@@ -641,7 +641,7 @@ namespace DS4Windows.Input
                 }
                 catch (Exception e)
                 {
-                    AppLogger.LogDebug($"[DS4Device] {Mac}: exception: {e.Message}");
+                    AppLogger.LogDebug($"[InputDeviceCore] {Mac}: exception: {e.Message}");
                 }
             }
 
@@ -664,7 +664,7 @@ namespace DS4Windows.Input
                     }
                     catch (Exception e)
                     {
-                        AppLogger.LogDebug($"[DS4Device] {Mac}: exception: {e.Message}");
+                        AppLogger.LogDebug($"[InputDeviceCore] {Mac}: exception: {e.Message}");
                     }
                 }
             }
