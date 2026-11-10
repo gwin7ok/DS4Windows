@@ -24,10 +24,6 @@ using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
-using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
-using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
-using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
-using JoinedGyroProvider = DS4Windows.Core.Settings.JoyConDeviceOptions.JoinedGyroProvider;
 
 using DS4Windows.Core.Model;
 
@@ -37,21 +33,8 @@ namespace DS4Windows.UI.ViewModels
     {
         private ControlServiceDeviceOptions serviceDeviceOpts;
 
-        public bool EnableDS4 { get => serviceDeviceOpts[InputDeviceFamily.DS4].Enabled; }
-
-        public bool EnableDualSense { get => serviceDeviceOpts[InputDeviceFamily.DualSense].Enabled; }
-
-        public bool EnableSwitchPro { get => serviceDeviceOpts[InputDeviceFamily.SwitchPro].Enabled; }
-
-        public bool EnableJoyCon { get => serviceDeviceOpts[InputDeviceFamily.JoyCon].Enabled; }
-
-        public bool EnableDS3 { get => serviceDeviceOpts[InputDeviceFamily.DS3].Enabled; }
-
-        public DS4DeviceOptions DS4DeviceOpts { get => serviceDeviceOpts.Get<DS4DeviceOptions>(InputDeviceFamily.DS4); }
-        public DS3DeviceOptions DS3DeviceOpts { get => serviceDeviceOpts.Get<DS3DeviceOptions>(InputDeviceFamily.DS3); }
-        public DualSenseDeviceOptions DSDeviceOpts { get => serviceDeviceOpts.Get<DualSenseDeviceOptions>(InputDeviceFamily.DualSense); }
-        public SwitchProDeviceOptions SwitchProDeviceOpts { get => serviceDeviceOpts.Get<SwitchProDeviceOptions>(InputDeviceFamily.SwitchPro); }
-        public JoyConDeviceOptions JoyConDeviceOpts { get => serviceDeviceOpts.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon); }
+        /// <summary>「この機種を使う」のチェックボックス（系統の一覧から作る）。</summary>
+        public List<FamilyToggleItem> FamilyToggles { get; }
 
         public bool UseMoonlightChanged
         {
@@ -101,39 +84,6 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler ControllerSelectedIndexChanged;
 
-        public DS4ControllerOptions CurrentDS4Options
-        {
-            get => controllerOptionsStores[controllerSelectedIndex] as DS4ControllerOptions;
-        }
-
-        public DualSenseControllerOptions CurrentDSOptions
-        {
-            get => controllerOptionsStores[controllerSelectedIndex] as DualSenseControllerOptions;
-        }
-
-        public SwitchProControllerOptions CurrentSwitchProOptions
-        {
-            get => controllerOptionsStores[controllerSelectedIndex] as SwitchProControllerOptions;
-        }
-
-        public JoyConControllerOptions CurrentJoyConOptions
-        {
-            get => controllerOptionsStores[controllerSelectedIndex] as JoyConControllerOptions;
-        }
-
-        private int currentTabSelectedIndex = 0;
-        public int CurrentTabSelectedIndex
-        {
-            get => currentTabSelectedIndex;
-            set
-            {
-                if (currentTabSelectedIndex == value) return;
-                currentTabSelectedIndex = value;
-                CurrentTabSelectedIndexChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-        public event EventHandler CurrentTabSelectedIndexChanged;
-
         // Phase6-Step10-2-2: Global.UseMoonlight／UseAdvancedMoonlight／SaveControllerConfigs の置換先（必須引数。null は拒否する）
         private readonly IAppSettingsService appSettings;
 
@@ -142,6 +92,8 @@ namespace DS4Windows.UI.ViewModels
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             this.serviceDeviceOpts = serviceDeviceOpts;
+            FamilyToggles = serviceDeviceOpts?.Families
+                .Select(f => new FamilyToggleItem(f, serviceDeviceOpts[f])).ToList() ?? new List<FamilyToggleItem>();
             if (slots == null) throw new ArgumentNullException(nameof(slots));
 
             for (int slot = 0; slot < slots.SlotCount; slot++)
@@ -156,68 +108,14 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private object dataContextObject = null;
-        public object DataContextObject { get => dataContextObject; }
-
-        public int FindTabOptionsIndex()
+        /// <summary>
+        /// 選んだコントローラーの設定パネルを作る。系統は、コントローラーの種類から引く。設定項目がない機種（DS3 など）は、項目が空のパネルになる。
+        /// </summary>
+        public DeviceFamilyPanelModel BuildCurrentPanel()
         {
-            ControllerOptionsStore currentStore =
-                controllerOptionsStores[controllerSelectedIndex];
-
-            int result = 0;
-            switch (currentStore.DeviceType)
-            {
-                case DS4Windows.Core.Model.InputDeviceType.DS3:
-                    result = 0;
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.DS4:
-                    result = 1;
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.DualSense:
-                    result = 2;
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.SwitchPro:
-                    result = 3;
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.JoyConL:
-                case DS4Windows.Core.Model.InputDeviceType.JoyConR:
-                    result = 4;
-                    break;
-                default:
-                    // Default to empty control
-                    result = 0;
-                    break;
-            }
-
-            return result;
-        }
-
-        public void FindFittingDataContext()
-        {
-            ControllerOptionsStore currentStore =
-                controllerOptionsStores[controllerSelectedIndex];
-
-            switch (currentStore.DeviceType)
-            {
-                case DS4Windows.Core.Model.InputDeviceType.DS3:
-                    // Does not have device specific options
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.DS4:
-                    dataContextObject = new DS4ControllerOptionsWrapper(CurrentDS4Options, serviceDeviceOpts.Get<DS4DeviceOptions>(InputDeviceFamily.DS4));
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.DualSense:
-                    dataContextObject = new DualSenseControllerOptionsWrapper(CurrentDSOptions, serviceDeviceOpts.Get<DualSenseDeviceOptions>(InputDeviceFamily.DualSense));
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.SwitchPro:
-                    dataContextObject = new SwitchProControllerOptionsWrapper(CurrentSwitchProOptions, serviceDeviceOpts.Get<SwitchProDeviceOptions>(InputDeviceFamily.SwitchPro));
-                    break;
-                case DS4Windows.Core.Model.InputDeviceType.JoyConL:
-                case DS4Windows.Core.Model.InputDeviceType.JoyConR:
-                    dataContextObject = new JoyConControllerOptionsWrapper(CurrentJoyConOptions, serviceDeviceOpts.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon));
-                    break;
-                default:
-                    break;
-            }
+            ControllerOptionsStore store = controllerOptionsStores[controllerSelectedIndex];
+            InputDeviceFamily family = InputDeviceTypeInfo.FamilyOf(store.DeviceType);
+            return new DeviceFamilyPanelModel(serviceDeviceOpts[family], store.Settings);
         }
 
         public void SaveControllerConfigs()

@@ -31,39 +31,14 @@ namespace DS4Windows.UI.ViewModels
     {
         private ControlServiceDeviceOptions serviceDeviceOpts;
 
-        public bool EnableDS4
-        {
-            get => serviceDeviceOpts[InputDeviceFamily.DS4].Enabled;
-            set => serviceDeviceOpts[InputDeviceFamily.DS4].Enabled = value;
-        }
-
-        public bool EnableDualSense
-        {
-            get => serviceDeviceOpts[InputDeviceFamily.DualSense].Enabled;
-            set => serviceDeviceOpts[InputDeviceFamily.DualSense].Enabled = value;
-        }
-
-        public bool EnableSwitchPro
-        {
-            get => serviceDeviceOpts[InputDeviceFamily.SwitchPro].Enabled;
-            set => serviceDeviceOpts[InputDeviceFamily.SwitchPro].Enabled = value;
-        }
-
-        public bool EnableJoyCon
-        {
-            get => serviceDeviceOpts[InputDeviceFamily.JoyCon].Enabled;
-            set => serviceDeviceOpts[InputDeviceFamily.JoyCon].Enabled = value;
-        }
-
-        public bool EnableDS3
-        {
-            get => serviceDeviceOpts[InputDeviceFamily.DS3].Enabled;
-            set => serviceDeviceOpts[InputDeviceFamily.DS3].Enabled = value;
-        }
+        /// <summary>系統ごとの「使う」のチェックボックスと説明（系統の一覧から作る）。</summary>
+        public List<FamilyToggleItem> FamilyToggles { get; }
 
         public FirstLauchUtilViewModel(ControlServiceDeviceOptions serviceDeviceOpts)
         {
             this.serviceDeviceOpts = serviceDeviceOpts;
+            FamilyToggles = serviceDeviceOpts?.Families
+                .Select(f => new FamilyToggleItem(f, serviceDeviceOpts[f])).ToList() ?? new List<FamilyToggleItem>();
         }
     }
 }

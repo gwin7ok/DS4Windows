@@ -23,6 +23,16 @@ namespace DS4Windows.Core.Settings
         /// <summary>XML の要素名。</summary>
         public string XmlName { get; }
 
+        /// <summary>画面での見せ方（画面に出さない項目は null）。</summary>
+        public SettingUi Ui { get; private set; }
+
+        /// <summary>画面での見せ方を設定する。選択肢は列挙型の項目だけに付ける。</summary>
+        public ControllerSetting WithUi(string labelKey, string tooltipKey = null, bool appliesOnNewConnection = false, params SettingChoice[] choices)
+        {
+            Ui = new SettingUi(labelKey, tooltipKey, appliesOnNewConnection, choices != null && choices.Length > 0 ? choices : null);
+            return this;
+        }
+
         /// <summary>列挙型の項目か（アプリ設定の読み込みでは、列挙型の値が解析できないと全体の読み込みが失敗する）。</summary>
         public bool IsEnum { get; }
 

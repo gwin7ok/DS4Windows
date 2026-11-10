@@ -86,8 +86,21 @@ namespace DS4Windows.Core.Settings
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {
-            ControllerSetting.Enum("LEDBarMode", this, o => o.LedMode, (o, v) => o.LedMode = v),
-            ControllerSetting.Enum("MuteLEDMode", this, o => o.MuteLedMode, (o, v) => o.MuteLedMode = v),
+            ControllerSetting.Enum("LEDBarMode", this, o => o.LedMode, (o, v) => o.LedMode = v)
+                .WithUi("ControllerRegOptWin.PlayerLEDMode", choices: new[]
+                {
+                    new SettingChoice("Off", "Off"),
+                    new SettingChoice("Only for multiple controllers", "MultipleControllers"),
+                    new SettingChoice("Battery Percentage", "BatteryPercentage"),
+                    new SettingChoice("On", "On"),
+                }),
+            ControllerSetting.Enum("MuteLEDMode", this, o => o.MuteLedMode, (o, v) => o.MuteLedMode = v)
+                .WithUi("ControllerRegOptWin.MuteLEDMode", choices: new[]
+                {
+                    new SettingChoice("Off", "Off"),
+                    new SettingChoice("On", "On"),
+                    new SettingChoice("Pulse", "Pulse"),
+                }),
         };
     }
 }

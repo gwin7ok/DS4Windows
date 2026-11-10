@@ -39,8 +39,18 @@ namespace DS4Windows.Core.Settings
 
         protected override IReadOnlyList<ControllerSetting> ExtraSettings => new[]
         {
-            ControllerSetting.Enum("LinkMode", this, o => o.LinkedMode, (o, v) => o.LinkedMode = v),
-            ControllerSetting.Enum("JoinedGyroProvider", this, o => o.JoinGyroProv, (o, v) => o.JoinGyroProv = v),
+            ControllerSetting.Enum("LinkMode", this, o => o.LinkedMode, (o, v) => o.LinkedMode = v)
+                .WithUi("ControllerRegOptWin.LinkMode", appliesOnNewConnection: true, choices: new[]
+                {
+                    new SettingChoice("Split", "Split"),
+                    new SettingChoice("Joined", "Joined"),
+                }),
+            ControllerSetting.Enum("JoinedGyroProvider", this, o => o.JoinGyroProv, (o, v) => o.JoinGyroProv = v)
+                .WithUi("ControllerRegOptWin.JoinedGyroProvider", appliesOnNewConnection: true, choices: new[]
+                {
+                    new SettingChoice("Left", "JoyConL"),
+                    new SettingChoice("Right", "JoyConR"),
+                }),
         };
 
         public enum LinkMode : ushort

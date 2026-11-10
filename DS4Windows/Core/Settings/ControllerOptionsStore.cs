@@ -47,6 +47,9 @@ namespace DS4Windows.Core.Settings
         /// <summary>保存する設定項目の定義（保存する順）。</summary>
         protected virtual IReadOnlyList<ControllerSetting> Schema => Array.Empty<ControllerSetting>();
 
+        /// <summary>設定項目の定義（画面が、項目を作るために読む）。</summary>
+        public IReadOnlyList<ControllerSetting> Settings => Schema;
+
         // 定義の並びを、親の節の下へ 1 つの節として置く（同名の節があれば置き換える）。保存形式は機種に関わらず同じ
         public void PersistSettings(XmlDocument xmlDoc, XmlNode node)
         {

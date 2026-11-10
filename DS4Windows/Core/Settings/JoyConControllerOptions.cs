@@ -58,7 +58,8 @@ namespace DS4Windows.Core.Settings
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {
-            ControllerSetting.Bool("EnableHomeLED", this, o => o.EnableHomeLED, (o, v) => o.EnableHomeLED = v),
+            ControllerSetting.Bool("EnableHomeLED", this, o => o.EnableHomeLED, (o, v) => o.EnableHomeLED = v)
+                .WithUi("ControllerRegOptWin.EnableHomeLED", appliesOnNewConnection: true),
         };
     }
 }

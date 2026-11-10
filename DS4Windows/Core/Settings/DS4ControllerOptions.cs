@@ -56,7 +56,7 @@ namespace DS4Windows.Core.Settings
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {
-            ControllerSetting.Bool("Copycat", this, o => o.IsCopyCat, (o, v) => o.IsCopyCat = v),
+            ControllerSetting.Bool("Copycat", this, o => o.IsCopyCat, (o, v) => o.IsCopyCat = v).WithUi("Copycat", "CopycatTip"),
         };
     }
 }

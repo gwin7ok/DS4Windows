@@ -15,7 +15,7 @@
 | 第2層 | `Processing/Services/XxxDeviceModule.cs`、`ServiceRegistration.Processing.cs` に `AddInputDevice<XxxDeviceCartridge, XxxDeviceModule>()` を 1 行 | `SwitchProDeviceModule` |
 | 設定 | `Core/Settings/XxxDeviceOptions.cs`、`XxxControllerOptions.cs`、`ControlServiceDeviceOptions` に系統を足す | |
 | 保存（17-2 で簡素化） | `XxxDeviceOptions`（節の名前を `base(…)` に渡し、機種固有の項目は `ExtraSettings` に `ControllerSetting` で書く）、`XxxControllerOptions`（`SectionName` と `Schema` に `ControllerSetting` を並べる）。DTO・シリアライザー・`AppSettingsDTO` は変えない | 保存の黄金テスト（`appsettings-varied.xml`）が形を守る |
-| UI | `XxxControllerOptionsWrapper`、`ControllerRegDeviceOptsViewModel`、`FirstLauchUtilViewModel`、`SettingsViewModel`、各 XAML、`Strings.*.resx` | |
+| UI（17-2c で自動生成） | `InputDeviceFamily` の値に `[InputDeviceFamilyUi(…)]`（文言のリソースキー）、設定項目に `.WithUi(ラベルのキー, …)`、`Strings.resx`／`Strings.ja.resx` の文言。画面の Wrapper・XAML・ViewModel は足さない | |
 | テスト | カートリッジ・モジュール・解析器の差分テスト | `DeviceModuleTests` ほか |
 
 ### 単純な機種（ボタン・スティック・トリガーと、任意の電池・出力）の最短経路（17-3）
@@ -23,7 +23,7 @@
 
 ### 今後（Phase17 の進行で更新する）
 - 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
-- 17-2（保存は済、画面は未）: 保存は設定の定義から作られる（DTO が不要になった）。画面（Wrapper・XAML）の自動生成は未着手。
+- 17-2（済）: 保存と画面が、設定の定義から作られる（DTO・Wrapper・XAML が不要）。
 - 17-3〜17-5: 読み取りループ・出力・切断が `ControllerSession` に集まり、機種は `IDeviceProtocol` を書くだけになる。
 
 ## 2. 仮想パッドの出力の種類を足す
