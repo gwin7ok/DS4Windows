@@ -390,10 +390,10 @@ namespace DS4Windows.Core.Persistence
                         {
                             Item = m_Xdoc.SelectSingleNode("/Profile/CustomLed" + (i + 1));
                             string[] ss = Item.InnerText.Split(':');
-                            bool.TryParse(ss[0], out store.lightbarSettingInfo[i].ds4winSettings.useCustomLed);
-                            DS4Color.TryParse(ss[1], ref store.lightbarSettingInfo[i].ds4winSettings.m_CustomLed);
+                            bool.TryParse(ss[0], out store.lightbarSlots[i].Info.ds4winSettings.useCustomLed);
+                            DS4Color.TryParse(ss[1], ref store.lightbarSlots[i].Info.ds4winSettings.m_CustomLed);
                         }
-                        catch { store.lightbarSettingInfo[i].ds4winSettings.useCustomLed = false; store.lightbarSettingInfo[i].ds4winSettings.m_CustomLed = new DS4Color(Color.Blue); missingSetting = true; }
+                        catch { store.lightbarSlots[i].Info.ds4winSettings.useCustomLed = false; store.lightbarSlots[i].Info.ds4winSettings.m_CustomLed = new DS4Color(Color.Blue); missingSetting = true; }
                     }
                 }
             }

@@ -27,7 +27,7 @@
 | タッチパッド | `TouchpadSlotSettings` | 完了（2026-11-10） |
 | トリガー（L2/R2 のカーブのモードを含む） | `TriggerSlotSettings` | 完了（2026-11-10） |
 | スティック（LS/RS のカーブのモードを含む） | `StickSlotSettings` | 完了（2026-11-11） |
-| ライトバー | `LightbarSlotSettings` | 未着手 |
+| ライトバー | `LightbarSlotSettings` | 完了（2026-11-11） |
 | 出力 | `OutputSlotSettings` | 未着手 |
 | 一般 | `GeneralSlotSettings` | 未着手 |
 | 6 軸 | `SixAxisSlotSettings` | 未着手 |

@@ -69,13 +69,11 @@ namespace DS4Windows.Core.Abstractions
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
-        LightbarSettingInfo[] LightbarSettingsInfo { get; }
         bool[] InverseRumbleMotors { get; }
         byte[] RumbleBoost { get; }
         RumbleEmulationMode[] DualSenseRumbleEmulationMode { get; set; }
         bool[] UseGenericRumbleStrRescaleForDualSenses { get; set; }
         byte[] DualSenseHapticPowerLevel { get; set; }
-        LightbarSettingInfo GetLightbarSettingsInfo(int deviceIndex);
         byte GetRumbleBoost(int deviceIndex);
         int GetRumbleAutostopTime(int deviceIndex);
         ref DS4Color GetMainColor(int deviceIndex);

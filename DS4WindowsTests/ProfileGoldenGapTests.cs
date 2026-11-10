@@ -49,7 +49,7 @@ namespace DS4WindowsTests
             store.setSXOutCurveMode(slot, 1);
             store.setSZOutCurveMode(slot, 6);
 
-            store.lightbarSettingInfo[slot].mode = LightbarMode.Passthru;
+            store.lightbarSlots[slot].Info.mode = LightbarMode.Passthru;
 
             // 特殊アクション（Step5 の入力になる節）
             store.profileActions[slot].Clear();

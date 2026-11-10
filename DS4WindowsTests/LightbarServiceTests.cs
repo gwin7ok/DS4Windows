@@ -27,7 +27,7 @@ namespace DS4WindowsTests
             public Scope()
             {
                 Settings = TestHost.GetService<IProfileSettingsService>();
-                _info = Settings.GetLightbarSettingsInfo(Slot);
+                _info = Settings.ForSlot(Slot).Lightbar.Info;
                 _mode = _info.mode;
                 _saved = _info.ds4winSettings;
                 _info.mode = LightbarMode.DS4Win;

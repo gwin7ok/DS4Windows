@@ -12,14 +12,15 @@ namespace DS4Windows.Core.Settings
         public ProfileSlotSettings(IProfileSettingsService settings, int slot, GyroSlotSettings gyro,
             TouchpadSlotSettings touchpad,
             TriggerSlotSettings triggers,
-            StickSlotSettings sticks)
+            StickSlotSettings sticks,
+            LightbarSlotSettings lightbar)
         {
             Slot = slot;
             Gyro = gyro ?? throw new System.ArgumentNullException(nameof(gyro));
             Touchpad = touchpad ?? throw new System.ArgumentNullException(nameof(touchpad));
             Triggers = triggers ?? throw new System.ArgumentNullException(nameof(triggers));
             Sticks = sticks ?? throw new System.ArgumentNullException(nameof(sticks));
-            Lightbar = new LightbarSlotSettings(settings, slot);
+            Lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             Output = new OutputSlotSettings(settings, slot);
             General = new GeneralSlotSettings(settings, slot);
             SixAxis = new SixAxisSlotSettings(settings, slot);

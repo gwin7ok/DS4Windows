@@ -268,14 +268,6 @@ namespace DS4Windows.Core.Settings
             _szOutCurveMode[index] = value;
         }
 
-        public LightbarSettingInfo[] lightbarSettingInfo = new LightbarSettingInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(),
-        };
 
         public int processPriority;
         public string[] launchProgram = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
@@ -359,6 +351,9 @@ namespace DS4Windows.Core.Settings
 
         /// <summary>Sticksの設定の持ち主（スロットごとに 1 つ）。</summary>
         public readonly StickSlotSettings[] stickSlots = new StickSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Lightbarの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly LightbarSlotSettings[] lightbarSlots = new LightbarSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -537,6 +532,7 @@ namespace DS4Windows.Core.Settings
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
+            for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
             for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
             for (int i = 0; i < triggerSlots.Length; i++) triggerSlots[i] = new TriggerSlotSettings(i);
             for (int i = 0; i < touchpadSlots.Length; i++) touchpadSlots[i] = new TouchpadSlotSettings(i);
@@ -603,15 +599,15 @@ namespace DS4Windows.Core.Settings
 
         private void SetupDefaultColors()
         {
-            lightbarSettingInfo[0].ds4winSettings.m_Led = new DS4Color(Color.Blue);
-            lightbarSettingInfo[1].ds4winSettings.m_Led = new DS4Color(Color.Red);
-            lightbarSettingInfo[2].ds4winSettings.m_Led = new DS4Color(Color.Green);
-            lightbarSettingInfo[3].ds4winSettings.m_Led = new DS4Color(Color.Pink);
-            lightbarSettingInfo[4].ds4winSettings.m_Led = new DS4Color(Color.Blue);
-            lightbarSettingInfo[5].ds4winSettings.m_Led = new DS4Color(Color.Red);
-            lightbarSettingInfo[6].ds4winSettings.m_Led = new DS4Color(Color.Green);
-            lightbarSettingInfo[7].ds4winSettings.m_Led = new DS4Color(Color.Pink);
-            lightbarSettingInfo[8].ds4winSettings.m_Led = new DS4Color(Color.White);
+            lightbarSlots[0].Info.ds4winSettings.m_Led = new DS4Color(Color.Blue);
+            lightbarSlots[1].Info.ds4winSettings.m_Led = new DS4Color(Color.Red);
+            lightbarSlots[2].Info.ds4winSettings.m_Led = new DS4Color(Color.Green);
+            lightbarSlots[3].Info.ds4winSettings.m_Led = new DS4Color(Color.Pink);
+            lightbarSlots[4].Info.ds4winSettings.m_Led = new DS4Color(Color.Blue);
+            lightbarSlots[5].Info.ds4winSettings.m_Led = new DS4Color(Color.Red);
+            lightbarSlots[6].Info.ds4winSettings.m_Led = new DS4Color(Color.Green);
+            lightbarSlots[7].Info.ds4winSettings.m_Led = new DS4Color(Color.Pink);
+            lightbarSlots[8].Info.ds4winSettings.m_Led = new DS4Color(Color.White);
         }
 
         public void CacheExtraProfileInfo(int device)
@@ -852,8 +848,8 @@ namespace DS4Windows.Core.Settings
                 throw new ArgumentOutOfRangeException();
             }
 
-            lightbarSettingInfo[index].ds4winSettings.useCustomLed = source.useCustomLed;
-            lightbarSettingInfo[index].ds4winSettings.m_CustomLed = source.m_CustomLed;
+            lightbarSlots[index].Info.ds4winSettings.useCustomLed = source.useCustomLed;
+            lightbarSlots[index].Info.ds4winSettings.m_CustomLed = source.m_CustomLed;
         }
 
         public LightbarDS4WinInfo ObtainLightbarDS4WinInfo(int index)
@@ -863,7 +859,7 @@ namespace DS4Windows.Core.Settings
                 throw new ArgumentOutOfRangeException();
             }
 
-            return lightbarSettingInfo[index].ds4winSettings;
+            return lightbarSlots[index].Info.ds4winSettings;
         }
 
 
@@ -1074,7 +1070,7 @@ namespace DS4Windows.Core.Settings
             triggerSlots[device].L2Output.ResetSettings();
             triggerSlots[device].R2Output.ResetSettings();
 
-            LightbarSettingInfo lightbarSettings = lightbarSettingInfo[device];
+            LightbarSettingInfo lightbarSettings = lightbarSlots[device].Info;
             LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
             lightbarSettings.Mode = LightbarMode.DS4Win;
             lightInfo.m_LowLed = new DS4Color(Color.Black);

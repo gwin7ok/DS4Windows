@@ -136,7 +136,7 @@ namespace DS4Windows.Core.Persistence
                 }
 
                 OutContType oldContType = store.ActiveOutDevType[device];
-                LightbarSettingInfo lightbarSettings = store.lightbarSettingInfo[device];
+                LightbarSettingInfo lightbarSettings = store.lightbarSlots[device].Info;
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileLoadContext(store, m_Xdoc, rootname, device, control, lightbarSettings, lightInfo)
                 {
@@ -328,7 +328,7 @@ namespace DS4Windows.Core.Persistence
                 rootElement.SetAttribute("app_version", _environment.ApplicationVersion);
                 rootElement.SetAttribute("config_version", ConfigVersion.ToString());
 
-                LightbarSettingInfo lightbarSettings = store.lightbarSettingInfo[device];
+                LightbarSettingInfo lightbarSettings = store.lightbarSlots[device].Info;
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileSaveContext(store, m_Xdoc, rootElement, device, lightbarSettings, lightInfo);
 

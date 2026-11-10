@@ -1,23 +1,22 @@
 ﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// 1 つのスロットのライトバーの設定の窓口。<see cref="IProfileSettingsService"/> のスロット番号の配列を、
-    /// スロット番号を渡さずに読み書きできるようにする（値は設定サービスの配列にあり、保存・読込の経路は変わらない）。
+    /// 1 つのスロットのLightbarの設定の持ち主（値そのもの）。<see cref="BackingStore"/> がスロットごとに 1 つ持ち、
+    /// 保存・読み込み（プロファイルの XML）、実行時の入力処理、設定画面の ViewModel が、同じ 1 つのオブジェクトを読み書きする。
     /// </summary>
     public class LightbarSlotSettings
     {
-        private readonly IProfileSettingsService _settings;
-        private readonly int _slot;
-
-        public LightbarSlotSettings(IProfileSettingsService settings, int slot)
+        public LightbarSlotSettings(int slot)
         {
-            _settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
-            _slot = slot;
+            Slot = slot;
+            Info = new LightbarSettingInfo();
         }
 
-        /// <summary>ライトバーの設定（モード、色、点滅、充電時の色など。中身を直接書き換える）。</summary>
-        public LightbarSettingInfo Info => _settings.LightbarSettingsInfo[_slot];
+        public int Slot { get; }
+
+        public LightbarSettingInfo Info { get; }
     }
 }

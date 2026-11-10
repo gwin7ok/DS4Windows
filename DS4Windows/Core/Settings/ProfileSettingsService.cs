@@ -211,7 +211,6 @@ namespace DS4Windows.Core.Settings
 
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
-        public LightbarSettingInfo[] LightbarSettingsInfo => SafeConfig?.lightbarSettingInfo;
         public bool[] InverseRumbleMotors => SafeConfig?.inverseRumbleMotors;
 
         public byte[] RumbleBoost
@@ -251,7 +250,6 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public LightbarSettingInfo GetLightbarSettingsInfo(int deviceIndex) => SafeConfig?.lightbarSettingInfo?[deviceIndex];
 
         public byte GetRumbleBoost(int deviceIndex)
         {
@@ -274,7 +272,7 @@ namespace DS4Windows.Core.Settings
             return SafeConfig?.rumbleAutostopTime != null ? SafeConfig.rumbleAutostopTime[deviceIndex] : 0;
         }
 
-        public ref DS4Color GetMainColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_Led;
+        public ref DS4Color GetMainColor(int deviceIndex) => ref SafeConfig.lightbarSlots[deviceIndex].Info.ds4winSettings.m_Led;
 
         public void SetRumbleAutostopTime(int index, int value)
         {
@@ -412,7 +410,7 @@ namespace DS4Windows.Core.Settings
             ProfileSlotSettings window = _slotSettings[slot];
             if (window == null)
             {
-                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot], SafeConfig.stickSlots[slot]);
+                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot], SafeConfig.stickSlots[slot], SafeConfig.lightbarSlots[slot]);
                 _slotSettings[slot] = window;
             }
             return window;

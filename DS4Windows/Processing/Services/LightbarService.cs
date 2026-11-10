@@ -73,7 +73,7 @@ namespace DS4Windows.Processing.Services
         {
             DS4Color color = new DS4Color();
             bool useForceLight = this.overrides.forcelight[deviceNum];
-            LightbarSettingInfo lightbarSettingInfo = this.profileSettings.GetLightbarSettingsInfo(deviceNum);
+            LightbarSettingInfo lightbarSettingInfo = this.profileSettings.ForSlot(deviceNum).Lightbar.Info;
             LightbarDS4WinInfo lightModeInfo = lightbarSettingInfo.ds4winSettings;
             bool useLightRoutine = lightbarSettingInfo.mode == LightbarMode.DS4Win;
             //bool useLightRoutine = false;
