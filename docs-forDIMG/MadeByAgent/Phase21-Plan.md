@@ -40,3 +40,4 @@
 ## 6. 進捗
 
 - 2026-11-10: 計画書を作成。コードは未着手。
+- 2026-11-10 21-0 調査の結果（Phase21 を閉じる）: 引数 3 個以上のコンストラクターについて、(a) 同じ型の引数が 2 つ以上あるもの、(b) 接尾辞が同じ契約の引数が 3 つ以上あるもの、をソースから抽出した。(a) は `TouchpadEventArgs`（`Touch` が 2 つ）、`TriggerBinding`（`SpecialAction` が 2 つ）、`ActionTypeDescriptor`（`ActionEditorModes` が 2 つ）で、いずれも値の入れ物で、数が固定の別々の役割。(b) は `CurveAndDeadzoneStage`（`IStickDeadZoneProcessor`／`IOutputCurveProcessor`／`ITriggerDeadZoneProcessor`／`IGyroControlsProcessor`）だけで、契約と呼び出しの署名が別々の段（同じ手順で扱えない）。決定 1 の 3 条件を満たす候補は **0 件**。よって **コードの変更なし**。種類の追加で増える複数の実装は、すでに `IInputDeviceModule` のように列で受けている（前例）。今後、同じ契約の実装を足すときの方針（列で受ける）は規則 3.1 に記載済み。Phase21 は調査のみで完了。

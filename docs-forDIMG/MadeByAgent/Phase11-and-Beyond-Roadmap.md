@@ -202,3 +202,4 @@ Phase16 の追補（16-12・16-13）で見送った次の項目を、Phase17 で
 - 2026-11-10 Phase19 完了（コード）: `MainWindowFactory` を `Composition` へ移し、`ActivatorUtilities` で窓をつくる形にして 18 → 1 にした。ほかの工場は基準内の多品目・実行時引数つきのため見送り（`Phase19-Plan.md` §6）。`ConstructorArityBaseline` の残りは `MainWindow` 18 のみ（Phase20）。実機の確認（起動、`-m` 起動、複製の名前入力欄）は未了。
 - 2026-11-10 Phase20 の 20-0〜20-3 完了（コード）: `MainWindow` を 18 → 15 にし、`ConstructorArityBaseline` は空になった（`TrayAppearanceController`／`ProfileSelectionCoordinator`）。20-5 以降（窓以外の引数 10 以上の型）は未着手。実機確認は台帳へ登録済み。
 - 2026-11-10 Phase20 完了: 窓の分割（18→15）、`InputReportProcessor` 15→13、しきい値を 12 へ。基準値の一覧に 6 型が凍結。次: Phase21（列で受ける。調査から）→ Phase22（Xbox）。
+- 2026-11-10 Phase21 完了（調査のみ。列で受ける候補は 0 件、コード変更なし）。次: Phase22（Xbox 360 USB 入力）。
