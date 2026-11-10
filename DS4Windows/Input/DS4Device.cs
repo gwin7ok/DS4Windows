@@ -35,7 +35,7 @@ using DS4Windows.Input.Hid;
 namespace DS4Windows.Input
 {
 
-    public class DS4Device
+    public class DS4Device : DS4Windows.Core.Abstractions.IConfigurableDevice
     {
         // Indicates PostInit completed and output buffers (etc.) are initialized
         protected volatile bool postInitDone = false;
@@ -100,6 +100,7 @@ namespace DS4Windows.Input
         }
 
         public ControllerOptionsStore optionsStore;
+        DS4Windows.Core.Settings.ControllerOptionsStore DS4Windows.Core.Abstractions.IConfigurableDevice.OptionsStore => optionsStore;
         private DS4ControllerOptions nativeOptionsStore;
 
         // Phase9 Steering 削除 W2: 旧「ステアリング（ジャイロでハンドル操作）の較正の状態」（wheelCenterPoint／wheel90DegPointLeft／Right／wheelCircle…／wheelPrev…／wheelFullTurnCount／WheelRecalibrateActiveState／

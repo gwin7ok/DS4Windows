@@ -628,3 +628,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **機種ごとの設定の共通化**: `DeviceOptionsBase`（有効・無効と変更の通知）を作り、`DS4`／`DualSense`／`SwitchPro`／`JoyCon`／`DS3` の `DeviceOptions` が継承する。既定値（`DEFAULT_ENABLE`）は機種ごとのまま。保存の DTO は、すでに `BaseInputDeviceSettingsGroup` を共有していたため変更なし（XML の形式は不変）。
 - 新テスト 5 件（`InputDeviceCartridgeTests`: 分ける前の表の書き出し〈黄金。42 件〉との一致、VID／PID の一意と種類ごとに 1 カートリッジ、設定の既定値と通知）。`RemovedApiRuleTests` に `InputDeviceFactory` を追記。
 - Debug ALL: 警告 0・エラー 0・Actions 3,306 件・Standalone 11 件合格。
+
+### Step 16-5c（2026-11-10。完了。L2 12→3）
+- **狭い契約**: `IConfigurableDevice`（`Core/Abstractions`。MAC、種類、機種固有の設定の入れ物、同期・生存、イベントスレッドへの積み込み、主か、振動の自動停止の時間）と、スロットから引く `IConfigurableDeviceLookup` を作った。`DS4Device` が実装し、`DeviceSlotState` が `IConfigurableDeviceLookup` も実装する（`IDeviceSlotState` と同じインスタンス）。
+- **Core 側の置き換え**: `IProfileLoadTarget`（`GetController`、`PluginOutDev`、`UnplugOutDev`、`CheckProfileOptions`）、`IProfileXmlStore`（コントローラー固有の設定の読み書き）と、その実装（`ControllerConfigsXmlSerializer`、`ProfileXmlStore`）、`LegacyProfileXmlSerializer`、`BackingStore`、`ProfileSettingsService`（`GetRumbleBoost` の DualSense の判定は `DeviceType == DualSense`）が `DS4Device` を参照しなくなった。実装側の `ProfileLoadTarget` と `ProfileApplicationService`（どちらも第 2 層）は、`IConfigurableDevice` を実装するのは `DS4Device` だけであることを前提に `DS4Device` へ変換する。
+- **移動**: `DS4Device` を返す `IDeviceStateAccessor` は、使う側が全部第 2 層・第 3 層のため、`Core/Abstractions` から `Processing/Abstractions` へ移した（`git mv` と名前空間の書き換えは別のコミット）。
+- 新テスト 3 件（`ConfigurableDeviceTests`）。`LazyControlServiceReplacementCharacterizationTests` は、コンストラクターを通さない `DualSenseDevice` に `deviceType` を設定するよう更新。
+- 残る L2 は `EnvironmentService` → HID の 3 件（16-6a で解消）。`RecordOnlyL2Count` を 12 → 3 に更新。
+- Debug ALL: 警告 0・エラー 0・Actions 3,309 件・Standalone 11 件合格。

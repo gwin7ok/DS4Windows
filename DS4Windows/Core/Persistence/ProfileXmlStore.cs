@@ -107,11 +107,11 @@ namespace DS4Windows.Core.Persistence
         }
 
         // ---- Phase6-Step2-2 (PR-2): 接続時のコントローラー固有設定の読込 ----
-        public bool LoadControllerConfigsForDevice(DS4Device device)
+        public bool LoadControllerConfigsForDevice(IConfigurableDevice device)
             => _controllerConfigsXml.LoadControllerConfigsForDevice(device);
 
         // ---- Phase6-Step3-1: 切断時のコントローラー固有設定の保存 ----
-        public bool SaveControllerConfigsForDevice(DS4Device device)
+        public bool SaveControllerConfigsForDevice(IConfigurableDevice device)
             => _controllerConfigsXml.SaveControllerConfigsForDevice(device);
     }
 }

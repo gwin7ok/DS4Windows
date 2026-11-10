@@ -37,19 +37,20 @@ namespace DS4Windows.Processing.Services
         }
 
         // 旧 control.DS4Controllers[ind] と同じ（範囲外は例外）。IDeviceStateAccessor.GetController（範囲外は null）にしない: 鎖の PostLoadSnippet などは範囲の検査をしないため、挙動を保つ
-        public DS4Device GetController(int ind) => _slots.DS4Controllers[ind];
+        public IConfigurableDevice GetController(int ind) => _slots.DS4Controllers[ind];
 
         public ITouchPadGyroToggles GetTouchPad(int ind) => _slots.TouchPads[ind];
 
         public bool HasOutputDevice(int ind) => _virtualPad.HasOutputDevice(ind);
 
-        public void PluginOutDev(int index, DS4Device device) => _virtualPad.PluginOutDev(index, device);
+        // IConfigurableDevice を実装するのは DS4Device だけ（この層は具象を知ってよい）
+        public void PluginOutDev(int index, IConfigurableDevice device) => _virtualPad.PluginOutDev(index, (DS4Device)device);
 
-        public void UnplugOutDev(int index, DS4Device device, bool immediate = false, bool force = false)
-            => _virtualPad.UnplugOutDev(index, device, immediate, force);
+        public void UnplugOutDev(int index, IConfigurableDevice device, bool immediate = false, bool force = false)
+            => _virtualPad.UnplugOutDev(index, (DS4Device)device, immediate, force);
 
-        public void CheckProfileOptions(int ind, DS4Device device, bool startUp = false)
-            => _connectionSetup.ApplyProfileOptions(ind, device, _slots.TouchPads[ind], startUp);
+        public void CheckProfileOptions(int ind, IConfigurableDevice device, bool startUp = false)
+            => _connectionSetup.ApplyProfileOptions(ind, (DS4Device)device, _slots.TouchPads[ind], startUp);
 
         public void StartTPOff(int deviceID) => _touchpadToggle.StartTouchpadOff(deviceID);
 

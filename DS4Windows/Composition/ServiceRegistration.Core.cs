@@ -33,9 +33,9 @@ namespace DS4Windows.Composition
 
             // Phase 5 Step 12: 出力スロット永続化・管理サービス（管理の IOutputSlotService は ServiceRegistration.Output.cs）
 
-            // Phase13-Step6 6-b: 旧 Func<ControlService>（遅延）をやめ、依存のない IDeviceStateAccessor を直接受ける
+            // Phase13-Step6 6-b: 旧 Func<ControlService>（遅延）をやめ、依存のない IConfigurableDeviceLookup を直接受ける
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(
-                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<IDeviceStateAccessor>()));
+                sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<IEnvironmentService>(), sp.GetRequiredService<IConfigurableDeviceLookup>()));
             // Phase7-Step10c W2: 設定ファイルの保存・読込を担う型（旧: BackingStore のメソッド）。BackingStore を受ける具象クラスの Singleton
             services.AddSingleton<SpecialActionsXmlSerializer>();
             services.AddSingleton<LinkedProfilesXmlSerializer>();

@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         }
 
         public static ProfileSettingsService CreateProfileSettingsService(BackingStore store = null,
-            IEnvironmentService environmentService = null, IDeviceStateAccessor deviceState = null)
+            IEnvironmentService environmentService = null, IConfigurableDeviceLookup deviceState = null)
         {
             return new ProfileSettingsService(store ?? TestGlobals.Store,
                 environmentService ?? new EnvironmentService(),

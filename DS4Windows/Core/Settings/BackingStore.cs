@@ -1437,7 +1437,7 @@ namespace DS4Windows.Core.Settings
             if (device < _environmentService.ControllerSlotLimit)
             {
                 bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
-                DS4Device tempDevice = control.GetController(device);
+                IConfigurableDevice tempDevice = control.GetController(device);
                 bool exists = tempBool = (tempDevice != null);
                 bool synced = tempBool = exists ? tempDevice.isSynced() : false;
                 bool isAlive = tempBool = exists ? tempDevice.IsAlive() : false;
@@ -1466,7 +1466,7 @@ namespace DS4Windows.Core.Settings
         // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
         public void PostLoadSnippet(int device, IProfileLoadTarget control, bool xinputStatus, bool xinputPlug)
         {
-            DS4Device tempDev = control.GetController(device);
+            IConfigurableDevice tempDev = control.GetController(device);
             if (tempDev != null && tempDev.isSynced())
             {
                 tempDev.queueEvent(() =>

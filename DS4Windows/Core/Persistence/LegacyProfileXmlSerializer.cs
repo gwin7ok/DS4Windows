@@ -204,7 +204,7 @@ namespace DS4Windows.Core.Persistence
                 if (device < _environment.ControllerSlotLimit && control.HasOutputDevice(device))
                 {
                     //Global.activeOutDevType[device] = OutContType.None;
-                    DS4Device tempDev = control.GetController(device);
+                    IConfigurableDevice tempDev = control.GetController(device);
                     if (tempDev != null)
                     {
                         tempDev.queueEvent(() =>

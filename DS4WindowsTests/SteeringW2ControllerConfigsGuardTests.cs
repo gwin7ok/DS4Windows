@@ -36,8 +36,8 @@ namespace DS4WindowsTests
             string text = ReadSerializer();
             if (text == null) return;
 
-            Assert.Contains("device.optionsStore?.LoadSettings(xmlDoc, node)", text);
-            Assert.Contains("device.optionsStore?.PersistSettings(xmlDoc, node)", text);
+            Assert.Contains("device.OptionsStore?.LoadSettings(xmlDoc, node)", text);
+            Assert.Contains("device.OptionsStore?.PersistSettings(xmlDoc, node)", text);
             Assert.Contains("CreateAttribute(\"Mac\")", text);
             Assert.Contains("CreateAttribute(\"ControllerType\")", text);
         }

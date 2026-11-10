@@ -30,8 +30,8 @@ namespace DS4WindowsTests
             public bool SaveProfileXml(int deviceIndex, string profileName) => true;
 
             // Phase6-Step2-2 (PR-2) / Phase6-Step3-1: IProfileXmlStore の拡張に追随（本テストでは使用しない）
-            public bool LoadControllerConfigsForDevice(DS4Device device) => true;
-            public bool SaveControllerConfigsForDevice(DS4Device device) => true;
+            public bool LoadControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;
+            public bool SaveControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;
 
             public bool LoadAppSettingsXml()
             {

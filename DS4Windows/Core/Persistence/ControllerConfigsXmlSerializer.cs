@@ -19,6 +19,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
@@ -62,7 +63,7 @@ namespace DS4Windows.Core.Persistence
             return saved;
         }
 
-        public bool LoadControllerConfigsForDevice(DS4Device device)
+        public bool LoadControllerConfigsForDevice(IConfigurableDevice device)
         {
             bool loaded = false;
 
@@ -79,7 +80,7 @@ namespace DS4Windows.Core.Persistence
                 {
                     // Phase9 Steering 削除 W2: 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
 
-                    device.optionsStore?.LoadSettings(xmlDoc, node);
+                    device.OptionsStore?.LoadSettings(xmlDoc, node);
 
                     loaded = true;
                 }
@@ -93,7 +94,7 @@ namespace DS4Windows.Core.Persistence
             return loaded;
         }
 
-        public bool SaveControllerConfigsForDevice(DS4Device device)
+        public bool SaveControllerConfigsForDevice(IConfigurableDevice device)
         {
             bool saved = true;
 
@@ -127,7 +128,7 @@ namespace DS4Windows.Core.Persistence
                 node.Attributes.Append(contTypeAttr);
 
                 // Phase9 Steering 削除 W2: 旧「車輪の較正値」の書き込みは削除した（Mac と ControllerType の属性、optionsStore の設定は、これまでどおり）
-                device.optionsStore?.PersistSettings(xmlDoc, node);
+                device.OptionsStore?.PersistSettings(xmlDoc, node);
 
                 // Remove old elements
                 xmlDoc.RemoveAll();

@@ -15,18 +15,18 @@ namespace DS4WindowsTests
     {
         private IProfileLoadTarget Target => TestHost.GetService<IProfileLoadTarget>();
 
-        public DS4Device GetController(int ind) => Target.GetController(ind);
+        public IConfigurableDevice GetController(int ind) => Target.GetController(ind);
 
         public ITouchPadGyroToggles GetTouchPad(int ind) => Target.GetTouchPad(ind);
 
         public bool HasOutputDevice(int ind) => Target.HasOutputDevice(ind);
 
-        public void PluginOutDev(int index, DS4Device device) => Target.PluginOutDev(index, device);
+        public void PluginOutDev(int index, IConfigurableDevice device) => Target.PluginOutDev(index, device);
 
-        public void UnplugOutDev(int index, DS4Device device, bool immediate = false, bool force = false)
+        public void UnplugOutDev(int index, IConfigurableDevice device, bool immediate = false, bool force = false)
             => Target.UnplugOutDev(index, device, immediate, force);
 
-        public void CheckProfileOptions(int ind, DS4Device device, bool startUp = false)
+        public void CheckProfileOptions(int ind, IConfigurableDevice device, bool startUp = false)
             => Target.CheckProfileOptions(ind, device, startUp);
 
         public void StartTPOff(int deviceID) => Target.StartTPOff(deviceID);

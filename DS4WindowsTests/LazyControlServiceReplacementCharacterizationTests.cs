@@ -104,6 +104,9 @@ namespace DS4WindowsTests
                 rescale[Slot] = false;
 
                 var dualSense = (DualSenseDevice)RuntimeHelpers.GetUninitializedObject(typeof(DualSenseDevice));
+                // コンストラクターを通さないため、DualSenseDevice が自分で設定する種類を同じ値にする（判定は DeviceType で行う）
+                typeof(DS4Device).GetField("deviceType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                    .SetValue(dualSense, DS4Windows.Core.Model.InputDeviceType.DualSense);
                 using (new SlotScope(Slot, dualSense))
                     Assert.Equal(100, settings.GetRumbleBoost(Slot));   // DualSense で、汎用の再スケールなし → 100 固定
 

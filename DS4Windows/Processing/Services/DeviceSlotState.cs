@@ -11,7 +11,7 @@ namespace DS4Windows.Processing.Services
     /// 配列の長さは <see cref="ControllerLimits.MaxControllerCount"/>（旧 <c>ControlService.MAX_DS4_CONTROLLER_COUNT</c> と同じ）。
     /// 各 <c>DS4State</c> の初期化（<c>new DS4State()</c>）は、これまでどおり <c>ControlService</c> のコンストラクターが行う（初期化の位置を変えない）。
     /// </summary>
-    public class DeviceSlotState : IDeviceSlotState
+    public class DeviceSlotState : IDeviceSlotState, DS4Windows.Core.Abstractions.IConfigurableDeviceLookup
     {
         public DS4Device[] DS4Controllers { get; } = new DS4Device[ControllerLimits.MaxControllerCount];
         public DS4State[] CurrentStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
@@ -21,6 +21,8 @@ namespace DS4Windows.Processing.Services
         public ControllerSlotManager SlotManager { get; } = new ControllerSlotManager();
         /// <summary>接続中のコントローラーの数。Phase13-Step5b: 旧 <c>ServiceLifecycle</c> の自動プロパティを、ここへ移した（<c>IDeviceSlotHost</c> の廃止で、<c>DeviceConnector</c> が直接読む）。</summary>
         public int ActiveControllers { get; set; }
+
+        DS4Windows.Core.Abstractions.IConfigurableDevice DS4Windows.Core.Abstractions.IConfigurableDeviceLookup.GetConfigurableDevice(int deviceIndex) => GetController(deviceIndex);
 
         /// <summary>範囲外は null（旧 <c>ControlService.GetController</c> と同じ）。</summary>
         public DS4Device GetController(int deviceIndex)

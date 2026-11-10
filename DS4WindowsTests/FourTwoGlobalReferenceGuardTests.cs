@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var env = new EnvironmentService();
-            IDeviceStateAccessor control = new DS4Windows.Processing.Services.DeviceSlotState();
+            IConfigurableDeviceLookup control = new DS4Windows.Processing.Services.DeviceSlotState();
 
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(null, env, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(store, null, control));
