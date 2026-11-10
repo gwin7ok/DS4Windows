@@ -31,6 +31,11 @@ namespace DS4Windows.Input.Devices
         // 基底の Report は仮想のイベント。派生で持ち直し、読み取りのスレッドから発火する
         public override event ReportHandler<EventArgs> Report = null;
 
+        public override void removeReportHandlers()
+        {
+            this.Report = null;
+        }
+
         /// <summary>1 フレームの処理の途中で起きた、続行できる誤り（タッチパッドの読み取りの失敗など）。フレームの終わりに <c>error</c> へ反映される。</summary>
         protected string frameError = string.Empty;
 

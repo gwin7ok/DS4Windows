@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             if (code == null) return;
 
             int start = code.IndexOf("public void WriteOutputOffOnce()", StringComparison.Ordinal);
-            int end = code.IndexOf("private const byte DEFAULT_BT_REPORT_TYPE", StringComparison.Ordinal);
+            int end = code.IndexOf("public int Battery => battery;", StringComparison.Ordinal);
             Assert.True(start >= 0 && end > start);
             string body = code.Substring(start, end - start);
 
