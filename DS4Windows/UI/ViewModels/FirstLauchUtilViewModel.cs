@@ -23,6 +23,8 @@ using System.Text;
 using System.Threading.Tasks;
 using DS4Windows.Core.Settings;
 
+using DS4Windows.Core.Model;
+
 namespace DS4Windows.UI.ViewModels
 {
     public class FirstLauchUtilViewModel
@@ -31,32 +33,32 @@ namespace DS4Windows.UI.ViewModels
 
         public bool EnableDS4
         {
-            get => serviceDeviceOpts.DS4DeviceOpts.Enabled;
-            set => serviceDeviceOpts.DS4DeviceOpts.Enabled = value;
+            get => serviceDeviceOpts[InputDeviceFamily.DS4].Enabled;
+            set => serviceDeviceOpts[InputDeviceFamily.DS4].Enabled = value;
         }
 
         public bool EnableDualSense
         {
-            get => serviceDeviceOpts.DualSenseOpts.Enabled;
-            set => serviceDeviceOpts.DualSenseOpts.Enabled = value;
+            get => serviceDeviceOpts[InputDeviceFamily.DualSense].Enabled;
+            set => serviceDeviceOpts[InputDeviceFamily.DualSense].Enabled = value;
         }
 
         public bool EnableSwitchPro
         {
-            get => serviceDeviceOpts.SwitchProDeviceOpts.Enabled;
-            set => serviceDeviceOpts.SwitchProDeviceOpts.Enabled = value;
+            get => serviceDeviceOpts[InputDeviceFamily.SwitchPro].Enabled;
+            set => serviceDeviceOpts[InputDeviceFamily.SwitchPro].Enabled = value;
         }
 
         public bool EnableJoyCon
         {
-            get => serviceDeviceOpts.JoyConDeviceOpts.Enabled;
-            set => serviceDeviceOpts.JoyConDeviceOpts.Enabled = value;
+            get => serviceDeviceOpts[InputDeviceFamily.JoyCon].Enabled;
+            set => serviceDeviceOpts[InputDeviceFamily.JoyCon].Enabled = value;
         }
 
         public bool EnableDS3
         {
-            get => serviceDeviceOpts.DS3DeviceOpts.Enabled;
-            set => serviceDeviceOpts.DS3DeviceOpts.Enabled = value;
+            get => serviceDeviceOpts[InputDeviceFamily.DS3].Enabled;
+            set => serviceDeviceOpts[InputDeviceFamily.DS3].Enabled = value;
         }
 
         public FirstLauchUtilViewModel(ControlServiceDeviceOptions serviceDeviceOpts)

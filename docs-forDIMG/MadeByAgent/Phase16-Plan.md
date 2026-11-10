@@ -774,3 +774,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **種類と系統の表**: `Core/Model` に `InputDeviceFamily`（DS4／DualSense／SwitchPro／JoyCon／DS3）と `InputDeviceTypeInfo`（`FamilyOf`／`IsFamily`／`IsJoyConSide`）を作った。5 つのカートリッジ（第 1 層）と 5 つの `*DeviceModule`（第 2 層）の `Handles` は、同じ表を引く。Joy-Con の左右の判定（`JoyConDeviceModule` 2 か所、`JoyConLinker` 1 か所）は `IsJoyConSide` に替えた。`IsFamily` は、表にない値を false にする（既存の「不明な種類は誰も扱わない」の挙動を維持）。
 - **残した分岐**: `JoyConDevice` の左／右の分岐（1835・1869 行。左右で処理が違う本体）と `DecideJoin`（左は主、右は副）は、系統でなく側の意味なので、そのまま。`ProfileSettingsService` の DualSense の判定も、そのまま（1 か所）。
 - **テスト**: `InputDeviceTypeInfoTests`（全値の対応、Joy-Con の側、全種類についてカートリッジ・モジュールがちょうど 1 つずつ、同じ系統の集合を扱うこと）。Actions 3,387 件合格・警告 0。
+
+### Step 16-12c（2026-11-10。完了。c1 と c2 を 1 コミットにした。画面の分岐は 12d へ持ち越し）
+- **辞書化（D-12-2）**: `ControlServiceDeviceOptions` の型付きのプロパティ 5 つ（`DS4DeviceOpts`／`DualSenseOpts`／`SwitchProDeviceOpts`／`JoyConDeviceOpts`／`DS3DeviceOpts`）を廃し、`InputDeviceFamily` をキーにした入れ物（`this[family]`、`Get<T>(family)`、`Families`）にした。約 55 参照のうち、保存（`AppSettingsDTO`）、読み込み（`AppSettingsXmlSerializer`）、`ServiceLifecycle`、接続フック、2 つの ViewModel を置き換えた。c1／c2 の 2 区切りにする予定だったが、機械的な置き換えで一度に通ったため 1 コミットにした（各段の検査は、保存形式の黄金テストが担った）。
+- **接続フックの一本化**: `InputDeviceModuleBase` が `Family`（null は「何も扱わない」）から `Handles`／`IsEnabled` を決める。5 つのモジュールと `NullInputDeviceModule` の個別の実装は消えた。
+- **読み込みの繰り返し**: `AppSettingsXmlSerializer` の機種ごとの `Enabled` の読み込み（同形 4 回）を、節の名前の表のループにした。DS3 の節は、この経路ではもともと読まない（DTO の経路は読む）ため表に入れず、挙動を保った。Joy-Con の結合の読み込みは、そのまま。
+- **保存形式は不変**: 黄金テスト（`appsettings-varied.xml`、`.state.txt`）は、基準のファイルを変えずに合格。状態の充填・出力の補助（`BackingStoreStateFiller`／`BackingStoreStateDumper`）は、辞書の中身を従来の名前で扱うよう直した（辞書は反射の対象外のため）。
+- **持ち越し**: `ControllerRegDeviceOptsViewModel` の種類ごとの `switch`（タブの番号とラッパーの生成）と XAML の `DS4DeviceOpts.Enabled` などの束縛は、ViewModel 自身のプロパティ（窓口）のため残した。ラッパーの型が機種ごとに別のため、12d で `*ControllerOptions` の重複と一緒に扱う。
+- 新テスト 3 件（`ControlServiceDeviceOptionsTests`: 系統ごとの設定の型、型付きプロパティがないこと、DTO の往復）。Actions 3,390 件合格・警告 0。

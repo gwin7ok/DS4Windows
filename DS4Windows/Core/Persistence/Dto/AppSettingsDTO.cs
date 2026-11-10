@@ -4,6 +4,8 @@ using System.Globalization;
 using DS4Windows.Core.Persistence.Dto;
 using DS4Windows.Core.Settings;
 
+using DS4Windows.Core.Model;
+
 namespace DS4Windows.Core.Persistence.Dto;
 /*
 DS4Windows
@@ -988,25 +990,25 @@ public class AppSettingsDTO
         {
             DS4SupportSettings = new DS4SupportSettingsGroup()
             {
-                Enabled = source.deviceOptions.DS4DeviceOpts.Enabled,
+                Enabled = source.deviceOptions[InputDeviceFamily.DS4].Enabled,
             },
             DualSenseSupportSettings = new DualSenseSupportSettings()
             {
-                Enabled = source.deviceOptions.DualSenseOpts.Enabled,
+                Enabled = source.deviceOptions[InputDeviceFamily.DualSense].Enabled,
             },
             SwitchProSupportSettings = new SwitchProSupportSettings()
             {
-                Enabled = source.deviceOptions.SwitchProDeviceOpts.Enabled,
+                Enabled = source.deviceOptions[InputDeviceFamily.SwitchPro].Enabled,
             },
             JoyConSupportSettings = new JoyConSupportSettings()
             {
-                Enabled = source.deviceOptions.JoyConDeviceOpts.Enabled,
-                LinkMode = source.deviceOptions.JoyConDeviceOpts.LinkedMode,
-                JoinedGyroProvider = source.deviceOptions.JoyConDeviceOpts.JoinGyroProv,
+                Enabled = source.deviceOptions[InputDeviceFamily.JoyCon].Enabled,
+                LinkMode = source.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode,
+                JoinedGyroProvider = source.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv,
             },
             DS3SupportSettings = new DS3SupportSettings()
             {
-                Enabled = source.deviceOptions.DS3DeviceOpts.Enabled,
+                Enabled = source.deviceOptions[InputDeviceFamily.DS3].Enabled,
             }
         };
 
@@ -1130,13 +1132,13 @@ public class AppSettingsDTO
         destination.autoProfileRevertDefaultProfile = AutoProfileRevertDefaultProfile;
         destination.autoProfileSwitchNotifyChoice = AutoProfileSwitchNotifyChoice;
 
-        destination.deviceOptions.DS4DeviceOpts.Enabled = DeviceOptions.DS4SupportSettings.Enabled;
-        destination.deviceOptions.DualSenseOpts.Enabled = DeviceOptions.DualSenseSupportSettings.Enabled;
-        destination.deviceOptions.SwitchProDeviceOpts.Enabled = DeviceOptions.SwitchProSupportSettings.Enabled;
-        destination.deviceOptions.JoyConDeviceOpts.Enabled = DeviceOptions.JoyConSupportSettings.Enabled;
-        destination.deviceOptions.JoyConDeviceOpts.LinkedMode = DeviceOptions.JoyConSupportSettings.LinkMode;
-        destination.deviceOptions.JoyConDeviceOpts.JoinGyroProv = DeviceOptions.JoyConSupportSettings.JoinedGyroProvider;
-        destination.deviceOptions.DS3DeviceOpts.Enabled = DeviceOptions.DS3SupportSettings.Enabled;
+        destination.deviceOptions[InputDeviceFamily.DS4].Enabled = DeviceOptions.DS4SupportSettings.Enabled;
+        destination.deviceOptions[InputDeviceFamily.DualSense].Enabled = DeviceOptions.DualSenseSupportSettings.Enabled;
+        destination.deviceOptions[InputDeviceFamily.SwitchPro].Enabled = DeviceOptions.SwitchProSupportSettings.Enabled;
+        destination.deviceOptions[InputDeviceFamily.JoyCon].Enabled = DeviceOptions.JoyConSupportSettings.Enabled;
+        destination.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode = DeviceOptions.JoyConSupportSettings.LinkMode;
+        destination.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv = DeviceOptions.JoyConSupportSettings.JoinedGyroProvider;
+        destination.deviceOptions[InputDeviceFamily.DS3].Enabled = DeviceOptions.DS3SupportSettings.Enabled;
 
         LightbarDS4WinInfo[] tempLightArray = new LightbarDS4WinInfo[]
         {

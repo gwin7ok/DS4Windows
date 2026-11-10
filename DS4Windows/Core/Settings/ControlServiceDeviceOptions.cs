@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using DS4Windows.Core.Model;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,20 +31,24 @@ namespace DS4Windows.Core.Settings
 {
     public class ControlServiceDeviceOptions
     {
-        private DS4DeviceOptions dS4DeviceOpts = new DS4DeviceOptions();
-        public DS4DeviceOptions DS4DeviceOpts { get => dS4DeviceOpts; }
+        // 機種の系統ごとの設定。系統を足すときは、ここへ 1 行足す（保存・画面・接続フックは系統で引く）
+        private readonly Dictionary<InputDeviceFamily, DeviceOptionsBase> byFamily = new Dictionary<InputDeviceFamily, DeviceOptionsBase>
+        {
+            [InputDeviceFamily.DS4] = new DS4DeviceOptions(),
+            [InputDeviceFamily.DualSense] = new DualSenseDeviceOptions(),
+            [InputDeviceFamily.SwitchPro] = new SwitchProDeviceOptions(),
+            [InputDeviceFamily.JoyCon] = new JoyConDeviceOptions(),
+            [InputDeviceFamily.DS3] = new DS3DeviceOptions(),
+        };
 
-        private DualSenseDeviceOptions dualSenseOpts = new DualSenseDeviceOptions();
-        public DualSenseDeviceOptions DualSenseOpts { get => dualSenseOpts; }
+        /// <summary>系統の設定（有効・無効と変更の通知）。</summary>
+        public DeviceOptionsBase this[InputDeviceFamily family] => byFamily[family];
 
-        private SwitchProDeviceOptions switchProDeviceOpts = new SwitchProDeviceOptions();
-        public SwitchProDeviceOptions SwitchProDeviceOpts { get => switchProDeviceOpts; }
+        /// <summary>系統の設定を、機種固有の型で受け取る（例: Joy-Con の結合の設定）。</summary>
+        public T Get<T>(InputDeviceFamily family) where T : DeviceOptionsBase => (T)byFamily[family];
 
-        private JoyConDeviceOptions joyConDeviceOpts = new JoyConDeviceOptions();
-        public JoyConDeviceOptions JoyConDeviceOpts { get => joyConDeviceOpts; }
-
-        private DS3DeviceOptions dS3DeviceOpts = new DS3DeviceOptions();
-        public DS3DeviceOptions DS3DeviceOpts { get => dS3DeviceOpts; }
+        /// <summary>設定を持つ系統の一覧。</summary>
+        public IEnumerable<InputDeviceFamily> Families => byFamily.Keys;
 
         private bool verboseLogMessages;
         public bool VerboseLogMessages { get => verboseLogMessages; set => verboseLogMessages = value; }

@@ -13,9 +13,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class JoyConDeviceModule : InputDeviceModuleBase
     {
-        public override bool Handles(InputDeviceType type) => InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.JoyCon);
-
-        public override bool IsEnabled(ControlServiceDeviceOptions options) => options.JoyConDeviceOpts.Enabled;
+        protected override InputDeviceFamily? Family => InputDeviceFamily.JoyCon;
 
         public override List<DS4Controls> GetKnownExtraButtons(DS4Device device)
         {
@@ -33,7 +31,7 @@ namespace DS4Windows.Processing.Services
         {
             if (InputDeviceTypeInfo.IsJoyConSide(device.DeviceType))
             {
-                if (DecideJoin(device.DeviceType, options.JoyConDeviceOpts.LinkedMode, options.JoyConDeviceOpts.JoinGyroProv,
+                if (DecideJoin(device.DeviceType, options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode, options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv,
                     out bool primaryDevice, out bool outputMapGyro))
                 {
                     DS4Windows.Input.Devices.JoyConDevice tempJoyDev = device as DS4Windows.Input.Devices.JoyConDevice;

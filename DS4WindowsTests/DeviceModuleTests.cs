@@ -27,21 +27,21 @@ namespace DS4WindowsTests
             switch (inputDevType)
             {
                 case InputDeviceType.DS4:
-                    result = deviceOptions.DS4DeviceOpts.Enabled;
+                    result = deviceOptions[InputDeviceFamily.DS4].Enabled;
                     break;
                 case InputDeviceType.DualSense:
-                    result = deviceOptions.DualSenseOpts.Enabled;
+                    result = deviceOptions[InputDeviceFamily.DualSense].Enabled;
                     break;
                 case InputDeviceType.SwitchPro:
-                    result = deviceOptions.SwitchProDeviceOpts.Enabled;
+                    result = deviceOptions[InputDeviceFamily.SwitchPro].Enabled;
                     break;
                 case InputDeviceType.JoyConL:
                 case InputDeviceType.JoyConR:
                 case InputDeviceType.JoyConGrip:
-                    result = deviceOptions.JoyConDeviceOpts.Enabled;
+                    result = deviceOptions[InputDeviceFamily.JoyCon].Enabled;
                     break;
                 case InputDeviceType.DS3:
-                    result = deviceOptions.DS3DeviceOpts.Enabled;
+                    result = deviceOptions[InputDeviceFamily.DS3].Enabled;
                     break;
                 default:
                     break;
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             bool applied = false, merge = false, primary = false, gyro = false;
             if (type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR)
             {
-                if (deviceOptions.JoyConDeviceOpts.LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
+                if (deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode == JoyConDeviceOptions.LinkMode.Joined)
                 {
                     applied = true;
                     merge = true;
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
                     if (type == InputDeviceType.JoyConL)
                     {
                         primary = true;
-                        if (deviceOptions.JoyConDeviceOpts.JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConL)
+                        if (deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConL)
                         {
                             gyro = true;
                         }
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
                     else
                     {
                         primary = false;
-                        if (deviceOptions.JoyConDeviceOpts.JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConR)
+                        if (deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv == JoyConDeviceOptions.JoinedGyroProvider.JoyConR)
                         {
                             gyro = true;
                         }
@@ -106,11 +106,11 @@ namespace DS4WindowsTests
             for (int mask = 0; mask < 32; mask++)
             {
                 var options = new ControlServiceDeviceOptions();
-                options.DS4DeviceOpts.Enabled = (mask & 1) != 0;
-                options.DualSenseOpts.Enabled = (mask & 2) != 0;
-                options.SwitchProDeviceOpts.Enabled = (mask & 4) != 0;
-                options.JoyConDeviceOpts.Enabled = (mask & 8) != 0;
-                options.DS3DeviceOpts.Enabled = (mask & 16) != 0;
+                options[InputDeviceFamily.DS4].Enabled = (mask & 1) != 0;
+                options[InputDeviceFamily.DualSense].Enabled = (mask & 2) != 0;
+                options[InputDeviceFamily.SwitchPro].Enabled = (mask & 4) != 0;
+                options[InputDeviceFamily.JoyCon].Enabled = (mask & 8) != 0;
+                options[InputDeviceFamily.DS3].Enabled = (mask & 16) != 0;
 
                 foreach (InputDeviceType type in AllTypes)
                 {
@@ -123,11 +123,11 @@ namespace DS4WindowsTests
         public void IsEnabled_IsFalse_ForAnUnknownType()
         {
             var options = new ControlServiceDeviceOptions();
-            options.DS4DeviceOpts.Enabled = true;
-            options.DualSenseOpts.Enabled = true;
-            options.SwitchProDeviceOpts.Enabled = true;
-            options.JoyConDeviceOpts.Enabled = true;
-            options.DS3DeviceOpts.Enabled = true;
+            options[InputDeviceFamily.DS4].Enabled = true;
+            options[InputDeviceFamily.DualSense].Enabled = true;
+            options[InputDeviceFamily.SwitchPro].Enabled = true;
+            options[InputDeviceFamily.JoyCon].Enabled = true;
+            options[InputDeviceFamily.DS3].Enabled = true;
 
             var unknown = (InputDeviceType)99;
             Assert.False(NewRegistry().Resolve(unknown).IsEnabled(options));
@@ -174,8 +174,8 @@ namespace DS4WindowsTests
                     foreach (JoyConDeviceOptions.JoinedGyroProvider provider in Enum.GetValues(typeof(JoyConDeviceOptions.JoinedGyroProvider)))
                     {
                         var options = new ControlServiceDeviceOptions();
-                        options.JoyConDeviceOpts.LinkedMode = mode;
-                        options.JoyConDeviceOpts.JoinGyroProv = provider;
+                        options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode = mode;
+                        options.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv = provider;
 
                         var expected = OldJoin(type, options);
 

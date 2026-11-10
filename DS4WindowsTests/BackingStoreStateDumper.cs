@@ -102,6 +102,8 @@ namespace DS4WindowsTests
             if (value is DS4Windows.Core.Settings.ProfileSlotNames slotNames) value = slotNames.ToArray();
             // Phase10-Step4d W5d: リンクプロファイルの窓口（LinkedProfileMap）は、従来の辞書と同じ出力にする（現在の名前の辞書として）
             if (value is DS4Windows.Core.Settings.LinkedProfileMap linkedMap) value = linkedMap.ToDictionary();
+            // 機種の系統ごとの設定は、型付きのプロパティがあった頃と同じ名前で出力する（保存・読み込みの基準の出力を変えないため）
+            if (value is DS4Windows.Core.Settings.ControlServiceDeviceOptions deviceOptions) value = new LegacyDeviceOptionsView(deviceOptions);
             Type t = value.GetType();
             if (IsScalar(t)) { Line(sb, path, Format(value)); return; }
             if (t == typeof(System.Drawing.Color))
@@ -166,6 +168,26 @@ namespace DS4WindowsTests
             {
                 if (!t.IsValueType) stack.RemoveAt(stack.Count - 1);
             }
+        }
+
+        private sealed class LegacyDeviceOptionsView
+        {
+            public LegacyDeviceOptionsView(DS4Windows.Core.Settings.ControlServiceDeviceOptions o)
+            {
+                DS4DeviceOpts = o.Get<DS4Windows.Core.Settings.DS4DeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.DS4);
+                DualSenseOpts = o.Get<DS4Windows.Core.Settings.DualSenseDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.DualSense);
+                SwitchProDeviceOpts = o.Get<DS4Windows.Core.Settings.SwitchProDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.SwitchPro);
+                JoyConDeviceOpts = o.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.JoyCon);
+                DS3DeviceOpts = o.Get<DS4Windows.Core.Settings.DS3DeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.DS3);
+                VerboseLogMessages = o.VerboseLogMessages;
+            }
+
+            public DS4Windows.Core.Settings.DS4DeviceOptions DS4DeviceOpts { get; }
+            public DS4Windows.Core.Settings.DualSenseDeviceOptions DualSenseOpts { get; }
+            public DS4Windows.Core.Settings.SwitchProDeviceOptions SwitchProDeviceOpts { get; }
+            public DS4Windows.Core.Settings.JoyConDeviceOptions JoyConDeviceOpts { get; }
+            public DS4Windows.Core.Settings.DS3DeviceOptions DS3DeviceOpts { get; }
+            public bool VerboseLogMessages { get; }
         }
 
         private static IEnumerable<MemberInfo> Members(Type t)

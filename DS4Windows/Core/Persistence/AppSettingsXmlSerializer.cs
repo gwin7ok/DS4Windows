@@ -37,6 +37,15 @@ namespace DS4Windows.Core.Persistence
     /// </summary>
     public class AppSettingsXmlSerializer
     {
+        // 機種の系統ごとの設定の節の名前（保存形式）。読み込みの順序は表の並びのまま。DS3 の節は、この経路ではもともと読まない（DTO の経路は読む）
+        private static readonly KeyValuePair<string, InputDeviceFamily>[] DeviceSupportSections =
+        {
+            new KeyValuePair<string, InputDeviceFamily>("DS4SupportSettings", InputDeviceFamily.DS4),
+            new KeyValuePair<string, InputDeviceFamily>("DualSenseSupportSettings", InputDeviceFamily.DualSense),
+            new KeyValuePair<string, InputDeviceFamily>("SwitchProSupportSettings", InputDeviceFamily.SwitchPro),
+            new KeyValuePair<string, InputDeviceFamily>("JoyConSupportSettings", InputDeviceFamily.JoyCon),
+        };
+
         private readonly BackingStore store;
         // 偽の exe 名を保存するファイルの名前（旧: CustomExeConfigFileName。Global の同名の定数は、この値を指す別名）
         public const string CustomExeConfigFileName = "custom_exe_name.txt";
@@ -366,43 +375,17 @@ namespace DS4Windows.Core.Persistence
                     XmlNode xmlDeviceOptions = m_Xdoc.SelectSingleNode("/Profile/DeviceOptions");
                     if (xmlDeviceOptions != null)
                     {
-                        XmlNode xmlDS4Support = xmlDeviceOptions.SelectSingleNode("DS4SupportSettings");
-                        if (xmlDS4Support != null)
+                        // 系統ごとの「Enabled」。節の名前は保存形式のまま
+                        foreach (KeyValuePair<string, InputDeviceFamily> section in DeviceSupportSections)
                         {
+                            XmlNode xmlSupport = xmlDeviceOptions.SelectSingleNode(section.Key);
+                            if (xmlSupport == null) continue;
                             try
                             {
-                                XmlNode item = xmlDS4Support.SelectSingleNode("Enabled");
+                                XmlNode item = xmlSupport.SelectSingleNode("Enabled");
                                 if (bool.TryParse(item?.InnerText ?? "", out bool temp))
                                 {
-                                    store.deviceOptions.DS4DeviceOpts.Enabled = temp;
-                                }
-                            }
-                            catch { }
-                        }
-
-                        XmlNode xmlDualSenseSupport = xmlDeviceOptions.SelectSingleNode("DualSenseSupportSettings");
-                        if (xmlDualSenseSupport != null)
-                        {
-                            try
-                            {
-                                XmlNode item = xmlDualSenseSupport.SelectSingleNode("Enabled");
-                                if (bool.TryParse(item?.InnerText ?? "", out bool temp))
-                                {
-                                    store.deviceOptions.DualSenseOpts.Enabled = temp;
-                                }
-                            }
-                            catch { }
-                        }
-
-                        XmlNode xmlSwitchProSupport = xmlDeviceOptions.SelectSingleNode("SwitchProSupportSettings");
-                        if (xmlSwitchProSupport != null)
-                        {
-                            try
-                            {
-                                XmlNode item = xmlSwitchProSupport.SelectSingleNode("Enabled");
-                                if (bool.TryParse(item?.InnerText ?? "", out bool temp))
-                                {
-                                    store.deviceOptions.SwitchProDeviceOpts.Enabled = temp;
+                                    store.deviceOptions[section.Value].Enabled = temp;
                                 }
                             }
                             catch { }
@@ -413,20 +396,10 @@ namespace DS4Windows.Core.Persistence
                         {
                             try
                             {
-                                XmlNode item = xmlJoyConSupport.SelectSingleNode("Enabled");
-                                if (bool.TryParse(item?.InnerText ?? "", out bool temp))
-                                {
-                                    store.deviceOptions.JoyConDeviceOpts.Enabled = temp;
-                                }
-                            }
-                            catch { }
-
-                            try
-                            {
                                 XmlNode item = xmlJoyConSupport.SelectSingleNode("LinkMode");
                                 if (Enum.TryParse(item?.InnerText ?? "", out JoyConDeviceOptions.LinkMode temp))
                                 {
-                                    store.deviceOptions.JoyConDeviceOpts.LinkedMode = temp;
+                                    store.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode = temp;
                                 }
                             }
                             catch { }
@@ -436,7 +409,7 @@ namespace DS4Windows.Core.Persistence
                                 XmlNode item = xmlJoyConSupport.SelectSingleNode("JoinedGyroProvider");
                                 if (Enum.TryParse(item?.InnerText ?? "", out JoyConDeviceOptions.JoinedGyroProvider temp))
                                 {
-                                    store.deviceOptions.JoyConDeviceOpts.JoinGyroProv = temp;
+                                    store.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv = temp;
                                 }
                             }
                             catch { }

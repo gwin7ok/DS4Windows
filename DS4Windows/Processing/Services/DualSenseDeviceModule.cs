@@ -14,9 +14,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class DualSenseDeviceModule : InputDeviceModuleBase
     {
-        public override bool Handles(InputDeviceType type) => InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DualSense);
-
-        public override bool IsEnabled(ControlServiceDeviceOptions options) => options.DualSenseOpts.Enabled;
+        protected override InputDeviceFamily? Family => InputDeviceFamily.DualSense;
 
         public override List<DS4Controls> GetKnownExtraButtons(DS4Device device)
         {

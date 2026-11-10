@@ -29,27 +29,29 @@ using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDM
 using LinkMode = DS4Windows.Core.Settings.JoyConDeviceOptions.LinkMode;
 using JoinedGyroProvider = DS4Windows.Core.Settings.JoyConDeviceOptions.JoinedGyroProvider;
 
+using DS4Windows.Core.Model;
+
 namespace DS4Windows.UI.ViewModels
 {
     public class ControllerRegDeviceOptsViewModel
     {
         private ControlServiceDeviceOptions serviceDeviceOpts;
 
-        public bool EnableDS4 { get => serviceDeviceOpts.DS4DeviceOpts.Enabled; }
+        public bool EnableDS4 { get => serviceDeviceOpts[InputDeviceFamily.DS4].Enabled; }
 
-        public bool EnableDualSense { get => serviceDeviceOpts.DualSenseOpts.Enabled; }
+        public bool EnableDualSense { get => serviceDeviceOpts[InputDeviceFamily.DualSense].Enabled; }
 
-        public bool EnableSwitchPro { get => serviceDeviceOpts.SwitchProDeviceOpts.Enabled; }
+        public bool EnableSwitchPro { get => serviceDeviceOpts[InputDeviceFamily.SwitchPro].Enabled; }
 
-        public bool EnableJoyCon { get => serviceDeviceOpts.JoyConDeviceOpts.Enabled; }
+        public bool EnableJoyCon { get => serviceDeviceOpts[InputDeviceFamily.JoyCon].Enabled; }
 
-        public bool EnableDS3 { get => serviceDeviceOpts.DS3DeviceOpts.Enabled; }
+        public bool EnableDS3 { get => serviceDeviceOpts[InputDeviceFamily.DS3].Enabled; }
 
-        public DS4DeviceOptions DS4DeviceOpts { get => serviceDeviceOpts.DS4DeviceOpts; }
-        public DS3DeviceOptions DS3DeviceOpts { get => serviceDeviceOpts.DS3DeviceOpts; }
-        public DualSenseDeviceOptions DSDeviceOpts { get => serviceDeviceOpts.DualSenseOpts; }
-        public SwitchProDeviceOptions SwitchProDeviceOpts { get => serviceDeviceOpts.SwitchProDeviceOpts; }
-        public JoyConDeviceOptions JoyConDeviceOpts { get => serviceDeviceOpts.JoyConDeviceOpts; }
+        public DS4DeviceOptions DS4DeviceOpts { get => serviceDeviceOpts.Get<DS4DeviceOptions>(InputDeviceFamily.DS4); }
+        public DS3DeviceOptions DS3DeviceOpts { get => serviceDeviceOpts.Get<DS3DeviceOptions>(InputDeviceFamily.DS3); }
+        public DualSenseDeviceOptions DSDeviceOpts { get => serviceDeviceOpts.Get<DualSenseDeviceOptions>(InputDeviceFamily.DualSense); }
+        public SwitchProDeviceOptions SwitchProDeviceOpts { get => serviceDeviceOpts.Get<SwitchProDeviceOptions>(InputDeviceFamily.SwitchPro); }
+        public JoyConDeviceOptions JoyConDeviceOpts { get => serviceDeviceOpts.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon); }
 
         public bool UseMoonlightChanged
         {
@@ -201,17 +203,17 @@ namespace DS4Windows.UI.ViewModels
                     // Does not have device specific options
                     break;
                 case DS4Windows.Core.Model.InputDeviceType.DS4:
-                    dataContextObject = new DS4ControllerOptionsWrapper(CurrentDS4Options, serviceDeviceOpts.DS4DeviceOpts);
+                    dataContextObject = new DS4ControllerOptionsWrapper(CurrentDS4Options, serviceDeviceOpts.Get<DS4DeviceOptions>(InputDeviceFamily.DS4));
                     break;
                 case DS4Windows.Core.Model.InputDeviceType.DualSense:
-                    dataContextObject = new DualSenseControllerOptionsWrapper(CurrentDSOptions, serviceDeviceOpts.DualSenseOpts);
+                    dataContextObject = new DualSenseControllerOptionsWrapper(CurrentDSOptions, serviceDeviceOpts.Get<DualSenseDeviceOptions>(InputDeviceFamily.DualSense));
                     break;
                 case DS4Windows.Core.Model.InputDeviceType.SwitchPro:
-                    dataContextObject = new SwitchProControllerOptionsWrapper(CurrentSwitchProOptions, serviceDeviceOpts.SwitchProDeviceOpts);
+                    dataContextObject = new SwitchProControllerOptionsWrapper(CurrentSwitchProOptions, serviceDeviceOpts.Get<SwitchProDeviceOptions>(InputDeviceFamily.SwitchPro));
                     break;
                 case DS4Windows.Core.Model.InputDeviceType.JoyConL:
                 case DS4Windows.Core.Model.InputDeviceType.JoyConR:
-                    dataContextObject = new JoyConControllerOptionsWrapper(CurrentJoyConOptions, serviceDeviceOpts.JoyConDeviceOpts);
+                    dataContextObject = new JoyConControllerOptionsWrapper(CurrentJoyConOptions, serviceDeviceOpts.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon));
                     break;
                 default:
                     break;

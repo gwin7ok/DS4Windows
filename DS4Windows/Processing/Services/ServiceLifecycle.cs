@@ -138,7 +138,7 @@ namespace DS4Windows.Processing.Services
 
                         // Phase9 9-E E-6d: Joy-Con の結合の手順（先に来たものを主にして順に組む）は JoyConLinker へ移した
                         tempPrimaryJoyDev = _joyConLinker.LinkOnStart(new JoinableDeviceAdapter(device), tempPrimaryJoyDev,
-                            _appSettings.DeviceOptions.JoyConDeviceOpts.LinkedMode);
+                            _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
 
                         slots.DS4Controllers[i] = device;
                         device.DeviceSlotNumber = i;
@@ -278,7 +278,7 @@ namespace DS4Windows.Processing.Services
                 IJoinableDevice tempPrimaryJoyDev = null;
                 IJoinableDevice tempSecondaryJoyDev = null;
                 _joyConLinker.FindPendingForHotPlug(devices.Select(d => (IJoinableDevice)new JoinableDeviceAdapter(d)),
-                    _appSettings.DeviceOptions.JoyConDeviceOpts.LinkedMode, out tempPrimaryJoyDev, out tempSecondaryJoyDev);
+                    _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode, out tempPrimaryJoyDev, out tempSecondaryJoyDev);
 
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && LoopControllers;)
                 {
@@ -316,7 +316,7 @@ namespace DS4Windows.Processing.Services
                             _deviceConnector.BeginPrepare(device);
 
                             _joyConLinker.LinkOnHotPlug(new JoinableDeviceAdapter(device), ref tempPrimaryJoyDev, ref tempSecondaryJoyDev,
-                                _appSettings.DeviceOptions.JoyConDeviceOpts.LinkedMode);
+                                _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
 
                             slots.DS4Controllers[Index] = device;
                             device.DeviceSlotNumber = Index;

@@ -8,9 +8,7 @@ namespace DS4Windows.Processing.Services
     /// <summary>Phase9 9-E E-6c: Switch Pro の部品。設定の有効／無効と、追加ボタン（Capture）。</summary>
     public sealed class SwitchProDeviceModule : InputDeviceModuleBase
     {
-        public override bool Handles(InputDeviceType type) => InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.SwitchPro);
-
-        public override bool IsEnabled(ControlServiceDeviceOptions options) => options.SwitchProDeviceOpts.Enabled;
+        protected override InputDeviceFamily? Family => InputDeviceFamily.SwitchPro;
 
         public override List<DS4Controls> GetKnownExtraButtons(DS4Device device)
         {

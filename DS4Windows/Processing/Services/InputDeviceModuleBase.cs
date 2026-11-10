@@ -13,9 +13,12 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public abstract class InputDeviceModuleBase : IInputDeviceModule
     {
-        public abstract bool Handles(InputDeviceType type);
+        /// <summary>この部品が扱う系統。種類の判定（<see cref="Handles"/>）と、設定の有効・無効（<see cref="IsEnabled"/>）の両方がこの系統で決まる。null は「どの系統も扱わない」（何もしない部品）。</summary>
+        protected abstract InputDeviceFamily? Family { get; }
 
-        public abstract bool IsEnabled(ControlServiceDeviceOptions options);
+        public bool Handles(InputDeviceType type) => Family.HasValue && InputDeviceTypeInfo.IsFamily(type, Family.Value);
+
+        public bool IsEnabled(ControlServiceDeviceOptions options) => Family.HasValue && options[Family.Value].Enabled;
 
         public virtual List<DS4Controls> GetKnownExtraButtons(DS4Device device)
         {

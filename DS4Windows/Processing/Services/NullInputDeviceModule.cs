@@ -9,8 +9,6 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class NullInputDeviceModule : InputDeviceModuleBase
     {
-        public override bool Handles(InputDeviceType type) => false;
-
-        public override bool IsEnabled(ControlServiceDeviceOptions options) => false;
+        protected override InputDeviceFamily? Family => null;
     }
 }

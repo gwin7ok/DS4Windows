@@ -92,12 +92,30 @@ namespace DS4WindowsTests
                 return;
             }
 
+            // 機種の系統ごとの設定は辞書に入っているため、系統ごとに同じ方法で値を変える（型付きのプロパティがあった頃と同じ値になる）
+            if (current is DS4Windows.Core.Settings.ControlServiceDeviceOptions deviceOptions)
+            {
+                foreach (DS4Windows.Core.Model.InputDeviceFamily family in deviceOptions.Families)
+                    FillObject(deviceOptions[family], null, slot, depth + 2);
+                set?.Invoke(current);
+                FillObject(new VerboseOnly(deviceOptions), null, slot, depth + 2);
+                return;
+            }
+
             if (current != null && !type.IsValueType && depth < 2 && IsOwnType(current.GetType()) && !(current is System.Collections.IEnumerable))
             {
                 object other = getReference();
                 if (other != null && ReferenceEquals(other, current)) return;
                 FillObject(current, null, slot, depth + 1);
             }
+        }
+
+        // ControlServiceDeviceOptions の系統に属さない設定（詳細ログ）を、同じ方法で変えるための薄い包み
+        private sealed class VerboseOnly
+        {
+            private readonly DS4Windows.Core.Settings.ControlServiceDeviceOptions options;
+            public VerboseOnly(DS4Windows.Core.Settings.ControlServiceDeviceOptions options) { this.options = options; }
+            public bool VerboseLogMessages { get => options.VerboseLogMessages; set => options.VerboseLogMessages = value; }
         }
 
         private static bool IsOwnType(Type t) => (t.Namespace ?? string.Empty).StartsWith("DS4Windows", StringComparison.Ordinal)
