@@ -29,6 +29,7 @@ using System.Drawing;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
+using DS4Windows.Input.Devices;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
@@ -994,8 +995,7 @@ namespace DS4Windows.Input
             {
                 firstActive = DateTime.UtcNow;
                 hDevice.SetNumInputBuffers(3);
-                Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
-                int tempLatencyCount = 0;
+                LatencyWindow latencyWindow = new LatencyWindow();
                 long oldtime = 0;
                 string currerror = string.Empty;
                 long curtime = 0;
@@ -1018,7 +1018,6 @@ namespace DS4Windows.Input
                     CRC32_POS_3 = BT_INPUT_REPORT_CRC32_POS + 3;
                 int crcpos = BT_INPUT_REPORT_CRC32_POS;
                 int crcoffset = 0;
-                long latencySum = 0;
 
                 // Run continuous calibration on Gyro when starting input loop
                 sixAxis.ResetContinuousCalibration();
@@ -1029,18 +1028,7 @@ namespace DS4Windows.Input
                     oldCharging = charging;
                     currerror = string.Empty;
 
-                    if (tempLatencyCount >= 20)
-                    {
-                        latencySum -= latencyQueue.Dequeue();
-                        tempLatencyCount--;
-                    }
-
-                    latencySum += this.lastTimeElapsed;
-                    latencyQueue.Enqueue(this.lastTimeElapsed);
-                    tempLatencyCount++;
-
-                    //Latency = latencyQueue.Average();
-                    Latency = latencySum / (double)tempLatencyCount;
+                    Latency = latencyWindow.Add(this.lastTimeElapsed);
 
                     readWaitEv.Set();
 
@@ -1339,59 +1327,19 @@ namespace DS4Windows.Input
                         isRemoved = false;
                     }
 
-                    if (conType == ConnectionType.USB)
+                    if (EvaluateIdleDisconnect(utcNow))
                     {
-                        if (idleTimeout == 0)
+                        if (conType == ConnectionType.BT)
                         {
-                            lastActive = utcNow;
-                        }
-                        else
-                        {
-                            idleInput = isDS4Idle();
-                            if (!idleInput)
+                            if (DisconnectBT(true))
                             {
-                                lastActive = utcNow;
+                                timeoutExecuted = true;
+                                return; // all done
                             }
                         }
-                    }
-                    else
-                    {
-                        bool shouldDisconnect = false;
-                        if (!isRemoved && idleTimeout > 0)
+                        else if (conType == ConnectionType.SONYWA)
                         {
-                            idleInput = isDS4Idle();
-                            if (idleInput)
-                            {
-                                DateTime timeout = lastActive + TimeSpan.FromSeconds(idleTimeout);
-                                if (!charging)
-                                    shouldDisconnect = utcNow >= timeout;
-                            }
-                            else
-                            {
-                                lastActive = utcNow;
-                            }
-                        }
-                        else
-                        {
-                            lastActive = utcNow;
-                        }
-
-                        if (shouldDisconnect)
-                        {
-                            AppLogger.LogUser(AppLogLevel.Info, "Log_Device_IdleDisconnect", Mac.ToString());
-
-                            if (conType == ConnectionType.BT)
-                            {
-                                if (DisconnectBT(true))
-                                {
-                                    timeoutExecuted = true;
-                                    return; // all done
-                                }
-                            }
-                            else if (conType == ConnectionType.SONYWA)
-                            {
-                                DisconnectDongle();
-                            }
+                            DisconnectDongle();
                         }
                     }
 
@@ -1408,20 +1356,7 @@ namespace DS4Windows.Input
 
                     cState.CopyTo(pState);
 
-                    if (hasInputEvts)
-                    {
-                        lock (eventQueueLock)
-                        {
-                            Action tempAct = null;
-                            for (int actInd = 0, actLen = eventQueue.Count; actInd < actLen; actInd++)
-                            {
-                                tempAct = eventQueue.Dequeue();
-                                tempAct.Invoke();
-                            }
-
-                            hasInputEvts = false;
-                        }
-                    }
+                    RunQueuedInputEvents();
                 }
             }
 
@@ -1856,6 +1791,78 @@ namespace DS4Windows.Input
             if (cState.Touch1 || cState.Touch2 || cState.TouchButton)
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// 読み取りのループの 1 フレームごとに、アイドルの判定と最後に操作した時刻（<c>lastActive</c>）を更新する。
+        /// USB は時刻の更新だけ。BT などは、アイドルが <c>idleTimeout</c> 秒続き、充電中でなければ true（切断すべき）を返す。
+        /// 切断の手順（<c>DisconnectBT</c> など）は機種ごとに違うため、呼ぶ側が行う。
+        /// </summary>
+        protected bool EvaluateIdleDisconnect(DateTime now)
+        {
+            if (conType == ConnectionType.USB)
+            {
+                if (idleTimeout == 0)
+                {
+                    lastActive = now;
+                }
+                else
+                {
+                    idleInput = isDS4Idle();
+                    if (!idleInput)
+                    {
+                        lastActive = now;
+                    }
+                }
+
+                return false;
+            }
+
+            bool shouldDisconnect = false;
+            if (!isRemoved && idleTimeout > 0)
+            {
+                idleInput = isDS4Idle();
+                if (idleInput)
+                {
+                    DateTime timeout = lastActive + TimeSpan.FromSeconds(idleTimeout);
+                    if (!charging)
+                        shouldDisconnect = now >= timeout;
+                }
+                else
+                {
+                    lastActive = now;
+                }
+            }
+            else
+            {
+                lastActive = now;
+            }
+
+            if (shouldDisconnect)
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Device_IdleDisconnect", Mac.ToString());
+            }
+
+            return shouldDisconnect;
+        }
+
+        /// <summary>読み取りのループの末尾で、他のスレッドから積まれた処理（<c>eventQueue</c>）を、その時点の件数だけ実行する。</summary>
+        protected void RunQueuedInputEvents()
+        {
+            if (!hasInputEvts)
+            {
+                return;
+            }
+
+            lock (eventQueueLock)
+            {
+                for (int actInd = 0, actLen = eventQueue.Count; actInd < actLen; actInd++)
+                {
+                    eventQueue.Dequeue().Invoke();
+                }
+
+                hasInputEvts = false;
+            }
         }
 
         protected DS4HapticState currentHap = new DS4HapticState();

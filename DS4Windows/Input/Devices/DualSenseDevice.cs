@@ -498,8 +498,7 @@ namespace DS4Windows.Input.Devices
             {
                 firstActive = DateTime.UtcNow;
                 hDevice.SetNumInputBuffers(3);
-                Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
-                int tempLatencyCount = 0;
+                LatencyWindow latencyWindow = new LatencyWindow();
                 long oldtime = 0;
                 string currerror = string.Empty;
                 long curtime = 0;
@@ -523,7 +522,6 @@ namespace DS4Windows.Input.Devices
                     CRC32_POS_3 = BT_INPUT_REPORT_CRC32_POS + 3;
                 int crcpos = BT_INPUT_REPORT_CRC32_POS;
                 int crcoffset = 0;
-                long latencySum = 0;
                 int reportOffset = conType == ConnectionType.BT ? 1 : 0;
                 IInputReportParser reportParser = new DualSenseReportParser(reportOffset);
 
@@ -536,18 +534,7 @@ namespace DS4Windows.Input.Devices
                     oldCharging = charging;
                     currerror = string.Empty;
 
-                    if (tempLatencyCount >= 20)
-                    {
-                        latencySum -= latencyQueue.Dequeue();
-                        tempLatencyCount--;
-                    }
-
-                    latencySum += this.lastTimeElapsed;
-                    latencyQueue.Enqueue(this.lastTimeElapsed);
-                    tempLatencyCount++;
-
-                    //Latency = latencyQueue.Average();
-                    Latency = latencySum / (double)tempLatencyCount;
+                    Latency = latencyWindow.Add(this.lastTimeElapsed);
 
                     readWaitEv.Set();
 
@@ -803,55 +790,15 @@ namespace DS4Windows.Input.Devices
                     }
                     ///*/
 
-                    if (conType == ConnectionType.USB)
+                    if (EvaluateIdleDisconnect(utcNow))
                     {
-                        if (idleTimeout == 0)
+                        if (conType == ConnectionType.BT)
                         {
-                            lastActive = utcNow;
-                        }
-                        else
-                        {
-                            idleInput = isDS4Idle();
-                            if (!idleInput)
+                            if (DisconnectBT(true))
                             {
-                                lastActive = utcNow;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        bool shouldDisconnect = false;
-                        if (!isRemoved && idleTimeout > 0)
-                        {
-                            idleInput = isDS4Idle();
-                            if (idleInput)
-                            {
-                                DateTime timeout = lastActive + TimeSpan.FromSeconds(idleTimeout);
-                                if (!charging)
-                                    shouldDisconnect = utcNow >= timeout;
-                            }
-                            else
-                            {
-                                lastActive = utcNow;
-                            }
-                        }
-                        else
-                        {
-                            lastActive = utcNow;
-                        }
-
-                        if (shouldDisconnect)
-                        {
-                            AppLogger.LogUser(AppLogLevel.Info, "Log_Device_IdleDisconnect", Mac.ToString());
-
-                            if (conType == ConnectionType.BT)
-                            {
-                                if (DisconnectBT(true))
-                                {
-                                    exitInputThread = true;
-                                    timeoutExecuted = true;
-                                    return; // all done
-                                }
+                                exitInputThread = true;
+                                timeoutExecuted = true;
+                                return; // all done
                             }
                         }
                     }
@@ -880,20 +827,7 @@ namespace DS4Windows.Input.Devices
 
                     cState.CopyTo(pState);
 
-                    if (hasInputEvts)
-                    {
-                        lock (eventQueueLock)
-                        {
-                            Action tempAct = null;
-                            for (int actInd = 0, actLen = eventQueue.Count; actInd < actLen; actInd++)
-                            {
-                                tempAct = eventQueue.Dequeue();
-                                tempAct.Invoke();
-                            }
-
-                            hasInputEvts = false;
-                        }
-                    }
+                    RunQueuedInputEvents();
                 }
             }
 
