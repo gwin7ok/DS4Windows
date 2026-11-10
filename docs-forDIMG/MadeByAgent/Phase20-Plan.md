@@ -1,12 +1,13 @@
 # Phase20 計画書: MainWindow の責務を分け、引数 15 以下の基準を満たす
 
 作成日: 2026-11-10
+位置づけ: 「引数 6 以上を避ける根本的な対策」の 1 番目（責務で分ける）。Phase19（工場の廃止）のあとに行う。工場は Phase19 で引数が 0〜2 になるため、`MainWindowFactory` の 18 は本 Phase の対象から外れる。
 前提: `Phase17-Plan.md` 17-6（部分達成）、ロードマップの 2026-11-10 の「構造の宿題」。`Mapping` は 15 になり、基準値の一覧（`ConstructorArityBaseline`）に残るのは `MainWindow` 18 と `MainWindowFactory` 18 だけ。
 規則: 3.1（コンストラクターの引数は 15 以下を努力目標。「何でも箱」は作らない）、3.3（1 ファイル 1 型、名前空間＝フォルダ）、2.2（機能・ログの完全維持）。
 
 ## 1. 目的と終わりの状態
 
-- `MainWindow`（約 2,060 行の code-behind）から、まとまりのある責務を別の部品へ移し、引数を 18 → 14 にする。`MainWindowFactory` も 18 → 15 以下になる（窓の依存に追随する）。
+- `MainWindow`（約 2,060 行の code-behind）から、まとまりのある責務を別の部品へ移し、引数を 18 → 14 にする。`MainWindowFactory` は Phase19 で解消済みの前提。
 - `ConstructorArityBaseline` が空になる（`ConstructorArityRuleTests` が一致を検査する）。
 - 画面の見た目・操作・ログ・通知は変えない。コードは「書き直さず、移す」（メソッドの本体はそのまま。窓に触る部分は、小さなホストの契約を通す）。
 
@@ -50,6 +51,22 @@
 | 20-3 | `ConstructorArityBaseline` を空にする。`MainWindow`／`MainWindowFactory` の引数の検査（`ControlServiceForwardRemovalGuardTests`）の数を更新 | `ConstructorArityRuleTests` |
 | 20-4 | 文書（モデル図 01、台帳、ロードマップ）の更新。UI の動作の確認（§5） | 実機の確認 |
 
+### 4.1 拡張: 窓以外の 10 引数以上の型（Step 20-5 以降。窓の分割のあとに続ける）
+
+窓の分割（20-0〜20-4）が済んだら、同じ方針（依存が「ひとつの責務」にだけ使われているものを、その責務の部品へ移す。束ねない）で、引数 10 以上の型を順に分ける。各型の前に、現状を固めるテストを書く。1 型 1 Step、全テストを通してから次へ。
+
+| 段階 | 型（引数） | 分け方の見込み |
+|---|---|---|
+| 20-5 | `InputReportProcessor`（15） | 1 レポートの処理（遅延の計測、電池の通知、タッチパッドの切り替え、マッピング、仮想パッドへの送出）の段に分ける。ホットパスのため、割り当てを増やさない（`Phase13Step5bOnReportTimingBenchmark` で比べる） |
+| 20-6 | `DeviceConnector`（13）、`DeviceDisconnectHandler`（11） | 接続・切断の手順を、機種ごとの設定の適用、仮想パッドの接続、通知に分ける |
+| 20-7 | `ServiceLifecycle`（12）、`ControlService`（12） | サービスの開始・停止の段階（入力の開始、出力の準備、ホットキーなど）を部品へ |
+| 20-8 | `ProfileApplicationService`（12） | 読み込み・適用・通知の段へ |
+| 20-9 | `SpecialActionOutputFactory`（14）、`AssignmentEditor`／`ProfileEditor`／`RecordBox`（11）、`AutoProfileService`／`IpcCommandProcessor`／`ProfileSettingsViewModel`（10）、`ProfileRepository`（9） | 順に判断。工場は Phase19 の結果に従う |
+| 20-10 | 値の入れ物（`AssignmentDefinition` 12、`BindingPolicy` 11、`RepeatHelper` 10、`ExtrasBindingValues` 9） | 分割ではなく、不変のレコード型（`record`）への置き換えか、名前付き引数の徹底で足りるかを判断する（3 つ以上の bool は名前付き引数） |
+| 20-11 | `ConstructorArityBaseline` のしきい値の引き下げ（15 → 12 → 10 を段階的に）と、新規の型は 6 以下をめざす旨を規則 3.1 へ追記 | `ConstructorArityRuleTests` |
+
+数字は 2026-11-10 の反射での測定。各 Step の最初に、実測と使われ方を調べて表を更新する。
+
 ## 5. 動作の確認（実機・利用者の確認が要る項目）
 
 窓の挙動は単体テストで守りきれないため、移したあとに次を確かめる。
@@ -66,4 +83,4 @@
 
 ## 7. 進捗
 
-- 2026-11-10: 計画書を作成。コードは未着手。
+- 2026-11-10: 計画書を作成。コードは未着手。同日、Phase19（工場の廃止）の新設に伴い位置づけを更新し、窓以外の型への拡張（20-5〜20-11）を追記した。
