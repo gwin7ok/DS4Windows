@@ -285,8 +285,7 @@ namespace DS4Windows.Processing.Services
                         }
 
                         slots.CurrentStates[i].Battery = slots.PreviousStates[i].Battery = 0; // Reset for the next connection's initial status change.
-                        OutputDevice tempout = _virtualPad.OutputDevices[i];
-                        if (tempout != null)
+                        if (_virtualPad.HasOutputDevice(i))
                         {
                             _virtualPad.UnplugOutDev(i, tempDevice, immediate: immediateUnplug, force: true);
                             anyUnplugged = true;
@@ -327,11 +326,11 @@ namespace DS4Windows.Processing.Services
                 if (showlog)
                     AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.StoppedDS4Windows, LogOptions.UserFacing);
 
-                while (_virtualPad.OutputSlotManager.RunningQueue)
+                while (_virtualPad.IsOutputQueueRunning)
                 {
                     Thread.SpinWait(500);
                 }
-                _virtualPad.OutputSlotManager.Stop(true);
+                _virtualPad.StopOutputSlots(immediate: true);
 
                 if (anyUnplugged)
                 {

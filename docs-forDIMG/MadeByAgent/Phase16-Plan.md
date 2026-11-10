@@ -598,3 +598,13 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - 偽のバックエンド（`FakeVirtualPadBackend`、`FakeXbox360Target`、`FakeDs4Target`）を追加。テスト 12 件: ボタン・軸・トリガー・十字キーの対応、ドライバーの版による DS4 の種類の選択（基本／拡張）、購読の解除、未開始のバックエンドでの生成の失敗、`VirtualPadService` の振動の転送、定数がドライバーの値と同じことの差分、**規則 L9**（`VirtualPadBackendBoundaryTests`: ViGEm の型を参照するのは `DS4Windows.Output.Backend` の型だけ）。
 - 見送り: 計画書の「失敗の通知を `BackendFailure` イベントにする」は、名前の変更だけで効果が小さいため、`OutputSlotManager.ViGEmFailure` のまま（16-4b で `IVirtualPadService` を縮めるときに扱う）。
 - Debug ALL: 警告 0・エラー 0・Actions 3,286 件合格。
+
+### Step 16-4b（2026-11-10。完了）
+
+- **L2（Core → 第 1 層・第 3 層）23 → 12（−11。見込みどおり）**。(c) 出力の型 8 件と (e) `VirtualKBM*` 3 件を解消した。
+  - 出力スロットの永続化を第 3 層へ移動: `OutputSlotStore` → `Output/Services`、`OutputSlotPersistDTO` → `Output`、`IOutputSlotStore` → `Output/Abstractions`（新設。規約 R1 に追記）。DI の登録も `ServiceRegistration.Output.cs` へ移した（`IPathService` だけに依存するため、循環の注意点は変わらない）。
+  - `IProfileLoadTarget.GetOutputDevice(int)`（戻りは `null` かどうかしか使われていなかった）を `bool HasOutputDevice(int)` に置き換えた（`LegacyProfileXmlSerializer`、`BackingStore` の 2 箇所）。
+  - `VirtualKBMMapping`（抽象クラス。型への依存なし）を `Core/Model` へ、識別子と有効判定を `VirtualKbmHandlerIds`（`Core/Model`）へ移し、起動引数の解析（`ArgumentParser`）が第 3 層の `VirtualKBMFactory` を参照しないようにした。識別子の値は同じ（`SendInputHandler.IDENTIFIER` などは定数の参照に）。
+- **`IVirtualPadService` の縮小**: `OutputDevices`（配列）の公開をやめ、`HasOutputDevice`／`SendReport`／`TryShareOutputDevice`／`ReleaseSharedOutputDevice`／`IsOutputQueueRunning`／`StopOutputSlots`／`ShutDownOutputSlots`／`BackendFailure`／`DescribeSlot` に置き換えた。`InputReportProcessor`・`DeviceConnector`・`DeviceDisconnectHandler`・`ServiceLifecycle`・`IpcCommandProcessor`・`ControlService` から、`OutputDevice` と `OutputSlotManager` の直接の参照がなくなった（手順と順序は逐語で保った。`SendReport` は null 条件の呼び出しと同じ）。`OutputSlotManager` の公開は `OutputSlotService`（同じ第 3 層）とテストのために残した。
+- 新テスト 3 件（`SendReport`、`TryShareOutputDevice`／`ReleaseSharedOutputDevice`、`DescribeSlot`）。`LifecycleGuardTests` の順序の検査を新しい呼び出しの文字列に更新（順序そのものは変えていない）。`RemovedApiRuleTests` に撤去したメンバーを追記。
+- Debug ALL: 警告 0・エラー 0・Actions 3,289 件合格。

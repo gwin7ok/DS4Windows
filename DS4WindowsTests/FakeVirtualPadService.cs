@@ -24,7 +24,28 @@ namespace DS4WindowsTests
 
         public OutputSlotManager OutputSlotManager { get; }
 
-        public OutputDevice[] OutputDevices => _inner?.OutputDevices ?? Array.Empty<OutputDevice>();
+        public bool HasOutputDevice(int index) => _inner?.HasOutputDevice(index) ?? false;
+
+        public void SendReport(int index, DS4State state) => _inner?.SendReport(index, state);
+
+        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, DS4Device device)
+            => _inner?.TryShareOutputDevice(fromIndex, toIndex, contType, device) ?? false;
+
+        public void ReleaseSharedOutputDevice(int index) => _inner?.ReleaseSharedOutputDevice(index);
+
+        public bool IsOutputQueueRunning => _inner?.IsOutputQueueRunning ?? false;
+
+        public void StopOutputSlots(bool immediate) => _inner?.StopOutputSlots(immediate);
+
+        public void ShutDownOutputSlots() => _inner?.ShutDownOutputSlots();
+
+        public event EventHandler<int> BackendFailure
+        {
+            add { if (_inner != null) _inner.BackendFailure += value; }
+            remove { if (_inner != null) _inner.BackendFailure -= value; }
+        }
+
+        public string DescribeSlot(int slot, OutputSlotInfoKind kind) => _inner?.DescribeSlot(slot, kind);
 
         public bool HasViGEmClient => _inner?.HasViGEmClient ?? false;
 

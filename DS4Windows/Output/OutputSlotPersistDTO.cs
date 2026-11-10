@@ -23,8 +23,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using DS4Windows.Output;
 using DS4Windows.Core.Model;
+using DS4Windows.Core.Persistence.Dto;
 
-namespace DS4Windows.Core.Persistence.Dto
+namespace DS4Windows.Output
 {
     [XmlRoot("OutputSlots")]
     public class OutputSlotPersistDTO : IDTO<OutputSlotManager>

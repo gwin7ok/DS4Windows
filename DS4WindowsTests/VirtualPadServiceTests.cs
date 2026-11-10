@@ -88,6 +88,55 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void SendReport_ForwardsToTheAssignedDevice_AndIgnoresAnEmptySlot()
+        {
+            var backend = new FakeVirtualPadBackend();
+            backend.Start();
+            VirtualPadService service = Create(backend: backend);
+            service.SendReport(0, new DS4Windows.Core.Model.DS4State());   // 割り当てなし: 何もしない
+            Assert.False(service.HasOutputDevice(0));
+
+            service.OutputDevices[0] = service.OutputSlotManager.AllocateController(DS4Windows.Core.Model.OutContType.X360, backend);
+            service.OutputDevices[0].Connect();
+            Assert.True(service.HasOutputDevice(0));
+            service.SendReport(0, new DS4Windows.Core.Model.DS4State { Cross = true });
+
+            FakeXbox360Target target = backend.Xbox360Targets[0];
+            Assert.Equal(1, target.SubmitCount);
+            Assert.Equal(DS4Windows.Output.Backend.Xbox360Buttons.A, target.Buttons);
+        }
+
+        [Fact]
+        public void TryShareOutputDevice_SharesTheDevice_OnlyWhenTheSourceSlotHasOne()
+        {
+            var backend = new FakeVirtualPadBackend();
+            backend.Start();
+            VirtualPadService service = Create(backend: backend);
+
+            Assert.False(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
+            Assert.False(service.HasOutputDevice(1));
+
+            service.OutputDevices[0] = service.OutputSlotManager.AllocateController(DS4Windows.Core.Model.OutContType.X360, backend);
+            Assert.True(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
+            Assert.Same(service.OutputDevices[0], service.OutputDevices[1]);
+
+            service.ReleaseSharedOutputDevice(1);
+            Assert.False(service.HasOutputDevice(1));
+            Assert.True(service.HasOutputDevice(0));
+            service.ReleaseSharedOutputDevice(1);   // 空のスロットでも安全
+        }
+
+        [Fact]
+        public void DescribeSlot_ReturnsTheSlotState_AsText()
+        {
+            VirtualPadService service = Create();
+            Assert.Equal(service.OutputSlotManager.OutputSlots[0].CurrentType.ToString(), service.DescribeSlot(0, DS4Windows.Processing.Abstractions.OutputSlotInfoKind.CurrentType));
+            Assert.Equal(service.OutputSlotManager.OutputSlots[0].PermanentType.ToString(), service.DescribeSlot(0, DS4Windows.Processing.Abstractions.OutputSlotInfoKind.PermanentType));
+            Assert.Equal(service.OutputSlotManager.OutputSlots[0].CurrentAttachedStatus.ToString(), service.DescribeSlot(0, DS4Windows.Processing.Abstractions.OutputSlotInfoKind.AttachedStatus));
+            Assert.Equal(service.OutputSlotManager.OutputSlots[0].CurrentInputBound.ToString(), service.DescribeSlot(0, DS4Windows.Processing.Abstractions.OutputSlotInfoKind.InputBound));
+        }
+
+        [Fact]
         public void InitialState_HasASlotManager_AndEightEmptyOutputDevices_AndNoViGEmClient()
         {
             VirtualPadService service = Create();

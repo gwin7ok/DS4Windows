@@ -1,3 +1,5 @@
+using DS4Windows.Output.Services;
+using DS4Windows.Output.Abstractions;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
@@ -30,7 +32,6 @@ namespace DS4Windows.Composition
             services.AddSingleton<IStartupArguments, StartupArguments>();
 
             // Phase 5 Step 12: 出力スロット永続化・管理サービス（管理の IOutputSlotService は ServiceRegistration.Output.cs）
-            services.AddSingleton<IOutputSlotStore, OutputSlotStore>();
 
             // Phase13-Step6 6-b: 旧 Func<ControlService>（遅延）をやめ、依存のない IDeviceStateAccessor を直接受ける
             services.AddSingleton<IProfileSettingsService>(sp => new ProfileSettingsService(

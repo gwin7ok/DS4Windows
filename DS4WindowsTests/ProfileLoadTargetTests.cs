@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             for (int i = 0; i < 4; i++)
             {
                 Assert.Same(slots.TouchPads[i], target.GetTouchPad(i));
-                Assert.Same(TestHost.GetService<DS4Windows.Processing.Abstractions.IVirtualPadService>().OutputDevices[i], target.GetOutputDevice(i));
+                Assert.Equal(TestHost.GetService<DS4Windows.Processing.Abstractions.IVirtualPadService>().HasOutputDevice(i), target.HasOutputDevice(i));
                 Assert.Same(slots.DS4Controllers[i], target.GetController(i));
             }
 

@@ -27,7 +27,7 @@ namespace DS4Windows.Output.Kbm
     public class FakerInputHandler : VirtualKBMBase
     {
         public const string DISPLAY_NAME = "FakerInput";
-        public const string IDENTIFIER = "fakerinput";
+        public const string IDENTIFIER = DS4Windows.Core.Model.VirtualKbmHandlerIds.FakerInput;
         // Keys values are under 255
         public const int MODIFIER_MASK = 1 << 9;
         // Can only map to 31 keys with this approach. Underlying key value is a uint

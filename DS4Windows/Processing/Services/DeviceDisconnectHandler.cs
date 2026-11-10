@@ -83,12 +83,7 @@ namespace DS4Windows.Processing.Services
                     }
                     else if (!device.PrimaryDevice)
                     {
-                        OutputDevice outDev = _virtualPad.OutputDevices[ind];
-                        if (outDev != null)
-                        {
-                            outDev.RemoveFeedback(ind);
-                            _virtualPad.OutputDevices[ind] = null;
-                        }
+                        _virtualPad.ReleaseSharedOutputDevice(ind);
                     }
 
                     // Use Task to reset device synth state and commit it

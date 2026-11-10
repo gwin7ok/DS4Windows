@@ -19,7 +19,7 @@ namespace DS4WindowsTests
 
         public ITouchPadGyroToggles GetTouchPad(int ind) => Target.GetTouchPad(ind);
 
-        public OutputDevice GetOutputDevice(int ind) => Target.GetOutputDevice(ind);
+        public bool HasOutputDevice(int ind) => Target.HasOutputDevice(ind);
 
         public void PluginOutDev(int index, DS4Device device) => Target.PluginOutDev(index, device);
 

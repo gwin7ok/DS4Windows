@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using DS4Windows.Core.Model;
 using System;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
@@ -24,7 +25,7 @@ namespace DS4Windows.Output.Kbm
 {
     public static class VirtualKBMFactory
     {
-        public const string DEFAULT_IDENTIFIER = "default";
+        public const string DEFAULT_IDENTIFIER = DS4Windows.Core.Model.VirtualKbmHandlerIds.Default;
 
         public static VirtualKBMBase DetermineHandler(string identifier =
             SendInputHandler.IDENTIFIER)
@@ -116,20 +117,7 @@ namespace DS4Windows.Output.Kbm
 
         public static bool IsValidHandler(string identifier)
         {
-            bool result = false;
-            switch (identifier)
-            {
-                case SendInputHandler.IDENTIFIER:
-                    result = true;
-                    break;
-                case FakerInputHandler.IDENTIFIER:
-                    result = true;
-                    break;
-                default:
-                    break;
-            }
-
-            return result;
+            return DS4Windows.Core.Model.VirtualKbmHandlerIds.IsValid(identifier);
         }
     }
 }

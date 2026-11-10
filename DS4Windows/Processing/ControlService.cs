@@ -215,7 +215,7 @@ namespace DS4Windows.Processing
             _deviceRegistry.PrepareDS4Init = PrepareDS4DeviceInit;
             _deviceRegistry.PostDS4Init = PostDS4DeviceInit;
             _deviceRegistry.PreparePendingDevice = CheckForSupportedDevice;
-            _virtualPad.OutputSlotManager.ViGEmFailure += OutputslotMan_ViGEmFailure;
+            _virtualPad.BackendFailure += OutputslotMan_ViGEmFailure;
 
             // Phase9 9-E E-3: スムージング設定の変更の購読（旧 ChangeUdpSmoothingAttrs）は UdpMotionService のコンストラクターへ移した
 
@@ -268,7 +268,7 @@ namespace DS4Windows.Processing
 
         public void ShutDown()
         {
-            _virtualPad.OutputSlotManager.ShutDown();
+            _virtualPad.ShutDownOutputSlots();
             // Phase7-Step5 W3（Q9＝A）: 契約（IOutputSlotService）経由に切り替えた。同じスロット管理と保存先で OutputSlotPersist.WriteConfig を呼ぶ
             _outputSlotService.SaveOutputSlots();
 

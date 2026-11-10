@@ -1,3 +1,4 @@
+using DS4Windows.Output.Abstractions;
 using System;
 using Xunit;
 using DS4Windows.Core.Abstractions;

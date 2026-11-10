@@ -80,6 +80,9 @@ namespace DS4WindowsTests
                 "GetConnectionType", "GetBatteryLevel", "SetDevice", "DeviceStateChanged",
             }),
             ("IOutputSlotService", new[] { "OutputDevices", "GetOutputDevice", "IsSlotPlugin" }),
+            // Phase16-Step4b: 出力デバイスの配列と実体を契約から外した（HasOutputDevice／SendReport などのメソッドへ）
+            ("IVirtualPadService", new[] { "OutputDevices" }),
+            ("IProfileLoadTarget", new[] { "GetOutputDevice" }),
             ("IVirtualKBM", new[] { "ErrorMessage", "Version" }),
             ("INotificationService", new[] { "NotificationsEnabled", "FlashTaskbar" }),
             ("IPathService", new[] { "GetAutoProfilesPath", "ActionsPath" }),

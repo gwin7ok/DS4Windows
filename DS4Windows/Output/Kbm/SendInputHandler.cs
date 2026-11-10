@@ -27,7 +27,7 @@ namespace DS4Windows.Output.Kbm
     public class SendInputHandler : VirtualKBMBase
     {
         public const string DISPLAY_NAME = "SendInput";
-        public const string IDENTIFIER = "sendinput";
+        public const string IDENTIFIER = DS4Windows.Core.Model.VirtualKbmHandlerIds.SendInput;
 
         public SendInputHandler()
         {

@@ -201,11 +201,8 @@ namespace DS4Windows.Core.Persistence
                 store.ResetMouseProperties(device, control);
 
                 // Unplug existing output device if requested profile does not exist
-                OutputDevice tempOutDev = device < _environment.ControllerSlotLimit ?
-                    control.GetOutputDevice(device) : null;
-                if (tempOutDev != null)
+                if (device < _environment.ControllerSlotLimit && control.HasOutputDevice(device))
                 {
-                    tempOutDev = null;
                     //Global.activeOutDevType[device] = OutContType.None;
                     DS4Device tempDev = control.GetController(device);
                     if (tempDev != null)

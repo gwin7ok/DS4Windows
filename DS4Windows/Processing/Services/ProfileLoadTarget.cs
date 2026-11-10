@@ -41,7 +41,7 @@ namespace DS4Windows.Processing.Services
 
         public ITouchPadGyroToggles GetTouchPad(int ind) => _slots.TouchPads[ind];
 
-        public OutputDevice GetOutputDevice(int ind) => _virtualPad.OutputDevices[ind];
+        public bool HasOutputDevice(int ind) => _virtualPad.HasOutputDevice(ind);
 
         public void PluginOutDev(int index, DS4Device device) => _virtualPad.PluginOutDev(index, device);
 

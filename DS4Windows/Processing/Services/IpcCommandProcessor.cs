@@ -254,13 +254,13 @@ namespace DS4Windows.Processing.Services
                 else if (propName == "charging" && controllers[tdevice] != null)
                     propValue = controllers[tdevice].Charging.ToString();
                 else if (propName == "outputslottype")
-                    propValue = _virtualPad.OutputSlotManager.OutputSlots[tdevice].CurrentType.ToString();
+                    propValue = _virtualPad.DescribeSlot(tdevice, OutputSlotInfoKind.CurrentType);
                 else if (propName == "outputslotpermanenttype")
-                    propValue = _virtualPad.OutputSlotManager.OutputSlots[tdevice].PermanentType.ToString();
+                    propValue = _virtualPad.DescribeSlot(tdevice, OutputSlotInfoKind.PermanentType);
                 else if (propName == "outputslotattachedstatus")
-                    propValue = _virtualPad.OutputSlotManager.OutputSlots[tdevice].CurrentAttachedStatus.ToString();
+                    propValue = _virtualPad.DescribeSlot(tdevice, OutputSlotInfoKind.AttachedStatus);
                 else if (propName == "outputslotinputbound")
-                    propValue = _virtualPad.OutputSlotManager.OutputSlots[tdevice].CurrentInputBound.ToString();
+                    propValue = _virtualPad.DescribeSlot(tdevice, OutputSlotInfoKind.InputBound);
 
                 else if (propName == "apprunning")
                     propValue = _lifecycle.Running.ToString(); // Controller idx value is ignored, but it still needs to be in 1..4 range in a cmdline call

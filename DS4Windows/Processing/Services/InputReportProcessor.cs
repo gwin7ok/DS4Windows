@@ -178,7 +178,7 @@ namespace DS4Windows.Processing.Services
                                 _mapping.TempMouseJoystick(jointInd, tempMapState);
                                 if (!_profileSettings.UseDInputOnlyArray[jointInd])
                                 {
-                                    _virtualPad.OutputDevices[jointInd]?.ConvertandSendReport(tempMapState, jointInd);
+                                    _virtualPad.SendReport(jointInd, tempMapState);
                                 }
                             }
                         }
@@ -252,7 +252,7 @@ namespace DS4Windows.Processing.Services
                         }
                     }
 
-                    _virtualPad.OutputDevices[ind]?.ConvertandSendReport(cState, ind);
+                    _virtualPad.SendReport(ind, cState);
 
                     // 仮想コントローラー出力完了時の処理遅延を計測
                     if (IsMeasuringProcessingDelay)

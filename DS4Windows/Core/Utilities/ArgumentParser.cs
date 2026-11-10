@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System.Collections.Generic;
-using DS4Windows.Output.Kbm;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Utilities
 {
@@ -31,7 +31,7 @@ namespace DS4Windows.Core.Utilities
         private bool runtask;
         private bool command;
         private string commandArgs;
-        private string virtualkbmHandler = VirtualKBMFactory.DEFAULT_IDENTIFIER;
+        private string virtualkbmHandler = VirtualKbmHandlerIds.Default;
 
         private Dictionary<string, string> errors =
             new Dictionary<string, string>();
@@ -113,7 +113,7 @@ namespace DS4Windows.Core.Utilities
                         {
                             i++;
                             string temp = args[i];
-                            bool valid = VirtualKBMFactory.IsValidHandler(temp);
+                            bool valid = VirtualKbmHandlerIds.IsValid(temp);
                             if (valid)
                             {
                                 virtualkbmHandler = temp;

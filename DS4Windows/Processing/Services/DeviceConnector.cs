@@ -128,12 +128,9 @@ namespace DS4Windows.Processing.Services
                     else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
                     {
                         int otherIdx = device.JointDeviceSlotNumber;
-                        OutputDevice tempOutDev = _virtualPad.OutputDevices[otherIdx];
-                        if (tempOutDev != null)
+                        OutContType tempConType = ActiveOutDevType[otherIdx];
+                        if (_virtualPad.TryShareOutputDevice(otherIdx, index, tempConType, device))
                         {
-                            OutContType tempConType = ActiveOutDevType[otherIdx];
-                            _virtualPad.EstablishOutFeedback(index, tempConType, tempOutDev, device);
-                            _virtualPad.OutputDevices[index] = tempOutDev;
                             ActiveOutDevType[index] = tempConType;
                         }
                     }

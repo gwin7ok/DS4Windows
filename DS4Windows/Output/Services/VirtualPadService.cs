@@ -54,7 +54,63 @@ namespace DS4Windows.Output.Services
 
         public OutputSlotManager OutputSlotManager => outputslotMan;
 
+        // テストが配列を直接調べるため公開している（契約の IVirtualPadService には出さない）
         public OutputDevice[] OutputDevices => outputDevices;
+
+        public bool HasOutputDevice(int index) => outputDevices[index] != null;
+
+        public void SendReport(int index, DS4State state)
+        {
+            outputDevices[index]?.ConvertandSendReport(state, index);
+        }
+
+        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, DS4Device device)
+        {
+            OutputDevice shared = outputDevices[fromIndex];
+            if (shared == null)
+            {
+                return false;
+            }
+
+            EstablishOutFeedback(toIndex, contType, shared, device);
+            outputDevices[toIndex] = shared;
+            return true;
+        }
+
+        public void ReleaseSharedOutputDevice(int index)
+        {
+            OutputDevice outDev = outputDevices[index];
+            if (outDev != null)
+            {
+                outDev.RemoveFeedback(index);
+                outputDevices[index] = null;
+            }
+        }
+
+        public bool IsOutputQueueRunning => outputslotMan.RunningQueue;
+
+        public void StopOutputSlots(bool immediate) => outputslotMan.Stop(immediate);
+
+        public void ShutDownOutputSlots() => outputslotMan.ShutDown();
+
+        public event EventHandler<int> BackendFailure
+        {
+            add => outputslotMan.ViGEmFailure += value;
+            remove => outputslotMan.ViGEmFailure -= value;
+        }
+
+        public string DescribeSlot(int slot, OutputSlotInfoKind kind)
+        {
+            OutSlotDevice slotDevice = outputslotMan.OutputSlots[slot];
+            switch (kind)
+            {
+                case OutputSlotInfoKind.CurrentType: return slotDevice.CurrentType.ToString();
+                case OutputSlotInfoKind.PermanentType: return slotDevice.PermanentType.ToString();
+                case OutputSlotInfoKind.AttachedStatus: return slotDevice.CurrentAttachedStatus.ToString();
+                case OutputSlotInfoKind.InputBound: return slotDevice.CurrentInputBound.ToString();
+                default: throw new ArgumentOutOfRangeException(nameof(kind));
+            }
+        }
 
         public bool HasViGEmClient => _backend.IsStarted;
 

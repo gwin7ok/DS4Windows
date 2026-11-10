@@ -1477,10 +1477,8 @@ namespace DS4Windows.Core.Settings
                     {
                         if (xinputPlug)
                         {
-                            OutputDevice tempOutDev = control.GetOutputDevice(device);
-                            if (tempOutDev != null)
+                            if (control.HasOutputDevice(device))
                             {
-                                tempOutDev = null;
                                 //Global.activeOutDevType[device] = OutContType.None;
                                 control.UnplugOutDev(device, tempDev);
                             }

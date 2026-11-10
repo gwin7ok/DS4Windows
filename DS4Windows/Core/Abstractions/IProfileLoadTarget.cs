@@ -1,5 +1,4 @@
 using DS4Windows.Input;
-using DS4Windows.Output;
 
 namespace DS4Windows.Core.Abstractions
 {
@@ -18,7 +17,7 @@ namespace DS4Windows.Core.Abstractions
         ITouchPadGyroToggles GetTouchPad(int ind);
 
         /// <summary>スロットの仮想パッド（旧: <c>control.outputDevices[ind]</c>。範囲外は元と同じく例外）。</summary>
-        OutputDevice GetOutputDevice(int ind);
+        bool HasOutputDevice(int ind);
 
         /// <summary>仮想パッドを接続する（<c>IVirtualPadService.PluginOutDev</c> への転送）。</summary>
         void PluginOutDev(int index, DS4Device device);
