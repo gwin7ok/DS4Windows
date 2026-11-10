@@ -10,7 +10,6 @@
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.UI.MainWindow|18",
         };
     }
 }

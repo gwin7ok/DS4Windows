@@ -41,7 +41,8 @@ namespace DS4WindowsTests
             ["DS4Windows/Core/Persistence/ProfileSections/ProfileMotionSaveSection.cs"] = (0, 2),
             ["DS4Windows/Core/Settings/ProfileSettingsService.cs"] = (0, 3),
             ["DS4Windows/Core/Persistence/SpecialActionRepository.cs"] = (0, 2),
-            ["DS4Windows/UI/MainWindow.xaml.cs"] = (2, 0),   // Phase10-Step4d W7: 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った。Phase9 9-F F-2b: IPC の 2 件を MainWindow.Ipc.cs へ移した
+            ["DS4Windows/UI/Services/ProfileSelectionCoordinator.cs"] = (2, 0),   // MainWindow から、プロファイルの選択・同期の責務ごと移した（合計は増えていない）
+            ["DS4Windows/UI/MainWindow.xaml.cs"] = (0, 0),   // Phase10-Step4d W7: 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った。Phase9 9-F F-2b: IPC の 2 件を MainWindow.Ipc.cs へ移した
             ["DS4Windows/UI/ProfileEditor.xaml.cs"] = (1, 4),
             ["DS4Windows/UI/ViewModels/CompositeDeviceModel.cs"] = (5, 0),
             ["DS4Windows/UI/ViewModels/ControllerListViewModel.cs"] = (3, 0),

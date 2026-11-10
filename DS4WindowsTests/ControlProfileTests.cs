@@ -414,12 +414,12 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRename_IsCalledFromTheMainWindowRename_NextToTheSaTargetUpdate()
         {
-            string path = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
             if (path == null) return;
 
             string source = File.ReadAllText(path);
-            int sa = source.IndexOf("profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);");
-            int controls = source.IndexOf("profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);");
+            int sa = source.IndexOf("_profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);");
+            int controls = source.IndexOf("_profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);");
             Assert.True(sa >= 0 && controls > sa, "名前変更の処理に、Controls の切り替え先の更新が、SA の更新の後にあること");
         }
     }

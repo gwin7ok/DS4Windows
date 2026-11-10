@@ -23,3 +23,4 @@
 ## 3. 実機で未確認の項目（2026-11-10。Phase16）
 - （2026-11-10: DS3 と Joy-Con は廃止した）DualSense・Switch Pro は実機がない。（旧記述: DualSense・Switch Pro・Joy-Con［左・右］・DS3）入力レポートの解析は `IInputReportParser` へ分離し、旧実装との差分テストで一致を確かめたが、実機では未確認。報告があれば最初に疑う場所は `Input/Parsers`。
 - （2026-11-10。Phase19）`MainWindowFactory` を `ActivatorUtilities` で窓をつくる形にした。窓の依存がすべてコンテナから解決できることは単体テストで確認済みだが、窓そのものは実機で未確認。確かめる項目: アプリの起動、最小化起動（`-m`）、プロファイル複製の名前入力欄（`dupBox`）の動作。不具合があれば最初に疑う場所は `Composition/MainWindowFactory`。
+- （2026-11-10。Phase20）`MainWindow` の責務を `TrayAppearanceController`・`ProfileSelectionCoordinator` へ移した（メソッドの本体は移動のみ）。実機で未確認の項目: (1) トレイ: 通知（プロファイルの切り替え、ホットキー、システム通知）、アイコンの切り替え、テーマ（ライト／ダーク）の切り替え、トレイのメニューからのプロファイルの選択。(2) プロファイル: 各コントローラーの行でのプロファイルの選択、新規・編集・保存・名前変更・削除、編集画面を閉じたあとの一覧の同期。(3) 最小化起動と終了。不具合があれば最初に疑う場所は `UI/Services/` の上記 2 つ。

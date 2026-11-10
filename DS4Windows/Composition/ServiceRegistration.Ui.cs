@@ -30,6 +30,8 @@ namespace DS4Windows.Composition
 
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口。MainWindow のコンストラクターで AppHost.GetService を使わないための窓口
             services.AddSingleton<IMainWindowFactory, MainWindowFactory>();
+            services.AddSingleton<TrayAppearanceController>();   // メイン画面のトレイ・通知・テーマの切り替え
+            services.AddSingleton<ProfileSelectionCoordinator>();   // メイン画面のプロファイルの選択・編集後の同期
             // Phase14b-Step16（決定 D11）: 画面のテーマ・言語の切り替え（App へ委譲するアダプター）
             services.AddSingleton<IUiThemeAndLanguage, AppThemeLanguageAdapter>();
             services.AddSingleton<IIpcResultWriter, AppIpcResultWriterAdapter>();   // Phase14b-Step16: CLI の問い合わせの結果（App の MMF へ委譲）
