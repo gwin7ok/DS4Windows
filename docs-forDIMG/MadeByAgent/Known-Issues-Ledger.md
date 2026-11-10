@@ -22,3 +22,4 @@
 
 ## 3. 実機で未確認の項目（2026-11-10。Phase16）
 - （2026-11-10: DS3 と Joy-Con は廃止した）DualSense・Switch Pro は実機がない。（旧記述: DualSense・Switch Pro・Joy-Con［左・右］・DS3）入力レポートの解析は `IInputReportParser` へ分離し、旧実装との差分テストで一致を確かめたが、実機では未確認。報告があれば最初に疑う場所は `Input/Parsers`。
+- （2026-11-10。Phase19）`MainWindowFactory` を `ActivatorUtilities` で窓をつくる形にした。窓の依存がすべてコンテナから解決できることは単体テストで確認済みだが、窓そのものは実機で未確認。確かめる項目: アプリの起動、最小化起動（`-m`）、プロファイル複製の名前入力欄（`dupBox`）の動作。不具合があれば最初に疑う場所は `Composition/MainWindowFactory`。
