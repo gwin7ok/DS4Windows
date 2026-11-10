@@ -194,3 +194,5 @@ Phase16 の追補（16-12・16-13）で見送った次の項目を、Phase17 で
 - 常時のルール（案）: 各 Phase の完了報告書の条件に「モデル図への反映」を加える（規約には「構造に関わる変更はモデル図に反映する」とあるが、Phase の完了条件には入っていない）。
 - Phase13 の前に 1 回（案）: モデル図の現状合わせ。内容は、(1) Phase11・12 の反映（`IWindowFocuser`、`IWindowSystem`、`IMouseInputHook`、`WindowTargetMatcher`、`MacroPointerRecorder`、`FocusWindow`、`Debouncer` の廃止、電池の `UpdateBattery`）、(2) Phase8 の `ITriggerDispatchEngine`／`IActionRegistry`／`IActionBindingBuilder` を「未実装（点線）」から実線へ、(3) 行数の更新（`DS4Device.cs` 約 2,068、`ProfileSettingsViewModel.cs` 約 3,469 ほか）。コードの変更はなく、文書だけ。
 - 各 Phase での更新: Phase13（`ControlService`、`Func<T>`、`ServiceProviderHolder`）、Phase14（名前空間・フォルダ。`DI/` の位置づけ）、Phase16（`IHidTransport` など）で、該当の図を更新する。
+
+- 2026-11-10 Phase17 の見送り: 既存機種（DS4Device 系）の `ProtocolDevice` への移行は Phase18 候補（前提: 共通部品の切り出しと差分テスト）。`MainWindow` 20・`MainWindowFactory` 20・`Mapping` 17 は 15 以下にしていない（理由は `Phase17-Plan.md`）。

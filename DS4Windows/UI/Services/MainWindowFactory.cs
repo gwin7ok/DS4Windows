@@ -81,9 +81,14 @@ namespace DS4Windows.UI.Services
         }
 
         public MainWindow Create(ArgumentParser parser)
-            => new MainWindow(parser, _appSettings, _editorWindowFactory,
+        {
+            var window = new MainWindow(parser, _appSettings, _editorWindowFactory,
                 _pathService, _environmentService, _appearanceSettings, _profileApplication,
                 _profileRepository, _notificationService, _lifecycle, _runtimeFeatures, _ipcProcessor, _profileSlotApplier,
-                _mainWindowsViewModel, _autoProfileService, _viewModelFactory, _profileIdentityService, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
+                _mainWindowsViewModel, _autoProfileService, _viewModelFactory, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
+            // 複製の名前入力欄が使うサービスは、窓の引数を増やさないよう工場から渡す
+            window.dupBox.Initialize(_pathService, _profileIdentityService);
+            return window;
+        }
     }
 }

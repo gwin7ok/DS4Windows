@@ -129,3 +129,5 @@ ControllerSession（全機種で共通。読み取りループ、出力スレッ
 - 保存の黄金テストが不変。層の違反は 0 件。警告 0・エラー 0。
 - モデル図は 3 文書になり、実在しないノードがない。`ModelDiagramGuardTests` が合格する。
 - DS4 の実機確認（設定の保存・再読み込み、ライトバー、出力の種類、切断）が OK。
+- 2026-11-10 **17-5 は移行しないと判断（自律の決定）**: `DS4Device` 系（DS4・DS3・DualSense・Switch Pro・Joy-Con）の読み取りループは、ジャイロ・タッチパッド・遅延計測・アイドル切断・複数接続方式を内包し（各 300〜1,500 行）、`ProtocolDevice` はそれらを持たない。実機は DS4 のみで、移行すると動作中の機種に回帰のリスクだけが残り、機種追加の容易さ（17-1〜17-3）はすでに達成済みのため、**既存機種は移さない**。Phase18 の候補とし、前提を「ジャイロ・タッチパッド・遅延・アイドル切断の共通部品の切り出し」「`FakeHidTransport` による旧実装との差分テスト」とする。
+- 2026-11-10 **17-6 の結果（部分達成）**: `EditorWindowFactory`（18 引数）を、用途別の 3 工場（`AssignmentWindowFactory` 7、`MacroRecordingWindowFactory` 5、`ProfileEditorFactory` 9）と窓口（3）に分け、使っていなかった 4 つの依存を除いた。`MainWindow` は複製の名前入力欄の初期化を `MainWindowFactory` へ移して 21→20（IPC の 2 つは `MainWindow.Ipc.cs` が使うため残る）。`MainWindowFactory`（20）と `Mapping`（17、毎フレームの経路）は、15 以下にするには依存を束ねる「何でも箱」が必要になり、規則（3.1）に反するため見送り、基準値は実数どおりに残した。
