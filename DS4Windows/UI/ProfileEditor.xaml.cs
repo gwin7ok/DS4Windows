@@ -28,6 +28,7 @@ using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 using DS4Windows.UI.Abstractions;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
@@ -135,6 +136,9 @@ namespace DS4Windows.UI
         // （重複していた空のコンストラクタ宣言を削除）
         // 並べ替えを適用して一覧を更新する。見出しの文字（矢印）は SpecialActionsListViewModel の
         // ヘッダー文字プロパティが変更通知で更新する
+        // 振動テストボタンの動作（画面に依存しない判断）
+        private readonly RumbleTestController rumbleTest;
+
         private void SortSpecialActionsList(string columnName, bool asc)
         {
             ListSortDirection sortDirection = asc ? ListSortDirection.Ascending : ListSortDirection.Descending;
@@ -187,6 +191,7 @@ namespace DS4Windows.UI
             this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
             this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
+            rumbleTest = new RumbleTestController(slotCommands, environmentService);
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(readingsSource ?? throw new ArgumentNullException(nameof(readingsSource)));
 
@@ -1096,94 +1101,19 @@ namespace DS4Windows.UI
 
         private void RumbleTestBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Phase6-Step7b: 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
-            // モーターの左右反転（InverseRumbleMotors）は、編集中の設定（作業スロット deviceNum）の値を読む（決定4＝I1）
-            int rumbleDevice = profileSettingsVM.FuncDevNum;
-            if (rumbleDevice < environmentService.ControllerSlotLimit)
-            {
-                if (slotCommands.IsConnected(rumbleDevice))
-                {
-                    RumbleType type;
-                    var btn = sender as Button;
-                    if (!profileSettingsVM.Output.InverseRumbleMotors)
-                    {
-                        type = btn.Name == "heavyRumbleTestBtn" ? RumbleType.Heavy : RumbleType.Light;
-                    }
-                    else
-                    {
-                        type = btn.Name == "heavyRumbleTestBtn" ? RumbleType.Light : RumbleType.Heavy;
-                    }
+            // 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
+            // モーターの左右反転は、編集中の設定（作業スロット deviceNum）の値を読む。判断は RumbleTestController が行い、
+            // ここは押したボタンの文字だけを変える
+            var btn = sender as Button;
+            bool heavyButton = btn.Name == "heavyRumbleTestBtn";
+            var outcome = rumbleTest.Toggle(profileSettingsVM.Output, profileSettingsVM.FuncDevNum, heavyButton);
+            if (outcome == RumbleTestOutcome.None) return;
 
-                    bool rumbleActive;
-                    if (type == RumbleType.Heavy)
-                        rumbleActive = profileSettingsVM.Output.HeavyRumbleActive;
-                    else
-                        rumbleActive = profileSettingsVM.Output.LightRumbleActive;
-                    if (!rumbleActive)
-                    {
-                        var rumbleBoost = profileSettingsVM.Output.RumbleBoost;
-
-                        // Check if device is DualSense and adjust/update accordingly
-                        if (slotCommands.ApplyDualSenseRumbleOptions(rumbleDevice,
-                            (int)profileSettingsVM.Output.DualSenseRumbleEmulationPerIndex,
-                            (byte)profileSettingsVM.Output.DualSenseHapticPowerLevelPerIndex))
-                        {
-                            if (!profileSettingsVM.Output.EnableGenericRumbleStrRescaleForDualSenseDevices)
-                                rumbleBoost = 100;
-                        }
-
-                        if (type == RumbleType.Heavy)
-                            profileSettingsVM.Output.HeavyRumbleActive = true;
-                        else
-                            profileSettingsVM.Output.LightRumbleActive = true;
-
-                        if (type == RumbleType.Heavy)
-                        {
-                            slotCommands.SetHeavyRumble(rumbleDevice, (byte)Math.Min(255, 255 * rumbleBoost / 100));
-                        }
-                        else
-                        {
-                            slotCommands.SetLightRumble(rumbleDevice, (byte)Math.Min(255, 255 * rumbleBoost / 100));
-                        }
-
-                        if (type == RumbleType.Heavy)
-                        {
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.StopHText;
-                            else
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.StopLText;
-                        }
-                        else
-                        {
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.StopLText;
-                            else
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.StopHText;
-                        }
-                    }
-                    else
-                    {
-                        if (type == RumbleType.Heavy)
-                        {
-                            profileSettingsVM.Output.HeavyRumbleActive = false;
-                            slotCommands.SetHeavyRumble(rumbleDevice, 0);
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.TestHText;
-                            else
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.TestLText;
-                        }
-                        else
-                        {
-                            profileSettingsVM.Output.LightRumbleActive = false;
-                            slotCommands.SetLightRumble(rumbleDevice, 0);
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.TestLText;
-                            else
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.TestHText;
-                        }
-                    }
-                }
-            }
+            bool started = outcome == RumbleTestOutcome.Started;
+            if (heavyButton)
+                outputPanel.HeavyRumbleTestBtn.Content = started ? Properties.Resources.StopHText : Properties.Resources.TestHText;
+            else
+                outputPanel.LightRumbleTestBtn.Content = started ? Properties.Resources.StopLText : Properties.Resources.TestLText;
         }
 
         private void SixAxisPanel_CustomCurveEditorRequested(object sender, string target)
