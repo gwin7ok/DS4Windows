@@ -21,7 +21,7 @@ namespace DS4Windows.Input.Devices
 
         public bool Handles(InputDeviceType type)
         {
-            return type == InputDeviceType.SwitchPro;
+            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.SwitchPro);
         }
 
         /// <summary>特徴レポートから読む。</summary>

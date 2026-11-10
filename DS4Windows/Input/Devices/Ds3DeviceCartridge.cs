@@ -21,7 +21,7 @@ namespace DS4Windows.Input.Devices
 
         public bool Handles(InputDeviceType type)
         {
-            return type == InputDeviceType.DS3;
+            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DS3);
         }
 
         /// <summary>DS3 は機器固有のシリアルを持たないため、擬似のシリアルを作る。</summary>

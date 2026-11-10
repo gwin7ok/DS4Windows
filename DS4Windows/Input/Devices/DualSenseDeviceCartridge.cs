@@ -22,7 +22,7 @@ namespace DS4Windows.Input.Devices
 
         public bool Handles(InputDeviceType type)
         {
-            return type == InputDeviceType.DualSense;
+            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DualSense);
         }
 
         /// <summary>DualSense は、DS4 と別の特徴レポート番号から読む。</summary>

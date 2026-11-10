@@ -769,3 +769,8 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **K-e（解析器の選択をカートリッジへ）は見送り**: DS4 以外のデバイスは、解析器を静的なフィールド、または受信ごとに作る（DualSense は報告のオフセットを渡す）。カートリッジから渡すには、デバイスのコンストラクターか初期化の順序を変えることになり、得るものが（機種を足すときの変更箇所が 1 か所減るだけで）小さいため。必要になったら再検討する。
 - **テスト**: `InputDeviceCartridgeSerialTests`（移す前の `if` を複製して、対応機器の全行で偽の通信路の呼び出しと戻り値を比べる。DualSense は 9、DS3 は擬似のシリアルなど）。`FakeHidTransport` に、最後に読んだ特徴レポート番号と擬似のシリアルを足した。Joy-Con グリップの USB のハンドシェイクは対象外（別途、実機）。
 - Actions 全件合格・警告 0。
+
+### Step 16-12b（2026-11-10。完了）
+- **種類と系統の表**: `Core/Model` に `InputDeviceFamily`（DS4／DualSense／SwitchPro／JoyCon／DS3）と `InputDeviceTypeInfo`（`FamilyOf`／`IsFamily`／`IsJoyConSide`）を作った。5 つのカートリッジ（第 1 層）と 5 つの `*DeviceModule`（第 2 層）の `Handles` は、同じ表を引く。Joy-Con の左右の判定（`JoyConDeviceModule` 2 か所、`JoyConLinker` 1 か所）は `IsJoyConSide` に替えた。`IsFamily` は、表にない値を false にする（既存の「不明な種類は誰も扱わない」の挙動を維持）。
+- **残した分岐**: `JoyConDevice` の左／右の分岐（1835・1869 行。左右で処理が違う本体）と `DecideJoin`（左は主、右は副）は、系統でなく側の意味なので、そのまま。`ProfileSettingsService` の DualSense の判定も、そのまま（1 か所）。
+- **テスト**: `InputDeviceTypeInfoTests`（全値の対応、Joy-Con の側、全種類についてカートリッジ・モジュールがちょうど 1 つずつ、同じ系統の集合を扱うこと）。Actions 3,387 件合格・警告 0。

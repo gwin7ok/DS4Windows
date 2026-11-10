@@ -23,7 +23,7 @@ namespace DS4Windows.Input.Devices
 
         public bool Handles(InputDeviceType type)
         {
-            return type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR || type == InputDeviceType.JoyConGrip;
+            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.JoyCon);
         }
 
         /// <summary>充電グリップに付いた Joy-Con は、USB のハンドシェイクでシリアルを読む。それ以外は特徴レポートから読む。</summary>

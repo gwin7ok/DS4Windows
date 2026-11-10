@@ -89,7 +89,7 @@ namespace DS4Windows.Processing.Services
 
         private static bool IsJoyConLeftOrRight(IJoinableDevice device)
         {
-            return device.DeviceType == InputDeviceType.JoyConL || device.DeviceType == InputDeviceType.JoyConR;
+            return InputDeviceTypeInfo.IsJoyConSide(device.DeviceType);
         }
 
         // 旧コードの 3 か所（Start、HotPlug の 2 つの枝）で同じだった組み立て。順序もそのまま:

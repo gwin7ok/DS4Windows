@@ -13,8 +13,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class JoyConDeviceModule : InputDeviceModuleBase
     {
-        public override bool Handles(InputDeviceType type) =>
-            type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR || type == InputDeviceType.JoyConGrip;
+        public override bool Handles(InputDeviceType type) => InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.JoyCon);
 
         public override bool IsEnabled(ControlServiceDeviceOptions options) => options.JoyConDeviceOpts.Enabled;
 
@@ -22,7 +21,7 @@ namespace DS4Windows.Processing.Services
         {
             List<DS4Controls> result = new List<DS4Controls>();
             // 旧コードは L／R のみ（Grip は default: で空）
-            if (device.DeviceType == InputDeviceType.JoyConL || device.DeviceType == InputDeviceType.JoyConR)
+            if (InputDeviceTypeInfo.IsJoyConSide(device.DeviceType))
             {
                 result.AddRange(new DS4Controls[] { DS4Controls.Capture, DS4Controls.SideL, DS4Controls.SideR, DS4Controls.FnL, DS4Controls.FnR });
             }
@@ -32,8 +31,7 @@ namespace DS4Windows.Processing.Services
 
         public override void OnDeviceInit(DS4Device device, ControlServiceDeviceOptions options)
         {
-            if (device.DeviceType == InputDeviceType.JoyConL ||
-                device.DeviceType == InputDeviceType.JoyConR)
+            if (InputDeviceTypeInfo.IsJoyConSide(device.DeviceType))
             {
                 if (DecideJoin(device.DeviceType, options.JoyConDeviceOpts.LinkedMode, options.JoyConDeviceOpts.JoinGyroProv,
                     out bool primaryDevice, out bool outputMapGyro))

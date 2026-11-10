@@ -55,7 +55,7 @@ namespace DS4Windows.Input.Devices
 
         public bool Handles(InputDeviceType type)
         {
-            return type == InputDeviceType.DS4;
+            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DS4);
         }
 
         /// <summary>Sony ワイヤレスアダプターは機器固有のシリアルを持たないため、擬似のシリアルを作る。それ以外は特徴レポートから読む。</summary>
