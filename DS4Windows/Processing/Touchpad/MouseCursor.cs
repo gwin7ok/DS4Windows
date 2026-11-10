@@ -336,7 +336,7 @@ namespace DS4Windows.Processing.Touchpad
 
         public void TouchMoveCursor(int dx, int dy, bool disableInvert = false)
         {
-            TouchpadRelMouseSettings relMouseSettings = _profileSettings.TouchRelMouse[deviceNumber];
+            TouchpadRelMouseSettings relMouseSettings = _profileSettings.ForSlot(deviceNumber).Touchpad.RelMouse;
             if (relMouseSettings.rotation != 0.0)
             {
                 //double rotation = 5.0 * Math.PI / 180.0;
@@ -352,8 +352,8 @@ namespace DS4Windows.Processing.Touchpad
             double normY = Math.Abs(Math.Sin(tempAngle));
             int signX = Math.Sign(dx);
             int signY = Math.Sign(dy);
-            double coefficient = _profileSettings.TouchSensitivity[deviceNumber] * 0.01;
-            bool jitterCompenstation = _profileSettings.TouchpadJitterCompensation[deviceNumber];
+            double coefficient = _profileSettings.ForSlot(deviceNumber).Touchpad.TouchSensitivity * 0.01;
+            bool jitterCompenstation = _profileSettings.ForSlot(deviceNumber).Touchpad.JitterCompensation;
 
             double xMotion = dx != 0 ?
                 coefficient * dx + (normX * (TOUCHPAD_MOUSE_OFFSET * signX)) : 0.0;
@@ -428,7 +428,7 @@ namespace DS4Windows.Processing.Touchpad
 
             if (disableInvert == false)
             {
-                int touchpadInvert = tempInt = _profileSettings.TouchpadInvert[deviceNumber];
+                int touchpadInvert = tempInt = _profileSettings.ForSlot(deviceNumber).Touchpad.Invert;
                 if ((touchpadInvert & 0x02) == 2)
                     xAction *= -1;
 

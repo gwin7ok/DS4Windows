@@ -21,8 +21,8 @@ namespace DS4WindowsTests
         private static ProfileSettingsService CreateSettings(out BackingStore store, byte touchSensitivity = 100, int touchpadInvert = 0)
         {
             store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            store.touchSensitivity[Slot] = touchSensitivity;
-            store.touchpadInvert[Slot] = touchpadInvert;
+            store.touchpadSlots[Slot].TouchSensitivity = touchSensitivity;
+            store.touchpadSlots[Slot].Invert = touchpadInvert;
             return TestRepositoryFactory.CreateProfileSettingsService(store);
         }
 

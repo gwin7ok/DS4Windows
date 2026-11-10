@@ -120,10 +120,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/StartTouchpadOff");
-                bool.TryParse(Item.InnerText, out store.startTouchpadOff[device]);
-                if (store.startTouchpadOff[device] == true) control.StartTPOff(device);
+                { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].StartOff = parsedValue; };
+                if (store.touchpadSlots[device].StartOff == true) control.StartTPOff(device);
             }
-            catch { store.startTouchpadOff[device] = false; missingSetting = true; }
+            catch { store.touchpadSlots[device].StartOff = false; missingSetting = true; }
 
             // Fallback lookup if TouchpadOutMode is not set
             bool tpForControlsPresent = false;
@@ -137,10 +137,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/UseTPforControls");
                     if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                     {
-                        if (temp) store.touchOutMode[device] = TouchpadOutMode.Controls;
+                        if (temp) store.touchpadSlots[device].OutputMode = TouchpadOutMode.Controls;
                     }
                 }
-                catch { store.touchOutMode[device] = TouchpadOutMode.Mouse; }
+                catch { store.touchpadSlots[device].OutputMode = TouchpadOutMode.Mouse; }
             }
 
             // Fallback lookup if GyroOutMode is not set

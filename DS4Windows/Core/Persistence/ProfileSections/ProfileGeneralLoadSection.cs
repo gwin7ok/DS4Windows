@@ -88,7 +88,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/flashBatteryAt"); Int32.TryParse(Item.InnerText, out lightInfo.flashAt); }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchSensitivity"); Byte.TryParse(Item.InnerText, out store.touchSensitivity[device]); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchSensitivity"); { Byte.TryParse(Item.InnerText, out byte parsedValue); store.touchpadSlots[device].TouchSensitivity = parsedValue; }; }
             catch { missingSetting = true; }
 
             //New method for saving color
@@ -158,7 +158,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchpadJitterCompensation"); bool.TryParse(Item.InnerText, out store.touchpadJitterCompensation[device]); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchpadJitterCompensation"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].JitterCompensation = parsedValue; }; }
             catch { missingSetting = true; }
 
             context.MissingSetting = missingSetting;

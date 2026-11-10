@@ -24,7 +24,7 @@
 | 領域 | 持ち主 | 状態 |
 |---|---|---|
 | ジャイロ（＋ SA のトリガー条件） | `GyroSlotSettings` | 完了（2026-11-10。パイロット） |
-| タッチパッド | `TouchpadSlotSettings` | 未着手 |
+| タッチパッド | `TouchpadSlotSettings` | 完了（2026-11-10） |
 | トリガー | `TriggerSlotSettings` | 未着手 |
 | スティック | `StickSlotSettings` | 未着手 |
 | ライトバー | `LightbarSlotSettings` | 未着手 |

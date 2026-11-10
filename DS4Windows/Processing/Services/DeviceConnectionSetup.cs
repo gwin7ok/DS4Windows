@@ -48,10 +48,10 @@ namespace DS4Windows.Processing.Services
             device.setIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
             device.setBTPollRate(_profileSettings.GetBTPollRate(ind));
 
-            touchPad.ResetTrackAccel(_profileSettings.GetTrackballFriction(ind));
+            touchPad.ResetTrackAccel(_profileSettings.ForSlot(ind).Touchpad.TrackballFriction);
             touchPad.ResetToggleGyroModes();
 
-            //Global.TouchOutMode[ind] = TouchpadOutMode.MouseJoystick;
+            //Global.ForSlot(ind).Touchpad.OutputMode = TouchpadOutMode.MouseJoystick;
             touchPad.PostSetup();
 
             _profileSettings.L2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.L2ModInfo[ind].maxOutput, _profileSettings.L2ModInfo[ind].maxZone) / 100.0 * 255);

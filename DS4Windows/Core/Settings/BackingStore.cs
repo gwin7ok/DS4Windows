@@ -155,12 +155,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4,
           DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4,
           DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4 };
-        public bool[] touchpadJitterCompensation = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP,
-          DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP,
-          DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP };
-        public bool[] lowerRCOn = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public bool[] touchClickPassthru = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
         public ProfileSlotNames profilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames olderProfilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames selectedProfile = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
@@ -186,10 +180,6 @@ namespace DS4Windows.Core.Settings
           DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE,
           DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE };
         public int[] rumbleAutostopTime = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Value in milliseconds (0=autustop timer disabled)
-        public Byte[] touchSensitivity = new Byte[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS,
-          DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS,
-          DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS };
         public StickDeadZoneInfo[] lsModInfo = new StickDeadZoneInfo[ControllerLimits.TestProfileItemCount]
         {
             new StickDeadZoneInfo(), new StickDeadZoneInfo(),
@@ -266,10 +256,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
           DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
           DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public Byte[] tapSensitivity = new Byte[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public bool[] doubleTap = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public int[] scrollSensitivity = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int[] touchpadInvert = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int[] btPollRate = new int[ControllerLimits.TestProfileItemCount]
         { DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
@@ -431,11 +417,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY,
           DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY,
           DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY };
-        public bool[] startTouchpadOff = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public TouchpadOutMode[] touchOutMode = new TouchpadOutMode[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE,
-          DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE,
-          DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE };
 
         public RumbleSettings[] rumbleSettings = new RumbleSettings[ControllerLimits.TestProfileItemCount]
                 {
@@ -448,10 +429,6 @@ namespace DS4Windows.Core.Settings
 
 
 
-        public int[][] touchDisInvertTriggers = new int[ControllerLimits.TestProfileItemCount][]
-        { new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
-          new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER }, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
-          new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER }, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER } };
         public Boolean useExclusiveMode = false; // Re-enable Ex Mode
 
         public const int DEFAULT_FORM_WIDTH = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
@@ -507,6 +484,9 @@ namespace DS4Windows.Core.Settings
 
         /// <summary>ジャイロの設定の持ち主（スロットごとに 1 つ）。</summary>
         public readonly GyroSlotSettings[] gyroSlots = new GyroSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Touchpadの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly TouchpadSlotSettings[] touchpadSlots = new TouchpadSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -599,35 +579,11 @@ namespace DS4Windows.Core.Settings
 
 
 
-        public bool[] trackballMode = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE,
-          DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE,
-          DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE };
-        public double[] trackballFriction = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION,
-          DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION,
-          DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION };
         //public bool[] touchStickTrackballMode = new bool[Global.TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         //public double[] touchStickTrackballFriction = new double[Global.TEST_PROFILE_ITEM_COUNT] { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 };
 
-        public TouchMouseStickInfo[] touchMStickInfo = new TouchMouseStickInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(), new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(), new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(), new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(),
-        };
 
-        public TouchpadRelMouseSettings[] touchpadRelMouse = new TouchpadRelMouseSettings[ControllerLimits.TestProfileItemCount] { new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(),
-            new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings() };
 
-        public TouchButtonActivationMode[] touchpadButtonMode = new TouchButtonActivationMode[ControllerLimits.TestProfileItemCount]
-        {
-            new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(),
-            new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(),
-        };
 
         // Used to hold the controller type desired in a profile
         public OutContType[] outputDevType = new OutContType[ControllerLimits.TestProfileItemCount]
@@ -725,6 +681,7 @@ namespace DS4Windows.Core.Settings
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
+            for (int i = 0; i < touchpadSlots.Length; i++) touchpadSlots[i] = new TouchpadSlotSettings(i);
 
             for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
             {
@@ -1208,7 +1165,7 @@ namespace DS4Windows.Core.Settings
             enableTouchToggle[device] = DEFAULT_TOUCH_TOGGLE;
             idleDisconnectTimeout[device] = 0;
             enableOutputDataToDS4[device] = DEFAULT_OUTPUT_TO_DS4;
-            touchpadJitterCompensation[device] = DEFAULT_TOUCHPAD_JITTER_COMP;
+            touchpadSlots[device].JitterCompensation = DEFAULT_TOUCHPAD_JITTER_COMP;
             // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
             inverseRumbleMotors[device] = false;
             leftStickDriftXAxis[device] = 0;
@@ -1216,12 +1173,12 @@ namespace DS4Windows.Core.Settings
             rightStickDriftXAxis[device] = 0;
             rightStickDriftYAxis[device] = 0;
             outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
-            lowerRCOn[device] = false;
-            touchClickPassthru[device] = false;
+            touchpadSlots[device].LowerRightAsRightClick = false;
+            touchpadSlots[device].ClickPassthru = false;
 
             rumble[device] = DEFAULT_RUMBLE;
             rumbleAutostopTime[device] = 0;
-            touchSensitivity[device] = DEFAULT_TOUCHPAD_SENS;
+            touchpadSlots[device].TouchSensitivity = DEFAULT_TOUCHPAD_SENS;
 
             lsModInfo[device].Reset();
             rsModInfo[device].Reset();
@@ -1248,10 +1205,10 @@ namespace DS4Windows.Core.Settings
             l2Sens[device] = r2Sens[device] = DEFAULT_ANALOG_SENS;
             LSSens[device] = RSSens[device] = DEFAULT_ANALOG_SENS;
             SXSens[device] = SZSens[device] = DEFAULT_ANALOG_SENS;
-            tapSensitivity[device] = 0;
-            doubleTap[device] = false;
-            scrollSensitivity[device] = 0;
-            touchpadInvert[device] = 0;
+            touchpadSlots[device].TapSensitivity = 0;
+            touchpadSlots[device].DoubleTap = false;
+            touchpadSlots[device].ScrollSensitivity = 0;
+            touchpadSlots[device].Invert = 0;
             btPollRate[device] = DEFAULT_DS4_BT_POLL_RATE;
 
             lsOutputSettings[device].ResetSettings();
@@ -1292,8 +1249,8 @@ namespace DS4Windows.Core.Settings
 
             launchProgram[device] = string.Empty;
             dinputOnly[device] = DEFAULT_DINPUT_ONLY;
-            startTouchpadOff[device] = false;
-            touchOutMode[device] = DEFAULT_TOUCH_OUT_MODE;
+            touchpadSlots[device].StartOff = false;
+            touchpadSlots[device].OutputMode = DEFAULT_TOUCH_OUT_MODE;
             gyroSlots[device].MouseTriggers = BackingStore.DEFAULT_SA_TRIGGERS;
             gyroSlots[device].MouseTriggerCondAnd = DEFAULT_SA_TRIGGER_COND;
             gyroSlots[device].OutputMode = DEFAULT_GYRO_OUT_MODE;
@@ -1304,7 +1261,7 @@ namespace DS4Windows.Core.Settings
 
             gyroSlots[device].MouseStickToggle = false;
             gyroSlots[device].MouseStickTriggerTurns = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
-            touchDisInvertTriggers[device] = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
+            touchpadSlots[device].DisInvertTriggers = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
             gyroSlots[device].Sensitivity = DEFAULT_GYRO_SENS;
             gyroSlots[device].SensVerticalScale = DEFAULT_GYRO_SENS_VERTICAL_SCALE;
             gyroSlots[device].Invert = 0;
@@ -1327,11 +1284,11 @@ namespace DS4Windows.Core.Settings
             setR2OutCurveMode(device, 0);
             setSXOutCurveMode(device, 0);
             setSZOutCurveMode(device, 0);
-            trackballMode[device] = DEFAULT_TRACKBALL_MODE;
-            trackballFriction[device] = DEFAULT_TRACKBALL_FRICTION;
-            touchpadRelMouse[device].Reset();
-            touchMStickInfo[device].Reset();
-            touchpadButtonMode[device] = TouchButtonActivationMode.Click;
+            touchpadSlots[device].Trackball = DEFAULT_TRACKBALL_MODE;
+            touchpadSlots[device].TrackballFriction = DEFAULT_TRACKBALL_FRICTION;
+            touchpadSlots[device].RelMouse.Reset();
+            touchpadSlots[device].MouseStick.Reset();
+            touchpadSlots[device].ButtonMode = TouchButtonActivationMode.Click;
             outputDevType[device] = DEFAULT_OUT_CONT_TYPE;
             ds4Mapping = false;
         }
@@ -1410,7 +1367,7 @@ namespace DS4Windows.Core.Settings
                     control.CheckProfileOptions(device, tempDev, true);
                 });
 
-                //Program.rootHub.touchPad[device]?.ResetTrackAccel(trackballFriction[device]);
+                //Program.rootHub.touchPad[device]?.ResetTrackAccel(touchpadSlots[device].TrackballFriction);
             }
         }
     }

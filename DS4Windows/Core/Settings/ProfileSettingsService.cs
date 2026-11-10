@@ -264,17 +264,6 @@ namespace DS4Windows.Core.Settings
         }
 
         // ---- Step10-2-A-3: タッチパッド関連 (m_Config委譲) ----
-        public byte[] TouchSensitivity => SafeConfig?.touchSensitivity;
-        public byte[] TapSensitivity => SafeConfig?.tapSensitivity;
-        public int[] TouchpadInvert => SafeConfig?.touchpadInvert;
-        public bool[] TouchpadJitterCompensation => SafeConfig?.touchpadJitterCompensation;
-        public bool[] TouchClickPassthru => SafeConfig?.touchClickPassthru;
-        public TouchButtonActivationMode[] TouchpadButtonMode => SafeConfig?.touchpadButtonMode;
-        public bool[] StartTouchpadOff => SafeConfig?.startTouchpadOff;
-        public TouchpadOutMode[] TouchOutMode => SafeConfig?.touchOutMode;
-        public int[][] TouchDisInvertTriggers => SafeConfig?.touchDisInvertTriggers;
-        public TouchMouseStickInfo[] TouchMouseStickInf => SafeConfig?.touchMStickInfo;
-        public TouchpadRelMouseSettings[] TouchRelMouse => SafeConfig?.touchpadRelMouse;
 
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
 
@@ -366,14 +355,7 @@ namespace DS4Windows.Core.Settings
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         public ButtonMouseInfo[] ButtonMouseInfos => SafeConfig?.buttonMouseInfos;
         public bool[] EnableTouchToggle => SafeConfig?.enableTouchToggle;
-        public bool[] DoubleTap => SafeConfig?.doubleTap;
-        public int[] ScrollSensitivity => SafeConfig?.scrollSensitivity;
-        public bool[] TrackballMode => SafeConfig?.trackballMode;
-        public double[] TrackballFriction => SafeConfig?.trackballFriction;
         public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.enableTouchToggle != null && SafeConfig.enableTouchToggle[deviceIndex];
-        public bool GetDoubleTap(int deviceIndex) => SafeConfig != null && SafeConfig.doubleTap != null && SafeConfig.doubleTap[deviceIndex];
-        public bool GetTrackballMode(int deviceIndex) => SafeConfig != null && SafeConfig.trackballMode != null && SafeConfig.trackballMode[deviceIndex];
-        public double GetTrackballFriction(int deviceIndex) => SafeConfig != null && SafeConfig.trackballFriction != null ? SafeConfig.trackballFriction[deviceIndex] : 0;
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
         public double[] SXDeadzone => SafeConfig?.SXDeadzone;
@@ -425,7 +407,6 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public bool[] LowerRCOn => SafeConfig?.lowerRCOn;
         public string[] LaunchProgram => SafeConfig?.launchProgram;
         public int GetBTPollRate(int deviceIndex) => SafeConfig != null && SafeConfig.btPollRate != null ? SafeConfig.btPollRate[deviceIndex] : 0;
         public bool GetDInputOnly(int deviceIndex) => SafeConfig != null && SafeConfig.dinputOnly != null && SafeConfig.dinputOnly[deviceIndex];
@@ -496,7 +477,7 @@ namespace DS4Windows.Core.Settings
             ProfileSlotSettings window = _slotSettings[slot];
             if (window == null)
             {
-                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot]);
+                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot]);
                 _slotSettings[slot] = window;
             }
             return window;

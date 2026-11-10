@@ -98,9 +98,9 @@ namespace DS4WindowsTests
         private static ProfileSettingsService CreateIsolatedSettings()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
-            for (int i = 0; i < settings.TouchOutMode.Length; i++)
+            for (int i = 0; i < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount; i++)
             {
-                settings.TouchOutMode[i] = TouchpadOutMode.Mouse;
+                settings.ForSlot(i).Touchpad.OutputMode = TouchpadOutMode.Mouse;
             }
             return settings;
         }
@@ -120,20 +120,20 @@ namespace DS4WindowsTests
 
             Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.DeviceNum);
             Assert.Equal(TargetSlot, vm.TargetDevice);
-            Assert.Equal(TouchpadOutMode.Passthru, settings.TouchOutMode[TargetSlot]);
+            Assert.Equal(TouchpadOutMode.Passthru, settings.ForSlot(TargetSlot).Touchpad.OutputMode);
             // 編集スロットとほかのスロットの設定は変えない
-            for (int i = 0; i < settings.TouchOutMode.Length; i++)
+            for (int i = 0; i < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount; i++)
             {
                 if (i == TargetSlot) continue;
-                Assert.Equal(TouchpadOutMode.Mouse, settings.TouchOutMode[i]);
+                Assert.Equal(TouchpadOutMode.Mouse, settings.ForSlot(i).Touchpad.OutputMode);
             }
 
             vm.RevertControlsSettings();
-            Assert.Equal(TouchpadOutMode.Mouse, settings.TouchOutMode[TargetSlot]);
+            Assert.Equal(TouchpadOutMode.Mouse, settings.ForSlot(TargetSlot).Touchpad.OutputMode);
 
             // Save と Cancel の両方から呼ばれても、2 回目で値を壊さない
             vm.RevertControlsSettings();
-            Assert.Equal(TouchpadOutMode.Mouse, settings.TouchOutMode[TargetSlot]);
+            Assert.Equal(TouchpadOutMode.Mouse, settings.ForSlot(TargetSlot).Touchpad.OutputMode);
         }
 
         [Fact]
@@ -143,10 +143,10 @@ namespace DS4WindowsTests
 
             var vm = CreateViewModel(settings, -1);
             Assert.Equal(-1, vm.TargetDevice);
-            Assert.All(settings.TouchOutMode, m => Assert.Equal(TouchpadOutMode.Mouse, m));
+            Assert.All(System.Linq.Enumerable.Range(0, DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount), i => Assert.Equal(TouchpadOutMode.Mouse, settings.ForSlot(i).Touchpad.OutputMode));
 
             vm.RevertControlsSettings();
-            Assert.All(settings.TouchOutMode, m => Assert.Equal(TouchpadOutMode.Mouse, m));
+            Assert.All(System.Linq.Enumerable.Range(0, DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount), i => Assert.Equal(TouchpadOutMode.Mouse, settings.ForSlot(i).Touchpad.OutputMode));
         }
 
         [Fact]
@@ -158,7 +158,7 @@ namespace DS4WindowsTests
                 true, settings, new DS4Windows.Core.Platform.EnvironmentService(), null);
 
             Assert.Equal(-1, vm.TargetDevice);
-            Assert.All(settings.TouchOutMode, m => Assert.Equal(TouchpadOutMode.Mouse, m));
+            Assert.All(System.Linq.Enumerable.Range(0, DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount), i => Assert.Equal(TouchpadOutMode.Mouse, settings.ForSlot(i).Touchpad.OutputMode));
         }
 
         [Fact]

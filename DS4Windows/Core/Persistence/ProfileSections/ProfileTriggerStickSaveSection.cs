@@ -37,14 +37,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             int device = context.Device;
             LightbarDS4WinInfo lightInfo = context.LightInfo;
 
-            XmlNode xmlLowerRCOn = m_Xdoc.CreateNode(XmlNodeType.Element, "lowerRCOn", null); xmlLowerRCOn.InnerText = store.lowerRCOn[device].ToString(); rootElement.AppendChild(xmlLowerRCOn);
-            XmlNode xmlTapSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "tapSensitivity", null); xmlTapSensitivity.InnerText = store.tapSensitivity[device].ToString(); rootElement.AppendChild(xmlTapSensitivity);
-            XmlNode xmlDouble = m_Xdoc.CreateNode(XmlNodeType.Element, "doubleTap", null); xmlDouble.InnerText = store.doubleTap[device].ToString(); rootElement.AppendChild(xmlDouble);
-            XmlNode xmlScrollSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "scrollSensitivity", null); xmlScrollSensitivity.InnerText = store.scrollSensitivity[device].ToString(); rootElement.AppendChild(xmlScrollSensitivity);
+            XmlNode xmlLowerRCOn = m_Xdoc.CreateNode(XmlNodeType.Element, "lowerRCOn", null); xmlLowerRCOn.InnerText = store.touchpadSlots[device].LowerRightAsRightClick.ToString(); rootElement.AppendChild(xmlLowerRCOn);
+            XmlNode xmlTapSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "tapSensitivity", null); xmlTapSensitivity.InnerText = store.touchpadSlots[device].TapSensitivity.ToString(); rootElement.AppendChild(xmlTapSensitivity);
+            XmlNode xmlDouble = m_Xdoc.CreateNode(XmlNodeType.Element, "doubleTap", null); xmlDouble.InnerText = store.touchpadSlots[device].DoubleTap.ToString(); rootElement.AppendChild(xmlDouble);
+            XmlNode xmlScrollSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "scrollSensitivity", null); xmlScrollSensitivity.InnerText = store.touchpadSlots[device].ScrollSensitivity.ToString(); rootElement.AppendChild(xmlScrollSensitivity);
             XmlNode xmlLeftTriggerMiddle = m_Xdoc.CreateNode(XmlNodeType.Element, "LeftTriggerMiddle", null); xmlLeftTriggerMiddle.InnerText = store.l2ModInfo[device].deadZone.ToString(); rootElement.AppendChild(xmlLeftTriggerMiddle);
             XmlNode xmlRightTriggerMiddle = m_Xdoc.CreateNode(XmlNodeType.Element, "RightTriggerMiddle", null); xmlRightTriggerMiddle.InnerText = store.r2ModInfo[device].deadZone.ToString(); rootElement.AppendChild(xmlRightTriggerMiddle);
-            XmlNode xmlTouchpadInvert = m_Xdoc.CreateNode(XmlNodeType.Element, "TouchpadInvert", null); xmlTouchpadInvert.InnerText = store.touchpadInvert[device].ToString(); rootElement.AppendChild(xmlTouchpadInvert);
-            XmlNode xmlTouchClickPasthru = m_Xdoc.CreateNode(XmlNodeType.Element, "TouchpadClickPassthru", null); xmlTouchClickPasthru.InnerText = store.touchClickPassthru[device].ToString(); rootElement.AppendChild(xmlTouchClickPasthru);
+            XmlNode xmlTouchpadInvert = m_Xdoc.CreateNode(XmlNodeType.Element, "TouchpadInvert", null); xmlTouchpadInvert.InnerText = store.touchpadSlots[device].Invert.ToString(); rootElement.AppendChild(xmlTouchpadInvert);
+            XmlNode xmlTouchClickPasthru = m_Xdoc.CreateNode(XmlNodeType.Element, "TouchpadClickPassthru", null); xmlTouchClickPasthru.InnerText = store.touchpadSlots[device].ClickPassthru.ToString(); rootElement.AppendChild(xmlTouchClickPasthru);
 
             XmlNode xmlL2AD = m_Xdoc.CreateNode(XmlNodeType.Element, "L2AntiDeadZone", null); xmlL2AD.InnerText = store.l2ModInfo[device].antiDeadZone.ToString(); rootElement.AppendChild(xmlL2AD);
             XmlNode xmlR2AD = m_Xdoc.CreateNode(XmlNodeType.Element, "R2AntiDeadZone", null); xmlR2AD.InnerText = store.r2ModInfo[device].antiDeadZone.ToString(); rootElement.AppendChild(xmlR2AD);

@@ -61,7 +61,7 @@ namespace DS4Windows.Processing.Touchpad
                currentMidX = (T0.HwX + T1.HwX) / 2d, currentMidY = (T0.HwY + T1.HwY) / 2d;
 
             // Express coefficient as a ratio
-            double coefficient = _profileSettings.ScrollSensitivity[deviceNumber] / 100.0;
+            double coefficient = _profileSettings.ForSlot(deviceNumber).Touchpad.ScrollSensitivity / 100.0;
 
             // Adjust for touch distance: "standard" distance is 960 pixels, i.e. half the width.  Scroll farther if fingers are farther apart, and vice versa, in linear proportion.
             double touchXDistance = T1.HwX - T0.HwX, touchYDistance = T1.HwY - T0.HwY, touchDistance = Math.Sqrt(touchXDistance * touchXDistance + touchYDistance * touchYDistance);

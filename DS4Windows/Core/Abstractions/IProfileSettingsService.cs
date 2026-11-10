@@ -94,17 +94,6 @@ namespace DS4Windows.Core.Abstractions
         void SetR2OutCurveMode(int index, int value);
 
         // ---- Step10-2-A-3: タッチパッド関連 (m_Config委譲) ----
-        byte[] TouchSensitivity { get; }
-        byte[] TapSensitivity { get; }
-        int[] TouchpadInvert { get; }
-        bool[] TouchpadJitterCompensation { get; }
-        bool[] TouchClickPassthru { get; }
-        TouchButtonActivationMode[] TouchpadButtonMode { get; }
-        bool[] StartTouchpadOff { get; }
-        TouchpadOutMode[] TouchOutMode { get; }
-        int[][] TouchDisInvertTriggers { get; }
-        TouchMouseStickInfo[] TouchMouseStickInf { get; }
-        TouchpadRelMouseSettings[] TouchRelMouse { get; }
 
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
 
@@ -124,14 +113,7 @@ namespace DS4Windows.Core.Abstractions
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         ButtonMouseInfo[] ButtonMouseInfos { get; }
         bool[] EnableTouchToggle { get; }
-        bool[] DoubleTap { get; }
-        int[] ScrollSensitivity { get; }
-        bool[] TrackballMode { get; }
-        double[] TrackballFriction { get; }
         bool GetEnableTouchToggle(int deviceIndex);
-        bool GetDoubleTap(int deviceIndex);
-        bool GetTrackballMode(int deviceIndex);
-        double GetTrackballFriction(int deviceIndex);
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
         double[] SXDeadzone { get; }
@@ -169,7 +151,6 @@ namespace DS4Windows.Core.Abstractions
         // ---- 課題④: ProfileActions インターフェースプロパティ ----
         List<string>[] ProfileActions { get; set; }
 
-        bool[] LowerRCOn { get; }
         string[] LaunchProgram { get; }
         int GetBTPollRate(int deviceIndex);
         bool GetDInputOnly(int deviceIndex);

@@ -54,9 +54,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadOutputMode");
                     string tempMode = Item.InnerText;
-                    Enum.TryParse(tempMode, out store.touchOutMode[device]);
+                    { Enum.TryParse(tempMode, out TouchpadOutMode parsedMode); store.touchpadSlots[device].OutputMode = parsedMode; };
                 }
-                catch { store.touchOutMode[device] = TouchpadOutMode.Mouse; missingSetting = true; }
+                catch { store.touchpadSlots[device].OutputMode = TouchpadOutMode.Mouse; missingSetting = true; }
             }
 
             try
@@ -71,9 +71,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                         tempIntList.Add(temp);
                 }
 
-                store.touchDisInvertTriggers[device] = tempIntList.ToArray();
+                store.touchpadSlots[device].DisInvertTriggers = tempIntList.ToArray();
             }
-            catch { store.touchDisInvertTriggers[device] = new int[1] { -1 }; missingSetting = true; }
+            catch { store.touchpadSlots[device].DisInvertTriggers = new int[1] { -1 }; missingSetting = true; }
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSensitivity"); { int.TryParse(Item.InnerText, out int parsedValue); store.gyroSlots[device].Sensitivity = parsedValue; }; }
             catch { store.gyroSlots[device].Sensitivity = 100; missingSetting = true; }

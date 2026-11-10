@@ -35,7 +35,7 @@ namespace DS4Windows.Processing.Services
 
         public void CheckForToggle(int deviceID, ControllerState cState, ControllerState pState)
         {
-            if (_profileSettings.TouchOutMode[deviceID] != TouchpadOutMode.Controls && cState.Touch1 && pState.PS)
+            if (_profileSettings.ForSlot(deviceID).Touchpad.OutputMode != TouchpadOutMode.Controls && cState.Touch1 && pState.PS)
             {
                 if (_profileSettings.TouchpadActiveArray[deviceID] && _touchreleased[deviceID])
                 {

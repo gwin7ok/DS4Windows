@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         private static TouchpadToggleService NewToggle(out IProfileSettingsService settings)
         {
             settings = TestRepositoryFactory.CreateProfileSettingsService();
-            settings.TouchOutMode[Slot] = TouchpadOutMode.Mouse;
+            settings.ForSlot(Slot).Touchpad.OutputMode = TouchpadOutMode.Mouse;
             settings.TouchpadActiveArray[Slot] = true;
             return new TouchpadToggleService(settings, TestHost.GetService<IEnvironmentService>());
         }
@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         public void Toggle_DoesNothing_WhenTheTouchpadOutputIsControls()
         {
             var toggle = NewToggle(out var settings);
-            settings.TouchOutMode[Slot] = TouchpadOutMode.Controls;
+            settings.ForSlot(Slot).Touchpad.OutputMode = TouchpadOutMode.Controls;
 
             toggle.CheckForToggle(Slot, new ControllerState { Touch1 = true }, new ControllerState { PS = true });
 

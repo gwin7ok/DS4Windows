@@ -42,13 +42,13 @@ namespace DS4WindowsTests
             using (var ctx = new PersistenceGoldenContext())
             {
                 BackingStore store = PersistenceHarness.NewStore();
-                store.touchpadButtonMode[PersistenceHarness.Slot] = mode;
+                store.touchpadSlots[PersistenceHarness.Slot].ButtonMode = mode;
 
                 string xml = PersistenceHarness.SaveProfile(ctx, store, "Phase14bTouchButtonMode");
                 Assert.Contains($"<TouchpadButtonMode>{mode}</TouchpadButtonMode>", xml);
 
                 BackingStore loaded = PersistenceHarness.LoadProfile(ctx, xml, "Phase14bTouchButtonMode");
-                Assert.Equal(mode, loaded.touchpadButtonMode[PersistenceHarness.Slot]);
+                Assert.Equal(mode, loaded.touchpadSlots[PersistenceHarness.Slot].ButtonMode);
             }
         }
     }
