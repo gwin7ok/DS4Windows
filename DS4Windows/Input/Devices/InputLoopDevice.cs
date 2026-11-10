@@ -31,6 +31,12 @@ namespace DS4Windows.Input.Devices
         /// <summary>1 フレームの処理の途中で起きた、続行できる誤り（タッチパッドの読み取りの失敗など）。フレームの終わりに <c>error</c> へ反映される。</summary>
         protected string frameError = string.Empty;
 
+        /// <summary>このフレームを読み取った時刻（ストップウォッチの刻み）。</summary>
+        protected long lastFrameTicks;
+
+        /// <summary>前のフレームの時刻。<see cref="IsExpectedReport"/> でフレームを捨てるとき、時刻を前へ戻すために使う。</summary>
+        protected long previousFrameTicks;
+
         protected InputLoopDevice(IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
             : base(hidDevice, displayName, featureSet)
         {
@@ -85,7 +91,8 @@ namespace DS4Windows.Input.Devices
             firstActive = DateTime.UtcNow;
             hDevice.SetNumInputBuffers(3);
             var latencyWindow = new LatencyWindow();
-            long oldTime = 0;
+            lastFrameTicks = 0;
+            previousFrameTicks = 0;
             ds4InactiveFrame = true;
             idleInput = true;
             OnLoopStarting();
@@ -114,9 +121,10 @@ namespace DS4Windows.Input.Devices
                 }
 
                 long now = Stopwatch.GetTimestamp();
-                lastTimeElapsedDouble = (now - oldTime) * (1.0 / Stopwatch.Frequency) * 1000.0;
+                lastTimeElapsedDouble = (now - lastFrameTicks) * (1.0 / Stopwatch.Frequency) * 1000.0;
                 lastTimeElapsed = (long)lastTimeElapsedDouble;
-                oldTime = now;
+                previousFrameTicks = lastFrameTicks;
+                lastFrameTicks = now;
 
                 if (!IsExpectedReport())
                 {

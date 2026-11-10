@@ -34,7 +34,7 @@ using DS4Windows.Input.Parsers;
 
 namespace DS4Windows.Input.Devices
 {
-    public class SwitchProDevice : DS4Device
+    public class SwitchProDevice : InputLoopDevice
     {
         public class RumbleTableData
         {
@@ -232,7 +232,6 @@ namespace DS4Windows.Input.Devices
         private bool connectionOpened = false;
 
         #pragma warning disable CS0067 // events declared for compatibility but may be unused
-        public override event ReportHandler<EventArgs> Report = null;
         public override event EventHandler<EventArgs> Removal = null;
 
         #pragma warning restore CS0067
@@ -342,277 +341,209 @@ namespace DS4Windows.Input.Devices
         {
         }
 
-        protected unsafe void ReadInput()
+        private readonly byte[] stick_raw = { 0, 0, 0 };
+        private readonly byte[] stick_raw2 = { 0, 0, 0 };
+        private readonly short[] accel_raw = { 0, 0, 0 };
+        private readonly short[] gyro_raw = new short[9];
+        private readonly short[] gyro_out = new short[9];
+        private long previousCheckTime;
+
+        protected override void OnLoopStarting()
         {
-            byte[] stick_raw = { 0, 0, 0 };
-            byte[] stick_raw2 = { 0, 0, 0 };
-            short[] accel_raw = { 0, 0, 0 };
-            short[] gyro_raw = new short[9];
-            short[] gyro_out = new short[9];
-            //short gyroYaw = 0, gyroYaw2 = 0, gyroYaw3 = 0;
-            //short gyroPitch = 0, gyroPitch2 = 0, gyroPitch3 = 0;
-            //short gyroRoll = 0, gyroRoll2 = 0, gyroRoll3 = 0;
-            short tempShort = 0;
-            int tempAxis = 0;
+            timeoutEvent = false;
+            previousCheckTime = 0;
 
-            /*long currentTime = 0;
-            long previousTime = 0;
-            long deltaElapsed = 0;
-            double lastElapsed;
-            double tempTimeElapsed;
-            bool firstReport = true;
-            */
+            // Run continuous calibration on Gyro when starting input loop
+            sixAxis.ResetContinuousCalibration();
+            standbySw.Start();
+        }
 
-            unchecked
+        // 標準の入力レポート（0x30）以外が続いたら、切断として扱う
+        protected override FrameResult ReceiveFrame()
+        {
+            HidReadStatus res = hDevice.ReadFile(inputReportBuffer);
+            if (res == HidReadStatus.Success)
             {
-                firstActive = DateTime.UtcNow;
-                hDevice.SetNumInputBuffers(3);
-                LatencyWindow latencyWindow = new LatencyWindow();
-                long oldtime = 0;
-                string currerror = string.Empty;
-                long curtime = 0;
-                long testelapsed = 0;
-                timeoutEvent = false;
-                ds4InactiveFrame = true;
-                idleInput = true;
-                bool syncWriteReport = conType != ConnectionType.BT;
-                //bool forceWrite = false;
-
-                //int maxBatteryValue = 0;
-                int tempBattery = 0;
-                bool tempCharging = charging;
-                //uint tempStamp = 0;
-                double elapsedDeltaTime = 0.0;
-                //uint tempDelta = 0;
-                byte tempByte = 0;
-
-                long previousCheckTime = 0;
-                long deltaCheckElapsed;
-                double lastCheckElapsed;
-                double lastCheckTimeElapsed;
-
-                // Run continuous calibration on Gyro when starting input loop
-                sixAxis.ResetContinuousCalibration();
-                standbySw.Start();
-
-                while (!exitInputThread)
+                if (inputReportBuffer[0] != 0x30)
                 {
-                    oldCharging = charging;
-                    currerror = string.Empty;
-
-                    readWaitEv.Set();
-
-                    HidReadStatus res = hDevice.ReadFile(inputReportBuffer);
-                    if (res == HidReadStatus.Success)
+                    readWaitEv.Reset();
+                    inputReportErrorCount++;
+                    if (inputReportErrorCount > 10)
                     {
-                        if (inputReportBuffer[0] != 0x30)
-                        {
-                            //Console.WriteLine("Got unexpected input report id 0x{0:X2}. Try again",
-                            //    inputReportBuffer[0]);
-
-                            readWaitEv.Reset();
-                            inputReportErrorCount++;
-                            if (inputReportErrorCount > 10)
-                            {
-                                exitInputThread = true;
-                                isDisconnecting = true;
-                                Removal?.Invoke(this, EventArgs.Empty);
-                            }
-
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        readWaitEv.Reset();
                         exitInputThread = true;
                         isDisconnecting = true;
                         Removal?.Invoke(this, EventArgs.Empty);
-                        continue;
                     }
 
-                    readWaitEv.Wait();
-                    readWaitEv.Reset();
-
-                    inputReportErrorCount = 0;
-                    curtime = Stopwatch.GetTimestamp();
-                    testelapsed = curtime - oldtime;
-                    lastTimeElapsedDouble = testelapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
-                    lastTimeElapsed = (long)lastTimeElapsedDouble;
-                    elapsedDeltaTime = lastTimeElapsedDouble * .001;
-                    combLatency = elapsedDeltaTime;
-
-                    // Obtain stats for current poll time
-                    deltaCheckElapsed = curtime - previousCheckTime;
-                    lastCheckElapsed = deltaCheckElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
-                    lastCheckTimeElapsed = lastCheckElapsed * 0.001;
-                    previousCheckTime = curtime;
-
-                    // Check if most recent poll exceeded a certain duration. Avoids false poll state?
-                    if (lastCheckTimeElapsed <= 0.005)
-                    {
-                        continue;
-                    }
-
-                    oldtime = curtime;
-
-                    Latency = latencyWindow.Add(this.lastTimeElapsed);
-
-                    utcNow = DateTime.UtcNow; // timestamp with UTC in case system time zone changes
-                    cState.PacketCounter = pState.PacketCounter + 1;
-                    // DS4 Frame Counter range is [0-127]
-                    cState.FrameCounter = (byte)(cState.PacketCounter % 128);
-                    cState.ReportTimeStamp = utcNow;
-
-                    cState.elapsedTime = elapsedDeltaTime;
-                    cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedDeltaTime * 1000000);
-                    combLatency = 0.0;
-
-                    if ((this.featureSet & VidPidFeatureSet.NoBatteryReading) == 0)
-                    {
-                        tempByte = inputReportBuffer[2];
-                        // Strip out LSB from high nibble. Used as Charging flag and will be checked later
-                        tempBattery = ((tempByte & 0xE0) >> 4) * 100 / 8;
-                        tempBattery = Math.Min(tempBattery, 100);
-                        UpdateBattery(tempBattery);
-
-                        cState.Battery = (byte)tempBattery;
-
-                        tempCharging = (tempByte & 0x10) != 0;
-                        UpdateCharging(tempCharging);
-                    }
-                    else
-                    {
-                        battery = 99;
-                        cState.Battery = 99;
-                    }
-
-                    reportParser.Parse(inputReportBuffer, cState);
-
-                    stick_raw[0] = inputReportBuffer[6];
-                    stick_raw[1] = inputReportBuffer[7];
-                    stick_raw[2] = inputReportBuffer[8];
-
-                    tempAxis = (stick_raw[0] | ((stick_raw[1] & 0x0F) << 8)) - leftStickOffsetX;
-                    tempAxis = tempAxis > leftStickXData.max ? leftStickXData.max : (tempAxis < leftStickXData.min ? leftStickXData.min : tempAxis);
-                    cState.LX = (byte)((tempAxis - leftStickXData.min) / (double)(leftStickXData.max - leftStickXData.min) * 255);
-
-                    tempAxis = ((stick_raw[1] >> 4) | (stick_raw[2] << 4)) - leftStickOffsetY;
-                    tempAxis = tempAxis > leftStickYData.max ? leftStickYData.max : (tempAxis < leftStickYData.min ? leftStickYData.min : tempAxis);
-                    cState.LY = (byte)((((tempAxis - leftStickYData.min) / (double)(leftStickYData.max - leftStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
-
-                    stick_raw2[0] = inputReportBuffer[9];
-                    stick_raw2[1] = inputReportBuffer[10];
-                    stick_raw2[2] = inputReportBuffer[11];
-
-                    tempAxis = (stick_raw2[0] | ((stick_raw2[1] & 0x0F) << 8)) - rightStickOffsetX;
-                    tempAxis = tempAxis > rightStickXData.max ? rightStickXData.max : (tempAxis < rightStickXData.min ? rightStickXData.min : tempAxis);
-                    cState.RX = (byte)((tempAxis - rightStickXData.min) / (double)(rightStickXData.max - rightStickXData.min) * 255);
-
-                    tempAxis = ((stick_raw2[1] >> 4) | (stick_raw2[2] << 4)) - rightStickOffsetY;
-                    tempAxis = tempAxis > rightStickYData.max ? rightStickYData.max : (tempAxis < rightStickYData.min ? rightStickYData.min : tempAxis);
-                    //cState.RY = (byte)((tempAxis - STICK_MIN) / (STICK_MAX - STICK_MIN) * 255);
-                    cState.RY = (byte)((((tempAxis - rightStickYData.min) / (double)(rightStickYData.max - rightStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
-
-                    for (int i = 0; i < 3; i++)
-                    {
-                        int data_offset = i * 12;
-                        int gyro_offset = i * 3;
-                        accel_raw[IMU_XAXIS_IDX] = (short)((ushort)(inputReportBuffer[16 + data_offset] << 8) | inputReportBuffer[15 + data_offset]);
-                        accel_raw[IMU_YAXIS_IDX] = (short)((ushort)(inputReportBuffer[14 + data_offset] << 8) | inputReportBuffer[13 + data_offset]);
-                        accel_raw[IMU_ZAXIS_IDX] = (short)((ushort)(inputReportBuffer[18 + data_offset] << 8) | inputReportBuffer[17 + data_offset]);
-
-                        tempShort = gyro_raw[IMU_YAW_IDX + gyro_offset] = (short)((ushort)(inputReportBuffer[24 + data_offset] << 8) | inputReportBuffer[23 + data_offset]);
-                        //gyro_out[IMU_YAW_IDX + gyro_offset] = (short)(tempShort - device.gyroBias[IMU_YAW_IDX]);
-                        gyro_out[IMU_YAW_IDX + gyro_offset] = (short)(tempShort);
-
-                        tempShort = gyro_raw[IMU_PITCH_IDX + gyro_offset] = (short)((ushort)(inputReportBuffer[22 + data_offset] << 8) | inputReportBuffer[21 + data_offset]);
-                        //gyro_out[IMU_PITCH_IDX + gyro_offset] = (short)(tempShort - device.gyroBias[IMU_PITCH_IDX]);
-                        gyro_out[IMU_PITCH_IDX + gyro_offset] = (short)(tempShort);
-
-                        tempShort = gyro_raw[IMU_ROLL_IDX + gyro_offset] = (short)((ushort)(inputReportBuffer[20 + data_offset] << 8) | inputReportBuffer[19 + data_offset]);
-                        //gyro_out[IMU_ROLL_IDX + gyro_offset] = (short)(tempShort - device.gyroBias[IMU_ROLL_IDX]);
-                        gyro_out[IMU_ROLL_IDX + gyro_offset] = (short)(tempShort);
-
-                        //Console.WriteLine($"IDX: ({i}) Accel: X({accel_raw[IMU_XAXIS_IDX]}) Y({accel_raw[IMU_YAXIS_IDX]}) Z({accel_raw[IMU_ZAXIS_IDX]})");
-                        //Console.WriteLine($"IDX: ({i}) Gyro: Yaw({gyro_raw[IMU_YAW_IDX + gyro_offset]}) Pitch({gyro_raw[IMU_PITCH_IDX + gyro_offset]}) Roll({gyro_raw[IMU_ROLL_IDX + gyro_offset]})");
-                        //Console.WriteLine($"IDX: ({i}) Gyro OUT: Yaw({gyro_out[IMU_YAW_IDX + gyro_offset]}) Pitch({gyro_out[IMU_PITCH_IDX + gyro_offset]}) Roll({gyro_out[IMU_ROLL_IDX + gyro_offset]})");
-                        //Console.WriteLine();
-                    }
-
-                    // For Accel, just use most recent sampled values
-                    int accelX = accel_raw[IMU_XAXIS_IDX];
-                    int accelY = accel_raw[IMU_YAXIS_IDX];
-                    int accelZ = accel_raw[IMU_ZAXIS_IDX];
-
-                    // Just use most recent sample for now
-                    int gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - gyroBias[IMU_YAW_IDX] + gyroCalibOffsets[IMU_YAW_IDX]));
-                    int gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - gyroBias[IMU_PITCH_IDX] - gyroCalibOffsets[IMU_PITCH_IDX]);
-                    int gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - gyroBias[IMU_ROLL_IDX] - gyroCalibOffsets[IMU_ROLL_IDX]);
-                    //cState.Motion.populate(gyroYaw, gyroPitch, gyroRoll, accelX, accelY, accelZ, cState.elapsedTime, pState.Motion);
-
-                    // Need to populate the SixAxis object manually to work around conversions
-                    //Console.WriteLine("GyroYaw: {0}", gyroYaw);
-                    SixAxis tempMotion = cState.Motion;
-                    sixAxis.PrepareNonDS4SixAxis(ref gyroYaw, ref gyroPitch, ref gyroRoll,
-                        ref accelX, ref accelY, ref accelZ);
-
-                    tempMotion.gyroYawFull = gyroYaw; tempMotion.gyroPitchFull = -gyroPitch; tempMotion.gyroRollFull = gyroRoll;
-                    tempMotion.accelXFull = accelX * 2; tempMotion.accelYFull = -accelZ * 2; tempMotion.accelZFull = -accelY * 2;
-
-                    tempMotion.elapsed = elapsedDeltaTime;
-                    tempMotion.previousAxis = pState.Motion;
-                    tempMotion.gyroYaw = gyroYaw / 256; tempMotion.gyroPitch = -gyroPitch / 256; tempMotion.gyroRoll = gyroRoll / 256;
-                    tempMotion.accelX = accelX / 31; tempMotion.accelY = -accelZ / 31; tempMotion.accelZ = -accelY / 31;
-                    //tempMotion.outputAccelX = tempMotion.accelX; tempMotion.outputAccelY = tempMotion.accelY; tempMotion.outputAccelZ = tempMotion.accelZ;
-                    tempMotion.outputAccelX = 0; tempMotion.outputAccelY = 0; tempMotion.outputAccelZ = 0;
-                    tempMotion.outputGyroControls = false;
-                    //Console.WriteLine(gyroRoll);
-                    tempMotion.accelXG = (accelX * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelYG = (-accelZ * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
-                    tempMotion.accelZG = (-accelY * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
-
-                    tempMotion.angVelYaw = gyroYaw * GYRO_IN_DEG_SEC_FACTOR;
-                    tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;
-                    tempMotion.angVelRoll = gyroRoll * GYRO_IN_DEG_SEC_FACTOR;
-
-                    SixAxisEventArgs args = new SixAxisEventArgs(cState.ReportTimeStamp, cState.Motion);
-                    sixAxis.FireSixAxisEvent(args);
-
-                    if (EvaluateIdleDisconnect(utcNow))
-                    {
-                        if (conType == ConnectionType.BT)
-                        {
-                            if (DisconnectBT(true))
-                            {
-                                timeoutExecuted = true;
-                                return; // all done
-                            }
-                        }
-                    }
-
-                    if (fireReport)
-                    {
-                        Report?.Invoke(this, EventArgs.Empty);
-                    }
-
-                    WriteReport();
-
-                    //forceWrite = false;
-
-                    if (!string.IsNullOrEmpty(currerror))
-                        error = currerror;
-                    else if (!string.IsNullOrEmpty(error))
-                        error = string.Empty;
-
-                    pState.Motion.copy(cState.Motion);
-                    cState.CopyTo(pState);
-
-                    RunQueuedInputEvents();
+                    return FrameResult.Skip;
                 }
             }
+            else
+            {
+                readWaitEv.Reset();
+                exitInputThread = true;
+                isDisconnecting = true;
+                Removal?.Invoke(this, EventArgs.Empty);
+                return FrameResult.Skip;
+            }
 
-            timeoutExecuted = true;
+            readWaitEv.Wait();
+            readWaitEv.Reset();
+
+            inputReportErrorCount = 0;
+            return FrameResult.Accept;
+        }
+
+        // 直前の読み取りから 5ms 以内のフレームは捨てる（捨てたフレームは、時刻を進めない）
+        protected override bool IsExpectedReport()
+        {
+            combLatency = lastTimeElapsedDouble * .001;
+
+            long deltaCheckElapsed = lastFrameTicks - previousCheckTime;
+            double lastCheckElapsed = deltaCheckElapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
+            double lastCheckTimeElapsed = lastCheckElapsed * 0.001;
+            previousCheckTime = lastFrameTicks;
+
+            if (lastCheckTimeElapsed <= 0.005)
+            {
+                lastFrameTicks = previousFrameTicks;
+                return false;
+            }
+
+            return true;
+        }
+
+        protected override void ProcessFrame()
+        {
+            unchecked
+            {
+                double elapsedDeltaTime = lastTimeElapsedDouble * .001;
+
+                // DS4 Frame Counter range is [0-127]
+                cState.FrameCounter = (byte)(cState.PacketCounter % 128);
+
+                cState.elapsedTime = elapsedDeltaTime;
+                cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedDeltaTime * 1000000);
+                combLatency = 0.0;
+
+                if ((this.featureSet & VidPidFeatureSet.NoBatteryReading) == 0)
+                {
+                    byte tempByte = inputReportBuffer[2];
+                    // Strip out LSB from high nibble. Used as Charging flag and will be checked later
+                    int tempBattery = ((tempByte & 0xE0) >> 4) * 100 / 8;
+                    tempBattery = Math.Min(tempBattery, 100);
+                    UpdateBattery(tempBattery);
+
+                    cState.Battery = (byte)tempBattery;
+
+                    bool tempCharging = (tempByte & 0x10) != 0;
+                    UpdateCharging(tempCharging);
+                }
+                else
+                {
+                    battery = 99;
+                    cState.Battery = 99;
+                }
+
+                reportParser.Parse(inputReportBuffer, cState);
+
+                int tempAxis;
+                stick_raw[0] = inputReportBuffer[6];
+                stick_raw[1] = inputReportBuffer[7];
+                stick_raw[2] = inputReportBuffer[8];
+
+                tempAxis = (stick_raw[0] | ((stick_raw[1] & 0x0F) << 8)) - leftStickOffsetX;
+                tempAxis = tempAxis > leftStickXData.max ? leftStickXData.max : (tempAxis < leftStickXData.min ? leftStickXData.min : tempAxis);
+                cState.LX = (byte)((tempAxis - leftStickXData.min) / (double)(leftStickXData.max - leftStickXData.min) * 255);
+
+                tempAxis = ((stick_raw[1] >> 4) | (stick_raw[2] << 4)) - leftStickOffsetY;
+                tempAxis = tempAxis > leftStickYData.max ? leftStickYData.max : (tempAxis < leftStickYData.min ? leftStickYData.min : tempAxis);
+                cState.LY = (byte)((((tempAxis - leftStickYData.min) / (double)(leftStickYData.max - leftStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
+
+                stick_raw2[0] = inputReportBuffer[9];
+                stick_raw2[1] = inputReportBuffer[10];
+                stick_raw2[2] = inputReportBuffer[11];
+
+                tempAxis = (stick_raw2[0] | ((stick_raw2[1] & 0x0F) << 8)) - rightStickOffsetX;
+                tempAxis = tempAxis > rightStickXData.max ? rightStickXData.max : (tempAxis < rightStickXData.min ? rightStickXData.min : tempAxis);
+                cState.RX = (byte)((tempAxis - rightStickXData.min) / (double)(rightStickXData.max - rightStickXData.min) * 255);
+
+                tempAxis = ((stick_raw2[1] >> 4) | (stick_raw2[2] << 4)) - rightStickOffsetY;
+                tempAxis = tempAxis > rightStickYData.max ? rightStickYData.max : (tempAxis < rightStickYData.min ? rightStickYData.min : tempAxis);
+                cState.RY = (byte)((((tempAxis - rightStickYData.min) / (double)(rightStickYData.max - rightStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
+
+                short tempShort;
+                for (int i = 0; i < 3; i++)
+                {
+                    int data_offset = i * 12;
+                    int gyro_offset = i * 3;
+                    accel_raw[IMU_XAXIS_IDX] = (short)((ushort)(inputReportBuffer[16 + data_offset] << 8) | inputReportBuffer[15 + data_offset]);
+                    accel_raw[IMU_YAXIS_IDX] = (short)((ushort)(inputReportBuffer[14 + data_offset] << 8) | inputReportBuffer[13 + data_offset]);
+                    accel_raw[IMU_ZAXIS_IDX] = (short)((ushort)(inputReportBuffer[18 + data_offset] << 8) | inputReportBuffer[17 + data_offset]);
+
+                    tempShort = gyro_raw[IMU_YAW_IDX + gyro_offset] = (short)((ushort)(inputReportBuffer[24 + data_offset] << 8) | inputReportBuffer[23 + data_offset]);
+                    gyro_out[IMU_YAW_IDX + gyro_offset] = (short)(tempShort);
+
+                    tempShort = gyro_raw[IMU_PITCH_IDX + gyro_offset] = (short)((ushort)(inputReportBuffer[22 + data_offset] << 8) | inputReportBuffer[21 + data_offset]);
+                    gyro_out[IMU_PITCH_IDX + gyro_offset] = (short)(tempShort);
+
+                    tempShort = gyro_raw[IMU_ROLL_IDX + gyro_offset] = (short)((ushort)(inputReportBuffer[20 + data_offset] << 8) | inputReportBuffer[19 + data_offset]);
+                    gyro_out[IMU_ROLL_IDX + gyro_offset] = (short)(tempShort);
+                }
+
+                // For Accel, just use most recent sampled values
+                int accelX = accel_raw[IMU_XAXIS_IDX];
+                int accelY = accel_raw[IMU_YAXIS_IDX];
+                int accelZ = accel_raw[IMU_ZAXIS_IDX];
+
+                // Just use most recent sample for now
+                int gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - gyroBias[IMU_YAW_IDX] + gyroCalibOffsets[IMU_YAW_IDX]));
+                int gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - gyroBias[IMU_PITCH_IDX] - gyroCalibOffsets[IMU_PITCH_IDX]);
+                int gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - gyroBias[IMU_ROLL_IDX] - gyroCalibOffsets[IMU_ROLL_IDX]);
+
+                // Need to populate the SixAxis object manually to work around conversions
+                SixAxis tempMotion = cState.Motion;
+                sixAxis.PrepareNonDS4SixAxis(ref gyroYaw, ref gyroPitch, ref gyroRoll,
+                    ref accelX, ref accelY, ref accelZ);
+
+                tempMotion.gyroYawFull = gyroYaw; tempMotion.gyroPitchFull = -gyroPitch; tempMotion.gyroRollFull = gyroRoll;
+                tempMotion.accelXFull = accelX * 2; tempMotion.accelYFull = -accelZ * 2; tempMotion.accelZFull = -accelY * 2;
+
+                tempMotion.elapsed = elapsedDeltaTime;
+                tempMotion.previousAxis = pState.Motion;
+                tempMotion.gyroYaw = gyroYaw / 256; tempMotion.gyroPitch = -gyroPitch / 256; tempMotion.gyroRoll = gyroRoll / 256;
+                tempMotion.accelX = accelX / 31; tempMotion.accelY = -accelZ / 31; tempMotion.accelZ = -accelY / 31;
+                tempMotion.outputAccelX = 0; tempMotion.outputAccelY = 0; tempMotion.outputAccelZ = 0;
+                tempMotion.outputGyroControls = false;
+                tempMotion.accelXG = (accelX * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
+                tempMotion.accelYG = (-accelZ * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
+                tempMotion.accelZG = (-accelY * 2) / DS4Windows.Core.Model.SixAxis.F_ACC_RES_PER_G;
+
+                tempMotion.angVelYaw = gyroYaw * GYRO_IN_DEG_SEC_FACTOR;
+                tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;
+                tempMotion.angVelRoll = gyroRoll * GYRO_IN_DEG_SEC_FACTOR;
+
+                SixAxisEventArgs args = new SixAxisEventArgs(cState.ReportTimeStamp, cState.Motion);
+                sixAxis.FireSixAxisEvent(args);
+            }
+        }
+
+        // この機種は BT の切断のあと、ループを抜けるだけ（切断の通知は DisconnectBT が行う）
+        protected override bool ProcessIdle()
+        {
+            if (EvaluateIdleDisconnect(utcNow) && conType == ConnectionType.BT && DisconnectBT(true))
+            {
+                timeoutExecuted = true;
+                return true; // all done
+            }
+
+            return false;
+        }
+
+        protected override void WriteOutputFrame()
+        {
+            WriteReport();
+            pState.Motion.copy(cState.Motion);
         }
 
         public void SetOperational()
