@@ -17,6 +17,6 @@ namespace DS4Windows.Input.Abstractions
         bool Handles(InputDeviceType type);
 
         /// <summary><paramref name="type"/> のデバイスを作る。<see cref="Handles"/> が true の種類だけ渡す。</summary>
-        DS4Device Create(InputDeviceType type, HidDevice hidDevice, string displayName, VidPidFeatureSet featureSet);
+        DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet);
     }
 }

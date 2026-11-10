@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Utilities;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input.Hid
 {
@@ -46,10 +47,10 @@ namespace DS4Windows.Input.Hid
                                                                                   productIds.Contains(x.Attributes.ProductId));
         }
 
-        public static IEnumerable<HidDevice> EnumerateDS4(VidPidInfo[] devInfo, DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings)
+        public static IEnumerable<IHidTransport> EnumerateDS4(VidPidInfo[] devInfo, DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings)
         {
             int iEnumeratedDevCount = 0;
-            List<HidDevice> foundDevs = new List<HidDevice>();
+            List<IHidTransport> foundDevs = new List<IHidTransport>();
             int devInfoLen = devInfo.Length;
             IEnumerable<DeviceInfo> temp = EnumerateDevices();
             for (var devEnum = temp.GetEnumerator(); devEnum.MoveNext();)

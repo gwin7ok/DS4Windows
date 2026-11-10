@@ -29,6 +29,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input.Devices
 {
@@ -208,7 +209,7 @@ namespace DS4Windows.Input.Devices
 
         public override event ReportHandler<EventArgs> Report = null;
 
-        public DualSenseDevice(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
+        public DualSenseDevice(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
         {
             synced = true;
@@ -224,7 +225,7 @@ namespace DS4Windows.Input.Devices
 
         public override void PostInit()
         {
-            HidDevice hidDevice = hDevice;
+            IHidTransport hidDevice = hDevice;
             deviceType = InputDeviceType.DualSense;
             DetermineSubType(hidDevice);
 
@@ -344,7 +345,7 @@ namespace DS4Windows.Input.Devices
             return ((major & 0xFF) << 8 | (minor & 0xFF));
         }
 
-        private void DetermineSubType(HidDevice hidDevice)
+        private void DetermineSubType(IHidTransport hidDevice)
         {
             subType = DeviceSubType.DualSense;
             if (hidDevice.Attributes.VendorId == DS4Devices.SONY_VID &&
@@ -354,7 +355,7 @@ namespace DS4Windows.Input.Devices
             }
         }
 
-        public static ConnectionType DetermineConnectionType(HidDevice hidDevice)
+        public static ConnectionType DetermineConnectionType(IHidTransport hidDevice)
         {
             ConnectionType result;
             if (hidDevice.Capabilities.InputReportByteLength == 64)
@@ -495,7 +496,7 @@ namespace DS4Windows.Input.Devices
             unchecked
             {
                 firstActive = DateTime.UtcNow;
-                NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
+                hDevice.SetNumInputBuffers(3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
                 int tempLatencyCount = 0;
                 long oldtime = 0;
@@ -551,8 +552,8 @@ namespace DS4Windows.Input.Devices
                     if (conType == ConnectionType.BT)
                     {
                         timeoutEvent = false;
-                        HidDevice.ReadStatus res = hDevice.ReadFile(inputReport);
-                        if (res == HidDevice.ReadStatus.Success)
+                        HidReadStatus res = hDevice.ReadFile(inputReport);
+                        if (res == HidReadStatus.Success)
                         {
                             uint recvCrc32 = inputReport[BT_INPUT_REPORT_CRC32_POS] |
                                 (uint)(inputReport[CRC32_POS_1] << 8) |
@@ -592,7 +593,7 @@ namespace DS4Windows.Input.Devices
                         }
                         else
                         {
-                            if (res == HidDevice.ReadStatus.WaitTimedOut)
+                            if (res == HidReadStatus.WaitTimedOut)
                             {
                                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedTimeout", Mac.ToString());
                             }
@@ -618,10 +619,10 @@ namespace DS4Windows.Input.Devices
                     }
                     else
                     {
-                        HidDevice.ReadStatus res = hDevice.ReadFile(inputReport);
-                        if (res != HidDevice.ReadStatus.Success)
+                        HidReadStatus res = hDevice.ReadFile(inputReport);
+                        if (res != HidReadStatus.Success)
                         {
-                            if (res == HidDevice.ReadStatus.WaitTimedOut)
+                            if (res == HidReadStatus.WaitTimedOut)
                             {
                                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedTimeout", Mac.ToString());
                             }

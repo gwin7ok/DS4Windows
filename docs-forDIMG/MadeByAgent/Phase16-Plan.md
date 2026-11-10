@@ -636,3 +636,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - 新テスト 3 件（`ConfigurableDeviceTests`）。`LazyControlServiceReplacementCharacterizationTests` は、コンストラクターを通さない `DualSenseDevice` に `deviceType` を設定するよう更新。
 - 残る L2 は `EnvironmentService` → HID の 3 件（16-6a で解消）。`RecordOnlyL2Count` を 12 → 3 に更新。
 - Debug ALL: 警告 0・エラー 0・Actions 3,309 件・Standalone 11 件合格。
+
+### Step 16-6a（2026-11-10。完了。L2 3→0、禁止の規則へ昇格）
+- **L2 の解消**: OS の呼び出しの `NativeMethods`、`DevicePathProbe`（`Core/Platform`。名前空間 `DS4Windows.Core.Platform`）と `Extensions`（`Core/Utilities`）を、使う層の `Core` へ `git mv`（移動のみ）し、名前空間を別のコミットで書き換えた。L2 が 0 件になったため禁止の規則へ昇格した（`LayerMap.RecordOnlyRules` は空、`RecordOnlyL2Count` と記録のみのテストを削除）。
+- **`IHidTransport`**（`Input/Abstractions`）: HID 機器との通信（開閉、読み取り、出力・特徴レポートの書き込み、シリアル、`SetNumInputBuffers`）の契約。`HidReadStatus` は `HidDevice` のネスト型から独立した列挙型にした（値は不変）。計画の `HidTransport.cs`（別の包み込み）は作らず、`HidDevice` 自身が実装する（余分な層を増やさないため）。`DS4Device`・`DS4Devices`・各機種のデバイスとカートリッジ・`DeviceRegistryHooks` は `IHidTransport` を通す。`HidDevices.EnumerateDS4` は `IEnumerable<IHidTransport>` を返す。
+- **新しい規則 L10**: `HidDevice` の具象を参照してよいのは `DS4Windows.Input.Hid` だけ（`HidTransportTests` が型の参照で検査）。
+- **テストの土台**: `FakeHidTransport`（読み取りの台本、書き込みの記録、書き込みの失敗、特徴レポート、シリアル）。容量・属性の型は internal のため、リフレクションで作る。6b〜6f の差分テストはこの偽物で動かす。
+- **未実施**: レジストリ（`DS4Devices`）が静的な `HidDevices.EnumerateDS4` を呼ぶ点は、列挙の差し替えを入れていないため「偽の HID 一覧を使うレジストリのテスト」は未実施（必要になった Step で入れる）。
+- Debug ALL: 警告 0・エラー 0・Actions 3,317 件・Standalone 11 件合格。

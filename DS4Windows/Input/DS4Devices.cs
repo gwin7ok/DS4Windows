@@ -47,7 +47,7 @@ namespace DS4Windows.Input
         private readonly HashSet<string> deviceSerials = new HashSet<string>();
         private readonly HashSet<string> DevicePaths = new HashSet<string>();
         // Keep instance of opened exclusive mode devices not in use (Charging while using BT connection)
-        private readonly List<HidDevice> DisabledDevices = new List<HidDevice>();
+        private readonly List<IHidTransport> DisabledDevices = new List<IHidTransport>();
         private readonly Stopwatch sw = new Stopwatch();
         public event RequestElevationDelegate RequestElevation;
         public PrepareInitDelegate PrepareDS4Init = null;
@@ -85,7 +85,7 @@ namespace DS4Windows.Input
         }
 
         // 種類に対応するカートリッジでデバイスを作る（対応するカートリッジがなければ null）
-        private DS4Device CreateDevice(InputDeviceType type, HidDevice hidDevice, string displayName, VidPidFeatureSet featureSet)
+        private DS4Device CreateDevice(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             for (int i = 0; i < cartridges.Length; i++)
             {
@@ -108,7 +108,7 @@ namespace DS4Windows.Input
                 detectNewControllers = value;
             }
         }
-        private bool IsRealDS4(HidDevice hDevice)
+        private bool IsRealDS4(IHidTransport hDevice)
         {
             var layerSettings = LayerSettings;
             if (layerSettings == null || !layerSettings.UseMoonlight) return !DevicePathProbe.CheckIfVirtualDevice(hDevice.DevicePath);
@@ -146,7 +146,7 @@ namespace DS4Windows.Input
         {
             lock (Devices)
             {
-                IEnumerable<HidDevice> hDevices = HidDevices.EnumerateDS4(knownDevices, LayerSettings);
+                IEnumerable<IHidTransport> hDevices = HidDevices.EnumerateDS4(knownDevices, LayerSettings);
 
                 hDevices = hDevices.Where(d =>
                 {
@@ -158,7 +158,7 @@ namespace DS4Windows.Input
                 hDevices = hDevices.Where(IsRealDS4).Select(dev => dev);
                 //hDevices = from dev in hDevices where IsRealDS4(dev) select dev;
                 // Sort Bluetooth first in case USB is also connected on the same controller.
-                hDevices = hDevices.OrderBy<HidDevice, ConnectionType>((HidDevice d) =>
+                hDevices = hDevices.OrderBy<IHidTransport, ConnectionType>((IHidTransport d) =>
                 {
                     // Need VidPidInfo instance to get CheckConnectionDelegate and
                     // check the connection type
@@ -169,7 +169,7 @@ namespace DS4Windows.Input
                     return metainfo.checkConnection(d);
                 });
 
-                List<HidDevice> tempList = hDevices.ToList();
+                List<IHidTransport> tempList = hDevices.ToList();
                 purgeHiddenExclusiveDevices();
                 tempList.AddRange(DisabledDevices);
                 int devCount = tempList.Count();
@@ -179,7 +179,7 @@ namespace DS4Windows.Input
                 for (int i = 0; i < devCount; i++)
                 //foreach (HidDevice hDevice in hDevices)
                 {
-                    HidDevice hDevice = tempList[i];
+                    IHidTransport hDevice = tempList[i];
                     VidPidInfo metainfo = knownDevices.Single(x => x.vid == hDevice.Attributes.VendorId &&
                         x.pid == hDevice.Attributes.ProductId);
 
@@ -411,12 +411,12 @@ namespace DS4Windows.Input
             int disabledDevCount = DisabledDevices.Count;
             if (disabledDevCount > 0)
             {
-                List<HidDevice> disabledDevList = new List<HidDevice>();
+                List<IHidTransport> disabledDevList = new List<IHidTransport>();
                 for (var devEnum = DisabledDevices.GetEnumerator(); devEnum.MoveNext();)
                 //for (int i = 0, arlen = disabledDevCount; i < arlen; i++)
                 {
                     //HidDevice tempDev = DisabledDevices.ElementAt(i);
-                    HidDevice tempDev = devEnum.Current;
+                    IHidTransport tempDev = devEnum.Current;
                     if (tempDev != null)
                     {
                         if (tempDev.IsOpen && tempDev.IsConnected)

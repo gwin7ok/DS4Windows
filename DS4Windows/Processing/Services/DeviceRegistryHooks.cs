@@ -5,6 +5,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Input.Hid;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Processing.Services
 {
@@ -50,7 +51,7 @@ namespace DS4Windows.Processing.Services
         }
 
         // 種類ごとの有効設定の判定は IInputDeviceModule が持つ（扱う部品がない種類は false）
-        public bool CheckForSupportedDevice(HidDevice device, VidPidInfo metaInfo)
+        public bool CheckForSupportedDevice(IHidTransport device, VidPidInfo metaInfo)
         {
             return _deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(_deviceOptions);
         }

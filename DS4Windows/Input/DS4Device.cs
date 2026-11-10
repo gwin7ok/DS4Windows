@@ -31,6 +31,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
+using DS4Windows.Input.Abstractions;
 
 
 namespace DS4Windows.Input
@@ -67,7 +68,7 @@ namespace DS4Windows.Input
         internal const int BATTERY_MAX_USB = 11;
         public const string BLANK_SERIAL = "00:00:00:00:00:00";
         public const byte SERIAL_FEATURE_ID = 18;
-        protected HidDevice hDevice;
+        protected IHidTransport hDevice;
         protected string Mac;
         protected DS4State cState = new DS4State();
         protected DS4State pState = new DS4State();
@@ -123,7 +124,7 @@ namespace DS4Windows.Input
         //public EventHandler<EventArgs> MotionEvent = null;
         public ReportHandler<EventArgs> MotionEvent = null;
 
-        public HidDevice HidDevice => hDevice;
+        public IHidTransport HidDevice => hDevice;
         public bool IsHidExclusive => HidDevice.IsExclusive;
         public bool isHidExclusive()
         {
@@ -416,7 +417,7 @@ namespace DS4Windows.Input
             set { layerSettings = value; sixAxis.LayerSettings = value; }
         }
 
-        public static ConnectionType HidConnectionType(HidDevice hidDevice)
+        public static ConnectionType HidConnectionType(IHidTransport hidDevice)
         {
             ConnectionType result = ConnectionType.USB;
             if (hidDevice.Capabilities.InputReportByteLength == 64)
@@ -524,7 +525,7 @@ namespace DS4Windows.Input
         }
 
 
-        public DS4Device(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
+        public DS4Device(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
         {
             hDevice = hidDevice;
             displayName = disName;
@@ -765,13 +766,13 @@ namespace DS4Windows.Input
                 {
                     if (btReport)
                     {
-                        if (hDevice.ReadFile(btInputReport) != HidDevice.ReadStatus.Success) return;
+                        if (hDevice.ReadFile(btInputReport) != HidReadStatus.Success) return;
                         if (btInputReport[0] != 0x11) continue;
                         battery = DecodeBatteryPercent(btInputReport[2 + 30], out _);   // inputReport[30] は btInputReport[2 + 30]
                     }
                     else
                     {
-                        if (hDevice.ReadFile(inputReport) != HidDevice.ReadStatus.Success) return;
+                        if (hDevice.ReadFile(inputReport) != HidReadStatus.Success) return;
                         battery = DecodeBatteryPercent(inputReport[30], out _);
                     }
 
@@ -981,7 +982,7 @@ namespace DS4Windows.Input
             unchecked
             {
                 firstActive = DateTime.UtcNow;
-                NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
+                hDevice.SetNumInputBuffers(3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
                 int tempLatencyCount = 0;
                 long oldtime = 0;
@@ -1039,10 +1040,10 @@ namespace DS4Windows.Input
                     //if (conType == ConnectionType.BT)
                     if (conType == ConnectionType.BT && (this.featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0)
                     {
-                        //HidDevice.ReadStatus res = hDevice.ReadFile(btInputReport);
-                        //HidDevice.ReadStatus res = hDevice.ReadAsyncWithFileStream(btInputReport, READ_STREAM_TIMEOUT);
-                        HidDevice.ReadStatus res = hDevice.ReadFile(btInputReport);
-                        if (res == HidDevice.ReadStatus.Success)
+                        //HidReadStatus res = hDevice.ReadFile(btInputReport);
+                        //HidReadStatus res = hDevice.ReadAsyncWithFileStream(btInputReport, READ_STREAM_TIMEOUT);
+                        HidReadStatus res = hDevice.ReadFile(btInputReport);
+                        if (res == HidReadStatus.Success)
                         {
                             rawReceivedTime = Stopwatch.GetTimestamp();
                             timeoutEvent = false;
@@ -1100,7 +1101,7 @@ namespace DS4Windows.Input
                         }
                         else
                         {
-                            if (res == HidDevice.ReadStatus.WaitTimedOut)
+                            if (res == HidReadStatus.WaitTimedOut)
                             {
                                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedTimeout", Mac.ToString());
                             }
@@ -1124,13 +1125,13 @@ namespace DS4Windows.Input
                     }
                     else
                     {
-                        //HidDevice.ReadStatus res = hDevice.ReadFile(inputReport);
+                        //HidReadStatus res = hDevice.ReadFile(inputReport);
                         //Array.Clear(inputReport, 0, inputReport.Length);
-                        //HidDevice.ReadStatus res = hDevice.ReadAsyncWithFileStream(inputReport, READ_STREAM_TIMEOUT);
-                        HidDevice.ReadStatus res = hDevice.ReadFile(inputReport);
-                        if (res != HidDevice.ReadStatus.Success)
+                        //HidReadStatus res = hDevice.ReadAsyncWithFileStream(inputReport, READ_STREAM_TIMEOUT);
+                        HidReadStatus res = hDevice.ReadFile(inputReport);
+                        if (res != HidReadStatus.Success)
                         {
-                            if (res == HidDevice.ReadStatus.WaitTimedOut)
+                            if (res == HidReadStatus.WaitTimedOut)
                             {
                                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedTimeout", Mac.ToString());
                             }

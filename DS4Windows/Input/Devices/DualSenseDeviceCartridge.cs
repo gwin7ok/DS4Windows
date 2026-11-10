@@ -25,7 +25,7 @@ namespace DS4Windows.Input.Devices
             return type == InputDeviceType.DualSense;
         }
 
-        public DS4Device Create(InputDeviceType type, HidDevice hidDevice, string displayName, VidPidFeatureSet featureSet)
+        public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new DualSenseDevice(hidDevice, displayName, featureSet);
         }

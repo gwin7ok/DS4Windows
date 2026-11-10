@@ -24,8 +24,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using DS4Windows.Input.Hid;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input
 {
-    public delegate bool CheckPendingDevice(HidDevice device, VidPidInfo vidPidInfo);
+    public delegate bool CheckPendingDevice(IHidTransport device, VidPidInfo vidPidInfo);
 }

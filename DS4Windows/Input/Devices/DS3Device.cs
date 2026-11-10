@@ -24,6 +24,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input.Devices
 {
@@ -39,7 +40,7 @@ namespace DS4Windows.Input.Devices
 
         public override event ReportHandler<EventArgs> Report = null;
 
-        public DS3Device(HidDevice hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
+        public DS3Device(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
         {
             synced = true;
@@ -57,7 +58,7 @@ namespace DS4Windows.Input.Devices
             warnInterval = WARN_INTERVAL_USB;
         }
 
-        public static ConnectionType DetermineConnectionType(HidDevice hidDevice)
+        public static ConnectionType DetermineConnectionType(IHidTransport hidDevice)
         {
             ConnectionType result = hidDevice.ParentPath.StartsWith("BTHPS3BUS\\") ?
                 ConnectionType.BT : ConnectionType.USB;
@@ -105,7 +106,7 @@ namespace DS4Windows.Input.Devices
             unchecked
             {
                 firstActive = DateTime.UtcNow;
-                NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
+                hDevice.SetNumInputBuffers(3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
                 int tempLatencyCount = 0;
                 long oldtime = 0;

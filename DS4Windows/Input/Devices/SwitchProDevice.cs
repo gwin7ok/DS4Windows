@@ -29,6 +29,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input.Devices
 {
@@ -233,7 +234,7 @@ namespace DS4Windows.Input.Devices
 
         #pragma warning restore CS0067
 
-        public SwitchProDevice(HidDevice hidDevice,
+        public SwitchProDevice(IHidTransport hidDevice,
             string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
         {
@@ -289,7 +290,7 @@ namespace DS4Windows.Input.Devices
             rumbleReportBuffer = new byte[RUMBLE_REPORT_LEN];
         }
 
-        public static ConnectionType DetermineConnectionType(HidDevice hDevice)
+        public static ConnectionType DetermineConnectionType(IHidTransport hDevice)
         {
             ConnectionType result;
             if (hDevice.DevicePath.ToUpper().Contains(BLUETOOTH_HID_GUID))
@@ -362,7 +363,7 @@ namespace DS4Windows.Input.Devices
             unchecked
             {
                 firstActive = DateTime.UtcNow;
-                NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
+                hDevice.SetNumInputBuffers(3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
                 int tempLatencyCount = 0;
                 long oldtime = 0;
@@ -400,8 +401,8 @@ namespace DS4Windows.Input.Devices
 
                     readWaitEv.Set();
 
-                    HidDevice.ReadStatus res = hDevice.ReadFile(inputReportBuffer);
-                    if (res == HidDevice.ReadStatus.Success)
+                    HidReadStatus res = hDevice.ReadFile(inputReportBuffer);
+                    if (res == HidReadStatus.Success)
                     {
                         if (inputReportBuffer[0] != 0x30)
                         {
@@ -719,7 +720,7 @@ namespace DS4Windows.Input.Devices
             //byte[] tmpReport = new byte[INPUT_REPORT_LEN];
             //byte[] command2 = new byte[SUBCOMMAND_BUFFER_LEN];
             //bool result;
-            //HidDevice.ReadStatus res;
+            //HidReadStatus res;
 
             // Set device to normal power state
             byte[] powerChoiceArray = new byte[] { 0x00 };
@@ -833,7 +834,7 @@ namespace DS4Windows.Input.Devices
         public void SetInitRumble()
         {
             bool result;
-            //HidDevice.ReadStatus res;
+            //HidReadStatus res;
             //byte[] tmpReport = new byte[64];
             byte[] rumble_data = new byte[8];
             rumble_data[0] = 0x0;
@@ -881,10 +882,10 @@ namespace DS4Windows.Input.Devices
                 if (result && checkResponse)
                 {
                     tmpReport = new byte[INPUT_REPORT_LEN];
-                    HidDevice.ReadStatus res;
+                    HidReadStatus res;
                     res = hDevice.ReadFile(tmpReport, SUBCOMMAND_RESPONSE_TIMEOUT);
                     int tries = 1;
-                    while (res == HidDevice.ReadStatus.Success &&
+                    while (res == HidReadStatus.Success &&
                         tmpReport[0] != 0x21 && tmpReport[14] != subcommand && tries < 100)
                     {
                         //Console.WriteLine("TRY AGAIN: {0}", tmpReport[0]);

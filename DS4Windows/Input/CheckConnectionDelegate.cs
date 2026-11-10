@@ -25,8 +25,9 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Model;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input
 {
-    public delegate ConnectionType CheckConnectionDelegate(HidDevice hidDevice);
+    public delegate ConnectionType CheckConnectionDelegate(IHidTransport hidDevice);
 }

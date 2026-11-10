@@ -30,6 +30,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input.Devices
 {
@@ -292,7 +293,7 @@ namespace DS4Windows.Input.Devices
         #pragma warning disable CS0067 // events declared for compatibility but may be unused
         #pragma warning restore CS0067
 
-        public JoyConDevice(HidDevice hidDevice,
+        public JoyConDevice(IHidTransport hidDevice,
             string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
         {
@@ -395,7 +396,7 @@ namespace DS4Windows.Input.Devices
             SetupOptionsEvents();
         }
 
-        public static string ReadUSBSerial(HidDevice hDevice)
+        public static string ReadUSBSerial(IHidTransport hDevice)
         {
             string serial = DS4Device.BLANK_SERIAL;
             byte[] data = new byte[64];
@@ -405,7 +406,7 @@ namespace DS4Windows.Input.Devices
             //Thread.Sleep(1000);
 
             byte[] cmdBuffer = new byte[64];
-            HidDevice.ReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
+            HidReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
             while (!(cmdBuffer[0] == 0x81 && cmdBuffer[1] == 0x01))
             {
                 if (cmdBuffer[0] != 0x81)
@@ -457,7 +458,7 @@ namespace DS4Windows.Input.Devices
             //Thread.Sleep(1000);
 
             byte[] cmdBuffer = new byte[64];
-            HidDevice.ReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
+            HidReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
             while (!(cmdBuffer[0] == 0x81 && cmdBuffer[1] == 0x01 && cmdBuffer[3] != 0x00))
             {
                 if (cmdBuffer[0] != 0x81)
@@ -548,7 +549,7 @@ namespace DS4Windows.Input.Devices
             //return;
 
             byte[] cmdBuffer = new byte[64];
-            HidDevice.ReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
+            HidReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
             while (!(cmdBuffer[0] == 0x81 && cmdBuffer[1] == 0x03))
             {
                 result = hDevice.WriteOutputReportViaInterrupt(data, 0);
@@ -565,7 +566,7 @@ namespace DS4Windows.Input.Devices
         private void WaitForReportResponse(byte reportId, byte command, byte[] commandBuf, bool repeatPacket = true)
         {
             byte[] cmdBuffer = new byte[64];
-            HidDevice.ReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
+            HidReadStatus res = hDevice.ReadFile(cmdBuffer, 100);
             while (!(cmdBuffer[0] == reportId && cmdBuffer[1] == command))
             {
                 if (repeatPacket)
@@ -581,7 +582,7 @@ namespace DS4Windows.Input.Devices
             //Trace.WriteLine($"{cmdBuffer[0]} | {cmdBuffer[1]}");
         }
 
-        public static ConnectionType DetermineConnectionType(HidDevice hDevice)
+        public static ConnectionType DetermineConnectionType(IHidTransport hDevice)
         {
             ConnectionType result = ConnectionType.BT;
             if (hDevice.Capabilities.InputReportByteLength == 64)
@@ -651,7 +652,7 @@ namespace DS4Windows.Input.Devices
             unchecked
             {
                 firstActive = DateTime.UtcNow;
-                NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle.DangerousGetHandle(), 3);
+                hDevice.SetNumInputBuffers(3);
                 Queue<long> latencyQueue = new Queue<long>(21); // Set capacity at max + 1 to avoid any resizing
                 int tempLatencyCount = 0;
                 long oldtime = 0;
@@ -689,8 +690,8 @@ namespace DS4Windows.Input.Devices
 
                     readWaitEv.Set();
 
-                    HidDevice.ReadStatus res = hDevice.ReadFile(inputReportBuffer);
-                    if (res == HidDevice.ReadStatus.Success)
+                    HidReadStatus res = hDevice.ReadFile(inputReportBuffer);
+                    if (res == HidReadStatus.Success)
                     {
                         if (inputReportBuffer[0] != 0x30)
                         {
@@ -1113,7 +1114,7 @@ namespace DS4Windows.Input.Devices
             //hDevice.fileStream.Flush();
 
             //byte[] cmdBuffer = new byte[64];
-            //HidDevice.ReadStatus res = hDevice.ReadWithFileStream(cmdBuffer, 0);
+            //HidReadStatus res = hDevice.ReadWithFileStream(cmdBuffer, 0);
             //while (cmdBuffer[0] != 0x81)
             //{
             //    res = hDevice.ReadWithFileStream(cmdBuffer, 0);
@@ -1137,7 +1138,7 @@ namespace DS4Windows.Input.Devices
             //hDevice.fileStream.Flush();
 
             //byte[] tmpBuffer = new byte[64];
-            //HidDevice.ReadStatus res = hDevice.ReadWithFileStream(tmpBuffer);
+            //HidReadStatus res = hDevice.ReadWithFileStream(tmpBuffer);
             //while (tmpBuffer[0] != 0x81)
             //{
             //    res = hDevice.ReadWithFileStream(tmpBuffer);
@@ -1222,7 +1223,7 @@ namespace DS4Windows.Input.Devices
         public void SetInitRumble()
         {
             bool result;
-            //HidDevice.ReadStatus res;
+            //HidReadStatus res;
             //byte[] tmpReport = new byte[64];
             byte[] rumble_data = new byte[8];
             rumble_data[0] = 0x0;
@@ -1270,10 +1271,10 @@ namespace DS4Windows.Input.Devices
                 if (result && checkResponse)
                 {
                     tmpReport = new byte[inputReportLen];
-                    HidDevice.ReadStatus res;
+                    HidReadStatus res;
                     res = hDevice.ReadFile(tmpReport, SUBCOMMAND_RESPONSE_TIMEOUT);
                     int tries = 1;
-                    while (res == HidDevice.ReadStatus.Success &&
+                    while (res == HidReadStatus.Success &&
                         tmpReport[0] != 0x21 && tmpReport[14] != subcommand && tries < 100)
                     {
                         //Console.WriteLine("TRY AGAIN: {0}", tmpReport[0]);

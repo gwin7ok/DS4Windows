@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("public unsafe ReadStatus ReadFile(Span<byte> inputBuffer")]
+        [InlineData("public unsafe HidReadStatus ReadFile(Span<byte> inputBuffer")]
         [InlineData("public unsafe bool WriteOutputReportViaInterrupt(")]
         public void TheWaitForAPendingIo_IsInsideTheFixedBlock(string signature)
         {
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("public unsafe ReadStatus ReadFile(Span<byte> inputBuffer")]
+        [InlineData("public unsafe HidReadStatus ReadFile(Span<byte> inputBuffer")]
         [InlineData("public unsafe bool WriteOutputReportViaInterrupt(")]
         public void WhenTheWaitFails_TheIoIsCancelledAndAwaited_BeforeTheBuffersAreReleased(string signature)
         {

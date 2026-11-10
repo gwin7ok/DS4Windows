@@ -7,21 +7,12 @@ using System.Threading;
 using Microsoft.Win32.SafeHandles;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
+using DS4Windows.Input.Abstractions;
 
 namespace DS4Windows.Input.Hid
 {
-    public class HidDevice : IDisposable
+    public class HidDevice : IHidTransport
     {
-        public enum ReadStatus
-        {
-            Success = 0,
-            WaitTimedOut = 1,
-            WaitFail = 2,
-            NoDataRead = 3,
-            ReadError = 4,
-            NotConnected = 5
-        }
-
         #region Win32 Native Constants & P/Invoke (WPF tmpビルド及びOmniSharpキャッシュ喪失耐性用)
         private const uint GENERIC_READ = 0x80000000;
         private const uint GENERIC_WRITE = 0x40000000;
@@ -162,6 +153,11 @@ namespace DS4Windows.Input.Hid
             CloseDevice();
         }
 
+        public void SetNumInputBuffers(int count)
+        {
+            NativeMethods.HidD_SetNumInputBuffers(SafeReadHandle.DangerousGetHandle(), count);
+        }
+
         public void CancelIO()
         {
             if (IsOpen)
@@ -221,7 +217,7 @@ namespace DS4Windows.Input.Hid
         // K7b-1: 非同期 I/O が完了するまで、バッファ（fixed）・NativeOverlapped（スタック）・イベントを有効に保つ。
         // 以前は fixed が ReadFile の呼び出しの直後に終わり、保留中の読み取りの間にバッファが固定されていなかった（GC が配列を移動すると、
         // カーネルが古い位置へ書き込み、ヒープを壊す）。また、待ちが失敗・タイムアウトした場合は、I/O が保留のまま ov とイベントが破棄された。
-        public unsafe ReadStatus ReadFile(Span<byte> inputBuffer, uint timeout = uint.MaxValue)
+        public unsafe HidReadStatus ReadFile(Span<byte> inputBuffer, uint timeout = uint.MaxValue)
         {
             SafeReadHandle ??= OpenHandle(_devicePath, true, false);
 
@@ -232,17 +228,17 @@ namespace DS4Windows.Input.Hid
             fixed (byte* pBuffer = inputBuffer)
             {
                 if (ReadFile(SafeReadHandle, pBuffer, (uint)inputBuffer.Length, null, &ov))
-                    return ReadStatus.Success;
+                    return HidReadStatus.Success;
 
-                if (Marshal.GetLastWin32Error() != ERROR_IO_PENDING) return ReadStatus.ReadError;
+                if (Marshal.GetLastWin32Error() != ERROR_IO_PENDING) return HidReadStatus.ReadError;
 
                 if (GetOverlappedResultEx(SafeReadHandle, ov, out _, timeout, true))
-                    return ReadStatus.Success;
+                    return HidReadStatus.Success;
 
                 // 待ちが失敗・タイムアウトした。I/O が保留のままなら、取り消して、完了するまで待つ（バッファ・ov・イベントを有効に保つため）
                 CancelIoEx(SafeReadHandle, &ov);
                 GetOverlappedResult(SafeReadHandle, ov, out _, true);
-                return ReadStatus.ReadError;
+                return HidReadStatus.ReadError;
             }
         }
 
