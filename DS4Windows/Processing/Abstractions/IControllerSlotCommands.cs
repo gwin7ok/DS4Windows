@@ -1,3 +1,5 @@
+using DS4Windows.Core.Model;
+
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
@@ -20,7 +22,7 @@ namespace DS4Windows.Processing.Abstractions
         bool SetLightRumble(int slot, byte strength);
 
         /// <summary>
-        /// 機器が DualSense のとき、振動のエミュレーション方式（<c>DualSenseDevice.RumbleEmulationMode</c> の値）と
+        /// 機器が DualSense のとき、振動のエミュレーション方式（<c>RumbleEmulationMode</c> の値）と
         /// ハプティクスの強さを機器へ反映して true を返す。DualSense でなければ何もせず false を返す。
         /// </summary>
         bool ApplyDualSenseRumbleOptions(int slot, int rumbleEmulationMode, byte hapticPowerLevel);

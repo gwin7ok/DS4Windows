@@ -130,13 +130,6 @@ namespace DS4Windows.Input.Devices
             }
         }
 
-        public enum RumbleEmulationMode
-        {
-            Accurate,
-            Legacy,
-            Disabled,
-            Passthru,
-        }
    
         public enum HapticPowerLevelFriendlyName : ushort
         {

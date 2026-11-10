@@ -2,6 +2,7 @@ using System;
 using DS4Windows.Input;
 using DS4Windows.Input.Devices;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing.Services
 {
@@ -50,17 +51,17 @@ namespace DS4Windows.Processing.Services
         {
             if (!(DeviceAt(slot) is DualSenseDevice dualsense)) return false;
 
-            switch ((DualSenseDevice.RumbleEmulationMode)rumbleEmulationMode)
+            switch ((RumbleEmulationMode)rumbleEmulationMode)
             {
-                case DualSenseDevice.RumbleEmulationMode.Disabled:
+                case RumbleEmulationMode.Disabled:
                     dualsense.UseRumble = false;
                     dualsense.UseAccurateRumble = false;
                     break;
-                case DualSenseDevice.RumbleEmulationMode.Legacy:
+                case RumbleEmulationMode.Legacy:
                     dualsense.UseRumble = true;
                     dualsense.UseAccurateRumble = false;
                     break;
-                case DualSenseDevice.RumbleEmulationMode.Accurate:
+                case RumbleEmulationMode.Accurate:
                 default:
                     dualsense.UseRumble = true;
                     dualsense.UseAccurateRumble = true;

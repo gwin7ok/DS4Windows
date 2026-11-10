@@ -2044,7 +2044,7 @@ namespace DS4Windows.Input
         }
 
         public virtual void PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId trigger,
-            DS4Windows.Core.Model.TriggerEffects effect, DS4Windows.Input.Devices.TriggerEffectSettings effectSettings)
+            DS4Windows.Core.Model.TriggerEffects effect, DS4Windows.Core.Model.TriggerEffectSettings effectSettings)
         {
         }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -69,18 +69,15 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(28, parameters.Length); // Phase13-Step5b: IDeviceSlotState／IProfileActionProvider／ISpecialActionRepository を追加（MapCustom の ControlService 引数の廃止）。 // Phase13-Step4: IManagedActionManager を追加（静的 ActionManager の廃止）。 Phase7-Step8 W3: ISyntheticDispatcher を追加。Phase8-Step4 W4: ITriggerDispatchEngine を追加。Phase9 9-A(1) (b): IStickDeadZoneProcessor を追加。(c): IOutputCurveProcessor を追加。(d): ITriggerDeadZoneProcessor を追加。9-A(2)-A: IGyroControlsProcessor を追加。9-A(2)-B: IStickInputConditioner を追加。9-A(2)-C: IFlickStickProcessor を追加。9-C: Func<IDeviceStateAccessor> を IMacroPlayback に置き換え（引数の数は同じ）。9-B: IButtonMouseMovementCalculator／IMouseMotionQuantizer／IGyroMouseStickBlender／IControlActivityReader を追加。Phase9 MapCustom の分割 M1: ISyntheticInputCommitter、M2: ITwoStageTriggerProcessor を追加
+            Assert.Equal(25, parameters.Length); // 設計の経緯は git の履歴と Phase16-Plan.md（16-1: 宣言と代入だけで読まれていなかった IProfileApplicationService／IProcessLauncher／IProfileSwitcher の 3 つを削除。28 → 25）
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
             {
                 new SyntheticInputState(), new MacroRuntimeState(), new StickMotionState(),
                 TestHost.GetService<IProfileSettingsService>(),
-                TestHost.GetService<IProfileApplicationService>(),
                 TestHost.GetService<IVirtualKBM>(),
                 TestHost.GetService<IKeyButtonControllerRegistry>(),
-                TestHost.GetService<IProcessLauncher>(),
-                TestHost.GetService<IProfileSwitcher>(),
                 TestHost.GetService<ISyntheticDispatcher>(),
                 TestHost.GetService<IMacroPlayback>(),   // Phase9 9-C: 旧 Func<IDeviceStateAccessor> の位置
                 TestHost.GetService<ITriggerDispatchEngine>(),

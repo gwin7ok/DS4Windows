@@ -339,7 +339,7 @@ namespace DS4Windows.Core.Settings
 
         // Start of DualSense specific profile options
         //
-        public DualSenseDevice.RumbleEmulationMode[] dualSenseRumbleEmulationMode = new DualSenseDevice.RumbleEmulationMode[ControllerLimits.TestProfileItemCount]
+        public RumbleEmulationMode[] dualSenseRumbleEmulationMode = new RumbleEmulationMode[ControllerLimits.TestProfileItemCount]
         {
             0,0,0,0,0,0,0,0,0
         };

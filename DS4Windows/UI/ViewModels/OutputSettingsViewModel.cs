@@ -178,21 +178,21 @@ namespace DS4Windows.UI.ViewModels
             {
                 switch (output.DualSenseRumbleEmulationMode)
                 {
-                    case DualSenseDevice.RumbleEmulationMode.Disabled: return 2;
-                    case DualSenseDevice.RumbleEmulationMode.Legacy: return 1;
-                    case DualSenseDevice.RumbleEmulationMode.Accurate: return 0;
+                    case RumbleEmulationMode.Disabled: return 2;
+                    case RumbleEmulationMode.Legacy: return 1;
+                    case RumbleEmulationMode.Accurate: return 0;
                     default: return 0;
                 }
             }
             set
             {
-                DualSenseDevice.RumbleEmulationMode temp;
+                RumbleEmulationMode temp;
                 switch (value)
                 {
-                    case 2: temp = DualSenseDevice.RumbleEmulationMode.Disabled; break;
-                    case 1: temp = DualSenseDevice.RumbleEmulationMode.Legacy; break;
-                    case 0: temp = DualSenseDevice.RumbleEmulationMode.Accurate; break;
-                    default: temp = DualSenseDevice.RumbleEmulationMode.Accurate; break;
+                    case 2: temp = RumbleEmulationMode.Disabled; break;
+                    case 1: temp = RumbleEmulationMode.Legacy; break;
+                    case 0: temp = RumbleEmulationMode.Accurate; break;
+                    default: temp = RumbleEmulationMode.Accurate; break;
                 }
                 output.DualSenseRumbleEmulationMode = temp;
             }

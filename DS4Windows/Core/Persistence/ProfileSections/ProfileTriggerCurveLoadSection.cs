@@ -21,6 +21,7 @@ using WpfScreenHelper;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
@@ -60,7 +61,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     try
                     {
                         Item = xmlDSRumbleGroupElement.SelectSingleNode("EmulationMode");
-                        DualSenseDevice.RumbleEmulationMode.TryParse(Item.InnerText, out DualSenseDevice.RumbleEmulationMode temp);
+                        RumbleEmulationMode.TryParse(Item.InnerText, out RumbleEmulationMode temp);
                         store.dualSenseRumbleEmulationMode[device] = temp;
                     }
                     catch { missingSetting = true; }

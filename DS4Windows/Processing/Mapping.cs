@@ -47,14 +47,11 @@ namespace DS4Windows.Processing
     {
         // Phase7-Step8 W2: 旧 静的な束縛（AppHost／Global のフォールバックつき）。コンストラクターで受ける（フォールバックは廃止）。
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings;
-        private readonly DS4Windows.Processing.Abstractions.IProfileApplicationService profileApplication;
         private readonly DS4Windows.Processing.Abstractions.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.DS4Controllers）
         private readonly DS4Windows.Processing.Abstractions.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
         private readonly DS4Windows.Core.Abstractions.ISpecialActionRepository _specialActionRepository;   // Phase13-Step5b: 旧 ctrl.SpecialActionRepository
         private readonly IVirtualKBM VirtualKBM;
         private readonly DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry _keyButtonControllers;
-        private readonly DS4Windows.Processing.Actions.IProcessLauncher _processLauncher;
-        private readonly DS4Windows.Processing.Actions.IProfileSwitcher _profileSwitcher;
         // Phase7-Step8 W3（Q6＝A）: 旧 静的クラス SyntheticDispatcher の呼び出し
         private readonly DS4Windows.Processing.Abstractions.ISyntheticDispatcher _syntheticDispatcher;
         // Phase9 9-C: 旧 _deviceStateAccessor（マクロの振動イベントで使う遅延の取得）は MacroStepExecutor へ移した。マクロの再生は IMacroPlayback が担う
@@ -65,7 +62,6 @@ namespace DS4Windows.Processing
         // 差し替わる GlobalState と、更新される MacroCount だけは、保持クラスを直接読み書きする。
         private readonly SyntheticInputState _syntheticInput;
         private readonly MacroRuntimeState _macroRuntime;
-        private readonly StickMotionState _stickMotion;
         private readonly ReaderWriterLockSlim syncStateLock;
         private readonly SyntheticState[] deviceState;
         // Phase9 9-C: 旧 macroControl／macroTaskQueue（MacroRuntimeState の配列の複製）は、マクロの再生の部品（MacroStepExecutor／MacroPlayback）と
@@ -107,11 +103,8 @@ namespace DS4Windows.Processing
             MacroRuntimeState macroRuntime,
             StickMotionState stickMotion,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
-            DS4Windows.Processing.Abstractions.IProfileApplicationService profileApplication,
             IVirtualKBM virtualKBM,
             DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry keyButtonControllers,
-            DS4Windows.Processing.Actions.IProcessLauncher processLauncher,
-            DS4Windows.Processing.Actions.IProfileSwitcher profileSwitcher,
             DS4Windows.Processing.Abstractions.ISyntheticDispatcher syntheticDispatcher,
             DS4Windows.Processing.Abstractions.IMacroPlayback macroPlayback,
             DS4Windows.Processing.Actions.ITriggerDispatchEngine triggerEngine,
@@ -150,13 +143,10 @@ namespace DS4Windows.Processing
 
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            if (stickMotion == null) throw new ArgumentNullException(nameof(stickMotion));
             this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            this.profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
             this.VirtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
             _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
-            _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
-            _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
             _syntheticDispatcher = syntheticDispatcher ?? throw new ArgumentNullException(nameof(syntheticDispatcher));
             _macroPlayback = macroPlayback ?? throw new ArgumentNullException(nameof(macroPlayback));
             _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));

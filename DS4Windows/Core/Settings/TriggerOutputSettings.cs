@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using Sensorit.Base;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
 {
@@ -55,8 +56,8 @@ namespace DS4Windows.Core.Settings
         }
         public event EventHandler TriggerEffectChanged;
 
-        public DS4Windows.Input.Devices.TriggerEffectSettings effectSettings = new DS4Windows.Input.Devices.TriggerEffectSettings();
-        public ref DS4Windows.Input.Devices.TriggerEffectSettings TrigEffectSettings => ref effectSettings;
+        public DS4Windows.Core.Model.TriggerEffectSettings effectSettings = new DS4Windows.Core.Model.TriggerEffectSettings();
+        public ref DS4Windows.Core.Model.TriggerEffectSettings TrigEffectSettings => ref effectSettings;
 
         public void ResetSettings()
         {

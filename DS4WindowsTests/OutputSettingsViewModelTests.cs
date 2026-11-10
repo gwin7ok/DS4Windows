@@ -83,7 +83,7 @@ namespace DS4WindowsTests
                 Assert.Equal(!inverse, service.InverseRumbleMotors[0]);
 
                 vm.DualSenseRumbleEmulationPerIndex = 1;
-                Assert.Equal(DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Legacy, service.DualSenseRumbleEmulationMode[0]);
+                Assert.Equal(DS4Windows.Core.Model.RumbleEmulationMode.Legacy, service.DualSenseRumbleEmulationMode[0]);
                 Assert.Equal(1, vm.DualSenseRumbleEmulationPerIndex);
             }
             finally

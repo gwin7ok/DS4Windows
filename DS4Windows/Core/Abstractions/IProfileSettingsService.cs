@@ -140,7 +140,7 @@ namespace DS4Windows.Core.Abstractions
         LightbarSettingInfo[] LightbarSettingsInfo { get; }
         bool[] InverseRumbleMotors { get; }
         byte[] RumbleBoost { get; }
-        DualSenseDevice.RumbleEmulationMode[] DualSenseRumbleEmulationMode { get; set; }
+        RumbleEmulationMode[] DualSenseRumbleEmulationMode { get; set; }
         bool[] UseGenericRumbleStrRescaleForDualSenses { get; set; }
         byte[] DualSenseHapticPowerLevel { get; set; }
         LightbarSettingInfo GetLightbarSettingsInfo(int deviceIndex);

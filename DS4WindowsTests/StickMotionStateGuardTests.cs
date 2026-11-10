@@ -79,7 +79,6 @@ namespace DS4WindowsTests
             Type mapping = typeof(DS4Windows.Processing.Mapping);
             foreach ((string field, Type type) in new[]
             {
-                ("_stickMotion", typeof(DS4Windows.Processing.StickMotionState)),
                 ("gyroStickX", typeof(byte[])),
                 ("mapStickActionData", typeof(DS4Windows.Processing.PostMapStickData[])),
                 ("flickMappingData", typeof(DS4Windows.Core.Settings.FlickStickMappingData[])),

@@ -48,15 +48,15 @@ namespace DS4Windows.Processing.Services
             {
                 switch (settings.DualSenseRumbleEmulationMode[ind])
                 {
-                    case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Disabled:
+                    case DS4Windows.Core.Model.RumbleEmulationMode.Disabled:
                         dualsense.UseRumble = false;
                         dualsense.UseAccurateRumble = false;
                         break;
-                    case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Legacy:
+                    case DS4Windows.Core.Model.RumbleEmulationMode.Legacy:
                         dualsense.UseRumble = true;
                         dualsense.UseAccurateRumble = false;
                         break;
-                    case DS4Windows.Input.Devices.DualSenseDevice.RumbleEmulationMode.Accurate:
+                    case DS4Windows.Core.Model.RumbleEmulationMode.Accurate:
                     default:
                         dualsense.UseRumble = true;
                         dualsense.UseAccurateRumble = true;

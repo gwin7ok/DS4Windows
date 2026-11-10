@@ -81,7 +81,7 @@ Phase16 は、次の 2 つを 1 つの Phase として行う。第 1 層・第 3
 
 #### `Mapping`（28 引数、約 1,100 行）
 
-フィールドの本体での使用回数と、メソッドごとの使用を調べた。**未使用の依存が 4 つある**: `profileApplication`、`_processLauncher`、`_profileSwitcher`、`_stickMotion` は、宣言と代入だけで、本体では読まれていない（Step 16-1 で削除すると 28 → 24）。
+フィールドの本体での使用回数と、メソッドごとの使用を調べた。**未使用の依存が 3 つある**: `profileApplication`、`_processLauncher`、`_profileSwitcher` は、宣言と代入だけで、本体では読まれていない（Step 16-1 で削除し、28 → 25。実施済み）。`_stickMotion` のフィールドも未使用だったが、引数 `stickMotion` はコンストラクターで配列の参照を取り出すために使うため、引数は残る。
 
 残る依存は、次の 4 つのまとまりに分かれる。
 
@@ -251,8 +251,8 @@ flowchart TB
 
 | 案 | 長所 | 短所 |
 |---|---|---|
-| **A. 3 つの段（曲線・デッドゾーン段、スティック／マウス変換段、切断の後始末）に分ける。28 → 約 15** | 使うメソッドが明確に分かれる。毎フレームの経路を壊しにくい | 新クラス 3 つの A/B 計測が要る |
-| B. 未使用の 4 引数の削除だけ（28 → 24） | ほぼリスクなし。16-1 で済む | 24 のまま。努力目標（C7）の 15 を超える |
+| **A. 3 つの段（曲線・デッドゾーン段、スティック／マウス変換段、切断の後始末）に分ける。28 → 25（16-1）→ 約 16** | 使うメソッドが明確に分かれる。毎フレームの経路を壊しにくい | 新クラス 3 つの A/B 計測が要る |
+| B. 未使用の 3 引数の削除だけ（28 → 25） | ほぼリスクなし。16-1 で済む | 25 のまま。努力目標（C7）の 15 を超える |
 | C. 5 つの段に分ける（上に加えて、二段トリガーと特殊アクションの段）。28 → 約 12 | 最も小さくなる | ホットパスの変更が大きく、実機確認も多い |
 
 ### C3. 手段 A の対象の 5 クラスをすべて Phase16 に入れる
@@ -355,7 +355,7 @@ C9 の判断により、次を計画に入れた。
 | Step | 目的 | 主な変更ファイル | テスト | 実機確認 |
 |---|---|---|---|---|
 | **16-0** 物差し | 基準値の記録（引数の数、L2・L7、テストの組み立ての数、Debug ALL の時間）。リフレクションの検査の追加（C7 により） | `DS4WindowsTests/ConstructorArityRuleTests.cs`、`ConstructorArityBaseline.cs`（新）、`copilot-instructions.md`（C7＝A のとき） | 新規テスト。第 1 層のバイト列 → `DS4State` の差分テストの方式の確認（既存のテストの有無、`HidDevice` を偽物にできるか。16-6a の前提） | 不要 |
-| **16-1** 無害な是正 | `Mapping` の未使用 4 引数の削除（28 → 24）。`DualSenseDevice.RumbleEmulationMode` と `TriggerEffectSettings` を `Core/Model` へ（L2 −8、L7 −1） | `Mapping.cs`、`ServiceRegistration.Processing.cs`、`Input/Devices/DualSenseDevice.cs`、`Core/Model/`、利用 19 か所ほか | 既存のテスト。保存・読み込みの黄金ファイルで、列挙型の名前が XML に出ないことを確認 | 不要（挙動不変） |
+| **16-1** 無害な是正 | `Mapping` の未使用 3 引数の削除（28 → 25）。`DualSenseDevice.RumbleEmulationMode` と `TriggerEffectSettings` を `Core/Model` へ（L2 −8、L7 −1） | `Mapping.cs`、`ServiceRegistration.Processing.cs`、`Input/Devices/DualSenseDevice.cs`、`Core/Model/`、利用 19 か所ほか | 既存のテスト。保存・読み込みの黄金ファイルで、列挙型の名前が XML に出ないことを確認 | 不要（挙動不変） |
 | **16-2** 時間の抽象化（T3） | マクロの再生・繰り返し・タップ間隔を `TimeProvider` 経由にする。`MacroPlayback`、`RepeatHelper`、`KeyButtonActionController`、`Mouse` | 同 4 クラス、`ServiceRegistration.Core.cs`（`TimeProvider.System` の登録）、テスト側に `ManualTimeProvider`（`TimeProvider` の自作の派生。新規パッケージは使わない） | 実時間で待つテストを仮想時間に置き換える（マクロ関連 10 ファイルが対象）。待ち時間の短縮を計測 | **要**: マクロ（再生、繰り返し、待ち時間の指定）、キーの長押しリピート、タッチパッドのタップ |
 | **16-3** 状態の型の移動（T5・R-17） | `DS4State`、`DS4StateExposed`、`SixAxis` と、それが依存する型を `Core/Model` へ（L7 −4）。第 3 層の第 1 層への依存を断つ | `git mv`（1 コミット）＋名前空間の書き換え（別コミット）。49 ファイル | `Phase14NamespaceFolderGuardTests`、`LayerDependencyRuleTests`。ホットパスの A/B 計測（型の定義は変えないため差が出ないことの確認） | 不要（挙動不変）。区切り A の終わりに確認 |
 | **16-4a** 出力の ViGEm 分離（T2） | ViGEm を包む `IVirtualPadBackend`（と、パッドの対象の抽象）を `Output/` に作り、第 3 層の 7 ファイルをその後ろへ。偽の実装でドライバなしにテスト。`ControlService` から `using Nefarius.ViGEm.Client` を外す（失敗の通知は `BackendFailure` イベント） | `Output/Backend/`（新）、`OutputSlotManager.cs`、`Output/Devices/*`、`VirtualPadService.cs`、`ControlService.cs` | 偽のバックエンドで、スロットの割り当て、プラグイン、アンプラグ、破棄順序のテスト。新しい規則 L9（ViGEm の型を参照してよいのは `Output` のバックエンド実装だけ） | **要**: 仮想 Xbox 360／仮想 DS4 の認識、振動の返り、ライトバーの返り、HidHide |
@@ -387,7 +387,7 @@ C9 の判断により、次を計画に入れた。
 |---|---|---|---|---|
 | **16-8** 出力のカートリッジ（T8、R-08。C10） | `OutContType` の分岐（17 ファイル）を `IOutputDeviceCartridge`（生成、振動・ライトバーの戻りの接続、表示名、保存のキー）の辞書引きへ | `VirtualPadService`、`ProfileSettingsViewModel`、`SlotDeviceEntry`、`ProfileOutputControllerLoadSection`、`ProfilePresets`、`MacroParser`、`OutputSlotManager`、`IpcCommandProcessor` ほか | 出力の種類ごとの契約テスト | **要**: 出力の種類の切り替え（Xbox 360／DS4／なし）、プリセット |
 | **16-9** アクション用ポートの束ね（手段 B。C4） | ポート 8 個を 3 つの意味のあるまとまりに束ねる。`= null` の任意引数と `ActionBindingBuilder` 内の `new SpecialActionOutputFactory(...)` を整理する。16 → 約 12、14／13 → 約 9 | `ActionBindingBuilder.cs`、`SpecialActionOutputFactory.cs`、`Default…Port` の周辺、`ServiceRegistration.Processing.cs`、テスト 20 ファイル（19＋18 か所） | `ActionBindingBuilderTests` ほかの組み立て方の更新。偽物の数の前後の比較 | 不要（挙動不変）。区切り C の終わりに確認 |
-| **16-10** `Mapping` の分割（手段 A。C2） | 曲線・デッドゾーン段、スティック／マウス変換段、切断の後始末の 3 つを外す。24 → 約 15。マクロ文字列の再生を外せれば、`Func<IMapping>` を外せるかを確認 | `Mapping.cs`、新クラス 3 つ、`ServiceRegistration.Processing.cs`、`MappingTests` | 入力 → 出力の特性化テスト（切り出しの前後で一致）。ホットパスの A/B 計測（割り当て 0、有意な悪化なし）。切断の後始末の既存テスト | **要**: ボタン・スティックの割り当て、デッドゾーン、曲線、フリックスティック、ジャイロマウス、二段トリガー、切断時の後始末（PS+↓） |
+| **16-10** `Mapping` の分割（手段 A。C2） | 曲線・デッドゾーン段、スティック／マウス変換段、切断の後始末の 3 つを外す。25 → 約 16。マクロ文字列の再生を外せれば、`Func<IMapping>` を外せるかを確認 | `Mapping.cs`、新クラス 3 つ、`ServiceRegistration.Processing.cs`、`MappingTests` | 入力 → 出力の特性化テスト（切り出しの前後で一致）。ホットパスの A/B 計測（割り当て 0、有意な悪化なし）。切断の後始末の既存テスト | **要**: ボタン・スティックの割り当て、デッドゾーン、曲線、フリックスティック、ジャイロマウス、二段トリガー、切断時の後始末（PS+↓） |
 | **16-11** 完了作業 | モデル図 01〜04、規約、ロードマップ、台帳、完了報告書の更新（§10）。Release ビルド 2 か所。**DS4 での実機確認を 1 回行う**（C9） | 文書、`CHANGELOG.md` | Debug ALL | **実機確認の 1 回（DS4 のみ。§6）** |
 
 ### 区切り間のゲート
@@ -492,7 +492,7 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 
 | 指標 | 前（2026-11-10） | 目標 |
 |---|---|---|
-| `Mapping` の引数 | 28 | 約 15（C2＝A）。16-1 の時点で 24 |
+| `Mapping` の引数 | 28 | 約 15〜16（C2＝A）。16-1 の時点で 25。15 にするには、`stickMotion` の配列の取り出しを別の入れ物へ移すことも検討 |
 | `DeviceConnector` の引数 | 18 | 約 11 |
 | `ServiceLifecycle` の引数 | 16 | 約 10 |
 | `ControlService` の引数 | 16 | 約 11 |
@@ -566,3 +566,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - `DS4Device.performDs4Input`（約 400 行）は、受信・CRC・解析・遅延計測・状態の更新・イベントの発火が 1 つのループに入っている。`NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle…)` というネイティブ呼び出し、`DateTime.UtcNow`、`Stopwatch`、専用のスレッド（`ds4Input`、`ds4Output`、`timeoutCheckThread`）を使う。
 - 差分テストの方針への所見: ループ全体を偽の transport で回す方式は、スレッド・時間・ネイティブ呼び出しの除去が前提になり、時間依存の値（遅延、タイムスタンプ）は比較から除く必要がある。解析だけを `IInputReportParser` に切り出す Step 16-6b では、切り出し前のループの出力を基準にするより、**切り出す直前に、解析の部分を同じバイト列で呼べる形（メソッドの抽出）にして、その前後を比較する**ほうが確実と見込む。16-6a の計画書で、`HidD_SetNumInputBuffers` のネイティブ呼び出しを `IHidTransport` の側へ寄せること、時間依存の値を比較から除くことを扱う。
 
+
+### Step 16-1（2026-11-10。完了）
+
+- `Mapping` の未使用 3 引数（`IProfileApplicationService`、`IProcessLauncher`、`IProfileSwitcher`）と未使用フィールド `_stickMotion` を削除（引数 28 → 25）。当初の見込み（4 引数）のうち `stickMotion` は、コンストラクターで配列の参照を取り出すため残した。
+- `RumbleEmulationMode`（`DualSenseDevice` の入れ子の型）を `Core/Model` のトップレベルの列挙型に、`TriggerEffectSettings` を `Input/Devices` から `Core/Model` へ（`git mv` と名前空間の書き換えは別コミット）。保存形式は値の名前で変わらない。
+- L2 30 → 23（−7）、L7 5 → 4（−1）。見込み（−8）との差の 1 件は `ProfileSettingsService` が `is DualSenseDevice` で機器の型を判定している参照で、16-5c（機器の狭い契約）で解消する。
+- `ConstructorArityBaseline` の `Mapping` を 25 に更新。ガードテスト 3 件（`MappingInstanceGuardTests`、`StickMotionStateGuardTests`、`NoSharedGuardTests`）を、削除した引数・フィールドに合わせて更新（`Mapping` が `StickMotionState` の配列の参照を共有する検査は残した）。
+- Debug ALL: 警告 0・エラー 0・Actions 3,269 件合格。

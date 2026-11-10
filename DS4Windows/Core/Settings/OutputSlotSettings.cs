@@ -60,7 +60,7 @@ namespace DS4Windows.Core.Settings
 
         // TODO(技術的負債): RumbleEmulationMode が DualSenseDevice（第1層）の入れ子の型のため、Core がこの型を参照する
         // （IProfileSettingsService と同じ。記録のみの規則 L2）。列挙型を Core/Model へ移せば、この参照はなくなる
-        public DualSenseDevice.RumbleEmulationMode DualSenseRumbleEmulationMode
+        public RumbleEmulationMode DualSenseRumbleEmulationMode
         {
             get => _settings.DualSenseRumbleEmulationMode[_slot];
             set => _settings.DualSenseRumbleEmulationMode[_slot] = value;

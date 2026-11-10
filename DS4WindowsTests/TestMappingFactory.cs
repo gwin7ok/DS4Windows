@@ -48,11 +48,8 @@ namespace DS4WindowsTests
                 macroState,
                 stickMotion ?? new StickMotionState(),
                 profileSettings,
-                TestHost.GetService<IProfileApplicationService>(),
                 kbm,
                 TestHost.GetService<IKeyButtonControllerRegistry>(),
-                TestHost.GetService<IProcessLauncher>(),
-                TestHost.GetService<IProfileSwitcher>(),
                 // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
                 syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
                 // Phase9 9-C: マクロの再生は、この Mapping と同じ macroState・kbm・設定を使う独立の instance にする（他のテストと状態を共有しない）

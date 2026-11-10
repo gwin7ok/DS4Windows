@@ -331,7 +331,7 @@ namespace DS4Windows.Core.Settings
         // 選択肢A: BackingStore への直接委譲（純粋な薄いパススルー）
         public RumbleSettings[] RumbleSettings => SafeConfig?.rumbleSettings;
 
-        public DualSenseDevice.RumbleEmulationMode[] DualSenseRumbleEmulationMode
+        public RumbleEmulationMode[] DualSenseRumbleEmulationMode
         {
             get => SafeConfig?.dualSenseRumbleEmulationMode;
             set

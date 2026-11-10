@@ -12,7 +12,7 @@
         {
             "DS4Windows.Processing.Actions.ActionBindingBuilder|16",
             "DS4Windows.Processing.ControlService|16",
-            "DS4Windows.Processing.Mapping|28",
+            "DS4Windows.Processing.Mapping|25",
             "DS4Windows.Processing.Services.DeviceConnector|18",
             "DS4Windows.Processing.Services.ServiceLifecycle|16",
             "DS4Windows.UI.MainWindow|21",

@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using Sensorit.Base;
 using DS4Windows.Input.Devices;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
 {
@@ -38,7 +39,7 @@ namespace DS4Windows.Core.Settings
         private int rumbleAutostopTime = DEFAULT_AUTOSTOP_TIME;
         private byte rumbleLight = DEFAULT_RUMBLE_LIGHT;
         private byte rumbleHeavy = DEFAULT_RUMBLE_HEAVY;
-        private DualSenseDevice.RumbleEmulationMode emulationMode = DualSenseDevice.RumbleEmulationMode.Accurate;
+        private RumbleEmulationMode emulationMode = RumbleEmulationMode.Accurate;
         private bool enableGenericRumbleRescale = DEFAULT_ENABLE_RESCALE;
         private byte hapticPowerLevel = DEFAULT_HAPTIC_POWER;
 
@@ -102,7 +103,7 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public DualSenseDevice.RumbleEmulationMode EmulationMode
+        public RumbleEmulationMode EmulationMode
         {
             get => emulationMode;
             set
@@ -147,7 +148,7 @@ namespace DS4Windows.Core.Settings
             rumbleAutostopTime = DEFAULT_AUTOSTOP_TIME;
             rumbleLight = DEFAULT_RUMBLE_LIGHT;
             rumbleHeavy = DEFAULT_RUMBLE_HEAVY;
-            emulationMode = DualSenseDevice.RumbleEmulationMode.Accurate;
+            emulationMode = RumbleEmulationMode.Accurate;
             enableGenericRumbleRescale = DEFAULT_ENABLE_RESCALE;
             hapticPowerLevel = DEFAULT_HAPTIC_POWER;
             RaiseAllPropertiesChanged();
