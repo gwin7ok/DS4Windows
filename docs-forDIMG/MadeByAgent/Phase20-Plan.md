@@ -88,3 +88,4 @@
 - 20-4 の実機確認は未了（台帳 `Known-Issues-Ledger.md` §3 へ登録）。20-5 以降（窓以外の型）は未着手。
 - 2026-11-10 20-5 完了: `InputReportProcessor` を 15 → 13 にした（使っていなかった `IVirtualKBM` を除き、最初のレポートのログ［`IPathService`／`IProfileRepository`］を `FirstReportActionLogger` へ切り出した。ホットパスの処理順・割り当ては不変）。全テスト 3,380 件緑。
 - 2026-11-10 20-6 判断: `DeviceConnector`（13）と `DeviceDisconnectHandler`（11）は、全ての依存が本体で使われており（未使用のフィールドなし）、残る分け方は OSC の 2 つ［`IOscService`＋`UseOscSender`］を包む程度で、束ねるだけの「何でも箱」になるため、**引数は変更しない**（基準 15 以下を満たす）。`ServiceLifecycle` の未使用のフィールド `_environmentService` だけ除いた（引数の数は不変）。
+- 2026-11-10 20-7 判断: `ServiceLifecycle`（12）は全フィールドが使われている。`ControlService`（12）は、`mapping`・`inputReport` を保持するだけで使っていないが、受け取ることで `Mapping`／`InputReportProcessor` の生成（スロット状態の配列の初期化）を ControlService の生成の時点に確実に行わせる副作用の順序に関わるため、実機の起動順序を変えうる。基準 15 以下を満たしており、**引数は変更しない**。順序の依存を明示する整理（初期化を専用の部品にする）は、別の機会に扱う。
