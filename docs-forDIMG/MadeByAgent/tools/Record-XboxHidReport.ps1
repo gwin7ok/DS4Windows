@@ -6,7 +6,8 @@
 param(
     [string]$Vid = '045E',
     [string]$ProductId = '028E',
-    [string]$OutFile = (Join-Path $PSScriptRoot 'xbox-reports.txt')
+    [string]$OutFile = (Join-Path $PSScriptRoot 'xbox-reports.txt'),
+    [string]$Only = ''   # 指定すると、名前にこの文字を含む操作だけを記録する（例: -Only Guide -OutFile xbox-guide.txt）
 )
 
 Add-Type -TypeDefinition @'
@@ -60,6 +61,8 @@ public static class XHid
     {
         SafeFileHandle h; Thread t; volatile bool stop; readonly object gate = new object();
         public int ReportLength;
+        public volatile bool Ended;
+        public int EndError;
         public byte[] Latest = new byte[0];
         public readonly List<string> Seen = new List<string>();
         public Reader(string path)
@@ -76,7 +79,7 @@ public static class XHid
             var buf = new byte[Math.Max(ReportLength, 64)];
             while (!stop)
             {
-                int n; if (!ReadFile(h, buf, ReportLength, out n, IntPtr.Zero)) break;
+                int n; if (!ReadFile(h, buf, ReportLength, out n, IntPtr.Zero)) { EndError = Marshal.GetLastWin32Error(); Ended = true; break; }
                 var r = new byte[n]; Array.Copy(buf, r, n);
                 lock (gate) { Latest = r; string s = BitConverter.ToString(r); if (!Seen.Contains(s)) Seen.Add(s); }
             }
@@ -94,27 +97,30 @@ if ($paths.Count -eq 0) { Write-Host "HID デバイスが見つかりません�
 for ($i = 0; $i -lt $paths.Count; $i++) { Write-Host ("[{0}] {1}" -f $i, $paths[$i]) }
 $idx = if ($paths.Count -eq 1) { 0 } else { [int](Read-Host '記録する番号（実機の HID の子を選ぶ。仮想パッドは ROOT 配下）') }
 
-$reader = [XHid]::new($paths[$idx])
+$reader = New-Object 'XHid+Reader' -ArgumentList $paths[$idx]
 Write-Host ("入力レポート長: {0} バイト" -f $reader.ReportLength)
 
 $ops = @(
     '無操作（何も触らない）',
-    'A', 'B', 'X', 'Y', 'LB', 'RB', 'Back', 'Start', 'Guide（Xbox ボタン）', 'LS 押し込み', 'RS 押し込み',
+    'A', 'B', 'X', 'Y', 'LB', 'RB', 'Back', 'Start', 'LS 押し込み', 'RS 押し込み',
     '十字キー 上', '十字キー 右上', '十字キー 右', '十字キー 右下', '十字キー 下', '十字キー 左下', '十字キー 左', '十字キー 左上',
     'LT を半分', 'LT を最大', 'RT を半分', 'RT を最大',
     '左スティック 左いっぱい', '左スティック 右いっぱい', '左スティック 上いっぱい', '左スティック 下いっぱい',
     '右スティック 左いっぱい', '右スティック 右いっぱい', '右スティック 上いっぱい', '右スティック 下いっぱい',
     'A と B と X と Y を同時'
 )
+# Guide は通常の一覧に含めない（長押しでタスクビューが開く）。-Only Guide を指定したときだけ、短押しを記録する
+if ($Only) { $ops = @($ops + 'Guide（Xbox ボタン）を短く押す（長押し禁止）') | Where-Object { $_ -like "*$Only*" } }
 $out = New-Object System.Collections.Generic.List[string]
 $out.Add("# Xbox HID report record  $(Get-Date -Format s)  $($paths[$idx])  len=$($reader.ReportLength)")
 $baseline = $null
 foreach ($op in $ops) {
-    Read-Host ("[{0}] を行い、保持したまま Enter（その後 1.5 秒記録）" -f $op) | Out-Null
-    $reader.ClearSeen(); Start-Sleep -Milliseconds 1500
+    Read-Host ("[{0}] Enter を押した「あと」に操作を始め、3 秒間そのまま保持する" -f $op) | Out-Null
+    $reader.ClearSeen(); Start-Sleep -Milliseconds 3000
     $seen = $reader.SnapshotSeen()
     $last = [BitConverter]::ToString($reader.Latest)
-    if ($null -eq $baseline) { $baseline = $reader.Latest }
+    if ($reader.Ended) { Write-Host ("  ※読み取りが終了しました（エラー {0}）" -f $reader.EndError); $out.Add("  ※読み取り終了 エラー $($reader.EndError)") }
+    if ($null -eq $baseline) { $baseline = [byte[]](0x00,0x00,0x80,0xFF,0x7F,0x00,0x80,0xFF,0x7F,0x00,0x80,0x00,0x00,0x00,0x00) }
     $diff = @()
     for ($b = 0; $b -lt $reader.Latest.Length; $b++) { if ($reader.Latest[$b] -ne $baseline[$b]) { $diff += $b } }
     $line = "{0} | 最後: {1} | 無操作との差分バイト: [{2}] | 出現数: {3}" -f $op, $last, ($diff -join ','), $seen.Count

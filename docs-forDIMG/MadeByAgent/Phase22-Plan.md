@@ -56,4 +56,12 @@
 - 2026-11-11: 22-0 の途中。
   - **仮想パッドの区別（決定 6）の既存の判定**: `DevicePathProbe.CheckIfVirtualDevice(devicePath)`（`Core/Platform`）。HID のパスから、親を `HTREE\ROOT\0` の直前までたどり、(a) ハードウェア ID が `ROOT\HIDGAMEMAP`（reWASD）／`ROOT\VHUSB3HC`（VirtualHere）、または (b) 根の直下が `ROOT\SYSTEM*`／`ROOT\USB*` なら仮想とみなす。VID/PID ではなく親の系統で見る。ViGEm の仮想パッドは根の直下の機器なので、同じ判定で除外できる見込み（Xbox では実機で確認する）。`DS4Devices.IsRealDS4` が呼んでいる。`CheckVirtualInfo`／`CheckVirtualDelegate` は、判定の結果を運ぶ型（現状は判定本体の経路に使われていない）。
   - **デコード**: 公開資料（FreeBSD `xb360gp.c`、Linux `xpad.c`、xboxdevwiki の XID）は、有線の生のレポート（20 バイト）の形で、Windows の `xinputhid` が見せる 15 バイトの HID レポートとは別物。そのため、実機の記録から決める。記録用のスクリプト: `docs-forDIMG/MadeByAgent/tools/Record-XboxHidReport.ps1`（操作ごとに 1.5 秒のレポートを集め、無操作との差分バイトを出す）。実機の記録待ち。
+  - **デコード表（2026-11-11、実機の記録 `tools/xbox-reports.txt` より。15 バイト。バイト 0 はレポート ID＝0x00）**
+    - 軸は 16 ビットの符号なし（リトルエンディアン）。LX＝バイト 1〜2（中立 0x8000、左 0x0000、右 0xFFFF）、LY＝3〜4（中立 0x7FFF、上 0x0000、下 0xFFFF）、RX＝5〜6（中立 0x8000）、RY＝7〜8（中立 0x7FFF）。上が小さい値。
+    - **トリガーは 1 本の軸に合成**: バイト 9〜10 の 16 ビット（中立 0x8000）。LT を押すと 0xFFFF 側へ、RT を押すと 0x0000 側へ動く。LT＝max(0, z−0x8000)、RT＝max(0, 0x8000−z)（各 0〜0x7FFF → 0〜255 へ換算）。両方同時に押すと打ち消し合い、区別できない（`xinputhid` の仕様。XInput の生の値は別経路）。
+    - ボタン（16 ビット、バイト 11〜12）: バイト 11 の bit0〜7＝A(0x01)、B(0x02)、X(0x04)、Y(0x08)、LB(0x10)、RB(0x20)、Back(0x40)、Start(0x80)。バイト 12 の bit0＝LS 押し込み(0x01)、bit1＝RS 押し込み(0x02)。
+    - 十字キーは、バイト 12 の bit2〜5 のハット値 `(b12 >> 2) & 0x0F`。0＝なし、1＝上、2＝右上、3＝右、4＝右下、5＝下、6＝左下、7＝左、8＝左上。
+    - バイト 13〜14 は常に 0。**Guide は、この HID の子には出ない**（長押しはタスクビューが開く。短押しは未確認。`-Only Guide` で記録できる）。
+    - 以前の調査メモ（Xbox-Input-Research.md）の「Back＝バイト 11 の 0x02」は、この記録では B であり、Back は 0x40。メモのほうが取り違えか、機器の違いかは未確認（この機器の記録を正とする）。
+    - 接続のたびに HID のパスが変わる（`IG_01` → `IG_02`）。パスでの照合は不可。
   - **機器の特定（2026-11-11、新しい実機を接続）**: 実機は `USB\VID_045E&PID_028E\A02014100201`（`XnaComposite`、親は USB ハブ）で、HID の子は `HID\VID_045E&PID_028E&IG_01`（親 `USB\VID_045E&PID_028E&IG_01\…`）。一方、もう 1 つの `USB\VID_045E&PID_028E&REV_0110\01` は、**Razer Tartarus Pro（`VID_1532&PID_0244&MI_01`）が作る仮想の Xbox 360**で、HID の子は `VID_046D&PID_0000&IG_00`（ViGEm ではない）。Razer の機器は VID_045E の HID パスを持たない（IG_00 が VID_046D）ので、記録スクリプトの既定の絞り込み（`vid_045e&pid_028e`）で実機だけが残る。なお、このほかに親が根の直下の `SWD\SYNTHETICGAMEPADENUM`（XBOX Synthetic Gamepad Bus）がある。仮想パッドの判定は、Razer の仮想（親が USB 機器 `MI_01`）を ROOT 系で除外できないため、決定 6 の検証項目に「Razer の仮想の Xbox 360 を入力として拾うか」を加える。
