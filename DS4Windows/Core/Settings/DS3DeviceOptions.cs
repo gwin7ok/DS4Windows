@@ -33,7 +33,7 @@ namespace DS4Windows.Core.Settings
     {
         public const bool DEFAULT_ENABLE = false;
 
-        public DS3DeviceOptions() : base(DEFAULT_ENABLE)
+        public DS3DeviceOptions() : base(DEFAULT_ENABLE, "DS3SupportSettings")
         {
         }
     }

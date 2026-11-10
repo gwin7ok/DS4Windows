@@ -37,15 +37,6 @@ namespace DS4Windows.Core.Persistence
     /// </summary>
     public class AppSettingsXmlSerializer
     {
-        // 機種の系統ごとの設定の節の名前（保存形式）。読み込みの順序は表の並びのまま。DS3 の節は、この経路ではもともと読まない（DTO の経路は読む）
-        private static readonly KeyValuePair<string, InputDeviceFamily>[] DeviceSupportSections =
-        {
-            new KeyValuePair<string, InputDeviceFamily>("DS4SupportSettings", InputDeviceFamily.DS4),
-            new KeyValuePair<string, InputDeviceFamily>("DualSenseSupportSettings", InputDeviceFamily.DualSense),
-            new KeyValuePair<string, InputDeviceFamily>("SwitchProSupportSettings", InputDeviceFamily.SwitchPro),
-            new KeyValuePair<string, InputDeviceFamily>("JoyConSupportSettings", InputDeviceFamily.JoyCon),
-        };
-
         private readonly BackingStore store;
         // 偽の exe 名を保存するファイルの名前（旧: CustomExeConfigFileName。Global の同名の定数は、この値を指す別名）
         public const string CustomExeConfigFileName = "custom_exe_name.txt";
@@ -375,44 +366,22 @@ namespace DS4Windows.Core.Persistence
                     XmlNode xmlDeviceOptions = m_Xdoc.SelectSingleNode("/Profile/DeviceOptions");
                     if (xmlDeviceOptions != null)
                     {
-                        // 系統ごとの「Enabled」。節の名前は保存形式のまま
-                        foreach (KeyValuePair<string, InputDeviceFamily> section in DeviceSupportSections)
+                        // 系統ごとの設定（Enabled と機種固有の項目）。節の名前と項目は DeviceOptionsBase の定義が持つ。
+                        // 解析できない値はそのまま（既定値）にする。DS3 の節は、この経路ではもともと読まない（DTO の経路は読む）
+                        foreach (InputDeviceFamily family in store.deviceOptions.Families)
                         {
-                            XmlNode xmlSupport = xmlDeviceOptions.SelectSingleNode(section.Key);
+                            if (family == InputDeviceFamily.DS3) continue;
+                            DeviceOptionsBase options = store.deviceOptions[family];
+                            XmlNode xmlSupport = xmlDeviceOptions.SelectSingleNode(options.SectionName);
                             if (xmlSupport == null) continue;
-                            try
+                            foreach (ControllerSetting setting in options.Settings)
                             {
-                                XmlNode item = xmlSupport.SelectSingleNode("Enabled");
-                                if (bool.TryParse(item?.InnerText ?? "", out bool temp))
+                                try
                                 {
-                                    store.deviceOptions[section.Value].Enabled = temp;
+                                    setting.ParseOrKeep(xmlSupport.SelectSingleNode(setting.XmlName)?.InnerText)?.Invoke();
                                 }
+                                catch { }
                             }
-                            catch { }
-                        }
-
-                        XmlNode xmlJoyConSupport = xmlDeviceOptions.SelectSingleNode("JoyConSupportSettings");
-                        if (xmlJoyConSupport != null)
-                        {
-                            try
-                            {
-                                XmlNode item = xmlJoyConSupport.SelectSingleNode("LinkMode");
-                                if (Enum.TryParse(item?.InnerText ?? "", out JoyConDeviceOptions.LinkMode temp))
-                                {
-                                    store.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode = temp;
-                                }
-                            }
-                            catch { }
-
-                            try
-                            {
-                                XmlNode item = xmlJoyConSupport.SelectSingleNode("JoinedGyroProvider");
-                                if (Enum.TryParse(item?.InnerText ?? "", out JoyConDeviceOptions.JoinedGyroProvider temp))
-                                {
-                                    store.deviceOptions.Get<JoyConDeviceOptions>(InputDeviceFamily.JoyCon).JoinGyroProv = temp;
-                                }
-                            }
-                            catch { }
                         }
                     }
 

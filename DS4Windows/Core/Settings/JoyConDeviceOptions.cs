@@ -33,9 +33,15 @@ namespace DS4Windows.Core.Settings
     {
         public const bool DEFAULT_ENABLE = false;
 
-        public JoyConDeviceOptions() : base(DEFAULT_ENABLE)
+        public JoyConDeviceOptions() : base(DEFAULT_ENABLE, "JoyConSupportSettings")
         {
         }
+
+        protected override IReadOnlyList<ControllerSetting> ExtraSettings => new[]
+        {
+            ControllerSetting.Enum("LinkMode", this, o => o.LinkedMode, (o, v) => o.LinkedMode = v),
+            ControllerSetting.Enum("JoinedGyroProvider", this, o => o.JoinGyroProv, (o, v) => o.JoinGyroProv = v),
+        };
 
         public enum LinkMode : ushort
         {

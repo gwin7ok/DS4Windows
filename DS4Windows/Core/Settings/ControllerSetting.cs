@@ -12,15 +12,19 @@ namespace DS4Windows.Core.Settings
         private readonly Func<string> read;
         private readonly Func<string, Action> parse;
 
-        private ControllerSetting(string xmlName, Func<string> read, Func<string, Action> parse)
+        private ControllerSetting(string xmlName, bool isEnum, Func<string> read, Func<string, Action> parse)
         {
             XmlName = xmlName;
+            IsEnum = isEnum;
             this.read = read;
             this.parse = parse;
         }
 
         /// <summary>XML の要素名。</summary>
         public string XmlName { get; }
+
+        /// <summary>列挙型の項目か（アプリ設定の読み込みでは、列挙型の値が解析できないと全体の読み込みが失敗する）。</summary>
+        public bool IsEnum { get; }
 
         /// <summary>現在の値を保存用の文字列にする。</summary>
         public string Read() => read();
@@ -31,9 +35,28 @@ namespace DS4Windows.Core.Settings
         /// </summary>
         public Action Parse(string text) => parse(text);
 
+        /// <summary>
+        /// 保存された文字列を、解析できたときだけ適用する動作にする（要素がない、または解析できないときは null。現在の値を保つ）。
+        /// アプリ設定（機種の系統ごとの設定）の読み込みで使う。列挙型は、解析できないとき null を返す（呼び出し側が失敗にする）。
+        /// </summary>
+        public Action ParseOrKeep(string text)
+        {
+            if (text == null)
+            {
+                return null;
+            }
+
+            if (IsEnum)
+            {
+                return parse(text);
+            }
+
+            return bool.TryParse(text, out _) ? parse(text) : null;
+        }
+
         public static ControllerSetting Bool<TOptions>(string xmlName, TOptions options, Func<TOptions, bool> get, Action<TOptions, bool> set)
         {
-            return new ControllerSetting(xmlName,
+            return new ControllerSetting(xmlName, false,
                 () => get(options).ToString(),
                 text =>
                 {
@@ -50,7 +73,7 @@ namespace DS4Windows.Core.Settings
         public static ControllerSetting Enum<TOptions, TEnum>(string xmlName, TOptions options, Func<TOptions, TEnum> get, Action<TOptions, TEnum> set)
             where TEnum : struct, Enum
         {
-            return new ControllerSetting(xmlName,
+            return new ControllerSetting(xmlName, true,
                 () => get(options).ToString(),
                 text =>
                 {
