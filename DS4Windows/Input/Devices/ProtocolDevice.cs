@@ -12,14 +12,11 @@ namespace DS4Windows.Input.Devices
     /// 切断（接続が切れたら <c>Removal</c>）、停止を一通り持つ。機種固有のバイト列との変換は、プロトコルが受け持つ。
     /// ジャイロ、タッチパッド、アイドル切断、複数の接続方式の動作は持たない（必要な機種は <c>DS4Device</c> の派生で書く）。
     /// </summary>
-    public class ProtocolDevice : DS4Device
+    public class ProtocolDevice : InputLoopDevice
     {
         private readonly IDeviceProtocol protocol;
         private DS4HapticState previousHapticState = new DS4HapticState();
         private bool outputDirty;
-
-        // 基底の Report は仮想のイベント。派生で持ち直し、読み取りのスレッドから発火する
-        public override event ReportHandler<EventArgs> Report = null;
 
         public ProtocolDevice(IDeviceProtocol protocol, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
             : base(hidDevice, displayName, featureSet)
@@ -65,86 +62,40 @@ namespace DS4Windows.Input.Devices
             ds4Input.Start();
         }
 
-        /// <summary>読み取りのループの本体（スレッドから呼ぶ。テストでは直接呼べる）。</summary>
-        protected internal void ReadInput()
+        protected override void OnLoopStarting()
         {
-            firstActive = DateTime.UtcNow;
-            hDevice.SetNumInputBuffers(3);
-            long oldTime = 0;
-            var latencyWindow = new LatencyWindow();
             exitInputThread = false;
             timeoutExecuted = false;
-            ds4InactiveFrame = true;
-            idleInput = true;
+        }
 
-            while (!exitInputThread)
+        protected override void ProcessFrame()
+        {
+            protocol.Parser.Parse(inputReport, cState);
+
+            if (protocol.TryReadBattery(inputReport, out int percent, out bool isCharging))
             {
-                // 読み取りで待つ間は「待機中」（HaltReportingRunAction が、この間に報告を止める）
-                readWaitEv.Set();
-                HidReadStatus status = hDevice.ReadFile(inputReport);
-                readWaitEv.Wait();
-                readWaitEv.Reset();
-
-                if (status == HidReadStatus.NotConnected || status == HidReadStatus.ReadError)
+                UpdateCharging(isCharging);
+                if (percent != battery)
                 {
-                    exitInputThread = true;
-                    StopOutputUpdate();
-                    isDisconnecting = true;
-                    RunRemoval();
-                    break;
+                    UpdateBattery(percent);
+                    outputDirty = true;
                 }
 
-                if (status != HidReadStatus.Success)
-                {
-                    continue;
-                }
-
-                long now = Stopwatch.GetTimestamp();
-                lastTimeElapsedDouble = (now - oldTime) * (1.0 / Stopwatch.Frequency) * 1000.0;
-                lastTimeElapsed = (long)lastTimeElapsedDouble;
-                oldTime = now;
-                Latency = latencyWindow.Add(lastTimeElapsed);
-
-                utcNow = DateTime.UtcNow;
-                cState.PacketCounter = pState.PacketCounter + 1;
-                cState.ReportTimeStamp = utcNow;
-                protocol.Parser.Parse(inputReport, cState);
-
-                if (protocol.TryReadBattery(inputReport, out int percent, out bool isCharging))
-                {
-                    UpdateCharging(isCharging);
-                    if (percent != battery)
-                    {
-                        UpdateBattery(percent);
-                        outputDirty = true;
-                    }
-
-                    cState.Battery = (byte)battery;
-                }
-                else
-                {
-                    // 電池の値を送らない機種は、低電池の警告が出続けないよう 99% にする
-                    battery = 99;
-                    cState.Battery = 99;
-                }
-
-                double elapsedSeconds = lastTimeElapsedDouble * 0.001;
-                cState.elapsedTime = elapsedSeconds;
-                cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedSeconds * 1000000);
-                lastActive = utcNow;
-
-                if (fireReport)
-                {
-                    Report?.Invoke(this, EventArgs.Empty);
-                }
-
-                WriteOutputIfChanged();
-                cState.CopyTo(pState);
-                RunQueuedInputEvents();
+                cState.Battery = (byte)battery;
+            }
+            else
+            {
+                // 電池の値を送らない機種は、低電池の警告が出続けないよう 99% にする
+                battery = 99;
+                cState.Battery = 99;
             }
 
-            timeoutExecuted = true;
+            double elapsedSeconds = lastTimeElapsedDouble * 0.001;
+            cState.elapsedTime = elapsedSeconds;
+            cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedSeconds * 1000000);
         }
+
+        protected override void WriteOutputFrame() => WriteOutputIfChanged();
 
         private void WriteOutputIfChanged()
         {
