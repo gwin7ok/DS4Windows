@@ -49,4 +49,10 @@
 
 ## 6. 進捗
 
-- 2026-11-10: 計画書を作成。コードは未着手。
+- 2026-11-10: 計画書を作成。
+- 2026-11-10 19-0 の分類と実施（結果）:
+  - **`MainWindowFactory`（18）は廃止の対象（A. 起動時 1 回）**。`Composition/MainWindowFactory` へ移し（`git mv` のみ）、`ActivatorUtilities.CreateInstance<MainWindow>(provider, parser)` で窓をつくる形にした。引数は 18 → 1（`IServiceProvider`。組み立て専用の層だけ）。`ConstructorArityBaseline` から除いた。`MainWindowFactoryResolutionTests` が窓の全依存（起動引数を除く）がコンテナから解決できることを検査。全テスト 3,376 件緑。
+  - **`ShellViewModelFactory`（14）、`ProfileEditViewModelFactory`（10）、`ActionViewModelFactory`、`ViewModelFactory`**: 1 つの工場が多数の ViewModel を作る「多品目の工場」で、品目ごとに依存の一部と実行時の値を渡し、`[DI] …Created` のログも出す。基準（15 以下）を満たしており、置き換えると品目ごとに登録が要るため、**廃止の対象外（C）**。引数の整理は Phase20 の責務の分割で扱う。
+  - **`ProfileEditorFactory`（9）、`AssignmentWindowFactory`／`EditorWindowFactory`／`MacroRecordingWindowFactory`**: 実行時の引数つき（B）。基準を満たし、null 検査のテストが多く、効果が小さいため **今回は見送り**（引数が基準を超えた時点で再検討）。
+  - よって Phase19 は **19-1（MainWindowFactory）のみで完了**。計画書の 19-1〜19-4 の順序案は、上の分類で置き換えた。
+  - 残る確認: 実機で起動（最小化起動 `-m` を含む）と複製の名前入力欄。

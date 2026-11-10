@@ -7,7 +7,7 @@
 
 ## 1. 目的と終わりの状態
 
-- `MainWindow`（約 2,060 行の code-behind）から、まとまりのある責務を別の部品へ移し、引数を 18 → 14 にする。`MainWindowFactory` は Phase19 で解消済みの前提。
+- `MainWindow`（約 2,060 行の code-behind）から、まとまりのある責務を別の部品へ移し、引数を 18 → 14 にする。`MainWindowFactory` は Phase19 で解消済み（引数 1）。
 - `ConstructorArityBaseline` が空になる（`ConstructorArityRuleTests` が一致を検査する）。
 - 画面の見た目・操作・ログ・通知は変えない。コードは「書き直さず、移す」（メソッドの本体はそのまま。窓に触る部分は、小さなホストの契約を通す）。
 
