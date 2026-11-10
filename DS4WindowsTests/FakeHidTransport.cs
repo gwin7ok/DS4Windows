@@ -63,6 +63,9 @@ namespace DS4WindowsTests
         /// <summary>特徴レポートを読んだときに、バッファへ入れるバイト列（先頭のレポート ID は残す）。</summary>
         public byte[] FeatureData { get; set; }
 
+        /// <summary>1 回の読み取りの前に待つミリ秒。実時間で間隔を見て、近すぎるフレームを読み飛ばす機種（Switch Pro）の台本に使う。</summary>
+        public int ReadDelayMs { get; set; }
+
         public void EnqueueRead(HidReadStatus status, byte[] data = null)
         {
             lock (_lock) _reads.Enqueue((status, data));
@@ -85,6 +88,7 @@ namespace DS4WindowsTests
         public HidReadStatus ReadFile(Span<byte> inputBuffer, uint timeout = uint.MaxValue)
         {
             ReadCount++;
+            if (ReadDelayMs > 0) System.Threading.Thread.Sleep(ReadDelayMs);
             (HidReadStatus Status, byte[] Data) next;
             lock (_lock)
             {
