@@ -109,21 +109,8 @@ namespace DS4Windows.Processing.Services
             {
                 _latencyMonitor.OnReport(device, ind);
 
-                DS4State cState, tempControlState;
-                if (!device.PerformStateMerge)
-                {
-                    cState = _currentState[ind];
-                    device.getRawCurrentState(cState);
-                    tempControlState = _currentState[ind];
-                }
-                else
-                {
-                    cState = device.JointState;
-                    device.MergeStateData(cState);
-                    // Need to copy state object info for use in UDP server
-                    cState.CopyTo(_currentState[ind]);
-                    tempControlState = _currentState[ind];
-                }
+                DS4State cState = _currentState[ind];
+                device.getRawCurrentState(cState);
 
                 DS4State pState = device.getPreviousStateRef();
                 //device.getPreviousState(PreviousState[ind]);
@@ -132,65 +119,23 @@ namespace DS4Windows.Processing.Services
 
                 if (device.firstReport && device.isSynced())
                 {
-                    // Only send Log message when device is considered a primary device
-                    if (device.PrimaryDevice)
+                    // Emit missing-action logs once per profile-apply (respect suppression).
+                    // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents
+                    if (File.Exists(Path.Combine(_pathService.AppDataPath, "Profiles", $"{_profileRepository.ProfilePath[ind]}.xml")))
                     {
-                        // Emit missing-action logs once per profile-apply (respect suppression).
-                        // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents
-                        if (File.Exists(Path.Combine(_pathService.AppDataPath, "Profiles", $"{_profileRepository.ProfilePath[ind]}.xml")))
+                        try
                         {
-                            try
-                            {
-                                _profileRepository.EmitMissingActionLogsForDevice(ind, false);
-                            }
-                            catch { }
+                            _profileRepository.EmitMissingActionLogsForDevice(ind, false);
                         }
+                        catch { }
                     }
 
                     device.firstReport = false;
                 }
 
-                if (device.PrimaryDevice && _appearanceSettings.UseIconChoice == TrayIconChoice.Battery)
+                if (_appearanceSettings.UseIconChoice == TrayIconChoice.Battery)
                 {
                     _appearanceSettings.InvokeBatteryChanged(cState.Battery);
-                }
-
-                if (!device.PrimaryDevice)
-                {
-                    // Make sure a joined device is still linked
-                    int jointInd = device.JointDeviceSlotNumber;
-                    if (device.OutputMapGyro &&
-                        jointInd != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
-                    {
-                        // Output changes from Gyro data early. Seems better to ME... REE
-                        GyroOutMode imuOutMode = _profileSettings.GetGyroOutMode(device.JointDeviceSlotNumber);
-                        if (imuOutMode != GyroOutMode.None)
-                        {
-                            if (imuOutMode == GyroOutMode.Mouse)
-                            {
-                                _virtualKBM.Sync();
-                            }
-                            else if (imuOutMode == GyroOutMode.MouseJoystick)
-                            {
-                                // Add new Mapping method and add data to
-                                // parent device state
-                                DS4State tempMapState = _mappedState[jointInd];
-                                _mapping.TempMouseJoystick(jointInd, tempMapState);
-                                if (!_profileSettings.UseDInputOnlyArray[jointInd])
-                                {
-                                    _virtualPad.SendReport(jointInd, tempMapState);
-                                }
-                            }
-                        }
-                    }
-                    else if (!device.OutputMapGyro)
-                    {
-                        // Copy for use in UDP
-                        tempControlState.Motion = device.GetRawCurrentStateRef().Motion;
-                    }
-
-                    // Skip mapping routine if part of a joined device
-                    return;
                 }
 
                 if (_profileSettings.GetEnableTouchToggle(ind))
@@ -289,17 +234,6 @@ namespace DS4Windows.Processing.Services
 
                 // Update the Lightbar color
                 _lightbar.Update(device, ind);
-
-                if (device.PerformStateMerge)
-                {
-                    device.PreserveMergedStateData();
-                }
-
-                if (device.PerformStateMerge && !device.OutputMapGyro)
-                {
-                    // Copy for use in UDP
-                    tempControlState.Motion = device.GetRawCurrentStateRef().Motion;
-                }
             }
         }
     }

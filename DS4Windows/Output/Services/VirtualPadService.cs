@@ -72,29 +72,6 @@ namespace DS4Windows.Output.Services
             outputDevices[index]?.ConvertandSendReport(state, index);
         }
 
-        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, InputDeviceCore device)
-        {
-            OutputDevice shared = outputDevices[fromIndex];
-            if (shared == null)
-            {
-                return false;
-            }
-
-            EstablishOutFeedback(toIndex, contType, shared, device);
-            outputDevices[toIndex] = shared;
-            return true;
-        }
-
-        public void ReleaseSharedOutputDevice(int index)
-        {
-            OutputDevice outDev = outputDevices[index];
-            if (outDev != null)
-            {
-                outDev.RemoveFeedback(index);
-                outputDevices[index] = null;
-            }
-        }
-
         public bool IsOutputQueueRunning => outputslotMan.RunningQueue;
 
         public void StopOutputSlots(bool immediate) => outputslotMan.Stop(immediate);
@@ -300,21 +277,13 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける（結合デバイスの相手側にも付ける）
+        // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける
         private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device)
         {
             if (_profileSettings.EnableOutputDataToDS4[index])
             {
                 EstablishOutFeedback(index, contType, outDevice, device);
 
-                if (device.JointDeviceSlotNumber != -1)
-                {
-                    InputDeviceCore inputDevice = _deviceAccessor.GetController(device.JointDeviceSlotNumber);
-                    if (inputDevice != null)
-                    {
-                        EstablishOutFeedback(device.JointDeviceSlotNumber, contType, outDevice, inputDevice);
-                    }
-                }
             }
         }
 

@@ -28,10 +28,6 @@ namespace DS4WindowsTests
 
         public void SendReport(int index, DS4State state) => _inner?.SendReport(index, state);
 
-        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, InputDeviceCore device)
-            => _inner?.TryShareOutputDevice(fromIndex, toIndex, contType, device) ?? false;
-
-        public void ReleaseSharedOutputDevice(int index) => _inner?.ReleaseSharedOutputDevice(index);
 
         public bool IsOutputQueueRunning => _inner?.IsOutputQueueRunning ?? false;
 

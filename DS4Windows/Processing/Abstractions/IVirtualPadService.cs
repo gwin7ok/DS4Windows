@@ -23,15 +23,6 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>スロット <paramref name="index"/> の出力デバイスへ、入力の状態を送る（割り当てがなければ何もしない）。入力レポートごとに呼ばれる。</summary>
         void SendReport(int index, DS4State state);
 
-        /// <summary>
-        /// 結合デバイスの相手側（<paramref name="toIndex"/>）が、<paramref name="fromIndex"/> に割り当て済みの出力デバイスを共有する。
-        /// 割り当てがなければ何もせず false。あれば、戻りの処理（振動・ライトバー）を付けてから共有し、true。
-        /// </summary>
-        bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, InputDeviceCore device);
-
-        /// <summary>共有している出力デバイスから、スロット <paramref name="index"/> を外す（戻りの処理を外し、割り当てを空にする）。割り当てがなければ何もしない。</summary>
-        void ReleaseSharedOutputDevice(int index);
-
         /// <summary>出力デバイスの抜き差しのキューが動いているか（<see cref="StopOutputSlots"/> の前に空になるのを待つのに使う）。</summary>
         bool IsOutputQueueRunning { get; }
 

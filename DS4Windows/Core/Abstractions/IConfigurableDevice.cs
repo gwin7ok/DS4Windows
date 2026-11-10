@@ -26,9 +26,6 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>デバイスのイベントスレッドで実行する処理を積む。</summary>
         void queueEvent(Action act);
 
-        /// <summary>結合デバイスの主か（仮想パッドを接続するのは主だけ）。</summary>
-        bool PrimaryDevice { get; }
-
         /// <summary>ミリ秒。0 以下で自動停止を無効にする。</summary>
         int RumbleAutostopTime { get; set; }
     }

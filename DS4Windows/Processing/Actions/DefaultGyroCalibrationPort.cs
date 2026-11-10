@@ -27,11 +27,6 @@ namespace DS4Windows.Processing.Actions
             if (d == null) return;
 
             d.SixAxis.ResetContinuousCalibration();
-            if (d.JointDeviceSlotNumber != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
-            {
-                InputDeviceCore tempDev = accessor.GetController(d.JointDeviceSlotNumber);
-                tempDev?.SixAxis.ResetContinuousCalibration();
-            }
         }
     }
 }

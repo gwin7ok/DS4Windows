@@ -48,7 +48,6 @@ namespace DS4Windows.Processing.Services
 
         public bool IsRemoving => Device.IsRemoving;
 
-        public bool PrimaryDevice => Device.PrimaryDevice;
 
         public DeviceExclusiveStatus ExclusiveStatus => Device.CurrentExclusiveStatus;
 

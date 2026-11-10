@@ -38,3 +38,4 @@
 - 18-4: 文書（モデル図 01・02）と検査（`DeviceLoopStructureTests`: 基底が抽象で、全ての具象が骨組みに載ること）を更新した。
 - **未了（実機）**: DS4 の USB／BT／ドングルでの接続・切断・ライトバー・振動の確認。BT・ドングルの特性化テストは旧実装の挙動を固定したもので、実機の挙動の保証ではない。
 - 18-5（済）: 基底の名前を `DS4Device` から `InputDeviceCore` へ変更した（ユーザーが候補から選択。`git mv` でファイルを移し、別コミットで参照 約 330 件を機械的に置換。ログの文言 `[DS4Device]` は維持）。
+- 2026-11-10 **2台結合の仕組みを削除（ユーザーの承認）**: `JointDeviceSlotNumber`／`PerformStateMerge`／`JointState`／`JointPreviousState`／`PrimaryDevice`／`OutputMapGyro`／`MergeStateData`／`PreserveMergedStateData` に値を入れるコードは、Joy-Con の廃止で本体からなくなっていた（テストの初期化だけ）。読む側の分岐（`InputReportProcessor`、`DeviceConnector`、`DeviceDisconnectHandler`、`ConnectedDeviceOutputs`、`ControllerSlotCommands`、`DefaultGyroCalibrationPort`、`VirtualPadService`）と、契約・UI の `PrimaryDevice`、出力の共有（`TryShareOutputDevice`／`ReleaseSharedOutputDevice`）を削除。`DEFAULT_JOINT_SLOT_NUMBER` は `DEFAULT_SLOT_NUMBER` に改名。Joy-Con 2 などの結合が必要になったら、第2層の別の部品として設計する。全 3,376 件合格。

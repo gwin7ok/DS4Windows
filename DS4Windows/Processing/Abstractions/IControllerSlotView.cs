@@ -31,9 +31,6 @@ namespace DS4Windows.Processing.Abstractions
 
         bool IsRemoving { get; }
 
-        /// <summary>合体した機器（Joy-Con）の主側か。</summary>
-        bool PrimaryDevice { get; }
-
         DeviceExclusiveStatus ExclusiveStatus { get; }
 
         /// <summary>この機器の設定値（機種ごとの設定）。</summary>

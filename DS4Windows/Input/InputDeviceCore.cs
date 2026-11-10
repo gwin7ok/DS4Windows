@@ -470,7 +470,8 @@ namespace DS4Windows.Input
         protected GyroMouseSens gyroMouseSensSettings;
         public virtual GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
 
-        protected int deviceSlotNumber = DEFAULT_JOINT_SLOT_NUMBER;
+        public const int DEFAULT_SLOT_NUMBER = -1;
+        protected int deviceSlotNumber = DEFAULT_SLOT_NUMBER;
         public int DeviceSlotNumber
         {
             get => deviceSlotNumber;
@@ -484,48 +485,6 @@ namespace DS4Windows.Input
         protected event EventHandler DeviceSlotNumberChanged;
         protected byte deviceSlotMask = 0x00;
 
-        protected DS4State jointState = new DS4State();
-        protected DS4State jointPreviousState = new DS4State();
-        public DS4State JointState
-        {
-            get => jointState;
-            set => jointState = value;
-        }
-
-        public DS4State JointPreviousState
-        {
-            get => jointPreviousState;
-            set => jointPreviousState = value;
-        }
-
-        protected bool performStateMerge;
-        public bool PerformStateMerge
-        {
-            get => performStateMerge;
-            set => performStateMerge = value;
-        }
-
-        protected bool primaryDevice = true;
-        public bool PrimaryDevice
-        {
-            get => primaryDevice;
-            set => primaryDevice = value;
-        }
-
-        public const int DEFAULT_JOINT_SLOT_NUMBER = -1;
-        protected int jointDeviceSlotNumber = DEFAULT_JOINT_SLOT_NUMBER;
-        public virtual int JointDeviceSlotNumber
-        {
-            get => jointDeviceSlotNumber;
-            set => jointDeviceSlotNumber = value;
-        }
-
-        protected bool outputMapGyro = true;
-        public bool OutputMapGyro
-        {
-            get => outputMapGyro;
-            set => outputMapGyro = value;
-        }
 
 
         public InputDeviceCore(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
@@ -964,10 +923,6 @@ namespace DS4Windows.Input
             return pState;
         }
 
-        public virtual void PreserveMergedStateData()
-        {
-        }
-
         public bool isDS4Idle()
         {
             if (cState.Square || cState.Cross || cState.Circle || cState.Triangle)
@@ -1165,10 +1120,6 @@ namespace DS4Windows.Input
         public void PrepareAbort()
         {
             abortInputThread = true;
-        }
-
-        public virtual void MergeStateData(DS4State dState)
-        {
         }
 
         public virtual void PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId trigger,

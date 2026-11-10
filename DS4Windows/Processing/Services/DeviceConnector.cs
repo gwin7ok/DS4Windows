@@ -100,24 +100,7 @@ namespace DS4Windows.Processing.Services
 
                 _outputs.PlugVirtualPad(index, device);
 
-                if (device.PrimaryDevice && device.OutputMapGyro)
-                {
-                    _deviceConnectionSetup.AttachTouchpad(index, device, touchPads);
-                }
-                else if (device.JointDeviceSlotNumber != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
-                {
-                    int otherIdx = device.JointDeviceSlotNumber;
-                    InputDeviceCore tempDev = slots.DS4Controllers[otherIdx];
-                    if (tempDev != null)
-                    {
-                        int mappedIdx = tempDev.PrimaryDevice ? otherIdx : index;
-                        InputDeviceCore gyroDev = device.OutputMapGyro ? device : (tempDev.OutputMapGyro ? tempDev : null);
-                        if (gyroDev != null)
-                        {
-                            _deviceConnectionSetup.AttachTouchpad(mappedIdx, gyroDev, touchPads);
-                        }
-                    }
-                }
+                _deviceConnectionSetup.AttachTouchpad(index, device, touchPads);
 
                 _deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);
                 _deviceConnectionSetup.WireInitialHooks(index, device);

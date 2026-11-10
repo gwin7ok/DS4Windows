@@ -108,26 +108,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TryShareOutputDevice_SharesTheDevice_OnlyWhenTheSourceSlotHasOne()
-        {
-            var backend = new FakeVirtualPadBackend();
-            backend.Start();
-            VirtualPadService service = Create(backend: backend);
-
-            Assert.False(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
-            Assert.False(service.HasOutputDevice(1));
-
-            service.OutputDevices[0] = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
-            Assert.True(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
-            Assert.Same(service.OutputDevices[0], service.OutputDevices[1]);
-
-            service.ReleaseSharedOutputDevice(1);
-            Assert.False(service.HasOutputDevice(1));
-            Assert.True(service.HasOutputDevice(0));
-            service.ReleaseSharedOutputDevice(1);   // 空のスロットでも安全
-        }
-
-        [Fact]
         public void DescribeSlot_ReturnsTheSlotState_AsText()
         {
             VirtualPadService service = Create();

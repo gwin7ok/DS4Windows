@@ -81,10 +81,6 @@ namespace DS4Windows.Processing.Services
                     {
                         _virtualPad.UnplugOutDev(ind, device);
                     }
-                    else if (!device.PrimaryDevice)
-                    {
-                        _virtualPad.ReleaseSharedOutputDevice(ind);
-                    }
 
                     // Use Task to reset device synth state and commit it
                     Task.Run(() =>

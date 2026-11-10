@@ -78,12 +78,6 @@ namespace DS4Windows.Processing.Services
             if (device == null) return false;
 
             device.SixAxis.ResetContinuousCalibration();
-            if (device.JointDeviceSlotNumber != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
-            {
-                // 相手側が未接続（null）でも落ちない
-                DeviceAt(device.JointDeviceSlotNumber)?.SixAxis.ResetContinuousCalibration();
-            }
-
             return true;
         }
 

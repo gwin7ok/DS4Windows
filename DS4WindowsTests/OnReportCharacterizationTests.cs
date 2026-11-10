@@ -32,18 +32,13 @@ namespace DS4WindowsTests
         }
 
         /// <summary>レポート処理が読む、保護フィールドを持つテスト用デバイス（受信した 1 回分の入力［cState］を指定できる）。</summary>
-        private static TestDs4Device NewDevice(Action<DS4State> fill = null, bool primary = true, bool outputMapGyro = true)
+        private static TestDs4Device NewDevice(Action<DS4State> fill = null)
         {
             TestDs4Device d = TestDs4Device.Create();
             var cState = new DS4State();
             fill?.Invoke(cState);
             Set(d, "cState", cState);
             Set(d, "pState", new DS4State());
-            Set(d, "jointState", new DS4State());
-            Set(d, "jointPreviousState", new DS4State());
-            Set(d, "primaryDevice", primary);
-            Set(d, "outputMapGyro", outputMapGyro);
-            Set(d, "jointDeviceSlotNumber", InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER);
             d.firstReport = false;
             d.firstActive = DateTime.UtcNow;
             return d;
@@ -83,18 +78,6 @@ namespace DS4WindowsTests
             Assert.Equal(200, current.LX);
             Assert.Equal(40, current.LY);
             Assert.Equal(77, current.R2);
-        }
-
-        [Fact]
-        public void ANonPrimaryDevice_WithoutGyroOutput_CopiesTheMotion_AndSkipsTheMapping()
-        {
-            InputDeviceCore d = NewDevice(s => s.LX = 150, primary: false, outputMapGyro: false);
-            d.GetRawCurrentStateRef().Motion.accelXG = 0.25;
-
-            Invoke(d, Slot);
-
-            Assert.Equal(150, Current(Slot).LX);
-            Assert.Equal(0.25, Current(Slot).Motion.accelXG);
         }
 
         [Fact]

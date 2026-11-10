@@ -61,11 +61,6 @@ namespace DS4WindowsTests
             var cState = new DS4State { LX = 130, LY = 120 };
             Set(d, "cState", cState);
             Set(d, "pState", new DS4State());
-            Set(d, "jointState", new DS4State());
-            Set(d, "jointPreviousState", new DS4State());
-            Set(d, "primaryDevice", true);
-            Set(d, "outputMapGyro", true);
-            Set(d, "jointDeviceSlotNumber", InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER);
             d.firstReport = false;
             d.firstActive = DateTime.UtcNow;
 

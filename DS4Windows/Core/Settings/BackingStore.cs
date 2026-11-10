@@ -1471,7 +1471,7 @@ namespace DS4Windows.Core.Settings
                 {
                     //tempDev.setIdleTimeout(idleDisconnectTimeout[device]);
                     //tempDev.setBTPollRate(btPollRate[device]);
-                    if (xinputStatus && tempDev.PrimaryDevice)
+                    if (xinputStatus)
                     {
                         if (xinputPlug)
                         {

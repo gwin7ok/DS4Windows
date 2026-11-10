@@ -42,19 +42,7 @@ namespace DS4Windows.Processing.Services
         {
             if (!_profileSettings.GetDInputOnly(index) && device.isSynced())
             {
-                if (device.PrimaryDevice)
-                {
-                    _virtualPad.PluginOutDev(index, device);
-                }
-                else if (device.JointDeviceSlotNumber != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
-                {
-                    int otherIdx = device.JointDeviceSlotNumber;
-                    OutContType tempConType = _activeOutDevType[otherIdx];
-                    if (_virtualPad.TryShareOutputDevice(otherIdx, index, tempConType, device))
-                    {
-                        _activeOutDevType[index] = tempConType;
-                    }
-                }
+                _virtualPad.PluginOutDev(index, device);
             }
             else
             {
