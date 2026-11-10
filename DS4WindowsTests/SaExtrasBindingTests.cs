@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         private static AssignmentBindingBuilder NewBuilder(bool withPort = true)
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+            var factory = TestOutputFactory.Create(settings, TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), macroStringPlayer: new NoMacroStringPlayer());
             return new AssignmentBindingBuilder(factory, withPort ? new SilentPort() : null);
         }

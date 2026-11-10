@@ -20,7 +20,7 @@ namespace DS4WindowsTests
             IControlExtrasPort extrasPort = null, IKeyButtonControllerRegistry controllers = null)
         {
             if (profileActions == null) throw new System.ArgumentNullException(nameof(profileActions));
-            outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, controllers, macroPlayer, processLauncher,
+            outputFactory = outputFactory ?? TestOutputFactory.Create(profileSettings, manager, controllers, macroPlayer, processLauncher,
                 profileSwitcher, actionRepository, mapping, gyroCalibration, disconnectPort, batteryCheckPort, macroStringPlayer);
             return new ActionBindingBuilder(profileActions, profileSettings, outputFactory, controlBuilder, extrasPort);
         }

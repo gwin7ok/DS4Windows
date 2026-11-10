@@ -10,7 +10,6 @@
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.Processing.Actions.SpecialActionOutputFactory|14",
             "DS4Windows.Processing.Mapping|15",
             "DS4Windows.Processing.Services.DeviceConnector|13",
             "DS4Windows.Processing.Services.InputReportProcessor|13",

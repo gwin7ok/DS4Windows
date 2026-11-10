@@ -11,6 +11,7 @@ using DS4Windows.Input.Devices;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Actions.OutputBuilders;
 using DS4Windows.Processing.Services;
 
 namespace DS4Windows.Composition
@@ -87,6 +88,17 @@ namespace DS4Windows.Composition
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
             // Phase8-Step5 W2（Q3＝A）: 束縛のビルダー。ProfileApplicationService は Func で遅延解決する（ビルダー → IProfileSwitcher → IProfileApplicationService の循環を避ける）
             // Phase10-Step4 W2: 種別ごとの出力アクション・方針の作り方（SA タブの ActionBindingBuilder と、Controls タブの束縛を作る側［W3 以降］が共有する）
+            // 種別 1 つにつき 1 つの出力の組み立て部品（同じ種別を 2 つ登録しない）
+            services.AddSingleton<ISpecialActionOutputBuilder, ButtonOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, KeyOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, MacroOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, ProgramOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, FocusWindowOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, ProfileOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, GyroCalibrateOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, DisconnectBtOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, BatteryCheckOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, MultiActionOutputBuilder>();
             services.AddSingleton<ISpecialActionOutputFactory, SpecialActionOutputFactory>();
             services.AddSingleton<IActionBindingBuilder, ActionBindingBuilder>();
             services.AddSingleton<Func<IActionBindingBuilder>>(sp => () => sp.GetRequiredService<IActionBindingBuilder>());

@@ -77,7 +77,7 @@ namespace DS4WindowsTests
             => new ControlSpecialItem { Type = SpecialAction.ActionTypeId.Profile, ProfileName = name, AutomaticUntrigger = auto };
 
         private static SpecialActionOutputFactory NewFactory(IProfileSwitcher switcher)
-            => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+            => TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), switcher,
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>());
 

@@ -57,11 +57,11 @@ namespace DS4WindowsTests
         private static SpecialActionOutputFactory NewFactory(bool withPorts)
         {
             return withPorts
-                ? new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+                ? TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), gyroCalibration: new RecordingGyroCalibrationPort(),
                     disconnectPort: new RecordingControllerDisconnectPort(), batteryCheckPort: new RecordingBatteryCheckPort(),
                     macroStringPlayer: new NoMacroStringPlayer())
-                : new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+                : TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher());
         }
 
@@ -255,12 +255,12 @@ namespace DS4WindowsTests
 
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             IManagedActionManager manager = TestHost.GetService<IManagedActionManager>();
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionOutputFactory(null, manager, TestActions.Controllers, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionOutputFactory(settings, null, TestActions.Controllers, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionOutputFactory(settings, manager, TestActions.Controllers, null, new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionOutputFactory(settings, manager, TestActions.Controllers, new NoMacroPlayer(), null, new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionOutputFactory(settings, manager, TestActions.Controllers, new NoMacroPlayer(), new NoLauncher(), null));
-            Assert.Throws<ArgumentNullException>(() => new SpecialActionOutputFactory(settings, manager, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestOutputFactory.Create(null, manager, TestActions.Controllers, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestOutputFactory.Create(settings, null, TestActions.Controllers, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestOutputFactory.Create(settings, manager, TestActions.Controllers, null, new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestOutputFactory.Create(settings, manager, TestActions.Controllers, new NoMacroPlayer(), null, new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestOutputFactory.Create(settings, manager, TestActions.Controllers, new NoMacroPlayer(), new NoLauncher(), null));
+            Assert.Throws<ArgumentNullException>(() => TestOutputFactory.Create(settings, manager, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
         }
 
         [Fact]

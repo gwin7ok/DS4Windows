@@ -31,3 +31,4 @@
 - （2026-11-11。Phase26-5）`ActionRumbleTestController`: 出力ピッカーの「振動のテスト」で、開始・停止とボタンの文字が正しいこと。
 - （2026-11-11。Phase27-3・27-4）`ControlService` を削除し、起動時の取り付けと終了の後始末を `RuntimeBootstrapper` へ移した。実機で未確認の項目: (1) アプリの起動後、コントローラーの接続でプロファイルが適用され、再接続で直前のプロファイルが復元されること（適用プロファイルの記憶）。(2) L2/R2 の 2 段トリガーの設定を切り替えても動作が乱れないこと。(3) アプリの終了（トレイの終了、サインアウト）で、仮想パッドが消え、出力スロットの設定が保存されること。不具合があれば最初に疑う場所は `Processing/Services/RuntimeBootstrapper` と `App.xaml.cs` の起動・終了。
 - （2026-11-11。Phase28-1）`IViewModelFactory` を 3 つの窓口へ分けた。実機で未確認の項目: メイン画面の各タブ、プロファイル編集画面（割り当ての編集・特殊アクションの一覧）、割り当て編集画面（各種別）、自動プロファイル、記録の窓、出力ピッカーが従来どおり開くこと。不具合があれば最初に疑う場所は `Composition/ServiceRegistration.Ui` と `UI/Services/*ViewModelFactory`。
+- （2026-11-11。Phase28-3）`SpecialActionOutputFactory` を種別ごとの組み立て部品（`Processing/Actions/OutputBuilders`）へ分けた。実機で未確認の項目: 割り当てた特殊アクションの各種別（ボタン・キー・マクロ・プログラム起動・プロファイル切替・ジャイロ校正・BT 切断・電池残量・複数動作・ウィンドウ前面化）が、SA タブと Controls タブの両方で従来どおり動くこと。不具合があれば最初に疑う場所は `OutputBuilders` の該当の種別。
