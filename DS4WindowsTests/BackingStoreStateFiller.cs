@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             Type t = target.GetType();
             foreach (FieldInfo f in t.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (ExcludedNames.Contains(f.Name) || f.IsInitOnly || f.IsLiteral) continue;
+                if (ExcludedNames.Contains(f.Name) || (f.IsInitOnly && !f.FieldType.IsArray) || f.IsLiteral) continue;
                 try { FillMember(target, reference, f.Name, f.FieldType, () => f.GetValue(target), v => f.SetValue(target, v),
                     () => reference == null ? null : f.GetValue(reference), slot, depth); } catch { }
             }

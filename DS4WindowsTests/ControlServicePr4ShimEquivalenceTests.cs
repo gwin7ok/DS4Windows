@@ -72,21 +72,21 @@ namespace DS4WindowsTests
         {
             // 初回呼び出しの JIT・初期化の影響を除くため、ウォームアップしてから計測する。
             const int iterations = 10000;
-            GyroOutMode gyro = _profileSettings.GetGyroOutMode(0);
+            GyroOutMode gyro = _profileSettings.ForSlot(0).Gyro.OutputMode;
             ProfileSlotNames profilePath = _profileRepository.ProfilePath;
 
             // 実際のウォームアップ（コメントのとおり）: 初回呼び出しの JIT による割り当て（他のテストが先に走っていないと、1 KB 程度出る）を、計測の外へ出す。
             // Phase8-Step7 7.5a-W2 のテスト実行で、この JIT の割り当てによる偶発的な失敗が出たため、ウォームアップを足した（検査の厳しさは同じ: 0 バイト）
             for (int i = 0; i < 200; i++)
             {
-                gyro = _profileSettings.GetGyroOutMode(0);
+                gyro = _profileSettings.ForSlot(0).Gyro.OutputMode;
                 profilePath = _profileRepository.ProfilePath;
             }
 
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < iterations; i++)
             {
-                gyro = _profileSettings.GetGyroOutMode(0);
+                gyro = _profileSettings.ForSlot(0).Gyro.OutputMode;
                 profilePath = _profileRepository.ProfilePath;
             }
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;

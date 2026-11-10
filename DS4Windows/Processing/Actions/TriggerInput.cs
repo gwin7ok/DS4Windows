@@ -177,7 +177,7 @@ namespace DS4Windows.Processing.Actions
             }
             else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool gyroForControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool gyroForControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 bool safeTest = false;
 
                 switch (control)
@@ -250,7 +250,7 @@ namespace DS4Windows.Processing.Actions
             }
             else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool saControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool saControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 int gyro = fieldMap.gryodirs[controlNum];
 
                 switch (control)
@@ -321,7 +321,7 @@ namespace DS4Windows.Processing.Actions
             }
             else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool saControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool saControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 int gyro = fieldMap.gryodirs[controlNum];
 
                 switch (control)
@@ -384,7 +384,7 @@ namespace DS4Windows.Processing.Actions
             }
             else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool gyroForControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool gyroForControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 bool safeTest = false;
 
                 switch (control)

@@ -33,8 +33,8 @@ namespace DS4WindowsTests
             }
 
             string code = SourceText.StripComments(File.ReadAllText(path));
-            Assert.Contains("GetGyroMouseStickHorizontalAxis(deviceNum)", code);
-            Assert.DoesNotMatch(@"GetGyroMouseStickHorizontalAxis\(\s*0\s*\)", code);
+            Assert.Contains("ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis", code);
+            Assert.DoesNotMatch(@"ForSlot\(\s*0\s*\)\.Gyro\.MouseStickHorizontalAxis", code);
         }
 
         [Fact]

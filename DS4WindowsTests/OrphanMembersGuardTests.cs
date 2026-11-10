@@ -37,7 +37,7 @@ namespace DS4WindowsTests
 
             Assert.Null(typeof(IAppSettingsService).GetProperty("CheckWhen"));
             Assert.Null(typeof(IProfileSettingsService).GetProperty("SATriggerCond"));
-            Assert.NotNull(typeof(IProfileSettingsService).GetMethod("GetSATriggerCond"));
+            Assert.Null(typeof(IProfileSettingsService).GetMethod("GetSATriggerCond"));   // ジャイロの設定の持ち主（GyroSlotSettings）へ移した
             Assert.Null(typeof(IAutoProfileService).GetMethod("ClearState"));
             Assert.Null(typeof(IProfileRepository).GetMethod("GetProfilePath"));
             // パスの組み立ての正規の窓口と、実装クラスの内部用の GetProfilePath は残る

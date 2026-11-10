@@ -21,7 +21,7 @@ namespace DS4WindowsTests
         public void TheService_ReturnsTheStoresHolder_ForEachSlot()
         {
             foreach (int slot in new[] { 0, 3, ControllerLimits.TestProfileIndex })
-                Assert.Same(TestGlobals.Store.removedGyroSwipeSettings[slot], _profileSettings.GetRemovedGyroSwipeSettings(slot));
+                Assert.Same(TestGlobals.Store.gyroSlots[slot].RemovedSwipe, _profileSettings.ForSlot(slot).Gyro.RemovedSwipe);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
 
             string text = File.ReadAllText(editor);
             int load = text.IndexOf("profileRepository.LoadProfile(deviceNum, profile.Name);", StringComparison.Ordinal);
-            int notice = text.IndexOf("RemovedGyroSwipeNotice.Apply(profileSettingsService.GetRemovedGyroSwipeSettings(deviceNum), profile.Name, removedGyroSwipePrompt);", StringComparison.Ordinal);
+            int notice = text.IndexOf("RemovedGyroSwipeNotice.Apply(profileSettingsService.ForSlot(deviceNum).Gyro.RemovedSwipe, profile.Name, removedGyroSwipePrompt);", StringComparison.Ordinal);
             Assert.True(load >= 0, "プロファイルの読込の呼び出しが見つからない");
             Assert.True(notice > load, "警告の呼び出しが、読込の直後にない");
             Assert.True(notice - load < 800, "警告の呼び出しが、読込から離れている");

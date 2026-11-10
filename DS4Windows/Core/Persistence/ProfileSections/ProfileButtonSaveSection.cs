@@ -156,7 +156,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 NodeControl.AppendChild(Special);
 
             // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては、保持した項目を、元のグループへそのまま戻す
-            store.removedGyroSwipeSettings[device].AppendControlsTo(m_Xdoc, NodeControl);
+            store.gyroSlots[device].RemovedSwipe.AppendControlsTo(m_Xdoc, NodeControl);
 
             if (NodeControl.HasChildNodes)
                 rootElement.AppendChild(NodeControl);

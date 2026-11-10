@@ -158,7 +158,7 @@ namespace DS4Windows.Processing.Services
                 _outputCurve.ProcessTriggerCurve(r2OutCurveMode, settings.R2OutBezierCurveObj[device], ref dState.R2);
 
 
-            bool saControls = settings.GyroOutputMode[device] == GyroOutMode.Controls;
+            bool saControls = settings.ForSlot(device).Gyro.OutputMode == GyroOutMode.Controls;
             if (saControls && dState.Motion.outputGyroControls)
             {
                 int SXD = (int)(128d * settings.SXDeadzone[device]);

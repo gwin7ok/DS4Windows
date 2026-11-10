@@ -96,8 +96,8 @@ namespace DS4WindowsTests
             fields.gryodirs[(int)DS4Controls.GyroZPos] = 67;
             input.Update(new ControllerState(), null, null, null, fields);
 
-            GyroOutMode saved = settings.GyroOutputMode[Device];
-            settings.GyroOutputMode[Device] = GyroOutMode.Controls;
+            GyroOutMode saved = settings.ForSlot(Device).Gyro.OutputMode;
+            settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.Controls;
             try
             {
                 Assert.True(input.IsDigitalActive(DS4Controls.Cross));
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Device] = saved;
+                settings.ForSlot(Device).Gyro.OutputMode = saved;
             }
         }
 

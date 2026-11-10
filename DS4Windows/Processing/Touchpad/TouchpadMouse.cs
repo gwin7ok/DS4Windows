@@ -133,8 +133,8 @@ namespace DS4Windows.Processing.Touchpad
 
             filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = GyroMouseStickInfo.DEFAULT_MINCUTOFF;
             filterPair.axis1Filter.Beta = filterPair.axis2Filter.Beta = GyroMouseStickInfo.DEFAULT_BETA;
-            //Global.GyroMouseStickInf[deviceNum].SetRefreshEvents(filterPair.axis1Filter);
-            //Global.GyroMouseStickInf[deviceNum].SetRefreshEvents(filterPair.axis2Filter);
+            //Global.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis1Filter);
+            //Global.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis2Filter);
 
             touchStickFilter = new OneEuroFilterPair(1.0, 1.0);
             touchStickTrackball = new FakeTrackball();
@@ -232,7 +232,7 @@ namespace DS4Windows.Processing.Touchpad
 
         public virtual void sixaxisMoved(DS4SixAxis sender, SixAxisEventArgs arg)
         {
-            GyroOutMode outMode = _profileSettings.GetGyroOutMode(deviceNum);
+            GyroOutMode outMode = _profileSettings.ForSlot(deviceNum).Gyro.OutputMode;
             if (outMode == GyroOutMode.Controls)
             {
                 s = dev.getCurrentStateRef();
@@ -252,7 +252,7 @@ namespace DS4Windows.Processing.Touchpad
                     s.Motion.outputGyroControls = false;
                 }
             }
-            else if (outMode == GyroOutMode.Mouse && _profileSettings.GetGyroSensitivity(deviceNum) > 0)
+            else if (outMode == GyroOutMode.Mouse && _profileSettings.ForSlot(deviceNum).Gyro.Sensitivity > 0)
             {
                 s = dev.getCurrentStateRef();
 
@@ -285,23 +285,23 @@ namespace DS4Windows.Processing.Touchpad
         {
             string[] ss = [];
             var andCond = false;
-            useReverseRatchet = _profileSettings.GetGyroTriggerTurns(deviceNum);
+            useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.TriggerTurns;
             if (mode == GyroOutMode.Controls)
             {
-                GyroControlsInfo controlsMapInfo = _profileSettings.GetGyroControlsInfo(deviceNum);
+                GyroControlsInfo controlsMapInfo = _profileSettings.ForSlot(deviceNum).Gyro.Controls;
                 ss = controlsMapInfo.triggers.Split(',');
                 andCond = controlsMapInfo.triggerCond;
             }
             else if (mode == GyroOutMode.Mouse)
             {
-                ss = _profileSettings.GetSATriggers(deviceNum).Split(',');
-                andCond = _profileSettings.GetSATriggerCond(deviceNum);
+                ss = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers.Split(',');
+                andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggerCondAnd;
             }
             else if (mode == GyroOutMode.MouseJoystick)
             {
-                useReverseRatchet = _profileSettings.GetGyroMouseStickTriggerTurns(deviceNum);
-                ss = _profileSettings.GetSAMouseStickTriggers(deviceNum).Split(',');
-                andCond = _profileSettings.GetSAMouseStickTriggerCond(deviceNum);
+                useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerTurns;
+                ss = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers.Split(',');
+                andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerCondAnd;
             }
             var i = 0;
             triggeractivated = andCond;
@@ -345,7 +345,7 @@ namespace DS4Windows.Processing.Touchpad
 
         public void ReplaceOneEuroFilterPair()
         {
-            _profileSettings.GyroMouseStickInf[deviceNum].RemoveRefreshEvents();
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.RemoveRefreshEvents();
             //filterPair = new OneEuroFilterPair();
             // No longer need to make new instances. Just reset filters
             filterPair.axis1Filter.Reset();
@@ -354,10 +354,10 @@ namespace DS4Windows.Processing.Touchpad
 
         public void SetupLateOneEuroFilters()
         {
-            filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = _profileSettings.GyroMouseStickInf[deviceNum].MinCutoff;
-            filterPair.axis1Filter.Beta = filterPair.axis2Filter.Beta = _profileSettings.GyroMouseStickInf[deviceNum].Beta;
-            _profileSettings.GyroMouseStickInf[deviceNum].SetRefreshEvents(filterPair.axis1Filter);
-            _profileSettings.GyroMouseStickInf[deviceNum].SetRefreshEvents(filterPair.axis2Filter);
+            filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.MinCutoff;
+            filterPair.axis1Filter.Beta = filterPair.axis2Filter.Beta = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.Beta;
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis1Filter);
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis2Filter);
         }
 
         public void PostSetup()
@@ -375,10 +375,10 @@ namespace DS4Windows.Processing.Touchpad
                 trackballTouchStickActive = false;
             }
 
-            GyroOutMode gyroOutMode = _profileSettings.GetGyroOutMode(deviceNum);
+            GyroOutMode gyroOutMode = _profileSettings.ForSlot(deviceNum).Gyro.OutputMode;
             if (gyroOutMode == GyroOutMode.MouseJoystick)
             {
-                GyroMouseStickInfo msinfo = _profileSettings.GyroMouseStickInf[deviceNum];
+                GyroMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick;
                 msinfo.RemoveRefreshEvents();
                 msinfo.SetRefreshEvents(filterPair.axis1Filter);
                 msinfo.SetRefreshEvents(filterPair.axis2Filter);
@@ -399,10 +399,10 @@ namespace DS4Windows.Processing.Touchpad
             }
 
             ResetToggleGyroModes();
-            GyroOutMode gyroOutMode = _profileSettings.GetGyroOutMode(deviceNum);
+            GyroOutMode gyroOutMode = _profileSettings.ForSlot(deviceNum).Gyro.OutputMode;
             if (gyroOutMode == GyroOutMode.MouseJoystick)
             {
-                _profileSettings.GyroMouseStickInf[deviceNum].RemoveRefreshEvents();
+                _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.RemoveRefreshEvents();
             }
         }
 
@@ -418,7 +418,7 @@ namespace DS4Windows.Processing.Touchpad
             ySmoothBuffer[iIndex] = 0;
             smoothBufferTail = iIndex + 1;
 
-            GyroMouseStickInfo msinfo = _profileSettings.GetGyroMouseStickInfo(deviceNum);
+            GyroMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick;
             if (msinfo.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.OneEuro)
             {
                 double currentRate = 1.0 / args.sixAxis.elapsed;
@@ -432,14 +432,14 @@ namespace DS4Windows.Processing.Touchpad
             int deltaX = 0, deltaY = 0;
             // Phase7b W2（K4-1）: 旧は GetGyroMouseStickHorizontalAxis(0) の固定で、2 台目以降も 1 台目のプロファイルの水平軸で動いていた
             // （上流の元からの不具合。1 台だけのときは挙動が変わらない）。この Mouse が受け持つ台の設定を読む。
-            deltaX = _profileSettings.GetGyroMouseStickHorizontalAxis(deviceNum) == 0 ? arg.sixAxis.gyroYawFull :
+            deltaX = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis == 0 ? arg.sixAxis.gyroYawFull :
                 arg.sixAxis.gyroRollFull;
             deltaY = -arg.sixAxis.gyroPitchFull;
             //int inputX = deltaX, inputY = deltaY;
             int maxDirX = deltaX >= 0 ? 127 : -128;
             int maxDirY = deltaY >= 0 ? 127 : -128;
 
-            GyroMouseStickInfo msinfo = _profileSettings.GetGyroMouseStickInfo(deviceNum);
+            GyroMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick;
 
             double tempDouble = arg.sixAxis.elapsed * 250.0; // Base default speed on 4 ms
             double tempAngle = Math.Atan2(-deltaY, deltaX);
@@ -649,7 +649,7 @@ namespace DS4Windows.Processing.Touchpad
             int maxDirX = deltaX >= 0 ? 127 : -128;
             int maxDirY = deltaY >= 0 ? 127 : -128;
 
-            //GyroMouseStickInfo msinfo = Global.GetGyroMouseStickInfo(deviceNum);
+            //GyroMouseStickInfo msinfo = Global.ForSlot(deviceNum).Gyro.MouseStick;
             TouchMouseStickInfo msinfo = _profileSettings.TouchMouseStickInf[deviceNum];
             if (msinfo.rotationRad != TouchMouseStickInfo.ANG_RAD_DEFAULT)
             {

@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             if (_profileSettings.TouchpadActiveArray[Slot]) acc++;
             if (_profileSettings.UseDInputOnlyArray[Slot]) acc++;
             acc += (int)_profileSettings.OutputDS4TriggerMode[Slot];
-            acc += (int)_profileSettings.GetGyroOutMode(Slot);
+            acc += (int)_profileSettings.ForSlot(Slot).Gyro.OutputMode;
             acc += _profileSettings.GetRumbleBoost(Slot);
             acc += _actionProvider.GetProfileActionCount(Slot);
             return acc;

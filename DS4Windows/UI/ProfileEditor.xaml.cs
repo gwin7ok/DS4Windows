@@ -712,7 +712,7 @@ namespace DS4Windows.UI
                 // Phase8-Step7 7.8d: 廃止された「シフト」の設定が残っていれば、警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）
                 RemovedShiftNotice.Apply(profileSettingsService.GetRemovedShiftSettings(deviceNum), profile.Name, removedShiftPrompt);
                 // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の設定が残っていれば、同じく警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）
-                RemovedGyroSwipeNotice.Apply(profileSettingsService.GetRemovedGyroSwipeSettings(deviceNum), profile.Name, removedGyroSwipePrompt);
+                RemovedGyroSwipeNotice.Apply(profileSettingsService.ForSlot(deviceNum).Gyro.RemovedSwipe, profile.Name, removedGyroSwipePrompt);
                 profileNameTxt.Text = profile.Name;
                 profileNameTxt.IsEnabled = false;
             }

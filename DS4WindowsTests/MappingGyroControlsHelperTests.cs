@@ -25,11 +25,11 @@ namespace DS4WindowsTests
         public void GyroControlsJudgement_IsTrueOnlyWhenTheOutputModeIsControls(GyroOutMode mode)
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            GyroOutMode originalMode = settings.GyroOutputMode[Slot];
+            GyroOutMode originalMode = settings.ForSlot(Slot).Gyro.OutputMode;
             double originalSx = settings.SXSens[Slot];
             try
             {
-                settings.GyroOutputMode[Slot] = mode;
+                settings.ForSlot(Slot).Gyro.OutputMode = mode;
                 settings.SXSens[Slot] = 1.0;
 
                 var state = new ControllerState();
@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Slot] = originalMode;
+                settings.ForSlot(Slot).Gyro.OutputMode = originalMode;
                 settings.SXSens[Slot] = originalSx;
             }
         }

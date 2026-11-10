@@ -151,7 +151,7 @@ namespace DS4WindowsTests
         private static ProfileSettingsService CreateGyroControlsService(out BackingStore store)
         {
             var service = CreateIsolatedService(out store);
-            store.gyroOutMode[Slot] = GyroOutMode.Controls;
+            store.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
             return service;
         }
 
@@ -160,7 +160,7 @@ namespace DS4WindowsTests
         {
             var controls = CreateGyroControlsService(out _);
             var notControls = CreateIsolatedService(out BackingStore otherStore);
-            otherStore.gyroOutMode[Slot] = GyroOutMode.None;
+            otherStore.gyroSlots[Slot].OutputMode = GyroOutMode.None;
 
             ControllerState a = RunGyro(controls);
             ControllerState b = RunGyro(notControls);

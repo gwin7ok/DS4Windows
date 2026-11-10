@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 //    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("UseSmoothing");
                 //    if (bool.TryParse(Item?.InnerText ?? "", out bool tempSmoothing))
                 //    {
-                //        gyroMStickInfo[device].useSmoothing = tempSmoothing;
+                //        gyroSlots[device].MouseStick.useSmoothing = tempSmoothing;
                 //    }
                 //}
                 //catch { }
@@ -223,9 +223,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     //{
                     //    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("UseSmoothing");
                     //    bool.TryParse(Item.InnerText, out bool tempSmoothing);
-                    //    gyroMStickInfo[device].useSmoothing = tempSmoothing;
+                    //    gyroSlots[device].MouseStick.useSmoothing = tempSmoothing;
                     //}
-                    //catch { gyroMStickInfo[device].useSmoothing = false; missingSetting = true; }
+                    //catch { gyroSlots[device].MouseStick.useSmoothing = false; missingSetting = true; }
 
                     try
                     {

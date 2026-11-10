@@ -149,10 +149,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/UseSAforMouse");
                 if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                 {
-                    if (temp) store.gyroOutMode[device] = GyroOutMode.Mouse;
+                    if (temp) store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
                 }
             }
-            catch { store.gyroOutMode[device] = GyroOutMode.Controls; }
+            catch { store.gyroSlots[device].OutputMode = GyroOutMode.Controls; }
 
             context.TpForControlsPresent = tpForControlsPresent;
             context.MissingSetting = missingSetting;

@@ -37,11 +37,11 @@ namespace DS4WindowsTests
             public GyroModeScope(IProfileSettingsService settings, GyroOutMode mode)
             {
                 _settings = settings;
-                _saved = settings.GyroOutputMode[Device];
-                settings.GyroOutputMode[Device] = mode;
+                _saved = settings.ForSlot(Device).Gyro.OutputMode;
+                settings.ForSlot(Device).Gyro.OutputMode = mode;
             }
 
-            public void Dispose() => _settings.GyroOutputMode[Device] = _saved;
+            public void Dispose() => _settings.ForSlot(Device).Gyro.OutputMode = _saved;
         }
 
         // ---- 現行の判定との一致（全コントロール × 多数の入力 × ジャイロ制御の有無）----

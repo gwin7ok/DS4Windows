@@ -159,12 +159,12 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            store.gyroOutMode[device] = GyroOutMode.MouseJoystick;
-            store.sAMouseStickTriggers[device] = "4";
-            store.sAMouseStickTriggerCond[device] = true;
-            store.gyroMouseStickTriggerTurns[device] = false;
-            store.gyroMStickInfo[device].useSmoothing = true;
-            store.gyroMStickInfo[device].smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.MouseJoystick;
+            store.gyroSlots[device].MouseStickTriggers = "4";
+            store.gyroSlots[device].MouseStickTriggerCondAnd = true;
+            store.gyroSlots[device].MouseStickTriggerTurns = false;
+            store.gyroSlots[device].MouseStick.useSmoothing = true;
+            store.gyroSlots[device].MouseStick.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
@@ -195,12 +195,12 @@ namespace DS4Windows.Core.Persistence
             TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
             r2Info.deadZone = (byte)(0.00 * 255);
 
-            store.gyroOutMode[device] = GyroOutMode.MouseJoystick;
-            store.sAMouseStickTriggers[device] = "4";
-            store.sAMouseStickTriggerCond[device] = true;
-            store.gyroMouseStickTriggerTurns[device] = false;
-            store.gyroMStickInfo[device].useSmoothing = true;
-            store.gyroMStickInfo[device].smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.MouseJoystick;
+            store.gyroSlots[device].MouseStickTriggers = "4";
+            store.gyroSlots[device].MouseStickTriggerCondAnd = true;
+            store.gyroSlots[device].MouseStickTriggerTurns = false;
+            store.gyroSlots[device].MouseStick.useSmoothing = true;
+            store.gyroSlots[device].MouseStick.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
 
             store.outputDevType[device] = OutContType.DS4;
 
@@ -239,12 +239,12 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            store.gyroOutMode[device] = GyroOutMode.Mouse;
-            store.sATriggers[device] = "4";
-            store.sATriggerCond[device] = true;
-            store.gyroTriggerTurns[device] = false;
-            store.gyroMouseInfo[device].enableSmoothing = true;
-            store.gyroMouseInfo[device].smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
+            store.gyroSlots[device].MouseTriggers = "4";
+            store.gyroSlots[device].MouseTriggerCondAnd = true;
+            store.gyroSlots[device].TriggerTurns = false;
+            store.gyroSlots[device].Mouse.enableSmoothing = true;
+            store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
             StickDeadZoneInfo rsInfo = store.rsModInfo[device];
             rsInfo.deadZone = (int)(0.10 * 127);
@@ -280,12 +280,12 @@ namespace DS4Windows.Core.Persistence
             TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
             r2Info.deadZone = (byte)(0.00 * 255);
 
-            store.gyroOutMode[device] = GyroOutMode.Mouse;
-            store.sATriggers[device] = "4";
-            store.sATriggerCond[device] = true;
-            store.gyroTriggerTurns[device] = false;
-            store.gyroMouseInfo[device].enableSmoothing = true;
-            store.gyroMouseInfo[device].smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
+            store.gyroSlots[device].MouseTriggers = "4";
+            store.gyroSlots[device].MouseTriggerCondAnd = true;
+            store.gyroSlots[device].TriggerTurns = false;
+            store.gyroSlots[device].Mouse.enableSmoothing = true;
+            store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
             store.outputDevType[device] = OutContType.DS4;
 
@@ -522,12 +522,12 @@ namespace DS4Windows.Core.Persistence
             TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
             r2Info.deadZone = (byte)(0.20 * 255);
 
-            store.gyroOutMode[device] = GyroOutMode.Mouse;
-            store.sATriggers[device] = "4";
-            store.sATriggerCond[device] = true;
-            store.gyroTriggerTurns[device] = false;
-            store.gyroMouseInfo[device].enableSmoothing = true;
-            store.gyroMouseInfo[device].smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
+            store.gyroSlots[device].MouseTriggers = "4";
+            store.gyroSlots[device].MouseTriggerCondAnd = true;
+            store.gyroSlots[device].TriggerTurns = false;
+            store.gyroSlots[device].Mouse.enableSmoothing = true;
+            store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
             // Flag to unplug virtual controller
             store.dinputOnly[device] = true;

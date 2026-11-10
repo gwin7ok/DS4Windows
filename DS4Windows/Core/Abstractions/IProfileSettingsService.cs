@@ -107,34 +107,6 @@ namespace DS4Windows.Core.Abstractions
         TouchpadRelMouseSettings[] TouchRelMouse { get; }
 
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
-        GyroMouseStickInfo[] GyroMouseStickInf { get; }
-        GyroMouseInfo[] GyroMouseInfo { get; }
-        GyroControlsInfo[] GyroControlsInf { get; }
-        int[] GyroInvert { get; }
-        int[] GyroSensitivity { get; }
-        int[] GyroSensVerticalScale { get; }
-        GyroOutMode[] GyroOutputMode { get; }
-        bool[] GyroTriggerTurns { get; }
-        bool[] GyroMouseStickTriggerTurns { get; }
-        int[] GyroMouseHorizontalAxis { get; }
-        int[] GyroMouseStickHorizontalAxis { get; }
-        int[] GyroMouseDeadZone { get; }
-        bool[] GyroMouseToggle { get; }
-        bool[] GyroMouseStickToggle { get; }
-        GyroOutMode GetGyroOutMode(int deviceIndex);
-        bool GetGyroMouseStickTriggerTurns(int deviceIndex);
-        int GetGyroMouseStickHorizontalAxis(int deviceIndex);
-        GyroMouseStickInfo GetGyroMouseStickInfo(int deviceIndex);
-        int GetGyroSensitivity(int deviceIndex);
-        int GetGyroSensVerticalScale(int deviceIndex);
-        int GetGyroInvert(int deviceIndex);
-        bool GetGyroTriggerTurns(int deviceIndex);
-        int GetGyroMouseHorizontalAxis(int deviceIndex);
-        GyroControlsInfo GetGyroControlsInfo(int deviceIndex);
-        void SetGyroMouseDeadZone(int index, int value, IProfileLoadTarget control);
-        void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control);
-        void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control);
-        void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control);
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
         LightbarSettingInfo[] LightbarSettingsInfo { get; }
@@ -162,8 +134,6 @@ namespace DS4Windows.Core.Abstractions
         double GetTrackballFriction(int deviceIndex);
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
-        string[] SATriggers { get; }
-        string[] SAMousestickTriggers { get; }
         double[] SXDeadzone { get; }
         double[] SZDeadzone { get; }
         double[] SXSens { get; }
@@ -174,12 +144,6 @@ namespace DS4Windows.Core.Abstractions
         double[] SZAntiDeadzone { get; }
         BezierCurve[] SxOutBezierCurveObj { get; }
         BezierCurve[] SzOutBezierCurveObj { get; }
-        string GetSATriggers(int deviceIndex);
-        bool GetSATriggerCond(int deviceIndex);
-        string GetSAMouseStickTriggers(int deviceIndex);
-        bool GetSAMouseStickTriggerCond(int deviceIndex);
-        void SetSaTriggerCond(int index, string text);
-        void SetSaMouseStickTriggerCond(int index, string text);
         int GetSxOutCurveMode(int index);
         void SetSxOutCurveMode(int index, int value);
         int GetSzOutCurveMode(int index);
@@ -233,10 +197,5 @@ namespace DS4Windows.Core.Abstractions
         /// 編集画面が、プロファイルを読み込んだあと、警告（削除か残すか）に使う。
         /// </summary>
         RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex);
-
-        /// <summary>
-        /// Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」機能の設定を保持する入れ物（スロットごと）。編集画面が、プロファイルを読み込んだあと、警告（削除か残すか）に使う。
-        /// </summary>
-        RemovedGyroSwipeSettings GetRemovedGyroSwipeSettings(int deviceIndex);
     }
 }

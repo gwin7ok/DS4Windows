@@ -55,8 +55,8 @@ namespace DS4WindowsTests
             source.rightStickDriftXAxis[Device] = 3;
             source.rightStickDriftYAxis[Device] = -9;
             source.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
-            source.gyroMouseInfo[Device].jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
-            source.gyroMStickInfo[Device].jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
+            source.gyroSlots[Device].Mouse.jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
+            source.gyroSlots[Device].MouseStick.jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
 
             XmlDocument doc = NewDocument(source);
             NewSerializer(source, doc).SaveLegacyExtraSettings(doc.DocumentElement, Device);
@@ -72,8 +72,8 @@ namespace DS4WindowsTests
             Assert.Equal(3, target.rightStickDriftXAxis[Device]);
             Assert.Equal(-9, target.rightStickDriftYAxis[Device]);
             Assert.Equal(DS4TriggerOutputMode.Buttons, target.outputDS4TriggerMode[Device]);
-            Assert.Equal(!GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, target.gyroMouseInfo[Device].jitterCompensation);
-            Assert.Equal(!GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, target.gyroMStickInfo[Device].jitterCompensation);
+            Assert.Equal(!GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].Mouse.jitterCompensation);
+            Assert.Equal(!GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].MouseStick.jitterCompensation);
 
             // 要素名は ProfileDTO と同じ（旧版・DTO 経路との互換）
             foreach (string name in new[]
@@ -96,8 +96,8 @@ namespace DS4WindowsTests
             store.leftStickDriftXAxis[Device] = -5;
             store.rightStickDriftYAxis[Device] = 9;
             store.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
-            store.gyroMouseInfo[Device].jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
-            store.gyroMStickInfo[Device].jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
+            store.gyroSlots[Device].Mouse.jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
+            store.gyroSlots[Device].MouseStick.jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
 
             var xml = NewSerializer(store, NewDocument(store));
             ResetProfile(store);
@@ -107,8 +107,8 @@ namespace DS4WindowsTests
             Assert.Equal(0, store.leftStickDriftXAxis[Device]);
             Assert.Equal(0, store.rightStickDriftYAxis[Device]);
             Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
-            Assert.Equal(GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, store.gyroMouseInfo[Device].jitterCompensation);
-            Assert.Equal(GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, store.gyroMStickInfo[Device].jitterCompensation);
+            Assert.Equal(GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, store.gyroSlots[Device].Mouse.jitterCompensation);
+            Assert.Equal(GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, store.gyroSlots[Device].MouseStick.jitterCompensation);
         }
 
         [Fact]

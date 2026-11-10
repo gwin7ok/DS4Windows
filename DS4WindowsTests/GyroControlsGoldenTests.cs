@@ -153,7 +153,7 @@ namespace DS4WindowsTests
         private static BackingStore NewStore(Scenario scenario)
         {
             var store = new BackingStore(new EnvironmentService());
-            store.gyroOutMode[Slot] = GyroOutMode.Controls;
+            store.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
             scenario.Configure(store);
             return store;
         }

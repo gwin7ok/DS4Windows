@@ -200,10 +200,10 @@ namespace DS4WindowsTests
         public void Gyro_SaNeedsMoreThan67_ControlsAnyTilt_AndBothNeedTheControlsMode()
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            GyroOutMode saved = settings.GyroOutputMode[Device];
+            GyroOutMode saved = settings.ForSlot(Device).Gyro.OutputMode;
             try
             {
-                settings.GyroOutputMode[Device] = GyroOutMode.Controls;
+                settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.Controls;
 
                 // 正の向き（GyroXPos）: (値, Controls, SA)
                 foreach ((int value, bool controlsExpected, bool saExpected) in new[]
@@ -234,7 +234,7 @@ namespace DS4WindowsTests
                 }
 
                 // Controls のモードでないとき: どちらも常に不成立
-                settings.GyroOutputMode[Device] = GyroOutMode.Passthru;
+                settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.Passthru;
                 var off = new Rig();
                 off.Fields.gryodirs[(int)DS4Controls.GyroXPos] = 200;
                 off.Fields.gryodirs[(int)DS4Controls.GyroXNeg] = -200;
@@ -247,7 +247,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Device] = saved;
+                settings.ForSlot(Device).Gyro.OutputMode = saved;
             }
         }
 

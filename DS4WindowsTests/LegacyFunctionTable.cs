@@ -75,8 +75,8 @@ namespace DS4WindowsTests
 
             var sb = new StringBuilder(Header());
             var random = new Random(Seed);
-            GyroOutMode saved = settings.GyroOutputMode[Device];
-            settings.GyroOutputMode[Device] = mode;
+            GyroOutMode saved = settings.ForSlot(Device).Gyro.OutputMode;
+            settings.ForSlot(Device).Gyro.OutputMode = mode;
             try
             {
                 for (int iteration = 0; iteration < Iterations; iteration++)
@@ -101,7 +101,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Device] = saved;
+                settings.ForSlot(Device).Gyro.OutputMode = saved;
             }
 
             return sb.ToString();

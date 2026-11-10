@@ -77,11 +77,11 @@ namespace DS4WindowsTests
         public void Gyro_IsInactive_UnlessTheOutputModeIsControls()
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            GyroOutMode savedMode = settings.GyroOutputMode[Device];
+            GyroOutMode savedMode = settings.ForSlot(Device).Gyro.OutputMode;
             double savedSx = settings.SXSens[Device];
             try
             {
-                settings.GyroOutputMode[Device] = GyroOutMode.None;
+                settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.None;
                 settings.SXSens[Device] = 1.0;
                 var state = new ControllerState();
                 state.Motion.accelX = -500;
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Device] = savedMode;
+                settings.ForSlot(Device).Gyro.OutputMode = savedMode;
                 settings.SXSens[Device] = savedSx;
             }
         }
@@ -100,12 +100,12 @@ namespace DS4WindowsTests
         public void GyroXPos_UsesAThresholdOfSixtySeven_WhenTheOutputModeIsControls(int accelX, bool expected)
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            GyroOutMode savedMode = settings.GyroOutputMode[Device];
+            GyroOutMode savedMode = settings.ForSlot(Device).Gyro.OutputMode;
             double savedSx = settings.SXSens[Device];
             double savedSz = settings.SZSens[Device];
             try
             {
-                settings.GyroOutputMode[Device] = GyroOutMode.Controls;
+                settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.Controls;
                 settings.SXSens[Device] = 1.0;
                 settings.SZSens[Device] = 1.0;
                 var state = new ControllerState();
@@ -117,7 +117,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Device] = savedMode;
+                settings.ForSlot(Device).Gyro.OutputMode = savedMode;
                 settings.SXSens[Device] = savedSx;
                 settings.SZSens[Device] = savedSz;
             }

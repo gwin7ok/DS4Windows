@@ -231,16 +231,16 @@ namespace DS4Windows.Core.Persistence
                 //if (device < Global.MAX_DS4_CONTROLLER_COUNT && control.GetTouchPad(device) != null)
                 //{
                 //    control.GetTouchPad(device)?.ResetToggleGyroModes();
-                //    GyroOutMode currentGyro = gyroOutMode[device];
+                //    GyroOutMode currentGyro = gyroSlots[device].OutputMode;
                 //    if (currentGyro == GyroOutMode.Mouse)
                 //    {
                 //        control.GetTouchPad(device).ToggleGyroMouse =
-                //            gyroMouseToggle[device];
+                //            gyroSlots[device].MouseToggle;
                 //    }
                 //    else if (currentGyro == GyroOutMode.MouseJoystick)
                 //    {
                 //        control.GetTouchPad(device).ToggleGyroMouse =
-                //            gyroMouseStickToggle[device];
+                //            gyroSlots[device].MouseStickToggle;
                 //    }
                 //}
 
@@ -284,9 +284,9 @@ namespace DS4Windows.Core.Persistence
             }
 
             if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseJitterCompensation"), out bool gyroMouseJitter))
-                store.gyroMouseInfo[device].jitterCompensation = gyroMouseJitter;
+                store.gyroSlots[device].Mouse.jitterCompensation = gyroMouseJitter;
             if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseStickJitterCompensation"), out bool gyroStickJitter))
-                store.gyroMStickInfo[device].jitterCompensation = gyroStickJitter;
+                store.gyroSlots[device].MouseStick.jitterCompensation = gyroStickJitter;
         }
 
         public bool SaveAsProfile(int device, string proName)
@@ -403,8 +403,8 @@ namespace DS4Windows.Core.Persistence
             AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.rightStickDriftXAxis[device].ToString());
             AppendLegacyElement(rootElement, "RightStickDriftYAxis", store.rightStickDriftYAxis[device].ToString());
             AppendLegacyElement(rootElement, "DS4OutputTriggerMode", store.outputDS4TriggerMode[device].ToString());
-            AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", store.gyroMouseInfo[device].jitterCompensation.ToString());
-            AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", store.gyroMStickInfo[device].jitterCompensation.ToString());
+            AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", store.gyroSlots[device].Mouse.jitterCompensation.ToString());
+            AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", store.gyroSlots[device].MouseStick.jitterCompensation.ToString());
         }
 
         private void AppendLegacyElement(XmlNode parent, string name, string value)

@@ -274,13 +274,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE };
-        public int[] gyroMouseDZ = new int[ControllerLimits.TestProfileItemCount] { MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE,MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE,};
-        public bool[] gyroMouseToggle = new bool[ControllerLimits.TestProfileItemCount] { false, false, false,
-            false, false, false, false, false, false };
 
         public SquareStickInfo[] squStickInfo = new SquareStickInfo[ControllerLimits.TestProfileItemCount]
         {
@@ -443,16 +436,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE,
           DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE,
           DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE };
-        public GyroOutMode[] gyroOutMode = new GyroOutMode[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE,
-          DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE,
-          DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE };
-        public GyroControlsInfo[] gyroControlsInf = new GyroControlsInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
-            new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
-            new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
-        };
 
         public RumbleSettings[] rumbleSettings = new RumbleSettings[ControllerLimits.TestProfileItemCount]
                 {
@@ -463,38 +446,7 @@ namespace DS4Windows.Core.Settings
             new RumbleSettings(),
                 };
 
-        public string[] sATriggers = new string[ControllerLimits.TestProfileItemCount]
-        { BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS,
-          BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS,
-          BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS };
-        public string[] sAMouseStickTriggers = new string[ControllerLimits.TestProfileItemCount]
-        { BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS,
-          BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS,
-          BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS };
-        public bool[] sATriggerCond = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND,
-          DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND,
-          DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND };
-        public bool[] sAMouseStickTriggerCond = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND,
-          DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND,
-          DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND };
-        public bool[] gyroMouseStickTriggerTurns = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS,
-          DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS,
-          DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS };
-        public GyroMouseStickInfo[] gyroMStickInfo = new GyroMouseStickInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(),
-        };
 
-        public bool[] gyroMouseStickToggle = new bool[ControllerLimits.TestProfileItemCount] { false, false, false,
-            false, false, false, false, false, false };
 
         public int[][] touchDisInvertTriggers = new int[ControllerLimits.TestProfileItemCount][]
         { new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
@@ -552,7 +504,9 @@ namespace DS4Windows.Core.Settings
         /// Phase8-Step8 8-0（Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定（<c>&lt;GyroSwipeSettings&gt;</c>、<c>&lt;Control&gt;</c> 内の <c>GyroSwipe*</c> の割り当て、
         /// ジャイロの出力モード <c>DirectionalSwipe</c>）を、解釈せずに保持する。スロットごと。読込のたびに取り込み直し、保存で、そのまま書き出す。
         /// </summary>
-        public readonly RemovedGyroSwipeSettings[] removedGyroSwipeSettings = new RemovedGyroSwipeSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>ジャイロの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly GyroSlotSettings[] gyroSlots = new GyroSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -641,32 +595,9 @@ namespace DS4Windows.Core.Settings
         // Cache whether profile has custom extras
         public bool[] containsCustomExtras = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
 
-        public int[] gyroSensitivity = new int[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS,
-          DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS,
-          DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS };
-        public int[] gyroSensVerticalScale = new int[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE,
-          DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE,
-          DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE };
-        public int[] gyroInvert = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public bool[] gyroTriggerTurns = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS,
-          DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS,
-          DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS };
 
-        public GyroMouseInfo[] gyroMouseInfo = new GyroMouseInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(),
-        };
 
-        public int[] gyroMouseHorizontalAxis = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public int[] gyroMouseStickHorizontalAxis = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         public bool[] trackballMode = new bool[ControllerLimits.TestProfileItemCount]
         { DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE,
@@ -793,6 +724,7 @@ namespace DS4Windows.Core.Settings
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
+            for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
 
             for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
             {
@@ -804,7 +736,6 @@ namespace DS4Windows.Core.Settings
 
                 ds4controlSettings[i] = new ControlSettingsGroup(ds4settings[i]);
                 removedShiftSettings[i] = new RemovedShiftSettings();
-                removedGyroSwipeSettings[i] = new RemovedGyroSwipeSettings();
 
                 // RumbleSettings の変更を生配列 rumble / rumbleAutostopTime に連動させる
                 int slot = i;
@@ -848,7 +779,7 @@ namespace DS4Windows.Core.Settings
             containsCustomExtras[device] = HasCustomExtras(device);
 
             {
-                customAct = gyroOutMode[device] == GyroOutMode.MouseJoystick;
+                customAct = gyroSlots[device].OutputMode == GyroOutMode.MouseJoystick;
                 customAct = customAct || lsOutputSettings[device].mode != StickMode.Controls;
                 customAct = customAct || rsOutputSettings[device].mode != StickMode.Controls;
                 containsCustomAction[device] = customAct;
@@ -1025,41 +956,21 @@ namespace DS4Windows.Core.Settings
 
         public void SetSaTriggerCond(int index, string text)
         {
-            sATriggerCond[index] = SaTriggerCondValue(text);
+            gyroSlots[index].MouseTriggerCondAnd = SaTriggerCondValue(text);
         }
 
         public void SetSaMouseStickTriggerCond(int index, string text)
         {
-            sAMouseStickTriggerCond[index] = SaTriggerCondValue(text);
+            gyroSlots[index].MouseStickTriggerCondAnd = SaTriggerCondValue(text);
         }
 
-        public void SetGyroMouseDZ(int index, int value, IProfileLoadTarget control)
-        {
-            gyroMouseDZ[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).CursorGyroDead = value;
-        }
+        public void SetGyroMouseDZ(int index, int value, IProfileLoadTarget control) => gyroSlots[index].SetMouseDeadZone(value, control);
 
-        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control)
-        {
-            gyroControlsInf[index].triggerToggle = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).ToggleGyroControls = value;
-        }
+        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetControlsToggle(value, control);
 
-        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control)
-        {
-            gyroMouseToggle[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).ToggleGyroMouse = value;
-        }
+        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseToggle(value, control);
 
-        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control)
-        {
-            gyroMouseStickToggle[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).ToggleGyroStick = value;
-        }
+        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseStickToggle(value, control);
 
 
         // Phase7-Step10b W1: getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
@@ -1290,9 +1201,9 @@ namespace DS4Windows.Core.Settings
         public void ResetProfile(int device)
         {
             removedShiftSettings[device].Clear();
-            removedGyroSwipeSettings[device].Clear();
+            gyroSlots[device].RemovedSwipe.Clear();
             buttonMouseInfos[device].Reset();
-            gyroControlsInf[device].Reset();
+            gyroSlots[device].Controls.Reset();
 
             enableTouchToggle[device] = DEFAULT_TOUCH_TOGGLE;
             idleDisconnectTimeout[device] = 0;
@@ -1383,25 +1294,25 @@ namespace DS4Windows.Core.Settings
             dinputOnly[device] = DEFAULT_DINPUT_ONLY;
             startTouchpadOff[device] = false;
             touchOutMode[device] = DEFAULT_TOUCH_OUT_MODE;
-            sATriggers[device] = BackingStore.DEFAULT_SA_TRIGGERS;
-            sATriggerCond[device] = DEFAULT_SA_TRIGGER_COND;
-            gyroOutMode[device] = DEFAULT_GYRO_OUT_MODE;
-            sAMouseStickTriggers[device] = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
-            sAMouseStickTriggerCond[device] = true;
+            gyroSlots[device].MouseTriggers = BackingStore.DEFAULT_SA_TRIGGERS;
+            gyroSlots[device].MouseTriggerCondAnd = DEFAULT_SA_TRIGGER_COND;
+            gyroSlots[device].OutputMode = DEFAULT_GYRO_OUT_MODE;
+            gyroSlots[device].MouseStickTriggers = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
+            gyroSlots[device].MouseStickTriggerCondAnd = true;
 
-            gyroMStickInfo[device].Reset();
+            gyroSlots[device].MouseStick.Reset();
 
-            gyroMouseStickToggle[device] = false;
-            gyroMouseStickTriggerTurns[device] = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
+            gyroSlots[device].MouseStickToggle = false;
+            gyroSlots[device].MouseStickTriggerTurns = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
             touchDisInvertTriggers[device] = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
-            gyroSensitivity[device] = DEFAULT_GYRO_SENS;
-            gyroSensVerticalScale[device] = DEFAULT_GYRO_SENS_VERTICAL_SCALE;
-            gyroInvert[device] = 0;
-            gyroTriggerTurns[device] = DEFAULT_GYRO_TRIGGER_TURNS;
-            gyroMouseInfo[device].Reset();
+            gyroSlots[device].Sensitivity = DEFAULT_GYRO_SENS;
+            gyroSlots[device].SensVerticalScale = DEFAULT_GYRO_SENS_VERTICAL_SCALE;
+            gyroSlots[device].Invert = 0;
+            gyroSlots[device].TriggerTurns = DEFAULT_GYRO_TRIGGER_TURNS;
+            gyroSlots[device].Mouse.Reset();
 
-            gyroMouseHorizontalAxis[device] = 0;
-            gyroMouseToggle[device] = false;
+            gyroSlots[device].MouseHorizontalAxis = 0;
+            gyroSlots[device].MouseToggle = false;
             //squStickInfo[device].lsMode = false;
             //squStickInfo[device].rsMode = false;
             //squStickInfo[device].lsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;

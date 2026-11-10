@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Services
             }
             else if (control >= DS4Controls.GyroXPos && control <= DS4Controls.GyroZNeg)
             {
-                bool saControls = settings.GyroOutputMode[device] == GyroOutMode.Controls;
+                bool saControls = settings.ForSlot(device).Gyro.OutputMode == GyroOutMode.Controls;
 
                 switch (control)
                 {
