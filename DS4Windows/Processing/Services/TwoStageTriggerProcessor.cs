@@ -130,7 +130,7 @@ namespace DS4Windows.Processing.Services
                     }
                     else if (triggerData.outputActive)
                     {
-                        //DS4State pState = d.getPreviousStateRef();
+                        //ControllerState pState = d.getPreviousStateRef();
                         if (triggerRawValue == 255)
                         {
                             dcsFullPull = inputFullPull;
@@ -192,7 +192,7 @@ namespace DS4Windows.Processing.Services
                     }
                     else if (triggerData.outputActive)
                     {
-                        //DS4State pState = d.getPreviousStateRef();
+                        //ControllerState pState = d.getPreviousStateRef();
                         if (triggerRawValue == 255 &&
                             triggerData.actionStateMode == TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly)
                         {

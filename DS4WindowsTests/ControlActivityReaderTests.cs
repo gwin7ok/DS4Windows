@@ -18,15 +18,15 @@ namespace DS4WindowsTests
 
         private static readonly ControlActivityReader Reader = new ControlActivityReader();
 
-        private static bool Active(DS4Controls control, DS4State state, DS4StateExposed exposed = null)
+        private static bool Active(DS4Controls control, ControllerState state, ControllerStateExposed exposed = null)
         {
-            return Reader.IsActive(TestHost.GetService<IProfileSettingsService>(), Device, control, state, exposed ?? new DS4StateExposed(state), null);
+            return Reader.IsActive(TestHost.GetService<IProfileSettingsService>(), Device, control, state, exposed ?? new ControllerStateExposed(state), null);
         }
 
         [Fact]
         public void Buttons_FollowTheState()
         {
-            var state = new DS4State { Cross = true, Square = false, L1 = true, DpadUp = true, PS = true, Share = false };
+            var state = new ControllerState { Cross = true, Square = false, L1 = true, DpadUp = true, PS = true, Share = false };
             Assert.True(Active(DS4Controls.Cross, state));
             Assert.False(Active(DS4Controls.Square, state));
             Assert.True(Active(DS4Controls.L1, state));
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         [InlineData(101, true)]
         public void Triggers_AreActiveAboveOneHundred(byte value, bool expected)
         {
-            var state = new DS4State { L2 = value, R2 = value };
+            var state = new ControllerState { L2 = value, R2 = value };
             Assert.Equal(expected, Active(DS4Controls.L2, state));
             Assert.Equal(expected, Active(DS4Controls.R2, state));
         }
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [InlineData(184, false, true)]
         public void StickDirections_UseAThresholdOfFiftyFiveFromCenter(byte axis, bool negative, bool positive)
         {
-            var state = new DS4State { LX = axis, LY = axis, RX = axis, RY = axis };
+            var state = new ControllerState { LX = axis, LY = axis, RX = axis, RY = axis };
             Assert.Equal(negative, Active(DS4Controls.LXNeg, state));
             Assert.Equal(negative, Active(DS4Controls.LYNeg, state));
             Assert.Equal(negative, Active(DS4Controls.RXNeg, state));
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchAndSwipe_AreInactive_WhenThereIsNoTouchpad()
         {
-            var state = new DS4State();
+            var state = new ControllerState();
             Assert.False(Active(DS4Controls.TouchLeft, state));
             Assert.False(Active(DS4Controls.TouchMulti, state));
             Assert.False(Active(DS4Controls.SwipeUp, state));
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
             {
                 settings.GyroOutputMode[Device] = GyroOutMode.None;
                 settings.SXSens[Device] = 1.0;
-                var state = new DS4State();
+                var state = new ControllerState();
                 state.Motion.accelX = -500;
                 Assert.False(Active(DS4Controls.GyroXPos, state));
             }
@@ -108,7 +108,7 @@ namespace DS4WindowsTests
                 settings.GyroOutputMode[Device] = GyroOutMode.Controls;
                 settings.SXSens[Device] = 1.0;
                 settings.SZSens[Device] = 1.0;
-                var state = new DS4State();
+                var state = new ControllerState();
                 state.Motion.accelX = accelX;
                 state.Motion.accelZ = -accelX;   // GyroZPos: SZ * AccelZ > 67
                 Assert.Equal(expected, Active(DS4Controls.GyroXPos, state));

@@ -15,10 +15,10 @@ namespace DS4Windows.Processing.Abstractions
         void OnReport(InputDeviceCore device, EventArgs e, int ind);
 
         /// <summary>スロットごとの、マッピング後の状態（旧 <c>ControlService.MappedState</c>）。</summary>
-        DS4State GetMappedState(int ind);
+        ControllerState GetMappedState(int ind);
 
         /// <summary>スロットごとの、マッピングに渡す公開用の状態（旧 <c>ControlService.ExposedState</c>）。</summary>
-        DS4StateExposed[] ExposedState { get; }
+        ControllerStateExposed[] ExposedState { get; }
 
         /// <summary>マクロの記録中は、マッピングを飛ばす（旧 <c>ControlService.recordingMacro</c>。<c>RecordBox</c> が書く）。</summary>
         bool RecordingMacro { get; set; }

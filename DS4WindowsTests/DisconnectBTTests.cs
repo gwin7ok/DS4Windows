@@ -16,15 +16,15 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step7 7.6b（Phase8-Step7-6-Plan.md §3.3。Q3＝B: 切断の成功／失敗と再試行）: DisconnectBT の新経路の確認。
-    /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.DS4Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
+    /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class DisconnectBTTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -346,7 +346,7 @@ namespace DS4WindowsTests
 
         private static long AllocatedWhileHeld(SpecialActionTestScope t)
         {
-            DS4State held = Frame(true);
+            ControllerState held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がりと JIT は、測定の外へ
 
             // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）

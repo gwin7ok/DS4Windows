@@ -17,6 +17,6 @@ namespace DS4Windows.Processing.Abstractions
         /// </summary>
         /// <param name="gyroX">ジャイロ由来の X（中心 128。128 のときは何もしない）。</param>
         /// <param name="gyroY">ジャイロ由来の Y（同上）。</param>
-        void Blend(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, DS4State MappedState, PostMapStickData mapStickData);
+        void Blend(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, ControllerState MappedState, PostMapStickData mapStickData);
     }
 }

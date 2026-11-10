@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Services
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IAppSettingsService _appSettings;
-        private readonly IDs4DeviceRegistry _deviceRegistry;
+        private readonly IInputDeviceRegistry _deviceRegistry;
         private readonly IDeviceDisconnectHandler _deviceDisconnect;
         private readonly IConnectionProfileSelector _connectionProfileSelector;
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
@@ -31,7 +31,7 @@ namespace DS4Windows.Processing.Services
         private readonly IConnectedDeviceOutputs _outputs;
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
-            IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
+            IInputDeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
             IDeviceConnectionSetup deviceConnectionSetup, IInputDeviceModuleRegistry deviceModules, IHidHideService hidHideService,
             IDeviceSlotState slots, IInputReportProcessor inputReport, ITouchpadMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
         {

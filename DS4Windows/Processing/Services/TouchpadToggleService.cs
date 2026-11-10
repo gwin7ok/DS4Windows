@@ -33,7 +33,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void CheckForToggle(int deviceID, DS4State cState, DS4State pState)
+        public void CheckForToggle(int deviceID, ControllerState cState, ControllerState pState)
         {
             if (_profileSettings.TouchOutMode[deviceID] != TouchpadOutMode.Controls && cState.Touch1 && pState.PS)
             {
@@ -64,7 +64,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public string Slide(int ind, DS4State cState, TouchpadMouse touchPad, bool connected)
+        public string Slide(int ind, ControllerState cState, TouchpadMouse touchPad, bool connected)
         {
             string slidedir = "none";
             if (connected && cState.Touch2 &&

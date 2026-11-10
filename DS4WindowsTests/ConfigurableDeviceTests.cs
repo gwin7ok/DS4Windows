@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         {
             var slots = new DeviceSlotState();
             var device = TestDs4Device.Create();
-            slots.DS4Controllers[1] = device;
+            slots.Controllers[1] = device;
 
             IConfigurableDeviceLookup lookup = slots;
             Assert.Same(device, lookup.GetConfigurableDevice(1));

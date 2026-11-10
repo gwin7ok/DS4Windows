@@ -22,8 +22,8 @@ namespace DS4WindowsTests
         private sealed class Rig
         {
             public readonly IProfileSettingsService Settings = TestHost.GetService<IProfileSettingsService>();
-            public readonly DS4State State = new DS4State();
-            public readonly DS4StateFieldMapping Fields = new DS4StateFieldMapping();
+            public readonly ControllerState State = new ControllerState();
+            public readonly ControllerStateFieldMapping Fields = new ControllerStateFieldMapping();
             public readonly TriggerInput Input;
 
             public Rig()
@@ -34,7 +34,7 @@ namespace DS4WindowsTests
             public void Apply() => Input.Update(State, null, null, null, Fields);
         }
 
-        private static void SetStick(DS4State state, DS4Controls control, byte value, double angle)
+        private static void SetStick(ControllerState state, DS4Controls control, byte value, double angle)
         {
             switch (control)
             {

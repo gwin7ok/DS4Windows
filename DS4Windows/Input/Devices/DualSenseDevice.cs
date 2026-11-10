@@ -345,7 +345,7 @@ namespace DS4Windows.Input.Devices
         private void DetermineSubType(IHidTransport hidDevice)
         {
             subType = DeviceSubType.DualSense;
-            if (hidDevice.Attributes.VendorId == DS4Devices.SONY_VID &&
+            if (hidDevice.Attributes.VendorId == InputDeviceRegistry.SONY_VID &&
                 hidDevice.Attributes.ProductId == 0x0DF2)
             {
                 subType = DeviceSubType.DSEdge;
@@ -647,7 +647,7 @@ namespace DS4Windows.Input.Devices
                 cState.elapsedTime = elapsedDeltaTime;
                 cState.ds4Timestamp = (ushort)((tempStamp / 16) % ushort.MaxValue);
 
-                // XXX DS4State mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
+                // XXX ControllerState mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
                 try
                 {
                     // Only care if one touch packet is detected. Other touch packets

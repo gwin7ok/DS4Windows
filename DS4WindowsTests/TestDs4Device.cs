@@ -16,9 +16,9 @@ namespace DS4WindowsTests
         }
 
         /// <summary>前回のレポートの状態（<see cref="InputDeviceCore.getPreviousStateRef"/> が返す）。</summary>
-        public DS4State Previous { get; set; } = new DS4State();
+        public ControllerState Previous { get; set; } = new ControllerState();
 
-        public override DS4State getPreviousStateRef() => Previous;
+        public override ControllerState getPreviousStateRef() => Previous;
 
         public override event ReportHandler<System.EventArgs> Report { add { } remove { } }
 

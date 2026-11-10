@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State Neutral() => ControlsKeyTestScope.Neutral();
+        private static ControllerState Neutral() => ControlsKeyTestScope.Neutral();
 
         [Fact]
         public void ButtonToPadButton_MovesThePressToTheTarget_AndErasesTheOriginal()
@@ -32,16 +32,16 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Cross, X360Controls.B);   // B の標準の割り当ては Circle
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             input.Square = true;   // 割り当てのないボタンは、そのまま
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
 
             Assert.True(output.Circle);
             Assert.False(output.Cross);
             Assert.True(output.Square);
 
-            DS4State released = t.Run(Neutral());
+            ControllerState released = t.Run(Neutral());
             Assert.False(released.Circle);
             Assert.False(released.Cross);
         }
@@ -55,20 +55,20 @@ namespace DS4WindowsTests
             t.Publish();
 
             // R-5（ユーザー決定 2026-10-23）: デジタルな出力先は閾値なし（以前は、スティックが幅 55、L2 が 100 を超えるまで不成立）
-            DS4State slightlyLeft = Neutral();
+            ControllerState slightlyLeft = Neutral();
             slightlyLeft.LX = 100;   // 128 − 100 ＝ 28
             Assert.True(t.Run(slightlyLeft).Cross);
 
-            DS4State farLeft = Neutral();
+            ControllerState farLeft = Neutral();
             farLeft.LX = 60;         // 128 − 60 ＝ 68
             Assert.True(t.Run(farLeft).Cross);
 
-            DS4State at0 = Neutral();
+            ControllerState at0 = Neutral();
             Assert.False(t.Run(at0).Triangle);
 
-            DS4State at1 = Neutral();
+            ControllerState at1 = Neutral();
             at1.L2 = 1;
-            DS4State output = t.Run(at1);
+            ControllerState output = t.Run(at1);
             Assert.True(output.Triangle);
             Assert.Equal(0, output.L2);   // 割り当てたトリガーの元の出力は消える
         }
@@ -81,9 +81,9 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Circle, X360Controls.LYNeg);
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
             Assert.Equal(255, output.LX);
             Assert.False(output.Cross);
 
@@ -105,9 +105,9 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.RXPos, X360Controls.LXPos);
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.RX = 200;
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
 
             _output.WriteLine($"[7.8f-1 W1 new] RX=200 → LXPos: LX={output.LX} RX={output.RX}");
             Assert.Equal(200, output.LX);
@@ -122,9 +122,9 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.R2, X360Controls.RT);
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.R1 = true;
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
             Assert.Equal(255, output.L2);
             Assert.False(output.R1);
 
@@ -141,10 +141,10 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Cross, X360Controls.Unbound);
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             input.Circle = true;
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
 
             Assert.False(output.Cross);
             Assert.True(output.Circle);   // 割り当てのないボタンは、そのまま
@@ -159,13 +159,13 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.LXNeg, X360Controls.A);   // 左へ倒す側だけを割り当てる。右へ倒す側（LXPos）は Default
             t.Publish();
 
-            DS4State right = Neutral();
+            ControllerState right = Neutral();
             right.LX = 220;
-            DS4State output = t.Run(right);
+            ControllerState output = t.Run(right);
             Assert.Equal(220, output.LX);   // Default の素通しで戻る（割り当てたペアの消去は、両方向を 128 にする）
             Assert.False(output.Cross);
 
-            DS4State left = Neutral();
+            ControllerState left = Neutral();
             left.LX = 40;
             output = t.Run(left);
             Assert.Equal(128, output.LX);   // 割り当て側は消える
@@ -178,11 +178,11 @@ namespace DS4WindowsTests
             using var t = new ControlsKeyTestScope();
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.LX = 220;
             input.LY = 40;
             input.RX = 90;
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
 
             Assert.Equal(220, output.LX);
             Assert.Equal(40, output.LY);
@@ -199,9 +199,9 @@ namespace DS4WindowsTests
             t.PublishControlsOnly();
 
             t.Run(Neutral());
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
 
             Assert.True(output.Circle);   // Button が動く
             Assert.False(output.Cross);

@@ -35,11 +35,11 @@ namespace DS4Windows.Processing.Services
 
         public event EventHandler<ControllerSlotChangedEventArgs> SlotChanged;
 
-        public int SlotCount => _slotState.DS4Controllers?.Length ?? 0;
+        public int SlotCount => _slotState.Controllers?.Length ?? 0;
 
         public IControllerSlotView GetSlot(int slot)
         {
-            InputDeviceCore[] controllers = _slotState.DS4Controllers;
+            InputDeviceCore[] controllers = _slotState.Controllers;
             if (controllers == null || slot < 0 || slot >= controllers.Length)
                 return null;
 

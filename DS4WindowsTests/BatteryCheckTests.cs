@@ -18,7 +18,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step7 7.6c（Phase8-Step7-6-Plan.md §3.3。Q6＝A: 静的な窓口はポートの内側／Q8＝B: コピーの名残りのログを削除）: BatteryCheck の新経路の確認。
-    /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.DS4Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
+    /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -26,9 +26,9 @@ namespace DS4WindowsTests
     {
         private const string FullDetails = "|True|True|255|0|0|0|255|0";   // 通知あり、ライトバーあり、空＝赤、満タン＝緑
 
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -269,7 +269,7 @@ namespace DS4WindowsTests
 
         private static long AllocatedWhileHeld(SpecialActionTestScope t)
         {
-            DS4State held = Frame(true);
+            ControllerState held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がり、フェードの完了（50 フレーム）、JIT は、測定の外へ
 
             // Phase10-Step4 W4: 5 ラウンド測って最小値を使う。一度きりの割り当て（遅延初期化など。実測で 0.5〜4MB が 1 回だけ混ざることがある）が測定の窓に入っても、

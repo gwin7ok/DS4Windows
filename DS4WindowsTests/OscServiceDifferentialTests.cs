@@ -22,14 +22,14 @@ namespace DS4WindowsTests
         /// <summary>旧 <c>ControlService</c> の OSC 系の逐語的な写し。</summary>
         private sealed class OldOsc
         {
-            public readonly DS4State[] oscState = new DS4State[ControllerLimits.MaxControllerCount];
+            public readonly ControllerState[] oscState = new ControllerState[ControllerLimits.MaxControllerCount];
             public readonly List<(string Address, object Value)> Sent = new List<(string, object)>();
             public bool InterpretingOscMonitoring;
             public bool UseOscSender;
 
             public OldOsc()
             {
-                for (int i = 0; i < oscState.Length; i++) oscState[i] = new DS4State();
+                for (int i = 0; i < oscState.Length; i++) oscState[i] = new ControllerState();
             }
 
             private void SendOsc(string address, object value)
@@ -232,7 +232,7 @@ namespace DS4WindowsTests
                 }
             }
 
-            public void OSCPostMappingStep(DS4State tempMapState, DS4State oscMapState)
+            public void OSCPostMappingStep(ControllerState tempMapState, ControllerState oscMapState)
             {
                 tempMapState.Cross |= oscMapState.Cross;
                 tempMapState.Square |= oscMapState.Square;
@@ -257,8 +257,8 @@ namespace DS4WindowsTests
                 tempMapState.R2 = oscMapState.R2 != 0 ? oscMapState.R2 : tempMapState.R2;
             }
 
-            public void OSCPreMappingStep(int ind, DS4State cState, DS4State tempMapState,
-                DS4State oscMapState)
+            public void OSCPreMappingStep(int ind, ControllerState cState, ControllerState tempMapState,
+                ControllerState oscMapState)
             {
                 if (cState.Battery != oscMapState.Battery)
                 {
@@ -290,7 +290,7 @@ namespace DS4WindowsTests
                 CompareAndSendChangesToOSC(ind, tempMapState, cState);
             }
 
-            private void CompareAndSendChangesToOSC(int index, DS4State oldState, DS4State newState)
+            private void CompareAndSendChangesToOSC(int index, ControllerState oldState, ControllerState newState)
             {
                 // Buttons
                 if (oldState.Square != newState.Square)
@@ -445,7 +445,7 @@ namespace DS4WindowsTests
             }
         }
 
-        private static string Describe(DS4State s)
+        private static string Describe(ControllerState s)
         {
             return string.Join(",", s.Cross, s.Square, s.Circle, s.Triangle, s.L1, s.L2, s.L3, s.R1, s.R2, s.R3,
                 s.DpadUp, s.DpadDown, s.DpadLeft, s.DpadRight, s.Options, s.Share, s.PS, s.LX, s.LY, s.RX, s.RY, s.Battery);
@@ -464,11 +464,11 @@ namespace DS4WindowsTests
         }
 
         /// <summary>新しい実装の OSC 側の入力状態を、読み取り専用で取り出す（テスト用。メッセージを重ねて調べる）。</summary>
-        private static DS4State NewState(OscService service, int index)
+        private static ControllerState NewState(OscService service, int index)
         {
             // PostMappingStep は oscState を tempMapState に重ねる。空の状態に重ねた結果が、OSC 側の状態（フラグは OR、軸は 128／0 以外のとき）になる
             // （バッテリーは PostMappingStep では重ならず、受信のメッセージでも変わらない［PreMappingStep だけが更新する］ため、0 のまま比べる）
-            var probe = new DS4State();
+            var probe = new ControllerState();
             service.PostMappingStep(index, probe);
             return probe;
         }
@@ -553,7 +553,7 @@ namespace DS4WindowsTests
             Assert.Null(ex);
             for (int i = 0; i < ControllerLimits.MaxControllerCount; i++)
             {
-                Assert.Equal(Describe(new DS4State()), Describe(NewState(f.New, i)));
+                Assert.Equal(Describe(new ControllerState()), Describe(NewState(f.New, i)));
             }
 
             Assert.Empty(f.Factory.Sent);
@@ -608,7 +608,7 @@ namespace DS4WindowsTests
             Exception ex = Record.Exception(() => f.New.HandleMessage(address, args));
 
             Assert.Null(ex);
-            Assert.Equal(Describe(new DS4State()), Describe(NewState(f.New, 0)));   // 2 引数形の片方が不正でも、片方だけは更新されない
+            Assert.Equal(Describe(new ControllerState()), Describe(NewState(f.New, 0)));   // 2 引数形の片方が不正でも、片方だけは更新されない
             Assert.Empty(f.Factory.Sent);
         }
 
@@ -622,11 +622,11 @@ namespace DS4WindowsTests
             Assert.Null(actual);
         }
 
-        private static DS4State RandomInput(Random rnd)
+        private static ControllerState RandomInput(Random rnd)
         {
             byte Axis() => rnd.Next(4) == 0 ? (byte)128 : (byte)rnd.Next(256);
             bool B() => rnd.Next(2) == 0;
-            return new DS4State
+            return new ControllerState
             {
                 Cross = B(), Square = B(), Circle = B(), Triangle = B(), L1 = B(), L3 = B(), R1 = B(), R3 = B(),
                 DpadUp = B(), DpadDown = B(), DpadLeft = B(), DpadRight = B(), Options = B(), Share = B(), PS = B(),
@@ -651,18 +651,18 @@ namespace DS4WindowsTests
                     f.New.HandleMessage(address, args);
                 }
 
-                DS4State inputOld = RandomInput(rnd);
-                DS4State inputNew = new DS4State(inputOld);
-                DS4State tempOld = RandomInput(rnd);
-                DS4State tempNew = new DS4State(tempOld);
+                ControllerState inputOld = RandomInput(rnd);
+                ControllerState inputNew = new ControllerState(inputOld);
+                ControllerState tempOld = RandomInput(rnd);
+                ControllerState tempNew = new ControllerState(tempOld);
 
                 f.Old.OSCPreMappingStep(Index, inputOld, tempOld, f.Old.oscState[Index]);
                 f.New.PreMappingStep(Index, inputNew, tempNew);
                 Assert.True(Describe(inputOld) == Describe(inputNew), $"round={round}: Pre の入力の重ね合わせが違う");
                 Assert.True(Describe(tempOld) == Describe(tempNew), $"round={round}: Pre の後の状態が違う");
 
-                DS4State outOld = RandomInput(rnd);
-                DS4State outNew = new DS4State(outOld);
+                ControllerState outOld = RandomInput(rnd);
+                ControllerState outNew = new ControllerState(outOld);
                 f.Old.OSCPostMappingStep(outOld, f.Old.oscState[Index]);
                 f.New.PostMappingStep(Index, outNew);
                 Assert.True(Describe(outOld) == Describe(outNew), $"round={round}: Post の重ね合わせが違う");
@@ -692,12 +692,12 @@ namespace DS4WindowsTests
         {
             using var f = new Fixture(false, false);
             f.New.HandleMessage("/ds4windows/2/press/cross", new object[] { 1 });
-            var before = new DS4State();
+            var before = new ControllerState();
             f.New.PostMappingStep(2, before);
             Assert.True(before.Cross);
 
             f.New.ResetDeviceState(2);
-            var after = new DS4State();
+            var after = new ControllerState();
             f.New.PostMappingStep(2, after);
             Assert.False(after.Cross);
         }

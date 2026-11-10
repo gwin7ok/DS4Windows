@@ -19,7 +19,7 @@ namespace DS4Windows.Output.Services
 
         public void Stop() => _server.Stop();
 
-        public void NewReportIncoming(ref DualShockPadMeta padMeta, DS4State hidReport, byte[] outputData)
+        public void NewReportIncoming(ref DualShockPadMeta padMeta, ControllerState hidReport, byte[] outputData)
         {
             _server.NewReportIncoming(ref padMeta, hidReport, outputData);
         }

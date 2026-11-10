@@ -26,7 +26,7 @@ namespace DS4WindowsTests
 
         public bool HasOutputDevice(int index) => _inner?.HasOutputDevice(index) ?? false;
 
-        public void SendReport(int index, DS4State state) => _inner?.SendReport(index, state);
+        public void SendReport(int index, ControllerState state) => _inner?.SendReport(index, state);
 
 
         public bool IsOutputQueueRunning => _inner?.IsOutputQueueRunning ?? false;

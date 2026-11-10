@@ -38,8 +38,8 @@ namespace DS4WindowsTests
         private double MeasureNanosecondsPerCall(string name, BackingStore store)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
             int sink = 0;
 
             void RunOnce()

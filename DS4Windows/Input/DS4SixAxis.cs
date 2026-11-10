@@ -169,7 +169,7 @@ namespace DS4Windows.Input
             int roll,
             int accelX,
             int accelY,
-            int accelZ, DS4State state,
+            int accelZ, ControllerState state,
             double elapsedDelta)
         {
             unchecked
@@ -202,7 +202,7 @@ namespace DS4Windows.Input
                 }
             }
         }
-        public unsafe void handleSixaxis(byte* gyro, byte* accel, DS4State state,
+        public unsafe void handleSixaxis(byte* gyro, byte* accel, ControllerState state,
             double elapsedDelta)
         {
             int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);

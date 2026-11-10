@@ -98,7 +98,7 @@ namespace DS4WindowsTests
         public void ThePadButtonTargetOfTheSa_IsTheSameDs4OutputAsTheControlsMapping(X360Controls target)
         {
             // SA の PressX360 は、Controls と同じ変換表（reverseX360ButtonMapping）の DS4 のボタンへ書く（以前は、番号をそのまま使い、Back・Start だけ別のボタンへ書いていた）
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             var frame = new FrameOutput();
             frame.Bind(fields, new SyntheticState());
 

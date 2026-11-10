@@ -153,9 +153,9 @@ namespace DS4WindowsTests
         private RecordingProfileApplicationService _recorder;
 
         /// <summary>1 フレーム分の入力を評価する（<c>MapCustom</c> を 1 回実行して出力の状態を返す）。</summary>
-        public DS4State RunFrame(DS4State input) => _inner.RunMapCustom(input);
+        public ControllerState RunFrame(ControllerState input) => _inner.RunMapCustom(input);
 
-        public static DS4State Neutral() => MappingCharacterizationScope.NeutralState();
+        public static ControllerState Neutral() => MappingCharacterizationScope.NeutralState();
 
         public ActionInstanceState StateOf(SpecialAction action)
         {

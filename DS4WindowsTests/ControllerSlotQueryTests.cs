@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         {
             var (query, state, _) = Create();
             TestDs4Device device = TestDs4Device.Create();
-            state.DS4Controllers[2] = device;
+            state.Controllers[2] = device;
 
             IControllerSlotView first = query.GetSlot(2);
 
@@ -83,8 +83,8 @@ namespace DS4WindowsTests
             TestDs4Device second = TestDs4Device.Create();
             state.SlotManager.AddController(first, 3);
             state.SlotManager.AddController(second, 1);
-            state.DS4Controllers[3] = first;
-            state.DS4Controllers[1] = second;
+            state.Controllers[3] = first;
+            state.Controllers[1] = second;
 
             var entries = query.Snapshot();
 
@@ -114,7 +114,7 @@ namespace DS4WindowsTests
         {
             var (query, state, lifecycle) = Create();
             TestDs4Device device = TestDs4Device.Create();
-            state.DS4Controllers[4] = device;
+            state.Controllers[4] = device;
             ControllerSlotChangedEventArgs received = null;
             query.SlotChanged += (s, e) => received = e;
 
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
         {
             var (query, state, _) = Create();
             TestDs4Device device = TestDs4Device.Create();
-            state.DS4Controllers[0] = device;
+            state.Controllers[0] = device;
             IControllerSlotView view = query.GetSlot(0);
             object sender = null;
             EventHandler handler = (s, e) => sender = s;
@@ -158,7 +158,7 @@ namespace DS4WindowsTests
         {
             var (query, state, _) = Create();
             TestDs4Device device = TestDs4Device.Create();
-            state.DS4Controllers[0] = device;
+            state.Controllers[0] = device;
             IControllerSlotView view = query.GetSlot(0);
             int count = 0;
             EventHandler handler = (s, e) => count++;

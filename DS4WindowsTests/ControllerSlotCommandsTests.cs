@@ -21,9 +21,9 @@ namespace DS4WindowsTests
             var commands = Create(out var state);
             Assert.False(commands.IsConnected(0));
             Assert.False(commands.IsConnected(-1));
-            Assert.False(commands.IsConnected(state.DS4Controllers.Length));
+            Assert.False(commands.IsConnected(state.Controllers.Length));
 
-            state.DS4Controllers[2] = TestDs4Device.Create();
+            state.Controllers[2] = TestDs4Device.Create();
 
             Assert.True(commands.IsConnected(2));
         }
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
         public void ApplyDualSenseRumbleOptions_ReturnsFalse_ForANonDualSenseDevice()
         {
             var commands = Create(out var state);
-            state.DS4Controllers[0] = TestDs4Device.Create();
+            state.Controllers[0] = TestDs4Device.Create();
 
             Assert.False(commands.ApplyDualSenseRumbleOptions(0, 0, 50));
         }

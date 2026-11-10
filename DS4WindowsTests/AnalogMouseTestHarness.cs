@@ -20,9 +20,9 @@ namespace DS4WindowsTests
         public AnalogMouseTestHarness(double elapsedMs = 5.0)
         {
             T = new ControlsKeyTestScope();
-            _savedDevice = TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[T.Device];
+            _savedDevice = TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[T.Device];
             _device.lastTimeElapsedDouble = elapsedMs;
-            TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[T.Device] = _device;
+            TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[T.Device] = _device;
             ResetSharedState();
         }
 
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
 
         public List<(int Vertical, int Horizontal)> Wheels => T.Scope.Recorder.WheelEvents;
 
-        public DS4State Step(DS4State input)
+        public ControllerState Step(ControllerState input)
         {
             Thread.Sleep(12);
             // 旧経路のホイールの繰り返しの基準時刻を最古に戻し、間隔を満たした状態にする（Phase9 MapCustom の分割 M1: 基準時刻は SyntheticInputCommitter が持つ）
@@ -54,7 +54,7 @@ namespace DS4WindowsTests
 
         public void Dispose()
         {
-            TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[T.Device] = _savedDevice;
+            TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[T.Device] = _savedDevice;
             T.Dispose();
         }
     }

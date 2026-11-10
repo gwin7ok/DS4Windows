@@ -23,9 +23,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileSwitchDualPathTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
 
         /// <summary>入力の列を流し、フレームごとの（累計の切替の回数、累計の復帰の回数）を返す。</summary>
         private static List<(int Applies, int Restores)> Run(string triggers, bool freshPressGuard, bool executing,
-            DS4State[] frames, double delay = 0, int applyBeforeFrame = -1)
+            ControllerState[] frames, double delay = 0, int applyBeforeFrame = -1)
         {
             using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Sequence_SwitchesOnce()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var result = Run("L1", false, false, frames);
 
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheFreshPressGuardIsOn_NothingSwitches()
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(true) };
 
             var result = Run("L1", true, false, frames);
 
@@ -91,7 +91,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileExecuting_NothingSwitches()
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
 
             var result = Run("L1", false, true, frames);
 
@@ -101,7 +101,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_SwitchesOnce()
         {
-            DS4State[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
+            ControllerState[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
 
             var result = Run("L1/R1", false, false, frames);
 

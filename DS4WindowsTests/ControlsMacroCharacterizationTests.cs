@@ -30,17 +30,17 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State Cross(bool held)
+        private static ControllerState Cross(bool held)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = held;
             return state;
         }
 
         /// <summary>指定の時間、10ms おきにフレームを流す。最後の出力を返す。</summary>
-        private static DS4State RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static ControllerState RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
-            DS4State last = null;
+            ControllerState last = null;
             var sw = Stopwatch.StartNew();
             do
             {
@@ -131,7 +131,7 @@ namespace DS4WindowsTests
             t.Publish();
 
             // R-5（ユーザー決定 2026-10-23）: デジタルな出力は閾値なし。中心から少しでも傾けば押下（以前は、SA と同じ幅 55）
-            DS4State slightlyLeft = ControlsKeyTestScope.Neutral();
+            ControllerState slightlyLeft = ControlsKeyTestScope.Neutral();
             slightlyLeft.LX = 100;   // 128 − 100 ＝ 28
             RunFor(t, ControlsKeyTestScope.Neutral(), 150);   // Fresh-press ガード（離して 80ms 続くまで実行しない）を先に満たす
             RunFor(t, slightlyLeft, 300);
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
             t.Publish();
 
             // R-5（ユーザー決定 2026-10-23）: デジタルな出力は閾値なし（以前は 100 を超えるまで不成立）
-            DS4State at1 = ControlsKeyTestScope.Neutral();
+            ControllerState at1 = ControlsKeyTestScope.Neutral();
             at1.L2 = 1;
             RunFor(t, ControlsKeyTestScope.Neutral(), 150);   // Fresh-press ガード（離して 80ms 続くまで実行しない）を先に満たす
             RunFor(t, at1, 300);
@@ -163,7 +163,7 @@ namespace DS4WindowsTests
             t.MapMacro(DS4Controls.Cross, Steps);
             t.Publish();
 
-            DS4State output = t.Run(Cross(true));
+            ControllerState output = t.Run(Cross(true));
 
             Assert.False(output.Cross);
         }

@@ -119,7 +119,7 @@ namespace DS4WindowsTests
             string details = type == "Button" ? ((int)X360Controls.A).ToString() : "65";
             var sa = t.Add(new SpecialAction("p8s1_delay_" + Guid.NewGuid().ToString("N"), "L1", type, details, 0.2, "Press\n"));
             t.StateOf(sa).RequiresFreshPressAfterReset = false;
-            DS4State held = SpecialActionTestScope.Neutral();
+            ControllerState held = SpecialActionTestScope.Neutral();
             held.L1 = true;
 
             List<string> errors = CaptureErrors(() =>
@@ -144,19 +144,19 @@ namespace DS4WindowsTests
             var sa = t.Add(new SpecialAction("p8s1_delay_btn_" + Guid.NewGuid().ToString("N"), "L1", "Button",
                 ((int)X360Controls.A).ToString(), 0.2, "Press\n"));
             t.StateOf(sa).RequiresFreshPressAfterReset = false;
-            DS4State held = SpecialActionTestScope.Neutral();
+            ControllerState held = SpecialActionTestScope.Neutral();
             held.L1 = true;
 
             try
             {
                 t.RunFrame(SpecialActionTestScope.Neutral()); // 離している間に、遅延の基準時刻（oldnowAction）が現在に更新される
 
-                DS4State early = t.RunFrame(held); // 押した直後は、遅延が経っていないので不成立（素通し）
+                ControllerState early = t.RunFrame(held); // 押した直後は、遅延が経っていないので不成立（素通し）
                 Assert.False(early.Cross);
                 Assert.True(early.L1);
 
                 Thread.Sleep(450); // 遅延（0.2 秒）より十分に長く待つ
-                DS4State late = t.RunFrame(held); // 遅延が経ったので成立
+                ControllerState late = t.RunFrame(held); // 遅延が経ったので成立
                 Assert.True(late.Cross);
                 Assert.False(late.L1);
             }

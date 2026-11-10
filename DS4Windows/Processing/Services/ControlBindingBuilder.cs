@@ -248,8 +248,8 @@ namespace DS4Windows.Processing.Services
         private bool NeedsPassthrough(int device, DS4ControlSettings dcs)
         {
             int control = (int)dcs.control;
-            if (control < 0 || control >= DS4StateFieldMapping.mappedType.Length) return false;
-            if (DS4StateFieldMapping.mappedType[control] != DS4StateFieldMapping.ControlType.AxisDir) return false;
+            if (control < 0 || control >= ControllerStateFieldMapping.mappedType.Length) return false;
+            if (ControllerStateFieldMapping.mappedType[control] != ControllerStateFieldMapping.ControlType.AxisDir) return false;
 
             int relation = control % 2 == 0 ? control - 1 : control + 1;
             DS4ControlSettings partner = _profileSettings.GetDS4CSetting(device, (DS4Controls)relation);

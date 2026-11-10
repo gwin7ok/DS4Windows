@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using static DS4Windows.Input.DS4Devices;
+using static DS4Windows.Input.InputDeviceRegistry;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
@@ -8,7 +8,7 @@ namespace DS4Windows.Input.Devices
 {
     /// <summary>
     /// DualSense（DualSense Edge を含む）のカートリッジ。対応する VID／PID の表と、デバイスの生成を持つ。
-    /// 表は、<c>DS4Devices</c> の対応機器の表から、この種類の行をそのまま（順序・コメントとも）移したもの。
+    /// 表は、<c>InputDeviceRegistry</c> の対応機器の表から、この種類の行をそのまま（順序・コメントとも）移したもの。
     /// </summary>
     public sealed class DualSenseDeviceCartridge : IInputDeviceCartridge
     {

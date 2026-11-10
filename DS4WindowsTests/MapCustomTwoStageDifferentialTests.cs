@@ -32,7 +32,7 @@ namespace DS4WindowsTests
                 _now = now;
             }
 
-            public void ProcessTwoStageTrigger(int device, DS4State cState, byte triggerValue, byte triggerRawValue,
+            public void ProcessTwoStageTrigger(int device, ControllerState cState, byte triggerValue, byte triggerRawValue,
                 ref DS4ControlSettings inputSoftPull, ref DS4ControlSettings inputFullPull, TriggerOutputSettings outputSettings,
                 TwoStageTriggerMappingData twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull)
             {

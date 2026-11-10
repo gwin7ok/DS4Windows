@@ -76,8 +76,8 @@ namespace DS4Windows.Input
         // 入力レポートの解析（ボタン・スティック・トリガー・タッチの生値）。状態を持たないため全デバイスで共有してよい
         private static readonly IInputReportParser ReportParser = new Ds4ReportParser();
         protected string Mac;
-        protected DS4State cState = new DS4State();
-        protected DS4State pState = new DS4State();
+        protected ControllerState cState = new ControllerState();
+        protected ControllerState pState = new ControllerState();
         protected ConnectionType conType;
         protected byte[] accel = new byte[6];
         protected byte[] gyro = new byte[6];
@@ -411,7 +411,7 @@ namespace DS4Windows.Input
         public DS4Touchpad Touchpad { get { return touchpad; } }
         public DS4SixAxis SixAxis { get { return sixAxis; } }
 
-        // Phase7-Step10d W3（Q4＝A）: デバウンス時間などの設定値。DS4Devices が、デバイスの生成直後（入力の開始前）に設定する。
+        // Phase7-Step10d W3（Q4＝A）: デバウンス時間などの設定値。InputDeviceRegistry が、デバイスの生成直後（入力の開始前）に設定する。
         // 未設定のとき（テスト）は、デバウンス 0ms として扱う。
         private DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings;
         public DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings
@@ -883,42 +883,42 @@ namespace DS4Windows.Input
             testRumble.dirty = false;
         }
 
-        public DS4State getRawCurrentState()
+        public ControllerState getRawCurrentState()
         {
             return cState.Clone();
         }
 
-        public DS4State getRawPreviousState()
+        public ControllerState getRawPreviousState()
         {
             return pState.Clone();
         }
 
-        public void getRawCurrentState(DS4State state)
+        public void getRawCurrentState(ControllerState state)
         {
             cState.CopyTo(state);
         }
 
-        public void getRawPreviousState(DS4State state)
+        public void getRawPreviousState(ControllerState state)
         {
             pState.CopyTo(state);
         }
 
-        public virtual DS4State getCurrentStateRef()
+        public virtual ControllerState getCurrentStateRef()
         {
             return cState;
         }
 
-        public virtual DS4State getPreviousStateRef()
+        public virtual ControllerState getPreviousStateRef()
         {
             return pState;
         }
 
-        public DS4State GetRawCurrentStateRef()
+        public ControllerState GetRawCurrentStateRef()
         {
             return cState;
         }
 
-        public DS4State GetRawPreviousStateRef()
+        public ControllerState GetRawPreviousStateRef()
         {
             return pState;
         }

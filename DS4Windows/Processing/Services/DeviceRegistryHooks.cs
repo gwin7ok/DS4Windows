@@ -12,14 +12,14 @@ namespace DS4Windows.Processing.Services
     /// <summary><see cref="IDeviceRegistryHooks"/> の実装（DI の Singleton）。<c>ControlService</c> にあったフックを、そのまま移したもの。</summary>
     public sealed class DeviceRegistryHooks : IDeviceRegistryHooks
     {
-        private readonly IDs4DeviceRegistry _deviceRegistry;
+        private readonly IInputDeviceRegistry _deviceRegistry;
         private readonly IInputDeviceModuleRegistry _deviceModules;
         private readonly IAppSettingsService _appSettings;
         private readonly IElevatedProcessLauncher _elevatedProcessLauncher;
         private readonly IPathService _pathService;
         private ControlServiceDeviceOptions _deviceOptions;
 
-        public DeviceRegistryHooks(IDs4DeviceRegistry deviceRegistry, IInputDeviceModuleRegistry deviceModules, IAppSettingsService appSettings,
+        public DeviceRegistryHooks(IInputDeviceRegistry deviceRegistry, IInputDeviceModuleRegistry deviceModules, IAppSettingsService appSettings,
             IElevatedProcessLauncher elevatedProcessLauncher, IPathService pathService)
         {
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));

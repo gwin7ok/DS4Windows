@@ -36,7 +36,7 @@ namespace DS4Windows.Processing.Services
             lastStickAxisValues = stickMotion.LastStickAxisValues;
         }
 
-        public DS4State Apply(int device, DS4State cState, DS4State dState, IProfileSettingsService settings)
+        public ControllerState Apply(int device, ControllerState cState, ControllerState dState, IProfileSettingsService settings)
         {
             double rotation = /*tempDoubleArray[device] =*/  settings.LSRotation[device];
             if (rotation > 0.0 || rotation < 0.0)
@@ -73,7 +73,7 @@ namespace DS4Windows.Processing.Services
             }
 
             cState.CopyTo(dState);
-            //DS4State dState = new DS4State(cState);
+            //ControllerState dState = new ControllerState(cState);
 
             // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズは、共通の処理（IStickInputConditioner）が行う。状態（履歴、前回の値）は StickMotionState が持つ。
             cState = _stickConditioner.ApplyDrift(device, dState, settings);

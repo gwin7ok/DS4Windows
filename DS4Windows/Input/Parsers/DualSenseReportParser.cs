@@ -18,7 +18,7 @@ namespace DS4Windows.Input.Parsers
             this.reportOffset = reportOffset;
         }
 
-        public void Parse(ReadOnlySpan<byte> inputReport, DS4State cState)
+        public void Parse(ReadOnlySpan<byte> inputReport, ControllerState cState)
         {
             int reportOffset = this.reportOffset;
             byte tempByte;

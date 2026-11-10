@@ -9,12 +9,12 @@ namespace DS4Windows.Processing.Abstractions
     /// Phase9 9-A(2)-B（Phase9-A2-Plan.md）: スティックの入力の前処理（ドリフト補正、アンチスナップバック、ファズ）。
     /// 以前は <c>Mapping.SetCurveAndDeadzone</c> の冒頭と、<c>Mapping</c> の private メソッド（<c>CalcAntiSnapbackStick</c>／<c>CalcStickAxisFuzz</c>）、
     /// <c>ApplyStickCalibration</c> にあった。状態は持たない（履歴・前回の値は呼び出し側［<see cref="StickMotionState"/>］が持ち、引数で渡す）。時刻も引数で受ける。
-    /// 回転は、<c>DS4State.rotateLSCoordinates</c>／<c>rotateRSCoordinates</c>（すでに <c>DS4State</c> のメソッド）のまま。
+    /// 回転は、<c>ControllerState.rotateLSCoordinates</c>／<c>rotateRSCoordinates</c>（すでに <c>ControllerState</c> のメソッド）のまま。
     /// </summary>
     public interface IStickInputConditioner
     {
         /// <summary>ドリフト補正（4 軸。設定の値を差し引き、0〜255 に丸める）。<paramref name="state"/> を書き換えて、そのまま返す。</summary>
-        DS4State ApplyDrift(int device, DS4State state, IProfileSettingsService settings);
+        ControllerState ApplyDrift(int device, ControllerState state, IProfileSettingsService settings);
 
         /// <summary>
         /// アンチスナップバック。<paramref name="history"/> は、そのスティックの履歴（古いものを捨て、今回の値を足す）、<paramref name="timeoutMs"/> は残す時間、

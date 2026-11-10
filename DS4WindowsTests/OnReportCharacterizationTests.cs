@@ -32,13 +32,13 @@ namespace DS4WindowsTests
         }
 
         /// <summary>レポート処理が読む、保護フィールドを持つテスト用デバイス（受信した 1 回分の入力［cState］を指定できる）。</summary>
-        private static TestDs4Device NewDevice(Action<DS4State> fill = null)
+        private static TestDs4Device NewDevice(Action<ControllerState> fill = null)
         {
             TestDs4Device d = TestDs4Device.Create();
-            var cState = new DS4State();
+            var cState = new ControllerState();
             fill?.Invoke(cState);
             Set(d, "cState", cState);
-            Set(d, "pState", new DS4State());
+            Set(d, "pState", new ControllerState());
             d.firstReport = false;
             d.firstActive = DateTime.UtcNow;
             return d;
@@ -59,7 +59,7 @@ namespace DS4WindowsTests
             TestHost.GetService<IInputReportProcessor>().OnReport(device, EventArgs.Empty, ind);
         }
 
-        private static DS4State Current(int ind) => TestHost.GetService<IDeviceSlotState>().CurrentStates[ind];
+        private static ControllerState Current(int ind) => TestHost.GetService<IDeviceSlotState>().CurrentStates[ind];
 
         [Fact]
         public void Index_MinusOne_DoesNothing()
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             InputDeviceCore d = NewDevice(s => { s.LX = 200; s.LY = 40; s.R2 = 77; });
             Invoke(d, Slot);
 
-            DS4State current = Current(Slot);
+            ControllerState current = Current(Slot);
             Assert.Equal(200, current.LX);
             Assert.Equal(40, current.LY);
             Assert.Equal(77, current.R2);

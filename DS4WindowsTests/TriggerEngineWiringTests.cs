@@ -58,9 +58,9 @@ namespace DS4WindowsTests
             public void Dispose() => Unmigrate();
         }
 
-        private static DS4State Frame(bool l1)
+        private static ControllerState Frame(bool l1)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             return state;
         }
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
                 new BindingPolicy(respectsFreshPressGuard: false), sa, 0));
 
             input.Established = true;
-            DS4State first = t.RunFrame(Frame(true));
+            ControllerState first = t.RunFrame(Frame(true));
 
             // 旧経路なら Button の Press は Cross を出力する。新経路（偽の出力）では、旧ループが通らないので Cross は出ない
             Assert.False(first.Cross);
@@ -120,7 +120,7 @@ namespace DS4WindowsTests
             var result = new List<(bool, bool)>();
             foreach (bool l1 in l1Sequence)
             {
-                DS4State output = t.RunFrame(Frame(l1));
+                ControllerState output = t.RunFrame(Frame(l1));
                 result.Add((output.Cross, output.L1));
             }
 

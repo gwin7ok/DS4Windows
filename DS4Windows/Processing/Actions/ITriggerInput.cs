@@ -7,7 +7,7 @@ namespace DS4Windows.Processing.Actions
     /// <summary>
     /// Phase8-Step3 W1: トリガー条件の判定に渡す、読み取り専用の入力（Phase8-Step2-Design.md §3。Q1＝A）。
     /// <c>Mapping</c> が毎フレーム、デバイスごとに再利用するオブジェクトを更新して渡す（割り当て 0）。
-    /// タッチ・スワイプ・ジャイロの判定は <c>DS4State</c> だけでは足りないため、<c>DS4StateFieldMapping</c> を含む入力をまとめて表す。
+    /// タッチ・スワイプ・ジャイロの判定は <c>ControllerState</c> だけでは足りないため、<c>ControllerStateFieldMapping</c> を含む入力をまとめて表す。
     /// </summary>
     public interface ITriggerInput
     {

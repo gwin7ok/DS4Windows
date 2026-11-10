@@ -84,7 +84,7 @@ namespace DS4Windows.Output
         }
 
         /// <summary>入力の状態から、仮想 DS4 のボタン・十字キー・特殊ボタンの値を求める（Basic と Ext で共通）。</summary>
-        protected static void MapButtons(DS4State state, out ushort tempButtons,
+        protected static void MapButtons(ControllerState state, out ushort tempButtons,
             out Ds4DPadDirection tempDPad, out ushort tempSpecial)
         {
             tempButtons = 0;

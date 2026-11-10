@@ -61,7 +61,7 @@ namespace DS4WindowsTests
         {
             // 検査そのものが働くことの確認。AppLogger.NotificationService の getter は、本体の中でだけ new NullNotificationService() を行う
             // （シグネチャやフィールドには現れない、メソッド本体だけの参照）。
-            // Phase14b-Step5: 旧対象（DS4Devices → UI の NotificationService.ShowToast）は是正したため差し替えた
+            // Phase14b-Step5: 旧対象（InputDeviceRegistry → UI の NotificationService.ShowToast）は是正したため差し替えた
             Assert.Contains(LayerDependencyScanner.Edges,
                 e => e.Source == "DS4Windows.Core.Logging.AppLogger" && e.Target == "DS4Windows.Core.Logging.NullNotificationService");
         }

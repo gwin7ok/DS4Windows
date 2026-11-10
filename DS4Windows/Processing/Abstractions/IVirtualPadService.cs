@@ -21,7 +21,7 @@ namespace DS4Windows.Processing.Abstractions
         bool HasOutputDevice(int index);
 
         /// <summary>スロット <paramref name="index"/> の出力デバイスへ、入力の状態を送る（割り当てがなければ何もしない）。入力レポートごとに呼ばれる。</summary>
-        void SendReport(int index, DS4State state);
+        void SendReport(int index, ControllerState state);
 
         /// <summary>出力デバイスの抜き差しのキューが動いているか（<see cref="StopOutputSlots"/> の前に空になるのを待つのに使う）。</summary>
         bool IsOutputQueueRunning { get; }

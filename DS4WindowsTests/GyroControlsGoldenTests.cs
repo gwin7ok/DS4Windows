@@ -141,12 +141,12 @@ namespace DS4WindowsTests
         private static (int X, int Z) Run(Mapping mapper, BackingStore store, int accelX, int accelZ)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
             cState.Motion.accelX = accelX;
             cState.Motion.accelZ = accelZ;
             cState.Motion.outputGyroControls = true;
-            DS4State result = mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
+            ControllerState result = mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
             return (result.Motion.outputAccelX, result.Motion.outputAccelZ);
         }
 

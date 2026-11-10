@@ -41,3 +41,5 @@
 ## 4. 更新履歴
 
 - 2026-11-10: 作成。コードは未着手。
+- 2026-11-10 D 完了: `Processing` 直下のファイルを `Touchpad`／`Gyro`／`Macro`／`Synthetic` へ分け、名前空間を合わせた。`Mouse` は実体（タッチパッド→マウス）に合わせて `TouchpadMouse`（`ITouchpadMouseFactory`／`TouchpadMouseFactory` も）へ改名。直下に残すのは、マッピングの中核と、スロットの実行時の管理（E で扱う）。規則 R1 を更新。
+- 2026-11-10 F 完了: 機種に依らない型の名前を一般化した。`DS4State`→`ControllerState`、`DS4StateExposed`→`ControllerStateExposed`、`DS4StateFieldMapping`→`ControllerStateFieldMapping`、`IDs4DeviceRegistry`→`IInputDeviceRegistry`、`Ds4DeviceRegistryAdapter`→`InputDeviceRegistryAdapter`、`DS4Devices`→`InputDeviceRegistry`、スロットの `DS4Controllers`→`Controllers`。**あえて残したもの**: `DS4Controls`（約 2,100 か所）、`DS4KeyType`、`DS4Color`、`DS4LightBar`、`DS4Touchpad` など。`DS4Controls` はプロファイル（XML）と画面の共通の語彙（Cross／Circle／Share…）で、他機種はその語彙へ対応づける設計（DS4 の配置を正準とする）。名前だけ変えても語彙は変わらず、利用者の保存データとの対応を保つため。DS4 固有のもの（`Ds4ReportParser`、`Ds4OutputCartridge`、`IDs4PadTarget`、ライトバー）も残す。

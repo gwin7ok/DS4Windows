@@ -22,7 +22,7 @@ using DS4Windows.Input;
 
 namespace DS4Windows.Processing
 {
-    public class DS4StateFieldMapping
+    public class ControllerStateFieldMapping
     {
         public enum ControlType : int { Unknown = 0, Button, AxisDir, Trigger, Touch, GyroDir, SwipeDir }
         public const byte LAST_DS4_ACTION = (byte)DS4Controls.TouchEnded;
@@ -92,16 +92,16 @@ namespace DS4Windows.Processing
             ControlType.Button, // DS4Controls.TouchEnded
         };
 
-        public DS4StateFieldMapping()
+        public ControllerStateFieldMapping()
         {
         }
 
-        public DS4StateFieldMapping(DS4State cState, DS4StateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
+        public ControllerStateFieldMapping(ControllerState cState, ControllerStateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
         {
             PopulateFieldMapping(cState, exposeState, tp, priorMouse);
         }
 
-        public void PopulateFieldMapping(DS4State cState, DS4StateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
+        public void PopulateFieldMapping(ControllerState cState, ControllerStateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
         {
             unchecked
             {
@@ -179,7 +179,7 @@ namespace DS4Windows.Processing
             }
         }
 
-        public void PopulateState(DS4State state)
+        public void PopulateState(ControllerState state)
         {
             unchecked
             {

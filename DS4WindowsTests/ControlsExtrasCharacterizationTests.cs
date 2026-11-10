@@ -29,9 +29,9 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State State(bool cross = false, bool circle = false, byte l2 = 0, byte lx = 128)
+        private static ControllerState State(bool cross = false, bool circle = false, byte l2 = 0, byte lx = 128)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = cross;
             state.Circle = circle;
             state.L2 = l2;
@@ -191,7 +191,7 @@ namespace DS4WindowsTests
             _output.WriteLine($"[7.8e W1 new] 同時に押したとき、後に処理されるのは {(circleIsLast ? "Circle" : "Cross")}");
 
             // 順序 1: 後に処理されるほうを先に離す
-            DS4State firstOnly = circleIsLast ? State(cross: true) : State(circle: true);
+            ControllerState firstOnly = circleIsLast ? State(cross: true) : State(circle: true);
             t.Run(firstOnly);
             // 新経路（承認済み。Q3＝B）: 離したボタンの分を元に戻す。押したままのほうは、同じフレームでは先に処理されるため、一瞬途切れ、次のフレームで再び適用する
             Assert.False(t.ForceLight);
@@ -223,7 +223,7 @@ namespace DS4WindowsTests
             t.PublishControlsOnly();
 
             t.Run(State());
-            DS4State output = t.Run(State(cross: true));
+            ControllerState output = t.Run(State(cross: true));
 
             Assert.True(output.Cross);   // Default の割り当ては、通常の出力を消さない
             Assert.True(t.ForceLight);
@@ -239,7 +239,7 @@ namespace DS4WindowsTests
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, 65);
 
             t.Run(State());
-            DS4State output = t.Run(State(cross: true));
+            ControllerState output = t.Run(State(cross: true));
 
             Assert.True(t.IsBeingTriggered(sa));   // Key が動く
             Assert.False(output.Cross);            // 割り当てたボタンの通常の出力は消える

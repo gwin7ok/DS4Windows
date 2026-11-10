@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Services
     {
         private readonly IAppSettingsService _appSettings;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IDs4DeviceRegistry _deviceRegistry;
+        private readonly IInputDeviceRegistry _deviceRegistry;
         private readonly IVirtualPadService _virtualPad;
         private readonly ILatencyMonitor _latencyMonitor;
         private readonly IDeviceConnector _deviceConnector;
@@ -73,7 +73,7 @@ namespace DS4Windows.Processing.Services
         private readonly ILightbarService _lightbarService;
 
         public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, ILightbarService lightbarService, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            IDs4DeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor,
+            IInputDeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor,
             IDeviceConnector deviceConnector, IDeviceSlotState slots,
             IEventThreadDispatcher eventThread, IOutputServicesLifecycle outputs)
         {
@@ -119,7 +119,7 @@ namespace DS4Windows.Processing.Services
                         _deviceRegistry.FindControllers();
                     });
 
-                    IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
+                    IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
                     int numControllers = devices.Count();
                     ActiveControllers = numControllers;
                     _lightbar.defaultLight = false;
@@ -131,7 +131,7 @@ namespace DS4Windows.Processing.Services
 
                         _deviceConnector.BeginPrepare(device, showlog: true);
 
-                        slots.DS4Controllers[i] = device;
+                        slots.Controllers[i] = device;
                         device.DeviceSlotNumber = i;
                         _deviceConnector.PrepareConnected(numControllers, device, index: i);
 
@@ -175,9 +175,9 @@ namespace DS4Windows.Processing.Services
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_VigemClosing");
 
                 bool anyUnplugged = false;
-                for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
+                for (int i = 0, arlength = slots.Controllers.Length; i < arlength; i++)
                 {
-                    InputDeviceCore tempDevice = slots.DS4Controllers[i];
+                    InputDeviceCore tempDevice = slots.Controllers[i];
                     if (tempDevice != null)
                     {
                         if ((_appSettings.DCBTatStop && !tempDevice.isCharging()) || Suspending)
@@ -203,7 +203,7 @@ namespace DS4Windows.Processing.Services
                             _lightbar.forcelight[i] = false;
                             _lightbar.forcedFlash[i] = 0;
                             _lightbar.defaultLight = true;
-                            _lightbarService.Update(slots.DS4Controllers[i], i);
+                            _lightbarService.Update(slots.Controllers[i], i);
                             tempDevice.IsRemoved = true;
                             tempDevice.StopUpdate();
                             _deviceRegistry.RemoveDevice(tempDevice);
@@ -221,7 +221,7 @@ namespace DS4Windows.Processing.Services
                         //useDInputOnly[i] = true;
                         //Global.activeOutDevType[i] = OutContType.None;
                         _profileSettings.UseDInputOnlyArray[i] = true;
-                        slots.DS4Controllers[i] = null;
+                        slots.Controllers[i] = null;
                         _outputs.ResetDeviceState(i);
                         slots.TouchPads[i] = null;
                         _latencyMonitor.Reset(i);
@@ -262,7 +262,7 @@ namespace DS4Windows.Processing.Services
                     _deviceRegistry.FindControllers();
                 });
 
-                IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
+                IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
                 int numControllers = devices.Count();
                 ActiveControllers = numControllers;
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && LoopControllers;)
@@ -275,10 +275,10 @@ namespace DS4Windows.Processing.Services
                     // Use local method rather than Func
                     bool checkAlreadyExists()
                     {
-                        for (int Index = 0, arlength = slots.DS4Controllers.Length; Index < arlength; Index++)
+                        for (int Index = 0, arlength = slots.Controllers.Length; Index < arlength; Index++)
                         {
-                            if (slots.DS4Controllers[Index] != null &&
-                                slots.DS4Controllers[Index].getMacAddress() == device.getMacAddress())
+                            if (slots.Controllers[Index] != null &&
+                                slots.Controllers[Index].getMacAddress() == device.getMacAddress())
                             {
                                 device.CheckControllerNumDeviceSettings(numControllers);
                                 return true;
@@ -293,14 +293,14 @@ namespace DS4Windows.Processing.Services
                         continue;
                     }
 
-                    for (int Index = 0, arlength = slots.DS4Controllers.Length;
+                    for (int Index = 0, arlength = slots.Controllers.Length;
                         Index < arlength && Index < _controllerSlotLimit; Index++)
                     {
-                        if (slots.DS4Controllers[Index] == null)
+                        if (slots.Controllers[Index] == null)
                         {
                             _deviceConnector.BeginPrepare(device);
 
-                            slots.DS4Controllers[Index] = device;
+                            slots.Controllers[Index] = device;
                             device.DeviceSlotNumber = Index;
                             _deviceConnector.PrepareConnected(numControllers, device, Index);
 
@@ -319,9 +319,9 @@ namespace DS4Windows.Processing.Services
         public void PrepareAbort()
         {
             IDeviceSlotState slots = _slots;
-            for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
+            for (int i = 0, arlength = slots.Controllers.Length; i < arlength; i++)
             {
-                InputDeviceCore tempDevice = slots.DS4Controllers[i];
+                InputDeviceCore tempDevice = slots.Controllers[i];
                 if (tempDevice != null)
                 {
                     tempDevice.PrepareAbort();

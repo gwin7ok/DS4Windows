@@ -28,8 +28,8 @@ namespace DS4WindowsTests
         public void Toggle_TurnsTheTouchpadOff_ThenWaitsForRelease_ThenTurnsItOn()
         {
             var toggle = NewToggle(out var settings);
-            var touching = new DS4State { Touch1 = true };
-            var psWasDown = new DS4State { PS = true };
+            var touching = new ControllerState { Touch1 = true };
+            var psWasDown = new ControllerState { PS = true };
 
             toggle.CheckForToggle(Slot, touching, psWasDown);
             Assert.False(settings.TouchpadActiveArray[Slot]);
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
             Assert.False(settings.TouchpadActiveArray[Slot]);
 
             // 離してから、もう一度 → ON に戻る
-            toggle.CheckForToggle(Slot, new DS4State(), new DS4State());
+            toggle.CheckForToggle(Slot, new ControllerState(), new ControllerState());
             toggle.CheckForToggle(Slot, touching, psWasDown);
             Assert.True(settings.TouchpadActiveArray[Slot]);
         }
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             var toggle = NewToggle(out var settings);
             settings.TouchOutMode[Slot] = TouchpadOutMode.Controls;
 
-            toggle.CheckForToggle(Slot, new DS4State { Touch1 = true }, new DS4State { PS = true });
+            toggle.CheckForToggle(Slot, new ControllerState { Touch1 = true }, new ControllerState { PS = true });
 
             Assert.True(settings.TouchpadActiveArray[Slot]);
         }
@@ -73,15 +73,15 @@ namespace DS4WindowsTests
         {
             var toggle = NewToggle(out _);
 
-            Assert.Equal("none", toggle.Slide(Slot, new DS4State { Touch2 = true }, null, false));
-            Assert.Equal("none", toggle.Slide(Slot, new DS4State { Touch2 = false }, null, true));
+            Assert.Equal("none", toggle.Slide(Slot, new ControllerState { Touch2 = true }, null, false));
+            Assert.Equal("none", toggle.Slide(Slot, new ControllerState { Touch2 = false }, null, true));
         }
 
         [Fact]
         public void Probe_ReturnsNone_WhenNotConnected()
         {
             var probe = new ActiveInputProbe();
-            Assert.Equal(DS4Controls.None, probe.GetActive(new DS4State { Cross = true }, null, false));
+            Assert.Equal(DS4Controls.None, probe.GetActive(new ControllerState { Cross = true }, null, false));
         }
 
         [Fact]
@@ -90,12 +90,12 @@ namespace DS4WindowsTests
             var probe = new ActiveInputProbe();
 
             // Cross は Circle・L1 などより先に判定される
-            Assert.Equal(DS4Controls.Cross, probe.GetActive(new DS4State { Cross = true, Circle = true, L1 = true }, null, true));
-            Assert.Equal(DS4Controls.Circle, probe.GetActive(new DS4State { Circle = true, L1 = true }, null, true));
-            Assert.Equal(DS4Controls.L1, probe.GetActive(new DS4State { L1 = true, R1 = true }, null, true));
+            Assert.Equal(DS4Controls.Cross, probe.GetActive(new ControllerState { Cross = true, Circle = true, L1 = true }, null, true));
+            Assert.Equal(DS4Controls.Circle, probe.GetActive(new ControllerState { Circle = true, L1 = true }, null, true));
+            Assert.Equal(DS4Controls.L1, probe.GetActive(new ControllerState { L1 = true, R1 = true }, null, true));
             // L1 の次は L2（トリガー）、その次が L3
-            Assert.Equal(DS4Controls.L2, probe.GetActive(new DS4State { L2 = 255, L3 = true }, null, true));
-            Assert.Equal(DS4Controls.DpadUp, probe.GetActive(new DS4State { DpadUp = true, Share = true }, null, true));
+            Assert.Equal(DS4Controls.L2, probe.GetActive(new ControllerState { L2 = 255, L3 = true }, null, true));
+            Assert.Equal(DS4Controls.DpadUp, probe.GetActive(new ControllerState { DpadUp = true, Share = true }, null, true));
         }
 
         [Fact]

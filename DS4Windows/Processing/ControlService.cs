@@ -52,11 +52,11 @@ namespace DS4Windows.Processing
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
         // Phase13-Step5: スロット状態の配列は IDeviceSlotState（DeviceSlotState）が所有する。ここは、コンストラクターで一度だけ取得した参照を保持する（ホットパス［On_Report］は従来どおりこのフィールドを読む。配列の参照は再代入されない）。
         private readonly DS4Windows.Processing.Abstractions.IInputReportProcessor _inputReport;   // Phase13-Step5b
-        private readonly InputDeviceCore[] DS4Controllers;
+        private readonly InputDeviceCore[] Controllers;
         // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
         // Phase13-Step9: running／suspending の転送は削除した（利用者の App／MainWindow／TrayIconViewModel は IServiceLifecycle を直接使う）。
-        private readonly DS4State[] PreviousState;
-        private readonly DS4State[] TempState;
+        private readonly ControllerState[] PreviousState;
+        private readonly ControllerState[] TempState;
         bool[] buttonsdown = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
         bool[] held = new bool[MAX_DS4_CONTROLLER_COUNT];
         int[] oldmouse = new int[MAX_DS4_CONTROLLER_COUNT] { -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -146,7 +146,7 @@ namespace DS4Windows.Processing
             // Phase13-Step5b: 入力レポートの処理は InputReportProcessor が持つ（MappedState／CurrentStates／ExposedState の初期化も、その先頭で済んでいる）
             this._inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
             // Phase13-Step5: スロット状態の配列の参照を一度だけ取得して保持する（以降の読み書きは、従来どおりこれらのフィールドを通す）
-            this.DS4Controllers = slots.DS4Controllers;
+            this.Controllers = slots.Controllers;
             this.PreviousState = slots.PreviousStates;
             this.TempState = slots.TempStates;
             // TODO(技術的負債): 過渡期の防御コード。DI 経由の生成（ServiceRegistration）では profileSettings は常に非 null。
@@ -165,11 +165,11 @@ namespace DS4Windows.Processing
 
             // Phase13-Step3: イベントスレッドの生成は EventThreadDispatcher のコンストラクターへ移した
 
-            for (int i = 0, arlength = DS4Controllers.Length; i < arlength; i++)
+            for (int i = 0, arlength = Controllers.Length; i < arlength; i++)
             {
                 // Phase13-Step5b: MappedState／CurrentState／ExposedState の作成は InputReportProcessor のコンストラクターへ移した
-                TempState[i] = new DS4State();
-                PreviousState[i] = new DS4State();
+                TempState[i] = new ControllerState();
+                PreviousState[i] = new ControllerState();
 
                 int tempDev = i;
                 _profileSettings.L2OutputSettings[i].TwoStageModeChanged += (sender, e) =>

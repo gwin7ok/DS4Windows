@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         [Theory]
-        [InlineData("DS4Controllers")]
+        [InlineData("Controllers")]
         [InlineData("PreviousState")]
         [InlineData("TempState")]
         public void SlotStateFields_AreReadonly(string name)
@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             var slots = TestHost.GetService<IDeviceSlotState>();
             var control = TestHost.GetService<ControlService>();
 
-            Assert.Same(slots.DS4Controllers, typeof(ControlService).GetField("DS4Controllers", All).GetValue(control));
+            Assert.Same(slots.Controllers, typeof(ControlService).GetField("Controllers", All).GetValue(control));
             Assert.Same(slots.PreviousStates, typeof(ControlService).GetField("PreviousState", All).GetValue(control));
             Assert.Same(slots.TempStates, typeof(ControlService).GetField("TempState", All).GetValue(control));
         }
@@ -45,8 +45,8 @@ namespace DS4WindowsTests
             var slots = TestHost.GetService<IDeviceSlotState>();
 
             Assert.Null(slots.GetController(-1));
-            Assert.Null(slots.GetController(slots.DS4Controllers.Length));
-            Assert.Same(slots.DS4Controllers[0], slots.GetController(0));
+            Assert.Null(slots.GetController(slots.Controllers.Length));
+            Assert.Same(slots.Controllers[0], slots.GetController(0));
         }
     }
 }

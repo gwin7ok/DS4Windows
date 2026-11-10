@@ -15,6 +15,6 @@ namespace DS4Windows.Processing.Abstractions
         /// 押されている入力を返す（なければ <see cref="DS4Controls.None"/>）。
         /// <paramref name="connected"/> はそのスロットにデバイスがあるか（なければ常に None）。<paramref name="tp"/> は connected のときだけ読む。
         /// </summary>
-        DS4Controls GetActive(DS4State cState, TouchpadMouse tp, bool connected);
+        DS4Controls GetActive(ControllerState cState, TouchpadMouse tp, bool connected);
     }
 }

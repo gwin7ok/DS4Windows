@@ -56,9 +56,9 @@ namespace DS4Windows.Processing.Services
             IDeviceSlotState host = _host;
             InputDeviceCore device = (InputDeviceCore)sender;
             int ind = -1;
-            for (int i = 0, arlength = host.DS4Controllers.Length; ind == -1 && i < arlength; i++)
+            for (int i = 0, arlength = host.Controllers.Length; ind == -1 && i < arlength; i++)
             {
-                if (host.DS4Controllers[i] != null && device.getMacAddress() == host.DS4Controllers[i].getMacAddress())
+                if (host.Controllers[i] != null && device.getMacAddress() == host.Controllers[i].getMacAddress())
                     ind = i;
             }
 
@@ -119,7 +119,7 @@ namespace DS4Windows.Processing.Services
 
                     device.IsRemoved = true;
                     device.Synced = false;
-                    host.DS4Controllers[ind] = null;
+                    host.Controllers[ind] = null;
                     _oscService.ResetDeviceState(ind);
                     //eventDispatcher.Invoke(() =>
                     //{
@@ -157,7 +157,7 @@ namespace DS4Windows.Processing.Services
             int ind = -1;
             for (int i = 0, arlength = _controllerSlotLimit; ind == -1 && i < arlength; i++)
             {
-                InputDeviceCore tempDev = host.DS4Controllers[i];
+                InputDeviceCore tempDev = host.Controllers[i];
                 if (tempDev != null && device == tempDev)
                     ind = i;
             }
@@ -196,7 +196,7 @@ namespace DS4Windows.Processing.Services
             int ind = -1;
             for (int i = 0, arlength = ControllerLimits.MaxControllerCount; ind == -1 && i < arlength; i++)
             {
-                InputDeviceCore tempDev = host.DS4Controllers[i];
+                InputDeviceCore tempDev = host.Controllers[i];
                 if (tempDev != null && device == tempDev)
                     ind = i;
             }

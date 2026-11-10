@@ -33,7 +33,7 @@ namespace DS4Windows.Processing.Touchpad
     {
         protected DateTime pastTime, firstTap, TimeofEnd;
         protected Touch firstTouch, secondTouch;
-        private DS4State s = new DS4State();
+        private ControllerState s = new ControllerState();
         protected int deviceNum;
         private InputDeviceCore dev = null;
         private readonly MouseCursor cursor;
@@ -1802,7 +1802,7 @@ namespace DS4Windows.Processing.Touchpad
             priorSwipeDownB = swipeDownB; priorSwipedB = swipedB;
         }
 
-        public DS4State getDS4State()
+        public ControllerState getDS4State()
         {
             return s;
         }

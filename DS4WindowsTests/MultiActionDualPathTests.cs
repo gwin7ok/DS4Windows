@@ -23,9 +23,9 @@ namespace DS4WindowsTests
     {
         private const string Details = "65/65,66/66,67/67";   // タップ → キー 65、長押し → キー 66、ダブルタップ → キー 67
 
-        private static DS4State Frame(bool l1)
+        private static ControllerState Frame(bool l1)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             return state;
         }
@@ -34,21 +34,21 @@ namespace DS4WindowsTests
         private sealed class Harness : IDisposable
         {
             private readonly TestDs4Device _device = TestDs4Device.Create();
-            private DS4State _previous = SpecialActionTestScope.Neutral();
+            private ControllerState _previous = SpecialActionTestScope.Neutral();
 
             public Harness()
             {
                 Scope = new SpecialActionTestScope();
-                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[Scope.Device] = _device;
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[Scope.Device] = _device;
             }
 
             public SpecialActionTestScope Scope { get; }
 
-            public DS4State Step(bool l1)
+            public ControllerState Step(bool l1)
             {
-                DS4State input = Frame(l1);
+                ControllerState input = Frame(l1);
                 _device.Previous = _previous;
-                DS4State mapped = Scope.RunFrame(input);
+                ControllerState mapped = Scope.RunFrame(input);
                 _previous = input;
                 return mapped;
             }
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
 
             public void Dispose()
             {
-                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[Scope.Device] = null;
+                TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[Scope.Device] = null;
                 Scope.Dispose();
             }
         }

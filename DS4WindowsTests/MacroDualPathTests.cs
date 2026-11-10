@@ -18,16 +18,16 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class MacroDualPathTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
         }
 
         private static List<(bool Being, bool Playing)> Run(string triggers, string extras, double delay, bool freshPressGuard,
-            DS4State[] frames, int applyBeforeFrame = -1)
+            ControllerState[] frames, int applyBeforeFrame = -1)
         {
             using var t = new SpecialActionTestScope();
             SpecialAction sa = t.Add(new SpecialAction("p8s73_macro_" + Guid.NewGuid().ToString("N"), triggers, "Macro", "65", delay, extras));
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Press_Sequence_GivesTheState()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false) };
 
             var result = Run("L1", string.Empty, 0, false, frames);
 
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RunOnRelease_Sequence_GivesTheState()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(false) };
 
             var result = Run("L1", "RunOnRelease", 0, false, frames);
 
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
         [InlineData("RunOnRelease")]
         public void WhileTheFreshPressGuardIsOn_NothingRuns(string extras)
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(true) };
 
             var result = Run("L1", extras, 0, true, frames);
 
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_GivesTheState()
         {
-            DS4State[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
+            ControllerState[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
 
             var result = Run("L1/R1", string.Empty, 0, false, frames);
 

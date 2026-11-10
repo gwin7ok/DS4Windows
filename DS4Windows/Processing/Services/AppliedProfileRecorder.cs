@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Services
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
-            _ds4Controllers = (slots ?? throw new ArgumentNullException(nameof(slots))).DS4Controllers;
+            _ds4Controllers = (slots ?? throw new ArgumentNullException(nameof(slots))).Controllers;
         }
 
         public void Attach()

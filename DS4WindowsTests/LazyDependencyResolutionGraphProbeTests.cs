@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             [typeof(IVirtualKBM)] = typeof(OutputKBMHandlerAdapter),
             [typeof(IDeviceStateAccessor)] = typeof(DeviceSlotState),
             [typeof(IInputReportProcessor)] = typeof(InputReportProcessor),
-            [typeof(IDs4DeviceRegistry)] = typeof(Ds4DeviceRegistryAdapter),
+            [typeof(IInputDeviceRegistry)] = typeof(InputDeviceRegistryAdapter),
             [typeof(ControlService)] = typeof(ControlService),
             [typeof(IOutputDeviceTypeState)] = typeof(OutputDeviceTypeState),
         };

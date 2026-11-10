@@ -21,7 +21,7 @@ namespace DS4Windows.Output.Services
     public sealed class UdpMotionService : IUdpMotionService
     {
         private readonly IAppSettingsService _appSettings;
-        private readonly IDs4DeviceRegistry _deviceRegistry;
+        private readonly IInputDeviceRegistry _deviceRegistry;
         private readonly IUdpMotionServerFactory _serverFactory;
         private readonly IDeviceSlotState _slots;
         private readonly IEventThreadDispatcher _eventThread;
@@ -44,7 +44,7 @@ namespace DS4Windows.Output.Services
 
         private IUdpMotionServer _udpServer;
 
-        public UdpMotionService(IAppSettingsService appSettings, IDs4DeviceRegistry deviceRegistry,
+        public UdpMotionService(IAppSettingsService appSettings, IInputDeviceRegistry deviceRegistry,
             IUdpMotionServerFactory serverFactory, IDeviceSlotState slots, IEventThreadDispatcher eventThread)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -143,7 +143,7 @@ namespace DS4Windows.Output.Services
 
         public void ChangeMotionEventStatus(bool state)
         {
-            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
+            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
             if (state)
             {
                 int i = 0;
@@ -186,7 +186,7 @@ namespace DS4Windows.Output.Services
         public async void UsePort()
         {
             ChangingPort = true;
-            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
+            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
             foreach (InputDeviceCore dev in devices)
             {
                 dev.queueEvent(() =>
@@ -231,7 +231,7 @@ namespace DS4Windows.Output.Services
 
         /// <summary>
         /// そのスロットのパッドの情報を <paramref name="meta"/> に書く（UDP モーションのサーバーが問い合わせる）。
-        /// Phase13-Step5: 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.DS4Controllers"/> と <c>InputDeviceCore</c> のメソッドだけ）。
+        /// Phase13-Step5: 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.Controllers"/> と <c>InputDeviceCore</c> のメソッドだけ）。
         /// </summary>
         public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
         {
@@ -239,7 +239,7 @@ namespace DS4Windows.Output.Services
             meta.PadId = (byte)padIdx;
             meta.Model = DsModel.DS4;
 
-            var d = _slots.DS4Controllers[padIdx];
+            var d = _slots.Controllers[padIdx];
             if (d == null)
             {
                 meta.PadMacAddress = null;
@@ -308,7 +308,7 @@ namespace DS4Windows.Output.Services
             {
                 DualShockPadMeta padDetail = new DualShockPadMeta();
                 GetPadDetailForIdx(tempIdx, ref padDetail);
-                DS4State stateForUdp = host.GetTempState(tempIdx);
+                ControllerState stateForUdp = host.GetTempState(tempIdx);
 
                 host.GetCurrentState(tempIdx).CopyTo(stateForUdp);
                 if (_appSettings.UseUdpServerSmoothing)

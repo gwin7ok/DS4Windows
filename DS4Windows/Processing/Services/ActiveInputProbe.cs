@@ -11,7 +11,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class ActiveInputProbe : DS4Windows.Processing.Abstractions.IActiveInputProbe
     {
-        public DS4Controls GetActive(DS4State cState, TouchpadMouse tp, bool connected)
+        public DS4Controls GetActive(ControllerState cState, TouchpadMouse tp, bool connected)
         {
             DS4Controls result = DS4Controls.None;
             if (connected)

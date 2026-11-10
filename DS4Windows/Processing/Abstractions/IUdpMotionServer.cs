@@ -15,6 +15,6 @@ namespace DS4Windows.Processing.Abstractions
         void Stop();
 
         /// <summary>1 フレーム分の入力を、購読中のクライアントへ送る（入力スレッドから呼ばれる。割り当てなし）。</summary>
-        void NewReportIncoming(ref DualShockPadMeta padMeta, DS4State hidReport, byte[] outputData);
+        void NewReportIncoming(ref DualShockPadMeta padMeta, ControllerState hidReport, byte[] outputData);
     }
 }

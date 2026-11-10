@@ -42,19 +42,19 @@ namespace DS4WindowsTests
             {
                 Assert.Same(slots.TouchPads[i], target.GetTouchPad(i));
                 Assert.Equal(TestHost.GetService<DS4Windows.Processing.Abstractions.IVirtualPadService>().HasOutputDevice(i), target.HasOutputDevice(i));
-                Assert.Same(slots.DS4Controllers[i], target.GetController(i));
+                Assert.Same(slots.Controllers[i], target.GetController(i));
             }
 
             var device = TestDs4Device.Create();
-            InputDeviceCore old = slots.DS4Controllers[0];
-            slots.DS4Controllers[0] = device;
+            InputDeviceCore old = slots.Controllers[0];
+            slots.Controllers[0] = device;
             try
             {
                 Assert.Same(device, target.GetController(0));
             }
             finally
             {
-                slots.DS4Controllers[0] = old;
+                slots.Controllers[0] = old;
             }
         }
 

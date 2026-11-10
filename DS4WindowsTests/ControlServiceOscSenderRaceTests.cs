@@ -31,8 +31,8 @@ namespace DS4WindowsTests
             OscService service = CreateService();
             Assert.False(service.HasSender);
 
-            var cState = new DS4State { Battery = 50, Cross = true };
-            var tempMapState = new DS4State();
+            var cState = new ControllerState { Battery = 50, Cross = true };
+            var tempMapState = new ControllerState();
 
             // バッテリー値が異なるため、送信経路（SendOsc）を通る
             Exception ex = Record.Exception(() => service.PreMappingStep(0, cState, tempMapState));

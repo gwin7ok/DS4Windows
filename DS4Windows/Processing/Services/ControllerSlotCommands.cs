@@ -83,7 +83,7 @@ namespace DS4Windows.Processing.Services
 
         private InputDeviceCore DeviceAt(int slot)
         {
-            InputDeviceCore[] controllers = _slotState.DS4Controllers;
+            InputDeviceCore[] controllers = _slotState.Controllers;
             if (controllers == null || slot < 0 || slot >= controllers.Length)
                 return null;
 

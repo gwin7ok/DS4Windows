@@ -16,13 +16,13 @@ namespace DS4Windows.Processing.Abstractions
         // ---- 入力の評価（ControlService が毎レポート呼ぶ） ----
 
         /// <summary>入力にカーブ・デッドゾーン・ドリフト補正・ジャイロ→コントロール変換を適用した状態を返す。</summary>
-        DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState, IProfileSettingsService settings);
+        ControllerState SetCurveAndDeadzone(int device, ControllerState cState, ControllerState dState, IProfileSettingsService settings);
 
         /// <summary>プロファイルの割り当てを評価して <paramref name="MappedState"/> に書く（通常入力の評価の本体）。</summary>
-        void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState, TouchpadMouse tp);
+        void MapCustom(int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState, TouchpadMouse tp);
 
         /// <summary>タッチパッドをジョイスティックとして扱うときの補助。</summary>
-        void TempMouseJoystick(int device, DS4State MappedState);
+        void TempMouseJoystick(int device, ControllerState MappedState);
 
         /// <summary>合成キー・マウスの入力を仮想キーボード・マウスへ確定して出力する。</summary>
         void Commit(int device, IProfileSettingsService settings);
@@ -30,7 +30,7 @@ namespace DS4Windows.Processing.Abstractions
         // ---- 画面向け ----
 
         /// <summary>指定のコントロールが押されているかを、プロファイルの割り当てを考慮して判定する（マクロ記録画面が使う）。</summary>
-        bool GetBoolMappingExternal(int device, DS4Controls control, DS4State cState, DS4StateExposed eState, TouchpadMouse tp);
+        bool GetBoolMappingExternal(int device, DS4Controls control, ControllerState cState, ControllerStateExposed eState, TouchpadMouse tp);
 
         // ---- 切断・マクロ（Actions/* 向け） ----
 

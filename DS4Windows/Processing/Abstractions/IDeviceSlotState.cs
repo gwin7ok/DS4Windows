@@ -15,13 +15,13 @@ namespace DS4Windows.Processing.Abstractions
     public interface IDeviceSlotState : IDeviceStateAccessor
     {
         /// <summary>接続中のデバイス（スロットごと。未接続は null）。</summary>
-        InputDeviceCore[] DS4Controllers { get; }
+        InputDeviceCore[] Controllers { get; }
         /// <summary>そのスロットのデバイスの現在の入力（旧 <c>ControlService.CurrentState</c>）。</summary>
-        DS4State[] CurrentStates { get; }
+        ControllerState[] CurrentStates { get; }
         /// <summary>前回の入力（旧 <c>ControlService.PreviousState</c>）。</summary>
-        DS4State[] PreviousStates { get; }
+        ControllerState[] PreviousStates { get; }
         /// <summary>UDP へ送る前の加工に使う作業用の入力（旧 <c>ControlService.TempState</c>）。</summary>
-        DS4State[] TempStates { get; }
+        ControllerState[] TempStates { get; }
         /// <summary>タッチパッド（旧 <c>ControlService.touchPad</c>）。</summary>
         TouchpadMouse[] TouchPads { get; }
         /// <summary>スロット管理（旧 <c>ControlService.slotManager</c>）。</summary>
@@ -29,8 +29,8 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>接続中のコントローラーの数（旧 <c>ControlService.activeControllers</c>。LED 設定の変更の発火のたびに読む）。書くのは <c>ServiceLifecycle</c>（<c>IServiceLifecycle.ActiveControllers</c> はこれへ転送する）。</summary>
         int ActiveControllers { get; set; }
         /// <summary>そのスロットのデバイスの現在の入力（範囲外は例外。旧 <c>ControlService.GetCurrentState</c>）。</summary>
-        DS4State GetCurrentState(int ind);
+        ControllerState GetCurrentState(int ind);
         /// <summary>そのスロットの作業用の入力（範囲外は例外。旧 <c>ControlService.GetTempState</c>）。</summary>
-        DS4State GetTempState(int ind);
+        ControllerState GetTempState(int ind);
     }
 }

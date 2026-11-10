@@ -12,7 +12,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// 入力デバイスの種類ごとのカートリッジ（<see cref="IInputDeviceCartridge"/>）の確認。
-    /// 対応機器の表は、カートリッジへ分ける前の <c>DS4Devices</c> の静的な表と同じ内容（42 件。VID／PID・名前・種類・機能フラグ・接続方式の判定）でなければならない
+    /// 対応機器の表は、カートリッジへ分ける前の <c>InputDeviceRegistry</c> の静的な表と同じ内容（42 件。VID／PID・名前・種類・機能フラグ・接続方式の判定）でなければならない
     /// （下の黄金の表は、分ける前の実際の表を書き出したもの）。機種ごとの設定（<see cref="DeviceOptionsBase"/>）の既定値と通知も確かめる。
     /// </summary>
     public class InputDeviceCartridgeTests
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
             var cartridges = AllCartridges().ToList();
             var all = cartridges.SelectMany(c => c.KnownDevices).ToList();
 
-            Assert.Equal(all.Count, all.Select(x => (x.vid, x.pid)).Distinct().Count());   // DS4Devices は Single(...) で引く
+            Assert.Equal(all.Count, all.Select(x => (x.vid, x.pid)).Distinct().Count());   // InputDeviceRegistry は Single(...) で引く
             foreach (var cartridge in cartridges)
             {
                 foreach (var info in cartridge.KnownDevices)
@@ -112,9 +112,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRegistry_BuildsItsTableFromTheCartridges_AndAnEmptyRegistryHasNone()
         {
-            Assert.Throws<ArgumentNullException>(() => new DS4Devices(null, null));
-            var devices = new DS4Devices(null, Array.Empty<IInputDeviceCartridge>());
-            Assert.Empty(devices.getDS4Controllers());
+            Assert.Throws<ArgumentNullException>(() => new InputDeviceRegistry(null, null));
+            var devices = new InputDeviceRegistry(null, Array.Empty<IInputDeviceCartridge>());
+            Assert.Empty(devices.GetControllers());
         }
 
         [Fact]

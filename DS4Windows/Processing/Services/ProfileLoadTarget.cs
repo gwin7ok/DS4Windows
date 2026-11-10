@@ -36,8 +36,8 @@ namespace DS4Windows.Processing.Services
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
         }
 
-        // 旧 control.DS4Controllers[ind] と同じ（範囲外は例外）。IDeviceStateAccessor.GetController（範囲外は null）にしない: 鎖の PostLoadSnippet などは範囲の検査をしないため、挙動を保つ
-        public IConfigurableDevice GetController(int ind) => _slots.DS4Controllers[ind];
+        // 旧 control.Controllers[ind] と同じ（範囲外は例外）。IDeviceStateAccessor.GetController（範囲外は null）にしない: 鎖の PostLoadSnippet などは範囲の検査をしないため、挙動を保つ
+        public IConfigurableDevice GetController(int ind) => _slots.Controllers[ind];
 
         public ITouchPadGyroToggles GetTouchPad(int ind) => _slots.TouchPads[ind];
 

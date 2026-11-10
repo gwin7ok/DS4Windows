@@ -24,9 +24,9 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State Frame(bool l1)
+        private static ControllerState Frame(bool l1)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             return state;
         }
@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        private static long Allocated(SpecialActionTestScope t, DS4State input)
+        private static long Allocated(SpecialActionTestScope t, ControllerState input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 1000; i++) t.RunFrame(input);
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             for (int i = 0; i < 30; i++)
                 AddProgram(t, triggers[i % triggers.Length]);
 
-            DS4State pressed = SpecialActionTestScope.Neutral();
+            ControllerState pressed = SpecialActionTestScope.Neutral();
             pressed.Cross = true;
             pressed.L1 = true;
             for (int i = 0; i < 300; i++) t.RunFrame(pressed);

@@ -13,12 +13,12 @@ namespace DS4Windows.Processing.Abstractions
     public interface ITouchpadToggleService
     {
         /// <summary>PS ボタンを押しながらタッチされたら、タッチパッドの動作を ON／OFF する（レポートごとに呼ばれる）。</summary>
-        void CheckForToggle(int deviceID, DS4State cState, DS4State pState);
+        void CheckForToggle(int deviceID, ControllerState cState, ControllerState pState);
 
         /// <summary>プロファイルの「タッチパッドを OFF で開始」。スロットの範囲内のときだけ OFF にする。</summary>
         void StartTouchpadOff(int deviceID);
 
         /// <summary>スライドの向き（"right"／"left"／""／"none"）を返す。<paramref name="connected"/> はそのスロットにデバイスがあるか。</summary>
-        string Slide(int ind, DS4State cState, TouchpadMouse touchPad, bool connected);
+        string Slide(int ind, ControllerState cState, TouchpadMouse touchPad, bool connected);
     }
 }

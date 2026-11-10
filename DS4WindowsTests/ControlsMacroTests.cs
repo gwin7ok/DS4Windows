@@ -107,9 +107,9 @@ namespace DS4WindowsTests
         public void TheTriggerJudgement_HasNoThreshold_AndTheAssignmentJudgementTheControlOne()
         {
             var input = new TriggerInput(Device, TestHost.GetService<IProfileSettingsService>());
-            DS4StateFieldMapping fields = new DS4StateFieldMapping();
+            ControllerStateFieldMapping fields = new ControllerStateFieldMapping();
             fields.triggers[(int)DS4Controls.L2] = 1;
-            input.Update(new DS4State(), null, null, null, fields);
+            input.Update(new ControllerState(), null, null, null, fields);
 
             var trigger = new ControlButtonInputAction("p8s78c", DS4Controls.L2, ControlBindingKind.Macro, ControlOutputNature.Digital);
             var assignment = new ControlButtonInputAction("p8s78c", DS4Controls.L2);
@@ -134,7 +134,7 @@ namespace DS4WindowsTests
             Assert.True(engine.OwnsControl(Device, DS4Controls.Cross));
         }
 
-        private static long Allocated(ControlsKeyTestScope t, DS4State input)
+        private static long Allocated(ControlsKeyTestScope t, ControllerState input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 200; i++) t.Run(input);

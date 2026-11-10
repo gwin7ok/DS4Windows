@@ -21,7 +21,7 @@ namespace DS4WindowsTests
         {
             private sealed class FakeParser : IInputReportParser
             {
-                public void Parse(ReadOnlySpan<byte> report, DS4State state)
+                public void Parse(ReadOnlySpan<byte> report, ControllerState state)
                 {
                     state.Cross = report[1] != 0;
                     state.LX = report[2];
@@ -82,7 +82,7 @@ namespace DS4WindowsTests
             var reportedLx = new List<byte>();
             device.Report += (sender, args) =>
             {
-                DS4State state = sender.getCurrentStateRef();
+                ControllerState state = sender.getCurrentStateRef();
                 reportedCross.Add(state.Cross);
                 reportedLx.Add(state.LX);
             };

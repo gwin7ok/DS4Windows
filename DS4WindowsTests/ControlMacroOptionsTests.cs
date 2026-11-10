@@ -37,9 +37,9 @@ namespace DS4WindowsTests
         private static TriggerInput InputWith(bool crossHeld)
         {
             var input = new TriggerInput(Device, TestHost.GetService<IProfileSettingsService>());
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             fields.buttons[(int)DS4Controls.Cross] = crossHeld;
-            input.Update(new DS4State(), null, null, null, fields);
+            input.Update(new ControllerState(), null, null, null, fields);
             return input;
         }
 
@@ -136,14 +136,14 @@ namespace DS4WindowsTests
 
         // ---- 実際の再生 ----
 
-        private static DS4State Cross(bool held)
+        private static ControllerState Cross(bool held)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = held;
             return state;
         }
 
-        private static void RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static void RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
             var sw = Stopwatch.StartNew();
             do

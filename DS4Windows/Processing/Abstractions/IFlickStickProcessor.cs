@@ -14,7 +14,7 @@ namespace DS4Windows.Processing.Abstractions
         /// </summary>
         /// <param name="data">そのデバイスのフリックの状態（進行、大きさ、持ち越しの端数。更新する）。</param>
         /// <param name="settings">フリックスティックの設定（しきい値、フリック時間、補正係数、最小角度）。</param>
-        /// <param name="elapsedTime">前のフレームからの経過時間（秒。<c>DS4State.elapsedTime</c>）。</param>
+        /// <param name="elapsedTime">前のフレームからの経過時間（秒。<c>ControllerState.elapsedTime</c>）。</param>
         /// <param name="stickX">現在のスティック値。</param>
         /// <param name="prevStickX">1 フレーム前のスティック値。</param>
         void Process(FlickStickMappingData data, FlickStickSettings settings, double elapsedTime,

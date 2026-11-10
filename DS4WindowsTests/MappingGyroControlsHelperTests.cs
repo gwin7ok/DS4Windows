@@ -32,10 +32,10 @@ namespace DS4WindowsTests
                 settings.GyroOutputMode[Slot] = mode;
                 settings.SXSens[Slot] = 1.0;
 
-                var state = new DS4State();
+                var state = new ControllerState();
                 state.Motion.accelX = 1000;   // GyroXNeg: SXSens * -AccelX < -67 （Controls のときだけ判定される）
 
-                bool actual = new ControlActivityReader().IsActive(settings, Slot, DS4Controls.GyroXNeg, state, new DS4StateExposed(state), null);
+                bool actual = new ControlActivityReader().IsActive(settings, Slot, DS4Controls.GyroXNeg, state, new ControllerStateExposed(state), null);
 
                 Assert.Equal(mode == GyroOutMode.Controls, actual);   // Global.IsUsingSAForControls は Phase6-Step12 Wave 4 で削除（同じ判定）
             }

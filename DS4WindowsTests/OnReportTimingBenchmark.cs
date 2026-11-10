@@ -58,9 +58,9 @@ namespace DS4WindowsTests
                 typeof(Action<InputDeviceCore, EventArgs, int>), processor, typeof(DS4Windows.Processing.Abstractions.IInputReportProcessor).GetMethod("OnReport"));
 
             TestDs4Device d = TestDs4Device.Create();
-            var cState = new DS4State { LX = 130, LY = 120 };
+            var cState = new ControllerState { LX = 130, LY = 120 };
             Set(d, "cState", cState);
-            Set(d, "pState", new DS4State());
+            Set(d, "pState", new ControllerState());
             d.firstReport = false;
             d.firstActive = DateTime.UtcNow;
 

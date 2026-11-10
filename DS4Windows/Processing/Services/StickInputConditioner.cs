@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class StickInputConditioner : IStickInputConditioner
     {
-        public DS4State ApplyDrift(int device, DS4State state, IProfileSettingsService settings)
+        public ControllerState ApplyDrift(int device, ControllerState state, IProfileSettingsService settings)
         {
             if (settings.RightStickDriftXAxis[device] != 0)
             {

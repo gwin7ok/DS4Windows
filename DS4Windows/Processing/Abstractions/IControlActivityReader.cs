@@ -14,6 +14,6 @@ namespace DS4Windows.Processing.Abstractions
     {
         /// <param name="settings">ジャイロの出力モードと感度（SX／SZ）を読む設定。</param>
         bool IsActive(IProfileSettingsService settings, int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, TouchpadMouse tp);
+            ControllerState cState, ControllerStateExposed eState, TouchpadMouse tp);
     }
 }

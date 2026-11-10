@@ -83,18 +83,18 @@ namespace DS4WindowsTests
             TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>().Replace(Device, TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>().Build(Device));
         }
 
-        public static DS4State NeutralState()
+        public static ControllerState NeutralState()
         {
-            return new DS4State { LX = 128, LY = 128, RX = 128, RY = 128, L2 = 0, R2 = 0 };
+            return new ControllerState { LX = 128, LY = 128, RX = 128, RY = 128, L2 = 0, R2 = 0 };
         }
 
         /// <summary>実機のレポート処理と同様に <c>MapCustom</c> を 1 回実行し、出力の状態を返す。</summary>
-        public DS4State RunMapCustom(DS4State input)
+        public ControllerState RunMapCustom(ControllerState input)
         {
             var device = (InputDeviceCore)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
             var mouse = new TouchpadMouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
-            var exposed = new DS4StateExposed(input);
-            var mapped = new DS4State();
+            var exposed = new ControllerStateExposed(input);
+            var mapped = new ControllerState();
 
             Mapper.MapCustom(Device, input, mapped, exposed, mouse);
             return mapped;

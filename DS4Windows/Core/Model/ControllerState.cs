@@ -21,7 +21,7 @@ using DS4Windows.Core.Utilities;
 
 namespace DS4Windows.Core.Model
 {
-    public class DS4State
+    public class ControllerState
     {
         public uint PacketCounter;
         public DateTime ReportTimeStamp;
@@ -64,7 +64,7 @@ namespace DS4Windows.Core.Model
         public TrackPadTouch TrackPadTouch0;
         public TrackPadTouch TrackPadTouch1;
 
-        public DS4State()
+        public ControllerState()
         {
             PacketCounter = 0;
             Square = Triangle = Circle = Cross = false;
@@ -98,7 +98,7 @@ namespace DS4Windows.Core.Model
             OutputLSOuter = OutputRSOuter = 0;
         }
 
-        public DS4State(DS4State state)
+        public ControllerState(ControllerState state)
         {
             PacketCounter = state.PacketCounter;
             ReportTimeStamp = state.ReportTimeStamp;
@@ -166,12 +166,12 @@ namespace DS4Windows.Core.Model
             OutputRSOuter = state.OutputRSOuter;
         }
 
-        public DS4State Clone()
+        public ControllerState Clone()
         {
-            return new DS4State(this);
+            return new ControllerState(this);
         }
 
-        public void CopyTo(DS4State state)
+        public void CopyTo(ControllerState state)
         {
             state.PacketCounter = PacketCounter;
             state.ReportTimeStamp = ReportTimeStamp;
@@ -240,12 +240,12 @@ namespace DS4Windows.Core.Model
         }
 
         /// <summary>
-        /// Only copy extra DS4State data that is not output directly tied
+        /// Only copy extra ControllerState data that is not output directly tied
         /// to the mapper routine. Gyro motion data, Touchpad touch data,
         /// and timestamp data are copied
         /// </summary>
         /// <param name="state">State object to copy data to</param>
-        public void CopyExtrasTo(DS4State state)
+        public void CopyExtrasTo(ControllerState state)
         {
             state.Motion = Motion;
             state.ds4Timestamp = ds4Timestamp;

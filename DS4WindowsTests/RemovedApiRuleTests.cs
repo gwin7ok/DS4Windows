@@ -92,7 +92,7 @@ namespace DS4WindowsTests
             ("IPathService", new[] { "GetAutoProfilesPath", "ActionsPath" }),
             ("IProfileRepository", new[] { "GetProfileNames", "ProfileExists", "LoadProfileToSlot", "LoadDefaultProfile" }),
             ("ISpecialActionRepository", new[] { "AddAction", "ReplaceAction", "RemoveAction", "GetActionIndex", "GetAction", "ActionExists", "SaveActions" }),
-            ("IDs4DeviceRegistry", new[] { "ConnectedDevices", "DeviceCount", "IsHidHideInstalled" }),
+            ("IInputDeviceRegistry", new[] { "ConnectedDevices", "DeviceCount", "IsHidHideInstalled" }),
             // Phase7-Step4 W4: 起動前の設定の読み込みは App のブートストラップへ
             ("WelcomeDialog", new[] { "loadConfig" }),
             // Phase7-Step7 W3: マクロの実行時状態は MacroRuntimeState へ

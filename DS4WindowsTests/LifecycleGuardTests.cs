@@ -233,7 +233,7 @@ namespace DS4WindowsTests
 
             // 起動直後の状態（旧: running = false、loopControllers = true、inServiceTask = false、activeControllers = 0）
             var fresh = new ServiceLifecycle(TestLightbar.State, TestHost.GetService<DS4Windows.Processing.Abstractions.ILightbarService>(), TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
-                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(),
+                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IInputDeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(),
                 TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
                 TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputServicesLifecycle>());
@@ -258,7 +258,7 @@ namespace DS4WindowsTests
         {
             var lightbar = new DS4Windows.Core.Model.LightbarOverrides();
             var lifecycle = new ServiceLifecycle(lightbar, TestHost.GetService<DS4Windows.Processing.Abstractions.ILightbarService>(), TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
-                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(),
+                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IInputDeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(),
                 TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
                 TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputServicesLifecycle>());

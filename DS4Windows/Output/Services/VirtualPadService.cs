@@ -67,7 +67,7 @@ namespace DS4Windows.Output.Services
 
         public bool HasOutputDevice(int index) => outputDevices[index] != null;
 
-        public void SendReport(int index, DS4State state)
+        public void SendReport(int index, ControllerState state)
         {
             outputDevices[index]?.ConvertandSendReport(state, index);
         }

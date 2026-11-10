@@ -29,9 +29,9 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>入力の列を流し、フレームごとの（累計の切替の回数、累計の復帰の回数）を返す。<paramref name="beforeFrame"/> は、フレームの前に行う操作（適用の後始末、切断など）。</summary>
-        private static List<(int Applies, int Restores)> Run(string triggers, DS4State[] frames,
+        private static List<(int Applies, int Restores)> Run(string triggers, ControllerState[] frames,
             bool freshPressGuard = false, bool executing = false, Action<SpecialActionTestScope, int> beforeFrame = null)
         {
             using var t = new SpecialActionTestScope();
@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RestoresOnce_WhenTheTriggerIsReleased()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(false) };
 
             var counts = Run("L1", frames);
 
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_RestoresWhenAnyOneOfTheTriggersIsReleased()
         {
-            DS4State[] frames = { Frame(false, false), Frame(true, true), Frame(true, true), Frame(true, false), Frame(true, false), Frame(false, false) };
+            ControllerState[] frames = { Frame(false, false), Frame(true, true), Frame(true, true), Frame(true, false), Frame(true, false), Frame(false, false) };
 
             var counts = Run("L1/R1", frames);
 
@@ -97,7 +97,7 @@ namespace DS4WindowsTests
         public void WhenNothingSwitched_NothingIsRestored()
         {
             // Fresh-press ガード中、実行中は、切り替えない。合図が立たないので、離しても復帰しない
-            DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var guarded = Run("L1", frames, freshPressGuard: true);
             var executing = Run("L1", frames, executing: true);
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
         public void AProfileApplyWhileHeld_KeepsTheSignal_AndTheReleaseStillRestoresOnce()
         {
             // Phase7b W1 の観点: 切替の適用の後始末（ClearDeviceState など）が入っても、復帰の合図は消えない
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var counts = Run("L1", frames, beforeFrame: (t, i) =>
             {
@@ -126,7 +126,7 @@ namespace DS4WindowsTests
         public void APhysicalDisconnect_ClearsTheSignal_SoTheReleaseDoesNotRestore()
         {
             // 本番の物理切断は、Mapping.HandleDeviceDisconnect（ControlService）と、エンジンの OnDeviceDisconnected（ProfileSlotApplier.ReleaseSlot）の両方を呼ぶ
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var counts = Run("L1", frames, beforeFrame: (t, i) =>
             {

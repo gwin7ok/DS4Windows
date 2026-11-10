@@ -713,7 +713,7 @@ namespace DS4Windows.Input.Devices
                     }
                 }
 
-                // XXX DS4State mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
+                // XXX ControllerState mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
                 try
                 {
                     // Only care if one touch packet is detected. Other touch packets

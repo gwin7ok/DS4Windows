@@ -18,9 +18,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileUntriggerEngineTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;

@@ -24,7 +24,7 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static int ReadOnce(IDeviceSlotState slots, DS4State[] cachedCurrent, DS4State[] cachedTemp, TouchpadMouse[] cachedTouch, int ind)
+        private static int ReadOnce(IDeviceSlotState slots, ControllerState[] cachedCurrent, ControllerState[] cachedTemp, TouchpadMouse[] cachedTouch, int ind)
         {
             int acc = 0;
             // ControlService が保持する形（コンストラクターで一度だけ取得したキャッシュ済みの配列）
@@ -35,7 +35,7 @@ namespace DS4WindowsTests
             if (slots.GetController(ind) != null) acc++;
             if (slots.GetCurrentState(ind) != null) acc++;
             if (slots.GetTempState(ind) != null) acc++;
-            if (slots.DS4Controllers[ind] != null) acc++;
+            if (slots.Controllers[ind] != null) acc++;
             if (slots.TouchPads[ind] != null) acc++;
             return acc;
         }
@@ -46,12 +46,12 @@ namespace DS4WindowsTests
             IDeviceSlotState slots = new DeviceSlotState();
             for (int i = 0; i < slots.CurrentStates.Length; i++)
             {
-                slots.CurrentStates[i] = new DS4State();
-                slots.TempStates[i] = new DS4State();
+                slots.CurrentStates[i] = new ControllerState();
+                slots.TempStates[i] = new ControllerState();
             }
 
-            DS4State[] cur = slots.CurrentStates;
-            DS4State[] tmp = slots.TempStates;
+            ControllerState[] cur = slots.CurrentStates;
+            ControllerState[] tmp = slots.TempStates;
             TouchpadMouse[] touch = slots.TouchPads;
 
             int sink = 0;

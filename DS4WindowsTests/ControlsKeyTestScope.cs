@@ -151,9 +151,9 @@ namespace DS4WindowsTests
         public SpecialAction SyntheticFor(DS4Controls control, int key, bool toggle = false, bool useScan = false)
             => SyntheticKeyActionFactory.Create(Device, (int)control, (uint)key, toggle, useScan);
 
-        public DS4State Run(DS4State input) => _inner.RunMapCustom(input);
+        public ControllerState Run(ControllerState input) => _inner.RunMapCustom(input);
 
-        public static DS4State Neutral() => MappingCharacterizationScope.NeutralState();
+        public static ControllerState Neutral() => MappingCharacterizationScope.NeutralState();
 
         public bool IsBeingTriggered(SpecialAction sa) => TestActions.Manager.IsBeingTriggered(sa, Device);
 

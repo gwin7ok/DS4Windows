@@ -18,16 +18,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace DS4Windows.Core.Model
 {
-    public class DS4StateExposed
+    public class ControllerStateExposed
     {
-        private DS4State _state;
+        private ControllerState _state;
 
-        public DS4StateExposed()
+        public ControllerStateExposed()
         {
-            _state = new DS4State();
+            _state = new ControllerState();
         }
 
-        public DS4StateExposed(DS4State state)
+        public ControllerStateExposed(ControllerState state)
         {
             _state = state;
         }

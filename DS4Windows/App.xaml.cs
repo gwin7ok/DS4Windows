@@ -892,10 +892,10 @@ namespace DS4Windows
             }
             else if (parser.ReenableDevice)
             {
-                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な DS4Devices.reEnableDevice の直接呼び出しをやめ、IDs4DeviceRegistry の契約を通す。
+                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な InputDeviceRegistry.reEnableDevice の直接呼び出しをやめ、IInputDeviceRegistry の契約を通す。
                 // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
                 // 差: デバイスのインスタンス ID が空のときは、アダプタが何もせず戻る（旧: 例外で終了していた。不正な起動引数の場合のみ）。
-                DS4Windows.Processing.Abstractions.IDs4DeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.Ds4DeviceRegistryAdapter();
+                DS4Windows.Processing.Abstractions.IInputDeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.InputDeviceRegistryAdapter();
                 reEnableRegistry.ReEnableDevice(parser.DeviceInstanceId);
                 runShutdown = false;
                 exitApp = true;
@@ -997,7 +997,7 @@ namespace DS4Windows
                 // Phase 3 Followup Step F-2: registry comes from AppHost (registered in
                 // ServiceRegistration). AppHost.CreateHost() already ran before this method
                 // is called, so GetService should not be null; the null-coalesce is a
-                // startup-order safety net only, and 'new Ds4DeviceRegistryAdapter()' here
+                // startup-order safety net only, and 'new InputDeviceRegistryAdapter()' here
                 // is the same adapter class already registered, not a second implementation.
                 // Phase7-Step5 W4: 解決の窓口（ResolvePostHostService）を通す。解決できなければ InvalidOperationException（従来と同じ）
                 _controlService = ResolvePostHostService<DS4Windows.Processing.ControlService>();

@@ -16,16 +16,16 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step7 7.6a（Phase8-Step7-6-Plan.md §3.1。Q2＝A）: GyroCalibrate の新経路の確認。
-    /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.DS4Controllers[device]</c>）で止まる。そのため、効果は記録用のポートで確かめ、
+    /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。そのため、効果は記録用のポートで確かめ、
     /// 旧経路とは、立ち上がりのログの文言（Trace の 4 行）だけを比べる。ポートの本番の実装は、コントローラーがいない場合の安全性を確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class GyroCalibrateTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -175,7 +175,7 @@ namespace DS4WindowsTests
 
         private static long AllocatedWhileHeld(SpecialActionTestScope t)
         {
-            DS4State held = Frame(true);
+            ControllerState held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がり（1 回だけ割り当てる）と JIT は、測定の外へ
 
             // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）

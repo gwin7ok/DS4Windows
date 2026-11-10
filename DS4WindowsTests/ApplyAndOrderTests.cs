@@ -19,9 +19,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class ApplyAndOrderTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
                 if (step.ApplyBefore)
                     t.SimulateProfileApply();
 
-                DS4State output = t.RunFrame(Frame(step.L1));
+                ControllerState output = t.RunFrame(Frame(step.L1));
                 result.Add((output.Cross, output.Circle, output.L1, t.Engine.IsSuppressed(t.Device, DS4Controls.L1),
                     t.Scope.Synthetic.DeviceState[t.Device].currentClicks.leftCount));
             }
@@ -98,7 +98,7 @@ namespace DS4WindowsTests
                 var result = new List<(bool, bool, int)>();
                 foreach (var f in new[] { (false, false), (true, false), (true, true), (false, true), (false, false) })
                 {
-                    DS4State output = t.RunFrame(Frame(f.Item1, f.Item2));
+                    ControllerState output = t.RunFrame(Frame(f.Item1, f.Item2));
                     result.Add((output.Cross, output.Circle, t.Scope.Synthetic.DeviceState[t.Device].currentClicks.leftCount));
                 }
 
@@ -118,7 +118,7 @@ namespace DS4WindowsTests
             SpecialAction sa = t.AddButtonPress("L1");
 
             Assert.True(t.Engine.Owns(t.Device, sa));
-            DS4State output = t.RunFrame(Frame(true));
+            ControllerState output = t.RunFrame(Frame(true));
 
             Assert.True(output.Cross);
             // Phase8-Step8 8b: 旧 Stage3（lastButtonTriggerState のキャッシュ）は削除した。新経路だけが処理する

@@ -36,7 +36,7 @@ namespace DS4Windows.Processing.Services
             if (device == null)
                 return false;
 
-            DS4State state = device.getCurrentStateRef();
+            ControllerState state = device.getCurrentStateRef();
             TouchpadMouse touchPad = _slotState.TouchPads[0];
             return _mapping.GetBoolMappingExternal(0, control, state, null, touchPad);
         }
@@ -45,7 +45,7 @@ namespace DS4Windows.Processing.Services
         {
             get
             {
-                InputDeviceCore[] controllers = _slotState.DS4Controllers;
+                InputDeviceCore[] controllers = _slotState.Controllers;
                 return controllers != null && controllers.Length > 0 ? controllers[0] : null;
             }
         }

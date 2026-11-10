@@ -9,7 +9,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// 接続時のシリアルの読み方（<see cref="IInputDeviceCartridge.ReadSerial"/>）が、カートリッジへ移す前に <c>DS4Devices</c> が種類ごとの
+    /// 接続時のシリアルの読み方（<see cref="IInputDeviceCartridge.ReadSerial"/>）が、カートリッジへ移す前に <c>InputDeviceRegistry</c> が種類ごとの
     /// <c>if</c> で行っていた読み方と同じであることを、対応機器の全行について確かめる（偽の通信路で、呼び出しと戻り値を比べる）。
     /// </summary>
     public class InputDeviceCartridgeSerialTests

@@ -64,8 +64,8 @@ namespace DS4WindowsTests
         public void SetCurveAndDeadzone_DoesNotAllocate()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
 
             int sink = 0;
 
@@ -93,13 +93,13 @@ namespace DS4WindowsTests
             store.setSZOutCurveMode(Slot, 2);
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
 
-            var cState = new DS4State();
+            var cState = new ControllerState();
             var motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
             motion.accelX = 64;
             motion.accelZ = -64;
             motion.outputGyroControls = true;
             cState.Motion = motion;
-            var dState = new DS4State();
+            var dState = new ControllerState();
 
             int sink = 0;
 
@@ -126,7 +126,7 @@ namespace DS4WindowsTests
             store.leftStickDriftXAxis[Slot] = 5;
             store.leftStickDriftYAxis[Slot] = -5;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var state = new DS4State();
+            var state = new ControllerState();
 
             int sink = 0;
 

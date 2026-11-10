@@ -18,11 +18,11 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class InputReportProcessor : IInputReportProcessor
     {
-        private readonly DS4State[] _currentState;
-        private readonly DS4State[] _tempState;
+        private readonly ControllerState[] _currentState;
+        private readonly ControllerState[] _tempState;
         private readonly TouchpadMouse[] _touchPad;
-        private readonly DS4State[] _mappedState = new DS4State[ControllerLimits.MaxControllerCount];
-        private readonly DS4StateExposed[] _exposedState = new DS4StateExposed[ControllerLimits.MaxControllerCount];
+        private readonly ControllerState[] _mappedState = new ControllerState[ControllerLimits.MaxControllerCount];
+        private readonly ControllerStateExposed[] _exposedState = new ControllerStateExposed[ControllerLimits.MaxControllerCount];
         private readonly double[] _processingDelayMs = new double[ControllerLimits.MaxControllerCount];
 
         private readonly ILatencyMonitor _latencyMonitor;
@@ -43,7 +43,7 @@ namespace DS4Windows.Processing.Services
         public bool RecordingMacro { get; set; }
         public bool IsMeasuringProcessingDelay { get; set; }
         public double[] ProcessingDelayMs => _processingDelayMs;
-        public DS4StateExposed[] ExposedState => _exposedState;
+        public ControllerStateExposed[] ExposedState => _exposedState;
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly ILightbarService _lightbar;
@@ -83,13 +83,13 @@ namespace DS4Windows.Processing.Services
             // ExposedState は CurrentStates[i] を参照するため、同じ場所で、CurrentStates[i] を作った後に作る（順序は旧と同じ）
             for (int i = 0; i < _currentState.Length; i++)
             {
-                _mappedState[i] = new DS4State();
-                _currentState[i] = new DS4State();
-                _exposedState[i] = new DS4StateExposed(_currentState[i]);
+                _mappedState[i] = new ControllerState();
+                _currentState[i] = new ControllerState();
+                _exposedState[i] = new ControllerStateExposed(_currentState[i]);
             }
         }
 
-        public DS4State GetMappedState(int ind) => _mappedState[ind];
+        public ControllerState GetMappedState(int ind) => _mappedState[ind];
 
         public double GetProcessingDelay(int deviceIndex)
         {
@@ -104,12 +104,12 @@ namespace DS4Windows.Processing.Services
             {
                 _latencyMonitor.OnReport(device, ind);
 
-                DS4State cState = _currentState[ind];
+                ControllerState cState = _currentState[ind];
                 device.getRawCurrentState(cState);
 
-                DS4State pState = device.getPreviousStateRef();
+                ControllerState pState = device.getPreviousStateRef();
                 //device.getPreviousState(PreviousState[ind]);
-                //DS4State pState = PreviousState[ind];
+                //ControllerState pState = PreviousState[ind];
 
 
                 if (device.firstReport && device.isSynced())
@@ -137,7 +137,7 @@ namespace DS4Windows.Processing.Services
                     _profileSettings.ContainsCustomAction(ind) || _profileSettings.ContainsCustomExtras(ind) ||
                     _profileActionProvider.GetProfileActionCount(ind) > 0))
                 {
-                    DS4State tempMapState = _mappedState[ind];
+                    ControllerState tempMapState = _mappedState[ind];
 
                     if (_appSettings.UseOscSender)
                     {
@@ -147,7 +147,7 @@ namespace DS4Windows.Processing.Services
                     _mapping.MapCustom(ind, cState, tempMapState, _exposedState[ind], _touchPad[ind]);
 
                     // Copy current Touchpad and Gyro data
-                    // Might change to use new DS4State.CopyExtrasTo method
+                    // Might change to use new ControllerState.CopyExtrasTo method
                     tempMapState.Motion = cState.Motion;
                     tempMapState.ds4Timestamp = cState.ds4Timestamp;
                     tempMapState.FrameCounter = cState.FrameCounter;

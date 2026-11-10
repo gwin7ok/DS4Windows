@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, string[]> Kept = new Dictionary<string, string[]>
         {
             ["IEnvironmentService"] = new[] { "UsingMaxControllers" },
-            ["IDs4DeviceRegistry"] = new[] { "ReEnableDevice" },
+            ["IInputDeviceRegistry"] = new[] { "ReEnableDevice" },
             ["IOutputSlotService"] = new[] { "LoadOutputSlots", "SaveOutputSlots", "OutputSlotChanged" },
             ["IDeviceStateService"] = new[] { "IsFirstConnection", "MarkConnected", "ResetConnectionFlags", "OnDeviceSerialChange" },
         };

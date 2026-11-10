@@ -10,7 +10,7 @@ namespace DS4WindowsTests
 {
     public class Ds4DeviceRegistryTests
     {
-        private class MockDs4DeviceRegistry : IDs4DeviceRegistry
+        private class MockDs4DeviceRegistry : IInputDeviceRegistry
         {
             public List<InputDeviceCore> MockDevices { get; } = new List<InputDeviceCore>();
             public int FindControllersCalls { get; private set; }
@@ -35,7 +35,7 @@ namespace DS4WindowsTests
                 return MockDevices;
             }
 
-            public IEnumerable<InputDeviceCore> GetDS4Controllers() => MockDevices;
+            public IEnumerable<InputDeviceCore> GetControllers() => MockDevices;
 
             public void StopControllers()
             {
@@ -57,10 +57,10 @@ namespace DS4WindowsTests
         [Fact]
         public void Adapter_InstantiatesAndImplementsInterfaceSafely()
         {
-            var adapter = new Ds4DeviceRegistryAdapter(new DS4Devices(new FakeDeviceLayerSettings(), System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>()));
+            var adapter = new InputDeviceRegistryAdapter(new InputDeviceRegistry(new FakeDeviceLayerSettings(), System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>()));
 
             Assert.NotNull(adapter);
-            Assert.NotNull(adapter.GetDS4Controllers());
+            Assert.NotNull(adapter.GetControllers());
 
             // Null 引数に対する安全性の検証
             bool removeNull = adapter.RemoveDevice(null);

@@ -48,11 +48,11 @@ namespace DS4WindowsTests
             {
                 _slot = slot;
                 var slots = TestHost.GetService<IDeviceSlotState>();
-                _old = slots.DS4Controllers[slot];
-                slots.DS4Controllers[slot] = device;
+                _old = slots.Controllers[slot];
+                slots.Controllers[slot] = device;
             }
 
-            public void Dispose() => TestHost.GetService<IDeviceSlotState>().DS4Controllers[_slot] = _old;
+            public void Dispose() => TestHost.GetService<IDeviceSlotState>().Controllers[_slot] = _old;
         }
 
         private static TestDs4Device DeviceWithBattery(int percent, bool charging)

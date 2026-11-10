@@ -21,9 +21,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class ProgramLogTests
     {
-        private static DS4State Frame(bool l1)
+        private static ControllerState Frame(bool l1)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             return state;
         }

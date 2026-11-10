@@ -142,9 +142,9 @@ namespace DS4Windows.Composition
 
             // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
             services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
-            services.AddSingleton<DS4Devices>(sp => new DS4Devices(sp.GetRequiredService<IDeviceLayerSettings>(),
+            services.AddSingleton<InputDeviceRegistry>(sp => new InputDeviceRegistry(sp.GetRequiredService<IDeviceLayerSettings>(),
                 sp.GetServices<IInputDeviceCartridge>()));   // 接続中のコントローラーの登録簿（状態を持つ）
-            services.AddSingleton<IDs4DeviceRegistry, Ds4DeviceRegistryAdapter>();
+            services.AddSingleton<IInputDeviceRegistry, InputDeviceRegistryAdapter>();
             services.AddSingleton<IDeviceRegistryHooks, DeviceRegistryHooks>();   // 登録簿が列挙・初期化の途中で呼び返すフック（対応する種類の確認、初期化の直後の処理、昇格の要求）
             services.AddSingleton<IAppliedProfileRecorder, AppliedProfileRecorder>();   // 適用のたびに、コントローラーごとにプロファイルを記憶する（再接続で使う）
             services.AddSingleton<IBackendFailureHandler, BackendFailureHandler>();   // 仮想パッドのバックエンドの失敗でサービスを止める

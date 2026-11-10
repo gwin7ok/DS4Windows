@@ -29,9 +29,9 @@ namespace DS4WindowsTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 
-        private static DS4State Pressed(params DS4Controls[] controls)
+        private static ControllerState Pressed(params DS4Controls[] controls)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             foreach (DS4Controls c in controls)
             {
                 switch (c)
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
             return state;
         }
 
-        private static void RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static void RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
             var sw = Stopwatch.StartNew();
             do

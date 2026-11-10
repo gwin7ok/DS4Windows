@@ -68,9 +68,9 @@ namespace DS4WindowsTests
             public bool Triggered(SpecialAction sa) => TestActions.Manager.IsBeingTriggered(sa, Device);
 
             /// <summary>指定のボタンを押した 1 フレームを流す（L2 は 0〜255 の値）。</summary>
-            public DS4State Run(DS4Controls[] held = null, byte l2 = 0)
+            public ControllerState Run(DS4Controls[] held = null, byte l2 = 0)
             {
-                DS4State input = SpecialActionTestScope.Neutral();
+                ControllerState input = SpecialActionTestScope.Neutral();
                 if (held != null)
                 {
                     foreach (DS4Controls c in held)
@@ -220,10 +220,10 @@ namespace DS4WindowsTests
             using var t = new Rig();
             t.AddKey("Cross/Circle");   // Controls の割り当ては、どちらも Default
 
-            DS4State beforeEstablished = t.Run(Cross);
+            ControllerState beforeEstablished = t.Run(Cross);
             Assert.True(beforeEstablished.Cross);      // 成立の手前: 素通しで出る
 
-            DS4State established = t.Run(CrossCircle);
+            ControllerState established = t.Run(CrossCircle);
             Assert.False(established.Cross);           // 成立後: トリガーの全ボタンの出力が 0 に戻る
             Assert.False(established.Circle);
         }

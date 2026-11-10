@@ -27,9 +27,9 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        private static DS4State HeldL1()
+        private static ControllerState HeldL1()
         {
-            DS4State s = SpecialActionTestScope.Neutral();
+            ControllerState s = SpecialActionTestScope.Neutral();
             s.L1 = true;
             return s;
         }

@@ -51,7 +51,7 @@ namespace DS4Windows.Processing
     {
         // Phase7-Step8 W2: 旧 静的な束縛（AppHost／Global のフォールバックつき）。コンストラクターで受ける（フォールバックは廃止）。
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings;
-        private readonly DS4Windows.Processing.Abstractions.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.DS4Controllers）
+        private readonly DS4Windows.Processing.Abstractions.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.Controllers）
         private readonly DS4Windows.Processing.Abstractions.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
         private readonly IVirtualKBM VirtualKBM;
         // Phase7-Step8 W3（Q6＝A）: 旧 静的クラス SyntheticDispatcher の呼び出し
@@ -184,22 +184,22 @@ namespace DS4Windows.Processing
         // Phase7-Step7 W2（Q2＝A・Q3＝A）: 合成入力の状態（_syntheticInput.GlobalState／deviceState／syncStateLock）の実体は SyntheticInputState が持つ。
         // Phase7-Step8 W2: 転送プロパティは削除した。deviceState／syncStateLock は上のフィールド宣言（readonly の複製）、GlobalState は保持クラスを直接読む。
 
-        public DS4StateFieldMapping[] fieldMappings = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount] {
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(),
+        public ControllerStateFieldMapping[] fieldMappings = new ControllerStateFieldMapping[ControllerLimits.MaxControllerCount] {
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
         };
-        public DS4StateFieldMapping[] outputFieldMappings = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount]
+        public ControllerStateFieldMapping[] outputFieldMappings = new ControllerStateFieldMapping[ControllerLimits.MaxControllerCount]
         {
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
         };
-        public DS4StateFieldMapping[] previousFieldMappings = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount]
+        public ControllerStateFieldMapping[] previousFieldMappings = new ControllerStateFieldMapping[ControllerLimits.MaxControllerCount]
         {
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(), new DS4StateFieldMapping(),
-            new DS4StateFieldMapping(), new DS4StateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
+            new ControllerStateFieldMapping(), new ControllerStateFieldMapping(),
         };
 
         // TODO When we disconnect, process a null/dead state to release any keys or buttons.
@@ -244,16 +244,16 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Processing.Actions.FrameOutput[] _frameOutputs;
 
         // Phase8-Step7 7.8f-3: 今のフレームの入力（getMouseMapping を新経路から借りるために、MapCustom が設定する）
-        private readonly DS4State[] _sampleState = new DS4State[ControllerLimits.MaxControllerCount];
-        private readonly DS4StateExposed[] _sampleExposed = new DS4StateExposed[ControllerLimits.MaxControllerCount];
-        private readonly DS4StateFieldMapping[] _sampleFields = new DS4StateFieldMapping[ControllerLimits.MaxControllerCount];
+        private readonly ControllerState[] _sampleState = new ControllerState[ControllerLimits.MaxControllerCount];
+        private readonly ControllerStateExposed[] _sampleExposed = new ControllerStateExposed[ControllerLimits.MaxControllerCount];
+        private readonly ControllerStateFieldMapping[] _sampleFields = new ControllerStateFieldMapping[ControllerLimits.MaxControllerCount];
         // Phase13-Step5b: 旧 _sampleControl（MapCustom が毎フレーム受け取る ControlService の保持）は削除した。必要なものはコンストラクターで受ける（逆依存の解消）
 
         // 新経路のマウスの移動（ControlMouseMoveOutputAction）が、TriggerInput 経由で呼ぶ。旧 getMouseMapping と同じ計算
         private double SampleMouseMovement(int device, DS4Controls control, int direction)
         {
-            DS4State state = _sampleState[device];
-            DS4StateFieldMapping fields = _sampleFields[device];
+            ControllerState state = _sampleState[device];
+            ControllerStateFieldMapping fields = _sampleFields[device];
             if (state == null || fields == null) return 0.0;
 
             // Phase9 9-B: 旧 getMouseMapping（ctrl から設定と経過時間を読んでいた）は ButtonMouseMovementCalculator へ移した。設定と経過時間は、ここで読んで渡す
@@ -262,7 +262,7 @@ namespace DS4Windows.Processing
                 profileSettings.LSModInfo[device].deadZone,
                 profileSettings.RSModInfo[device].deadZone,
                 deltaAccelProcessors[device],
-                _slots.DS4Controllers[device].lastTimeElapsedDouble);
+                _slots.Controllers[device].lastTimeElapsedDouble);
         }
 
         // Phase10-Step6 後の Step5: SA のマウス移動（強さの固定値）が、TriggerInput 経由で呼ぶ。getMouseMapping の「ボタンが元のとき」（押している）の量
@@ -310,7 +310,7 @@ namespace DS4Windows.Processing
         }
 
         // 補正の段（回転・ドリフト・デッドゾーン・出力カーブ・ジャイロ）は CurveAndDeadzoneStage が行う
-        public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState,
+        public ControllerState SetCurveAndDeadzone(int device, ControllerState cState, ControllerState dState,
                 DS4Windows.Core.Abstractions.IProfileSettingsService settings)
         {
             return _curveStage.Apply(device, cState, dState, settings);
@@ -320,7 +320,7 @@ namespace DS4Windows.Processing
         /// Map DS4 Buttons/Axes to other DS4 Buttons/Axes (largely the same as Xinput ones) and to keyboard and mouse buttons.
         /// </summary>
 
-        public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
+        public void MapCustom(int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState,
             TouchpadMouse tp)
         {
             /* TODO: This method is slow sauce. Find ways to speed up action execution */
@@ -330,15 +330,15 @@ namespace DS4Windows.Processing
             int mouseDeltaY = 0;
 
             cState.calculateStickAngles();
-            DS4StateFieldMapping fieldMapping = fieldMappings[device];
+            ControllerStateFieldMapping fieldMapping = fieldMappings[device];
             fieldMapping.PopulateFieldMapping(cState, eState, tp);
-            DS4StateFieldMapping outputfieldMapping = outputFieldMappings[device];
+            ControllerStateFieldMapping outputfieldMapping = outputFieldMappings[device];
             outputfieldMapping.PopulateFieldMapping(cState, eState, tp);
             // Phase8-Step4 W4: トリガー判定の入力と、フレームの出力の書き込み口を、このフレームの表に合わせる（割り当て 0）
             // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
             // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
-            DS4State previousState = null;
-            try { previousState = _slots.DS4Controllers[device]?.getPreviousStateRef(); } catch { }
+            ControllerState previousState = null;
+            try { previousState = _slots.Controllers[device]?.getPreviousStateRef(); } catch { }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             _sampleState[device] = cState;
@@ -444,8 +444,8 @@ namespace DS4Windows.Processing
 
         // Phase9 MapCustom の分割 M3c: LS／RS の 1 スティック分の処理（旧 MapCustom の「Process LS」「Process RS」）。
         // 左右の違い: 軸の添字、フリックスティックの読む軸、RS だけの「デルタ加速」（Controls モードのとき、割り当ての処理の前に実行）。ホットパスのため割り当てを増やさない
-        private void ProcessStick(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            TouchpadMouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
+        private void ProcessStick(int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState,
+            TouchpadMouse tp, ControllerStateFieldMapping fieldMapping, ControllerStateFieldMapping outputfieldMapping, SyntheticState deviceState,
             ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             StickOutputSetting stickSettings, List<DS4ControlSettings> stickControls, bool isRightStick)
         {
@@ -453,8 +453,8 @@ namespace DS4Windows.Processing
             {
                 if (isRightStick && stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
                 {
-                    InputDeviceCore d = _slots.DS4Controllers[device];
-                    DS4State cRawState = d.getCurrentStateRef();
+                    InputDeviceCore d = _slots.Controllers[device];
+                    ControllerState cRawState = d.getCurrentStateRef();
                     cRawState.calculateStickAngles();
 
                     double maxXValue = cState.RX >= 128.0 ? 255.0 : 0.0;
@@ -492,9 +492,9 @@ namespace DS4Windows.Processing
                     case StickMode.None:
                         break;
                     case StickMode.FlickStick:
-                        InputDeviceCore d = _slots.DS4Controllers[device];
-                        DS4State cRawState = d.getCurrentStateRef();
-                        DS4State pState = d.getPreviousStateRef();
+                        InputDeviceCore d = _slots.Controllers[device];
+                        ControllerState cRawState = d.getCurrentStateRef();
+                        ControllerState pState = d.getPreviousStateRef();
 
                         if (isRightStick)
                         {
@@ -516,8 +516,8 @@ namespace DS4Windows.Processing
 
         // Phase9 MapCustom の分割 M3b: L2／R2 の 1 トリガー分の処理（旧 MapCustom の「Process L2」「Process R2」。値は Phase9MapCustomTwoStageCharacterizationTests が守る）。
         // ホットパスのため、ラムダや割り当てを使わない
-        private void ProcessTriggerWithTwoStage(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            TouchpadMouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
+        private void ProcessTriggerWithTwoStage(int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState,
+            TouchpadMouse tp, ControllerStateFieldMapping fieldMapping, ControllerStateFieldMapping outputfieldMapping, SyntheticState deviceState,
             ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             DS4ControlSettings dcsTemp, DS4ControlSettings fullPullSettings, DS4Controls softControl, DS4Controls fullControl,
             byte triggerValue, byte triggerRawValue, TriggerOutputSettings triggerSettings, TwoStageTriggerMappingData twoStageData)
@@ -589,7 +589,7 @@ namespace DS4Windows.Processing
             }
         }
 
-        public void TempMouseJoystick(int device, DS4State MappedState)
+        public void TempMouseJoystick(int device, ControllerState MappedState)
         {
             GyroOutMode imuOutMode = profileSettings.GetGyroOutMode(device);
             if (imuOutMode == GyroOutMode.MouseJoystick)
@@ -652,8 +652,8 @@ namespace DS4Windows.Processing
         //private static double FlickTime = 0.1;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ProcessControlSettingAction(DS4ControlSettings dcs, int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            TouchpadMouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY)
+        private void ProcessControlSettingAction(DS4ControlSettings dcs, int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState,
+            TouchpadMouse tp, ControllerStateFieldMapping fieldMapping, ControllerStateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY)
         {
             // Check if this control press would trigger a Special Action
             // If so, suppress the normal mapping to prevent conflict
@@ -787,7 +787,7 @@ namespace DS4Windows.Processing
 
         /// <summary>
         /// Method to check the currently active bool state for an input control.
-        /// Slower version that does not take advantage of a generated DS4StateFieldMapping instance.
+        /// Slower version that does not take advantage of a generated ControllerStateFieldMapping instance.
         /// Meant to be used outside of the Mapping class
         /// </summary>
         /// <param name="device">Input slot number for InputDeviceCore</param>
@@ -797,7 +797,7 @@ namespace DS4Windows.Processing
         /// <param name="tp">Mouse object</param>
         /// <returns>Is the specified input considered active</returns>
         public bool GetBoolMappingExternal(int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, TouchpadMouse tp)
+            ControllerState cState, ControllerStateExposed eState, TouchpadMouse tp)
         {
             // Phase9 9-B: 判定の本体（約 105 行）は ControlActivityReader へ移した。設定は、Mapping が保持する profileSettings を渡す
             return _controlActivityReader.IsActive(profileSettings, device, control, cState, eState, tp);
@@ -806,7 +806,7 @@ namespace DS4Windows.Processing
         // Check if the current button press would trigger any Special Action
         // Returns true if a Special Action would be triggered, indicating normal mapping should be suppressed
         private bool CheckForSpecialActionSuppression(int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, TouchpadMouse tp, DS4StateFieldMapping fieldMap)
+            ControllerState cState, ControllerStateExposed eState, TouchpadMouse tp, ControllerStateFieldMapping fieldMap)
         {
             // Issue8-1(3)是正: 「現在トリガーが成立しているか」（IsSpecialActionTriggeredの都度再計算）ではなく、
             // 「このボタンが、いずれかのトリガー成立によりまだ抑制継続中か」を判定する。
@@ -838,26 +838,26 @@ namespace DS4Windows.Processing
             return touchButton;
         }
 
-        private void ResetToDefaultValue(DS4Controls control, DS4State cState,
-            DS4StateFieldMapping fieldMap)
+        private void ResetToDefaultValue(DS4Controls control, ControllerState cState,
+            ControllerStateFieldMapping fieldMap)
         {
             int controlNum = (int)control;
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 fieldMap.buttons[controlNum] = false;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 fieldMap.axisdirs[controlNum] = 128;
                 int controlRelation = (controlNum % 2 == 0 ? controlNum - 1 : controlNum + 1);
                 fieldMap.axisdirs[controlRelation] = 128;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 fieldMap.triggers[controlNum] = 0;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Touch)
             {
                 fieldMap.buttons[controlNum] = false;
             }

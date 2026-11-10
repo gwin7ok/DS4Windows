@@ -13,7 +13,7 @@ namespace DS4Windows.Processing.Services
     public sealed class ControlActivityReader : DS4Windows.Processing.Abstractions.IControlActivityReader
     {
         public bool IsActive(DS4Windows.Core.Abstractions.IProfileSettingsService settings, int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, TouchpadMouse tp)
+            ControllerState cState, ControllerStateExposed eState, TouchpadMouse tp)
         {
             bool result = false;
 

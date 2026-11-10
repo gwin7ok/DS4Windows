@@ -280,9 +280,9 @@ namespace DS4WindowsTests
 
         // ---- エンジン: 1 ボタン複数束縛、後始末、ロールバック ----
 
-        private static DS4State State(bool cross = false)
+        private static ControllerState State(bool cross = false)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = cross;
             return state;
         }
@@ -356,7 +356,7 @@ namespace DS4WindowsTests
             public void RestoreSensitivity(int deviceIndex) { }
         }
 
-        private static long Allocated(ControlsKeyTestScope t, DS4State input)
+        private static long Allocated(ControlsKeyTestScope t, ControllerState input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 1000; i++) t.Run(input);

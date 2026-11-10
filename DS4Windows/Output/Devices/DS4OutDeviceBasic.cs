@@ -33,7 +33,7 @@ namespace DS4Windows.Output.Devices
         {
         }
 
-        public override void ConvertandSendReport(DS4State state, int device)
+        public override void ConvertandSendReport(ControllerState state, int device)
         {
             if (!connected) return;
 

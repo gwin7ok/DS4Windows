@@ -94,13 +94,13 @@ namespace DS4WindowsTests
             var backend = new FakeVirtualPadBackend();
             backend.Start();
             VirtualPadService service = Create(backend: backend);
-            service.SendReport(0, new DS4Windows.Core.Model.DS4State());   // 割り当てなし: 何もしない
+            service.SendReport(0, new DS4Windows.Core.Model.ControllerState());   // 割り当てなし: 何もしない
             Assert.False(service.HasOutputDevice(0));
 
             service.OutputDevices[0] = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
             service.OutputDevices[0].Connect();
             Assert.True(service.HasOutputDevice(0));
-            service.SendReport(0, new DS4Windows.Core.Model.DS4State { Cross = true });
+            service.SendReport(0, new DS4Windows.Core.Model.ControllerState { Cross = true });
 
             FakeXbox360Target target = backend.Xbox360Targets[0];
             Assert.Equal(1, target.SubmitCount);

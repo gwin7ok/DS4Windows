@@ -154,16 +154,16 @@ namespace DS4WindowsTests
             Assert.Equal((Device, "Other", true), Assert.Single(switcher.Switches));
         }
 
-        private static DS4State Cross(bool held)
+        private static ControllerState Cross(bool held)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = held;
             return state;
         }
 
-        private static DS4State RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static ControllerState RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
-            DS4State last = null;
+            ControllerState last = null;
             var sw = Stopwatch.StartNew();
             do
             {
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
             RunFor(t, Cross(false), 150);   // SA と同じ Fresh-press ガード
             Assert.Empty(switcher.Switches);
 
-            DS4State held = RunFor(t, Cross(true), 300);
+            ControllerState held = RunFor(t, Cross(true), 300);
             Assert.Single(switcher.Switches);
             Assert.False(held.Cross);       // 割り当てたボタンの通常の出力は消える
             Assert.Empty(switcher.Restores);

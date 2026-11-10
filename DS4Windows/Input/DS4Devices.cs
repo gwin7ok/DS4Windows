@@ -38,7 +38,7 @@ namespace DS4Windows.Input
     /// 状態（開いているデバイスの表、シリアルの重複の検出、排他モードの記憶）はこのインスタンスが持つ。
     /// 設定値は、コンストラクターで受ける（null のときは、Moonlight 無効・詳細ログ無効として扱う。補助プロセスと一部のテスト）。
     /// </summary>
-    public class DS4Devices
+    public class InputDeviceRegistry
     {
         // (HID device path, InputDeviceCore)
         private readonly Dictionary<string, InputDeviceCore> Devices = new Dictionary<string, InputDeviceCore>();
@@ -77,7 +77,7 @@ namespace DS4Windows.Input
         // 全カートリッジの表をつないだもの（VID／PID は表の中で一意。順序は結果に影響しない）
         private readonly VidPidInfo[] knownDevices;
 
-        public DS4Devices(DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings, IEnumerable<IInputDeviceCartridge> cartridges)
+        public InputDeviceRegistry(DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings, IEnumerable<IInputDeviceCartridge> cartridges)
         {
             LayerSettings = layerSettings;
             this.cartridges = (cartridges ?? throw new ArgumentNullException(nameof(cartridges))).ToArray();
@@ -308,7 +308,7 @@ namespace DS4Windows.Input
         }
 
         // Returns DS4 controllers that were found and are running
-        public IEnumerable<InputDeviceCore> getDS4Controllers()
+        public IEnumerable<InputDeviceCore> GetControllers()
         {
             lock (Devices)
             {

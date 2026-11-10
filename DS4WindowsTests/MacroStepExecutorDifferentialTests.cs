@@ -338,10 +338,10 @@ namespace DS4WindowsTests
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 押下: 例外にならない
             Assert.True(state.MacroControl[NewDevice][code - 261]);
             Assert.Equal(1u, state.MacroCount[NewDevice]);
-            var mapped = new DS4State();
+            var mapped = new ControllerState();
             state.ApplyHeldControls(NewDevice, mapped);   // 対応する出力がないので、何も重ならない
             Assert.False(mapped.Cross);
-            Assert.Equal(new DS4State().LX, mapped.LX);
+            Assert.Equal(new ControllerState().LX, mapped.LX);
 
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 離上
             Assert.False(state.MacroControl[NewDevice][code - 261]);

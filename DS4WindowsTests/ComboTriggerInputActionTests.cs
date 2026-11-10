@@ -27,8 +27,8 @@ namespace DS4WindowsTests
         private sealed class Harness : IDisposable
         {
             private readonly IProfileSettingsService _settings;
-            private readonly DS4StateFieldMapping _fields = new DS4StateFieldMapping();
-            private readonly DS4State _state = new DS4State();
+            private readonly ControllerStateFieldMapping _fields = new ControllerStateFieldMapping();
+            private readonly ControllerState _state = new ControllerState();
             private DateTime _now = T;
 
             public Harness()

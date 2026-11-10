@@ -26,8 +26,8 @@ namespace DS4WindowsTests
         public void TryRead_ReturnsFalse_AndCopiesNothing_WhenThereIsNoDevice(int slot)
         {
             var source = CreateSource(new DeviceSlotState());
-            var input = new DS4State { LX = 17 };
-            var mapped = new DS4State { LX = 23 };
+            var input = new ControllerState { LX = 17 };
+            var mapped = new ControllerState { LX = 23 };
 
             bool read = source.TryRead(slot, 0, input, mapped, out ControllerReadingInfo info);
 

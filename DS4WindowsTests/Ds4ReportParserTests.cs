@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class Ds4ReportParserTests
     {
-        private static void LegacyParse(byte[] inputReport, DS4State cState)
+        private static void LegacyParse(byte[] inputReport, ControllerState cState)
         {
             byte tempByte;
             cState.LX = inputReport[1];
@@ -81,8 +81,8 @@ namespace DS4WindowsTests
 
         private static void AssertSame(byte[] report)
         {
-            var expected = new DS4State();
-            var actual = new DS4State();
+            var expected = new ControllerState();
+            var actual = new ControllerState();
             LegacyParse(report, expected);
             new Ds4ReportParser().Parse(report, actual);
             Assert.Equal(DS4StateSnapshot.Of(expected), DS4StateSnapshot.Of(actual));
@@ -127,7 +127,7 @@ namespace DS4WindowsTests
             var parser = new Ds4ReportParser();
             var report = new byte[64];
             new Random(1).NextBytes(report);
-            var state = new DS4State();
+            var state = new ControllerState();
             parser.Parse(report, state);   // JIT を済ませる
 
             long before = GC.GetAllocatedBytesForCurrentThread();
@@ -145,7 +145,7 @@ namespace DS4WindowsTests
             report[1] = 10; report[2] = 20; report[3] = 30; report[4] = 40;
             report[5] = 0x28;   // Cross（bit5）+ 方向キー 8（中立）
             report[8] = 200; report[9] = 100;
-            var state = new DS4State();
+            var state = new ControllerState();
 
             parser.Parse(report, state);
 

@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     {
         private static void Frame(ControlsKeyTestScope scope, bool isL2, byte value, byte raw)
         {
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             if (isL2) { input.L2 = value; input.L2Raw = raw; } else { input.R2 = value; input.R2Raw = raw; }
             scope.Scope.RunMapCustom(input);
         }

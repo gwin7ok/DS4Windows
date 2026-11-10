@@ -10,14 +10,14 @@ namespace DS4Windows.Processing.Services
     /// <summary>
     /// Phase13-Step5: <see cref="IDeviceSlotState"/> の実装（DI の Singleton。依存なし）。
     /// 配列の長さは <see cref="ControllerLimits.MaxControllerCount"/>（旧 <c>ControlService.MAX_DS4_CONTROLLER_COUNT</c> と同じ）。
-    /// 各 <c>DS4State</c> の初期化（<c>new DS4State()</c>）は、これまでどおり <c>ControlService</c> のコンストラクターが行う（初期化の位置を変えない）。
+    /// 各 <c>ControllerState</c> の初期化（<c>new ControllerState()</c>）は、これまでどおり <c>ControlService</c> のコンストラクターが行う（初期化の位置を変えない）。
     /// </summary>
     public class DeviceSlotState : IDeviceSlotState, DS4Windows.Core.Abstractions.IConfigurableDeviceLookup
     {
-        public InputDeviceCore[] DS4Controllers { get; } = new InputDeviceCore[ControllerLimits.MaxControllerCount];
-        public DS4State[] CurrentStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
-        public DS4State[] PreviousStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
-        public DS4State[] TempStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
+        public InputDeviceCore[] Controllers { get; } = new InputDeviceCore[ControllerLimits.MaxControllerCount];
+        public ControllerState[] CurrentStates { get; } = new ControllerState[ControllerLimits.MaxControllerCount];
+        public ControllerState[] PreviousStates { get; } = new ControllerState[ControllerLimits.MaxControllerCount];
+        public ControllerState[] TempStates { get; } = new ControllerState[ControllerLimits.MaxControllerCount];
         public TouchpadMouse[] TouchPads { get; } = new TouchpadMouse[ControllerLimits.MaxControllerCount];
         public ControllerSlotManager SlotManager { get; } = new ControllerSlotManager();
         /// <summary>接続中のコントローラーの数。Phase13-Step5b: 旧 <c>ServiceLifecycle</c> の自動プロパティを、ここへ移した（<c>IDeviceSlotHost</c> の廃止で、<c>DeviceConnector</c> が直接読む）。</summary>
@@ -28,12 +28,12 @@ namespace DS4Windows.Processing.Services
         /// <summary>範囲外は null（旧 <c>ControlService.GetController</c> と同じ）。</summary>
         public InputDeviceCore GetController(int deviceIndex)
         {
-            if (deviceIndex < 0 || deviceIndex >= DS4Controllers.Length) return null;
-            return DS4Controllers[deviceIndex];
+            if (deviceIndex < 0 || deviceIndex >= Controllers.Length) return null;
+            return Controllers[deviceIndex];
         }
 
-        public DS4State GetCurrentState(int ind) => CurrentStates[ind];
+        public ControllerState GetCurrentState(int ind) => CurrentStates[ind];
 
-        public DS4State GetTempState(int ind) => TempStates[ind];
+        public ControllerState GetTempState(int ind) => TempStates[ind];
     }
 }

@@ -27,8 +27,8 @@ namespace DS4Windows.Processing.Services
             _gyroMouseStickBlender = gyroMouseStickBlender ?? throw new ArgumentNullException(nameof(gyroMouseStickBlender));
         }
 
-        public double CalculateButtonMouseMovement(int device, DS4Controls control, int mnum, DS4State cState,
-            DS4StateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
+        public double CalculateButtonMouseMovement(int device, DS4Controls control, int mnum, ControllerState cState,
+            ControllerStateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
             DeltaSettingsProcessorGroup deltaAccelProcessorGroup, double timeElapsed)
         {
             return _buttonMouseMovement.Calculate(device, control, mnum, cState, fieldMapping, buttonMouseInfo,
@@ -46,7 +46,7 @@ namespace DS4Windows.Processing.Services
             _mouseMotionQuantizer.Quantize(device, ref rawMouseX, ref rawMouseY, out mouseX, out mouseY);
         }
 
-        public void BlendGyroMouseStick(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, DS4State MappedState, PostMapStickData mapStickData)
+        public void BlendGyroMouseStick(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, ControllerState MappedState, PostMapStickData mapStickData)
         {
             _gyroMouseStickBlender.Blend(msinfo, gyroX, gyroY, MappedState, mapStickData);
         }

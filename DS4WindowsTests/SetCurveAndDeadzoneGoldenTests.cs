@@ -319,11 +319,11 @@ namespace DS4WindowsTests
 
         // ---- 実行 ----
 
-        private static DS4State Run(Mapping mapper, BackingStore store, byte lx, byte ly, byte rx, byte ry, byte l2, byte r2)
+        private static ControllerState Run(Mapping mapper, BackingStore store, byte lx, byte ly, byte rx, byte ry, byte l2, byte r2)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
             cState.LX = lx; cState.LY = ly; cState.RX = rx; cState.RY = ry;
             cState.L2 = l2; cState.R2 = r2;
             return mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
@@ -346,7 +346,7 @@ namespace DS4WindowsTests
             {
                 foreach (byte y in StickGrid)
                 {
-                    DS4State result = Run(mapper, store, x, y, x, y, 0, 0);
+                    ControllerState result = Run(mapper, store, x, y, x, y, 0, 0);
                     text.AppendLine($"{x},{y} -> L {result.LX},{result.LY} R {result.RX},{result.RY}");
                 }
             }
@@ -362,7 +362,7 @@ namespace DS4WindowsTests
             text.AppendLine("## " + scenario.Name);
             foreach (byte v in TriggerGrid)
             {
-                DS4State result = Run(mapper, store, 128, 128, 128, 128, v, v);
+                ControllerState result = Run(mapper, store, 128, 128, 128, 128, v, v);
                 text.AppendLine($"{v} -> L2 {result.L2} R2 {result.R2}");
             }
 
@@ -407,7 +407,7 @@ namespace DS4WindowsTests
                 {
                     foreach (byte y in StickGrid)
                     {
-                        DS4State r = Run(mapper, store, x, y, x, y, 0, 0);
+                        ControllerState r = Run(mapper, store, x, y, x, y, 0, 0);
                         if (r.LX != r.RX || r.LY != r.RY)
                         {
                             differences++;
@@ -427,7 +427,7 @@ namespace DS4WindowsTests
                 int differences = 0;
                 foreach (byte v in TriggerGrid)
                 {
-                    DS4State r = Run(mapper, store, 128, 128, 128, 128, v, v);
+                    ControllerState r = Run(mapper, store, 128, 128, 128, 128, v, v);
                     if (r.L2 != r.R2) differences++;
                 }
 
@@ -458,7 +458,7 @@ namespace DS4WindowsTests
                 text.AppendLine($"## fuzz {fuzz}");
                 foreach (var frame in sequence)
                 {
-                    DS4State r = Run(mapper, store, frame.X, frame.Y, frame.X, frame.Y, 0, 0);
+                    ControllerState r = Run(mapper, store, frame.X, frame.Y, frame.X, frame.Y, 0, 0);
                     text.AppendLine($"{frame.X},{frame.Y} -> L {r.LX},{r.LY} R {r.RX},{r.RY}");
                 }
             }

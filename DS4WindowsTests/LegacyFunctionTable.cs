@@ -38,20 +38,20 @@ namespace DS4WindowsTests
             sb.Append("# Phase8-Step8 W1: 旧関数の戻り値の表。1 行 ＝ 1 回の入力（種 ").Append(Seed).Append("）。項目 ＝ コントロールごと（下の順）。\n");
             sb.Append("# 項目（9 文字）: 判定(SA)1 判定(Controls)1 GetBoolMapping 1 バイト値 2 軸(alt=false) 2 軸(alt=true) 2。真偽は 1／0、例外は x、'-' は新経路にない\n");
             sb.Append("# controls:");
-            for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++) sb.Append(' ').Append((DS4Controls)c);
+            for (int c = 0; c <= ControllerStateFieldMapping.LAST_DS4_ACTION; c++) sb.Append(' ').Append((DS4Controls)c);
             sb.Append('\n');
             return sb.ToString();
         }
 
-        private static void MakeInput(Random random, out DS4State state, out DS4StateFieldMapping fields)
+        private static void MakeInput(Random random, out ControllerState state, out ControllerStateFieldMapping fields)
         {
-            state = new DS4State
+            state = new ControllerState
             {
                 LX = (byte)random.Next(256), LY = (byte)random.Next(256),
                 RX = (byte)random.Next(256), RY = (byte)random.Next(256),
             };
             state.calculateStickAngles();
-            fields = new DS4StateFieldMapping();
+            fields = new ControllerStateFieldMapping();
             for (int i = 0; i < fields.buttons.Length; i++)
             {
                 fields.buttons[i] = random.Next(2) == 0;
@@ -81,10 +81,10 @@ namespace DS4WindowsTests
             {
                 for (int iteration = 0; iteration < Iterations; iteration++)
                 {
-                    MakeInput(random, out DS4State state, out DS4StateFieldMapping fields);
+                    MakeInput(random, out ControllerState state, out ControllerStateFieldMapping fields);
                     input.Update(state, null, null, null, fields);
                     sb.Append(iteration.ToString("D3")).Append(' ');
-                    for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
+                    for (int c = 0; c <= ControllerStateFieldMapping.LAST_DS4_ACTION; c++)
                     {
                         var control = (DS4Controls)c;
                         if (c > 0) sb.Append(',');

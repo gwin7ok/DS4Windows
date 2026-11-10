@@ -208,9 +208,9 @@ namespace DS4Windows.UI
         public event EventHandler RsDriftYChanged;
 
 
-        private DS4State baseState = new DS4State();
-        private DS4State interState = new DS4State();
-        private DS4StateExposed exposeState;
+        private ControllerState baseState = new ControllerState();
+        private ControllerState interState = new ControllerState();
+        private ControllerStateExposed exposeState;
         private Label outputDelayLabel; // XAMLコントロール参照キャッシュ
         private const int CANVAS_WIDTH = 130;
         private const int CANVAS_MIDPOINT = CANVAS_WIDTH / 2;
@@ -254,7 +254,7 @@ namespace DS4Windows.UI
             l2ValLbBrush.Color = ThemeForegroundColor();
             r2ValLbBrush.Color = ThemeForegroundColor();
             inputContNum.Content = $"#{deviceNum + 1}";
-            exposeState = new DS4StateExposed(baseState);
+            exposeState = new ControllerStateExposed(baseState);
 
             readingTimer = new NonFormTimer();
             readingTimer.Interval = 66.0; // 約15fps (66ms): 診断用として十分滑らかかつCPU負荷を最小化

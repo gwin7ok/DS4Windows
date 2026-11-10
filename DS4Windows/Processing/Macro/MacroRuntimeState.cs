@@ -52,7 +52,7 @@ namespace DS4Windows.Processing.Macro
         /// そのデバイスのマクロが押しているゲームパッドのボタン等（<see cref="MacroControl"/>）を、出力 <paramref name="mapped"/> に重ねる（旧 <c>Mapping.MapCustom</c> の末尾のブロック）。
         /// 個数 <see cref="MacroCount"/> が 0 のときは何もしない。毎フレーム呼ばれる（割り当て 0）。
         /// </summary>
-        public void ApplyHeldControls(int device, DS4State mapped)
+        public void ApplyHeldControls(int device, ControllerState mapped)
         {
             if (MacroCount[device] > 0)
             {

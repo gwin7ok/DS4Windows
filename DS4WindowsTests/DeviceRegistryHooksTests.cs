@@ -8,7 +8,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// コントローラーの登録簿（<see cref="DS4Devices"/>。インスタンス）と、そこへ結ぶフック（<see cref="DeviceRegistryHooks"/>）、
+    /// コントローラーの登録簿（<see cref="InputDeviceRegistry"/>。インスタンス）と、そこへ結ぶフック（<see cref="DeviceRegistryHooks"/>）、
     /// 適用プロファイルの記憶（<see cref="AppliedProfileRecorder"/>）、仮想パッドの失敗の処理（<see cref="BackendFailureHandler"/>）の、
     /// 登録・独立性・引数の検査。記憶の判定の順序は <c>DisconnectClearsTempProfileTests</c> が固定する。
     /// </summary>
@@ -17,29 +17,29 @@ namespace DS4WindowsTests
         [Fact]
         public void TwoRegistries_DoNotShareState()
         {
-            var first = new DS4Devices(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
-            var second = new DS4Devices(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
+            var first = new InputDeviceRegistry(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
+            var second = new InputDeviceRegistry(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
 
             first.isExclusiveMode = true;
             first.PrepareDS4Init = device => { };
 
             Assert.False(second.isExclusiveMode);
             Assert.Null(second.PrepareDS4Init);
-            Assert.Empty(first.getDS4Controllers());
-            Assert.Empty(second.getDS4Controllers());
+            Assert.Empty(first.GetControllers());
+            Assert.Empty(second.GetControllers());
         }
 
         [Fact]
         public void Registry_ComesFromTheContainerAsOneInstance()
         {
-            Assert.Same(TestHost.GetService<DS4Devices>(), TestHost.GetService<DS4Devices>());
+            Assert.Same(TestHost.GetService<InputDeviceRegistry>(), TestHost.GetService<InputDeviceRegistry>());
         }
 
         [Fact]
         public void Attach_ConnectsTheCallbacksToTheRegistry()
         {
-            var devices = new DS4Devices(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
-            var registry = new Ds4DeviceRegistryAdapter(devices);
+            var devices = new InputDeviceRegistry(null, System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>());
+            var registry = new InputDeviceRegistryAdapter(devices);
             var hooks = new DeviceRegistryHooks(registry, TestHost.GetService<IInputDeviceModuleRegistry>(),
                 TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IElevatedProcessLauncher>(), TestHost.GetService<IPathService>());
 
@@ -63,8 +63,8 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructors_RejectNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new Ds4DeviceRegistryAdapter((DS4Devices)null));
-            var registry = TestHost.GetService<IDs4DeviceRegistry>();
+            Assert.Throws<ArgumentNullException>(() => new InputDeviceRegistryAdapter((InputDeviceRegistry)null));
+            var registry = TestHost.GetService<IInputDeviceRegistry>();
             var modules = TestHost.GetService<IInputDeviceModuleRegistry>();
             var app = TestHost.GetService<IAppSettingsService>();
             var launcher = TestHost.GetService<IElevatedProcessLauncher>();

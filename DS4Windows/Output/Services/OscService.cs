@@ -21,7 +21,7 @@ namespace DS4Windows.Output.Services
     {
         private readonly IAppSettingsService _appSettings;
         private readonly IOscTransportFactory _transportFactory;
-        private readonly DS4State[] _oscState = new DS4State[ControllerLimits.MaxControllerCount];
+        private readonly ControllerState[] _oscState = new ControllerState[ControllerLimits.MaxControllerCount];
 
         private IOscListenerHandle _listener;
         private IOscMessageSender _sender;
@@ -32,7 +32,7 @@ namespace DS4Windows.Output.Services
             _transportFactory = transportFactory ?? throw new ArgumentNullException(nameof(transportFactory));
             for (int i = 0; i < _oscState.Length; i++)
             {
-                _oscState[i] = new DS4State();
+                _oscState[i] = new ControllerState();
             }
         }
 
@@ -42,7 +42,7 @@ namespace DS4Windows.Output.Services
 
         public void ResetDeviceState(int index)
         {
-            _oscState[index] = new DS4State();
+            _oscState[index] = new ControllerState();
         }
 
         public void ChangeListenerStatus(bool state)
@@ -324,9 +324,9 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public void PostMappingStep(int ind, DS4State tempMapState)
+        public void PostMappingStep(int ind, ControllerState tempMapState)
         {
-            DS4State oscMapState = _oscState[ind];
+            ControllerState oscMapState = _oscState[ind];
             tempMapState.Cross |= oscMapState.Cross;
             tempMapState.Square |= oscMapState.Square;
             tempMapState.Circle |= oscMapState.Circle;
@@ -350,9 +350,9 @@ namespace DS4Windows.Output.Services
             tempMapState.R2 = oscMapState.R2 != 0 ? oscMapState.R2 : tempMapState.R2;
         }
 
-        public void PreMappingStep(int ind, DS4State cState, DS4State tempMapState)
+        public void PreMappingStep(int ind, ControllerState cState, ControllerState tempMapState)
         {
-            DS4State oscMapState = _oscState[ind];
+            ControllerState oscMapState = _oscState[ind];
             if (cState.Battery != oscMapState.Battery)
             {
                 SendOsc("/ds4windows/monitor/" + ind + "/battery", Convert.ToInt32(cState.Battery));
@@ -383,7 +383,7 @@ namespace DS4Windows.Output.Services
             CompareAndSendChanges(ind, tempMapState, cState);
         }
 
-        private void CompareAndSendChanges(int index, DS4State oldState, DS4State newState)
+        private void CompareAndSendChanges(int index, ControllerState oldState, ControllerState newState)
         {
             // Buttons
             if (oldState.Square != newState.Square)

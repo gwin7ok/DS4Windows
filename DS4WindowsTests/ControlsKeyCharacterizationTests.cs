@@ -36,14 +36,14 @@ namespace DS4WindowsTests
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key);
 
-            DS4State idle = ControlsKeyTestScope.Neutral();
-            DS4State held = ControlsKeyTestScope.Neutral();
+            ControllerState idle = ControlsKeyTestScope.Neutral();
+            ControllerState held = ControlsKeyTestScope.Neutral();
             held.Cross = true;
 
             t.Run(idle);
             Assert.False(t.IsBeingTriggered(sa));
 
-            DS4State output = t.Run(held);
+            ControllerState output = t.Run(held);
             Assert.True(t.IsBeingTriggered(sa));
             Assert.False(output.Cross);          // 割り当てたボタンの通常の出力は消える
 
@@ -62,8 +62,8 @@ namespace DS4WindowsTests
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key, toggle: true);
 
-            DS4State idle = ControlsKeyTestScope.Neutral();
-            DS4State held = ControlsKeyTestScope.Neutral();
+            ControllerState idle = ControlsKeyTestScope.Neutral();
+            ControllerState held = ControlsKeyTestScope.Neutral();
             held.Cross = true;
 
             t.Run(idle);
@@ -93,19 +93,19 @@ namespace DS4WindowsTests
 
             // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、Controls の Key は SA と同じ判定（中心から幅 55 を超える）になった。
             // R-5（ユーザー決定 2026-10-23）: デジタルな出力は、SA も Controls も閾値なし（中心から少しでも傾けば押下。値はデッドゾーンの補正の後）
-            DS4State slightlyLeft = ControlsKeyTestScope.Neutral();
+            ControllerState slightlyLeft = ControlsKeyTestScope.Neutral();
             slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。閾値なしなので押下
-            DS4State output = t.Run(slightlyLeft);
+            ControllerState output = t.Run(slightlyLeft);
             Assert.True(t.IsBeingTriggered(sa));
             Assert.Equal(128, output.LX);          // 方向の出力は消える（毎フレーム）
 
-            DS4State farLeft = ControlsKeyTestScope.Neutral();
+            ControllerState farLeft = ControlsKeyTestScope.Neutral();
             farLeft.LX = 72;   // 128 − 72 ＝ 56
             output = t.Run(farLeft);
             Assert.True(t.IsBeingTriggered(sa));
             Assert.Equal(128, output.LX);
 
-            DS4State idle = ControlsKeyTestScope.Neutral();
+            ControllerState idle = ControlsKeyTestScope.Neutral();
             t.Run(idle);
             Assert.False(t.IsBeingTriggered(sa));
         }
@@ -120,9 +120,9 @@ namespace DS4WindowsTests
 
             // 右へ倒した: 割り当てたのは「左」。押していない。反対の方向（LXPos）は未設定（Default）で、その出力が素通しされる（customMapQueue）ため、軸はそのまま出る。
             // （押していない軸の出力の消去が、軸の値として目に見えるのは、反対の方向を含まない傾きのときに限られる。消去の規則そのものは、エンジンの方針で引き継ぐ）
-            DS4State right = ControlsKeyTestScope.Neutral();
+            ControllerState right = ControlsKeyTestScope.Neutral();
             right.LX = 220;
-            DS4State output = t.Run(right);
+            ControllerState output = t.Run(right);
 
             Assert.False(t.IsBeingTriggered(sa));
             Assert.Equal(220, output.LX);
@@ -138,14 +138,14 @@ namespace DS4WindowsTests
 
             // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、Controls の Key は SA と同じ判定（100 を超える）になった。
             // R-5（ユーザー決定 2026-10-23）: SA も Controls も閾値なし（0 を超えれば押下）
-            DS4State slight = ControlsKeyTestScope.Neutral();
+            ControllerState slight = ControlsKeyTestScope.Neutral();
             slight.L2 = 1;
-            DS4State output = t.Run(slight);
+            ControllerState output = t.Run(slight);
 
             Assert.True(t.IsBeingTriggered(sa));
             Assert.Equal(0, output.L2);            // トリガーの出力は消える（毎フレーム）
 
-            DS4State pressed = ControlsKeyTestScope.Neutral();
+            ControllerState pressed = ControlsKeyTestScope.Neutral();
             pressed.L2 = 101;
             output = t.Run(pressed);
 
@@ -163,9 +163,9 @@ namespace DS4WindowsTests
             t.MapKey(DS4Controls.L1, Key);
             t.Publish();
 
-            DS4State input = ControlsKeyTestScope.Neutral();
+            ControllerState input = ControlsKeyTestScope.Neutral();
             input.Cross = true;   // 未設定（Default）のボタン
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
 
             Assert.True(output.Cross);
         }
@@ -196,7 +196,7 @@ namespace DS4WindowsTests
                 t.Publish();
                 SpecialAction synthetic = t.SyntheticFor(DS4Controls.Cross, Key);
 
-                DS4State held = ControlsKeyTestScope.Neutral();
+                ControllerState held = ControlsKeyTestScope.Neutral();
                 held.Cross = true;
                 t.Run(held);
 
@@ -215,7 +215,7 @@ namespace DS4WindowsTests
             t.Publish();
             SpecialAction sa = t.SyntheticFor(DS4Controls.Cross, Key);
 
-            DS4State held = ControlsKeyTestScope.Neutral();
+            ControllerState held = ControlsKeyTestScope.Neutral();
             held.Cross = true;
 
             t.Run(held);

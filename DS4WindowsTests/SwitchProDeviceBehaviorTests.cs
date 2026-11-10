@@ -64,7 +64,7 @@ namespace DS4WindowsTests
             return f;
         }
 
-        private static string Snapshot(DS4State s)
+        private static string Snapshot(ControllerState s)
         {
             return $"Ci={s.Circle} Cr={s.Cross} Sq={s.Square} R1={s.R1} L1={s.L1} Up={s.DpadUp} L2={s.L2} R2={s.R2} " +
                    $"LX={s.LX} LY={s.LY} RX={s.RX} RY={s.RY} Bat={s.Battery} Pkt={s.PacketCounter}";
