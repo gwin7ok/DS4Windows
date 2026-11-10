@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Parsers;
@@ -81,32 +79,13 @@ namespace DS4WindowsTests
                         cState.TrackPadTouch1.Y = (short)(((ushort)(inputReport[42]) << 4) | ((ushort)(inputReport[41] & 0xf0) >> 4));
         }
 
-        private static string Snapshot(DS4State state)
-        {
-            // DS4State の公開フィールド（入れ子の構造体を含む）をすべて並べる。パーサーが触らない項目も含めて、書き込み先が同じであることを確かめる
-            return string.Join(";", Dump(state));
-        }
-
-        private static string[] Dump(object o)
-        {
-            return o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public)
-                .OrderBy(f => f.Name, StringComparer.Ordinal)
-                .Select(f =>
-                {
-                    object v = f.GetValue(o);
-                    return v != null && v.GetType().IsValueType && !v.GetType().IsPrimitive && !v.GetType().IsEnum
-                        ? f.Name + "{" + string.Join(",", Dump(v)) + "}"
-                        : f.Name + "=" + v;
-                }).ToArray();
-        }
-
         private static void AssertSame(byte[] report)
         {
             var expected = new DS4State();
             var actual = new DS4State();
             LegacyParse(report, expected);
             new Ds4ReportParser().Parse(report, actual);
-            Assert.Equal(Snapshot(expected), Snapshot(actual));
+            Assert.Equal(DS4StateSnapshot.Of(expected), DS4StateSnapshot.Of(actual));
         }
 
         [Fact]

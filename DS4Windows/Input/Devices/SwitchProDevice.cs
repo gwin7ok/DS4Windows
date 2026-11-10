@@ -30,6 +30,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
+using DS4Windows.Input.Parsers;
 
 namespace DS4Windows.Input.Devices
 {
@@ -184,6 +185,8 @@ namespace DS4Windows.Input.Devices
         private new const int WARN_INTERVAL_BT = 40;
         private new const int WARN_INTERVAL_USB = 30;
         private byte[] inputReportBuffer;
+        // ボタン・方向キー・ZL/ZR の解析。状態を持たないため共有してよい
+        private static readonly IInputReportParser reportParser = new SwitchProReportParser();
         private byte[] outputReportBuffer;
         private byte[] rumbleReportBuffer;
 
@@ -497,33 +500,7 @@ namespace DS4Windows.Input.Devices
                         cState.Battery = 99;
                     }
 
-                    tempByte = inputReportBuffer[3];
-                    cState.Circle = (tempByte & 0x08) != 0;
-                    cState.Cross = (tempByte & 0x04) != 0;
-                    cState.Triangle = (tempByte & 0x02) != 0;
-                    cState.Square = (tempByte & 0x01) != 0;
-                    cState.R1 = (tempByte & 0x40) != 0;
-                    cState.R2Btn = (tempByte & 0x80) != 0;
-                    cState.R2 = (byte)(cState.R2Btn ? 255 : 0);
-                    cState.R2Raw = cState.R2;
-
-                    tempByte = inputReportBuffer[4];
-                    cState.Share = (tempByte & 0x01) != 0;
-                    cState.Options = (tempByte & 0x02) != 0;
-                    cState.PS = (tempByte & 0x10) != 0;
-                    cState.Capture = (tempByte & 0x20) != 0;
-                    cState.L3 = (tempByte & 0x08) != 0;
-                    cState.R3 = (tempByte & 0x04) != 0;
-
-                    tempByte = inputReportBuffer[5];
-                    cState.DpadUp = (tempByte & 0x02) != 0;
-                    cState.DpadDown = (tempByte & 0x01) != 0;
-                    cState.DpadLeft = (tempByte & 0x08) != 0;
-                    cState.DpadRight = (tempByte & 0x04) != 0;
-                    cState.L1 = (tempByte & 0x40) != 0;
-                    cState.L2Btn = (tempByte & 0x80) != 0;
-                    cState.L2 = (byte)(cState.L2Btn ? 255 : 0);
-                    cState.L2Raw = cState.L2;
+                    reportParser.Parse(inputReportBuffer, cState);
 
                     stick_raw[0] = inputReportBuffer[6];
                     stick_raw[1] = inputReportBuffer[7];
