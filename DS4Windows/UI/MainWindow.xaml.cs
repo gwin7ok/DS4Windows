@@ -73,6 +73,8 @@ namespace DS4Windows.UI
         private bool wasrunning = false;
         private AutoProfileHolder autoProfileHolder;
         private NonFormTimer hotkeysTimer;
+        // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
+        private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         private NonFormTimer autoProfilesTimer;
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly IAutoProfileService _autoProfileService;
@@ -607,38 +609,15 @@ namespace DS4Windows.UI
                 //for (int i = 0; i < 4; i++)
                 {
                     string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
-                    if (slide == "left")
+                    if (slide == "left" || slide == "right")
                     {
-                        //int ind = i;
                         Dispatcher.BeginInvoke((Action)(() =>
                         {
-                            if (item.SelectedIndex <= 0)
-                            {
-                                item.SelectedIndex = item.ProfileListCol.Count - 1;
-                            }
-                            else
-                            {
-                                item.SelectedIndex--;
-                            }
-                        }));
-                    }
-                    else if (slide == "right")
-                    {
-                        //int ind = i;
-                        Dispatcher.BeginInvoke((Action)(() =>
-                        {
-                            if (item.SelectedIndex == (item.ProfileListCol.Count - 1))
-                            {
-                                item.SelectedIndex = 0;
-                            }
-                            else
-                            {
-                                item.SelectedIndex++;
-                            }
+                            item.SelectedIndex = swipeRule.NextIndex(item.SelectedIndex, item.ProfileListCol.Count, slide);
                         }));
                     }
 
-                    if (slide.Contains("t"))
+                    if (swipeRule.WantsNotification(slide))
                     {
                         //int ind = i;
                         Dispatcher.BeginInvoke((Action)(() =>
