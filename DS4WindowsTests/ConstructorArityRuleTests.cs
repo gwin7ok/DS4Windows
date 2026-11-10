@@ -12,8 +12,8 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// コンストラクターの引数の数の努力目標（15 以下。規約 §3.1）を、本体のアセンブリのリフレクションで検査する。
-    /// 15 を超える型は <see cref="ConstructorArityBaseline"/> に凍結し、実数との一致を検査する（増えても減っても失敗。
+    /// コンストラクターの引数の数の努力目標（12 以下。規約 §3.1。Phase20 で 15 から引き下げ）を、本体のアセンブリのリフレクションで検査する。
+    /// 12 を超える型は <see cref="ConstructorArityBaseline"/> に凍結し、実数との一致を検査する（増えても減っても失敗。
     /// 規約 §3.1 のラチェットの一致検査と同じ運用）。値の入れ物・工場・View も免除せず、許可リストで増加だけを止める。
     /// 引数の数は型ごとに、インスタンス コンストラクター（非公開を含む。主コンストラクターも同じ）の最大値。
     /// 作り直し: 環境変数 DS4W_ARITY_BASELINE_OUT に書き出し先のパスを入れて実行する。
@@ -21,7 +21,7 @@ namespace DS4WindowsTests
     public class ConstructorArityRuleTests
     {
         private const string BaselineOutEnv = "DS4W_ARITY_BASELINE_OUT";
-        public const int Threshold = 15;
+        public const int Threshold = 12;
 
         private readonly ITestOutputHelper _output;
 
@@ -105,7 +105,7 @@ namespace DS4WindowsTests
             sb.AppendLine("namespace DS4WindowsTests");
             sb.AppendLine("{");
             sb.AppendLine("    /// <summary>");
-            sb.AppendLine("    /// コンストラクターの引数が 15 を超える型の許可リスト（\"型の完全名|引数の数\"。序数順）。");
+            sb.AppendLine("    /// コンストラクターの引数が 12 を超える型の許可リスト（\"型の完全名|引数の数\"。序数順）。");
             sb.AppendLine("    /// <see cref=\"ConstructorArityRuleTests\"/> が実数と一致することを検査する（増えても減っても失敗）。");
             sb.AppendLine("    /// 是正で減ったら、同じコミットでここも更新する。新しい型は追加しない（責務の分割や束ねで是正する）。");
             sb.AppendLine("    /// 更新の手順: 環境変数 DS4W_ARITY_BASELINE_OUT にファイルのパスを入れてテストを実行すると、実測から作ったこのファイルの内容をそのパスへ書き出す。");
