@@ -46,10 +46,33 @@ namespace DS4WindowsTests
                    $"Us={s.totalMicroSec} Ts={s.ds4Timestamp} El={s.elapsedTime:F6}";
         }
 
+        // BT の入力レポート（547 バイト）: [0]=0x11、[2..]=USB と同じ並び、[74..77]=CRC32（先頭 74 バイトの）
+        private static byte[] BtFrame(byte[] usbFrame, bool validCrc = true)
+        {
+            var f = new byte[547];
+            f[0] = 0x11;
+            Array.Copy(usbFrame, 0, f, 2, usbFrame.Length);
+            uint seed = 2351727372;
+            byte[] buffer = f;
+            int offset = 0;
+            int length = 74;
+            uint crc = ~DS4Windows.Input.Crc32Algorithm.CalculateFasterBT78Hash(ref seed, ref buffer, ref offset, ref length);
+            if (!validCrc) crc ^= 0xFFFFFFFF;
+            f[74] = (byte)crc;
+            f[75] = (byte)(crc >> 8);
+            f[76] = (byte)(crc >> 16);
+            f[77] = (byte)(crc >> 24);
+            return f;
+        }
+
         private (string Reports, string Writes, int Battery, bool Removed) Run(VidPidFeatureSet featureSet, params byte[][] frames)
         {
-            var transport = new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 32,
-                vendorId: 0x054C, productId: 0x09CC);
+            return RunWith(new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 32,
+                vendorId: 0x054C, productId: 0x09CC), featureSet, frames);
+        }
+
+        private (string Reports, string Writes, int Battery, bool Removed) RunWith(FakeHidTransport transport, VidPidFeatureSet featureSet, params byte[][] frames)
+        {
             foreach (byte[] frame in frames)
             {
                 transport.EnqueueRead(HidReadStatus.Success, frame);
@@ -90,6 +113,53 @@ namespace DS4WindowsTests
             Assert.True(result.Removed);
             Assert.Equal(Expected, (result.Reports + "--\n" + result.Writes + $"Battery={result.Battery}\n").Replace("\r\n", "\n"));
         }
+
+        [Fact]
+        public void BtScript_ReportsTheFramesWithAValidCrc_AndSkipsTheOnesWithABadCrc()
+        {
+            var transport = new FakeHidTransport(inputReportByteLength: 547, outputReportByteLength: 78,
+                vendorId: 0x054C, productId: 0x09CC);
+            var result = RunWith(transport, VidPidFeatureSet.NoGyroCalib,
+                BtFrame(Frame(10, 20, 0, 0x08, 100, 0x05)),
+                BtFrame(Frame(99, 99, 0, 0x08, 150, 0x05), validCrc: false),
+                BtFrame(Frame(200, 128, 255, 0x28, 200, 0x18)));
+
+            output.WriteLine(result.Reports);
+            output.WriteLine(result.Writes);
+            output.WriteLine("Battery=" + result.Battery + " Removed=" + result.Removed);
+            Assert.True(result.Removed);
+            Assert.Equal(BtExpected, (result.Reports + "--\n" + result.Writes + $"Battery={result.Battery}\n").Replace("\r\n", "\n"));
+        }
+
+        [Fact]
+        public void DongleScript_ReportsTheFrames_AndRemovesOnTheEndOfTheScript()
+        {
+            var transport = new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 32, numberFeatureDataIndices: 22,
+                vendorId: 0x054C, productId: 0x0BA0);
+            var result = RunWith(transport, VidPidFeatureSet.NoGyroCalib,
+                Frame(10, 20, 0, 0x08, 100, 0x05),
+                Frame(200, 128, 255, 0x28, 200, 0x18));
+
+            output.WriteLine(result.Reports);
+            output.WriteLine(result.Writes);
+            output.WriteLine("Battery=" + result.Battery + " Removed=" + result.Removed);
+            Assert.True(result.Removed);
+            Assert.Equal(DongleExpected, (result.Reports + "--\n" + result.Writes + $"Battery={result.Battery}\n").Replace("\r\n", "\n"));
+        }
+
+        private const string BtExpected =
+            "X=False Sq=False LX=10 LY=20 L2=0 Bat=62 Pkt=1 Us=533 Ts=100 El=0.000533\n" +
+            "X=True Sq=False LX=200 LY=128 L2=255 Bat=72 Pkt=2 Us=1066 Ts=200 El=0.000533\n" +
+            "--\n" +
+            "interrupt len=334 id=11 b1=C0 b2=00 b3=07\n" +
+            "interrupt len=334 id=11 b1=C0 b2=00 b3=07\n" +
+            "Battery=72\n";
+        private const string DongleExpected =
+            "X=False Sq=False LX=10 LY=20 L2=0 Bat=62 Pkt=1 Us=533 Ts=100 El=0.000533\n" +
+            "X=True Sq=False LX=200 LY=128 L2=255 Bat=72 Pkt=2 Us=1066 Ts=200 El=0.000533\n" +
+            "--\n" +
+            "interrupt len=32 id=05 b1=07 b2=04 b3=00\n" +
+            "Battery=72\n";
 
         // 旧実装（DS4Device）が出した記録そのもの。移行後の実装は、これと同じ記録を出すこと
         private const string Expected =
