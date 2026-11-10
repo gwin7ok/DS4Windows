@@ -32,7 +32,7 @@ namespace DS4Windows.Output.Devices
         // Temp version number for ViGEmBus version with AwaitOutputBuffer API calls
         private static Version outBuffAPIMinVersion = new Version("1.19.0.0");
 
-        public static DS4OutDevice CreateDS4Device(IVirtualPadBackend backend,
+        public static DS4OutDevice CreateDS4OutDevice(IVirtualPadBackend backend,
             Version driverVersion)
         {
             DS4OutDevice result = null;

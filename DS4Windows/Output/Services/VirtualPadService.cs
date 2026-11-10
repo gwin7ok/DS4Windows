@@ -309,10 +309,10 @@ namespace DS4Windows.Output.Services
 
                 if (device.JointDeviceSlotNumber != -1)
                 {
-                    InputDeviceCore tempDS4Device = _deviceAccessor.GetController(device.JointDeviceSlotNumber);
-                    if (tempDS4Device != null)
+                    InputDeviceCore inputDevice = _deviceAccessor.GetController(device.JointDeviceSlotNumber);
+                    if (inputDevice != null)
                     {
-                        EstablishOutFeedback(device.JointDeviceSlotNumber, contType, outDevice, tempDS4Device);
+                        EstablishOutFeedback(device.JointDeviceSlotNumber, contType, outDevice, inputDevice);
                     }
                 }
             }
