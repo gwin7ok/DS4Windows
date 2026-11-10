@@ -83,63 +83,14 @@ namespace DS4Windows.Core.Settings
 
         public override void PersistSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            string testStr = string.Empty;
-            XmlSerializer serializer = new XmlSerializer(typeof(DualSenseControllerOptsDTO));
-
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = false,
-                        OmitXmlDeclaration = true, // only partial XML with no declaration
-                    });
-
-                // Write root element and children
-                DualSenseControllerOptsDTO dto = new DualSenseControllerOptsDTO();
-                dto.MapFrom(this);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
-
-            XmlNode tempDSNode = xmlDoc.CreateDocumentFragment();
-            tempDSNode.InnerXml = testStr;
-
-            XmlNode tempOptsNode = node.SelectSingleNode(XML_ELEMENT_NAME);
-            if (tempOptsNode != null)
-            {
-                node.RemoveChild(tempOptsNode);
-            }
-
-            tempOptsNode = tempDSNode;
-            node.AppendChild(tempOptsNode);
+            DualSenseControllerOptsDTO dto = new DualSenseControllerOptsDTO();
+            dto.MapFrom(this);
+            PersistDto(xmlDoc, node, XML_ELEMENT_NAME, dto);
         }
 
         public override void LoadSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(DualSenseControllerOptsDTO));
-            XmlNode baseNode = node.SelectSingleNode(XML_ELEMENT_NAME);
-            if (baseNode == null)
-                return;
-
-            try
-            {
-                using var stringReader = new StringReader(baseNode.OuterXml);
-                using var xmlReader = XmlReader.Create(stringReader);
-                DualSenseControllerOptsDTO dto = serializer.Deserialize(xmlReader) as DualSenseControllerOptsDTO;
-                dto.MapTo(this);
-            }
-            catch (InvalidOperationException)
-            {
-            }
+            LoadDto<DualSenseControllerOptsDTO>(node, XML_ELEMENT_NAME, dto => dto.MapTo(this));
         }
     }
 }

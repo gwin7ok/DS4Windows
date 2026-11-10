@@ -53,63 +53,14 @@ namespace DS4Windows.Core.Settings
 
         public override void PersistSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            string testStr = string.Empty;
-            XmlSerializer serializer = new XmlSerializer(typeof(DS4ControllerOptsDTO));
-
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = false,
-                        OmitXmlDeclaration = true, // only partial XML with no declaration
-                    });
-
-                // Write root element and children
-                DS4ControllerOptsDTO dto = new DS4ControllerOptsDTO();
-                dto.MapFrom(this);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
-
-            XmlNode tempDS4Node = xmlDoc.CreateDocumentFragment();
-            tempDS4Node.InnerXml = testStr;
-
-            XmlNode tempOptsNode = node.SelectSingleNode(XML_ELEMENT_NAME);
-            if (tempOptsNode != null)
-            {
-                node.RemoveChild(tempOptsNode);
-            }
-
-            tempOptsNode = tempDS4Node;
-            node.AppendChild(tempOptsNode);
+            DS4ControllerOptsDTO dto = new DS4ControllerOptsDTO();
+            dto.MapFrom(this);
+            PersistDto(xmlDoc, node, XML_ELEMENT_NAME, dto);
         }
 
         public override void LoadSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(DS4ControllerOptsDTO));
-            XmlNode baseNode = node.SelectSingleNode(XML_ELEMENT_NAME);
-            if (baseNode == null)
-                return;
-
-            try
-            {
-                using var stringReader = new StringReader(baseNode.OuterXml);
-                using var xmlReader = XmlReader.Create(stringReader);
-                DS4ControllerOptsDTO dto = serializer.Deserialize(xmlReader) as DS4ControllerOptsDTO;
-                dto.MapTo(this);
-            }
-            catch (InvalidOperationException)
-            {
-            }
+            LoadDto<DS4ControllerOptsDTO>(node, XML_ELEMENT_NAME, dto => dto.MapTo(this));
         }
     }
 }

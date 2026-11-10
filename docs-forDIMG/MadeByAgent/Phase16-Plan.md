@@ -782,3 +782,8 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **保存形式は不変**: 黄金テスト（`appsettings-varied.xml`、`.state.txt`）は、基準のファイルを変えずに合格。状態の充填・出力の補助（`BackingStoreStateFiller`／`BackingStoreStateDumper`）は、辞書の中身を従来の名前で扱うよう直した（辞書は反射の対象外のため）。
 - **持ち越し**: `ControllerRegDeviceOptsViewModel` の種類ごとの `switch`（タブの番号とラッパーの生成）と XAML の `DS4DeviceOpts.Enabled` などの束縛は、ViewModel 自身のプロパティ（窓口）のため残した。ラッパーの型が機種ごとに別のため、12d で `*ControllerOptions` の重複と一緒に扱う。
 - 新テスト 3 件（`ControlServiceDeviceOptionsTests`: 系統ごとの設定の型、型付きプロパティがないこと、DTO の往復）。Actions 3,390 件合格・警告 0。
+
+### Step 16-12d（2026-11-10。完了。縮小した範囲）
+- **共通化したもの**: `DS4`／`DualSense`／`SwitchPro`／`JoyCon` の `*ControllerOptions` にあった、約 60 行ずつ同形の `PersistSettings`／`LoadSettings`（DTO を XML の断片にして親の節へ置く／読む）を、`ControllerOptionsStore` の `PersistDto<TDto>`／`LoadDto<TDto>` へ集めた。各クラスは 5〜6 行になり、4 クラスの合計は 544 行から約 370 行（基底を含む）になった。節の名前・書き出しの設定・「節がなければ何もしない」「`InvalidOperationException` は無視」は元と同じ。
+- **やらなかったもの（理由）**: `EnableHomeLED`（SwitchPro と JoyCon の同一の 2 行）と、UI の `*OptionsWrapper`・`ControllerRegDeviceOptsViewModel` の種類ごとの `switch`（タブの番号とラッパーの生成）。ラッパーは機種ごとに束縛先の項目が違い、無理にまとめると束縛が壊れやすいため、計画（13.2）どおり「無理にまとめない」とした。
+- 新テスト 5 件（`ControllerOptionsPersistenceTests`: 往復、同名の節は 1 つ、節がなければ変更なし、節の名前）。Actions 3,395 件合格・警告 0。

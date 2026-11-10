@@ -54,63 +54,14 @@ namespace DS4Windows.Core.Settings
 
         public override void PersistSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            string testStr = string.Empty;
-            XmlSerializer serializer = new XmlSerializer(typeof(SwitchProControllerOptsDTO));
-
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = false,
-                        OmitXmlDeclaration = true, // only partial XML with no declaration
-                    });
-
-                // Write root element and children
-                SwitchProControllerOptsDTO dto = new SwitchProControllerOptsDTO();
-                dto.MapFrom(this);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
-
-            XmlNode tempSwitchProNode = xmlDoc.CreateDocumentFragment();
-            tempSwitchProNode.InnerXml = testStr;
-
-            XmlNode tempOptsNode = node.SelectSingleNode(XML_ELEMENT_NAME);
-            if (tempOptsNode != null)
-            {
-                node.RemoveChild(tempOptsNode);
-            }
-
-            tempOptsNode = tempSwitchProNode;
-            node.AppendChild(tempOptsNode);
+            SwitchProControllerOptsDTO dto = new SwitchProControllerOptsDTO();
+            dto.MapFrom(this);
+            PersistDto(xmlDoc, node, XML_ELEMENT_NAME, dto);
         }
 
         public override void LoadSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(SwitchProControllerOptsDTO));
-            XmlNode baseNode = node.SelectSingleNode(XML_ELEMENT_NAME);
-            if (baseNode == null)
-                return;
-
-            try
-            {
-                using var stringReader = new StringReader(baseNode.OuterXml);
-                using var xmlReader = XmlReader.Create(stringReader);
-                SwitchProControllerOptsDTO dto = serializer.Deserialize(xmlReader) as SwitchProControllerOptsDTO;
-                dto.MapTo(this);
-            }
-            catch (InvalidOperationException)
-            {
-            }
+            LoadDto<SwitchProControllerOptsDTO>(node, XML_ELEMENT_NAME, dto => dto.MapTo(this));
         }
     }
 }
