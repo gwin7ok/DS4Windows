@@ -109,6 +109,22 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 - **追加（2026-11-05。`Phase14d-Plan.md` §10）**: マクロの再生・繰り返し・タップ間隔の時間の扱いを `TimeProvider` 経由にし、テストが実時間で待たずに済むようにする（Debug ALL のテストの時間の残りの大半。本体の変更のため実機確認が要る）。
 - **追加（2026-11-05。`Phase14c-Plan.md` §7）**: R-05 の後半（ライトバーの色の計算を第1層の `DS4LightBar.updateLightBar` から第2層の `ILightbarService` へ。強制表示の状態は Phase14c で `LightbarOverrides` にした）、`DS4Devices` のインスタンス化、R-17（`DS4State` など層間の状態の型）、記録のみの規則 L2（Core → 第1層・第3層。Phase14c の後 29 件）の残り、R-07・R-08・R-11（入力・出力のカートリッジ化と機種の設定の共通化。Phase14c で層ごとに分けた `ServiceRegistration` の partial ファイルを、カートリッジの登録の受け皿にする）。
 
+### Phase17: Phase16 で見送った項目の実装（2026-11-10 追加。計画書は Phase16 の完了後に作成する）
+
+Phase16 の追補（16-12・16-13）で見送った次の項目を、Phase17 で計画を立てて実装する。根拠と詳細は `Phase16-Plan.md` §12「16-12a」「16-13a」「16-13b-2／13c」。
+
+| ID | 項目 | 内容 | 出典 |
+|---|---|---|---|
+| P17-1 | `MainWindow` の責務分割 | IPC の受け付けと結果の書き込み、テーマ・言語、更新の確認、プロファイルの適用などを ViewModel／サービスへ移し、`MainWindow`（21 引数）・`MainWindowFactory`（20）を 15 以下にする | 16-13b-2／13c |
+| P17-2 | `EditorWindowFactory` の整理 | 編集画面群（18 引数）を 15 以下にする。P17-1 と同じ方針 | 16-13b-2 |
+| P17-3 | `Mapping` の残りの分割 | 段 2（`ProcessStick`／`ProcessControlSettingAction`／`MapCustomAction`）を `MappingFrame`（共有の `_sampleState`／`_sampleFields` の入れ物）で切り出し、17 引数を 15 以下にする。毎フレームの経路のため、割り当て 0 のテストと A/B 計測を伴う | 16-13a（D-13-1 の本来の案） |
+| P17-4 | 解析器の選択のカートリッジ化 | DS4 以外のデバイスが自分で持つ解析器の選択を、カートリッジから渡す形にする。デバイスのコンストラクター・初期化の順序の変更を伴う | 16-12a（K-e） |
+| P17-5 | 設定画面の機種ごとの統合 | `*OptionsWrapper` と `ControllerRegDeviceOptsViewModel` の種類ごとの `switch` を、カートリッジの表から作る形にする。`EnableHomeLED`（SwitchPro・JoyCon の同一の 2 行）の共通化を含む。見た目は変えない | 16-12c／12d |
+| P17-6 | DS4 以外の機種の実機確認 | DualSense・Switch Pro・Joy-Con・DS3 は実機がなく、差分テストだけで守っている。実機が得られたときに確認する（`Known-Issues-Ledger.md` §3） | Phase16 全体 |
+| P17-7 | 入力機種の登録のカートリッジ化の完全な形 | 機種の追加が「デバイス＋カートリッジ＋登録 1 行」で済む形に近づける（モジュールの登録、設定の入れ物の登録を含む） | R-07 |
+
+- 進め方: Phase16 の master への取り込みと実機確認の後に、`Phase17-Plan.md` を作成し、承認を得てから実装する（規約 4 章）。順序の案は P17-5 → P17-4 → P17-3 → P17-1・P17-2（機種に近い順に。画面の分割は最後）。P17-6 は実機の入手を条件とする。
+
 ## 4. FurtherImprovements 01〜06 の扱い
 
 | 文書 | 扱い |
@@ -152,7 +168,8 @@ Issue #4 の 4 件と、2026-11-02 時点のコードとの照合:
 9. 済み（2026-11-10。実機確認待ち）: Phase16（第 1 層・第 3 層のカートリッジ化。`Phase16-Plan.md`、`Phase16-Completion-Report.md`）。`IHidTransport`／`IInputReportParser`（Joy-Con・DS3 を含む）、ViGEm の分離、`TimeProvider`、`ILightbarService`、`IOutputDeviceCartridge`／`OutContTypeInfo`、引数の整理（`ActionBindingBuilder` 16→5、`Mapping` 25→20）、層の違反 L2・L7 を 0 件に。実機確認は DS4 のみ 1 回。
 8. 小作業の持ち越し: テストの `[Collection("ServiceProviderHolder")]` の改名（**Phase14d-Step5 で実施済み**）。`ControlService` のスロット状態の転送（約 50 利用者）の整理は、Phase15 の最初の Step（R-09）で行う。
 9. （済み）Phase15-0（Phase14 系の小さな持ち越しの片付け。`Phase15-0-Plan.md`。2026-11-05 承認、決定 H1〜H6 はすべて推奨案）: 利用者向けのログ文言のリソース化（Phase13b-2）、Phase 名のテストの改名、テスト固有の読み取りの補助の整理、テストの共有の状態の整理と並列実行の再計測。続けて Phase15 の本体。
-10. 未解決の不具合は `Known-Issues-Ledger.md` にまとめた（2026-11-05。KI-1〜KI-5）。
+10. 次（2026-11-10 追加）: Phase16 の追補分の実機確認 → master への取り込み → Phase17（Phase16 で見送った項目。§3 Phase17。計画書は未作成）。
+11. 未解決の不具合は `Known-Issues-Ledger.md` にまとめた（2026-11-05。KI-1〜KI-5）。
 
 ## 8. 追加案（2026-11-04。FurtherImprovements との照合で見つかった抜け。**承認済み: 8.1〜8.3 すべて採用**）
 

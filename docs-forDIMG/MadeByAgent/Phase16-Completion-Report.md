@@ -24,3 +24,4 @@
 - 追補後の実機確認（DS4 で 1 回: 設定画面の機種ごとの設定の保存・再読み込み、ライトバー、切断）は未実施。Release ビルドも未実施。
 - 引数の目標（15 以下）に届かないもの: `Mapping`（17）、`MainWindow`（21）、`MainWindowFactory`（20）、`EditorWindowFactory`（18）。画面の分割が要るため、次の Phase の候補（計画書 §12「16-13b-2／13c」）。
 - 見送り: 解析器の選択をカートリッジへ移すこと（K-e）、`MappingFrame`、設定画面の `*OptionsWrapper` の統合。
+- 上の見送りと引数の目標に届かなかったものは、すべて **Phase17** に登録した（`Phase11-and-Beyond-Roadmap.md` §3 Phase17。P17-1〜P17-7）。
