@@ -24,7 +24,6 @@ namespace DS4Windows.Processing.Services
     public sealed class ServiceLifecycle : IServiceLifecycle
     {
         private readonly IAppSettingsService _appSettings;
-        private readonly IEnvironmentService _environmentService;
         private readonly IProfileSettingsService _profileSettings;
         private readonly IDs4DeviceRegistry _deviceRegistry;
         private readonly IVirtualPadService _virtualPad;
@@ -81,7 +80,6 @@ namespace DS4Windows.Processing.Services
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _lightbarService = lightbarService ?? throw new System.ArgumentNullException(nameof(lightbarService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
@@ -90,7 +88,7 @@ namespace DS4Windows.Processing.Services
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
             _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
-            _controllerSlotLimit = environmentService.ControllerSlotLimit;
+            _controllerSlotLimit = (environmentService ?? throw new ArgumentNullException(nameof(environmentService))).ControllerSlotLimit;
         }
 
         public bool Start(bool showlog = true)
