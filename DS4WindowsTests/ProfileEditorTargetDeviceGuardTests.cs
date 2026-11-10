@@ -213,7 +213,7 @@ namespace DS4WindowsTests
 
             // Phase7-Step5 W5: ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
             Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", text);
-            string factory = SourceText.ReadCode("DS4Windows/UI/Services/EditorWindowFactory.cs");
+            string factory = SourceText.ReadCode("DS4Windows/UI/Services/ProfileEditorFactory.cs");
             if (factory != null)
                 Assert.Contains("new ProfileEditor(targetDevice,", factory);
             Assert.Contains("editor.Reload(entity)", text);
@@ -225,7 +225,7 @@ namespace DS4WindowsTests
             var checks = new (string File, string Call)[]
             {
                 ("DS4Windows/UI/BindingWindow.xaml.cs", "CreateRecordBox("),
-                ("DS4Windows/UI/Services/EditorWindowFactory.cs", "CreateBindingWindowViewModel("),
+                ("DS4Windows/UI/Services/AssignmentWindowFactory.cs", "CreateBindingWindowViewModel("),
                 ("DS4Windows/UI/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/UI/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
                 ("DS4Windows/UI/AssignmentEditor.xaml.cs", "CreateRecordBoxWindow("),

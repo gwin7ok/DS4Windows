@@ -85,40 +85,48 @@ namespace DS4WindowsTests
         public void EditorWindowFactory_RequiresAllServices()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            var slots = TestRepositoryFactory.CreateOutputSlotService();
             var path = new PathService();
             var rd = TestHost.GetService<DS4Windows.Processing.Abstractions.IControllerReadingsSource>();
             var mr = TestHost.GetService<DS4Windows.Processing.Abstractions.IMacroRecordingState>();
-            var lt = new LazyProfileLoadTarget();   // Phase13-Step6 6-e: プリセットの読込先の窓口
-            var loader = TestRepositoryFactory.CreateProfilePresetLoader();
             var repo = TestRepositoryFactory.CreateSpecialActionRepository();
-            // Phase7-Step5 W5: CreateProfileEditor のために、アプリ設定・プロファイルリポジトリ・プロファイル切替の 3 つを追加した
             var app = TestRepositoryFactory.CreateAppSettingsService();
             var profiles = TestRepositoryFactory.CreateProfileRepository(settings);
             var switcher = new DS4Windows.Processing.Actions.DefaultProfileSwitcher();
             var vm = new NullViewModelFactory();
+            var env = new DS4Windows.Core.Platform.EnvironmentService();
             var windowSystem = new DS4Windows.Core.Platform.Win32WindowSystem();
             var mouseHook = new DS4Windows.Core.Platform.LowLevelMouseHook();
-            var rf = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();   // Phase13-Step10 10-d
+            var rf = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
             var sc = TestHost.GetService<DS4Windows.Processing.Abstractions.IControllerSlotCommands>();
 
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, null, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, null, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, null, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, null, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, null, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, null, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, null, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, null, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, null, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, null, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, null, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, null, windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, null, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), null, mouseHook, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, null, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, null, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(TestLightbar.State, settings, slots, path, vm, repo, loader, rd, mr, lt, app, profiles, switcher, new DS4Windows.Core.Platform.EnvironmentService(), windowSystem, mouseHook, rf, null));
+            // 窓口は 3 つの工場を受け、それぞれの工場は必要な依存を受ける
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(null, new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, mouseHook), new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, env, rf, sc)));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, repo, env, windowSystem, rd), null, new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, env, rf, sc)));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, repo, env, windowSystem, rd), new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, mouseHook), null));
+
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(null, sc, vm, repo, env, windowSystem, rd));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(settings, null, vm, repo, env, windowSystem, rd));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, null, repo, env, windowSystem, rd));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, null, env, windowSystem, rd));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, repo, null, windowSystem, rd));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, repo, env, null, rd));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, repo, env, windowSystem, null));
+
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(null, path, vm, windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, null, vm, windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, null, windowSystem, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, null, mouseHook));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, null));
+
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(null, settings, profiles, switcher, rd, vm, env, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, null, profiles, switcher, rd, vm, env, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, null, switcher, rd, vm, env, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, null, rd, vm, env, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, null, vm, env, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, null, env, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, null, rf, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, env, null, sc));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, env, rf, null));
         }
 
         private class NullViewModelFactory : IViewModelFactory

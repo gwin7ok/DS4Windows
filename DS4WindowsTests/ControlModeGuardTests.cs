@@ -53,7 +53,7 @@ namespace DS4WindowsTests
                 .ToArray();
 
             // 宣言（インターフェース）と実装（窓口）と、呼び出し元の ProfileEditor だけ（Phase10-Step3 W4 で、ProfileEditor に接続した）
-            Assert.Equal(new[] { "EditorWindowFactory.cs", "IEditorWindowFactory.cs", "ProfileEditor.xaml.cs" }, callers);
+            Assert.Equal(new[] { "AssignmentWindowFactory.cs", "EditorWindowFactory.cs", "IEditorWindowFactory.cs", "ProfileEditor.xaml.cs" }, callers);
         }
     }
 }
