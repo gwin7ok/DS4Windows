@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Touchpad;
+
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
@@ -6,6 +8,6 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface IMouseFactory
     {
-        Mouse Create(int deviceIndex, DS4Windows.Input.InputDeviceCore device);
+        TouchpadMouse Create(int deviceIndex, DS4Windows.Input.InputDeviceCore device);
     }
 }

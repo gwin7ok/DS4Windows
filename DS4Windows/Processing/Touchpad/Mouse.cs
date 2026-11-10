@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 //using System.Diagnostics;
+using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
@@ -26,9 +27,9 @@ using DS4Windows.Core.Utilities;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Touchpad
 {
-    public class Mouse : ITouchpadBehaviour, ITouchPadGyroToggles
+    public class TouchpadMouse : ITouchpadBehaviour, ITouchPadGyroToggles
     {
         protected DateTime pastTime, firstTap, TimeofEnd;
         protected Touch firstTouch, secondTouch;
@@ -115,7 +116,7 @@ namespace DS4Windows.Processing
         private OneEuroFilterPair touchStickFilter;
         private FakeTrackball touchStickTrackball;
 
-        public Mouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
+        public TouchpadMouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
             _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));

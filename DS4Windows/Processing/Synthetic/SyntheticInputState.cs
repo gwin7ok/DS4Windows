@@ -1,9 +1,10 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using System.Threading;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Synthetic
 {
     /// <summary>
     /// Phase7-Step7 W2（Q2＝A）: 合成キー・マウス入力の状態の保持クラス（旧: <c>Mapping</c> の静的フィールド <c>globalState</c>／<c>deviceState</c>／<c>syncStateLock</c>）。

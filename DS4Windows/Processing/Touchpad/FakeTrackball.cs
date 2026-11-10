@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using DS4Windows.Core.Abstractions;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Touchpad
 {
     public class FakeTrackball : IInstanceIdentifiable
     {

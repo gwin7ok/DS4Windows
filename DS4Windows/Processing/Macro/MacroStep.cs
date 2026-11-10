@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Macro
 {
 
     public class MacroStep

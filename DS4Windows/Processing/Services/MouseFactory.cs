@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Touchpad;
+using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -25,9 +27,9 @@ namespace DS4Windows.Processing.Services
             _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         }
 
-        public Mouse Create(int deviceIndex, InputDeviceCore device)
+        public TouchpadMouse Create(int deviceIndex, InputDeviceCore device)
         {
-            return new Mouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput, _timeProvider);
+            return new TouchpadMouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput, _timeProvider);
         }
     }
 }

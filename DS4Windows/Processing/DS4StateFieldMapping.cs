@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
 
@@ -95,12 +96,12 @@ namespace DS4Windows.Processing
         {
         }
 
-        public DS4StateFieldMapping(DS4State cState, DS4StateExposed exposeState, Mouse tp, bool priorMouse = false)
+        public DS4StateFieldMapping(DS4State cState, DS4StateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
         {
             PopulateFieldMapping(cState, exposeState, tp, priorMouse);
         }
 
-        public void PopulateFieldMapping(DS4State cState, DS4StateExposed exposeState, Mouse tp, bool priorMouse = false)
+        public void PopulateFieldMapping(DS4State cState, DS4StateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
         {
             unchecked
             {

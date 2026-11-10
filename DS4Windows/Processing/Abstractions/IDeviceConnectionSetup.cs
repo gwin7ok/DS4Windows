@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Input;
 
@@ -14,12 +15,12 @@ namespace DS4Windows.Processing.Abstractions
         /// プロファイルの設定（出力データ、アイドル切断、BT のポーリング、デバウンス、トラックボール、トリガー効果、振動の自動停止、ライトバー、DualSense の設定）を
         /// デバイスへ反映する。<paramref name="startUp"/> が false のときは、プロファイルの「起動するプログラム」も扱う。
         /// </summary>
-        void ApplyProfileOptions(int ind, InputDeviceCore device, Mouse touchPad, bool startUp = false);
+        void ApplyProfileOptions(int ind, InputDeviceCore device, TouchpadMouse touchPad, bool startUp = false);
 
         /// <summary>UDP のスムージング、フリックスティック、トリガー効果の変更イベントを、このスロットのデバイスへ配線し直す。</summary>
         void WireInitialHooks(int ind, InputDeviceCore device);
 
         /// <summary>タッチパッドと 6 軸のイベントを、スロットのマウス（<paramref name="touchPads"/>[ind]）へ配線する。</summary>
-        void AttachTouchpad(int ind, InputDeviceCore device, Mouse[] touchPads);
+        void AttachTouchpad(int ind, InputDeviceCore device, TouchpadMouse[] touchPads);
     }
 }

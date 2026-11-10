@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
@@ -36,7 +37,7 @@ namespace DS4Windows.Processing.Services
                 return false;
 
             DS4State state = device.getCurrentStateRef();
-            Mouse touchPad = _slotState.TouchPads[0];
+            TouchpadMouse touchPad = _slotState.TouchPads[0];
             return _mapping.GetBoolMappingExternal(0, control, state, null, touchPad);
         }
 

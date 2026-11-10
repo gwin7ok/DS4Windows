@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +20,7 @@ namespace DS4Windows.Processing.Services
     {
         private readonly DS4State[] _currentState;
         private readonly DS4State[] _tempState;
-        private readonly Mouse[] _touchPad;
+        private readonly TouchpadMouse[] _touchPad;
         private readonly DS4State[] _mappedState = new DS4State[ControllerLimits.MaxControllerCount];
         private readonly DS4StateExposed[] _exposedState = new DS4StateExposed[ControllerLimits.MaxControllerCount];
         private readonly double[] _processingDelayMs = new double[ControllerLimits.MaxControllerCount];

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS4Windows.Processing.Synthetic;
+using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services;
@@ -48,7 +49,7 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ConnectedDeviceOutputs(settings, app, osc, null, types, udp));
             Assert.Throws<ArgumentNullException>(() => new ConnectedDeviceOutputs(settings, app, osc, pad, null, udp));
             Assert.Throws<ArgumentNullException>(() => new ConnectedDeviceOutputs(settings, app, osc, pad, types, null));
-            Assert.Throws<ArgumentNullException>(() => new MouseFactory(settings, null, new DS4Windows.Processing.StickMotionState(), new DS4Windows.Processing.SyntheticInputState(), TimeProvider.System));
+            Assert.Throws<ArgumentNullException>(() => new MouseFactory(settings, null, new DS4Windows.Processing.StickMotionState(), new DS4Windows.Processing.Synthetic.SyntheticInputState(), TimeProvider.System));
         }
     }
 }

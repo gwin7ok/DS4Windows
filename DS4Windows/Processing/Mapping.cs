@@ -1,4 +1,8 @@
-﻿using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
+﻿using DS4Windows.Processing.Touchpad;
+using DS4Windows.Processing.Gyro;
+using DS4Windows.Processing.Macro;
+using DS4Windows.Processing.Synthetic;
+using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -317,7 +321,7 @@ namespace DS4Windows.Processing
         /// </summary>
 
         public void MapCustom(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            Mouse tp)
+            TouchpadMouse tp)
         {
             /* TODO: This method is slow sauce. Find ways to speed up action execution */
             double tempMouseDeltaX = 0.0;
@@ -441,7 +445,7 @@ namespace DS4Windows.Processing
         // Phase9 MapCustom の分割 M3c: LS／RS の 1 スティック分の処理（旧 MapCustom の「Process LS」「Process RS」）。
         // 左右の違い: 軸の添字、フリックスティックの読む軸、RS だけの「デルタ加速」（Controls モードのとき、割り当ての処理の前に実行）。ホットパスのため割り当てを増やさない
         private void ProcessStick(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
+            TouchpadMouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
             ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             StickOutputSetting stickSettings, List<DS4ControlSettings> stickControls, bool isRightStick)
         {
@@ -513,7 +517,7 @@ namespace DS4Windows.Processing
         // Phase9 MapCustom の分割 M3b: L2／R2 の 1 トリガー分の処理（旧 MapCustom の「Process L2」「Process R2」。値は Phase9MapCustomTwoStageCharacterizationTests が守る）。
         // ホットパスのため、ラムダや割り当てを使わない
         private void ProcessTriggerWithTwoStage(int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
+            TouchpadMouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState,
             ref double tempMouseDeltaX, ref double tempMouseDeltaY,
             DS4ControlSettings dcsTemp, DS4ControlSettings fullPullSettings, DS4Controls softControl, DS4Controls fullControl,
             byte triggerValue, byte triggerRawValue, TriggerOutputSettings triggerSettings, TwoStageTriggerMappingData twoStageData)
@@ -649,7 +653,7 @@ namespace DS4Windows.Processing
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProcessControlSettingAction(DS4ControlSettings dcs, int device, DS4State cState, DS4State MappedState, DS4StateExposed eState,
-            Mouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY)
+            TouchpadMouse tp, DS4StateFieldMapping fieldMapping, DS4StateFieldMapping outputfieldMapping, SyntheticState deviceState, ref double tempMouseDeltaX, ref double tempMouseDeltaY)
         {
             // Check if this control press would trigger a Special Action
             // If so, suppress the normal mapping to prevent conflict
@@ -793,7 +797,7 @@ namespace DS4Windows.Processing
         /// <param name="tp">Mouse object</param>
         /// <returns>Is the specified input considered active</returns>
         public bool GetBoolMappingExternal(int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, Mouse tp)
+            DS4State cState, DS4StateExposed eState, TouchpadMouse tp)
         {
             // Phase9 9-B: 判定の本体（約 105 行）は ControlActivityReader へ移した。設定は、Mapping が保持する profileSettings を渡す
             return _controlActivityReader.IsActive(profileSettings, device, control, cState, eState, tp);
@@ -802,7 +806,7 @@ namespace DS4Windows.Processing
         // Check if the current button press would trigger any Special Action
         // Returns true if a Special Action would be triggered, indicating normal mapping should be suppressed
         private bool CheckForSpecialActionSuppression(int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, Mouse tp, DS4StateFieldMapping fieldMap)
+            DS4State cState, DS4StateExposed eState, TouchpadMouse tp, DS4StateFieldMapping fieldMap)
         {
             // Issue8-1(3)是正: 「現在トリガーが成立しているか」（IsSpecialActionTriggeredの都度再計算）ではなく、
             // 「このボタンが、いずれかのトリガー成立によりまだ抑制継続中か」を判定する。

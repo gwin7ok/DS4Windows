@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Model;

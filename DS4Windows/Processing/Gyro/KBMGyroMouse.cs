@@ -23,7 +23,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DS4Windows.Core.Settings;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Gyro
 {
 
     public class KBMGyroMouse : PresetOption

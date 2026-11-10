@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Threading;
 using System.IO;
 using System.Linq;

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -67,7 +68,7 @@ namespace DS4Windows.Processing.Services
         {
             IInputReportProcessor inputReport = _inputReport;
             IDeviceSlotState slots = _slots;
-            Mouse[] touchPads = slots.TouchPads;
+            TouchpadMouse[] touchPads = slots.TouchPads;
             _profileSettings.RefreshExtrasButtons(index, _deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device));
             _profileXmlStore.LoadControllerConfigsForDevice(device);
             device.LoadStoreSettings();

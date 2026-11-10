@@ -22,7 +22,7 @@ using System.Windows.Input;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Macro
 {
     public class MacroParser : IInstanceIdentifiable
     {

@@ -1,4 +1,5 @@
-﻿using Sensorit.Base;
+﻿using DS4Windows.Processing.Touchpad;
+using Sensorit.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

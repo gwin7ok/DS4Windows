@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Macro;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -58,9 +59,9 @@ namespace DS4WindowsTests
         public void Registration_RegistersTheSharedState()
         {
             // Phase14d-Step3: 登録の文字列ではなく、コンテナが同じインスタンスを返すことを確かめる
-            var first = TestHost.GetService<DS4Windows.Processing.MacroRuntimeState>();
+            var first = TestHost.GetService<DS4Windows.Processing.Macro.MacroRuntimeState>();
             Assert.NotNull(first);
-            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.MacroRuntimeState>());
+            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.Macro.MacroRuntimeState>());
         }
     }
 }

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Threading;
 using Xunit;
 using DS4Windows.Core.Model;

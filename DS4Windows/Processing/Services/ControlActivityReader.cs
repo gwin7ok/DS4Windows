@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
@@ -12,7 +13,7 @@ namespace DS4Windows.Processing.Services
     public sealed class ControlActivityReader : DS4Windows.Processing.Abstractions.IControlActivityReader
     {
         public bool IsActive(DS4Windows.Core.Abstractions.IProfileSettingsService settings, int device, DS4Controls control,
-            DS4State cState, DS4StateExposed eState, Mouse tp)
+            DS4State cState, DS4StateExposed eState, TouchpadMouse tp)
         {
             bool result = false;
 

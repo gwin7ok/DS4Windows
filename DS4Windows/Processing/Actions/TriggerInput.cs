@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -27,7 +28,7 @@ namespace DS4Windows.Processing.Actions
         private DS4State _current;
         private DS4State _previous;
         private DS4StateExposed _exposed;
-        private Mouse _mouse;
+        private TouchpadMouse _mouse;
         private DS4StateFieldMapping _fields;
         private bool _previousPopulated;
 
@@ -54,7 +55,7 @@ namespace DS4Windows.Processing.Actions
         /// 1 フレームの入力を設定する。<paramref name="fields"/> は、<c>Mapping</c> が展開済みの表（<c>PopulateFieldMapping</c> 済み）。
         /// <paramref name="previous"/>／<paramref name="exposed"/>／<paramref name="mouse"/> は、前フレームの表を遅延して作るときだけ使う（null でもよい）。
         /// </summary>
-        public void Update(DS4State current, DS4State previous, DS4StateExposed exposed, Mouse mouse, DS4StateFieldMapping fields)
+        public void Update(DS4State current, DS4State previous, DS4StateExposed exposed, TouchpadMouse mouse, DS4StateFieldMapping fields)
         {
             _current = current;
             _previous = previous;

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Macro;
 using DS4Windows.Core.Model;
 using System.Linq;
 using Xunit;

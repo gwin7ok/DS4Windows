@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Gyro;
 using System;
 using System.IO;
 using System.Linq;

@@ -1,4 +1,5 @@
 
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
@@ -17,7 +18,7 @@ namespace DS4Windows.Processing.Services
         public DS4State[] CurrentStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
         public DS4State[] PreviousStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
         public DS4State[] TempStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
-        public Mouse[] TouchPads { get; } = new Mouse[ControllerLimits.MaxControllerCount];
+        public TouchpadMouse[] TouchPads { get; } = new TouchpadMouse[ControllerLimits.MaxControllerCount];
         public ControllerSlotManager SlotManager { get; } = new ControllerSlotManager();
         /// <summary>接続中のコントローラーの数。Phase13-Step5b: 旧 <c>ServiceLifecycle</c> の自動プロパティを、ここへ移した（<c>IDeviceSlotHost</c> の廃止で、<c>DeviceConnector</c> が直接読む）。</summary>
         public int ActiveControllers { get; set; }

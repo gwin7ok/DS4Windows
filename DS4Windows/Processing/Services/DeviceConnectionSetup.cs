@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace DS4Windows.Processing.Services
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
         }
 
-        public void ApplyProfileOptions(int ind, InputDeviceCore device, Mouse touchPad, bool startUp = false)
+        public void ApplyProfileOptions(int ind, InputDeviceCore device, TouchpadMouse touchPad, bool startUp = false)
         {
             // Phase11 W6c（K-W6-12。D2＝案 B）: 書く状態から書かない状態（OFF）へ変わるときは、フラグを立てる前に、消灯・振動ゼロを 1 度だけ書く
             // （同じプロファイルの再適用でも、OFF の結果が見える。フラグ後は何も書かれず、パッドが最後の色を保持するため）
@@ -181,9 +182,9 @@ namespace DS4Windows.Processing.Services
             };
         }
 
-        public void AttachTouchpad(int ind, InputDeviceCore device, Mouse[] touchPads)
+        public void AttachTouchpad(int ind, InputDeviceCore device, TouchpadMouse[] touchPads)
         {
-            Mouse tPad = touchPads[ind];
+            TouchpadMouse tPad = touchPads[ind];
             //ITouchpadBehaviour tPad = touchPad[ind];
             device.Touchpad.TouchButtonDown += tPad.touchButtonDown;
             device.Touchpad.TouchButtonUp += tPad.touchButtonUp;

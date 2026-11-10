@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using DS4Windows.Input;
@@ -18,6 +19,6 @@ namespace DS4Windows.Processing.Abstractions
         void StartTouchpadOff(int deviceID);
 
         /// <summary>スライドの向き（"right"／"left"／""／"none"）を返す。<paramref name="connected"/> はそのスロットにデバイスがあるか。</summary>
-        string Slide(int ind, DS4State cState, Mouse touchPad, bool connected);
+        string Slide(int ind, DS4State cState, TouchpadMouse touchPad, bool connected);
     }
 }

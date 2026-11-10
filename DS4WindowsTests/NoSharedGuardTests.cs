@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Macro;
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.IO;
 using System.Linq;

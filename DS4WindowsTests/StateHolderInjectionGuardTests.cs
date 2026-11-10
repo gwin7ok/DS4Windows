@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -70,11 +71,11 @@ namespace DS4WindowsTests
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数とコンテナの登録を確かめる（Shared の撤去は RemovedApiRuleTests）
             var mouseParameters = typeof(DS4Windows.Processing.Mouse).GetConstructors().SelectMany(c => c.GetParameters()).Select(p => p.ParameterType).ToArray();
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState), mouseParameters);
-            Assert.Contains(typeof(DS4Windows.Processing.SyntheticInputState), mouseParameters);
+            Assert.Contains(typeof(DS4Windows.Processing.Synthetic.SyntheticInputState), mouseParameters);
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState),
                 typeof(DS4Windows.Processing.ControlService).GetConstructors().Single().GetParameters().Select(p => p.ParameterType));
             Assert.IsType<DS4Windows.Processing.Services.SyntheticDispatcherService>(TestHost.GetService<DS4Windows.Processing.Abstractions.ISyntheticDispatcher>());
-            Assert.Contains(typeof(DS4Windows.Processing.SyntheticInputState),
+            Assert.Contains(typeof(DS4Windows.Processing.Synthetic.SyntheticInputState),
                 typeof(DS4Windows.Processing.Services.SyntheticDispatcherService).GetConstructors()[0].GetParameters().Select(p => p.ParameterType));
         }
 

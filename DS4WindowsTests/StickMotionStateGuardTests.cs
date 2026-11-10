@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Gyro;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -82,7 +83,7 @@ namespace DS4WindowsTests
                 ("gyroStickX", typeof(byte[])),
                 ("mapStickActionData", typeof(DS4Windows.Processing.PostMapStickData[])),
                 ("flickMappingData", typeof(DS4Windows.Core.Settings.FlickStickMappingData[])),
-                ("deltaAccelProcessors", typeof(DS4Windows.Processing.DeltaSettingsProcessorGroup[])),
+                ("deltaAccelProcessors", typeof(DS4Windows.Processing.Gyro.DeltaSettingsProcessorGroup[])),
             })
             {
                 System.Reflection.FieldInfo f = mapping.GetField(field, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);

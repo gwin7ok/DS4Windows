@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Macro;
 using System;
 using System.Windows;
 using Xunit;

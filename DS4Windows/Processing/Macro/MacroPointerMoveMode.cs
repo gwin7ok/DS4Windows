@@ -1,4 +1,4 @@
-namespace DS4Windows.Processing
+namespace DS4Windows.Processing.Macro
 {
     /// <summary>
     /// Phase12-Step3 3b（R-3）: マクロのマウスポインター移動の、座標の基準（Phase12-Step3-Plan.md D1）。

@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     {
         private const int Slot = 0;
 
-        private static readonly Type WheelType = typeof(Mapping).Assembly.GetType("DS4Windows.Processing.MouseWheel");
+        private static readonly Type WheelType = typeof(Mapping).Assembly.GetType("DS4Windows.Processing.Touchpad.MouseWheel");
 
         private static object CreateWheel(int deviceNum, IProfileSettingsService settings, IVirtualKBM kbm)
         {

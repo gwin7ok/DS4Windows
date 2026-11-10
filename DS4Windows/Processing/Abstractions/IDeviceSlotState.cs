@@ -1,4 +1,5 @@
 
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
@@ -22,7 +23,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>UDP へ送る前の加工に使う作業用の入力（旧 <c>ControlService.TempState</c>）。</summary>
         DS4State[] TempStates { get; }
         /// <summary>タッチパッド（旧 <c>ControlService.touchPad</c>）。</summary>
-        Mouse[] TouchPads { get; }
+        TouchpadMouse[] TouchPads { get; }
         /// <summary>スロット管理（旧 <c>ControlService.slotManager</c>）。</summary>
         ControllerSlotManager SlotManager { get; }
         /// <summary>接続中のコントローラーの数（旧 <c>ControlService.activeControllers</c>。LED 設定の変更の発火のたびに読む）。書くのは <c>ServiceLifecycle</c>（<c>IServiceLifecycle.ActiveControllers</c> はこれへ転送する）。</summary>
