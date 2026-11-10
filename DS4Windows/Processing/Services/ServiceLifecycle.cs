@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Services
     /// 旧 <c>ControlService</c> の <c>Start</c>／<c>Stop</c>／<c>HotPlug</c>／<c>PrepareAbort</c> と、その状態
     /// （<c>running</c>／<c>loopControllers</c>／<c>inServiceTask</c>／<c>activeControllers</c>／<c>suspending</c>）、イベントを、そのまま移したもの。
     /// 安全弁（ViGEm の開始・破棄順序、<c>inServiceTask</c> による直列化、<c>Thread.Sleep</c>、イベントの発火順序）は、逐語で保つ（順序はソース走査のテストで固定）。
-    /// スロットの配列は <see cref="IDeviceSlotState"/>（Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>）から受ける。イベントスレッドの実行とキーボード／マウス出力の初期化は、Phase13-Step3 で <see cref="IEventThreadDispatcher"/>／<see cref="IOutputKbmInitializer"/> へ移した。
+    /// スロットの配列は <see cref="IDeviceSlotState"/>（Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>）から受ける。イベントスレッドの実行とキーボード／マウス出力の初期化は、Phase13-Step3 で <see cref="IEventThreadDispatcher"/>／<see cref="IOutputKbmInitializer"/> へ移した。出力側のサービス（仮想パッドのドライバー、キーボード・マウス、HidHide、OSC、UDP）の開始・停止の手順は <see cref="IOutputServicesLifecycle"/> が持ち、この類は途中の決まった位置で呼ぶ。
     /// </summary>
     public sealed class ServiceLifecycle : IServiceLifecycle
     {
@@ -27,17 +27,13 @@ namespace DS4Windows.Processing.Services
         private readonly IEnvironmentService _environmentService;
         private readonly IProfileSettingsService _profileSettings;
         private readonly IDs4DeviceRegistry _deviceRegistry;
-        private readonly IVirtualKBM _virtualKBM;
-        private readonly IOscService _oscService;
-        private readonly IUdpMotionService _udpMotion;
-        private readonly IHidHideService _hidHideService;
         private readonly IVirtualPadService _virtualPad;
         private readonly ILatencyMonitor _latencyMonitor;
         private readonly IJoyConLinker _joyConLinker;
         private readonly IDeviceConnector _deviceConnector;
         private readonly IDeviceSlotState _slots;
         private readonly IEventThreadDispatcher _eventThread;
-        private readonly IOutputKbmInitializer _kbmInitializer;
+        private readonly IOutputServicesLifecycle _outputs;
         private readonly int _controllerSlotLimit;
 
         public bool Running { get; set; }
@@ -78,27 +74,22 @@ namespace DS4Windows.Processing.Services
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            IDs4DeviceRegistry deviceRegistry, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion,
-            IHidHideService hidHideService, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
+            IDs4DeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
             IDeviceConnector deviceConnector, IDeviceSlotState slots,
-            IEventThreadDispatcher eventThread, IOutputKbmInitializer kbmInitializer)
+            IEventThreadDispatcher eventThread, IOutputServicesLifecycle outputs)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
-            _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
             _joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             _deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            _kbmInitializer = kbmInitializer ?? throw new ArgumentNullException(nameof(kbmInitializer));
+            _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
             _controllerSlotLimit = environmentService.ControllerSlotLimit;
         }
 
@@ -106,31 +97,11 @@ namespace DS4Windows.Processing.Services
         {
             IDeviceSlotState slots = _slots;
             InServiceTask = true;
-            _virtualPad.StartViGEm();
-            if (_virtualPad.HasViGEmClient)
-            //if (x360Bus.Open() && x360Bus.Start())
+            if (_outputs.StartVirtualOutputs(showlog))
             {
-                // Initialize output KBM handler at start of ControlService
-                _kbmInitializer.Initialize();
-
-                if (showlog)
-                    AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.Starting, LogOptions.UserFacing);
-
-                Thread.Sleep(2000);
-
-                bool runningAsAdmin = _environmentService.IsAdministrator();
-                if (_virtualKBM.GetIdentifier() != FakerInputHandler.IDENTIFIER && !runningAsAdmin)
-                {
-                    string helpURL = @"https://ryochan7.github.io/ds4windows-site/troubleshooting/kb-mouse-issues/#windows-not-responding-to-ds4ws-kb-m-commands-in-some-situations";
-                    AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_UacConflict", helpURL);
-                }
-
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_KbmHandler", _virtualKBM.GetFullDisplayName());
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_VigemConnected", _environmentService.ViGEmBusVersion);
-
                 _deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode; //Re-enable Exclusive Mode
 
-                _hidHideService.UpdateAttributes();
+                _outputs.UpdateHidHide();
 
                 if (showlog)
                 {
@@ -138,24 +109,7 @@ namespace DS4Windows.Processing.Services
                     AppLogger.Log(AppLogLevel.Info, _deviceRegistry.IsExclusiveMode ? DS4Windows.Properties.Resources.UsingExclusive : DS4Windows.Properties.Resources.UsingShared, LogOptions.UserFacing);
                 }
 
-                if (_appSettings.UseOscServer && !_oscService.HasListener)
-                {
-                    _oscService.ChangeListenerStatus(true);
-                }
-
-                if (_appSettings.UseOscSender && !_oscService.HasSender)
-                {
-                    _oscService.ChangeSenderStatus(true);
-                }
-
-                if (_appSettings.UseUdpServer && !_udpMotion.HasServer)
-                {
-                    _udpMotion.ChangeStatus(true, false);
-                    while (_udpMotion.IsChangingStatus)
-                    {
-                        Thread.SpinWait(500);
-                    }
-                }
+                _outputs.StartNetworkOutputs();
 
                 try
                 {
@@ -200,28 +154,7 @@ namespace DS4Windows.Processing.Services
 
                 Running = true;
 
-                _udpMotion.StartListeningIfCreated();   // Phase9 9-E E-3: 旧: _udpServer != null のときの待ち受けの開始（ブロックを UdpMotionService へ移した）
-            }
-            else
-            {
-                string logKey = "Log_Svc_VigemConnectFailed";
-                object[] logArgs = null;
-                if (!_environmentService.IsViGEmBusInstalled())
-                {
-                    logKey = "Log_Svc_VigemNotInstalled";
-                }
-                else if (!_environmentService.IsRunningSupportedViGEmBus())
-                {
-                    logKey = "Log_Svc_VigemUnsupported";
-                    logArgs = new object[] { _environmentService.ViGEmBusVersion };
-                }
-                else
-                {
-                    logKey = "Log_Svc_VigemConnectFailed";
-                }
-
-                AppLogger.LogUser(AppLogLevel.Info, logKey, logArgs);
-                AppLogger.LogToTray(AppLogger.UserText(logKey, logArgs));
+                _outputs.StartUdpListening();
             }
 
             InServiceTask = false;
@@ -296,7 +229,7 @@ namespace DS4Windows.Processing.Services
                         //Global.activeOutDevType[i] = OutContType.None;
                         _profileSettings.UseDInputOnlyArray[i] = true;
                         slots.DS4Controllers[i] = null;
-                        _oscService.ResetDeviceState(i);
+                        _outputs.ResetDeviceState(i);
                         slots.TouchPads[i] = null;
                         _latencyMonitor.Reset(i);
                     }
@@ -308,40 +241,12 @@ namespace DS4Windows.Processing.Services
                 _deviceRegistry.StopControllers();
                 slots.SlotManager.ClearControllerList();
 
-                if (_oscService.HasListener)
-                {
-                    _oscService.ChangeListenerStatus(false);
-                }
-
-                if (_oscService.HasSender)
-                {
-                    _oscService.ChangeSenderStatus(false);
-                }
-
-                if (_udpMotion.HasServer)
-                {
-                    _udpMotion.ChangeStatus(false, true);
-                }
+                _outputs.StopNetworkOutputs();
 
                 if (showlog)
                     AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.StoppedDS4Windows, LogOptions.UserFacing);
 
-                while (_virtualPad.IsOutputQueueRunning)
-                {
-                    Thread.SpinWait(500);
-                }
-                _virtualPad.StopOutputSlots(immediate: true);
-
-                if (anyUnplugged)
-                {
-                    Thread.Sleep(OutputSlotManager.DELAY_TIME);
-                }
-
-                _virtualPad.StopViGEm();
-
-                // Disconnect from KBM system when stopping ControlService
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_KbmClosing", _virtualKBM.GetDisplayName());
-                _virtualKBM.Disconnect();
+                _outputs.StopVirtualOutputs(anyUnplugged);
                 InServiceTask = false;
                 ActiveControllers = 0;
             }

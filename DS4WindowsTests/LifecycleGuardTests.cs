@@ -92,21 +92,17 @@ namespace DS4WindowsTests
             AssertOrder(text, start, stop, new[]
             {
                 "InServiceTask = true;",
-                "_virtualPad.StartViGEm();",
-                "_kbmInitializer.Initialize();",
-                "Thread.Sleep(2000);",
+                "_outputs.StartVirtualOutputs(showlog)",
                 "_deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode;",
-                "_hidHideService.UpdateAttributes();",
-                "_oscService.ChangeListenerStatus(true);",
-                "_oscService.ChangeSenderStatus(true);",
-                "_udpMotion.ChangeStatus(true, false);",
+                "_outputs.UpdateHidHide();",
+                "_outputs.StartNetworkOutputs();",
                 "LoopControllers = true;",
                 "_virtualPad.AssignInitialDevices();",
                 "_deviceRegistry.FindControllers();",
                 "_deviceConnector.BeginPrepare(device, showlog: true);",
                 "_deviceConnector.PrepareConnected(numControllers, device, index: i);",
                 "Running = true;",
-                "_udpMotion.StartListeningIfCreated();",
+                "_outputs.StartUdpListening();",
                 "InServiceTask = false;",
                 "_appSettings.RunHotPlug = true;",
                 "ServiceStarted?.Invoke(this, EventArgs.Empty);",
@@ -132,23 +128,79 @@ namespace DS4WindowsTests
                 "InServiceTask = true;",
                 "PreServiceStop?.Invoke(this, EventArgs.Empty);",
                 "_virtualPad.UnplugOutDev(i, tempDevice, immediate: immediateUnplug, force: true);",
-                "_oscService.ResetDeviceState(i);",
+                "_outputs.ResetDeviceState(i);",
                 "_latencyMonitor.Reset(i);",
                 "_deviceRegistry.StopControllers();",
                 "slots.SlotManager.ClearControllerList();",
-                "_oscService.ChangeListenerStatus(false);",
-                "_oscService.ChangeSenderStatus(false);",
-                "_udpMotion.ChangeStatus(false, true);",
-                "while (_virtualPad.IsOutputQueueRunning)",
-                "_virtualPad.StopOutputSlots(immediate: true);",
-                "Thread.Sleep(OutputSlotManager.DELAY_TIME);",
-                "_virtualPad.StopViGEm();",
-                "_virtualKBM.Disconnect();",
+                "_outputs.StopNetworkOutputs();",
+                "_outputs.StopVirtualOutputs(anyUnplugged);",
                 "InServiceTask = false;",
                 "ActiveControllers = 0;",
                 "ServiceStopped?.Invoke(this, EventArgs.Empty);",
                 "RunningChanged?.Invoke(this, EventArgs.Empty);",
             }, "Stop");
+        }
+
+        /// <summary>
+        /// 出力側のサービスの開始・停止の内側の順序（ドライバーの開始 → キーボード・マウスの初期化 → 2 秒待ち、
+        /// 停止時の出力キューの待ち → スロットの停止 → 取り外しの待ち → ドライバーの破棄 → キーボード・マウスの切断）。
+        /// ServiceLifecycle からの呼び出しの順序は、上の 2 つのテストが固定する。
+        /// </summary>
+        [Fact]
+        public void OutputServicesLifecycle_KeepsTheDriverStartAndDestructionOrder()
+        {
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/OutputServicesLifecycle.cs");
+            if (text == null) return;
+
+            int start = text.IndexOf("public bool StartVirtualOutputs(");
+            int hide = text.IndexOf("public void UpdateHidHide(");
+            Assert.True(start > 0 && hide > start);
+            AssertOrder(text, start, hide, new[]
+            {
+                "_virtualPad.StartViGEm();",
+                "_kbmInitializer.Initialize();",
+                "Thread.Sleep(2000);",
+                "\"Log_Svc_UacConflict\"",
+                "\"Log_Svc_KbmHandler\"",
+                "\"Log_Svc_VigemConnected\"",
+            }, "StartVirtualOutputs");
+
+            int network = text.IndexOf("public void StartNetworkOutputs(");
+            int udpListen = text.IndexOf("public void StartUdpListening(");
+            Assert.True(network > 0 && udpListen > network);
+            AssertOrder(text, network, udpListen, new[]
+            {
+                "_oscService.ChangeListenerStatus(true);",
+                "_oscService.ChangeSenderStatus(true);",
+                "_udpMotion.ChangeStatus(true, false);",
+            }, "StartNetworkOutputs");
+
+            int stopNet = text.IndexOf("public void StopNetworkOutputs(");
+            int stopOut = text.IndexOf("public void StopVirtualOutputs(");
+            Assert.True(stopNet > 0 && stopOut > stopNet);
+            AssertOrder(text, stopNet, stopOut, new[]
+            {
+                "_oscService.ChangeListenerStatus(false);",
+                "_oscService.ChangeSenderStatus(false);",
+                "_udpMotion.ChangeStatus(false, true);",
+            }, "StopNetworkOutputs");
+
+            AssertOrder(text, stopOut, text.Length, new[]
+            {
+                "while (_virtualPad.IsOutputQueueRunning)",
+                "_virtualPad.StopOutputSlots(immediate: true);",
+                "Thread.Sleep(OutputSlotManager.DELAY_TIME);",
+                "_virtualPad.StopViGEm();",
+                "_virtualKBM.Disconnect();",
+            }, "StopVirtualOutputs");
+        }
+
+        [Fact]
+        public void TheOutputServicesLifecycle_IsRegisteredAsASingleton()
+        {
+            var outputs = TestHost.GetService<IOutputServicesLifecycle>();
+            Assert.IsType<OutputServicesLifecycle>(outputs);
+            Assert.Same(outputs, TestHost.GetService<IOutputServicesLifecycle>());
         }
 
         [Fact]
@@ -179,11 +231,10 @@ namespace DS4WindowsTests
 
             // 起動直後の状態（旧: running = false、loopControllers = true、inServiceTask = false、activeControllers = 0）
             var fresh = new ServiceLifecycle(TestLightbar.State, TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
-                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(), TestHost.GetService<IVirtualKBM>(),
-                TestHost.GetService<IOscService>(), TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IHidHideService>(),
+                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
                 TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
-                TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputKbmInitializer>());
+                TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputServicesLifecycle>());
             Assert.False(fresh.Running);
             Assert.True(fresh.LoopControllers);
             Assert.False(fresh.InServiceTask);
@@ -205,11 +256,10 @@ namespace DS4WindowsTests
         {
             var lightbar = new DS4Windows.Core.Model.LightbarOverrides();
             var lifecycle = new ServiceLifecycle(lightbar, TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
-                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(), TestHost.GetService<IVirtualKBM>(),
-                TestHost.GetService<IOscService>(), TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IHidHideService>(),
+                TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
                 TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
-                TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputKbmInitializer>());
+                TestHost.GetService<IEventThreadDispatcher>(), TestHost.GetService<IOutputServicesLifecycle>());
 
             Assert.False(lightbar.shuttingdown);
 
