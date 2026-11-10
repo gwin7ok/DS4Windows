@@ -21,7 +21,7 @@
 - 実機確認（DS4 のみ・1 回）は 2026-11-10 にユーザーが実施し、全項目問題なし。確認項目: ライトバー（全モード）、出力の種類の切り替えとプリセット、USB／Bluetooth 接続、切断時のキー解放。
 - DualSense・Switch Pro・Joy-Con・DS3 は実機未確認（`Known-Issues-Ledger.md` §3）。
 - `InputReportProcessor` は 15 引数のまま。レジストリを偽の列挙子でテストする検査は未実施。
-- 追補後の実機確認（DS4 で 1 回: 設定画面の機種ごとの設定の保存・再読み込み、ライトバー、切断）は未実施。Release ビルドも未実施。
+- 追補後の実機確認（DS4。2026-11-10 実施）: 確認1 設定の保存と再読み込み OK、確認2 ライトバー（単色・バッテリー連動・虹色）動作 OK（設定画面が分かりにくいとの指摘は Phase17 の P17-8）、確認3 出力の種類の切り替え OK、確認4 押したまま切断でキー解放 OK。Release ビルド（Debug と同じ警告 0）も確認済み。
 - 引数の目標（15 以下）に届かないもの: `Mapping`（17）、`MainWindow`（21）、`MainWindowFactory`（20）、`EditorWindowFactory`（18）。画面の分割が要るため、次の Phase の候補（計画書 §12「16-13b-2／13c」）。
 - 見送り: 解析器の選択をカートリッジへ移すこと（K-e）、`MappingFrame`、設定画面の `*OptionsWrapper` の統合。
 - 上の見送りと引数の目標に届かなかったものは、すべて **Phase17** に登録した（`Phase11-and-Beyond-Roadmap.md` §3 Phase17。P17-1〜P17-7）。
