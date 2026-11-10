@@ -41,52 +41,52 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXDeadZone");
-                double.TryParse(Item.InnerText, out store.SXDeadzone[device]);
+                { double.TryParse(Item.InnerText, out double parsedValue); store.sixAxisSlots[device].SXDeadZone = parsedValue; };
             }
-            catch { store.SXDeadzone[device] = BackingStore.DEFAULT_SX_TILT_DEADZONE; missingSetting = true; }
+            catch { store.sixAxisSlots[device].SXDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZDeadZone");
-                double.TryParse(Item.InnerText, out store.SZDeadzone[device]);
+                { double.TryParse(Item.InnerText, out double parsedValue); store.sixAxisSlots[device].SZDeadZone = parsedValue; };
             }
-            catch { store.SZDeadzone[device] = BackingStore.DEFAULT_SX_TILT_DEADZONE; missingSetting = true; }
+            catch { store.sixAxisSlots[device].SZDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXMaxZone");
                 int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
-                store.SXMaxzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
+                store.sixAxisSlots[device].SXMaxZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
-            catch { store.SXMaxzone[device] = 1.0; missingSetting = true; }
+            catch { store.sixAxisSlots[device].SXMaxZone = 1.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZMaxZone");
                 int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
-                store.SZMaxzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
+                store.sixAxisSlots[device].SZMaxZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
-            catch { store.SZMaxzone[device] = 1.0; missingSetting = true; }
+            catch { store.sixAxisSlots[device].SZMaxZone = 1.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXAntiDeadZone");
                 int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
-                store.SXAntiDeadzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
+                store.sixAxisSlots[device].SXAntiDeadZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
-            catch { store.SXAntiDeadzone[device] = 0.0; missingSetting = true; }
+            catch { store.sixAxisSlots[device].SXAntiDeadZone = 0.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZAntiDeadZone");
                 int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
-                store.SZAntiDeadzone[device] = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
+                store.sixAxisSlots[device].SZAntiDeadZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
-            catch { store.SZAntiDeadzone[device] = 0.0; missingSetting = true; }
+            catch { store.sixAxisSlots[device].SZAntiDeadZone = 0.0; missingSetting = true; }
 
             try
             {
@@ -135,22 +135,24 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     store.triggerSlots[device].R2Sens = 1;
                 }
 
-                if (double.TryParse(s[4], out store.SXSens[device]))
+                bool parsedOkSx = double.TryParse(s[4], out double parsedValueSx); store.sixAxisSlots[device].SXSens = parsedValueSx;
+                if (parsedOkSx)
                 {
-                    store.SXSens[device] = Math.Clamp(store.SXSens[device], 0.0, 5.0);
+                    store.sixAxisSlots[device].SXSens = Math.Clamp(store.sixAxisSlots[device].SXSens, 0.0, 5.0);
                 }
                 else
                 {
-                    store.SXSens[device] = 1;
+                    store.sixAxisSlots[device].SXSens = 1;
                 }
 
-                if (double.TryParse(s[5], out store.SZSens[device]))
+                bool parsedOkSz = double.TryParse(s[5], out double parsedValueSz); store.sixAxisSlots[device].SZSens = parsedValueSz;
+                if (parsedOkSz)
                 {
-                    store.SZSens[device] = Math.Clamp(store.SZSens[device], 0.0, 5.0);
+                    store.sixAxisSlots[device].SZSens = Math.Clamp(store.sixAxisSlots[device].SZSens, 0.0, 5.0);
                 }
                 else
                 {
-                    store.SZSens[device] = 1;
+                    store.sixAxisSlots[device].SZSens = 1;
                 }
             }
             catch { missingSetting = true; }

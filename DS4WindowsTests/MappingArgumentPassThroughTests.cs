@@ -174,7 +174,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var halfSens = CreateGyroControlsService(out BackingStore halfStore);
-            halfStore.SXSens[Slot] = 0.5;
+            halfStore.sixAxisSlots[Slot].SXSens = 0.5;
 
             ControllerState a = RunGyro(neutral);
             ControllerState b = RunGyro(halfSens);
@@ -188,7 +188,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var halfSens = CreateGyroControlsService(out BackingStore halfStore);
-            halfStore.SZSens[Slot] = 0.5;
+            halfStore.sixAxisSlots[Slot].SZSens = 0.5;
 
             ControllerState a = RunGyro(neutral);
             ControllerState b = RunGyro(halfSens);
@@ -202,7 +202,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var wideDead = CreateGyroControlsService(out BackingStore wideStore);
-            wideStore.SXDeadzone[Slot] = 0.9; // 入力（64）を完全にデッドゾーン内（0.9*128=115）へ収める
+            wideStore.sixAxisSlots[Slot].SXDeadZone = 0.9; // 入力（64）を完全にデッドゾーン内（0.9*128=115）へ収める
 
             ControllerState a = RunGyro(neutral);
             ControllerState b = RunGyro(wideDead);
@@ -216,7 +216,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var wideDead = CreateGyroControlsService(out BackingStore wideStore);
-            wideStore.SZDeadzone[Slot] = 0.9;
+            wideStore.sixAxisSlots[Slot].SZDeadZone = 0.9;
 
             ControllerState a = RunGyro(neutral);
             ControllerState b = RunGyro(wideDead);
@@ -230,7 +230,7 @@ namespace DS4WindowsTests
         {
             var linear = CreateGyroControlsService(out _);
             var squared = CreateGyroControlsService(out BackingStore squaredStore);
-            squaredStore.setSXOutCurveMode(Slot, 2); // 2乗カーブ（出力が小さくなる）
+            squaredStore.sixAxisSlots[Slot].ApplySXCurveMode(2); // 2乗カーブ（出力が小さくなる）
 
             ControllerState a = RunGyro(linear);
             ControllerState b = RunGyro(squared);
@@ -244,7 +244,7 @@ namespace DS4WindowsTests
         {
             var linear = CreateGyroControlsService(out _);
             var squared = CreateGyroControlsService(out BackingStore squaredStore);
-            squaredStore.setSZOutCurveMode(Slot, 2);
+            squaredStore.sixAxisSlots[Slot].ApplySZCurveMode(2);
 
             ControllerState a = RunGyro(linear);
             ControllerState b = RunGyro(squared);

@@ -185,27 +185,7 @@ namespace DS4Windows.Core.Settings
 
         // Rotation angle expressed in radians
 
-        public double[] SXDeadzone = new double[ControllerLimits.TestProfileItemCount] { DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE },
-            SZDeadzone = new double[ControllerLimits.TestProfileItemCount] { DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE };
 
-        public double[] SXMaxzone = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-            DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-            DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE };
-        public double[] SZMaxzone = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-          DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-          DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE };
-        public double[] SXAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-            SZAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-        public double[] SXSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public double[] SZSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
         public int[] btPollRate = new int[ControllerLimits.TestProfileItemCount]
         { DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
@@ -233,40 +213,6 @@ namespace DS4Windows.Core.Settings
         //
         // End of DualSense specific profile options
 
-        private void setOutBezierCurveObjArrayItem(BezierCurve[] bezierCurveArray, int device, int curveOptionValue, BezierCurve.AxisType axisType)
-        {
-            // Set bezier curve obj of axis. 0=Linear (no curve mapping), 1-5=Pre-defined curves, 6=User supplied custom curve string value of a profile (comma separated list of 4 decimal numbers)
-            switch (curveOptionValue)
-            {
-                // Commented out case 1..5 because Mapping.cs:SetCurveAndDeadzone function has the original IF-THEN-ELSE code logic for those original 1..5 output curve mappings (ie. no need to initialize the lookup result table).
-                // Only the new bezier custom curve option 6 uses the lookup result table (initialized in BezierCurve class based on an input curve definition).
-                //case 1: bezierCurveArray[device].InitBezierCurve(99.0, 91.0, 0.00, 0.00, axisType); break;  // Enhanced Precision (hard-coded curve) (almost the same curve as bezier 0.70, 0.28, 1.00, 1.00)
-                //case 2: bezierCurveArray[device].InitBezierCurve(99.0, 92.0, 0.00, 0.00, axisType); break;  // Quadric
-                //case 3: bezierCurveArray[device].InitBezierCurve(99.0, 93.0, 0.00, 0.00, axisType); break;  // Cubic
-                //case 4: bezierCurveArray[device].InitBezierCurve(99.0, 94.0, 0.00, 0.00, axisType); break;  // Easeout Quad
-                //case 5: bezierCurveArray[device].InitBezierCurve(99.0, 95.0, 0.00, 0.00, axisType); break;  // Easeout Cubic
-                case 6: bezierCurveArray[device].InitBezierCurve(bezierCurveArray[device].CustomDefinition, axisType); break;  // Custom output curve
-            }
-        }
-
-        public BezierCurve[] sxOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] szOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-
-        private int[] _sxOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getSXOutCurveMode(int index) { return _sxOutCurveMode[index]; }
-        public void setSXOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(sxOutBezierCurveObj, index, value, BezierCurve.AxisType.SA);
-            _sxOutCurveMode[index] = value;
-        }
-
-        private int[] _szOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getSZOutCurveMode(int index) { return _szOutCurveMode[index]; }
-        public void setSZOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(szOutBezierCurveObj, index, value, BezierCurve.AxisType.SA);
-            _szOutCurveMode[index] = value;
-        }
 
 
         public int processPriority;
@@ -354,6 +300,9 @@ namespace DS4Windows.Core.Settings
 
         /// <summary>Lightbarの設定の持ち主（スロットごとに 1 つ）。</summary>
         public readonly LightbarSlotSettings[] lightbarSlots = new LightbarSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>SixAxisの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly SixAxisSlotSettings[] sixAxisSlots = new SixAxisSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -532,6 +481,7 @@ namespace DS4Windows.Core.Settings
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
+            for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
             for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
             for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
             for (int i = 0; i < triggerSlots.Length; i++) triggerSlots[i] = new TriggerSlotSettings(i);
@@ -1053,12 +1003,12 @@ namespace DS4Windows.Core.Settings
             stickSlots[device].LSRotation = 0.0;
             stickSlots[device].RSRotation = 0.0;
 
-            SXDeadzone[device] = SZDeadzone[device] = DEFAULT_SX_TILT_DEADZONE;
-            SXMaxzone[device] = SZMaxzone[device] = DEFAULT_RUMBLE;
-            SXAntiDeadzone[device] = SZAntiDeadzone[device] = 0.0;
+            sixAxisSlots[device].SXDeadZone = sixAxisSlots[device].SZDeadZone = DEFAULT_SX_TILT_DEADZONE;
+            sixAxisSlots[device].SXMaxZone = sixAxisSlots[device].SZMaxZone = DEFAULT_RUMBLE;
+            sixAxisSlots[device].SXAntiDeadZone = sixAxisSlots[device].SZAntiDeadZone = 0.0;
             triggerSlots[device].L2Sens = triggerSlots[device].R2Sens = DEFAULT_ANALOG_SENS;
             stickSlots[device].LSSens = stickSlots[device].RSSens = DEFAULT_ANALOG_SENS;
-            SXSens[device] = SZSens[device] = DEFAULT_ANALOG_SENS;
+            sixAxisSlots[device].SXSens = sixAxisSlots[device].SZSens = DEFAULT_ANALOG_SENS;
             touchpadSlots[device].TapSensitivity = 0;
             touchpadSlots[device].DoubleTap = false;
             touchpadSlots[device].ScrollSensitivity = 0;
@@ -1136,8 +1086,8 @@ namespace DS4Windows.Core.Settings
             stickSlots[device].ApplyRSCurveMode(0);
             triggerSlots[device].L2CurveMode = 0;
             triggerSlots[device].R2CurveMode = 0;
-            setSXOutCurveMode(device, 0);
-            setSZOutCurveMode(device, 0);
+            sixAxisSlots[device].ApplySXCurveMode(0);
+            sixAxisSlots[device].ApplySZCurveMode(0);
             touchpadSlots[device].Trackball = DEFAULT_TRACKBALL_MODE;
             touchpadSlots[device].TrackballFriction = DEFAULT_TRACKBALL_FRICTION;
             touchpadSlots[device].RelMouse.Reset();

@@ -85,20 +85,6 @@ namespace DS4Windows.Core.Abstractions
         bool GetEnableTouchToggle(int deviceIndex);
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
-        double[] SXDeadzone { get; }
-        double[] SZDeadzone { get; }
-        double[] SXSens { get; }
-        double[] SZSens { get; }
-        double[] SXMaxzone { get; }
-        double[] SZMaxzone { get; }
-        double[] SXAntiDeadzone { get; }
-        double[] SZAntiDeadzone { get; }
-        BezierCurve[] SxOutBezierCurveObj { get; }
-        BezierCurve[] SzOutBezierCurveObj { get; }
-        int GetSxOutCurveMode(int index);
-        void SetSxOutCurveMode(int index, int value);
-        int GetSzOutCurveMode(int index);
-        void SetSzOutCurveMode(int index, int value);
 
         // ---- Step10-2-A-8: 残余設定・デバイスオプション (m_Config委譲) ----
         int[] BTPollRate { get; }

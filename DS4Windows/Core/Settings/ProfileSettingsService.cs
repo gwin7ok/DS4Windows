@@ -295,20 +295,6 @@ namespace DS4Windows.Core.Settings
         public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.enableTouchToggle != null && SafeConfig.enableTouchToggle[deviceIndex];
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
-        public double[] SXDeadzone => SafeConfig?.SXDeadzone;
-        public double[] SZDeadzone => SafeConfig?.SZDeadzone;
-        public double[] SXSens => SafeConfig?.SXSens;
-        public double[] SZSens => SafeConfig?.SZSens;
-        public double[] SXMaxzone => SafeConfig?.SXMaxzone;
-        public double[] SZMaxzone => SafeConfig?.SZMaxzone;
-        public double[] SXAntiDeadzone => SafeConfig?.SXAntiDeadzone;
-        public double[] SZAntiDeadzone => SafeConfig?.SZAntiDeadzone;
-        public BezierCurve[] SxOutBezierCurveObj => SafeConfig?.sxOutBezierCurveObj;
-        public BezierCurve[] SzOutBezierCurveObj => SafeConfig?.szOutBezierCurveObj;
-        public int GetSxOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getSXOutCurveMode(index) : 0;
-        public void SetSxOutCurveMode(int index, int value) => SafeConfig?.setSXOutCurveMode(index, value);
-        public int GetSzOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getSZOutCurveMode(index) : 0;
-        public void SetSzOutCurveMode(int index, int value) => SafeConfig?.setSZOutCurveMode(index, value);
 
         // ---- Step10-2-A-8: 残余設定・デバイスオプション (m_Config委譲) ----
         public int[] BTPollRate => SafeConfig?.btPollRate;
@@ -410,7 +396,7 @@ namespace DS4Windows.Core.Settings
             ProfileSlotSettings window = _slotSettings[slot];
             if (window == null)
             {
-                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot], SafeConfig.stickSlots[slot], SafeConfig.lightbarSlots[slot]);
+                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot], SafeConfig.stickSlots[slot], SafeConfig.lightbarSlots[slot], SafeConfig.sixAxisSlots[slot]);
                 _slotSettings[slot] = window;
             }
             return window;

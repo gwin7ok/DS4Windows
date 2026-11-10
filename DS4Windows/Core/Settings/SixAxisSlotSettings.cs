@@ -1,86 +1,83 @@
 ﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
+using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// 1 つのスロットの 6 軸（加速度の X・Z）の設定の窓口。<see cref="IProfileSettingsService"/> のスロット番号の配列を、
-    /// スロット番号を渡さずに読み書きできるようにする（値は設定サービスの配列にあり、保存・読込の経路は変わらない）。
+    /// 1 つのスロットのSixAxisの設定の持ち主（値そのもの）。<see cref="BackingStore"/> がスロットごとに 1 つ持ち、
+    /// 保存・読み込み（プロファイルの XML）、実行時の入力処理、設定画面の ViewModel が、同じ 1 つのオブジェクトを読み書きする。
     /// </summary>
     public class SixAxisSlotSettings
     {
-        private readonly IProfileSettingsService _settings;
-        private readonly int _slot;
-
-        public SixAxisSlotSettings(IProfileSettingsService settings, int slot)
+        public SixAxisSlotSettings(int slot)
         {
-            _settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
-            _slot = slot;
+            Slot = slot;
+            SXCurve = new BezierCurve();
+            SZCurve = new BezierCurve();
+            SXDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE;
+            SZDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE;
+            SXMaxZone = BackingStore.DEFAULT_SX_TILT_MAXZONE;
+            SZMaxZone = BackingStore.DEFAULT_SX_TILT_MAXZONE;
+            SXAntiDeadZone = 0.0;
+            SZAntiDeadZone = 0.0;
+            SXSens = BackingStore.DEFAULT_ANALOG_SENS;
+            SZSens = BackingStore.DEFAULT_ANALOG_SENS;
         }
 
-        public double SXDeadZone
-        {
-            get => _settings.SXDeadzone[_slot];
-            set => _settings.SXDeadzone[_slot] = value;
-        }
+        public int Slot { get; }
 
-        public double SZDeadZone
-        {
-            get => _settings.SZDeadzone[_slot];
-            set => _settings.SZDeadzone[_slot] = value;
-        }
+        public double SXDeadZone { get; set; }
+        public double SZDeadZone { get; set; }
+        public double SXMaxZone { get; set; }
+        public double SZMaxZone { get; set; }
+        public double SXAntiDeadZone { get; set; }
+        public double SZAntiDeadZone { get; set; }
+        public double SXSens { get; set; }
+        public double SZSens { get; set; }
+        public BezierCurve SXCurve { get; }
+        public BezierCurve SZCurve { get; }
 
-        public double SXMaxZone
-        {
-            get => _settings.SXMaxzone[_slot];
-            set => _settings.SXMaxzone[_slot] = value;
-        }
+        // 出力カーブのモード。6（利用者の定義したカーブ）を選んだときだけ、ベジェ曲線の参照表を初期化する
+        // （1〜5 は、入力処理の側の計算式で扱う）
+        private int _sXCurveMode;
+        private int _sZCurveMode;
 
-        public double SZMaxZone
-        {
-            get => _settings.SZMaxzone[_slot];
-            set => _settings.SZMaxzone[_slot] = value;
-        }
-
-        public double SXAntiDeadZone
-        {
-            get => _settings.SXAntiDeadzone[_slot];
-            set => _settings.SXAntiDeadzone[_slot] = value;
-        }
-
-        public double SZAntiDeadZone
-        {
-            get => _settings.SZAntiDeadzone[_slot];
-            set => _settings.SZAntiDeadzone[_slot] = value;
-        }
-
-        public double SXSens
-        {
-            get => _settings.SXSens[_slot];
-            set => _settings.SXSens[_slot] = value;
-        }
-
-        public double SZSens
-        {
-            get => _settings.SZSens[_slot];
-            set => _settings.SZSens[_slot] = value;
-        }
-
+        /// <summary>Sx の出力カーブのモード。画面から変えたときの値の設定（診断ログつき）。</summary>
         public int SXCurveMode
         {
-            get => _settings.GetSxOutCurveMode(_slot);
-            set => _settings.SetSxOutCurveMode(_slot, value);
+            get => _sXCurveMode;
+            set
+            {
+                ApplySXCurveMode(value);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetSxOutCurveMode: Slot {Slot} = {value}");
+            }
         }
 
+        /// <summary>プロファイルの読み込み・初期化など、画面の操作ではない経路の設定（ログなし）。</summary>
+        public void ApplySXCurveMode(int value)
+        {
+            if (value == 6) SXCurve.InitBezierCurve(SXCurve.CustomDefinition, BezierCurve.AxisType.SA);
+            _sXCurveMode = value;
+        }
+
+        /// <summary>Sz の出力カーブのモード。画面から変えたときの値の設定（診断ログつき）。</summary>
         public int SZCurveMode
         {
-            get => _settings.GetSzOutCurveMode(_slot);
-            set => _settings.SetSzOutCurveMode(_slot, value);
+            get => _sZCurveMode;
+            set
+            {
+                ApplySZCurveMode(value);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetSzOutCurveMode: Slot {Slot} = {value}");
+            }
         }
 
-        /// <summary>X の出力曲線のカスタム定義（中身を直接書き換える）。</summary>
-        public BezierCurve SXCurve => _settings.SxOutBezierCurveObj[_slot];
-
-        public BezierCurve SZCurve => _settings.SzOutBezierCurveObj[_slot];
+        /// <summary>プロファイルの読み込み・初期化など、画面の操作ではない経路の設定（ログなし）。</summary>
+        public void ApplySZCurveMode(int value)
+        {
+            if (value == 6) SZCurve.InitBezierCurve(SZCurve.CustomDefinition, BezierCurve.AxisType.SA);
+            _sZCurveMode = value;
+        }
     }
 }

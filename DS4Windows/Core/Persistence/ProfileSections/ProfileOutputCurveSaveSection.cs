@@ -98,11 +98,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlNode xmlR2OutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "R2OutputCurveMode", null); xmlR2OutputCurveMode.InnerText = axisOutputCurveString(store.triggerSlots[device].R2CurveMode); rootElement.AppendChild(xmlR2OutputCurveMode);
             XmlNode xmlR2OutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "R2OutputCurveCustom", null); xmlR2OutputCurveCustom.InnerText = store.triggerSlots[device].R2Bezier.ToString(); rootElement.AppendChild(xmlR2OutputCurveCustom);
 
-            XmlNode xmlSXOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "SXOutputCurveMode", null); xmlSXOutputCurveMode.InnerText = axisOutputCurveString(store.getSXOutCurveMode(device)); rootElement.AppendChild(xmlSXOutputCurveMode);
-            XmlNode xmlSXOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "SXOutputCurveCustom", null); xmlSXOutputCurveCustom.InnerText = store.sxOutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlSXOutputCurveCustom);
+            XmlNode xmlSXOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "SXOutputCurveMode", null); xmlSXOutputCurveMode.InnerText = axisOutputCurveString(store.sixAxisSlots[device].SXCurveMode); rootElement.AppendChild(xmlSXOutputCurveMode);
+            XmlNode xmlSXOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "SXOutputCurveCustom", null); xmlSXOutputCurveCustom.InnerText = store.sixAxisSlots[device].SXCurve.ToString(); rootElement.AppendChild(xmlSXOutputCurveCustom);
 
-            XmlNode xmlSZOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "SZOutputCurveMode", null); xmlSZOutputCurveMode.InnerText = axisOutputCurveString(store.getSZOutCurveMode(device)); rootElement.AppendChild(xmlSZOutputCurveMode);
-            XmlNode xmlSZOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "SZOutputCurveCustom", null); xmlSZOutputCurveCustom.InnerText = store.szOutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlSZOutputCurveCustom);
+            XmlNode xmlSZOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "SZOutputCurveMode", null); xmlSZOutputCurveMode.InnerText = axisOutputCurveString(store.sixAxisSlots[device].SZCurveMode); rootElement.AppendChild(xmlSZOutputCurveMode);
+            XmlNode xmlSZOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "SZOutputCurveCustom", null); xmlSZOutputCurveCustom.InnerText = store.sixAxisSlots[device].SZCurve.ToString(); rootElement.AppendChild(xmlSZOutputCurveCustom);
 
             XmlNode xmlTrackBallMode = m_Xdoc.CreateNode(XmlNodeType.Element, "TrackballMode", null); xmlTrackBallMode.InnerText = store.touchpadSlots[device].Trackball.ToString(); rootElement.AppendChild(xmlTrackBallMode);
             XmlNode xmlTrackBallFriction = m_Xdoc.CreateNode(XmlNodeType.Element, "TrackballFriction", null); xmlTrackBallFriction.InnerText = store.touchpadSlots[device].TrackballFriction.ToString(); rootElement.AppendChild(xmlTrackBallFriction);

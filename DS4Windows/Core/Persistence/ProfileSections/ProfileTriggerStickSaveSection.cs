@@ -122,17 +122,17 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlElement xmlRSDeltaMinFactor = m_Xdoc.CreateElement("MinFactor"); xmlRSDeltaMinFactor.InnerText = store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.minfactor.ToString(); xmlRSDeltaAccelGroupEl.AppendChild(xmlRSDeltaMinFactor);
             rootElement.AppendChild(xmlRSDeltaAccelGroupEl);
 
-            XmlNode xmlSXD = m_Xdoc.CreateNode(XmlNodeType.Element, "SXDeadZone", null); xmlSXD.InnerText = store.SXDeadzone[device].ToString(); rootElement.AppendChild(xmlSXD);
-            XmlNode xmlSZD = m_Xdoc.CreateNode(XmlNodeType.Element, "SZDeadZone", null); xmlSZD.InnerText = store.SZDeadzone[device].ToString(); rootElement.AppendChild(xmlSZD);
+            XmlNode xmlSXD = m_Xdoc.CreateNode(XmlNodeType.Element, "SXDeadZone", null); xmlSXD.InnerText = store.sixAxisSlots[device].SXDeadZone.ToString(); rootElement.AppendChild(xmlSXD);
+            XmlNode xmlSZD = m_Xdoc.CreateNode(XmlNodeType.Element, "SZDeadZone", null); xmlSZD.InnerText = store.sixAxisSlots[device].SZDeadZone.ToString(); rootElement.AppendChild(xmlSZD);
 
-            XmlNode xmlSXMaxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SXMaxZone", null); xmlSXMaxzone.InnerText = Convert.ToInt32(store.SXMaxzone[device] * 100.0).ToString(); rootElement.AppendChild(xmlSXMaxzone);
-            XmlNode xmlSZMaxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SZMaxZone", null); xmlSZMaxzone.InnerText = Convert.ToInt32(store.SZMaxzone[device] * 100.0).ToString(); rootElement.AppendChild(xmlSZMaxzone);
+            XmlNode xmlSXMaxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SXMaxZone", null); xmlSXMaxzone.InnerText = Convert.ToInt32(store.sixAxisSlots[device].SXMaxZone * 100.0).ToString(); rootElement.AppendChild(xmlSXMaxzone);
+            XmlNode xmlSZMaxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SZMaxZone", null); xmlSZMaxzone.InnerText = Convert.ToInt32(store.sixAxisSlots[device].SZMaxZone * 100.0).ToString(); rootElement.AppendChild(xmlSZMaxzone);
 
-            XmlNode xmlSXAntiDeadzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SXAntiDeadZone", null); xmlSXAntiDeadzone.InnerText = Convert.ToInt32(store.SXAntiDeadzone[device] * 100.0).ToString(); rootElement.AppendChild(xmlSXAntiDeadzone);
-            XmlNode xmlSZAntiDeadzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SZAntiDeadZone", null); xmlSZAntiDeadzone.InnerText = Convert.ToInt32(store.SZAntiDeadzone[device] * 100.0).ToString(); rootElement.AppendChild(xmlSZAntiDeadzone);
+            XmlNode xmlSXAntiDeadzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SXAntiDeadZone", null); xmlSXAntiDeadzone.InnerText = Convert.ToInt32(store.sixAxisSlots[device].SXAntiDeadZone * 100.0).ToString(); rootElement.AppendChild(xmlSXAntiDeadzone);
+            XmlNode xmlSZAntiDeadzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SZAntiDeadZone", null); xmlSZAntiDeadzone.InnerText = Convert.ToInt32(store.sixAxisSlots[device].SZAntiDeadZone * 100.0).ToString(); rootElement.AppendChild(xmlSZAntiDeadzone);
 
             XmlNode xmlSens = m_Xdoc.CreateNode(XmlNodeType.Element, "Sensitivity", null);
-            xmlSens.InnerText = $"{store.stickSlots[device].LSSens}|{store.stickSlots[device].RSSens}|{store.triggerSlots[device].L2Sens}|{store.triggerSlots[device].R2Sens}|{store.SXSens[device]}|{store.SZSens[device]}";
+            xmlSens.InnerText = $"{store.stickSlots[device].LSSens}|{store.stickSlots[device].RSSens}|{store.triggerSlots[device].L2Sens}|{store.triggerSlots[device].R2Sens}|{store.sixAxisSlots[device].SXSens}|{store.sixAxisSlots[device].SZSens}";
             rootElement.AppendChild(xmlSens);
 
             XmlNode xmlChargingType = m_Xdoc.CreateNode(XmlNodeType.Element, "ChargingType", null); xmlChargingType.InnerText = lightInfo.chargingType.ToString(); rootElement.AppendChild(xmlChargingType);

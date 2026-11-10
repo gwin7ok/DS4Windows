@@ -46,8 +46,8 @@ namespace DS4WindowsTests
             store.stickSlots[slot].ApplyRSCurveMode(2);
             store.triggerSlots[slot].ApplyL2CurveMode(4);
             store.triggerSlots[slot].ApplyR2CurveMode(5);
-            store.setSXOutCurveMode(slot, 1);
-            store.setSZOutCurveMode(slot, 6);
+            store.sixAxisSlots[slot].ApplySXCurveMode(1);
+            store.sixAxisSlots[slot].ApplySZCurveMode(6);
 
             store.lightbarSlots[slot].Info.mode = LightbarMode.Passthru;
 

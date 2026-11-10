@@ -161,14 +161,14 @@ namespace DS4Windows.Processing.Services
             bool saControls = settings.ForSlot(device).Gyro.OutputMode == GyroOutMode.Controls;
             if (saControls && dState.Motion.outputGyroControls)
             {
-                int SXD = (int)(128d * settings.SXDeadzone[device]);
-                int SZD = (int)(128d * settings.SZDeadzone[device]);
-                double SXMax = settings.SXMaxzone[device];
-                double SZMax = settings.SZMaxzone[device];
-                double sxAntiDead = settings.SXAntiDeadzone[device];
-                double szAntiDead = settings.SZAntiDeadzone[device];
-                double sxsens = settings.SXSens[device];
-                double szsens = settings.SZSens[device];
+                int SXD = (int)(128d * settings.ForSlot(device).SixAxis.SXDeadZone);
+                int SZD = (int)(128d * settings.ForSlot(device).SixAxis.SZDeadZone);
+                double SXMax = settings.ForSlot(device).SixAxis.SXMaxZone;
+                double SZMax = settings.ForSlot(device).SixAxis.SZMaxZone;
+                double sxAntiDead = settings.ForSlot(device).SixAxis.SXAntiDeadZone;
+                double szAntiDead = settings.ForSlot(device).SixAxis.SZAntiDeadZone;
+                double sxsens = settings.ForSlot(device).SixAxis.SXSens;
+                double szsens = settings.ForSlot(device).SixAxis.SZSens;
 
                 int gyroX = cState.Motion.accelX, gyroZ = cState.Motion.accelZ;
 
@@ -177,13 +177,13 @@ namespace DS4Windows.Processing.Services
                 dState.Motion.outputAccelX = _gyroControls.Correct(gyroX, SXD, SXMax, sxAntiDead, sxsens);
                 dState.Motion.outputAccelZ = _gyroControls.Correct(gyroZ, SZD, SZMax, szAntiDead, szsens);
 
-                int sxOutCurveMode = settings.GetSxOutCurveMode(device);
+                int sxOutCurveMode = settings.ForSlot(device).SixAxis.SXCurveMode;
                 if (sxOutCurveMode > 0)
-                    dState.Motion.outputAccelX = _gyroControls.ApplyCurve(sxOutCurveMode, settings.SxOutBezierCurveObj[device], dState.Motion.outputAccelX);
+                    dState.Motion.outputAccelX = _gyroControls.ApplyCurve(sxOutCurveMode, settings.ForSlot(device).SixAxis.SXCurve, dState.Motion.outputAccelX);
 
-                int szOutCurveMode = settings.GetSzOutCurveMode(device);
+                int szOutCurveMode = settings.ForSlot(device).SixAxis.SZCurveMode;
                 if (szOutCurveMode > 0 && dState.Motion.outputAccelZ != 0)
-                    dState.Motion.outputAccelZ = _gyroControls.ApplyCurve(szOutCurveMode, settings.SzOutBezierCurveObj[device], dState.Motion.outputAccelZ);
+                    dState.Motion.outputAccelZ = _gyroControls.ApplyCurve(szOutCurveMode, settings.ForSlot(device).SixAxis.SZCurve, dState.Motion.outputAccelZ);
             }
 
             return dState;

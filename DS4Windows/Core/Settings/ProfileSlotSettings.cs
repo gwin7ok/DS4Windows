@@ -13,7 +13,8 @@ namespace DS4Windows.Core.Settings
             TouchpadSlotSettings touchpad,
             TriggerSlotSettings triggers,
             StickSlotSettings sticks,
-            LightbarSlotSettings lightbar)
+            LightbarSlotSettings lightbar,
+            SixAxisSlotSettings sixAxis)
         {
             Slot = slot;
             Gyro = gyro ?? throw new System.ArgumentNullException(nameof(gyro));
@@ -23,7 +24,7 @@ namespace DS4Windows.Core.Settings
             Lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             Output = new OutputSlotSettings(settings, slot);
             General = new GeneralSlotSettings(settings, slot);
-            SixAxis = new SixAxisSlotSettings(settings, slot);
+            SixAxis = sixAxis ?? throw new System.ArgumentNullException(nameof(sixAxis));
         }
 
         public int Slot { get; }

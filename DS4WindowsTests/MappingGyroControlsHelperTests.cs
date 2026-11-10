@@ -26,11 +26,11 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             GyroOutMode originalMode = settings.ForSlot(Slot).Gyro.OutputMode;
-            double originalSx = settings.SXSens[Slot];
+            double originalSx = settings.ForSlot(Slot).SixAxis.SXSens;
             try
             {
                 settings.ForSlot(Slot).Gyro.OutputMode = mode;
-                settings.SXSens[Slot] = 1.0;
+                settings.ForSlot(Slot).SixAxis.SXSens = 1.0;
 
                 var state = new ControllerState();
                 state.Motion.accelX = 1000;   // GyroXNeg: SXSens * -AccelX < -67 （Controls のときだけ判定される）
@@ -42,7 +42,7 @@ namespace DS4WindowsTests
             finally
             {
                 settings.ForSlot(Slot).Gyro.OutputMode = originalMode;
-                settings.SXSens[Slot] = originalSx;
+                settings.ForSlot(Slot).SixAxis.SXSens = originalSx;
             }
         }
     }

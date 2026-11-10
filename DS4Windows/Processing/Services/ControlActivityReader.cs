@@ -96,10 +96,10 @@ namespace DS4Windows.Processing.Services
                 switch (control)
                 {
                     // Phase6-Step3-6b（決定P2）: 呼び出し元が ctrl を持たないため、引数の settings［Mapping が保持する profileSettings］から読む。Phase7-Step8 W2 で instance 化済み（Phase7c W3 でコメントを訂正）。
-                    case DS4Controls.GyroXPos: result = saControls ? settings.SXSens[device] * -eState.AccelX > 67 : false; break;
-                    case DS4Controls.GyroXNeg: result = saControls ? settings.SXSens[device] * -eState.AccelX < -67 : false; break;
-                    case DS4Controls.GyroZPos: result = saControls ? settings.SZSens[device] * eState.AccelZ > 67 : false; break;
-                    case DS4Controls.GyroZNeg: result = saControls ? settings.SZSens[device] * eState.AccelZ < -67 : false; break;
+                    case DS4Controls.GyroXPos: result = saControls ? settings.ForSlot(device).SixAxis.SXSens * -eState.AccelX > 67 : false; break;
+                    case DS4Controls.GyroXNeg: result = saControls ? settings.ForSlot(device).SixAxis.SXSens * -eState.AccelX < -67 : false; break;
+                    case DS4Controls.GyroZPos: result = saControls ? settings.ForSlot(device).SixAxis.SZSens * eState.AccelZ > 67 : false; break;
+                    case DS4Controls.GyroZNeg: result = saControls ? settings.ForSlot(device).SixAxis.SZSens * eState.AccelZ < -67 : false; break;
                     default: break;
                 }
             }

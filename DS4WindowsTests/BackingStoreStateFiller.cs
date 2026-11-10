@@ -22,7 +22,7 @@ namespace DS4WindowsTests
             "lastVersionChecked", "lastVersionCheckedNum", "useLang", "fakeExeFileName", "loggedInvalidActions",
             "actions", "linkedProfiles",
             // 出力カーブのモードは、以前は非公開のフィールドで、ゴールデンは既定値のまま固定している（変えると、カーブの定義の保存も変わる）
-            "L2CurveMode", "R2CurveMode", "LSCurveMode", "RSCurveMode",
+            "L2CurveMode", "R2CurveMode", "LSCurveMode", "RSCurveMode", "SXCurveMode", "SZCurveMode",
         };
 
         // パス・ファイル・言語・バージョン・アドレスなど、値の形式に意味がある文字列は変えない

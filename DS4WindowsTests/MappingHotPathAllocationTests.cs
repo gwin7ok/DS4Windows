@@ -89,8 +89,8 @@ namespace DS4WindowsTests
             // ジャイロ→コントロール変換（Step3-5 で引数渡しへ移した SX/SZ 系）の分岐を実際に通す。
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
-            store.setSXOutCurveMode(Slot, 2); // 出力カーブの分岐も通す
-            store.setSZOutCurveMode(Slot, 2);
+            store.sixAxisSlots[Slot].ApplySXCurveMode(2); // 出力カーブの分岐も通す
+            store.sixAxisSlots[Slot].ApplySZCurveMode(2);
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
 
             var cState = new ControllerState();

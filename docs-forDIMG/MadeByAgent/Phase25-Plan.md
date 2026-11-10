@@ -30,7 +30,7 @@
 | ライトバー | `LightbarSlotSettings` | 完了（2026-11-11） |
 | 出力 | `OutputSlotSettings` | 未着手 |
 | 一般 | `GeneralSlotSettings` | 未着手 |
-| 6 軸 | `SixAxisSlotSettings` | 未着手 |
+| 6 軸 | `SixAxisSlotSettings` | 完了（2026-11-11。SX/SZ のカーブのモードを含む） |
 | ボタン割り当て（`ds4controlSettings` など） | — | 領域外。最後に判断 |
 
 ## 4. 決定

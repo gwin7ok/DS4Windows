@@ -78,11 +78,11 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             GyroOutMode savedMode = settings.ForSlot(Device).Gyro.OutputMode;
-            double savedSx = settings.SXSens[Device];
+            double savedSx = settings.ForSlot(Device).SixAxis.SXSens;
             try
             {
                 settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.None;
-                settings.SXSens[Device] = 1.0;
+                settings.ForSlot(Device).SixAxis.SXSens = 1.0;
                 var state = new ControllerState();
                 state.Motion.accelX = -500;
                 Assert.False(Active(DS4Controls.GyroXPos, state));
@@ -90,7 +90,7 @@ namespace DS4WindowsTests
             finally
             {
                 settings.ForSlot(Device).Gyro.OutputMode = savedMode;
-                settings.SXSens[Device] = savedSx;
+                settings.ForSlot(Device).SixAxis.SXSens = savedSx;
             }
         }
 
@@ -101,13 +101,13 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             GyroOutMode savedMode = settings.ForSlot(Device).Gyro.OutputMode;
-            double savedSx = settings.SXSens[Device];
-            double savedSz = settings.SZSens[Device];
+            double savedSx = settings.ForSlot(Device).SixAxis.SXSens;
+            double savedSz = settings.ForSlot(Device).SixAxis.SZSens;
             try
             {
                 settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.Controls;
-                settings.SXSens[Device] = 1.0;
-                settings.SZSens[Device] = 1.0;
+                settings.ForSlot(Device).SixAxis.SXSens = 1.0;
+                settings.ForSlot(Device).SixAxis.SZSens = 1.0;
                 var state = new ControllerState();
                 state.Motion.accelX = accelX;
                 state.Motion.accelZ = -accelX;   // GyroZPos: SZ * AccelZ > 67
@@ -118,8 +118,8 @@ namespace DS4WindowsTests
             finally
             {
                 settings.ForSlot(Device).Gyro.OutputMode = savedMode;
-                settings.SXSens[Device] = savedSx;
-                settings.SZSens[Device] = savedSz;
+                settings.ForSlot(Device).SixAxis.SXSens = savedSx;
+                settings.ForSlot(Device).SixAxis.SZSens = savedSz;
             }
         }
     }

@@ -98,8 +98,8 @@ namespace DS4WindowsTests
             // 4. ジャイロ → コントロール＋ジャイロの出力カーブ
             var gyro = new BackingStore(new EnvironmentService());
             gyro.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
-            gyro.setSXOutCurveMode(Slot, 2);
-            gyro.setSZOutCurveMode(Slot, 2);
+            gyro.sixAxisSlots[Slot].ApplySXCurveMode(2);
+            gyro.sixAxisSlots[Slot].ApplySZCurveMode(2);
             MeasureNanosecondsPerCall("ジャイロ → コントロール", gyro);
         }
     }

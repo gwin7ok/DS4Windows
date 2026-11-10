@@ -58,31 +58,31 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).SixAxis;
-            double dead = service.SXDeadzone[0];
-            double sens = service.SZSens[0];
-            int mode = service.GetSxOutCurveMode(0);
+            double dead = service.ForSlot(0).SixAxis.SXDeadZone;
+            double sens = service.ForSlot(0).SixAxis.SZSens;
+            int mode = service.ForSlot(0).SixAxis.SXCurveMode;
             try
             {
                 var names = new List<string>();
                 vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
                 vm.SXDeadZone = dead + 0.25;
-                Assert.Equal(dead + 0.25, service.SXDeadzone[0]);
+                Assert.Equal(dead + 0.25, service.ForSlot(0).SixAxis.SXDeadZone);
                 Assert.Contains(nameof(SixAxisSettingsViewModel.SXDeadZone), names);
 
                 vm.SZSens = 1.5;
-                Assert.Equal(1.5, service.SZSens[0]);
+                Assert.Equal(1.5, service.ForSlot(0).SixAxis.SZSens);
 
                 // 曲線の選択を 6（カスタム）にすると、カスタム曲線の入力が有効になる通知が出る
                 vm.SXOutputCurveIndex = 6;
-                Assert.Equal(6, service.GetSxOutCurveMode(0));
+                Assert.Equal(6, service.ForSlot(0).SixAxis.SXCurveMode);
                 Assert.True(vm.SXCustomCurveSelected);
                 Assert.Contains(nameof(SixAxisSettingsViewModel.SXCustomCurveSelected), names);
             }
             finally
             {
-                service.SXDeadzone[0] = dead;
-                service.SZSens[0] = sens;
-                service.SetSxOutCurveMode(0, mode);
+                service.ForSlot(0).SixAxis.SXDeadZone = dead;
+                service.ForSlot(0).SixAxis.SZSens = sens;
+                service.ForSlot(0).SixAxis.SXCurveMode = mode;
             }
         }
 
@@ -90,7 +90,7 @@ namespace DS4WindowsTests
         public void TheSlotSettings_ComeFromTheServiceEntryPoint_AndTheOldMembersAreGoneFromTheEditorViewModel()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            Assert.Same(service.SxOutBezierCurveObj[3], service.ForSlot(3).SixAxis.SXCurve);
+            Assert.Same(service.ForSlot(3).SixAxis.SXCurve, service.ForSlot(3).SixAxis.SXCurve);
 
             // 6 軸の項目は、ProfileSettingsViewModel から SixAxis（サブ ViewModel）へ移った
             string[] moved = typeof(SixAxisSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)

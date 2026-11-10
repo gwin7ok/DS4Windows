@@ -166,15 +166,15 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveCustom"); store.sxOutBezierCurveObj[device].CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveCustom"); store.sixAxisSlots[device].SXCurve.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveMode"); store.setSXOutCurveMode(device, axisOutputCurveId(Item.InnerText)); }
-            catch { store.setSXOutCurveMode(device, 0); missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveMode"); store.sixAxisSlots[device].ApplySXCurveMode(axisOutputCurveId(Item.InnerText)); }
+            catch { store.sixAxisSlots[device].ApplySXCurveMode(0); missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveCustom"); store.szOutBezierCurveObj[device].CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveCustom"); store.sixAxisSlots[device].SZCurve.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveMode"); store.setSZOutCurveMode(device, axisOutputCurveId(Item.InnerText)); }
-            catch { store.setSZOutCurveMode(device, 0); missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveMode"); store.sixAxisSlots[device].ApplySZCurveMode(axisOutputCurveId(Item.InnerText)); }
+            catch { store.sixAxisSlots[device].ApplySZCurveMode(0); missingSetting = true; }
 
             context.MissingSetting = missingSetting;
         }
