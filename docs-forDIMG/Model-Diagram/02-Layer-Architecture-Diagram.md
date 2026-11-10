@@ -217,3 +217,8 @@
 %% - 第 2 層: Mapping は ICurveAndDeadzoneStage（入力の補正）と IDeviceInputCleanup（切断時の後始末）を切り出し、25 → 20 引数。ActionBindingBuilder は 16 → 5 引数。
 %% - 層の違反 L2・L7 は 0 件。禁止の規則はすべて許可リスト空。
 %% - フォルダ: Input/Parsers を新設。Output/Backend（ViGEm はここだけ）。規則 L9（ViGEm は Output.Backend だけ）、L10（HidDevice の具象は DS4Windows.Input.Hid だけ）。
+
+%% ---- Phase16 追補 16-12・16-13（2026-11-10）----
+%% - 入力機種: IInputDeviceCartridge がシリアルの読み方（ReadSerial）も持つ。種類と系統の表 InputDeviceTypeInfo／InputDeviceFamily（Core/Model）を、カートリッジ（第 1 層）と IInputDeviceModule（第 2 層）の両方が引く。
+%% - 機種ごとの設定: ControlServiceDeviceOptions は InputDeviceFamily をキーにした入れ物（型付きの 5 プロパティは廃止）。*ControllerOptions の XML の書き出し・読み込みは ControllerOptionsStore に集約。
+%% - 第 2 層: Mapping は IMouseConversionStage（マウスの動きへの変換）も切り出し、20 → 17 引数。UI: ViewModelFactory は Shell／ProfileEdit／Action の 3 つの工場への委譲（19 → 3 引数）。

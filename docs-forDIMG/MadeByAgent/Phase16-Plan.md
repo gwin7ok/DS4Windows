@@ -797,3 +797,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **分割（D-13-2）**: `ViewModelFactory`（`IViewModelFactory` の窓口。画面側の依存は変えない）を、用途別の 3 つのファクトリーへの委譲にした。`ShellViewModelFactory`（メイン画面の枠: 設定・機器一覧・出力スロット・自動プロファイル・トレイ・ダイアログ。依存 14）、`ProfileEditViewModelFactory`（プロファイル編集・出力ピッカー・ボタンの記録・プリセット。依存 10）、`ActionViewModelFactory`（特殊アクション・マクロなど。依存 4）。各 ViewModel の生成式と `[DI]` のトレースログの文言は移しただけで、変えていない。窓口は 30 メソッドの委譲だけを持つ。
 - 「何でも箱」にしない: 3 つは、作る ViewModel が使う依存だけを受ける（全部の依存を束ねた契約は作っていない）。
 - `ConstructorArityBaseline` から `ViewModelFactory` を削除。`ProfileSettingsViewModelGlobalReferenceGuardTests` は、4 つのコンストラクターを合わせて確かめるよう更新。Actions 3,395 件合格・警告 0。
+
+### Step 16-13b-2／13c（2026-11-10。見送り。基準に凍結）
+- **対象**: `MainWindowFactory`（20）、`EditorWindowFactory`（18）、`MainWindow`（21）。
+- **見送りの理由**: これらは、画面（View）とその工場で、渡している依存は `MainWindow`（約 2,100 行のコードビハインド）が実際に 1 つずつ使っているもの。引数を減らすには、`MainWindow` から責務（IPC の受け付けと結果の書き込み、テーマ・言語、更新の確認、プロファイルの適用など）を ViewModel やサービスへ移す、画面の分割が要る。これは Phase の規模の作業で、束ねるだけの契約を作っても、依存が見えなくなるだけ（規約 3.1）。規約 3.1（View は生成物側の整理に追随する）と D-13-3 に従い、`ConstructorArityBaseline` に凍結し、次の Phase の候補とする（`Repository-Review` の R-14 の続き）。
+- **結果**: `ConstructorArityBaseline` は、`Mapping|17`、`MainWindow|21`、`MainWindowFactory|20`、`EditorWindowFactory|18` の 4 件。`ActionBindingBuilder`（16→5）、`ViewModelFactory`（19→3）、`ControlService`（16→12）は解消。
+
+### Step 16-13d（2026-11-10。完了）
+- `InputReportProcessor`（15）は目標内のため対象外。`ConstructorArityBaseline` と `Phase13FuncRatchetGuardTests` は実数と一致（テストで確認済み）。
