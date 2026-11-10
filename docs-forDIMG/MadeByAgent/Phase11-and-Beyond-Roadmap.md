@@ -196,3 +196,5 @@ Phase16 の追補（16-12・16-13）で見送った次の項目を、Phase17 で
 - 各 Phase での更新: Phase13（`ControlService`、`Func<T>`、`ServiceProviderHolder`）、Phase14（名前空間・フォルダ。`DI/` の位置づけ）、Phase16（`IHidTransport` など）で、該当の図を更新する。
 
 - 2026-11-10 Phase17 の見送り: 既存機種（DS4Device 系）の `ProtocolDevice` への移行は Phase18 候補（前提: 共通部品の切り出しと差分テスト）。`MainWindow` 20・`MainWindowFactory` 20・`Mapping` 17 は 15 以下にしていない（理由は `Phase17-Plan.md`）。
+- 2026-11-10 Phase18 完了（ブランチ Phase17 の中）: 4 機種（DS4・DualSense・Switch Pro・`ProtocolDevice`）が `InputLoopDevice` の骨組みに載り、基底は抽象の `InputDeviceCore`（旧 `DS4Device`）になった（`Phase18-Plan.md`）。同日、到達できなかった 2 台結合の仕組み（Joint／`PrimaryDevice`）を削除した。
+- 2026-11-10 Phase19 の計画: USB の Xbox 360 コントローラーを入力機種として足す（`Phase19-Plan.md`。調査は `Xbox-Input-Research.md`）。コードは未着手。
