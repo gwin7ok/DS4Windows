@@ -176,15 +176,14 @@ namespace DS4Windows.Composition
             services.AddSingleton<IControllerReadingsSource, ControllerReadingsSource>();
             services.AddSingleton<IMacroRecordingState, MacroRecordingState>();
             // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
+            services.AddSingleton<FirstReportActionLogger>();
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
                 sp.GetRequiredService<ILightbarService>(),
                 sp.GetRequiredService<IDeviceSlotState>(),
                 sp.GetRequiredService<ILatencyMonitor>(),
-                sp.GetRequiredService<IPathService>(),
-                sp.GetRequiredService<IProfileRepository>(),
+                sp.GetRequiredService<FirstReportActionLogger>(),
                 sp.GetRequiredService<IAppearanceSettingsService>(),
                 sp.GetRequiredService<IProfileSettingsService>(),
-                sp.GetRequiredService<IVirtualKBM>(),
                 sp.GetRequiredService<IMapping>(),
                 sp.GetRequiredService<ITouchpadToggleService>(),
                 sp.GetRequiredService<IProfileActionProvider>(),

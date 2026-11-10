@@ -29,7 +29,8 @@ namespace DS4WindowsTests
             ["DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs"] = (6, 0),
             ["DS4Windows/Processing/Services/AutoProfileService.cs"] = (2, 0),
             ["DS4Windows/Processing/Services/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
-            ["DS4Windows/Processing/Services/InputReportProcessor.cs"] = (1, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/FirstReportActionLogger.cs"] = (1, 0),   // InputReportProcessor から、最初のレポートのログを切り出した（合計は増えていない）
+            ["DS4Windows/Processing/Services/InputReportProcessor.cs"] = (0, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
             ["DS4Windows/Processing/Services/IpcCommandProcessor.cs"] = (2, 0),   // Phase13-Step11 11-b: IPC コマンド（loadprofile／query）の実行を MainWindow.Ipc.cs から移した（合計は増えていない）
             ["DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs"] = (1, 0),
             ["DS4Windows/Processing/Services/ProfileActionProvider.cs"] = (0, 2),

@@ -25,11 +25,9 @@ namespace DS4Windows.Processing.Services
         private readonly double[] _processingDelayMs = new double[ControllerLimits.MaxControllerCount];
 
         private readonly ILatencyMonitor _latencyMonitor;
-        private readonly IPathService _pathService;
-        private readonly IProfileRepository _profileRepository;
+        private readonly FirstReportActionLogger _firstReportLogger;
         private readonly IAppearanceSettingsService _appearanceSettings;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IVirtualKBM _virtualKBM;
         private readonly IMapping _mapping;
         private readonly ITouchpadToggleService _touchpadToggle;
         private readonly IProfileActionProvider _profileActionProvider;
@@ -52,11 +50,9 @@ namespace DS4Windows.Processing.Services
         public InputReportProcessor(ILightbarService lightbar, 
             IDeviceSlotState slots,
             ILatencyMonitor latencyMonitor,
-            IPathService pathService,
-            IProfileRepository profileRepository,
+            FirstReportActionLogger firstReportLogger,
             IAppearanceSettingsService appearanceSettings,
             IProfileSettingsService profileSettings,
-            IVirtualKBM virtualKBM,
             IMapping mapping,
             ITouchpadToggleService touchpadToggle,
             IProfileActionProvider profileActionProvider,
@@ -71,11 +67,9 @@ namespace DS4Windows.Processing.Services
             _tempState = slots.TempStates;
             _touchPad = slots.TouchPads;
             _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            _firstReportLogger = firstReportLogger ?? throw new ArgumentNullException(nameof(firstReportLogger));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
             _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
             _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
@@ -121,14 +115,7 @@ namespace DS4Windows.Processing.Services
                 {
                     // Emit missing-action logs once per profile-apply (respect suppression).
                     // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents
-                    if (File.Exists(Path.Combine(_pathService.AppDataPath, "Profiles", $"{_profileRepository.ProfilePath[ind]}.xml")))
-                    {
-                        try
-                        {
-                            _profileRepository.EmitMissingActionLogsForDevice(ind, false);
-                        }
-                        catch { }
-                    }
+                    _firstReportLogger.Emit(ind);
 
                     device.firstReport = false;
                 }
