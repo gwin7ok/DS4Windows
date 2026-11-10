@@ -38,7 +38,7 @@ using DS4Windows.Input.Parsers;
 namespace DS4Windows.Input
 {
 
-    public class DS4Device : DS4Windows.Core.Abstractions.IConfigurableDevice
+    public class DS4Device : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice
     {
         // Indicates PostInit completed and output buffers (etc.) are initialized
         protected volatile bool postInitDone = false;
@@ -198,6 +198,14 @@ namespace DS4Windows.Input
         }
 
         public ConnectionType ConnectionType => conType;
+        // ILightbarDevice（ライトバーの色の計算が読む値）。既存のメソッドへ委譲する
+        bool DS4Windows.Input.Abstractions.ILightbarDevice.IsCharging => isCharging();
+        int DS4Windows.Input.Abstractions.ILightbarDevice.Battery => getBattery();
+        ConnectionType DS4Windows.Input.Abstractions.ILightbarDevice.ConnectionType => getConnectionType();
+        DateTime DS4Windows.Input.Abstractions.ILightbarDevice.LastActive => lastActive;
+        byte DS4Windows.Input.Abstractions.ILightbarDevice.LeftHeavySlowRumble => getLeftHeavySlowRumble();
+        byte DS4Windows.Input.Abstractions.ILightbarDevice.LightBarOnDuration => getLightBarOnDuration();
+
         public ConnectionType getConnectionType()
         {
             return this.conType;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
 
@@ -6,7 +7,7 @@ namespace DS4Windows.Core.Utilities
 {
     /// <summary>
     /// Phase7-Step10b W2（Q2＝A）: 色の純粋な計算（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。
-    /// <c>DS4LightBar</c>（ライトバーの色の遷移）と <c>Mapping</c>（ライトバーのマクロ）が使う。
+    /// <c>LightbarService</c>（ライトバーの色の遷移）と <c>Mapping</c>（ライトバーのマクロ）が使う。
     /// </summary>
     public static class ColorUtil
     {
@@ -34,6 +35,26 @@ namespace DS4Windows.Core.Utilities
         }
 
         // Phase7-Step10e W4（承認済み）: 旧 Global から移した孤立コード applyRatio(Color, Color, uint) と HuetoRGB(float, float, float) を削除した。
-        // 移動前から呼び出し元が 0 件の WPF 色ブレンドの残骸で、本体のライトバーは DS4LightBar.HuetoRGB(float, byte) を使う。
+        // 移動前から呼び出し元が 0 件の WPF 色ブレンドの残骸で、本体のライトバーは HueToRgb(float, byte)（LightbarService が使う）を使う。
+
+        public static DS4Color HueToRgb(float hue, byte sat)
+        {
+            byte C = sat;
+            int X = (int)((C * (float)(1 - Math.Abs((hue / 60) % 2 - 1))));
+            if (0 <= hue && hue < 60)
+                return new DS4Color(C, (byte)X, 0);
+            else if (60 <= hue && hue < 120)
+                return new DS4Color((byte)X, C, 0);
+            else if (120 <= hue && hue < 180)
+                return new DS4Color(0, C, (byte)X);
+            else if (180 <= hue && hue < 240)
+                return new DS4Color(0, (byte)X, C);
+            else if (240 <= hue && hue < 300)
+                return new DS4Color((byte)X, 0, C);
+            else if (300 <= hue && hue < 360)
+                return new DS4Color(C, 0, (byte)X);
+            else
+                return new DS4Color(Color.Red);
+        }
     }
 }

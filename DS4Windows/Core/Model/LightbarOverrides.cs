@@ -6,7 +6,7 @@ namespace DS4Windows.Core.Model
     /// ライトバーの強制表示の状態（スロットごと）。DI の Singleton。
     /// Phase14c-Step4（R-05 の前半）: 旧 <c>DS4LightBar</c>（第1層）の public static な配列と旗（<c>forcelight</c>／<c>forcedColor</c>／<c>forcedFlash</c>／
     /// <c>defaultLight</c>／<c>shuttingdown</c>）を、この持ち主へ移した。全層が直接読み書きしていた静的な状態をなくすため、利用者はコンストラクターで受け取る。
-    /// メンバーの名前・形は旧と同じ（置き換えを機械的にするため）。色の計算（<c>DS4LightBar.updateLightBar</c>）の移動は Phase16（<c>ILightbarService</c>）で行う。
+    /// メンバーの名前・形は旧と同じ（置き換えを機械的にするため）。色の計算は第 2 層の <c>LightbarService</c>（<c>ILightbarService</c>）が、この状態を読んで行う。
     /// </summary>
     public sealed class LightbarOverrides
     {

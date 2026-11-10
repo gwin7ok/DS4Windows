@@ -118,6 +118,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
             // Phase13-Step3: ブースト・反転つきの振動（IDeviceRumbleService）と KBM 出力の初期化（IOutputKbmInitializer）の登録は ServiceRegistration.Output.cs
+            services.AddSingleton<ILightbarService, LightbarService>();   // ライトバーの色の計算（スロットごとの経過を持つ。時間は TimeProvider）
             services.AddSingleton<IMouseFactory, MouseFactory>();   // スロットごとのタッチパッドの Mouse（TimeProvider を渡す）
             services.AddSingleton<IConnectedDeviceOutputs, ConnectedDeviceOutputs>();   // 接続時の出力側の準備（OSC の通知、仮想パッドの割り当て、UDP の準備）
             services.AddSingleton<IOutputServicesLifecycle, OutputServicesLifecycle>();   // 出力側のサービス（仮想パッド、KBM、HidHide、OSC、UDP）の開始・停止の手順
@@ -182,7 +183,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IMacroRecordingState, MacroRecordingState>();
             // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
-                sp.GetRequiredService<LightbarOverrides>(),   // Phase14c-Step4
+                sp.GetRequiredService<ILightbarService>(),
                 sp.GetRequiredService<IDeviceSlotState>(),
                 sp.GetRequiredService<ILatencyMonitor>(),
                 sp.GetRequiredService<IPathService>(),

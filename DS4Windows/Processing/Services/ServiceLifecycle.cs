@@ -72,13 +72,15 @@ namespace DS4Windows.Processing.Services
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+        private readonly ILightbarService _lightbarService;
 
-        public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
+        public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, ILightbarService lightbarService, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IDs4DeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
             IDeviceConnector deviceConnector, IDeviceSlotState slots,
             IEventThreadDispatcher eventThread, IOutputServicesLifecycle outputs)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
+            _lightbarService = lightbarService ?? throw new System.ArgumentNullException(nameof(lightbarService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -210,7 +212,7 @@ namespace DS4Windows.Processing.Services
                             _lightbar.forcelight[i] = false;
                             _lightbar.forcedFlash[i] = 0;
                             _lightbar.defaultLight = true;
-                            DS4LightBar.updateLightBar(slots.DS4Controllers[i], i, _profileSettings, _lightbar);
+                            _lightbarService.Update(slots.DS4Controllers[i], i);
                             tempDevice.IsRemoved = true;
                             tempDevice.StopUpdate();
                             _deviceRegistry.RemoveDevice(tempDevice);

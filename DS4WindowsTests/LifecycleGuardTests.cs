@@ -232,7 +232,7 @@ namespace DS4WindowsTests
             Assert.Same(lifecycle, TestHost.GetService<IServiceLifecycle>());
 
             // 起動直後の状態（旧: running = false、loopControllers = true、inServiceTask = false、activeControllers = 0）
-            var fresh = new ServiceLifecycle(TestLightbar.State, TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
+            var fresh = new ServiceLifecycle(TestLightbar.State, TestHost.GetService<DS4Windows.Processing.Abstractions.ILightbarService>(), TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
                 TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),
@@ -257,7 +257,7 @@ namespace DS4WindowsTests
         public void Suspending_SwitchesTheLightbarShuttingDownFlagTogether()
         {
             var lightbar = new DS4Windows.Core.Model.LightbarOverrides();
-            var lifecycle = new ServiceLifecycle(lightbar, TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
+            var lifecycle = new ServiceLifecycle(lightbar, TestHost.GetService<DS4Windows.Processing.Abstractions.ILightbarService>(), TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IDs4DeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<IJoyConLinker>(),
                 TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceSlotState>(),

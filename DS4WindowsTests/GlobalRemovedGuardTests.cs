@@ -137,12 +137,13 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void LightBar_TakesTheProfileSettingsAsAnArgument()
+        public void LightbarService_TakesTheProfileSettingsAndTheOverridesAsConstructorArguments()
         {
-            var method = typeof(DS4LightBar).GetMethod("updateLightBar");
-            Assert.NotNull(method);
-            // Phase14c-Step4（R-05 の前半）: 強制表示の状態（旧: 静的な配列）も引数で受ける
-            Assert.Equal(new[] { "device", "deviceNum", "profileSettings", "overrides" }, method.GetParameters().Select(p => p.Name).ToArray());
+            // 設定と強制表示の状態は、静的な窓口ではなくコンストラクターで受ける。呼び出し側は、デバイスとスロット番号だけを渡す
+            var ctor = typeof(DS4Windows.Processing.Services.LightbarService).GetConstructors().Single();
+            Assert.Equal(new[] { "profileSettings", "overrides", "time" }, ctor.GetParameters().Select(p => p.Name).ToArray());
+            var method = typeof(DS4Windows.Processing.Abstractions.ILightbarService).GetMethod("Update");
+            Assert.Equal(new[] { "device", "deviceNum" }, method.GetParameters().Select(p => p.Name).ToArray());
         }
     }
 }

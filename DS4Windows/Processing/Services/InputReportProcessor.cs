@@ -47,9 +47,9 @@ namespace DS4Windows.Processing.Services
         public DS4StateExposed[] ExposedState => _exposedState;
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-        private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+        private readonly ILightbarService _lightbar;
 
-        public InputReportProcessor(DS4Windows.Core.Model.LightbarOverrides lightbar, 
+        public InputReportProcessor(ILightbarService lightbar, 
             IDeviceSlotState slots,
             ILatencyMonitor latencyMonitor,
             IPathService pathService,
@@ -288,7 +288,7 @@ namespace DS4Windows.Processing.Services
                 _mapping.Commit(ind, _profileSettings);
 
                 // Update the Lightbar color
-                DS4LightBar.updateLightBar(device, ind, _profileSettings, _lightbar);
+                _lightbar.Update(device, ind);
 
                 if (device.PerformStateMerge)
                 {

@@ -18,6 +18,10 @@ namespace DS4WindowsTests
             get { lock (_timers) { return _timers.FindAll(t => t.IsActive).Count; } }
         }
 
+        // 経過時間の計測（GetTimestamp／GetElapsedTime）も仮想時間に従わせる。単位は 100ns（TimeSpan の Tick）
+        public override long TimestampFrequency => TimeSpan.TicksPerSecond;
+        public override long GetTimestamp() => _nowTicks;
+
         public override DateTimeOffset GetUtcNow() => new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero).AddTicks(_nowTicks);
 
         public override ITimer CreateTimer(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)

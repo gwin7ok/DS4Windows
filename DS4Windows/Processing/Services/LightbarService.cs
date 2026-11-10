@@ -1,32 +1,20 @@
-﻿/*
-DS4Windows
-Copyright (C) 2023  Travis Nickles
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
-using System;
-using System.Drawing;
+﻿using System;
 using static System.Math;
-using System.Diagnostics;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
+using DS4Windows.Input;
+using DS4Windows.Input.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Processing.Services
 {
-    public class DS4LightBar
+    /// <summary>
+    /// <see cref="ILightbarService"/> の実装。ライトバーの色（虹色、電池連動、点滅、充電中、無操作のフェード、強制表示、終了時の消灯、距離プロファイル）を計算する。
+    /// スロットごとの経過（虹色の角度、フェードの向きと開始時刻）をこのインスタンスが持つ。時間は <see cref="TimeProvider"/> から読む（テストでは仮想時間）。
+    /// </summary>
+    public class LightbarService : ILightbarService
     {
         private readonly static byte[/* Light On duration */, /* Light Off duration */] BatteryIndicatorDurations =
         {
@@ -43,36 +31,53 @@ namespace DS4Windows.Input
             { 0, 0 }     // use on 100%. 0 is for "charging" OR anything sufficiently-"charged"
         };
 
-        static double[] counters = new double[ControllerLimits.MaxControllerCount] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static Stopwatch[] fadewatches = new Stopwatch[ControllerLimits.MaxControllerCount]
-        {
-            new Stopwatch(), new Stopwatch(), new Stopwatch(), new Stopwatch(),
-            new Stopwatch(), new Stopwatch(), new Stopwatch(), new Stopwatch(),
-        };
+        private readonly IProfileSettingsService profileSettings;
+        private readonly LightbarOverrides overrides;
+        private readonly TimeProvider time;
 
-        static bool[] fadedirection = new bool[ControllerLimits.MaxControllerCount] { false, false, false, false, false, false, false, false };
-        static DateTime[] oldnow = new DateTime[ControllerLimits.MaxControllerCount]
-        {
-            DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow,
-            DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow, DateTime.UtcNow,
-        };
+        private readonly double[] counters = new double[ControllerLimits.MaxControllerCount];
+        private readonly bool[] fadedirection = new bool[ControllerLimits.MaxControllerCount];
+        // フェードの計測（旧 Stopwatch の IsRunning／Restart／ElapsedMilliseconds／Stop と同じ意味）
+        private readonly bool[] fadeRunning = new bool[ControllerLimits.MaxControllerCount];
+        private readonly long[] fadeStart = new long[ControllerLimits.MaxControllerCount];
+        private readonly DateTime[] oldnow = new DateTime[ControllerLimits.MaxControllerCount];
 
         internal const int PULSE_FLASH_DURATION = 2000;
         internal const double PULSE_FLASH_SEGMENTS = PULSE_FLASH_DURATION / 40;
         internal const int PULSE_CHARGING_DURATION = 4000;
         internal const double PULSE_CHARGING_SEGMENTS = (PULSE_CHARGING_DURATION / 40) - 2;
 
-        // Phase7-Step10d W5: 旧 Global の転送（getLightbarSettingsInfo／getMainColor／getIdleDisconnectTimeout／DistanceProfiles／tempprofileDistance）に替えて、
-        // 呼び出し元（ControlService）が持つプロファイル設定サービスを引数で受け取る。
-        public static void updateLightBar(DS4Device device, int deviceNum, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings, DS4Windows.Core.Model.LightbarOverrides overrides)
+        public LightbarService(IProfileSettingsService profileSettings, LightbarOverrides overrides, TimeProvider time)
+        {
+            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            this.overrides = overrides ?? throw new ArgumentNullException(nameof(overrides));
+            this.time = time ?? throw new ArgumentNullException(nameof(time));
+            DateTime start = UtcNow();
+            for (int i = 0; i < oldnow.Length; i++) oldnow[i] = start;
+        }
+
+        private DateTime UtcNow() => time.GetUtcNow().UtcDateTime;
+
+        private void RestartFade(int deviceNum)
+        {
+            fadeRunning[deviceNum] = true;
+            fadeStart[deviceNum] = time.GetTimestamp();
+        }
+
+        private long FadeElapsedMilliseconds(int deviceNum)
+        {
+            return (long)time.GetElapsedTime(fadeStart[deviceNum]).TotalMilliseconds;
+        }
+
+        public void Update(ILightbarDevice device, int deviceNum)
         {
             DS4Color color = new DS4Color();
-            bool useForceLight = overrides.forcelight[deviceNum];
-            LightbarSettingInfo lightbarSettingInfo = profileSettings.GetLightbarSettingsInfo(deviceNum);
+            bool useForceLight = this.overrides.forcelight[deviceNum];
+            LightbarSettingInfo lightbarSettingInfo = this.profileSettings.GetLightbarSettingsInfo(deviceNum);
             LightbarDS4WinInfo lightModeInfo = lightbarSettingInfo.ds4winSettings;
             bool useLightRoutine = lightbarSettingInfo.mode == LightbarMode.DS4Win;
             //bool useLightRoutine = false;
-            if (!overrides.defaultLight && !useForceLight && useLightRoutine)
+            if (!this.overrides.defaultLight && !useForceLight && useLightRoutine)
             {
                 if (lightModeInfo.useCustomLed)
                 {
@@ -84,12 +89,12 @@ namespace DS4Windows.Input
                     if (rainbow > 0)
                     {
                         // Display rainbow
-                        DateTime now = DateTime.UtcNow;
+                        DateTime now = UtcNow();
                         if (now >= oldnow[deviceNum] + TimeSpan.FromMilliseconds(10)) //update by the millisecond that way it's a smooth transtion
                         {
                             int diffMs = now.Subtract(oldnow[deviceNum]).Milliseconds;
                             oldnow[deviceNum] = now;
-                            if (device.isCharging())
+                            if (device.IsCharging)
                                 //counters[deviceNum] -= 1.5 * 3 / rainbow;
                                 counters[deviceNum] -= 360.0 * (diffMs / 1000.0 / rainbow);
                             else
@@ -106,12 +111,12 @@ namespace DS4Windows.Input
                         if (lightModeInfo.ledAsBattery)
                         {
                             byte useSat = (byte)(maxSat == 1.0 ?
-                                device.getBattery() * 2.55 :
-                                device.getBattery() * 2.55 * maxSat);
-                            color = HuetoRGB((float)counters[deviceNum] % 360, useSat);
+                                device.Battery * 2.55 :
+                                device.Battery * 2.55 * maxSat);
+                            color = ColorUtil.HueToRgb((float)counters[deviceNum] % 360, useSat);
                         }
                         else
-                            color = HuetoRGB((float)counters[deviceNum] % 360,
+                            color = ColorUtil.HueToRgb((float)counters[deviceNum] % 360,
                                 (byte)(maxSat == 1.0 ? 255 : 255 * maxSat));
 
                     }
@@ -119,15 +124,15 @@ namespace DS4Windows.Input
                     {
                         ref DS4Color fullColor = ref lightModeInfo.m_Led; //ref getMainColor(deviceNum);
                         ref DS4Color lowColor = ref lightModeInfo.m_LowLed; //ref getLowColor(deviceNum);
-                        color = ColorUtil.getTransitionedColor(ref lowColor, ref fullColor, device.getBattery());
+                        color = ColorUtil.getTransitionedColor(ref lowColor, ref fullColor, device.Battery);
                     }
                     else
                     {
-                        color = profileSettings.GetMainColor(deviceNum);
+                        color = this.profileSettings.GetMainColor(deviceNum);
                     }
                 }
 
-                if (device.getBattery() <= lightModeInfo.flashAt && !overrides.defaultLight && !device.isCharging())
+                if (device.Battery <= lightModeInfo.flashAt && !this.overrides.defaultLight && !device.IsCharging)
                 {
                     ref DS4Color flashColor = ref lightModeInfo.m_FlashLed; //ref getFlashColor(deviceNum);
                     if (!(flashColor.red == 0 &&
@@ -139,16 +144,16 @@ namespace DS4Windows.Input
                     {
                         double ratio = 0.0;
 
-                        if (!fadewatches[deviceNum].IsRunning)
+                        if (!fadeRunning[deviceNum])
                         {
                             bool temp = fadedirection[deviceNum];
                             fadedirection[deviceNum] = !temp;
-                            fadewatches[deviceNum].Restart();
+                            RestartFade(deviceNum);
                             ratio = temp ? 100.0 : 0.0;
                         }
                         else
                         {
-                            long elapsed = fadewatches[deviceNum].ElapsedMilliseconds;
+                            long elapsed = FadeElapsedMilliseconds(deviceNum);
 
                             if (fadedirection[deviceNum])
                             {
@@ -160,7 +165,7 @@ namespace DS4Windows.Input
                                 else
                                 {
                                     ratio = 100.0;
-                                    fadewatches[deviceNum].Stop();
+                                    fadeRunning[deviceNum] = false;
                                 }
                             }
                             else
@@ -173,7 +178,7 @@ namespace DS4Windows.Input
                                 else
                                 {
                                     ratio = 0.0;
-                                    fadewatches[deviceNum].Stop();
+                                    fadeRunning[deviceNum] = false;
                                 }
                             }
                         }
@@ -183,12 +188,12 @@ namespace DS4Windows.Input
                     }
                 }
 
-                int idleDisconnectTimeout = profileSettings.GetIdleDisconnectTimeout(deviceNum);
+                int idleDisconnectTimeout = this.profileSettings.GetIdleDisconnectTimeout(deviceNum);
                 if (idleDisconnectTimeout > 0 && lightModeInfo.ledAsBattery &&
-                    (!device.isCharging() || device.getBattery() >= 100))
+                    (!device.IsCharging || device.Battery >= 100))
                 {
                     // Fade lightbar by idle time
-                    TimeSpan timeratio = new TimeSpan(DateTime.UtcNow.Ticks - device.lastActive.Ticks);
+                    TimeSpan timeratio = new TimeSpan(UtcNow().Ticks - device.LastActive.Ticks);
                     double botratio = timeratio.TotalMilliseconds;
                     double topratio = TimeSpan.FromSeconds(idleDisconnectTimeout).TotalMilliseconds;
                     double ratio = 100.0 * (botratio / topratio), elapsed = ratio;
@@ -206,7 +211,7 @@ namespace DS4Windows.Input
                         
                 }
 
-                if (device.isCharging() && device.getBattery() < 100)
+                if (device.IsCharging && device.Battery < 100)
                 {
                     switch (lightModeInfo.chargingType)
                     {
@@ -214,16 +219,16 @@ namespace DS4Windows.Input
                         {
                             double ratio = 0.0;
 
-                            if (!fadewatches[deviceNum].IsRunning)
+                            if (!fadeRunning[deviceNum])
                             {
                                 bool temp = fadedirection[deviceNum];
                                 fadedirection[deviceNum] = !temp;
-                                fadewatches[deviceNum].Restart();
+                                RestartFade(deviceNum);
                                 ratio = temp ? 100.0 : 0.0;
                             }
                             else
                             {
-                                long elapsed = fadewatches[deviceNum].ElapsedMilliseconds;
+                                long elapsed = FadeElapsedMilliseconds(deviceNum);
 
                                 if (fadedirection[deviceNum])
                                 {
@@ -237,7 +242,7 @@ namespace DS4Windows.Input
                                     else
                                     {
                                         ratio = 100.0;
-                                        fadewatches[deviceNum].Stop();
+                                        fadeRunning[deviceNum] = false;
                                     }
                                 }
                                 else
@@ -252,7 +257,7 @@ namespace DS4Windows.Input
                                     else
                                     {
                                         ratio = 0.0;
-                                        fadewatches[deviceNum].Stop();
+                                        fadeRunning[deviceNum] = false;
                                     }
                                 }
                             }
@@ -264,7 +269,7 @@ namespace DS4Windows.Input
                         case 2:
                         {
                             counters[deviceNum] += 0.167;
-                            color = HuetoRGB((float)counters[deviceNum] % 360, 255);
+                            color = ColorUtil.HueToRgb((float)counters[deviceNum] % 360, 255);
                             break;
                         }
                         case 3:
@@ -278,17 +283,17 @@ namespace DS4Windows.Input
             }
             else if (useForceLight)
             {
-                color = overrides.forcedColor[deviceNum];
+                color = this.overrides.forcedColor[deviceNum];
                 useLightRoutine = true;
             }
-            else if (overrides.shuttingdown)
+            else if (this.overrides.shuttingdown)
             {
                 color = new DS4Color(0, 0, 0);
                 useLightRoutine = true;
             }
             else if (useLightRoutine)
             {
-                if (device.getConnectionType() == ConnectionType.BT)
+                if (device.ConnectionType == ConnectionType.BT)
                     color = new DS4Color(32, 64, 64);
                 else
                     color = new DS4Color(0, 0, 0);
@@ -296,14 +301,14 @@ namespace DS4Windows.Input
 
             if (useLightRoutine)
             {
-                bool distanceprofile = profileSettings.DistanceProfiles[deviceNum] || profileSettings.TempProfileDistanceArray[deviceNum];
+                bool distanceprofile = this.profileSettings.DistanceProfiles[deviceNum] || this.profileSettings.TempProfileDistanceArray[deviceNum];
                 //distanceprofile = (ProfilePath[deviceNum].ToLower().Contains("distance") || tempprofilename[deviceNum].ToLower().Contains("distance"));
-                if (distanceprofile && !overrides.defaultLight)
+                if (distanceprofile && !this.overrides.defaultLight)
                 {
                     // Thing I did for Distance
-                    float rumble = device.getLeftHeavySlowRumble() / 2.55f;
+                    float rumble = device.LeftHeavySlowRumble / 2.55f;
                     byte max = Max(color.red, Max(color.green, color.blue));
-                    if (device.getLeftHeavySlowRumble() > 100)
+                    if (device.LeftHeavySlowRumble > 100)
                     {
                         DS4Color maxCol = new DS4Color(max, max, 0);
                         DS4Color redCol = new DS4Color(255, 0, 0);
@@ -316,7 +321,7 @@ namespace DS4Windows.Input
                         DS4Color tempCol = ColorUtil.getTransitionedColor(ref maxCol,
                             ref redCol, 39.6078f);
                         color = ColorUtil.getTransitionedColor(ref color, ref tempCol,
-                            device.getLeftHeavySlowRumble());
+                            device.LeftHeavySlowRumble);
                     }
                 }
 
@@ -332,23 +337,23 @@ namespace DS4Windows.Input
 
                 if (lightState.IsLightBarSet())
                 {
-                    if (useForceLight && overrides.forcedFlash[deviceNum] > 0)
+                    if (useForceLight && this.overrides.forcedFlash[deviceNum] > 0)
                     {
-                        lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = (byte)(25 - overrides.forcedFlash[deviceNum]);
+                        lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = (byte)(25 - this.overrides.forcedFlash[deviceNum]);
                         lightState.LightBarExplicitlyOff = true;
                     }
-                    else if (device.getBattery() <= lightModeInfo.flashAt && lightModeInfo.flashType == 0 && !overrides.defaultLight && !device.isCharging())
+                    else if (device.Battery <= lightModeInfo.flashAt && lightModeInfo.flashType == 0 && !this.overrides.defaultLight && !device.IsCharging)
                     {
-                        int level = device.getBattery() / 10;
+                        int level = device.Battery / 10;
                         if (level >= 10)
                             level = 10; // all values of >~100% are rendered the same
 
                         lightState.LightBarFlashDurationOn = BatteryIndicatorDurations[level, 0];
                         lightState.LightBarFlashDurationOff = BatteryIndicatorDurations[level, 1];
                     }
-                    else if (distanceprofile && device.getLeftHeavySlowRumble() > 155) //also part of Distance
+                    else if (distanceprofile && device.LeftHeavySlowRumble > 155) //also part of Distance
                     {
-                        lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = (byte)((-device.getLeftHeavySlowRumble() + 265));
+                        lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = (byte)((-device.LeftHeavySlowRumble + 265));
                         lightState.LightBarExplicitlyOff = true;
                     }
                     else
@@ -363,7 +368,7 @@ namespace DS4Windows.Input
                     lightState.LightBarExplicitlyOff = true;
                 }
 
-                byte tempLightBarOnDuration = device.getLightBarOnDuration();
+                byte tempLightBarOnDuration = device.LightBarOnDuration;
                 if (tempLightBarOnDuration != lightState.LightBarFlashDurationOn && tempLightBarOnDuration != 1 && lightState.LightBarFlashDurationOn == 0)
                     lightState.LightBarFlashDurationOff = lightState.LightBarFlashDurationOn = 1;
 
@@ -373,27 +378,5 @@ namespace DS4Windows.Input
             }
         }
 
-        // Phase14c-Step4（R-05 の前半）: 旧 public static の forcelight／forcedColor／forcedFlash／defaultLight／shuttingdown は、
-        // DS4Windows.Core.Model.LightbarOverrides（DI の Singleton）へ移した。updateLightBar は引数で受け取る
-      
-        public static DS4Color HuetoRGB(float hue, byte sat)
-        {
-            byte C = sat;
-            int X = (int)((C * (float)(1 - Math.Abs((hue / 60) % 2 - 1))));
-            if (0 <= hue && hue < 60)
-                return new DS4Color(C, (byte)X, 0);
-            else if (60 <= hue && hue < 120)
-                return new DS4Color((byte)X, C, 0);
-            else if (120 <= hue && hue < 180)
-                return new DS4Color(0, C, (byte)X);
-            else if (180 <= hue && hue < 240)
-                return new DS4Color(0, (byte)X, C);
-            else if (240 <= hue && hue < 300)
-                return new DS4Color((byte)X, 0, C);
-            else if (300 <= hue && hue < 360)
-                return new DS4Color(C, 0, (byte)X);
-            else
-                return new DS4Color(Color.Red);
-        }
     }
 }

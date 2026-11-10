@@ -659,3 +659,12 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **差分テスト**: 各パーサーについて、切り出す前のループの該当部分の写しを基準に、固定シードの乱数 20,000 件（DualSense は USB・Bluetooth の両方）と全 0・全 0xFF で `DS4State` の全公開フィールドが一致することを確認した。共通の `DS4StateSnapshot` を追加。
 - **所見（実機の差分）**: Joy-Con・Switch Pro・DS3 は実機を使わないため、バイト列の解析の一致は差分テストで担保した。通信・校正・出力は変えていない。実機確認は最後の 1 回（DS4 のみ）。
 - Debug ALL: 警告 0・エラー 0・Actions 3,346 件合格。
+
+### Step 16-7（2026-11-10。完了）
+- **ライトバーの色の計算を第 2 層へ**: 静的な `DS4LightBar.updateLightBar`（第 1 層）を `ILightbarService`／`LightbarService`（`Processing`）へ移し、`DS4LightBar` を削除した。計算の式・分岐は変えていない（虹色、電池連動、点滅、充電中の脈動、無操作のフェード、強制表示、終了時の消灯、距離プロファイル）。`HuetoRGB` は `ColorUtil.HueToRgb`（Core）へ移した（同名の旧 WPF 版の削除ガードと衝突するため改名）。
+- **インスタンス化**: 静的だったスロットごとの経過（虹色の角度、フェードの向き、`Stopwatch`、前回時刻）は、サービスのインスタンスの持ち物にした。`Stopwatch` は `TimeProvider.GetTimestamp`／`GetElapsedTime` に、`DateTime.UtcNow` は `GetUtcNow` に替えた（意味は同じ。経過ミリ秒は切り捨て）。
+- **契約の置き場所**: 計算が読むデバイスの値と書き込み先は `ILightbarDevice`（`Input/Abstractions`。実装は `DS4Device` の明示的な実装で、既存のメソッドへ委譲）。第 2 層は具象を知らない。最初は `Processing/Abstractions` に置いたが、第 1 層が上の層を参照する（L3）ため `Input/Abstractions` へ置き直した。
+- **呼び出し側**: `InputReportProcessor`（引数の `LightbarOverrides` を `ILightbarService` に置き換え。数は 15 のまま）と `ServiceLifecycle`（`ILightbarService` を追加して 12→13）。
+- **見込みとの差**: `InputReportProcessor` の引数を約 10 に減らす分離（電池のトレイ表示・読み込みログ・仮想コントローラーへの送信段）は、ライトバーの移動と独立しており、15 の目標内のため見送った。必要になったら 16-9 以降で扱う。
+- **特性化テスト**（`LightbarServiceTests`。仮想時間 `ManualTimeProvider` に `GetTimestamp` の上書きを追加）: 固定色、モード対象外、強制表示と点滅、終了時の消灯、電池低下の点滅の時間表、虹色の進み、充電中の脈動、無操作のフェード、距離プロファイル。
+- Debug ALL: 警告 0・エラー 0・Actions 3,355 件合格。
