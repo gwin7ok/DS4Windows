@@ -543,4 +543,26 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 
 ## 12. 進捗
 
-（Step の開始後に記入する）
+### Step 16-0（2026-11-10。完了）
+
+詳細は `Phase16-Step0-Plan.md`。本体の変更なし。コミット: 検査の追加、規約の追記、本節。
+
+**基準値**
+
+| 指標 | 値 |
+|---|---|
+| コンストラクターを持つ型（リフレクション。型ごとの最大引数） | 533 |
+| 引数 5／8／10／12／15／20 以上の型 | 66／29／20／13／10／3（正規表現の計測［コンストラクター単位］は 72／32／23／14／10／3。差は過負荷の数え方） |
+| 15 を超える型（許可リスト `ConstructorArityBaseline`） | 9: `Mapping` 28、`MainWindow` 21、`MainWindowFactory` 20、`ViewModelFactory` 19、`DeviceConnector` 18、`EditorWindowFactory` 18、`ActionBindingBuilder` 16、`ControlService` 16、`ServiceLifecycle` 16 |
+| L2／L7 | 30／5 |
+| テストで手で組み立てる箇所（箇所／ファイル） | `Mapping` 1／1、`ServiceLifecycle` 2／1、`ActionBindingBuilder` 19／10、`SpecialActionOutputFactory` 18／10、`AutoProfileService` 11／2、`DeviceConnector`・`InputReportProcessor`・`ControlService` 0 |
+| Debug ALL（Benchmark を除く） | Actions 3,269 件合格（検査 2 件を追加）。テスト実行 53 秒、ビルド込み 93 秒 |
+| `Nefarius.ViGEm` を参照するファイル／`TimeProvider` を使うファイル／`DS4Device.cs` の行数 | 8／0／2,062 |
+
+**16-6a の前提の調査**
+
+- `HidDevice` は非 `virtual` の具象クラスで、偽物にできない。`IHidTransport` を入れた後でなければ、偽の transport 越しの差分テストは作れない。
+- 第 1 層が `HidDevice` に対して呼ぶメンバー（出現回数の多い順）: `WriteOutputReportViaInterrupt`（37）、`ReadFile`（24）、`Capabilities`（16）、`DevicePath`（12）、`Attributes`（11）、`readFeatureData`（8）、`ReadSerial`（8）、`WriteAsyncOutputReportViaInterrupt`（7）、`WriteOutputReportViaControl`（8）、`ReadWithFileStream`（8）、`OpenDevice`（4）、`IsOpen`（4）、`fileStream`／`SafeReadHandle`（各 5 付近。ネイティブのハンドルを直接渡す箇所がある）、`ReadAsyncWithFileStream`（2）、`GenerateFakeHwSerial`（2）、`CloseDevice`（2）、`IsExclusive`、`ParentPath`、`WriteFeatureReport`、`resetSerial`、`OpenFileStream`、`IsFileStreamOpen`、`CancelIO`、型 `HidDevice.ReadStatus`（35）。`IHidTransport` の契約は、読み取り（状態を返す）、出力レポートの書き込み（割り込み／コントロール／非同期）、特徴レポート、シリアル、属性・能力・パス、開閉・取り消しに分けられる。
+- `DS4Device.performDs4Input`（約 400 行）は、受信・CRC・解析・遅延計測・状態の更新・イベントの発火が 1 つのループに入っている。`NativeMethods.HidD_SetNumInputBuffers(hDevice.SafeReadHandle…)` というネイティブ呼び出し、`DateTime.UtcNow`、`Stopwatch`、専用のスレッド（`ds4Input`、`ds4Output`、`timeoutCheckThread`）を使う。
+- 差分テストの方針への所見: ループ全体を偽の transport で回す方式は、スレッド・時間・ネイティブ呼び出しの除去が前提になり、時間依存の値（遅延、タイムスタンプ）は比較から除く必要がある。解析だけを `IInputReportParser` に切り出す Step 16-6b では、切り出し前のループの出力を基準にするより、**切り出す直前に、解析の部分を同じバイト列で呼べる形（メソッドの抽出）にして、その前後を比較する**ほうが確実と見込む。16-6a の計画書で、`HidD_SetNumInputBuffers` のネイティブ呼び出しを `IHidTransport` の側へ寄せること、時間依存の値を比較から除くことを扱う。
+
