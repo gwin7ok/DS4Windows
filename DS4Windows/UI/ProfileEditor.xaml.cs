@@ -765,39 +765,18 @@ namespace DS4Windows.UI
             // （コンストラクタでの配置は読み込み前の値で行われ、TouchpadOutputIndex の setter を通らない変更では更新されない）
             TouchpadButtonControlDisplaySetup();
 
-            StickDeadZoneInfo lsMod = profileSettingsVM.Sticks.LSMod;
-            if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-            {
-                conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.LSDeadZone;
-                conReadingsUserCon.LsDeadY = profileSettingsVM.Sticks.LSDeadZone;
-            }
-            else if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-            {
-                conReadingsUserCon.LsDeadX = sticksPanel.AxialLeft.AxialVM.DeadZoneX;
-                conReadingsUserCon.LsDeadY = sticksPanel.AxialLeft.AxialVM.DeadZoneY;
-            }
-
-            StickDeadZoneInfo rsMod = profileSettingsVM.Sticks.RSMod;
-            if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-            {
-                conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
-                conReadingsUserCon.RsDeadY = profileSettingsVM.Sticks.RSDeadZone;
-            }
-            else if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-            {
-                conReadingsUserCon.RsDeadX = sticksPanel.AxialRight.AxialVM.DeadZoneX;
-                conReadingsUserCon.RsDeadY = sticksPanel.AxialRight.AxialVM.DeadZoneY;
-            }
-
-            conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
-            conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
-            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SixAxis.SXDeadZone;
-            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SixAxis.SZDeadZone;
-
-            conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
-            conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
-            conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.RightStickDriftXAxis;
-            conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.RightStickDriftYAxis;
+            // 入力の表示へ渡す値の判断は ReadingsDeadZoneSnapshot が行い、ここは値を渡すだけにする
+            var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
+            if (dead.LsDeadX.HasValue) { conReadingsUserCon.LsDeadX = dead.LsDeadX.Value; conReadingsUserCon.LsDeadY = dead.LsDeadY.Value; }
+            if (dead.RsDeadX.HasValue) { conReadingsUserCon.RsDeadX = dead.RsDeadX.Value; conReadingsUserCon.RsDeadY = dead.RsDeadY.Value; }
+            conReadingsUserCon.L2Dead = dead.L2Dead;
+            conReadingsUserCon.R2Dead = dead.R2Dead;
+            conReadingsUserCon.SixAxisXDead = dead.SixAxisXDead;
+            conReadingsUserCon.SixAxisZDead = dead.SixAxisZDead;
+            conReadingsUserCon.LsDriftX = dead.LsDriftX;
+            conReadingsUserCon.LsDriftY = dead.LsDriftY;
+            conReadingsUserCon.RsDriftX = dead.RsDriftX;
+            conReadingsUserCon.RsDriftY = dead.RsDriftY;
 
             sticksPanel.AxialLeft.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
             sticksPanel.AxialRight.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
