@@ -24,6 +24,12 @@ namespace DS4Windows.Input.Devices
             return type == InputDeviceType.DS3;
         }
 
+        /// <summary>DS3 は機器固有のシリアルを持たないため、擬似のシリアルを作る。</summary>
+        public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
+        {
+            return hidDevice.GenerateFakeHwSerial();
+        }
+
         public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new DS3Device(hidDevice, displayName, featureSet);

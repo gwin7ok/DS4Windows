@@ -26,6 +26,18 @@ namespace DS4Windows.Input.Devices
             return type == InputDeviceType.JoyConL || type == InputDeviceType.JoyConR || type == InputDeviceType.JoyConGrip;
         }
 
+        /// <summary>充電グリップに付いた Joy-Con は、USB のハンドシェイクでシリアルを読む。それ以外は特徴レポートから読む。</summary>
+        public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
+        {
+            if (info.inputDevType == InputDeviceType.JoyConGrip)
+            {
+                // 空のシリアルは、Joy-Con がグリップのどちらの側にも付いていないことを表す
+                return JoyConDevice.ReadUSBSerial(hidDevice);
+            }
+
+            return hidDevice.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
+        }
+
         public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new JoyConDevice(hidDevice, displayName, featureSet);

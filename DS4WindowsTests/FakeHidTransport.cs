@@ -122,8 +122,12 @@ namespace DS4WindowsTests
         }
 
         public void resetSerial() { }
-        public string ReadSerial(byte featureID = 18) => Serial;
-        public string GenerateFakeHwSerial() => Serial;
+        /// <summary>最後に <see cref="ReadSerial"/> が受けた特徴レポート番号（読んでいなければ -1）。</summary>
+        public int LastSerialFeatureId { get; private set; } = -1;
+        /// <summary>擬似のシリアル（<see cref="GenerateFakeHwSerial"/> の戻り値）。</summary>
+        public string FakeHwSerial { get; set; } = "FA:KE:00:00:00:01";
+        public string ReadSerial(byte featureID = 18) { LastSerialFeatureId = featureID; return Serial; }
+        public string GenerateFakeHwSerial() => FakeHwSerial;
         public void SetNumInputBuffers(int count) { NumInputBuffers = count; }
     }
 }

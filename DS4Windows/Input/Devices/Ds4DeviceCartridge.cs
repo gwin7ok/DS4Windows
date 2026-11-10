@@ -58,6 +58,17 @@ namespace DS4Windows.Input.Devices
             return type == InputDeviceType.DS4;
         }
 
+        /// <summary>Sony ワイヤレスアダプターは機器固有のシリアルを持たないため、擬似のシリアルを作る。それ以外は特徴レポートから読む。</summary>
+        public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
+        {
+            if (info.checkConnection(hidDevice) == ConnectionType.SONYWA)
+            {
+                return hidDevice.GenerateFakeHwSerial();
+            }
+
+            return hidDevice.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
+        }
+
         public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new DS4Device(hidDevice, displayName, featureSet);

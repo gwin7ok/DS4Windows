@@ -16,6 +16,9 @@ namespace DS4Windows.Input.Abstractions
         /// <summary>この種類のデバイスをこのカートリッジで作れるか。</summary>
         bool Handles(InputDeviceType type);
 
+        /// <summary>接続時に、機器を一意に見分けるシリアルを読む（機器を開いた後、生成の前に呼ぶ）。読み方は種類ごとに違う。</summary>
+        string ReadSerial(VidPidInfo info, IHidTransport hidDevice);
+
         /// <summary><paramref name="type"/> のデバイスを作る。<see cref="Handles"/> が true の種類だけ渡す。</summary>
         DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet);
     }

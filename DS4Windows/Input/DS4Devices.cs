@@ -84,6 +84,18 @@ namespace DS4Windows.Input
             knownDevices = this.cartridges.SelectMany(c => c.KnownDevices).ToArray();
         }
 
+        // 種類に対応するカートリッジでシリアルを読む（対応するカートリッジがなければ空のシリアル）
+        private string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
+        {
+            for (int i = 0; i < cartridges.Length; i++)
+            {
+                if (cartridges[i].Handles(info.inputDevType))
+                    return cartridges[i].ReadSerial(info, hidDevice);
+            }
+
+            return DS4Device.BLANK_SERIAL;
+        }
+
         // 種類に対応するカートリッジでデバイスを作る（対応するカートリッジがなければ null）
         private DS4Device CreateDevice(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
@@ -228,27 +240,7 @@ namespace DS4Windows.Input
 
                     if (hDevice.IsOpen)
                     {
-                        //string serial = hDevice.ReadSerial();
-                        string serial = DS4Device.BLANK_SERIAL;
-                        if (metainfo.inputDevType == InputDeviceType.DualSense)
-                        {
-                            serial = hDevice.ReadSerial(DualSenseDevice.SERIAL_FEATURE_ID);
-                        }
-                        else if (metainfo.inputDevType == InputDeviceType.DS4 &&
-                            metainfo.checkConnection(hDevice) == ConnectionType.SONYWA ||
-                            metainfo.inputDevType == InputDeviceType.DS3)
-                        {
-                            serial = hDevice.GenerateFakeHwSerial();
-                        }
-                        else if (metainfo.inputDevType == InputDeviceType.JoyConGrip)
-                        {
-                            // Blank serial will mean that a JoyCon is not docked to a side
-                            serial = JoyConDevice.ReadUSBSerial(hDevice);
-                        }
-                        else
-                        {
-                            serial = hDevice.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
-                        }
+                        string serial = ReadSerial(metainfo, hDevice);
 
                         bool validSerial = !serial.Equals(DS4Device.BLANK_SERIAL);
                         bool newdev = true;
