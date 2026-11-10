@@ -26,8 +26,9 @@ namespace DS4Windows.Processing.Services
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
-        public MacroPlayback(DS4Windows.Core.Model.LightbarOverrides lightbar, IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager)
+        public MacroPlayback(DS4Windows.Core.Model.LightbarOverrides lightbar, IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager, TimeProvider timeProvider)
         {
+            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _stepExecutor = stepExecutor ?? throw new ArgumentNullException(nameof(stepExecutor));
@@ -102,6 +103,8 @@ namespace DS4Windows.Processing.Services
 
         /// <summary>Phase10-Step3: 手順が空のマクロを「押している間繰り返す」ときの、1 回ごとの間隔（ミリ秒）。手順のあるマクロの 1 回の再生時間（約 50ms）に合わせた。</summary>
         private const int EmptyMacroRepeatIntervalMs = 50;
+        // 待ち（手順の待ち時間、空のマクロの繰り返しの間隔）の時計。テストが仮想の時計を渡して、実時間で待たずに済ませる
+        private readonly TimeProvider _time;
 
         // Play through a macro. The macro steps are defined either as string, List or Array object (always only one of those parameters is set to a valid value)
         private void PlayMacroTask(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
@@ -168,7 +171,7 @@ namespace DS4Windows.Processing.Services
                         // Phase10-Step3: 手順が空のマクロも、押している間は繰り返す。ただし、1 回の再生に時間がかからず、待ちなしの空回りになるため、
                         // 繰り返しの間に、短い間隔（EmptyMacroRepeatIntervalMs）を置く（手順のあるマクロは、手順そのものの時間が間隔になる）
                         if ((macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0))
-                            Task.Delay(EmptyMacroRepeatIntervalMs).Wait();
+                            Task.Delay(TimeSpan.FromMilliseconds(EmptyMacroRepeatIntervalMs), _time).Wait();
 
                         // Execute the macro sequence again inline (the iteration is marked as running)
                         RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true);
@@ -216,7 +219,7 @@ namespace DS4Windows.Processing.Services
                 {
                     int macroCodeValue = steps[i];
                     if (_stepExecutor.Execute(device, keyType, macroCodeValue, keydown))
-                        Task.Delay(macroCodeValue - 300).Wait();
+                        Task.Delay(TimeSpan.FromMilliseconds(macroCodeValue - 300), _time).Wait();
                 }
             }
 

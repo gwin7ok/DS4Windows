@@ -25,11 +25,13 @@ namespace DS4Windows.Processing.Services
         private readonly Dictionary<string, KeyButtonActionController> _controllers = new Dictionary<string, KeyButtonActionController>();
         private readonly IKeyButtonActionControllerFactory _factory;
         private readonly IControllerRegistry _controllerRegistry;
+        private readonly TimeProvider _time;
         private readonly IManagedActionManager _manager;   // Phase13-Step4: ファクトリーが無いときの直接生成（new KeyButtonActionController）に渡す
 
         public KeyButtonControllerRegistry(IKeyButtonActionControllerFactory factory, IControllerRegistry controllerRegistry, IManagedActionManager manager,
-            ISyntheticDispatcher dispatcher)
+            ISyntheticDispatcher dispatcher, TimeProvider timeProvider)
         {
+            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
             _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
@@ -58,7 +60,7 @@ namespace DS4Windows.Processing.Services
                         }
                         catch { }
 
-                        inst = temp ?? new KeyButtonActionController(device, mode, _manager, _dispatcher, actionName ?? "<mapping>");
+                        inst = temp ?? new KeyButtonActionController(device, mode, _manager, _dispatcher, _time, actionName ?? "<mapping>");
                         _controllers[dictKey] = inst;
                         try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
                     }
@@ -89,7 +91,7 @@ namespace DS4Windows.Processing.Services
                         }
                         catch { }
 
-                        inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, name);
+                        inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, _time, name);
                         _controllers[dictKey] = inst;
                         try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
                     }

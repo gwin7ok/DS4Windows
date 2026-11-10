@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
@@ -19,6 +20,8 @@ namespace DS4Windows.Composition
         private static void AddCoreServices(IServiceCollection services)
         {
             services.AddSingleton<LightbarOverrides>();   // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+            // 時間の扱い（マクロの待ち、キーのリピート）の時計。テストは仮想の時計に差し替える
+            services.AddSingleton<TimeProvider>(TimeProvider.System);
             services.AddSingleton<IPathService, PathService>();
             services.AddSingleton<IEnvironmentService, EnvironmentService>();
             services.AddSingleton<IAppearanceSettingsService, AppearanceSettingsService>();

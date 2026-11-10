@@ -46,7 +46,7 @@ namespace DS4WindowsTests
         public void Play_RunsAStringMacroStepByStep_OnABackgroundTask()
         {
             var executor = new CountingExecutor();
-            var playback = new MacroPlayback(TestLightbar.State, executor, new MacroRuntimeState(), TestActions.Manager);
+            var playback = new MacroPlayback(TestLightbar.State, executor, new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System);
 
             playback.Play(1, "65/310/66/66/65", null, null, DS4KeyType.None);
 
@@ -59,9 +59,9 @@ namespace DS4WindowsTests
         public void Play_RunsAListAndAnArray()
         {
             var executorList = new CountingExecutor();
-            new MacroPlayback(TestLightbar.State, executorList, new MacroRuntimeState(), TestActions.Manager).Play(0, string.Empty, new List<int> { 65, 65 }, null, DS4KeyType.None);
+            new MacroPlayback(TestLightbar.State, executorList, new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System).Play(0, string.Empty, new List<int> { 65, 65 }, null, DS4KeyType.None);
             var executorArray = new CountingExecutor();
-            new MacroPlayback(TestLightbar.State, executorArray, new MacroRuntimeState(), TestActions.Manager).Play(0, string.Empty, null, new[] { 70, 70 }, DS4KeyType.None);
+            new MacroPlayback(TestLightbar.State, executorArray, new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System).Play(0, string.Empty, null, new[] { 70, 70 }, DS4KeyType.None);
 
             WaitFor(() => executorList.Count >= 2 && executorArray.Count >= 2);
             Assert.Equal(new[] { 65, 65 }, executorList.Calls.ConvertAll(c => c.Code));
@@ -73,7 +73,7 @@ namespace DS4WindowsTests
         {
             // 手順が 65 だけ（押したまま）。特殊アクションなし（keepKeyState の指定なし）なので、終わりに 65 をもう一度実行して離す
             var executor = new CountingExecutor();
-            new MacroPlayback(TestLightbar.State, executor, new MacroRuntimeState(), TestActions.Manager).Play(0, string.Empty, new List<int> { 65 }, null, DS4KeyType.None);
+            new MacroPlayback(TestLightbar.State, executor, new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System).Play(0, string.Empty, new List<int> { 65 }, null, DS4KeyType.None);
 
             WaitFor(() => executor.Count >= 2);
             Assert.Equal(new[] { 65, 65 }, executor.Calls.ConvertAll(c => c.Code));
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
             var state = new MacroRuntimeState();
             state.TaskQueue[2]["a"] = System.Threading.Tasks.Task.CompletedTask;
             state.TaskQueue[3]["b"] = System.Threading.Tasks.Task.CompletedTask;
-            var playback = new MacroPlayback(TestLightbar.State, new CountingExecutor(), state, TestActions.Manager);
+            var playback = new MacroPlayback(TestLightbar.State, new CountingExecutor(), state, TestActions.Manager, System.TimeProvider.System);
 
             playback.ClearDevice(2);
 
@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ClearDevice_IgnoresAnOutOfRangeDevice()
         {
-            var playback = new MacroPlayback(TestLightbar.State, new CountingExecutor(), new MacroRuntimeState(), TestActions.Manager);
+            var playback = new MacroPlayback(TestLightbar.State, new CountingExecutor(), new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System);
             playback.ClearDevice(-1);
             playback.ClearDevice(ControllerLimits.MaxControllerCount);
         }
@@ -104,8 +104,8 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructors_RejectNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new MacroPlayback(TestLightbar.State, null, new MacroRuntimeState(), TestActions.Manager));
-            Assert.Throws<ArgumentNullException>(() => new MacroPlayback(TestLightbar.State, new CountingExecutor(), null, TestActions.Manager));
+            Assert.Throws<ArgumentNullException>(() => new MacroPlayback(TestLightbar.State, null, new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System));
+            Assert.Throws<ArgumentNullException>(() => new MacroPlayback(TestLightbar.State, new CountingExecutor(), null, TestActions.Manager, System.TimeProvider.System));
         }
     }
 }

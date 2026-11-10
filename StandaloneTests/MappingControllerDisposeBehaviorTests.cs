@@ -25,7 +25,7 @@ namespace StandaloneTests
             {
                 DS4Windows.Processing.Services.KeyButtonControllerRegistry registry = null;
                 Manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
-                registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Processing.Actions.DefaultControllerRegistry(), Manager, new NoOpSyntheticDispatcher());
+                registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Processing.Actions.DefaultControllerRegistry(), Manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System);
                 Registry = registry;
             }
         }
@@ -76,7 +76,7 @@ namespace StandaloneTests
         {
             public bool WasDisposed { get; private set; }
             private readonly bool throwOnDispose;
-            public TestKeyButtonActionController(int device, Mode mode, DS4Windows.Processing.Actions.IManagedActionManager manager, string name = null, bool throwOnDispose = false) : base(device, mode, manager, new NoOpSyntheticDispatcher(), name)
+            public TestKeyButtonActionController(int device, Mode mode, DS4Windows.Processing.Actions.IManagedActionManager manager, string name = null, bool throwOnDispose = false) : base(device, mode, manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System, name)
             {
                 this.throwOnDispose = throwOnDispose;
             }

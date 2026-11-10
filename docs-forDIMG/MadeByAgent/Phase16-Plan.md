@@ -574,3 +574,10 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - L2 30 → 23（−7）、L7 5 → 4（−1）。見込み（−8）との差の 1 件は `ProfileSettingsService` が `is DualSenseDevice` で機器の型を判定している参照で、16-5c（機器の狭い契約）で解消する。
 - `ConstructorArityBaseline` の `Mapping` を 25 に更新。ガードテスト 3 件（`MappingInstanceGuardTests`、`StickMotionStateGuardTests`、`NoSharedGuardTests`）を、削除した引数・フィールドに合わせて更新（`Mapping` が `StickMotionState` の配列の参照を共有する検査は残した）。
 - Debug ALL: 警告 0・エラー 0・Actions 3,269 件合格。
+
+### Step 16-2（2026-11-10。完了。`Mouse` は 16-4c へ）
+
+- `TimeProvider.System` を `ServiceRegistration.Core.cs` に Singleton で登録。`MacroPlayback`（`Task.Delay(TimeSpan, TimeProvider)` ×2）、`RepeatHelper`（`TimeProvider.CreateTimer`。`System.Threading.Timer` から `ITimer` へ）、`KeyButtonActionController`（初回リピートの遅延と `RepeatHelper` の生成）に、コンストラクター引数で `TimeProvider` を受ける形にした。`KeyButtonActionControllerAdapter`・`DefaultKeyButtonActionControllerFactory`・`KeyButtonControllerRegistry` は、中継のために引数を 1 つ足した。
+- **`Mouse`（タップ後の保持）は 16-4c へ送った。** `Mouse` を作る `DeviceConnector` が既に 18 引数（許可リストの対象）で、`TimeProvider` を足すと引数がさらに増えるため。`DeviceConnector` の分割（16-4c）と同時に行う。
+- テスト側に `ManualTimeProvider`（`TimeProvider` の自作の派生。`Advance` で時間を進めたときだけタイマーが発火する）を追加し、`RepeatHelperTimeProviderTests`（3 件）で、タイマーがその `TimeProvider` で動くことを実時間を待たずに確かめた。既存のマクロ関連テストは、実時間の待ちが短い（数十 ms）ため、`TimeProvider.System` を渡す形のまま維持し、仮想時間への置き換えは見送った（時間の短縮が見込めず、挙動の差分を増やすだけのため）。`EmptyMacroTests` の文字列検査は、新しい呼び出しの形に合わせた。
+- Debug ALL: 警告 0・エラー 0・Actions 3,272 件合格・StandaloneTests 11 件合格。

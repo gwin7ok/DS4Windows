@@ -23,7 +23,7 @@ namespace DS4Windows.Actions.Tests
             {
                 var controllerRegistry = new DefaultControllerRegistry();
                 Registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(
-                    new DefaultKeyButtonActionControllerFactory(controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher), controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher);
+                    new DefaultKeyButtonActionControllerFactory(controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System), controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System);
             }
         }
 
@@ -191,7 +191,7 @@ namespace DS4Windows.Actions.Tests
             dam.ClearAllEntries();
 
             var handler = new FakeKBMHandler();
-            var adapter = new DS4Windows.Processing.Actions.KeyButtonActionControllerAdapter(0, sa, dam, DS4WindowsTests.TestActions.Dispatcher);
+            var adapter = new DS4Windows.Processing.Actions.KeyButtonActionControllerAdapter(0, sa, dam, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System);
             var binding = new DS4Windows.Processing.Actions.KeyActionBinding(sa);
             var trigger = new DS4Windows.Processing.Actions.TriggerContextImpl
             {
@@ -226,7 +226,7 @@ namespace DS4Windows.Actions.Tests
             dam.ClearAllEntries();
 
             var handler = new FakeKBMHandler();
-            var adapter = new DS4Windows.Processing.Actions.KeyButtonActionControllerAdapter(0, sa, dam, DS4WindowsTests.TestActions.Dispatcher);
+            var adapter = new DS4Windows.Processing.Actions.KeyButtonActionControllerAdapter(0, sa, dam, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System);
             var binding = new DS4Windows.Processing.Actions.KeyActionBinding(sa);
             var triggerEst = new DS4Windows.Processing.Actions.TriggerContextImpl
             {
@@ -272,7 +272,7 @@ namespace DS4Windows.Actions.Tests
             var sa = new DS4Windows.Core.Settings.SpecialAction("injectedsub", "0", "Key", "0");
             sa.KeyButtonSwitchMode = DS4Windows.Core.Settings.SpecialAction.KeyButtonSwitchModeEnum.Toggle;
 
-            var controller = new DS4Windows.Processing.Actions.KeyButtonActionController(0, sa, dam, DS4WindowsTests.TestActions.Dispatcher, "injectedsub");
+            var controller = new DS4Windows.Processing.Actions.KeyButtonActionController(0, sa, dam, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System, "injectedsub");
             var handler = new FakeKBMHandler();
 
             controller.OnSATriggerEstablished(30, 0, false, handler, true);
@@ -293,10 +293,10 @@ namespace DS4Windows.Actions.Tests
         public void Constructors_RequireTheirManager()
         {
             var sa = new DS4Windows.Core.Settings.SpecialAction("ctorreq", "0", "Key", "0");
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Actions.KeyButtonActionController(0, sa, null, DS4WindowsTests.TestActions.Dispatcher, "x"));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Actions.KeyButtonActionController(0, DS4Windows.Processing.Actions.KeyButtonActionController.Mode.Press, null, DS4WindowsTests.TestActions.Dispatcher, "x"));
-            Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), null, DS4WindowsTests.TestActions.Dispatcher));
-            Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(null, new DefaultActionManager(TestRepositoryFactory.MappingProvider), DS4WindowsTests.TestActions.Dispatcher));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Actions.KeyButtonActionController(0, sa, null, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System, "x"));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.Processing.Actions.KeyButtonActionController(0, DS4Windows.Processing.Actions.KeyButtonActionController.Mode.Press, null, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System, "x"));
+            Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(new DefaultControllerRegistry(), null, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System));
+            Assert.Throws<ArgumentNullException>(() => new DefaultKeyButtonActionControllerFactory(null, new DefaultActionManager(TestRepositoryFactory.MappingProvider), DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System));
         }
     }
 }

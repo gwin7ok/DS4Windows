@@ -15,7 +15,7 @@ namespace DS4WindowsTests
             sa.typeID = SpecialAction.ActionTypeId.Key;
             sa.details = "30"; // 0x1E ('A')
 
-            var adapter = new KeyButtonActionControllerAdapter(0, sa, TestActions.Manager, TestActions.Dispatcher);
+            var adapter = new KeyButtonActionControllerAdapter(0, sa, TestActions.Manager, TestActions.Dispatcher, System.TimeProvider.System);
             var binding = new KeyActionBinding(sa);
 
             var triggerDown = new TriggerContextImpl
@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             sa.typeID = SpecialAction.ActionTypeId.Key;
             sa.details = "30";
 
-            var inner = new KeyButtonActionController(0, KeyButtonActionController.Mode.Toggle, TestActions.Manager, TestActions.Dispatcher, "Key_Toggle_Test");
+            var inner = new KeyButtonActionController(0, KeyButtonActionController.Mode.Toggle, TestActions.Manager, TestActions.Dispatcher, System.TimeProvider.System, "Key_Toggle_Test");
             var adapter = new KeyButtonActionControllerAdapter(inner);
             var binding = new KeyActionBinding(sa);
 

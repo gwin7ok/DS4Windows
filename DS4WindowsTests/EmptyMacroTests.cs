@@ -74,7 +74,7 @@ namespace DS4WindowsTests
 
             string source = File.ReadAllText(path);
             int guard = source.IndexOf("(macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0)");
-            int wait = source.IndexOf("Task.Delay(EmptyMacroRepeatIntervalMs).Wait()", guard < 0 ? 0 : guard);
+            int wait = source.IndexOf("Task.Delay(TimeSpan.FromMilliseconds(EmptyMacroRepeatIntervalMs), _time).Wait()", guard < 0 ? 0 : guard);
             int rerun = source.IndexOf("RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true)");
             Assert.True(guard >= 0, "空のマクロの繰り返しの間隔の条件がない");
             Assert.True(wait > guard, "空のマクロの繰り返しに、間隔の待ちがない");
