@@ -978,9 +978,7 @@ namespace DS4Windows.Input
         protected bool ds4InactiveFrame = true;
         protected bool idleInput = true;
 
-        bool timeStampInit = false;
-        uint timeStampPrevious = 0;
-        uint deltaTimeCurrent = 0;
+        private readonly TimestampClock timestampClock = new TimestampClock(ushort.MaxValue, 16u);
 
 
         protected const int BT_INPUT_REPORT_CRC32_POS = 74; //last 4 bytes of the 78-sized input report are crc32
@@ -1206,38 +1204,11 @@ namespace DS4Windows.Input
                     }
 
                     tempStamp = (uint)((ushort)(inputReport[11] << 8) | inputReport[10]);
-                    if (timeStampInit == false)
-                    {
-                        timeStampInit = true;
-                        deltaTimeCurrent = tempStamp * 16u / 3u;
-                    }
-                    else if (timeStampPrevious > tempStamp)
-                    {
-                        tempDelta = ushort.MaxValue - timeStampPrevious + tempStamp + 1u;
-                        deltaTimeCurrent = tempDelta * 16u / 3u;
-                    }
-                    else
-                    {
-                        tempDelta = tempStamp - timeStampPrevious;
-                        deltaTimeCurrent = tempDelta * 16u / 3u;
-                    }
-
-                    // Make sure timestamps don't match
-                    if (deltaTimeCurrent != 0)
-                    {
-                        elapsedDeltaTime = 0.000001 * deltaTimeCurrent; // Convert from microseconds to seconds
-                        cState.totalMicroSec = pState.totalMicroSec + deltaTimeCurrent;
-                    }
-                    else
-                    {
-                        // Duplicate timestamp. Use system clock for elapsed time instead
-                        elapsedDeltaTime = lastTimeElapsedDouble * .001;
-                        cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedDeltaTime * 1000000);
-                    }
+                    timestampClock.Advance(tempStamp, lastTimeElapsedDouble * .001, pState.totalMicroSec, out elapsedDeltaTime, out ulong clockTotalMicroSec);
+                    cState.totalMicroSec = clockTotalMicroSec;
 
                     cState.elapsedTime = elapsedDeltaTime;
                     cState.ds4Timestamp = (ushort)tempStamp;
-                    timeStampPrevious = tempStamp;
 
                     if (conType == ConnectionType.SONYWA)
                     {

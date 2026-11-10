@@ -169,9 +169,7 @@ namespace DS4Windows.Input.Devices
         private const int OUTPUT_MIN_COUNT_BT = 20;
         private const byte LED_PLAYER_BAR_TOGGLE = 0x10;
         private const int FEATURE_FIRMWARE_INFO_ID = 0x20;
-        private bool timeStampInit = false;
-        private uint timeStampPrevious = 0;
-        private uint deltaTimeCurrent = 0;
+        private readonly TimestampClock timestampClock = new TimestampClock(uint.MaxValue, 1u);
         private bool outputDirty = false;
         private DS4HapticState previousHapticState = new DS4HapticState();
         private byte[] outputBTCrc32Head = new byte[] { 0xA2 };
@@ -693,45 +691,11 @@ namespace DS4Windows.Input.Devices
                                 (uint)(inputReport[30+reportOffset] << 16) |
                                 (uint)(inputReport[31+reportOffset] << 24);
 
-                    if (timeStampInit == false)
-                    {
-                        timeStampInit = true;
-                        deltaTimeCurrent = tempStamp * 1u / 3u;
-                    }
-                    else if (timeStampPrevious > tempStamp)
-                    {
-                        tempDelta = uint.MaxValue - timeStampPrevious + tempStamp + 1u;
-                        deltaTimeCurrent = tempDelta * 1u / 3u;
-                    }
-                    else
-                    {
-                        tempDelta = tempStamp - timeStampPrevious;
-                        deltaTimeCurrent = tempDelta * 1u / 3u;
-                    }
-
-                    //if (tempStamp == timeStampPrevious)
-                    //{
-                    //    Console.WriteLine("PINEAPPLES");
-                    //}
-
-                    // Make sure timestamps don't match
-                    if (deltaTimeCurrent != 0)
-                    {
-                        elapsedDeltaTime = 0.000001 * deltaTimeCurrent; // Convert from microseconds to seconds
-                        cState.totalMicroSec = pState.totalMicroSec + deltaTimeCurrent;
-                    }
-                    else
-                    {
-                        // Duplicate timestamp. Use system clock for elapsed time instead
-                        elapsedDeltaTime = lastTimeElapsedDouble * .001;
-                        cState.totalMicroSec = pState.totalMicroSec + (uint)(elapsedDeltaTime * 1000000);
-                    }
-
-                    //Console.WriteLine("{0} {1} {2} {3} {4} Diff({5}) TSms({6}) Sys({7})", tempStamp, inputReport[31 + reportOffset], inputReport[30 + reportOffset], inputReport[29 + reportOffset], inputReport[28 + reportOffset], tempStamp - timeStampPrevious, elapsedDeltaTime, lastTimeElapsedDouble * 0.001);
+                    timestampClock.Advance(tempStamp, lastTimeElapsedDouble * .001, pState.totalMicroSec, out elapsedDeltaTime, out ulong clockTotalMicroSec);
+                    cState.totalMicroSec = clockTotalMicroSec;
 
                     cState.elapsedTime = elapsedDeltaTime;
                     cState.ds4Timestamp = (ushort)((tempStamp / 16) % ushort.MaxValue);
-                    timeStampPrevious = tempStamp;
 
                     //elapsedDeltaTime = lastTimeElapsedDouble * .001;
                     //cState.elapsedTime = elapsedDeltaTime;
