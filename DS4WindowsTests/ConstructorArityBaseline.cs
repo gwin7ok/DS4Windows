@@ -14,7 +14,6 @@
             "DS4Windows.Processing.Services.DeviceConnector|13",
             "DS4Windows.Processing.Services.InputReportProcessor|13",
             "DS4Windows.UI.MainWindow|15",
-            "DS4Windows.UI.Services.ShellViewModelFactory|14",
         };
     }
 }

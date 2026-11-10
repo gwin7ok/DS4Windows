@@ -27,11 +27,9 @@ namespace DS4Windows.UI.Services
         private readonly IControllerSlotQuery _slots;
         private readonly IServiceLifecycle _lifecycle;
         private readonly IAppearanceSettingsService _appearanceSettings;
-        private readonly ILogSettingsApplier _logSettingsApplier;
-        private readonly IStartupEntryService _startupEntries;
         private readonly IChangelogService _changelogService;
-        private readonly IAutoProfileService _autoProfileService;
-        private readonly IRuntimeFeatureSwitch _runtimeFeatures;
+        private readonly SettingsViewModelFactory _settingsFactory;
+        private readonly AutoProfilesViewModelFactory _autoProfilesFactory;
 
         public ShellViewModelFactory(IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
@@ -42,11 +40,9 @@ namespace DS4Windows.UI.Services
             IControllerSlotQuery slots,
             IServiceLifecycle lifecycle,
             IAppearanceSettingsService appearanceSettings,
-            ILogSettingsApplier logSettingsApplier,
-            IStartupEntryService startupEntries,
             IChangelogService changelogService,
-            IAutoProfileService autoProfileService,
-            IRuntimeFeatureSwitch runtimeFeatures)
+            SettingsViewModelFactory settingsFactory,
+            AutoProfilesViewModelFactory autoProfilesFactory)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -57,11 +53,9 @@ namespace DS4Windows.UI.Services
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
-            _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
             _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
-            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
+            _settingsFactory = settingsFactory ?? throw new ArgumentNullException(nameof(settingsFactory));
+            _autoProfilesFactory = autoProfilesFactory ?? throw new ArgumentNullException(nameof(autoProfilesFactory));
         }
 
         public ChangelogViewModel CreateChangelogViewModel() => new ChangelogViewModel(_changelogService);
@@ -85,13 +79,7 @@ namespace DS4Windows.UI.Services
             => new TrayIconViewModel(_slots, _lifecycle, profileListHolder, _appearanceSettings, _profileRepo,
                 _environmentService, _pathService, dispatcher);
 
-        public SettingsViewModel CreateSettingsViewModel()
-        {
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[DI] ViewModelFactory: Created SettingsViewModel");
-            return new SettingsViewModel(_appSettings, _appearanceSettings, _environmentService, _pathService,
-                _logSettingsApplier, _startupEntries);
-        }
+        public SettingsViewModel CreateSettingsViewModel() => _settingsFactory.Create();
 
         public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder)
         {
@@ -109,11 +97,6 @@ namespace DS4Windows.UI.Services
         }
 
         public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList)
-        {
-            if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[DI] ViewModelFactory: Created AutoProfilesViewModel");
-            return new AutoProfilesViewModel(autoProfileHolder, profileList,
-                _appSettings, _autoProfileService, _runtimeFeatures, _environmentService);
-        }
+            => _autoProfilesFactory.Create(autoProfileHolder, profileList);
     }
 }

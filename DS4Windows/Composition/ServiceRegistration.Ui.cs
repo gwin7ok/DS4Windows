@@ -17,6 +17,8 @@ namespace DS4Windows.Composition
             services.AddSingleton<INotificationService, AppNotificationService>();
 
             // Phase 4: UI層 ViewModel ファクトリの登録
+            services.AddSingleton<SettingsViewModelFactory>();
+            services.AddSingleton<AutoProfilesViewModelFactory>();
             services.AddSingleton<IShellViewModelFactory, ShellViewModelFactory>();
             services.AddSingleton<IProfileEditViewModelFactory, ProfileEditViewModelFactory>();
             services.AddSingleton<IActionViewModelFactory, ActionViewModelFactory>();
