@@ -73,6 +73,8 @@ namespace DS4Windows.UI
         private bool wasrunning = false;
         private AutoProfileHolder autoProfileHolder;
         private NonFormTimer hotkeysTimer;
+        // 更新の確認の判断（画面に依存しない）
+        private UpdateCheckPolicy updateCheckPolicy;
         // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         private NonFormTimer autoProfilesTimer;
@@ -126,6 +128,7 @@ namespace DS4Windows.UI
             this.trayAppearance = trayAppearance ?? throw new ArgumentNullException(nameof(trayAppearance));
             this.profileSelection = profileSelection ?? throw new ArgumentNullException(nameof(profileSelection));
             this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
+            updateCheckPolicy = new UpdateCheckPolicy(changelogService, appSettingsService);
             this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
             this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
@@ -336,35 +339,22 @@ namespace DS4Windows.UI
                 //newversion = "2.1.3";
             }
 
-            // Delegate newest-version detection (and skip handling) to Changelog helper
+            // 判断は UpdateCheckPolicy が行い、ここは結果に応じた画面の表示と、記録ファイルの後始末だけをする
             try
             {
-                if (!string.IsNullOrWhiteSpace(newversion) && version.CompareTo(newversion) != 0)
+                var outcome = updateCheckPolicy.Evaluate(version, newversion, out Version latest);
+                if (outcome == UpdateCheckOutcome.UpdateAvailable)
                 {
-                    // Ensure CheckNewerVersionExists compares against the provided file version
-                    Version parsedVersion;
-                    if (Version.TryParse(newversion, out parsedVersion))
-                    {
-                        // Temporarily set cached/latest if needed - call helper allowing fresh check
-                        if (changelogService.CheckNewerVersionExists(out var latest, appSettingsService.LastVersionChecked, allowCached: false))
-                        {
-                            Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
-                        }
-                        else
-                        {
-                            if (showstatus)
-                                Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
-                        }
-                    }
+                    Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
                 }
-                else
+                else if (outcome == UpdateCheckOutcome.UpToDate && showstatus)
                 {
-                    if (showstatus)
-                        Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
+                    Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
                 }
             }
             catch
             {
+                // 画面の表示で例外が出たときも、元の処理どおり、確認を求められたときは「最新です」と知らせる
                 if (showstatus)
                     Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
             }

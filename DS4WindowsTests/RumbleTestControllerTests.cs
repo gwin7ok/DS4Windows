@@ -10,8 +10,14 @@ namespace DS4WindowsTests
     /// 振動テストのボタンの動作（<see cref="RumbleTestController"/>）。
     /// 元は <c>ProfileEditor</c> のクリック処理にあった分岐で、反転設定でのモーターの入れ替わり・DualSense の強さの補正・開始と停止を固定する。
     /// </summary>
-    public class RumbleTestControllerTests
+    [Xunit.Collection("SharedProfileStoreRumble")]
+    public class RumbleTestControllerTests : System.IDisposable
     {
+        // 共有のストアを書き換えるため、終わりに元へ戻す（ほかのテストへ状態を残さない）
+        private readonly List<System.Action> restore = new List<System.Action>();
+
+        public void Dispose() { foreach (var r in restore) r(); }
+
         private sealed class FakeCommands : IControllerSlotCommands
         {
             public bool Connected = true;
@@ -25,10 +31,12 @@ namespace DS4WindowsTests
             public bool ResetGyroCalibration(int slot) => true;
         }
 
-        private static (RumbleTestController ctl, FakeCommands cmd, DS4Windows.UI.ViewModels.OutputSettingsViewModel output) Create(bool inverse = false, int boost = 100)
+        private (RumbleTestController ctl, FakeCommands cmd, DS4Windows.UI.ViewModels.OutputSettingsViewModel output) Create(bool inverse = false, int boost = 100)
         {
             var cmd = new FakeCommands();
             var output = ProfileSettingsViewModelTestFactory.Create(0).Output;
+            int oldBoost = output.RumbleBoost; bool oldInverse = output.InverseRumbleMotors; bool oldRescale = output.EnableGenericRumbleStrRescaleForDualSenseDevices;
+            restore.Add(() => { output.RumbleBoost = oldBoost; output.InverseRumbleMotors = oldInverse; output.EnableGenericRumbleStrRescaleForDualSenseDevices = oldRescale; output.HeavyRumbleActive = false; output.LightRumbleActive = false; });
             output.InverseRumbleMotors = inverse;
             output.RumbleBoost = boost;
             output.HeavyRumbleActive = false;

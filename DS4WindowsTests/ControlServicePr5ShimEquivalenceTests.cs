@@ -11,6 +11,8 @@ namespace DS4WindowsTests
     /// Global（m_Config / BackingStore）と完全に同一の実体・同一の値を返すことを検証する。
     /// 各テストは変更した Global 状態を必ず元に戻す。
     /// </summary>
+    // 共有のストアの振動の強さを書き換えるテスト（RumbleTestControllerTests）と同時に走らせない
+    [Xunit.Collection("SharedProfileStoreRumble")]
     public class ControlServicePr5ShimEquivalenceTests
     {
         private readonly AppSettingsService _appSettings = TestRepositoryFactory.CreateAppSettingsService();
