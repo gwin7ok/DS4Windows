@@ -19,10 +19,7 @@ namespace DS4Windows.Input.Devices
 
         public IReadOnlyList<VidPidInfo> KnownDevices => knownDevices;
 
-        public bool Handles(InputDeviceType type)
-        {
-            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.SwitchPro);
-        }
+        public InputDeviceFamily Family => InputDeviceFamily.SwitchPro;
 
         /// <summary>特徴レポートから読む。</summary>
         public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)

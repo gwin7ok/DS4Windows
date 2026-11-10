@@ -11,15 +11,15 @@
 | 区分 | 足すもの（`Xxx` は系統名） | 参考にする既存の例 |
 |---|---|---|
 | 第1層 | `Input/Devices/XxxDevice.cs`（`DS4Device` の派生）、`XxxDeviceCartridge.cs`（VID/PID の表・生成）、`Input/Parsers/XxxReportParser.cs` | `SwitchProDevice`、`SwitchProDeviceCartridge`、`SwitchProReportParser` |
-| Core/Model | `InputDeviceType`・`InputDeviceFamily` に値を足し、`InputDeviceTypeInfo` の表に行を足す | 同じ事実が 3 か所にある |
-| 第2層 | `Processing/Services/XxxDeviceModule.cs`、`ServiceRegistration.Processing.cs` に登録 | `SwitchProDeviceModule` |
+| Core/Model | `InputDeviceFamily` と `InputDeviceType` に値を足し、`InputDeviceType` の値に `[InputDeviceFamily(...)]` を付ける（17-1 で表は不要になった） | |
+| 第2層 | `Processing/Services/XxxDeviceModule.cs`、`ServiceRegistration.Processing.cs` に `AddInputDevice<XxxDeviceCartridge, XxxDeviceModule>()` を 1 行 | `SwitchProDeviceModule` |
 | 設定 | `Core/Settings/XxxDeviceOptions.cs`、`XxxControllerOptions.cs`、`ControlServiceDeviceOptions` に系統を足す | |
 | 保存 | `XxxSupportSettings`、`XxxControllerOptsDTO`、`InputDeviceOptions`、`AppSettingsDTO`、`AppSettingsXmlSerializer` | 保存の黄金テスト（`appsettings-varied.xml`）が形を守る |
 | UI | `XxxControllerOptionsWrapper`、`ControllerRegDeviceOptsViewModel`、`FirstLauchUtilViewModel`、`SettingsViewModel`、各 XAML、`Strings.*.resx` | |
 | テスト | カートリッジ・モジュール・解析器の差分テスト | `DeviceModuleTests` ほか |
 
 ### 今後（Phase17 の進行で更新する）
-- 17-1: 種類・系統・対応表・カートリッジ・接続フックが「記述子」1 つにまとまる。
+- 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
 - 17-2: 保存と画面が、設定の定義から作られる（Wrapper・DTO・XAML が不要になる）。
 - 17-3〜17-5: 読み取りループ・出力・切断が `ControllerSession` に集まり、機種は `IDeviceProtocol` を書くだけになる。
 

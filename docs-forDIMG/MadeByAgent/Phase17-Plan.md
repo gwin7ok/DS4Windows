@@ -112,6 +112,11 @@ ControllerSession（全機種で共通。読み取りループ、出力スレッ
 | D4 | モデル図 | **3 文書に整理し、図の検査テストを足す** |
 | D5 | 層の呼び方 | **「核／アダプター／殻」を書き添える**（フォルダは変えない） |
 
+## 6a. 進捗
+
+- 2026-11-10 **17-0 完了**: 旧 4 文書を `Model-Diagram/Archive/` へ移し、`01-Structure.md`・`02-Extension-Guide.md`・`03-Lifecycle-and-DI.md`・`Ideas.md` を作成。`ModelDiagramGuardTests`（図の型の実在）を追加。規約の参照先を更新。
+- 2026-11-10 **17-1 完了**（計画からの変更あり）: 層の依存（L3: 第1層は第2層を参照しない）のため、第1層のカートリッジと第2層の接続フックを 1 つの型にはまとめられない。そこで「記述子」は新しい型を作らず、**カートリッジに `Family` を持たせ**、種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性を唯一の持ち主にした（`InputDeviceTypeInfo` の表と `InputDeviceFamily` 対応表の二重管理を廃止）。登録は `AddInputDevice<カートリッジ, モジュール>()` の 1 行。解析器の選択（P17-4）は、デバイスが解析器を静的に持つため、17-3 の `IDeviceProtocol` へ吸収する。テスト 3,401 件合格。
+
 ## 7. 完了条件（案）
 
 - 全機種が `ControllerSession` 上で動き、`DS4Device` の継承が廃止されている。`ConstructorArityBaseline` が空。

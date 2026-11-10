@@ -19,10 +19,7 @@ namespace DS4Windows.Input.Devices
 
         public IReadOnlyList<VidPidInfo> KnownDevices => knownDevices;
 
-        public bool Handles(InputDeviceType type)
-        {
-            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DS3);
-        }
+        public InputDeviceFamily Family => InputDeviceFamily.DS3;
 
         /// <summary>DS3 は機器固有のシリアルを持たないため、擬似のシリアルを作る。</summary>
         public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)

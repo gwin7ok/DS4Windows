@@ -20,10 +20,7 @@ namespace DS4Windows.Input.Devices
 
         public IReadOnlyList<VidPidInfo> KnownDevices => knownDevices;
 
-        public bool Handles(InputDeviceType type)
-        {
-            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DualSense);
-        }
+        public InputDeviceFamily Family => InputDeviceFamily.DualSense;
 
         /// <summary>DualSense は、DS4 と別の特徴レポート番号から読む。</summary>
         public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)

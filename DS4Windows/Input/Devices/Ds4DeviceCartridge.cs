@@ -53,10 +53,7 @@ namespace DS4Windows.Input.Devices
 
         public IReadOnlyList<VidPidInfo> KnownDevices => knownDevices;
 
-        public bool Handles(InputDeviceType type)
-        {
-            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DS4);
-        }
+        public InputDeviceFamily Family => InputDeviceFamily.DS4;
 
         /// <summary>Sony ワイヤレスアダプターは機器固有のシリアルを持たないため、擬似のシリアルを作る。それ以外は特徴レポートから読む。</summary>
         public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)

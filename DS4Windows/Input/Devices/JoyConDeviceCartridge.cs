@@ -21,10 +21,7 @@ namespace DS4Windows.Input.Devices
 
         public IReadOnlyList<VidPidInfo> KnownDevices => knownDevices;
 
-        public bool Handles(InputDeviceType type)
-        {
-            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.JoyCon);
-        }
+        public InputDeviceFamily Family => InputDeviceFamily.JoyCon;
 
         /// <summary>充電グリップに付いた Joy-Con は、USB のハンドシェイクでシリアルを読む。それ以外は特徴レポートから読む。</summary>
         public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)

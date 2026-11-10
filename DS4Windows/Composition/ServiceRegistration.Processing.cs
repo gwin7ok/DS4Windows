@@ -109,12 +109,12 @@ namespace DS4Windows.Composition
             services.AddSingleton<IIpcCommandProcessor, IpcCommandProcessor>();   // Phase13-Step11 11-b: IPC コマンドの実行（UI に頼む操作は IIpcCommandHost）
             services.AddSingleton<IRuntimeFeatureSwitch, RuntimeFeatureSwitch>();   // Phase13-Step10 10-c: 画面が使う OSC／UDP／HidHide／タッチパッドの切り替えの窓口
             services.AddSingleton<IConnectionProfileSelector, ConnectionProfileSelector>();   // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
-            // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）。新しい種類は、IInputDeviceModule を実装してここへ足すだけ
-            services.AddSingleton<IInputDeviceModule, Ds4DeviceModule>();
-            services.AddSingleton<IInputDeviceModule, DualSenseDeviceModule>();
-            services.AddSingleton<IInputDeviceModule, SwitchProDeviceModule>();
-            services.AddSingleton<IInputDeviceModule, JoyConDeviceModule>();
-            services.AddSingleton<IInputDeviceModule, Ds3DeviceModule>();
+            // 入力機種（系統）の登録は 1 行ずつ（第 1 層のカートリッジ＋第 2 層の接続フック）。機種を足すときは、ここへ 1 行足す。並びは解決の順になる
+            services.AddInputDevice<Ds4DeviceCartridge, Ds4DeviceModule>();
+            services.AddInputDevice<DualSenseDeviceCartridge, DualSenseDeviceModule>();
+            services.AddInputDevice<SwitchProDeviceCartridge, SwitchProDeviceModule>();
+            services.AddInputDevice<JoyConDeviceCartridge, JoyConDeviceModule>();
+            services.AddInputDevice<Ds3DeviceCartridge, Ds3DeviceModule>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
             // Phase13-Step3: ブースト・反転つきの振動（IDeviceRumbleService）と KBM 出力の初期化（IOutputKbmInitializer）の登録は ServiceRegistration.Output.cs
@@ -143,12 +143,6 @@ namespace DS4Windows.Composition
 
             // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
             services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
-            // 入力デバイスの種類ごとのカートリッジ（対応する VID／PID の表と、デバイスの生成）。機種を足すときは、ここへ 1 行足す
-            services.AddInputDeviceCartridge<Ds4DeviceCartridge>();
-            services.AddInputDeviceCartridge<DualSenseDeviceCartridge>();
-            services.AddInputDeviceCartridge<SwitchProDeviceCartridge>();
-            services.AddInputDeviceCartridge<JoyConDeviceCartridge>();
-            services.AddInputDeviceCartridge<Ds3DeviceCartridge>();
             services.AddSingleton<DS4Devices>(sp => new DS4Devices(sp.GetRequiredService<IDeviceLayerSettings>(),
                 sp.GetServices<IInputDeviceCartridge>()));   // 接続中のコントローラーの登録簿（状態を持つ）
             services.AddSingleton<IDs4DeviceRegistry, Ds4DeviceRegistryAdapter>();

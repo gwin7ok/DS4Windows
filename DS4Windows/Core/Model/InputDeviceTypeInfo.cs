@@ -5,21 +5,31 @@ namespace DS4Windows.Core.Model
     /// <summary>
     /// 入力デバイスの種類（<see cref="InputDeviceType"/>）と系統（<see cref="InputDeviceFamily"/>）の対応の表。
     /// 第 1 層のカートリッジと第 2 層の接続フックが、種類ごとに <c>==</c> を並べずに同じ表を引く。値は純粋な定数で、状態を持たない。
-    /// 種類を足すときは、<see cref="InputDeviceType"/> と、ここの表へ 1 行足す。
+    /// 種類を足すときは、<see cref="InputDeviceType"/> の値に <see cref="InputDeviceFamilyAttribute"/> を付ける（ここは変えない）。
     /// </summary>
     public static class InputDeviceTypeInfo
     {
-        // InputDeviceType の値の順（enum の並びと一致させる。テストが全値を検査する）
-        private static readonly InputDeviceFamily[] FamilyByType =
+        // InputDeviceType の値の順（要素 i が、値 i の系統）。対応は enum の値に付けた [InputDeviceFamily] が持ち、ここは起動時に一度だけ読む
+        private static readonly InputDeviceFamily[] FamilyByType = BuildFamilyTable();
+
+        private static InputDeviceFamily[] BuildFamilyTable()
         {
-            InputDeviceFamily.DS4,         // DS4
-            InputDeviceFamily.SwitchPro,   // SwitchPro
-            InputDeviceFamily.JoyCon,      // JoyConL
-            InputDeviceFamily.JoyCon,      // JoyConR
-            InputDeviceFamily.JoyCon,      // JoyConGrip
-            InputDeviceFamily.DualSense,   // DualSense
-            InputDeviceFamily.DS3,         // DS3
-        };
+            InputDeviceType[] values = (InputDeviceType[])Enum.GetValues(typeof(InputDeviceType));
+            InputDeviceFamily[] table = new InputDeviceFamily[values.Length];
+            foreach (InputDeviceType value in values)
+            {
+                InputDeviceFamilyAttribute attr = (InputDeviceFamilyAttribute)Attribute.GetCustomAttribute(
+                    typeof(InputDeviceType).GetField(value.ToString()), typeof(InputDeviceFamilyAttribute));
+                if (attr == null)
+                {
+                    throw new InvalidOperationException("InputDeviceType." + value + " に [InputDeviceFamily] がない");
+                }
+
+                table[(int)value] = attr.Family;
+            }
+
+            return table;
+        }
 
         /// <summary>種類が属する系統。</summary>
         public static InputDeviceFamily FamilyOf(InputDeviceType type)
