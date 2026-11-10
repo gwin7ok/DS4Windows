@@ -44,3 +44,6 @@
 
 - 2026-11-10: 計画書を作成。
 - 2026-11-10 **機能廃止（ユーザーの承認）**: DS3 と Joy-Con は、現役で使われている可能性が低く、後継機が出ているため、機能ごと廃止した（コードの削除）。DS3 専用だった「ジャイロ擬似（UseDs3PitchRollSim）」の設定・画面・DS4 への出力補正・サービス再起動の要求・Joy-Con の結合（`JoyConLinker`）・Joy-Con／DS3 の設定の入れ物・解析器・テストも合わせて削除した。保存済みの設定ファイルにある該当の節・要素は、読み込みで無視される（書き出さない）。`InputDeviceType` は 3 値（DS4、SwitchPro、DualSense）になった。移行の対象は DualSense・Switch Pro・DS4 の 3 機種になる。テストは 3,366 件合格。
+- 2026-11-10 **17-5a 完了**: DualSense・Switch Pro・DS4（いずれも USB）の特性化テストを追加した（`DualSenseDeviceBehaviorTests`、`SwitchProDeviceBehaviorTests`、`Ds4DeviceBehaviorTests`）。台本の入力に対する状態の列・電池・出力レポート・台本が尽きたあとの切断を、旧実装の記録として固定した。Switch Pro は初期化のサブコマンドの応答と校正値も台本にした。`FakeHidTransport` に読み取りの遅延（`ReadDelayMs`）を足した（Switch Pro は 5ms 未満の間隔のフレームを読み飛ばすため）。
+- 2026-11-10 **17-5b の第 1 段（共通部品の集約）完了**: 3 機種のループに同じ形で複製されていた「遅延の窓」（`LatencyWindow`）、「アイドル切断の規則」（`DS4Device.EvaluateIdleDisconnect`）、「積まれた処理の実行」（`DS4Device.RunQueuedInputEvents`）を共通部品に集約した。3 機種の特性化テストは変わらず合格（全 3,371 件合格）。
+- **残り（次の段）**: 時間の計算（機種のタイムスタンプ）、タッチパッド・動きの取り込み、入力の検証（BT の CRC・レポート ID）を `ProtocolDevice` の差し込み口にし、DualSense → Switch Pro → DS4 の順に移す。`DS4Device` は UI・割り当て・出力側が型として広く参照している基底であり、継承の廃止は影響が大きい。各機種で旧実装との差分が説明できない場合は旧実装を残す（4 章）。
