@@ -71,12 +71,12 @@ namespace DS4Windows.Core.Persistence
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.deadZone = (int)(0.00 * 127);
             lsInfo.antiDeadZone = 0;
             lsInfo.maxZone = 100;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.00 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
@@ -179,12 +179,12 @@ namespace DS4Windows.Core.Persistence
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.deadZone = (int)(0.00 * 127);
             lsInfo.antiDeadZone = 0;
             lsInfo.maxZone = 100;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.00 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
@@ -246,7 +246,7 @@ namespace DS4Windows.Core.Persistence
             store.gyroSlots[device].Mouse.enableSmoothing = true;
             store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.10 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -264,12 +264,12 @@ namespace DS4Windows.Core.Persistence
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.deadZone = (int)(0.00 * 127);
             lsInfo.antiDeadZone = 0;
             lsInfo.maxZone = 100;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.10 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
@@ -311,7 +311,7 @@ namespace DS4Windows.Core.Persistence
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
             setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.035 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -362,7 +362,7 @@ namespace DS4Windows.Core.Persistence
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
             setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.035 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -402,10 +402,10 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.antiDeadZone = 0;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.035 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -508,10 +508,10 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.antiDeadZone = 0;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.105 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;

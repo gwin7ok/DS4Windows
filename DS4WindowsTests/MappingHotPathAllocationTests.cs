@@ -121,10 +121,10 @@ namespace DS4WindowsTests
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             // 4軸すべてで補正の分岐（減算とクランプ）を通す。
-            store.rightStickDriftXAxis[Slot] = 3;
-            store.rightStickDriftYAxis[Slot] = -3;
-            store.leftStickDriftXAxis[Slot] = 5;
-            store.leftStickDriftYAxis[Slot] = -5;
+            store.stickSlots[Slot].RightStickDriftXAxis = 3;
+            store.stickSlots[Slot].RightStickDriftYAxis = -3;
+            store.stickSlots[Slot].LeftStickDriftXAxis = 5;
+            store.stickSlots[Slot].LeftStickDriftYAxis = -5;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var state = new ControllerState();
 

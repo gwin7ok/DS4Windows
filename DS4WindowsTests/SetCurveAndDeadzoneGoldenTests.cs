@@ -53,7 +53,7 @@ namespace DS4WindowsTests
 
         private static void Stick(BackingStore store, StickDeadZoneInfo.DeadZoneType type, int dead, int anti, int maxZone, double maxOutput, bool force, double verticalScale = 100.0)
         {
-            foreach (StickDeadZoneInfo info in new[] { store.lsModInfo[Slot], store.rsModInfo[Slot] })
+            foreach (StickDeadZoneInfo info in new[] { store.stickSlots[Slot].LSMod, store.stickSlots[Slot].RSMod })
             {
                 info.deadzoneType = type;
                 info.deadZone = dead;
@@ -106,37 +106,37 @@ namespace DS4WindowsTests
             yield return new Scenario("stick radial dz10 sensitivity-1.5", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSSens[Slot] = 1.5;
-                s.RSSens[Slot] = 1.5;
+                s.stickSlots[Slot].LSSens = 1.5;
+                s.stickSlots[Slot].RSSens = 1.5;
             });
             yield return new Scenario("stick radial dz10 sensitivity-0.6", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSSens[Slot] = 0.6;
-                s.RSSens[Slot] = 0.6;
+                s.stickSlots[Slot].LSSens = 0.6;
+                s.stickSlots[Slot].RSSens = 0.6;
             });
             yield return new Scenario("stick axial dz10 sensitivity-1.5 (ignored for axial)", s =>
             {
                 Stick(s, axial, 10, 0, 100, 100.0, false);
-                s.LSSens[Slot] = 1.5;
-                s.RSSens[Slot] = 1.5;
+                s.stickSlots[Slot].LSSens = 1.5;
+                s.stickSlots[Slot].RSSens = 1.5;
             });
 
             yield return new Scenario("stick radial dz10 square-roundness-5", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].lsMode = true;
-                s.squStickInfo[Slot].rsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 5.0;
-                s.squStickInfo[Slot].rsRoundness = 5.0;
+                s.stickSlots[Slot].SquStick.lsMode = true;
+                s.stickSlots[Slot].SquStick.rsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 5.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 5.0;
             });
             yield return new Scenario("stick radial dz10 square-roundness-12", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].lsMode = true;
-                s.squStickInfo[Slot].rsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 12.0;
-                s.squStickInfo[Slot].rsRoundness = 12.0;
+                s.stickSlots[Slot].SquStick.lsMode = true;
+                s.stickSlots[Slot].SquStick.rsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 12.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 12.0;
             });
 
             for (int mode = 1; mode <= 5; mode++)
@@ -145,22 +145,22 @@ namespace DS4WindowsTests
                 yield return new Scenario($"stick radial dz10 out-curve-{curve}", s =>
                 {
                     Stick(s, radial, 10, 0, 100, 100.0, false);
-                    s.setLsOutCurveMode(Slot, curve);
-                    s.setRsOutCurveMode(Slot, curve);
+                    s.stickSlots[Slot].ApplyLSCurveMode(curve);
+                    s.stickSlots[Slot].ApplyRSCurveMode(curve);
                 });
             }
 
             yield return new Scenario("stick radial dz10 rotation-30", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSRotation[Slot] = 30.0;
-                s.RSRotation[Slot] = 30.0;
+                s.stickSlots[Slot].LSRotation = 30.0;
+                s.stickSlots[Slot].RSRotation = 30.0;
             });
             yield return new Scenario("stick radial dz10 rotation-minus-45", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSRotation[Slot] = -45.0;
-                s.RSRotation[Slot] = -45.0;
+                s.stickSlots[Slot].LSRotation = -45.0;
+                s.stickSlots[Slot].RSRotation = -45.0;
             });
 
             // (c) の前に追加: 出力カーブを Axial のデッドゾーンでも通す。ベジェ曲線（モード 6。Radial と Axial で分岐する）と、スクエアスティックの片側だけの場面
@@ -170,8 +170,8 @@ namespace DS4WindowsTests
                 yield return new Scenario($"stick axial dz10 out-curve-{curve}", s =>
                 {
                     Stick(s, axial, 10, 0, 100, 100.0, false);
-                    s.setLsOutCurveMode(Slot, curve);
-                    s.setRsOutCurveMode(Slot, curve);
+                    s.stickSlots[Slot].ApplyLSCurveMode(curve);
+                    s.stickSlots[Slot].ApplyRSCurveMode(curve);
                 });
             }
 
@@ -181,46 +181,46 @@ namespace DS4WindowsTests
                 yield return new Scenario($"stick {dzType} dz10 out-curve-6-bezier", s =>
                 {
                     Stick(s, dzType, 10, 0, 100, 100.0, false);
-                    s.lsOutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.LSRS, true);
-                    s.rsOutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.LSRS, true);
-                    s.setLsOutCurveMode(Slot, 6);
-                    s.setRsOutCurveMode(Slot, 6);
+                    s.stickSlots[Slot].LsBezier.InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.LSRS, true);
+                    s.stickSlots[Slot].RsBezier.InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.LSRS, true);
+                    s.stickSlots[Slot].ApplyLSCurveMode(6);
+                    s.stickSlots[Slot].ApplyRSCurveMode(6);
                 });
             }
 
             yield return new Scenario("stick radial dz10 square-left-only out-curve-2", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].lsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 8.0;
-                s.squStickInfo[Slot].rsRoundness = 3.0;
-                s.setLsOutCurveMode(Slot, 2);
-                s.setRsOutCurveMode(Slot, 3);
+                s.stickSlots[Slot].SquStick.lsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 8.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 3.0;
+                s.stickSlots[Slot].ApplyLSCurveMode(2);
+                s.stickSlots[Slot].ApplyRSCurveMode(3);
             });
             yield return new Scenario("stick axial dz10 square-right-only", s =>
             {
                 Stick(s, axial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].rsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 3.0;
-                s.squStickInfo[Slot].rsRoundness = 8.0;
+                s.stickSlots[Slot].SquStick.rsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 3.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 8.0;
             });
 
             // 9-A(2)-B の前に追加: ドリフト補正（ApplyStickCalibration。左右・X／Y で量と符号を変える。範囲外はクランプ）
             yield return new Scenario("stick radial dz10 drift-ls10-minus20-rs-minus30-40", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.leftStickDriftXAxis[Slot] = 10;
-                s.leftStickDriftYAxis[Slot] = -20;
-                s.rightStickDriftXAxis[Slot] = -30;
-                s.rightStickDriftYAxis[Slot] = 40;
+                s.stickSlots[Slot].LeftStickDriftXAxis = 10;
+                s.stickSlots[Slot].LeftStickDriftYAxis = -20;
+                s.stickSlots[Slot].RightStickDriftXAxis = -30;
+                s.stickSlots[Slot].RightStickDriftYAxis = 40;
             });
             yield return new Scenario("stick axial none drift-large", s =>
             {
                 Stick(s, axial, 0, 0, 100, 100.0, false);
-                s.leftStickDriftXAxis[Slot] = 100;
-                s.leftStickDriftYAxis[Slot] = -100;
-                s.rightStickDriftXAxis[Slot] = -100;
-                s.rightStickDriftYAxis[Slot] = 100;
+                s.stickSlots[Slot].LeftStickDriftXAxis = 100;
+                s.stickSlots[Slot].LeftStickDriftYAxis = -100;
+                s.stickSlots[Slot].RightStickDriftXAxis = -100;
+                s.stickSlots[Slot].RightStickDriftYAxis = 100;
             });
         }
 
@@ -452,8 +452,8 @@ namespace DS4WindowsTests
                 var mapper = TestMappingFactory.Create();
                 var store = new BackingStore(new EnvironmentService());
                 Stick(store, StickDeadZoneInfo.DeadZoneType.Radial, 0, 0, 100, 100.0, false);
-                store.lsModInfo[Slot].fuzz = fuzz;
-                store.rsModInfo[Slot].fuzz = fuzz;
+                store.stickSlots[Slot].LSMod.fuzz = fuzz;
+                store.stickSlots[Slot].RSMod.fuzz = fuzz;
 
                 text.AppendLine($"## fuzz {fuzz}");
                 foreach (var frame in sequence)

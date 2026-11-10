@@ -79,8 +79,8 @@ namespace DS4WindowsTests
 
             // 2. 出力カーブあり（左右のスティックと L2／R2。ベジェ曲線の分岐を通す）
             var curves = new BackingStore(new EnvironmentService());
-            curves.setLsOutCurveMode(Slot, 2);
-            curves.setRsOutCurveMode(Slot, 2);
+            curves.stickSlots[Slot].ApplyLSCurveMode(2);
+            curves.stickSlots[Slot].ApplyRSCurveMode(2);
             curves.triggerSlots[Slot].ApplyL2CurveMode(2);
             curves.triggerSlots[Slot].ApplyR2CurveMode(2);
             MeasureNanosecondsPerCall("出力カーブあり（LS／RS／L2／R2）", curves);

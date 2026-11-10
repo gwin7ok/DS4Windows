@@ -50,10 +50,10 @@ namespace DS4WindowsTests
         {
             var source = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             source.inverseRumbleMotors[Device] = true;
-            source.leftStickDriftXAxis[Device] = -5;
-            source.leftStickDriftYAxis[Device] = 7;
-            source.rightStickDriftXAxis[Device] = 3;
-            source.rightStickDriftYAxis[Device] = -9;
+            source.stickSlots[Device].LeftStickDriftXAxis = -5;
+            source.stickSlots[Device].LeftStickDriftYAxis = 7;
+            source.stickSlots[Device].RightStickDriftXAxis = 3;
+            source.stickSlots[Device].RightStickDriftYAxis = -9;
             source.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
             source.gyroSlots[Device].Mouse.jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
             source.gyroSlots[Device].MouseStick.jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
@@ -67,10 +67,10 @@ namespace DS4WindowsTests
             targetXml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.True(target.inverseRumbleMotors[Device]);
-            Assert.Equal(-5, target.leftStickDriftXAxis[Device]);
-            Assert.Equal(7, target.leftStickDriftYAxis[Device]);
-            Assert.Equal(3, target.rightStickDriftXAxis[Device]);
-            Assert.Equal(-9, target.rightStickDriftYAxis[Device]);
+            Assert.Equal(-5, target.stickSlots[Device].LeftStickDriftXAxis);
+            Assert.Equal(7, target.stickSlots[Device].LeftStickDriftYAxis);
+            Assert.Equal(3, target.stickSlots[Device].RightStickDriftXAxis);
+            Assert.Equal(-9, target.stickSlots[Device].RightStickDriftYAxis);
             Assert.Equal(DS4TriggerOutputMode.Buttons, target.outputDS4TriggerMode[Device]);
             Assert.Equal(!GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].Mouse.jitterCompensation);
             Assert.Equal(!GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].MouseStick.jitterCompensation);
@@ -93,8 +93,8 @@ namespace DS4WindowsTests
             // 古いプロファイル（10 要素が無い）を読み込んでも、既定値になること（前のプロファイルの値を引き継がない）
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             store.inverseRumbleMotors[Device] = true;
-            store.leftStickDriftXAxis[Device] = -5;
-            store.rightStickDriftYAxis[Device] = 9;
+            store.stickSlots[Device].LeftStickDriftXAxis = -5;
+            store.stickSlots[Device].RightStickDriftYAxis = 9;
             store.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
             store.gyroSlots[Device].Mouse.jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
             store.gyroSlots[Device].MouseStick.jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
@@ -104,8 +104,8 @@ namespace DS4WindowsTests
             xml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.False(store.inverseRumbleMotors[Device]);
-            Assert.Equal(0, store.leftStickDriftXAxis[Device]);
-            Assert.Equal(0, store.rightStickDriftYAxis[Device]);
+            Assert.Equal(0, store.stickSlots[Device].LeftStickDriftXAxis);
+            Assert.Equal(0, store.stickSlots[Device].RightStickDriftYAxis);
             Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
             Assert.Equal(GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, store.gyroSlots[Device].Mouse.jitterCompensation);
             Assert.Equal(GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, store.gyroSlots[Device].MouseStick.jitterCompensation);
@@ -132,7 +132,7 @@ namespace DS4WindowsTests
 
             xml.LoadLegacyExtraSettings(Device, Root);
 
-            Assert.Equal(0, store.leftStickDriftXAxis[Device]);
+            Assert.Equal(0, store.stickSlots[Device].LeftStickDriftXAxis);
             Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
             Assert.False(store.inverseRumbleMotors[Device]);
         }

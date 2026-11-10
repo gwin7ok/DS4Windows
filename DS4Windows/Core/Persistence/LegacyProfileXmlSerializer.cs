@@ -268,13 +268,13 @@ namespace DS4Windows.Core.Persistence
 
 
             if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftXAxis"), out sbyte value))
-                store.leftStickDriftXAxis[device] = value;
+                store.stickSlots[device].LeftStickDriftXAxis = value;
             if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftYAxis"), out value))
-                store.leftStickDriftYAxis[device] = value;
+                store.stickSlots[device].LeftStickDriftYAxis = value;
             if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftXAxis"), out value))
-                store.rightStickDriftXAxis[device] = value;
+                store.stickSlots[device].RightStickDriftXAxis = value;
             if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftYAxis"), out value))
-                store.rightStickDriftYAxis[device] = value;
+                store.stickSlots[device].RightStickDriftYAxis = value;
 
             string triggerMode = ReadLegacyElement(rootname, "DS4OutputTriggerMode");
             if (triggerMode != null && Enum.TryParse(triggerMode, out DS4TriggerOutputMode mode) &&
@@ -398,10 +398,10 @@ namespace DS4Windows.Core.Persistence
         public void SaveLegacyExtraSettings(XmlNode rootElement, int device)
         {
             AppendLegacyElement(rootElement, "InverseRumbleMotors", store.inverseRumbleMotors[device].ToString());
-            AppendLegacyElement(rootElement, "LeftStickDriftXAxis", store.leftStickDriftXAxis[device].ToString());
-            AppendLegacyElement(rootElement, "LeftStickDriftYAxis", store.leftStickDriftYAxis[device].ToString());
-            AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.rightStickDriftXAxis[device].ToString());
-            AppendLegacyElement(rootElement, "RightStickDriftYAxis", store.rightStickDriftYAxis[device].ToString());
+            AppendLegacyElement(rootElement, "LeftStickDriftXAxis", store.stickSlots[device].LeftStickDriftXAxis.ToString());
+            AppendLegacyElement(rootElement, "LeftStickDriftYAxis", store.stickSlots[device].LeftStickDriftYAxis.ToString());
+            AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.stickSlots[device].RightStickDriftXAxis.ToString());
+            AppendLegacyElement(rootElement, "RightStickDriftYAxis", store.stickSlots[device].RightStickDriftYAxis.ToString());
             AppendLegacyElement(rootElement, "DS4OutputTriggerMode", store.outputDS4TriggerMode[device].ToString());
             AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", store.gyroSlots[device].Mouse.jitterCompensation.ToString());
             AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", store.gyroSlots[device].MouseStick.jitterCompensation.ToString());

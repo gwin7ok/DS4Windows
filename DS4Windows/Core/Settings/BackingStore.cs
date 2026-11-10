@@ -180,28 +180,10 @@ namespace DS4Windows.Core.Settings
           DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE,
           DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE };
         public int[] rumbleAutostopTime = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Value in milliseconds (0=autustop timer disabled)
-        public StickDeadZoneInfo[] lsModInfo = new StickDeadZoneInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(),
-        };
-        public StickDeadZoneInfo[] rsModInfo = new StickDeadZoneInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(),
-        };
 
         // Rotation angle expressed in radians
-        public double[] LSRotation = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
         // Rotation angle expressed in radians
-        public double[] RSRotation = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
         public double[] SXDeadzone = new double[ControllerLimits.TestProfileItemCount] { DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE },
             SZDeadzone = new double[ControllerLimits.TestProfileItemCount] { DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE };
@@ -216,14 +198,6 @@ namespace DS4Windows.Core.Settings
           DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE };
         public double[] SXAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
             SZAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-        public double[] LSSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS};
-        public double[] RSSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
         public double[] SXSens = new double[ControllerLimits.TestProfileItemCount]
         { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
           DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
@@ -237,46 +211,10 @@ namespace DS4Windows.Core.Settings
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE };
 
-        public SquareStickInfo[] squStickInfo = new SquareStickInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(),
-        };
 
-        public StickAntiSnapbackInfo[] lsAntiSnapbackInfo = new StickAntiSnapbackInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(),
-        };
 
-        public StickAntiSnapbackInfo[] rsAntiSnapbackInfo = new StickAntiSnapbackInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(),
-        };
 
-        public StickOutputSetting[] lsOutputSettings = new StickOutputSetting[ControllerLimits.TestProfileItemCount]
-        {
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-        };
 
-        public StickOutputSetting[] rsOutputSettings = new StickOutputSetting[ControllerLimits.TestProfileItemCount]
-        {
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-        };
 
 
 
@@ -311,26 +249,8 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public BezierCurve[] lsOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] rsOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
         public BezierCurve[] sxOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
         public BezierCurve[] szOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-
-        private int[] _lsOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getLsOutCurveMode(int index) { return _lsOutCurveMode[index]; }
-        public void setLsOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(lsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
-            _lsOutCurveMode[index] = value;
-        }
-
-        private int[] _rsOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getRsOutCurveMode(int index) { return _rsOutCurveMode[index]; }
-        public void setRsOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(rsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
-            _rsOutCurveMode[index] = value;
-        }
 
         private int[] _sxOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int getSXOutCurveMode(int index) { return _sxOutCurveMode[index]; }
@@ -437,6 +357,9 @@ namespace DS4Windows.Core.Settings
         /// <summary>Triggersの設定の持ち主（スロットごとに 1 つ）。</summary>
         public readonly TriggerSlotSettings[] triggerSlots = new TriggerSlotSettings[ControllerLimits.TestProfileItemCount];
 
+        /// <summary>Sticksの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly StickSlotSettings[] stickSlots = new StickSlotSettings[ControllerLimits.TestProfileItemCount];
+
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
               new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>() };
@@ -491,22 +414,6 @@ namespace DS4Windows.Core.Settings
         public AppThemeChoice useCurrentTheme;
         public string fakeExeFileName = string.Empty;
 
-        public sbyte[] leftStickDriftXAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
-        public sbyte[] leftStickDriftYAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
-        public sbyte[] rightStickDriftXAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
-        public sbyte[] rightStickDriftYAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
 
         // Phase11 K-W6-10: debouncingMs（デバウンス時間）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
 
@@ -630,6 +537,7 @@ namespace DS4Windows.Core.Settings
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
+            for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
             for (int i = 0; i < triggerSlots.Length; i++) triggerSlots[i] = new TriggerSlotSettings(i);
             for (int i = 0; i < touchpadSlots.Length; i++) touchpadSlots[i] = new TouchpadSlotSettings(i);
 
@@ -687,8 +595,8 @@ namespace DS4Windows.Core.Settings
 
             {
                 customAct = gyroSlots[device].OutputMode == GyroOutMode.MouseJoystick;
-                customAct = customAct || lsOutputSettings[device].mode != StickMode.Controls;
-                customAct = customAct || rsOutputSettings[device].mode != StickMode.Controls;
+                customAct = customAct || stickSlots[device].LSOutput.mode != StickMode.Controls;
+                customAct = customAct || stickSlots[device].RSOutput.mode != StickMode.Controls;
                 containsCustomAction[device] = customAct;
             }
         }
@@ -1118,10 +1026,10 @@ namespace DS4Windows.Core.Settings
             touchpadSlots[device].JitterCompensation = DEFAULT_TOUCHPAD_JITTER_COMP;
             // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
             inverseRumbleMotors[device] = false;
-            leftStickDriftXAxis[device] = 0;
-            leftStickDriftYAxis[device] = 0;
-            rightStickDriftXAxis[device] = 0;
-            rightStickDriftYAxis[device] = 0;
+            stickSlots[device].LeftStickDriftXAxis = 0;
+            stickSlots[device].LeftStickDriftYAxis = 0;
+            stickSlots[device].RightStickDriftXAxis = 0;
+            stickSlots[device].RightStickDriftYAxis = 0;
             outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
             touchpadSlots[device].LowerRightAsRightClick = false;
             touchpadSlots[device].ClickPassthru = false;
@@ -1130,13 +1038,13 @@ namespace DS4Windows.Core.Settings
             rumbleAutostopTime[device] = 0;
             touchpadSlots[device].TouchSensitivity = DEFAULT_TOUCHPAD_SENS;
 
-            lsModInfo[device].Reset();
-            rsModInfo[device].Reset();
-            lsModInfo[device].deadZone = rsModInfo[device].deadZone = StickDeadZoneInfo.DEFAULT_DEADZONE;
-            lsModInfo[device].antiDeadZone = rsModInfo[device].antiDeadZone = StickDeadZoneInfo.DEFAULT_ANTIDEADZONE;
-            lsModInfo[device].maxZone = rsModInfo[device].maxZone = StickDeadZoneInfo.DEFAULT_MAXZONE;
-            lsModInfo[device].maxOutput = rsModInfo[device].maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
-            lsModInfo[device].fuzz = rsModInfo[device].fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
+            stickSlots[device].LSMod.Reset();
+            stickSlots[device].RSMod.Reset();
+            stickSlots[device].LSMod.deadZone = stickSlots[device].RSMod.deadZone = StickDeadZoneInfo.DEFAULT_DEADZONE;
+            stickSlots[device].LSMod.antiDeadZone = stickSlots[device].RSMod.antiDeadZone = StickDeadZoneInfo.DEFAULT_ANTIDEADZONE;
+            stickSlots[device].LSMod.maxZone = stickSlots[device].RSMod.maxZone = StickDeadZoneInfo.DEFAULT_MAXZONE;
+            stickSlots[device].LSMod.maxOutput = stickSlots[device].RSMod.maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
+            stickSlots[device].LSMod.fuzz = stickSlots[device].RSMod.fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
 
             //triggerSlots[device].L2Mod.deadZone = triggerSlots[device].R2Mod.deadZone = 0;
             //triggerSlots[device].L2Mod.antiDeadZone = triggerSlots[device].R2Mod.antiDeadZone = 0;
@@ -1146,14 +1054,14 @@ namespace DS4Windows.Core.Settings
             triggerSlots[device].R2Mod.Reset();
 
             // Rotation angles expressed in radians
-            LSRotation[device] = 0.0;
-            RSRotation[device] = 0.0;
+            stickSlots[device].LSRotation = 0.0;
+            stickSlots[device].RSRotation = 0.0;
 
             SXDeadzone[device] = SZDeadzone[device] = DEFAULT_SX_TILT_DEADZONE;
             SXMaxzone[device] = SZMaxzone[device] = DEFAULT_RUMBLE;
             SXAntiDeadzone[device] = SZAntiDeadzone[device] = 0.0;
             triggerSlots[device].L2Sens = triggerSlots[device].R2Sens = DEFAULT_ANALOG_SENS;
-            LSSens[device] = RSSens[device] = DEFAULT_ANALOG_SENS;
+            stickSlots[device].LSSens = stickSlots[device].RSSens = DEFAULT_ANALOG_SENS;
             SXSens[device] = SZSens[device] = DEFAULT_ANALOG_SENS;
             touchpadSlots[device].TapSensitivity = 0;
             touchpadSlots[device].DoubleTap = false;
@@ -1161,8 +1069,8 @@ namespace DS4Windows.Core.Settings
             touchpadSlots[device].Invert = 0;
             btPollRate[device] = DEFAULT_DS4_BT_POLL_RATE;
 
-            lsOutputSettings[device].ResetSettings();
-            rsOutputSettings[device].ResetSettings();
+            stickSlots[device].LSOutput.ResetSettings();
+            stickSlots[device].RSOutput.ResetSettings();
             triggerSlots[device].L2Output.ResetSettings();
             triggerSlots[device].R2Output.ResetSettings();
 
@@ -1220,16 +1128,16 @@ namespace DS4Windows.Core.Settings
 
             gyroSlots[device].MouseHorizontalAxis = 0;
             gyroSlots[device].MouseToggle = false;
-            //squStickInfo[device].lsMode = false;
-            //squStickInfo[device].rsMode = false;
-            //squStickInfo[device].lsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
-            //squStickInfo[device].rsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
-            squStickInfo[device].Reset();
-            lsAntiSnapbackInfo[device].timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT;
-            lsAntiSnapbackInfo[device].delta = StickAntiSnapbackInfo.DEFAULT_DELTA;
-            lsAntiSnapbackInfo[device].enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
-            setLsOutCurveMode(device, 0);
-            setRsOutCurveMode(device, 0);
+            //stickSlots[device].SquStick.lsMode = false;
+            //stickSlots[device].SquStick.rsMode = false;
+            //stickSlots[device].SquStick.lsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
+            //stickSlots[device].SquStick.rsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
+            stickSlots[device].SquStick.Reset();
+            stickSlots[device].LSAntiSnapback.timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT;
+            stickSlots[device].LSAntiSnapback.delta = StickAntiSnapbackInfo.DEFAULT_DELTA;
+            stickSlots[device].LSAntiSnapback.enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
+            stickSlots[device].ApplyLSCurveMode(0);
+            stickSlots[device].ApplyRSCurveMode(0);
             triggerSlots[device].L2CurveMode = 0;
             triggerSlots[device].R2CurveMode = 0;
             setSXOutCurveMode(device, 0);

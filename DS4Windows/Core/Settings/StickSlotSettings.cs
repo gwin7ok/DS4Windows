@@ -1,93 +1,97 @@
 ﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
+using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// 1 つのスロットのスティック（LS・RS）の設定の窓口。<see cref="IProfileSettingsService"/> のスロット番号の配列を、
-    /// スロット番号を渡さずに読み書きできるようにする（値は設定サービスの配列にあり、保存・読込の経路は変わらない）。
+    /// 1 つのスロットのSticksの設定の持ち主（値そのもの）。<see cref="BackingStore"/> がスロットごとに 1 つ持ち、
+    /// 保存・読み込み（プロファイルの XML）、実行時の入力処理、設定画面の ViewModel が、同じ 1 つのオブジェクトを読み書きする。
     /// </summary>
     public class StickSlotSettings
     {
-        private readonly IProfileSettingsService _settings;
-        private readonly int _slot;
-
-        public StickSlotSettings(IProfileSettingsService settings, int slot)
+        public StickSlotSettings(int slot)
         {
-            _settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
-            _slot = slot;
+            Slot = slot;
+            LSMod = new StickDeadZoneInfo();
+            RSMod = new StickDeadZoneInfo();
+            LSOutput = new StickOutputSetting();
+            RSOutput = new StickOutputSetting();
+            LSAntiSnapback = new StickAntiSnapbackInfo();
+            RSAntiSnapback = new StickAntiSnapbackInfo();
+            SquStick = new SquareStickInfo();
+            LsBezier = new BezierCurve();
+            RsBezier = new BezierCurve();
+            LSSens = BackingStore.DEFAULT_ANALOG_SENS;
+            RSSens = BackingStore.DEFAULT_ANALOG_SENS;
+            LSRotation = 0.0;
+            RSRotation = 0.0;
+            LeftStickDriftXAxis = 0;
+            LeftStickDriftYAxis = 0;
+            RightStickDriftXAxis = 0;
+            RightStickDriftYAxis = 0;
         }
 
-        // 中身を直接書き換える設定のまとまり
-        public StickDeadZoneInfo LSMod => _settings.LSModInfo[_slot];
-        public StickDeadZoneInfo RSMod => _settings.RSModInfo[_slot];
-        public StickOutputSetting LSOutput => _settings.LSOutputSettings[_slot];
-        public StickOutputSetting RSOutput => _settings.RSOutputSettings[_slot];
-        public StickAntiSnapbackInfo LSAntiSnapback => _settings.LSAntiSnapbackInfo[_slot];
-        public StickAntiSnapbackInfo RSAntiSnapback => _settings.RSAntiSnapbackInfo[_slot];
-        public SquareStickInfo SquStick => _settings.SquStickInfo[_slot];
-        public BezierCurve LsBezier => _settings.LsOutBezierCurveObj[_slot];
-        public BezierCurve RsBezier => _settings.RsOutBezierCurveObj[_slot];
+        public int Slot { get; }
 
-        public double LSSens
-        {
-            get => _settings.LSSens[_slot];
-            set => _settings.LSSens[_slot] = value;
-        }
+        public StickDeadZoneInfo LSMod { get; }
+        public StickDeadZoneInfo RSMod { get; }
+        public StickOutputSetting LSOutput { get; }
+        public StickOutputSetting RSOutput { get; }
+        public StickAntiSnapbackInfo LSAntiSnapback { get; }
+        public StickAntiSnapbackInfo RSAntiSnapback { get; }
+        public SquareStickInfo SquStick { get; }
+        public BezierCurve LsBezier { get; }
+        public BezierCurve RsBezier { get; }
+        public double LSSens { get; set; }
+        public double RSSens { get; set; }
+        public double LSRotation { get; set; }
+        public double RSRotation { get; set; }
+        public sbyte LeftStickDriftXAxis { get; set; }
+        public sbyte LeftStickDriftYAxis { get; set; }
+        public sbyte RightStickDriftXAxis { get; set; }
+        public sbyte RightStickDriftYAxis { get; set; }
 
-        public double RSSens
-        {
-            get => _settings.RSSens[_slot];
-            set => _settings.RSSens[_slot] = value;
-        }
+        // 出力カーブのモード。6（利用者の定義したカーブ）を選んだときだけ、ベジェ曲線の参照表を初期化する
+        // （1〜5 は、入力処理の側の計算式で扱う）
+        private int _lSCurveMode;
+        private int _rSCurveMode;
 
-        /// <summary>回転（ラジアン）。</summary>
-        public double LSRotation
-        {
-            get => _settings.LSRotation[_slot];
-            set => _settings.LSRotation[_slot] = value;
-        }
-
-        public double RSRotation
-        {
-            get => _settings.RSRotation[_slot];
-            set => _settings.RSRotation[_slot] = value;
-        }
-
-        public sbyte LeftStickDriftXAxis
-        {
-            get => _settings.LeftStickDriftXAxis[_slot];
-            set => _settings.LeftStickDriftXAxis[_slot] = value;
-        }
-
-        public sbyte LeftStickDriftYAxis
-        {
-            get => _settings.LeftStickDriftYAxis[_slot];
-            set => _settings.LeftStickDriftYAxis[_slot] = value;
-        }
-
-        public sbyte RightStickDriftXAxis
-        {
-            get => _settings.RightStickDriftXAxis[_slot];
-            set => _settings.RightStickDriftXAxis[_slot] = value;
-        }
-
-        public sbyte RightStickDriftYAxis
-        {
-            get => _settings.RightStickDriftYAxis[_slot];
-            set => _settings.RightStickDriftYAxis[_slot] = value;
-        }
-
+        /// <summary>Ls の出力カーブのモード。画面から変えたときの値の設定（診断ログつき）。</summary>
         public int LSCurveMode
         {
-            get => _settings.GetLsOutCurveMode(_slot);
-            set => _settings.SetLsOutCurveMode(_slot, value);
+            get => _lSCurveMode;
+            set
+            {
+                ApplyLSCurveMode(value);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetLsOutCurveMode: Slot {Slot} = {value}");
+            }
         }
 
+        /// <summary>プロファイルの読み込み・初期化など、画面の操作ではない経路の設定（ログなし）。</summary>
+        public void ApplyLSCurveMode(int value)
+        {
+            if (value == 6) LsBezier.InitBezierCurve(LsBezier.CustomDefinition, BezierCurve.AxisType.LSRS);
+            _lSCurveMode = value;
+        }
+
+        /// <summary>Rs の出力カーブのモード。画面から変えたときの値の設定（診断ログつき）。</summary>
         public int RSCurveMode
         {
-            get => _settings.GetRsOutCurveMode(_slot);
-            set => _settings.SetRsOutCurveMode(_slot, value);
+            get => _rSCurveMode;
+            set
+            {
+                ApplyRSCurveMode(value);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetRsOutCurveMode: Slot {Slot} = {value}");
+            }
+        }
+
+        /// <summary>プロファイルの読み込み・初期化など、画面の操作ではない経路の設定（ログなし）。</summary>
+        public void ApplyRSCurveMode(int value)
+        {
+            if (value == 6) RsBezier.InitBezierCurve(RsBezier.CustomDefinition, BezierCurve.AxisType.LSRS);
+            _rSCurveMode = value;
         }
     }
 }

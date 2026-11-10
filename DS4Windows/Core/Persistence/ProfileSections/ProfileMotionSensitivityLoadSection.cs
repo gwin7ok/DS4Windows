@@ -95,26 +95,28 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 if (s.Length == 1)
                     s = Item.InnerText.Split(',');
 
-                if (double.TryParse(s[0], out store.LSSens[device]))
-                {
-                    store.LSSens[device] = Math.Clamp(store.LSSens[device], 0.1, 5.0);
-                }
-                else
-                {
-                    store.LSSens[device] = 1;
-                }
-
-                if (double.TryParse(s[1], out store.RSSens[device]))
-                {
-                    store.RSSens[device] = Math.Clamp(store.RSSens[device], 0.1, 5.0);
-                }
-                else
-                {
-                    store.RSSens[device] = 1;
-                }
-
-                bool parsedOk1 = double.TryParse(s[2], out double parsedValue1); store.triggerSlots[device].L2Sens = parsedValue1;
+                bool parsedOk1 = double.TryParse(s[0], out double parsedValue1); store.stickSlots[device].LSSens = parsedValue1;
                 if (parsedOk1)
+                {
+                    store.stickSlots[device].LSSens = Math.Clamp(store.stickSlots[device].LSSens, 0.1, 5.0);
+                }
+                else
+                {
+                    store.stickSlots[device].LSSens = 1;
+                }
+
+                bool parsedOk2 = double.TryParse(s[1], out double parsedValue2); store.stickSlots[device].RSSens = parsedValue2;
+                if (parsedOk2)
+                {
+                    store.stickSlots[device].RSSens = Math.Clamp(store.stickSlots[device].RSSens, 0.1, 5.0);
+                }
+                else
+                {
+                    store.stickSlots[device].RSSens = 1;
+                }
+
+                bool parsedOk3 = double.TryParse(s[2], out double parsedValue3); store.triggerSlots[device].L2Sens = parsedValue3;
+                if (parsedOk3)
                 {
                     store.triggerSlots[device].L2Sens = Math.Clamp(store.triggerSlots[device].L2Sens, 0.1, 10.0);
                 }
@@ -123,8 +125,8 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     store.triggerSlots[device].L2Sens = 1;
                 }
 
-                bool parsedOk2 = double.TryParse(s[3], out double parsedValue2); store.triggerSlots[device].R2Sens = parsedValue2;
-                if (parsedOk2)
+                bool parsedOk4 = double.TryParse(s[3], out double parsedValue4); store.triggerSlots[device].R2Sens = parsedValue4;
+                if (parsedOk4)
                 {
                     store.triggerSlots[device].R2Sens = Math.Clamp(store.triggerSlots[device].R2Sens, 0.1, 10.0);
                 }

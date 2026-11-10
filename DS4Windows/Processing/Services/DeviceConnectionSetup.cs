@@ -121,11 +121,11 @@ namespace DS4Windows.Processing.Services
 
             // Phase9 Steering 削除 W2: 旧「ステアリング用のフィルター（OneEuroFilter）の作成と、設定［スムージング］との連動」は削除した（機能ごと削除）
 
-            FlickStickSettings flickStickSettings = _profileSettings.LSOutputSettings[ind].outputSettings.flickSettings;
+            FlickStickSettings flickStickSettings = _profileSettings.ForSlot(ind).Sticks.LSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
             flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
 
-            flickStickSettings = _profileSettings.RSOutputSettings[ind].outputSettings.flickSettings;
+            flickStickSettings = _profileSettings.ForSlot(ind).Sticks.RSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
             flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
 

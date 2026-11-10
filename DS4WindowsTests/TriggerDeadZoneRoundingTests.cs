@@ -89,15 +89,15 @@ namespace DS4WindowsTests
                 Assert.Equal(29, settings.ForSlot(slot).Triggers.R2Mod.maxZone);
                 Assert.Equal(29, settings.ForSlot(slot).Triggers.L2Mod.antiDeadZone);
                 Assert.Equal(29, settings.ForSlot(slot).Triggers.R2Mod.antiDeadZone);
-                Assert.Equal(29, settings.LSModInfo[slot].maxZone);
-                Assert.Equal(29, settings.RSModInfo[slot].maxZone);
-                Assert.Equal(29, settings.LSModInfo[slot].antiDeadZone);
-                Assert.Equal(29, settings.RSModInfo[slot].antiDeadZone);
+                Assert.Equal(29, settings.ForSlot(slot).Sticks.LSMod.maxZone);
+                Assert.Equal(29, settings.ForSlot(slot).Sticks.RSMod.maxZone);
+                Assert.Equal(29, settings.ForSlot(slot).Sticks.LSMod.antiDeadZone);
+                Assert.Equal(29, settings.ForSlot(slot).Sticks.RSMod.antiDeadZone);
             }
             finally
             {
                 settings.ForSlot(slot).Triggers.L2Mod.Reset(); settings.ForSlot(slot).Triggers.R2Mod.Reset();
-                settings.LSModInfo[slot].Reset(); settings.RSModInfo[slot].Reset();
+                settings.ForSlot(slot).Sticks.LSMod.Reset(); settings.ForSlot(slot).Sticks.RSMod.Reset();
             }
         }
     }

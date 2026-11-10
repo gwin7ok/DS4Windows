@@ -26,7 +26,7 @@
 | ジャイロ（＋ SA のトリガー条件） | `GyroSlotSettings` | 完了（2026-11-10。パイロット） |
 | タッチパッド | `TouchpadSlotSettings` | 完了（2026-11-10） |
 | トリガー（L2/R2 のカーブのモードを含む） | `TriggerSlotSettings` | 完了（2026-11-10） |
-| スティック | `StickSlotSettings` | 未着手 |
+| スティック（LS/RS のカーブのモードを含む） | `StickSlotSettings` | 完了（2026-11-11） |
 | ライトバー | `LightbarSlotSettings` | 未着手 |
 | 出力 | `OutputSlotSettings` | 未着手 |
 | 一般 | `GeneralSlotSettings` | 未着手 |

@@ -89,9 +89,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSRotation"); int tempDegrees = 0;
                 int.TryParse(Item.InnerText, out tempDegrees);
                 tempDegrees = Math.Min(Math.Max(tempDegrees, -180), 180);
-                store.LSRotation[device] = tempDegrees * Math.PI / 180.0;
+                store.stickSlots[device].LSRotation = tempDegrees * Math.PI / 180.0;
             }
-            catch { store.LSRotation[device] = 0.0; missingSetting = true; }
+            catch { store.stickSlots[device].LSRotation = 0.0; missingSetting = true; }
 
             try
             {
@@ -99,27 +99,27 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSRotation"); int tempDegrees = 0;
                 int.TryParse(Item.InnerText, out tempDegrees);
                 tempDegrees = Math.Min(Math.Max(tempDegrees, -180), 180);
-                store.RSRotation[device] = tempDegrees * Math.PI / 180.0;
+                store.stickSlots[device].RSRotation = tempDegrees * Math.PI / 180.0;
             }
-            catch { store.RSRotation[device] = 0.0; missingSetting = true; }
+            catch { store.stickSlots[device].RSRotation = 0.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSFuzz"); int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
                 temp = Math.Min(Math.Max(temp, 0), 100);
-                store.lsModInfo[device].fuzz = temp;
+                store.stickSlots[device].LSMod.fuzz = temp;
             }
-            catch { store.lsModInfo[device].fuzz = StickDeadZoneInfo.DEFAULT_FUZZ; missingSetting = true; }
+            catch { store.stickSlots[device].LSMod.fuzz = StickDeadZoneInfo.DEFAULT_FUZZ; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSFuzz"); int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
                 temp = Math.Min(Math.Max(temp, 0), 100);
-                store.rsModInfo[device].fuzz = temp;
+                store.stickSlots[device].RSMod.fuzz = temp;
             }
-            catch { store.rsModInfo[device].fuzz = StickDeadZoneInfo.DEFAULT_FUZZ; missingSetting = true; }
+            catch { store.stickSlots[device].RSMod.fuzz = StickDeadZoneInfo.DEFAULT_FUZZ; missingSetting = true; }
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ButtonMouseSensitivity"); int.TryParse(Item.InnerText, out store.buttonMouseInfos[device].buttonSensitivity); }
             catch { missingSetting = true; }
@@ -150,11 +150,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSDeadZone");
                 int.TryParse(Item.InnerText, out int temp);
                 temp = Math.Min(Math.Max(temp, 0), 127);
-                store.lsModInfo[device].deadZone = temp;
+                store.stickSlots[device].LSMod.deadZone = temp;
             }
             catch
             {
-                store.lsModInfo[device].deadZone = 10; missingSetting = true;
+                store.stickSlots[device].LSMod.deadZone = 10; missingSetting = true;
             }
 
             try
@@ -162,79 +162,79 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSDeadZone");
                 int.TryParse(Item.InnerText, out int temp);
                 temp = Math.Min(Math.Max(temp, 0), 127);
-                store.rsModInfo[device].deadZone = temp;
+                store.stickSlots[device].RSMod.deadZone = temp;
             }
             catch
             {
-                store.rsModInfo[device].deadZone = 10; missingSetting = true;
+                store.stickSlots[device].RSMod.deadZone = 10; missingSetting = true;
             }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiDeadZone"); int.TryParse(Item.InnerText, out store.lsModInfo[device].antiDeadZone); }
-            catch { store.lsModInfo[device].antiDeadZone = 20; missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiDeadZone"); int.TryParse(Item.InnerText, out store.rsModInfo[device].antiDeadZone); }
-            catch { store.rsModInfo[device].antiDeadZone = 20; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiDeadZone"); int.TryParse(Item.InnerText, out store.stickSlots[device].LSMod.antiDeadZone); }
+            catch { store.stickSlots[device].LSMod.antiDeadZone = 20; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiDeadZone"); int.TryParse(Item.InnerText, out store.stickSlots[device].RSMod.antiDeadZone); }
+            catch { store.stickSlots[device].RSMod.antiDeadZone = 20; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSMaxZone"); int temp = 100;
                 int.TryParse(Item.InnerText, out temp);
-                store.lsModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
+                store.stickSlots[device].LSMod.maxZone = Math.Min(Math.Max(temp, 0), 100);
             }
-            catch { store.lsModInfo[device].maxZone = 100; missingSetting = true; }
+            catch { store.stickSlots[device].LSMod.maxZone = 100; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSMaxZone"); int temp = 100;
                 int.TryParse(Item.InnerText, out temp);
-                store.rsModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
+                store.stickSlots[device].RSMod.maxZone = Math.Min(Math.Max(temp, 0), 100);
             }
-            catch { store.rsModInfo[device].maxZone = 100; missingSetting = true; }
+            catch { store.stickSlots[device].RSMod.maxZone = 100; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSVerticalScale");
                 if (double.TryParse(Item?.InnerText ?? "", out double temp))
                 {
-                    store.lsModInfo[device].verticalScale = Math.Min(Math.Max(temp, 0.0), 200.0);
+                    store.stickSlots[device].LSMod.verticalScale = Math.Min(Math.Max(temp, 0.0), 200.0);
                 }
             }
-            catch { store.lsModInfo[device].verticalScale = StickDeadZoneInfo.DEFAULT_VERTICAL_SCALE; }
+            catch { store.stickSlots[device].LSMod.verticalScale = StickDeadZoneInfo.DEFAULT_VERTICAL_SCALE; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSMaxOutput"); double temp = 100.0;
                 temp = double.Parse(Item.InnerText);
-                store.lsModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                store.stickSlots[device].LSMod.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
             }
-            catch { store.lsModInfo[device].maxOutput = 100.0; missingSetting = true; }
+            catch { store.stickSlots[device].LSMod.maxOutput = 100.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSMaxOutputForce");
                 if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                 {
-                    store.lsModInfo[device].maxOutputForce = temp;
+                    store.stickSlots[device].LSMod.maxOutputForce = temp;
                 }
             }
-            catch { store.lsModInfo[device].maxOutputForce = StickDeadZoneInfo.DEFAULT_MAXOUTPUT_FORCE; missingSetting = true; }
+            catch { store.stickSlots[device].LSMod.maxOutputForce = StickDeadZoneInfo.DEFAULT_MAXOUTPUT_FORCE; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSMaxOutput"); double temp = 100.0;
                 temp = double.Parse(Item.InnerText);
-                store.rsModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                store.stickSlots[device].RSMod.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
             }
-            catch { store.rsModInfo[device].maxOutput = 100; missingSetting = true; }
+            catch { store.stickSlots[device].RSMod.maxOutput = 100; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSMaxOutputForce");
                 if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                 {
-                    store.rsModInfo[device].maxOutputForce = temp;
+                    store.stickSlots[device].RSMod.maxOutputForce = temp;
                 }
             }
-            catch { store.rsModInfo[device].maxOutputForce = StickDeadZoneInfo.DEFAULT_MAXOUTPUT_FORCE; missingSetting = true; }
+            catch { store.stickSlots[device].RSMod.maxOutputForce = StickDeadZoneInfo.DEFAULT_MAXOUTPUT_FORCE; missingSetting = true; }
 
             try
             {
@@ -242,10 +242,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 if (int.TryParse(Item?.InnerText ?? "", out int temp))
                 {
                     temp = Math.Min(Math.Max(temp, 0), 100);
-                    store.lsModInfo[device].outerBindDeadZone = temp;
+                    store.stickSlots[device].LSMod.outerBindDeadZone = temp;
                 }
             }
-            catch { store.lsModInfo[device].outerBindDeadZone = StickDeadZoneInfo.DEFAULT_OUTER_BIND_DEAD; }
+            catch { store.stickSlots[device].LSMod.outerBindDeadZone = StickDeadZoneInfo.DEFAULT_OUTER_BIND_DEAD; }
 
             try
             {
@@ -253,47 +253,47 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 if (int.TryParse(Item?.InnerText ?? "", out int temp))
                 {
                     temp = Math.Min(Math.Max(temp, 0), 100);
-                    store.rsModInfo[device].outerBindDeadZone = temp;
+                    store.stickSlots[device].RSMod.outerBindDeadZone = temp;
                 }
             }
-            catch { store.rsModInfo[device].outerBindDeadZone = StickDeadZoneInfo.DEFAULT_OUTER_BIND_DEAD; }
+            catch { store.stickSlots[device].RSMod.outerBindDeadZone = StickDeadZoneInfo.DEFAULT_OUTER_BIND_DEAD; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOuterBindInvert");
                 if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                 {
-                    store.lsModInfo[device].outerBindInvert = temp;
+                    store.stickSlots[device].LSMod.outerBindInvert = temp;
                 }
             }
-            catch { store.lsModInfo[device].outerBindInvert = StickDeadZoneInfo.DEFAULT_OUTER_BIND_INVERT; }
+            catch { store.stickSlots[device].LSMod.outerBindInvert = StickDeadZoneInfo.DEFAULT_OUTER_BIND_INVERT; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOuterBindInvert");
                 if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                 {
-                    store.rsModInfo[device].outerBindInvert = temp;
+                    store.stickSlots[device].RSMod.outerBindInvert = temp;
                 }
             }
-            catch { store.rsModInfo[device].outerBindInvert = StickDeadZoneInfo.DEFAULT_OUTER_BIND_INVERT; }
+            catch { store.stickSlots[device].RSMod.outerBindInvert = StickDeadZoneInfo.DEFAULT_OUTER_BIND_INVERT; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSVerticalScale");
                 if (double.TryParse(Item?.InnerText ?? "", out double temp))
                 {
-                    store.rsModInfo[device].verticalScale = Math.Min(Math.Max(temp, 0.0), 200.0);
+                    store.stickSlots[device].RSMod.verticalScale = Math.Min(Math.Max(temp, 0.0), 200.0);
                 }
             }
-            catch { store.rsModInfo[device].verticalScale = StickDeadZoneInfo.DEFAULT_VERTICAL_SCALE; }
+            catch { store.stickSlots[device].RSMod.verticalScale = StickDeadZoneInfo.DEFAULT_VERTICAL_SCALE; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSDeadZoneType");
                 if (Enum.TryParse(Item?.InnerText ?? "", out StickDeadZoneInfo.DeadZoneType temp))
                 {
-                    store.lsModInfo[device].deadzoneType = temp;
+                    store.stickSlots[device].LSMod.deadzoneType = temp;
                 }
             }
             catch { }

@@ -259,8 +259,8 @@ namespace DS4Windows.Processing
             // Phase9 9-B: 旧 getMouseMapping（ctrl から設定と経過時間を読んでいた）は ButtonMouseMovementCalculator へ移した。設定と経過時間は、ここで読んで渡す
             return _mouseConversion.CalculateButtonMouseMovement(device, control, direction, state, fields,
                 profileSettings.ButtonMouseInfos[device],
-                profileSettings.LSModInfo[device].deadZone,
-                profileSettings.RSModInfo[device].deadZone,
+                profileSettings.ForSlot(device).Sticks.LSMod.deadZone,
+                profileSettings.ForSlot(device).Sticks.RSMod.deadZone,
                 deltaAccelProcessors[device],
                 _slots.Controllers[device].lastTimeElapsedDouble);
         }
@@ -354,10 +354,10 @@ namespace DS4Windows.Processing
             // Process LS／RS（Phase9 MapCustom の分割 M3c: 左右で似たコードが 2 回あった。LS → RS の順は変えない）
             ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
                 ref tempMouseDeltaX, ref tempMouseDeltaY,
-                profileSettings.LSOutputSettings[device], controlSetGroup.LS, false);
+                profileSettings.ForSlot(device).Sticks.LSOutput, controlSetGroup.LS, false);
             ProcessStick(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
                 ref tempMouseDeltaX, ref tempMouseDeltaY,
-                profileSettings.RSOutputSettings[device], controlSetGroup.RS, true);
+                profileSettings.ForSlot(device).Sticks.RSOutput, controlSetGroup.RS, true);
 
             // Process L2／R2（Phase9 MapCustom の分割 M3b: 左右で同じコードが 2 回あった［約 130 行］。L2 → R2 の順は変えない）
             ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,

@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var rotated = CreateIsolatedService(out BackingStore rotatedStore);
-            rotatedStore.LSRotation[Slot] = Math.PI / 2.0; // 90度回転（右入力が上下方向へ移る）
+            rotatedStore.stickSlots[Slot].LSRotation = Math.PI / 2.0; // 90度回転（右入力が上下方向へ移る）
 
             ControllerState a = Run(neutral, lx: 200, ly: 128);
             ControllerState b = Run(rotated, lx: 200, ly: 128);
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var rotated = CreateIsolatedService(out BackingStore rotatedStore);
-            rotatedStore.RSRotation[Slot] = Math.PI / 2.0;
+            rotatedStore.stickSlots[Slot].RSRotation = Math.PI / 2.0;
 
             ControllerState a = Run(neutral, rx: 200, ry: 128);
             ControllerState b = Run(rotated, rx: 200, ry: 128);
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var wideDead = CreateIsolatedService(out BackingStore wideStore);
-            wideStore.lsModInfo[Slot].deadZone = 127; // 入力（中心から72）を完全にデッドゾーン内へ収める
+            wideStore.stickSlots[Slot].LSMod.deadZone = 127; // 入力（中心から72）を完全にデッドゾーン内へ収める
 
             ControllerState a = Run(neutral, lx: 200, ly: 128);
             ControllerState b = Run(wideDead, lx: 200, ly: 128);
@@ -91,7 +91,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var halfSens = CreateIsolatedService(out BackingStore halfStore);
-            halfStore.LSSens[Slot] = 0.5;
+            halfStore.stickSlots[Slot].LSSens = 0.5;
 
             ControllerState a = Run(neutral, lx: 200, ly: 128);
             ControllerState b = Run(halfSens, lx: 200, ly: 128);
@@ -260,10 +260,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var drifted = CreateIsolatedService(out BackingStore driftStore);
-            driftStore.rightStickDriftXAxis[Slot] = 10;
-            driftStore.rightStickDriftYAxis[Slot] = 20;
-            driftStore.leftStickDriftXAxis[Slot] = 30;
-            driftStore.leftStickDriftYAxis[Slot] = 40;
+            driftStore.stickSlots[Slot].RightStickDriftXAxis = 10;
+            driftStore.stickSlots[Slot].RightStickDriftYAxis = 20;
+            driftStore.stickSlots[Slot].LeftStickDriftXAxis = 30;
+            driftStore.stickSlots[Slot].LeftStickDriftYAxis = 40;
 
             ControllerState a = Conditioner.ApplyDrift(Slot, new ControllerState { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
             ControllerState b = Conditioner.ApplyDrift(Slot, new ControllerState { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
@@ -285,7 +285,7 @@ namespace DS4WindowsTests
         public void ApplyStickCalibration_ClampsToByteRange()
         {
             var drifted = CreateIsolatedService(out BackingStore driftStore);
-            driftStore.leftStickDriftXAxis[Slot] = 50; // 10 - 50 が負になる → 0 に丸める
+            driftStore.stickSlots[Slot].LeftStickDriftXAxis = 50; // 10 - 50 が負になる → 0 に丸める
 
             ControllerState b = Conditioner.ApplyDrift(Slot, new ControllerState { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
 

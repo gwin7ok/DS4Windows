@@ -38,16 +38,16 @@ namespace DS4Windows.Processing.Services
 
         public ControllerState Apply(int device, ControllerState cState, ControllerState dState, IProfileSettingsService settings)
         {
-            double rotation = /*tempDoubleArray[device] =*/  settings.LSRotation[device];
+            double rotation = /*tempDoubleArray[device] =*/  settings.ForSlot(device).Sticks.LSRotation;
             if (rotation > 0.0 || rotation < 0.0)
                 cState.rotateLSCoordinates(rotation);
 
-            double rotationRS = /*tempDoubleArray[device] =*/ settings.RSRotation[device];
+            double rotationRS = /*tempDoubleArray[device] =*/ settings.ForSlot(device).Sticks.RSRotation;
             if (rotationRS > 0.0 || rotationRS < 0.0)
                 cState.rotateRSCoordinates(rotationRS);
 
-            StickAntiSnapbackInfo lsAntiSnapback = settings.LSAntiSnapbackInfo[device];
-            StickAntiSnapbackInfo rsAntiSnapback = settings.RSAntiSnapbackInfo[device];
+            StickAntiSnapbackInfo lsAntiSnapback = settings.ForSlot(device).Sticks.LSAntiSnapback;
+            StickAntiSnapbackInfo rsAntiSnapback = settings.ForSlot(device).Sticks.RSAntiSnapback;
 
             if (lsAntiSnapback.enabled)
             {
@@ -59,8 +59,8 @@ namespace DS4Windows.Processing.Services
                 _stickConditioner.AntiSnapback(stickValueHistory[device][1], rsAntiSnapback.delta, rsAntiSnapback.timeout, DateTimeOffset.Now.ToUnixTimeMilliseconds(), ref cState.RX, ref cState.RY);
             }
 
-            StickDeadZoneInfo lsMod = settings.LSModInfo[device];
-            StickDeadZoneInfo rsMod = settings.RSModInfo[device];
+            StickDeadZoneInfo lsMod = settings.ForSlot(device).Sticks.LSMod;
+            StickDeadZoneInfo rsMod = settings.ForSlot(device).Sticks.RSMod;
 
             if (lsMod.fuzz > 0)
             {
@@ -106,7 +106,7 @@ namespace DS4Windows.Processing.Services
             // Only apply deprecated Sensitivity modifier for Radial DZ
             if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
-                double lsSens = settings.LSSens[device];
+                double lsSens = settings.ForSlot(device).Sticks.LSSens;
                 if (lsSens != 1.0)
                 {
                     dState.LX = (byte)NumericUtil.Clamp(0, lsSens * (dState.LX - 128.0) + 128.0, 255);
@@ -117,7 +117,7 @@ namespace DS4Windows.Processing.Services
             // Only apply deprecated Sensitivity modifier for Radial DZ
             if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
             {
-                double rsSens = settings.RSSens[device];
+                double rsSens = settings.ForSlot(device).Sticks.RSSens;
                 if (rsSens != 1.0)
                 {
                     dState.RX = (byte)NumericUtil.Clamp(0, rsSens * (dState.RX - 128.0) + 128.0, 255);
@@ -133,21 +133,21 @@ namespace DS4Windows.Processing.Services
             if (r2Sens != 1.0)
                 dState.R2 = (byte)NumericUtil.Clamp(0, r2Sens * dState.R2, 255);
 
-            SquareStickInfo squStk = settings.SquStickInfo[device];
+            SquareStickInfo squStk = settings.ForSlot(device).Sticks.SquStick;
             // Phase9 9-A(1) (c): スクエアスティックと出力カーブは IOutputCurveProcessor へ切り出した（左右・L2／R2 は同じ処理）。条件の判定は、ここに残す
             if (squStk.lsMode && (dState.LX != 128 || dState.LY != 128))
                 _outputCurve.ProcessSquareStick(squStk.lsRoundness, ref dState.LX, ref dState.LY);
 
-            int lsOutCurveMode = settings.GetLsOutCurveMode(device);
+            int lsOutCurveMode = settings.ForSlot(device).Sticks.LSCurveMode;
             if (lsOutCurveMode > 0 && (dState.LX != 128 || dState.LY != 128))
-                _outputCurve.ProcessStickCurve(lsOutCurveMode, lsMod.deadzoneType, settings.LsOutBezierCurveObj[device], ref dState.LX, ref dState.LY);
+                _outputCurve.ProcessStickCurve(lsOutCurveMode, lsMod.deadzoneType, settings.ForSlot(device).Sticks.LsBezier, ref dState.LX, ref dState.LY);
 
             if (squStk.rsMode && (dState.RX != 128 || dState.RY != 128))
                 _outputCurve.ProcessSquareStick(squStk.rsRoundness, ref dState.RX, ref dState.RY);
 
-            int rsOutCurveMode = settings.GetRsOutCurveMode(device);
+            int rsOutCurveMode = settings.ForSlot(device).Sticks.RSCurveMode;
             if (rsOutCurveMode > 0 && (dState.RX != 128 || dState.RY != 128))
-                _outputCurve.ProcessStickCurve(rsOutCurveMode, rsMod.deadzoneType, settings.RsOutBezierCurveObj[device], ref dState.RX, ref dState.RY);
+                _outputCurve.ProcessStickCurve(rsOutCurveMode, rsMod.deadzoneType, settings.ForSlot(device).Sticks.RsBezier, ref dState.RX, ref dState.RY);
 
             int l2OutCurveMode = settings.ForSlot(device).Triggers.L2CurveMode;
             if (l2OutCurveMode > 0 && dState.L2 != 0)

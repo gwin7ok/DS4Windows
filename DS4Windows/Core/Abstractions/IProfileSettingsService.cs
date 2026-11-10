@@ -59,23 +59,6 @@ namespace DS4Windows.Core.Abstractions
         DS4Controls[] ReverseX360ButtonMapping { get; }
 
         // ---- Step10-2-A-1: スティック関連 (m_Config委譲) ----
-        StickDeadZoneInfo[] LSModInfo { get; }
-        StickDeadZoneInfo[] RSModInfo { get; }
-        double[] LSRotation { get; }
-        double[] RSRotation { get; }
-        double[] LSSens { get; }
-        double[] RSSens { get; }
-        SquareStickInfo[] SquStickInfo { get; }
-        StickAntiSnapbackInfo[] LSAntiSnapbackInfo { get; }
-        StickAntiSnapbackInfo[] RSAntiSnapbackInfo { get; }
-        StickOutputSetting[] LSOutputSettings { get; }
-        StickOutputSetting[] RSOutputSettings { get; }
-        BezierCurve[] LsOutBezierCurveObj { get; }
-        BezierCurve[] RsOutBezierCurveObj { get; }
-        int GetLsOutCurveMode(int index);
-        void SetLsOutCurveMode(int index, int value);
-        int GetRsOutCurveMode(int index);
-        void SetRsOutCurveMode(int index, int value);
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
         bool[] OutputVirtualTriggerButton { get; }
@@ -124,10 +107,6 @@ namespace DS4Windows.Core.Abstractions
         bool DS4Mapping { get; set; }
         bool[] DinputOnly { get; }
         int[] IdleDisconnectTimeout { get; }
-        sbyte[] RightStickDriftXAxis { get; }
-        sbyte[] RightStickDriftYAxis { get; }
-        sbyte[] LeftStickDriftXAxis { get; }
-        sbyte[] LeftStickDriftYAxis { get; }
         bool[] EnableOutputDataToDS4 { get; }
 
         /// <summary>

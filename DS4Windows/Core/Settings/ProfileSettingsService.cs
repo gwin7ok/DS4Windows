@@ -193,41 +193,8 @@ namespace DS4Windows.Core.Settings
         }
 
         // ---- Step10-2-A-1: スティック関連 (m_Config委譲) ----
-        public StickDeadZoneInfo[] LSModInfo => SafeConfig?.lsModInfo;
-        public StickDeadZoneInfo[] RSModInfo => SafeConfig?.rsModInfo;
-        public double[] LSRotation => SafeConfig?.LSRotation;
-        public double[] RSRotation => SafeConfig?.RSRotation;
-        public double[] LSSens => SafeConfig?.LSSens;
-        public double[] RSSens => SafeConfig?.RSSens;
-        public SquareStickInfo[] SquStickInfo => SafeConfig?.squStickInfo;
-        public StickAntiSnapbackInfo[] LSAntiSnapbackInfo => SafeConfig?.lsAntiSnapbackInfo;
-        public StickAntiSnapbackInfo[] RSAntiSnapbackInfo => SafeConfig?.rsAntiSnapbackInfo;
-        public StickOutputSetting[] LSOutputSettings => SafeConfig?.lsOutputSettings;
-        public StickOutputSetting[] RSOutputSettings => SafeConfig?.rsOutputSettings;
-        public BezierCurve[] LsOutBezierCurveObj => SafeConfig?.lsOutBezierCurveObj;
-        public BezierCurve[] RsOutBezierCurveObj => SafeConfig?.rsOutBezierCurveObj;
 
-        public int GetLsOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getLsOutCurveMode(index) : 0;
 
-        public void SetLsOutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setLsOutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetLsOutCurveMode: Slot {index} = {value}");
-            }
-        }
-
-        public int GetRsOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getRsOutCurveMode(index) : 0;
-
-        public void SetRsOutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setRsOutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetRsOutCurveMode: Slot {index} = {value}");
-            }
-        }
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
         public bool[] OutputVirtualTriggerButton => SafeConfig?.outputVirtualTriggerButtons;
@@ -357,10 +324,6 @@ namespace DS4Windows.Core.Settings
         }
         public bool[] DinputOnly => SafeConfig?.dinputOnly;
         public int[] IdleDisconnectTimeout => SafeConfig?.idleDisconnectTimeout;
-        public sbyte[] RightStickDriftXAxis => SafeConfig?.rightStickDriftXAxis;
-        public sbyte[] RightStickDriftYAxis => SafeConfig?.rightStickDriftYAxis;
-        public sbyte[] LeftStickDriftXAxis => SafeConfig?.leftStickDriftXAxis;
-        public sbyte[] LeftStickDriftYAxis => SafeConfig?.leftStickDriftYAxis;
         public bool[] EnableOutputDataToDS4 => SafeConfig?.enableOutputDataToDS4;
 
         // Issue7是正: Global.OutContType と同一の _config.outputDevType への読み取り専用委譲。
@@ -449,7 +412,7 @@ namespace DS4Windows.Core.Settings
             ProfileSlotSettings window = _slotSettings[slot];
             if (window == null)
             {
-                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot]);
+                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot], SafeConfig.stickSlots[slot]);
                 _slotSettings[slot] = window;
             }
             return window;

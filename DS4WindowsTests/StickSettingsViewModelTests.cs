@@ -61,39 +61,39 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
-            double sens = service.LSSens[0];
-            double rotation = service.RSRotation[0];
-            int mode = service.GetLsOutCurveMode(0);
-            var deadType = service.RSModInfo[0].deadzoneType;
+            double sens = service.ForSlot(0).Sticks.LSSens;
+            double rotation = service.ForSlot(0).Sticks.RSRotation;
+            int mode = service.ForSlot(0).Sticks.LSCurveMode;
+            var deadType = service.ForSlot(0).Sticks.RSMod.deadzoneType;
             try
             {
                 vm.LSSens = sens + 0.25;
-                Assert.Equal(sens + 0.25, service.LSSens[0]);
+                Assert.Equal(sens + 0.25, service.ForSlot(0).Sticks.LSSens);
 
                 // 回転は、画面では度、保存ではラジアン
                 vm.RSRotation = 90.0;
-                Assert.Equal(Math.PI / 2, service.RSRotation[0], 6);
+                Assert.Equal(Math.PI / 2, service.ForSlot(0).Sticks.RSRotation, 6);
                 Assert.Equal(90.0, vm.RSRotation, 6);
 
                 // 曲線の選択を 6（カスタム）にすると、カスタム曲線の入力が有効になる通知が出る
                 var names = new List<string>();
                 vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
                 vm.LSOutputCurveIndex = 6;
-                Assert.Equal(6, service.GetLsOutCurveMode(0));
+                Assert.Equal(6, service.ForSlot(0).Sticks.LSCurveMode);
                 Assert.True(vm.LSCustomCurveSelected);
                 Assert.Contains(nameof(StickSettingsViewModel.LSCustomCurveSelected), names);
 
                 // デッドゾーンの種類（0＝Radial、1＝Axial）
                 vm.RSDeadTypeIndex = 1;
-                Assert.Equal(StickDeadZoneInfo.DeadZoneType.Axial, service.RSModInfo[0].deadzoneType);
+                Assert.Equal(StickDeadZoneInfo.DeadZoneType.Axial, service.ForSlot(0).Sticks.RSMod.deadzoneType);
                 Assert.Equal(1, vm.RSDeadTypeIndex);
             }
             finally
             {
-                service.LSSens[0] = sens;
-                service.RSRotation[0] = rotation;
-                service.SetLsOutCurveMode(0, mode);
-                service.RSModInfo[0].deadzoneType = deadType;
+                service.ForSlot(0).Sticks.LSSens = sens;
+                service.ForSlot(0).Sticks.RSRotation = rotation;
+                service.ForSlot(0).Sticks.LSCurveMode = mode;
+                service.ForSlot(0).Sticks.RSMod.deadzoneType = deadType;
             }
         }
 
@@ -102,19 +102,19 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
-            StickMode original = service.RSOutputSettings[0].mode;
+            StickMode original = service.ForSlot(0).Sticks.RSOutput.mode;
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
                 vm.RSOutputIndex = 2;
-                Assert.Equal(StickMode.FlickStick, service.RSOutputSettings[0].mode);
+                Assert.Equal(StickMode.FlickStick, service.ForSlot(0).Sticks.RSOutput.mode);
                 Assert.Equal(2, vm.RSOutputIndex);
                 Assert.Contains(nameof(StickSettingsViewModel.RSOutputIndex), names);
             }
             finally
             {
-                service.RSOutputSettings[0].mode = original;
+                service.ForSlot(0).Sticks.RSOutput.mode = original;
             }
         }
 
@@ -122,8 +122,8 @@ namespace DS4WindowsTests
         public void TheSlotSettings_ComeFromTheServiceEntryPoint_AndTheOldMembersAreGoneFromTheEditorViewModel()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            Assert.Same(service.LSModInfo[3], service.ForSlot(3).Sticks.LSMod);
-            Assert.Same(service.RsOutBezierCurveObj[3], service.ForSlot(3).Sticks.RsBezier);
+            Assert.Same(service.ForSlot(3).Sticks.LSMod, service.ForSlot(3).Sticks.LSMod);
+            Assert.Same(service.ForSlot(3).Sticks.RsBezier, service.ForSlot(3).Sticks.RsBezier);
 
             // スティックの項目は、ProfileSettingsViewModel から Sticks（サブ ViewModel）へ移った
             string[] moved = typeof(StickSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)

@@ -42,8 +42,8 @@ namespace DS4WindowsTests
             int slot = PersistenceHarness.Slot;
 
             // 曲線のモード（private なフィールド。設定用のメソッドでだけ変えられる）
-            store.setLsOutCurveMode(slot, 3);
-            store.setRsOutCurveMode(slot, 2);
+            store.stickSlots[slot].ApplyLSCurveMode(3);
+            store.stickSlots[slot].ApplyRSCurveMode(2);
             store.triggerSlots[slot].ApplyL2CurveMode(4);
             store.triggerSlots[slot].ApplyR2CurveMode(5);
             store.setSXOutCurveMode(slot, 1);
@@ -58,8 +58,8 @@ namespace DS4WindowsTests
             store.profileActions[slot].Add("Golden_Key");
 
             store.touchpadSlots[slot].DisInvertTriggers = new int[] { 1, 2 };
-            store.lsModInfo[slot].outerBindDeadZone = 12.0;
-            store.rsModInfo[slot].outerBindDeadZone = 34.0;
+            store.stickSlots[slot].LSMod.outerBindDeadZone = 12.0;
+            store.stickSlots[slot].RSMod.outerBindDeadZone = 34.0;
             return store;
         }
 
