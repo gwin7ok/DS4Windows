@@ -42,16 +42,8 @@ namespace DS4WindowsTests
         public void UsingMaxControllers_IsTrueOnlyWhenLimitEqualsExpandedCount()
         {
             Assert.Equal(
-                _environment.ControllerSlotLimit == ControlService.EXPANDED_CONTROLLER_COUNT,
+                _environment.ControllerSlotLimit == DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount,
                 _environment.UsingMaxControllers);
-        }
-
-        [Fact]
-        public void ExpandedControllerCount_EqualsGlobalMaxControllerCount()
-        {
-            // EnvironmentService と ControlService の互換シムは EXPANDED_CONTROLLER_COUNT で判定するため、
-            // Global 側の最大値と食い違っていないことを固定する。
-            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount, ControlService.EXPANDED_CONTROLLER_COUNT);
         }
 
     }

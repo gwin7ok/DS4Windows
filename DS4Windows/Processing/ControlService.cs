@@ -44,9 +44,6 @@ namespace DS4Windows.Processing
     public class ControlService : IInstanceIdentifiable
     {
         public int InstanceId => this.GetHashCode();
-        // Might be useful for ScpVBus build
-        public const int EXPANDED_CONTROLLER_COUNT = 8;
-        public const int MAX_DS4_CONTROLLER_COUNT = ControllerLimits.MaxControllerCount;
         // Phase7-Step10e W2: 静的な互換シム CURRENT_DS4_CONTROLLER_LIMIT は削除した。値の SSOT は IEnvironmentService.ControllerSlotLimit / UsingMaxControllers。
         // ControlService 内部は注入値 _controllerSlotLimit を使用する（Phase6-Step2-Plan.md 決定O2/O3）。
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
@@ -57,18 +54,12 @@ namespace DS4Windows.Processing
         // Phase13-Step9: running／suspending の転送は削除した（利用者の App／MainWindow／TrayIconViewModel は IServiceLifecycle を直接使う）。
         private readonly ControllerState[] PreviousState;
         private readonly ControllerState[] TempState;
-        bool[] buttonsdown = new bool[MAX_DS4_CONTROLLER_COUNT] { false, false, false, false, false, false, false, false };
-        bool[] held = new bool[MAX_DS4_CONTROLLER_COUNT];
-        int[] oldmouse = new int[MAX_DS4_CONTROLLER_COUNT] { -1, -1, -1, -1, -1, -1, -1, -1 };
 
         // Phase13-Step5b: IDeviceSlotHost（ActiveControllers と OnReport の窓口）は削除した。接続中の数は IDeviceSlotState、入力レポートの処理は IInputReportProcessor
 
         // Phase13-Step3: イベントスレッドは IEventThreadDispatcher、KBM 出力の初期化は IOutputKbmInitializer へ移した（IServiceLifecycleHost は廃止）
 
         // Phase9 9-E E-3: 旧 udpEuroPairAccel／udpEuroPairGyro（UDP モーションのスムージングのフィルター）は UdpMotionService へ移した
-#pragma warning disable CS0169 // tempBusThread is intentionally unused currently
-        Thread tempBusThread;
-#pragma warning restore CS0169
         // Phase13-Step3: 旧 eventDispatchThread／eventDispatcher（イベントスレッド）は EventThreadDispatcher へ移した
         private readonly DS4Windows.Processing.Abstractions.IEventThreadDispatcher _eventThread;
 
@@ -83,12 +74,6 @@ namespace DS4Windows.Processing
         // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（OutputSlotService → ControlService の逆依存の回避）をやめ、直接注入にした。
         // 逆依存は Phase9 E-4 で解消済みで、OutputSlotService は VirtualPadService だけを見る。
         private readonly DS4Windows.Processing.Abstractions.IOutputSlotService _outputSlotService;
-        private OutContType[] _activeOutDevType;
-        // ActiveOutDevType の配列参照は再代入されない（OutputSlotService の配列は要素書込みのみ）ため、初回に1回だけ取得する。
-        // 以降は null 合体の1分岐のみで、ホットパスでもアロケーションは発生しない。
-        private OutContType[] ActiveOutDevType
-            => _activeOutDevType ?? (_activeOutDevType = _outputSlotService.ActiveOutDevType);
-        private readonly DS4Windows.Core.Abstractions.IProfileRepository _profileRepository;
 
         // Phase6-Step2-3 (PR-3): KBM 出力の送出（IVirtualKBM）とハンドラのライフサイクル（IVirtualKBMLifecycle）を分離（決定D3）
         // Phase13-Step5b-5b-e: 旧 _virtualKBM／_appearanceSettings／_profileActionProvider／_specialActionRepository は、On_Report（InputReportProcessor へ移設）と Mapping の逆依存の解消で、使われなくなったため削除した
@@ -98,19 +83,16 @@ namespace DS4Windows.Processing
         // Phase7-Step8 W1: 旧 StickMotionState.Shared／SyntheticInputState.Shared（静的な窓口）。コンストラクターで受ける。
         private readonly StickMotionState _stickMotion;
         // Phase7-Step8 W2: 入力の評価の窓口（旧: Mapping の静的メソッド）。画面（ControllerReadingsControl、RecordBoxViewModel）も、これを経由して使う
-        private readonly DS4Windows.Processing.Abstractions.IMapping _mapping;
         // コントローラースロット上限（現在接続台数ではない）。プロセス内で不変のためコンストラクタで1回だけ取得する。
 
         // ---- Phase6-Step3-2: Mapping.cs への引数渡し（S3方針）用の読み取り専用アクセサ ----
         // Mapping.cs の各メソッドは既に ControlService（ctrl）を引数として受け取っているため、
         // 新たな static Service Locator を追加せず、この既存の受け渡し経路を通じてサービスを渡す。
-        internal DS4Windows.Core.Abstractions.IProfileRepository ProfileRepository => _profileRepository;
         // Phase6-Step3-3: MapCustom の ButtonAbsMouseInfos（絶対マウス出力の座標系設定）参照を
         // ctrl 経由の引数渡しへ切り替えるために追加。既存の _profileSettings フィールドをそのまま公開するのみで、
         // 新規サービス・新規フィールドは追加していない。ButtonAbsMouseInfos 自体はその後の機能廃止
         // （Abs Mouse機能削除、copilot-instructions.md §2.2 例外規定）で無くなったが、本プロパティは
         // Step3-6（GetControlSettingsGroup 等）で再利用する汎用アクセサとして存置している。
-        internal DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettingsService => _profileSettings;
 
         // Phase9 9-E E-2: 旧 hidDeviceHiding*（HidHide の状態）は HidHideService へ移した
 
@@ -132,9 +114,7 @@ namespace DS4Windows.Processing
         public ControlService(
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
-            DS4Windows.Core.Abstractions.IProfileRepository profileRepository,
             StickMotionState stickMotion,
-            DS4Windows.Processing.Abstractions.IMapping mapping,
             DS4Windows.Processing.Abstractions.IVirtualPadService virtualPadService,
             DS4Windows.Processing.Abstractions.IEventThreadDispatcher eventThread,
             DS4Windows.Processing.Abstractions.IDeviceSlotState slots,
@@ -153,11 +133,9 @@ namespace DS4Windows.Processing
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。
             this._profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings)); // Phase6-Step10-4-5: Global のフォールバックを廃止
             this._outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-            this._profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
             (appliedProfileRecorder ?? throw new ArgumentNullException(nameof(appliedProfileRecorder))).Attach();
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
 

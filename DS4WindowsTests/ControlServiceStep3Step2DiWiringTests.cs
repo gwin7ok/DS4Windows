@@ -39,28 +39,5 @@ namespace DS4WindowsTests
         }
 
         // Phase13-Step5b-5b-e: 該当の引数（ControlService のコンストラクター）は、使われなくなったため削除した。null 検査のテストも不要になった
-
-        private static object GetInternalProperty(ControlService controlService, string propertyName)
-        {
-            PropertyInfo prop = typeof(ControlService).GetProperty(
-                propertyName, BindingFlags.Instance | BindingFlags.NonPublic);
-
-            Assert.NotNull(prop); // プロパティ名変更等でシグネチャが失われた場合に検出する
-            return prop.GetValue(controlService);
-        }
-
-        [Theory]
-        [InlineData("ProfileRepository", typeof(IProfileRepository))]
-        public void InternalAccessor_ReturnsSameInstanceAsAppHost(string propertyName, Type serviceType)
-        {
-            DS4Windows.Composition.AppHost.CreateHost();
-            var controlService = TestHost.GetService<ControlService>();
-
-            var expected = TestHost.GetService(serviceType);
-            var actual = GetInternalProperty(controlService, propertyName);
-
-            Assert.NotNull(expected);
-            Assert.Same(expected, actual);
-        }
     }
 }

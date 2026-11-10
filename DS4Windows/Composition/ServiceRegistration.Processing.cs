@@ -155,10 +155,8 @@ namespace DS4Windows.Composition
                     // Phase13-Step3: 起動引数（-virtualkbm）は OutputKbmInitializer が Initialize() の時点で IStartupArguments から読む（旧: ここで渡していた）
                     sp.GetRequiredService<IProfileSettingsService>(),
                     sp.GetRequiredService<IOutputSlotService>(),   // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（逆依存は Phase9 E-4 で解消済み）
-                    sp.GetRequiredService<IProfileRepository>(),
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),
-                    sp.GetRequiredService<IMapping>(),
                     sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4
                     sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
                     sp.GetRequiredService<IDeviceSlotState>(),   // Phase13-Step5

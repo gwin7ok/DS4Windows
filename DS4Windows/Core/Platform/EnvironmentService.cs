@@ -119,7 +119,7 @@ namespace DS4Windows.Core.Platform
 
         public int ControllerSlotLimit => ProcessControllerSlotLimit;
 
-        public bool UsingMaxControllers => ProcessControllerSlotLimit == ControlService.EXPANDED_CONTROLLER_COUNT;
+        public bool UsingMaxControllers => ProcessControllerSlotLimit == DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;
 
         // ---- Phase6-Step2-3 (PR-3): FakerInput 導入バージョン ----
         public string FakerInputVersion => FakerInputVersionState;

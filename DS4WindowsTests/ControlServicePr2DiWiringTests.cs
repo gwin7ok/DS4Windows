@@ -39,7 +39,6 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData("outputSlotService")]
-        [InlineData("profileRepository")]
         [InlineData("appliedProfileRecorder")]
         public void Constructor_NullRequiredParameter_ThrowsArgumentNullException(string parameterName)
         {

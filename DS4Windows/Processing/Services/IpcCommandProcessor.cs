@@ -112,7 +112,7 @@ namespace DS4Windows.Processing.Services
             int tdevice = -1;
             if (int.TryParse(strData[1], out tdevice))
                 tdevice--;
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 byte.TryParse(strData[2], out byte red);
                 byte.TryParse(strData[3], out byte green);
@@ -128,7 +128,7 @@ namespace DS4Windows.Processing.Services
             int tdevice = -1;
             if (int.TryParse(strData[1], out tdevice)) tdevice--;
 
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount &&
                     File.Exists(_pathService.AppDataPath + "\\Profiles\\" + strData[2] + ".xml"))
             {
                 if (strData[0] == "loadprofile")
@@ -197,7 +197,7 @@ namespace DS4Windows.Processing.Services
             if (int.TryParse(strData[1], out tdevice))
                 tdevice--;
 
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 strData[2] = strData[2].ToLower();
                 // Phase6-Step10-5: 抜き差しの正式な入口（IOutputSlotService）経由。事前条件の確認と UI スレッドへの切り替えは、サービスが行う
@@ -219,7 +219,7 @@ namespace DS4Windows.Processing.Services
             if (int.TryParse(strData[1], out tdevice))
                 tdevice--;
 
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 string propName = strData[2].ToLower();
                 InputDeviceCore[] controllers = _slots.Controllers;

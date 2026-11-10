@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         public void ControlService_Constructor_HasNoUnusedParameters()
         {
             var parameters = typeof(ControlService).GetConstructors().Single().GetParameters();
-            Assert.Equal(12, parameters.Length);   // Phase16-Step5a: 登録簿のフック・適用プロファイルの記憶・仮想パッドの失敗の処理を部品へ分けた（16 → 12）。 Phase13b-Step3: IServiceDebugRelay を廃止（17 → 16）。 Phase13-Step10 10-e: ログの中継の 6 引数を IServiceDebugRelay 1 つにまとめた（22 → 17）。 Phase13-Step10 10-d: IActiveInputProbe／IDeviceRumbleService／IEnvironmentService を外した（25 → 22）。 Phase13-Step10 10-c: IOscService を外した（26 → 25）。 Phase13-Step5b-5b-e: 使われなくなった IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository を外した（30 → 26）。 Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30）。 Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
+            Assert.Equal(10, parameters.Length);   // Phase27: 使っていなかった IProfileRepository／IMapping を外した（12 → 10）。 Phase16-Step5a: 登録簿のフック・適用プロファイルの記憶・仮想パッドの失敗の処理を部品へ分けた（16 → 12）。 Phase13b-Step3: IServiceDebugRelay を廃止（17 → 16）。 Phase13-Step10 10-e: ログの中継の 6 引数を IServiceDebugRelay 1 つにまとめた（22 → 17）。 Phase13-Step10 10-d: IActiveInputProbe／IDeviceRumbleService／IEnvironmentService を外した（25 → 22）。 Phase13-Step10 10-c: IOscService を外した（26 → 25）。 Phase13-Step5b-5b-e: 使われなくなった IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository を外した（30 → 26）。 Phase13-Step5b-5b-c: IInputReportProcessor を足した（29 → 30）。 Phase13-Step5: スロット状態の持ち主（IDeviceSlotState）を足した（28 → 29。Step5b 以降で減らす）
             foreach (Type t in Removed)
                 Assert.DoesNotContain(parameters, p => p.ParameterType == t);
         }

@@ -87,7 +87,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { "led:0:255:0:10" }, Run("changeledcolor", "1", "255", "0", "10").Calls);
             Assert.Empty(Run("changeledcolor", "1", "255", "0").Calls);                       // 引数が足りない
             Assert.Empty(Run("changeledcolor", "0", "1", "2", "3").Calls);                    // スロット番号は 1 から
-            Assert.Empty(Run("changeledcolor", (ControlService.MAX_DS4_CONTROLLER_COUNT + 1).ToString(), "1", "2", "3").Calls);
+            Assert.Empty(Run("changeledcolor", (DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount + 1).ToString(), "1", "2", "3").Calls);
             Assert.Equal(new[] { "led:0:0:0:0" }, Run("changeledcolor", "1", "x", "300", "-1").Calls);   // 解釈できない値は 0
         }
 

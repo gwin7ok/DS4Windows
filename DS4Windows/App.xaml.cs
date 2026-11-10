@@ -529,7 +529,7 @@ namespace DS4Windows
                 _profileRepository.SaveAsProfile(0, "Default");
                 ProfileSlotNames profilePath = _profileRepository.ProfilePath;
                 ProfileSlotNames olderProfilePath = _profileRepository.OlderProfilePath;
-                for (int i = 0; i < DS4Windows.Processing.ControlService.MAX_DS4_CONTROLLER_COUNT; i++)
+                for (int i = 0; i < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount; i++)
                 {
                     profilePath[i] = olderProfilePath[i] = "Default";
                 }
