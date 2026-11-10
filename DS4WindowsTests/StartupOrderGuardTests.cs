@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
 
             // 単一起動の通知は、ホストの構築より前
             AssertOrder(SourceText.Body(text, "private void InitializeProcessWideSettings("),
-                "timeBeginPeriod(1)", "LoadFromRegistry()", "RefreshViGEmBusInfo()", "new EventWaitHandle(", "CreateTempWorkerThread();");
+                "timeBeginPeriod(1)", "LoadFromRegistry()", "RefreshViGEmBusInfo()", "_singleInstance.StartListening(");
 
             // ホストの構築 → ControlService → Post-Host のサービス
             AssertOrder(SourceText.Body(text, "private void BuildHostAndServices("),
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
 
             // メイン画面 → IPC → 出力スロット → LateChecks
             AssertOrder(SourceText.Body(text, "private void ShowMainWindowAndFinish("),
-                "IMainWindowFactory", "window.Show();", "CreateIPCClassNameMMF(", "window.CheckMinStatus();", "CheckHidHidePresence()", "LoadOutputSlots();", "window.LateChecks(parser);");
+                "IMainWindowFactory", "window.Show();", "PublishWindowClassName(", "window.CheckMinStatus();", "CheckHidHidePresence()", "LoadOutputSlots();", "window.LateChecks(parser);");
         }
     }
 }

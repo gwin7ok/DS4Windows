@@ -33,8 +33,10 @@ namespace DS4Windows.Composition
             services.AddSingleton<TrayAppearanceController>();   // メイン画面のトレイ・通知・テーマの切り替え
             services.AddSingleton<ProfileSelectionCoordinator>();   // メイン画面のプロファイルの選択・編集後の同期
             // Phase14b-Step16（決定 D11）: 画面のテーマ・言語の切り替え（App へ委譲するアダプター）
-            services.AddSingleton<IUiThemeAndLanguage, AppThemeLanguageAdapter>();
-            services.AddSingleton<IIpcResultWriter, AppIpcResultWriterAdapter>();   // Phase14b-Step16: CLI の問い合わせの結果（App の MMF へ委譲）
+            services.AddSingleton<AppThemeAndCultureService>(sp => new AppThemeAndCultureService(sp.GetRequiredService<DS4Windows.Core.Settings.BackingStore>()));
+            services.AddSingleton<IUiThemeAndLanguage>(sp => sp.GetRequiredService<AppThemeAndCultureService>());
+            services.AddSingleton<DS4Windows.Core.Platform.IpcMemoryMap>();   // CLI との通信のメモリマップトファイル（本体側が、クラス名の公開と問い合わせの結果の書き込みに使う）
+            services.AddSingleton<IIpcResultWriter, IpcResultWriterAdapter>();   // CLI の問い合わせの結果の書き込み
 
             // Phase 4: Pattern A ViewModel (Transient)
             services.AddTransient<SettingsViewModel>();
