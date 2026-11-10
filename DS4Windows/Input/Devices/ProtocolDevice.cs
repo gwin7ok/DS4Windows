@@ -71,6 +71,7 @@ namespace DS4Windows.Input.Devices
             firstActive = DateTime.UtcNow;
             hDevice.SetNumInputBuffers(3);
             long oldTime = 0;
+            var latencyWindow = new LatencyWindow();
             exitInputThread = false;
             timeoutExecuted = false;
             ds4InactiveFrame = true;
@@ -102,6 +103,7 @@ namespace DS4Windows.Input.Devices
                 lastTimeElapsedDouble = (now - oldTime) * (1.0 / Stopwatch.Frequency) * 1000.0;
                 lastTimeElapsed = (long)lastTimeElapsedDouble;
                 oldTime = now;
+                Latency = latencyWindow.Add(lastTimeElapsed);
 
                 utcNow = DateTime.UtcNow;
                 cState.PacketCounter = pState.PacketCounter + 1;
@@ -138,7 +140,7 @@ namespace DS4Windows.Input.Devices
 
                 WriteOutputIfChanged();
                 cState.CopyTo(pState);
-                RunQueuedEvents();
+                RunQueuedInputEvents();
             }
 
             timeoutExecuted = true;
@@ -161,24 +163,6 @@ namespace DS4Windows.Input.Devices
 
             outputDirty = false;
             currentHap.dirty = false;
-        }
-
-        private void RunQueuedEvents()
-        {
-            if (!hasInputEvts)
-            {
-                return;
-            }
-
-            lock (eventQueueLock)
-            {
-                while (eventQueue.Count > 0)
-                {
-                    eventQueue.Dequeue().Invoke();
-                }
-
-                hasInputEvts = false;
-            }
         }
 
         // 停止のとき、全ての出力を止める（空の状態を書く）
