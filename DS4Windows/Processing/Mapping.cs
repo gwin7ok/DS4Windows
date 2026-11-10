@@ -1,4 +1,4 @@
-using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
+﻿using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -103,10 +103,7 @@ namespace DS4Windows.Processing
             DS4Windows.Processing.Abstractions.IDeviceInputCleanup inputCleanup,
             DS4Windows.Processing.Abstractions.IMacroPlayback macroPlayback,
             DS4Windows.Processing.Actions.ITriggerDispatchEngine triggerEngine,
-            DS4Windows.Processing.Abstractions.IFlickStickProcessor flickStick,
-            DS4Windows.Processing.Abstractions.IButtonMouseMovementCalculator buttonMouseMovement,
-            DS4Windows.Processing.Abstractions.IMouseMotionQuantizer mouseMotionQuantizer,
-            DS4Windows.Processing.Abstractions.IGyroMouseStickBlender gyroMouseStickBlender,
+            DS4Windows.Processing.Abstractions.IMouseConversionStage mouseConversion,
             DS4Windows.Processing.Abstractions.ICurveAndDeadzoneStage curveStage,
             DS4Windows.Processing.Abstractions.IControlActivityReader controlActivityReader,
             DS4Windows.Processing.Abstractions.ISyntheticInputCommitter syntheticCommitter,
@@ -140,11 +137,8 @@ namespace DS4Windows.Processing
             _macroPlayback = macroPlayback ?? throw new ArgumentNullException(nameof(macroPlayback));
             _inputCleanup = inputCleanup ?? throw new ArgumentNullException(nameof(inputCleanup));
             _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
+            _mouseConversion = mouseConversion ?? throw new ArgumentNullException(nameof(mouseConversion));
             _curveStage = curveStage ?? throw new ArgumentNullException(nameof(curveStage));
-            _flickStick = flickStick ?? throw new ArgumentNullException(nameof(flickStick));
-            _buttonMouseMovement = buttonMouseMovement ?? throw new ArgumentNullException(nameof(buttonMouseMovement));
-            _mouseMotionQuantizer = mouseMotionQuantizer ?? throw new ArgumentNullException(nameof(mouseMotionQuantizer));
-            _gyroMouseStickBlender = gyroMouseStickBlender ?? throw new ArgumentNullException(nameof(gyroMouseStickBlender));
             _controlActivityReader = controlActivityReader ?? throw new ArgumentNullException(nameof(controlActivityReader));
             _syntheticCommitter = syntheticCommitter ?? throw new ArgumentNullException(nameof(syntheticCommitter));
             _twoStageTrigger = twoStageTrigger ?? throw new ArgumentNullException(nameof(twoStageTrigger));
@@ -249,11 +243,8 @@ namespace DS4Windows.Processing
         // 新旧の経路が別々の集合を持つと、通常の割り当ての抑制が食い違うため（Phase8-Step2-Design.md §23.3）。
         private readonly DS4Windows.Processing.Actions.ITriggerDispatchEngine _engine;
         private readonly DS4Windows.Processing.Abstractions.IDeviceInputCleanup _inputCleanup;   // 切断時の合成キーの解放・マクロのキュー・ボタンのコントローラーの後始末
+        private readonly DS4Windows.Processing.Abstractions.IMouseConversionStage _mouseConversion;   // 入力をマウスの動きへ変える段（移動量の計算、フリックスティック、整数化、ジャイロのマウススティック）
         private readonly DS4Windows.Processing.Abstractions.ICurveAndDeadzoneStage _curveStage;   // 入力の補正の段（回転・ドリフト・デッドゾーン・出力カーブ・ジャイロ）
-        private readonly DS4Windows.Processing.Abstractions.IFlickStickProcessor _flickStick;   // Phase9 9-A(2)-C: フリックスティック（共通の処理）
-        private readonly DS4Windows.Processing.Abstractions.IButtonMouseMovementCalculator _buttonMouseMovement;   // Phase9 9-B: ボタン・スティック・トリガー・ジャイロ方向 → マウスの生の移動量（旧 getMouseMapping。加速の状態はデバイスごと）
-        private readonly DS4Windows.Processing.Abstractions.IMouseMotionQuantizer _mouseMotionQuantizer;   // Phase9 9-B: マウスの移動量の整数化と端数の持ち越し（旧 calculateFinalMouseMovement。端数はデバイスごと）
-        private readonly DS4Windows.Processing.Abstractions.IGyroMouseStickBlender _gyroMouseStickBlender;   // Phase9 9-B: ジャイロのマウススティック出力の合成（旧 TempMouseJoystick の内側）
         private readonly DS4Windows.Processing.Abstractions.ITwoStageTriggerProcessor _twoStageTrigger;   // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（旧 ProcessTwoStageTrigger）
         private readonly DS4Windows.Processing.Abstractions.ISyntheticInputCommitter _syntheticCommitter;   // Phase9 MapCustom の分割 M1: 合成入力の確定（旧 Commit の本体）
         private readonly DS4Windows.Processing.Abstractions.IControlActivityReader _controlActivityReader;   // Phase9 9-B: コントロールが押されているかの判定（旧 GetBoolMappingExternal の本体）
@@ -277,7 +268,7 @@ namespace DS4Windows.Processing
             if (state == null || fields == null) return 0.0;
 
             // Phase9 9-B: 旧 getMouseMapping（ctrl から設定と経過時間を読んでいた）は ButtonMouseMovementCalculator へ移した。設定と経過時間は、ここで読んで渡す
-            return _buttonMouseMovement.Calculate(device, control, direction, state, fields,
+            return _mouseConversion.CalculateButtonMouseMovement(device, control, direction, state, fields,
                 profileSettings.ButtonMouseInfos[device],
                 profileSettings.LSModInfo[device].deadZone,
                 profileSettings.RSModInfo[device].deadZone,
@@ -454,7 +445,7 @@ namespace DS4Windows.Processing
             if (tempMouseDeltaX == 0.0) tempMouseDeltaX = frameOutput.MouseDeltaX;
             if (tempMouseDeltaY == 0.0) tempMouseDeltaY = frameOutput.MouseDeltaY;
 
-            _mouseMotionQuantizer.Quantize(device, ref tempMouseDeltaX, ref tempMouseDeltaY,
+            _mouseConversion.QuantizeMouseMotion(device, ref tempMouseDeltaX, ref tempMouseDeltaY,
                 out mouseDeltaX, out mouseDeltaY);
             if (mouseDeltaX != 0 || mouseDeltaY != 0)
             {
@@ -518,12 +509,12 @@ namespace DS4Windows.Processing
 
                         if (isRightStick)
                         {
-                            _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                            _mouseConversion.ProcessFlickStick(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
                                 cRawState.RX, cRawState.RY, pState.RX, pState.RY, ref tempMouseDeltaX);
                         }
                         else
                         {
-                            _flickStick.Process(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                            _mouseConversion.ProcessFlickStick(flickMappingData[device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
                                 cRawState.LX, cRawState.LY, pState.LX, pState.LY, ref tempMouseDeltaX);
                         }
 
@@ -618,7 +609,7 @@ namespace DS4Windows.Processing
                 if (msinfo.outputStick != GyroMouseStickInfo.OutputStick.None)
                 {
                     // Phase9 9-B: X／Y の合成（約 55 行）は GyroMouseStickBlender へ移した
-                    _gyroMouseStickBlender.Blend(msinfo, gyroStickX[device], gyroStickY[device],
+                    _mouseConversion.BlendGyroMouseStick(msinfo, gyroStickX[device], gyroStickY[device],
                         MappedState, mapStickActionData[device]);
                 }
             }

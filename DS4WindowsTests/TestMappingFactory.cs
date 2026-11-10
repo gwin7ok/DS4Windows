@@ -57,10 +57,9 @@ namespace DS4WindowsTests
                 cleanup,
                 playback,
                 triggerEngine,
-                TestHost.GetService<IFlickStickProcessor>(),   // Phase9 9-A(2)-C
-                new ButtonMouseMovementCalculator(),   // Phase9 9-B: 加速の状態を持つため、独立の instance にする（他のテストと状態を共有しない）
-                new MouseMotionQuantizer(),   // Phase9 9-B: 端数を持つため、独立の instance にする
-                TestHost.GetService<IGyroMouseStickBlender>(),   // Phase9 9-B: 状態なし
+                // Phase9 9-B: 加速の状態・端数を持つ部品は、独立の instance にする（他のテストと状態を共有しない）
+                new MouseConversionStage(new ButtonMouseMovementCalculator(), TestHost.GetService<IFlickStickProcessor>(),
+                    new MouseMotionQuantizer(), TestHost.GetService<IGyroMouseStickBlender>()),
                 new CurveAndDeadzoneStage(TestHost.GetService<IStickDeadZoneProcessor>(), TestHost.GetService<IOutputCurveProcessor>(),
                     TestHost.GetService<ITriggerDeadZoneProcessor>(), TestHost.GetService<IGyroControlsProcessor>(),
                     TestHost.GetService<IStickInputConditioner>(), stickMotionState),   // 状態は stickMotion を共有する

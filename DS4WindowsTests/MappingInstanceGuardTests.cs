@@ -69,7 +69,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(20, parameters.Length); // 設計の経緯は git の履歴と Phase16-Plan.md（16-1: 読まれていなかった 3 つを削除し 28 → 25。16-10: 補正の段と切断の後始末を切り出し 25 → 20）
+            Assert.Equal(17, parameters.Length); // 設計の経緯は git の履歴と Phase16-Plan.md（16-1: 読まれていなかった 3 つを削除し 28 → 25。16-10: 補正の段と切断の後始末を切り出し 25 → 20。16-13a: マウスの変換の段を窓口にして 20 → 17）
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
@@ -80,10 +80,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IDeviceInputCleanup>(),
                 TestHost.GetService<IMacroPlayback>(),   // Phase9 9-C: 旧 Func<IDeviceStateAccessor> の位置
                 TestHost.GetService<ITriggerDispatchEngine>(),
-                TestHost.GetService<IFlickStickProcessor>(),
-                TestHost.GetService<IButtonMouseMovementCalculator>(),
-                TestHost.GetService<IMouseMotionQuantizer>(),
-                TestHost.GetService<IGyroMouseStickBlender>(),
+                TestHost.GetService<IMouseConversionStage>(),
                 TestHost.GetService<ICurveAndDeadzoneStage>(),
                 TestHost.GetService<IControlActivityReader>(),
                 TestHost.GetService<ISyntheticInputCommitter>(),

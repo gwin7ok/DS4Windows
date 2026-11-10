@@ -134,6 +134,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<ITwoStageTriggerProcessor, TwoStageTriggerProcessor>();   // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（状態なし。状態は StickMotionState の TwoStageTriggerMappingData）
             services.AddSingleton<ISyntheticInputCommitter, SyntheticInputCommitter>();   // Phase9 MapCustom の分割 M1: 合成入力の確定（クリック・ホイール。ホイールの繰り返しの状態を持つ）
             services.AddSingleton<IControlActivityReader, ControlActivityReader>();   // Phase9 9-B: コントロールが押されているかの判定（状態なし）
+            services.AddSingleton<IMouseConversionStage, MouseConversionStage>();   // 入力をマウスの動きへ変える段（4 つの計算の部品への窓口）
             services.AddSingleton<ICurveAndDeadzoneStage, CurveAndDeadzoneStage>();   // 入力の補正の段（Mapping から切り出した）
             services.AddSingleton<IDeviceInputCleanup, DeviceInputCleanup>();   // 切断時の合成キーの解放・マクロキューとボタンのコントローラーの後始末（Mapping から切り出した）
             services.AddSingleton<IMapping, Mapping>();

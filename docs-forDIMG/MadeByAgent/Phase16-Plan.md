@@ -787,3 +787,8 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **共通化したもの**: `DS4`／`DualSense`／`SwitchPro`／`JoyCon` の `*ControllerOptions` にあった、約 60 行ずつ同形の `PersistSettings`／`LoadSettings`（DTO を XML の断片にして親の節へ置く／読む）を、`ControllerOptionsStore` の `PersistDto<TDto>`／`LoadDto<TDto>` へ集めた。各クラスは 5〜6 行になり、4 クラスの合計は 544 行から約 370 行（基底を含む）になった。節の名前・書き出しの設定・「節がなければ何もしない」「`InvalidOperationException` は無視」は元と同じ。
 - **やらなかったもの（理由）**: `EnableHomeLED`（SwitchPro と JoyCon の同一の 2 行）と、UI の `*OptionsWrapper`・`ControllerRegDeviceOptsViewModel` の種類ごとの `switch`（タブの番号とラッパーの生成）。ラッパーは機種ごとに束縛先の項目が違い、無理にまとめると束縛が壊れやすいため、計画（13.2）どおり「無理にまとめない」とした。
 - 新テスト 5 件（`ControllerOptionsPersistenceTests`: 往復、同名の節は 1 つ、節がなければ変更なし、節の名前）。Actions 3,395 件合格・警告 0。
+
+### Step 16-13a（2026-11-10。完了。見込み約 16 に対し 17。`MappingFrame` は導入せず）
+- **決定 D-13-1 からの変更（理由つき）**: `MappingFrame`（共有の `_sampleState`／`_sampleFields` を渡す入れ物）での段 2 の切り出しは、行わなかった。段 2 の中心（`ProcessStick`／`ProcessControlSettingAction`／`MapCustomAction`）は、`_slots`・各種の状態の配列・トリガーエンジンと密に絡み、毎フレームの経路で引数の受け渡しを増やす割に、`Mapping` の引数が減る量が小さいため。かわりに、**入力をマウスの動きへ変える 4 つの計算の部品**（ボタン等からの移動量、フリックスティック、整数化、ジャイロのマウススティック）を、窓口 `IMouseConversionStage`／`MouseConversionStage` にまとめた（4 引数 → 1 引数）。窓口は 4 部品への委譲だけで、計算と状態は各部品のまま。
+- **結果**: `Mapping` のコンストラクターは 20 → 17 引数（`ConstructorArityBaseline` に 17 で凍結）。15 以下には届かない。残りの依存（デバイス・状態の窓口 3 つ、合成入力の保持 3 つ、トリガーエンジン、2 段階トリガー、確定、活動の読み取り、補正の段、後始末、マクロ再生）は、どれも別々の責務で、これ以上は「何でも箱」にしかならないため、規約 3.1 と D-13-3 に従い、ここで止める。
+- **検証**: 特性化テスト（デッドゾーン・出力カーブ・マウスの移動・ジャイロの合成）と、割り当て 0 のテストは、変更なしで合格。毎フレームの経路の増加は、仮想呼び出し 1 回。Actions 3,395 件合格・警告 0。
