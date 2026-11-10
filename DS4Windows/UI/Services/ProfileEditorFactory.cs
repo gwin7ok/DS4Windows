@@ -21,14 +21,15 @@ namespace DS4Windows.UI.Services
         private readonly IProfileRepository _profileRepository;
         private readonly IProfileSwitcher _profileSwitcher;
         private readonly IControllerReadingsSource _readings;
-        private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfileEditViewModelFactory _viewModelFactory;
+        private readonly IActionViewModelFactory _actionViewModelFactory;
         private readonly IEnvironmentService _environmentService;
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // 振動の停止・入力の取得の窓口
         private readonly IControllerSlotCommands _slotCommands;
 
         public ProfileEditorFactory(IAppSettingsService appSettings, IProfileSettingsService profileSettings,
             IProfileRepository profileRepository, IProfileSwitcher profileSwitcher, IControllerReadingsSource readings,
-            IViewModelFactory viewModelFactory, IEnvironmentService environmentService,
+            IProfileEditViewModelFactory viewModelFactory, IActionViewModelFactory actionViewModelFactory, IEnvironmentService environmentService,
             IRuntimeFeatureSwitch runtimeFeatures, IControllerSlotCommands slotCommands)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -36,6 +37,7 @@ namespace DS4Windows.UI.Services
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
             _readings = readings ?? throw new ArgumentNullException(nameof(readings));
+            _actionViewModelFactory = actionViewModelFactory ?? throw new ArgumentNullException(nameof(actionViewModelFactory));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
@@ -44,6 +46,6 @@ namespace DS4Windows.UI.Services
 
         public ProfileEditor CreateProfileEditor(int targetDevice, IEditorWindowFactory editors)
             => new ProfileEditor(targetDevice, _appSettings, _profileSettings, editors, _profileRepository,
-                _profileSwitcher, _readings, _viewModelFactory, _environmentService, _runtimeFeatures, _slotCommands);
+                _profileSwitcher, _readings, _viewModelFactory, _actionViewModelFactory, _environmentService, _runtimeFeatures, _slotCommands);
     }
 }

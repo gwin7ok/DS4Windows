@@ -72,7 +72,7 @@ namespace DS4Windows.UI
         private readonly IAppSettingsService appSettingsService;
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
-        private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfileEditViewModelFactory _viewModelFactory;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
@@ -171,10 +171,11 @@ namespace DS4Windows.UI
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IViewModelFactory viewModelFactory,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
+            IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IProfileEditViewModelFactory viewModelFactory,
+            IActionViewModelFactory actionViewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             IControllerSlotCommands slotCommands)
         {
+            if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));   // Phase13-Step10 10-d: 旧 ControlService.setRumble／GetActiveInputControl の転送
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
@@ -211,7 +212,7 @@ namespace DS4Windows.UI
             picBoxHover2.Visibility = Visibility.Hidden;
 
             mappingListVM = vmFactory.CreateMappingListViewModel(deviceNum, profileSettingsVM.Output.ContType);
-            specialActionsVM = vmFactory.CreateSpecialActionsListViewModel(deviceNum);
+            specialActionsVM = actionViewModelFactory.CreateSpecialActionsListViewModel(deviceNum);
 
             // S9-10: 削除されたプロファイルを参照する Load Profile は、一覧でも「(none)」と表示する（割り当て編集画面と同じ）
             mappingListVM.ProfileExists = LoadProfileTargetExists;

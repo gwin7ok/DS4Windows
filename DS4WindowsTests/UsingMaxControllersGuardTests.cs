@@ -77,7 +77,7 @@ namespace DS4WindowsTests
         public void TheViewModel_FollowsTheEnvironment()
         {
             DS4Windows.Composition.AppHost.CreateHost();
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IShellViewModelFactory>();
             var env = TestHost.GetService<IEnvironmentService>();
             var vm = factory.CreateAutoProfilesViewModel(TestRepositoryFactory.CreateAutoProfileHolder(),
                 new ProfileList(TestHost.GetService<IPathService>()));

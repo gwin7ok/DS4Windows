@@ -515,7 +515,7 @@ namespace DS4Windows
             {
                 _themeCulture.ApplyLanguageSetting(_appSettingsService.UseLang);
                 DS4Windows.UI.FirstLaunchUtilWindow firstLaunchUtilWin =
-                    new DS4Windows.UI.FirstLaunchUtilWindow(ResolvePostHostService<DS4Windows.UI.Abstractions.IViewModelFactory>()
+                    new DS4Windows.UI.FirstLaunchUtilWindow(ResolvePostHostService<DS4Windows.UI.Abstractions.IShellViewModelFactory>()
                         .CreateFirstLaunchUtilViewModel(_appSettingsService.DeviceOptions));
                 firstLaunchUtilWin.ShowDialog();
                 _appSettingsService.Save();

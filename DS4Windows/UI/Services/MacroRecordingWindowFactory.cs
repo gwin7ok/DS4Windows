@@ -18,12 +18,12 @@ namespace DS4Windows.UI.Services
     {
         private readonly IMacroRecordingState _macroRecording;
         private readonly IPathService _pathService;
-        private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfileEditViewModelFactory _viewModelFactory;
         private readonly IWindowSystem _windowSystem;   // 画面全体のマウス入力ではなく、ドロップしたウィンドウの取得（FocusWindow の対象）
         private readonly IMouseInputHook _mouseHook;   // 記録で、画面全体のマウス入力（移動・ボタン）を監視する
 
         public MacroRecordingWindowFactory(IMacroRecordingState macroRecording, IPathService pathService,
-            IViewModelFactory viewModelFactory, IWindowSystem windowSystem, IMouseInputHook mouseHook)
+            IProfileEditViewModelFactory viewModelFactory, IWindowSystem windowSystem, IMouseInputHook mouseHook)
         {
             _macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));

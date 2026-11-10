@@ -26,7 +26,7 @@
 |---|---|
 | **Singleton** | アプリの起動から終了まで常駐するもの: 設定・リポジトリ・デバイスの登録簿・`Mapping` と処理の段・仮想パッドの出力・工場。状態を持つものは、スレッドセーフにする |
 | **Transient** | 開くたびに最新の設定を読み直す画面（ViewModel） |
-| **工場で生成** | 引数（プロファイル名・スロット番号）を伴う複合 ViewModel。`IViewModelFactory` 経由で作る |
+| **工場で生成** | 引数（プロファイル名・スロット番号）を伴う複合 ViewModel。`IShellViewModelFactory`／`IProfileEditViewModelFactory`／`IActionViewModelFactory` 経由で作る |
 
 - ホットパスの処理の段（`CurveAndDeadzoneStage` など）は状態を持たない Singleton か、スロット別の状態を別の保持クラス（`SyntheticInputState`、`StickMotionState`）で受ける。
 - プロファイル編集画面では、編集対象（プロファイル）と、プレビュー・校正に使う実機（`targetDevice`。-1 は実機なし）を分けて渡す。

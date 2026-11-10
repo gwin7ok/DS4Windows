@@ -17,10 +17,9 @@ namespace DS4Windows.Composition
             services.AddSingleton<INotificationService, AppNotificationService>();
 
             // Phase 4: UI層 ViewModel ファクトリの登録
-            services.AddSingleton<ShellViewModelFactory>();
-            services.AddSingleton<ProfileEditViewModelFactory>();
-            services.AddSingleton<ActionViewModelFactory>();
-            services.AddSingleton<IViewModelFactory, ViewModelFactory>();
+            services.AddSingleton<IShellViewModelFactory, ShellViewModelFactory>();
+            services.AddSingleton<IProfileEditViewModelFactory, ProfileEditViewModelFactory>();
+            services.AddSingleton<IActionViewModelFactory, ActionViewModelFactory>();
 
             // Phase6-Step10-2（決定 E1＝A）: 補助ウィンドウ（ボタン割り当て、マクロ記録、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
             services.AddSingleton<AssignmentWindowFactory>();   // 割り当ての窓（出力ピッカー、割り当て編集画面、プリセット、校正）の生成

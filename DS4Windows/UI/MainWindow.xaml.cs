@@ -87,7 +87,7 @@ namespace DS4Windows.UI
         private readonly TrayAppearanceController trayAppearance;
         private readonly ProfileSelectionCoordinator profileSelection;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
-        private readonly DS4Windows.UI.Abstractions.IViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
+        private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
@@ -118,7 +118,7 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
             MainWindowsViewModel mainWindowsViewModel,
             IAutoProfileService autoProfileService,
-            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
             DS4Windows.Core.Abstractions.IChangelogService changelogService,
             DS4Windows.Processing.Abstractions.IControllerSlotQuery slots,

@@ -14,9 +14,9 @@ namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// メイン画面の枠（タブ、設定、機器一覧、出力スロット、自動プロファイル、トレイ）と、その子ダイアログの ViewModel を作る。
-    /// <see cref="ViewModelFactory"/>（<see cref="IViewModelFactory"/> の窓口）が、生成をここへ委譲する。依存は、ここで作る ViewModel が使うものだけを受ける。
+    /// 窓口は <see cref="DS4Windows.UI.Abstractions.IShellViewModelFactory"/>。依存は、ここで作る ViewModel が使うものだけを受ける。
     /// </summary>
-    public sealed class ShellViewModelFactory
+    public sealed class ShellViewModelFactory : DS4Windows.UI.Abstractions.IShellViewModelFactory
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileRepository _profileRepo;
@@ -24,14 +24,14 @@ namespace DS4Windows.UI.Services
         private readonly IEnvironmentService _environmentService;
         private readonly IPathService _pathService;
         private readonly IAppSettingsService _appSettings;
-        private readonly IAutoProfileService _autoProfileService;
-        private readonly IRuntimeFeatureSwitch _runtimeFeatures;
         private readonly IControllerSlotQuery _slots;
         private readonly IServiceLifecycle _lifecycle;
         private readonly IAppearanceSettingsService _appearanceSettings;
         private readonly ILogSettingsApplier _logSettingsApplier;
         private readonly IStartupEntryService _startupEntries;
         private readonly IChangelogService _changelogService;
+        private readonly IAutoProfileService _autoProfileService;
+        private readonly IRuntimeFeatureSwitch _runtimeFeatures;
 
         public ShellViewModelFactory(IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
@@ -39,14 +39,14 @@ namespace DS4Windows.UI.Services
             IEnvironmentService environmentService,
             IPathService pathService,
             IAppSettingsService appSettings,
-            IAutoProfileService autoProfileService,
-            IRuntimeFeatureSwitch runtimeFeatures,
             IControllerSlotQuery slots,
             IServiceLifecycle lifecycle,
             IAppearanceSettingsService appearanceSettings,
             ILogSettingsApplier logSettingsApplier,
             IStartupEntryService startupEntries,
-            IChangelogService changelogService)
+            IChangelogService changelogService,
+            IAutoProfileService autoProfileService,
+            IRuntimeFeatureSwitch runtimeFeatures)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -54,14 +54,14 @@ namespace DS4Windows.UI.Services
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
             _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
             _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
+            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
+            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
         }
 
         public ChangelogViewModel CreateChangelogViewModel() => new ChangelogViewModel(_changelogService);

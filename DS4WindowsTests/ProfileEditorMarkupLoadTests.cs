@@ -41,7 +41,7 @@ namespace DS4WindowsTests
                         TestHost.GetService<DS4Windows.Core.Abstractions.IAppSettingsService>(),
                         TestHost.GetService<DS4Windows.Core.Abstractions.IProfileSettingsService>(),
                         TestHost.GetService<DS4Windows.UI.Abstractions.IEditorWindowFactory>(),
-                        null, null, null, null,
+                        null, null, null, null, null,
                         TestHost.GetService<DS4Windows.Core.Abstractions.IEnvironmentService>(),
                         TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>(),
                         null));

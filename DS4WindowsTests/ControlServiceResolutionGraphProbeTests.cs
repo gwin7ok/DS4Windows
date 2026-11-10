@@ -100,7 +100,7 @@ namespace DS4WindowsTests
         [InlineData(typeof(AutoProfileService), false)]
         [InlineData(typeof(EditorWindowFactory), false)]
         [InlineData(typeof(MainWindowFactory), false)]
-        [InlineData(typeof(ViewModelFactory), false)]
+        [InlineData(typeof(ShellViewModelFactory), false)]
         public void TheNineUsers_AreInsideOrOutsideTheGraphOfControlService(Type user, bool inside)
         {
             IServiceCollection services = Registrations();
@@ -165,7 +165,7 @@ namespace DS4WindowsTests
                 HashSet<Type> closure = Closure(services, root);
                 Assert.DoesNotContain(typeof(EditorWindowFactory), closure);
                 Assert.DoesNotContain(typeof(MainWindowFactory), closure);
-                Assert.DoesNotContain(typeof(ViewModelFactory), closure);
+                Assert.DoesNotContain(typeof(ShellViewModelFactory), closure);
                 Assert.DoesNotContain(typeof(AutoProfileService), closure);
             }
         }

@@ -18,18 +18,20 @@ namespace DS4Windows.UI.Services
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IControllerSlotCommands _slotCommands;
-        private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfileEditViewModelFactory _viewModelFactory;
+        private readonly IActionViewModelFactory _actionViewModelFactory;
         private readonly ISpecialActionRepository _specialActionRepository;
         private readonly IEnvironmentService _environmentService;
         private readonly IWindowSystem _windowSystem;
         private readonly IControllerReadingsSource _readings;
 
         public AssignmentWindowFactory(IProfileSettingsService profileSettings, IControllerSlotCommands slotCommands,
-            IViewModelFactory viewModelFactory, ISpecialActionRepository specialActionRepository,
+            IProfileEditViewModelFactory viewModelFactory, IActionViewModelFactory actionViewModelFactory, ISpecialActionRepository specialActionRepository,
             IEnvironmentService environmentService, IWindowSystem windowSystem, IControllerReadingsSource readings)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
+            _actionViewModelFactory = actionViewModelFactory ?? throw new ArgumentNullException(nameof(actionViewModelFactory));
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -51,12 +53,12 @@ namespace DS4Windows.UI.Services
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction, IEditorWindowFactory editors)
-            => new AssignmentEditor(deviceNum, profileList, targetDevice, editors, _viewModelFactory,
+            => new AssignmentEditor(deviceNum, profileList, targetDevice, editors, _viewModelFactory, _actionViewModelFactory,
                 _specialActionRepository, _profileSettings, _environmentService, _windowSystem, specialAction);
 
         public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings,
             ProfileList profileList, int targetDevice, IEditorWindowFactory editors)
-            => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, editors, _viewModelFactory,
+            => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, editors, _viewModelFactory, _actionViewModelFactory,
                 _specialActionRepository, _profileSettings, _environmentService, _windowSystem);
     }
 }

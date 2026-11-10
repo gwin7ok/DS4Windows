@@ -79,10 +79,9 @@ namespace DS4WindowsTests
         public void ViewModelFactory_HasNoServiceLocatorInConstructor()
         {
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる（AppHost を使わないことは RemovedApiRuleTests）
-            // 窓口（ViewModelFactory）は用途別の 3 つのファクトリーへ委譲するため、4 つ全部のコンストラクターを合わせて確かめる
+            // 用途別の 3 つのファクトリーのコンストラクターを合わせて確かめる
             System.Reflection.ParameterInfo[] ps = new[]
             {
-                typeof(DS4Windows.UI.Services.ViewModelFactory),
                 typeof(DS4Windows.UI.Services.ShellViewModelFactory),
                 typeof(DS4Windows.UI.Services.ProfileEditViewModelFactory),
                 typeof(DS4Windows.UI.Services.ActionViewModelFactory),
@@ -121,7 +120,7 @@ namespace DS4WindowsTests
         public void ViewModelFactory_ResolvedFromContainer_CreatesViewModelWithEnvironmentService()
         {
             DS4Windows.Composition.AppHost.CreateHost();
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             ProfileSettingsViewModel vm = factory.CreateProfileSettingsViewModel(0);

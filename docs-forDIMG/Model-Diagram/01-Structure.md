@@ -113,7 +113,9 @@ flowchart LR
 | `ProfileRepository` | Core | プロファイルの一覧と CRUD |
 | `AppHost` | 4-b | DI ホストの構築 |
 | `ServiceRegistration` | 4-b | DI 登録（層ごとの partial） |
-| `ViewModelFactory` | 4-a | ViewModel の生成の窓口 |
+| `ShellViewModelFactory` | 4-a | メイン画面の枠の ViewModel の生成（窓口は `IShellViewModelFactory`） |
+| `ProfileEditViewModelFactory` | 4-a | プロファイル編集画面と子画面の ViewModel の生成（`IProfileEditViewModelFactory`） |
+| `ActionViewModelFactory` | 4-a | 特殊アクションと割り当て編集の種別ごとの ViewModel の生成（`IActionViewModelFactory`） |
 | `MainWindowFactory` | 4-a | メイン画面の生成 |
 | `EditorWindowFactory` | 4-a | 編集画面の生成 |
 

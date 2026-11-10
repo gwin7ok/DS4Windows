@@ -70,11 +70,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AppHost_ShouldResolve_IViewModelFactory()
+        public void AppHost_ShouldResolve_TheViewModelFactories()
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
         }
 
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             var vm = factory.CreateProfileSettingsViewModel(0);
@@ -102,7 +102,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             var outputSlotService = TestHost.GetService<IOutputSlotService>();
@@ -127,7 +127,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             var settings = new DS4ControlSettings(DS4Controls.Cross);
@@ -148,7 +148,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
             var profileSettings = TestHost.GetService<IProfileSettingsService>();
             Assert.NotNull(profileSettings);
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IShellViewModelFactory>();
             Assert.NotNull(factory);
 
             var profileList = new ProfileList(TestHost.GetService<DS4Windows.Core.Abstractions.IPathService>());

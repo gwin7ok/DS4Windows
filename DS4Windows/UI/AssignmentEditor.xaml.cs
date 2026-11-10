@@ -93,13 +93,14 @@ namespace DS4Windows.UI
 
         public AssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IActionViewModelFactory actionViewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
             DS4Windows.Core.Settings.SpecialAction specialAction = null)
-            : this(deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory,
+            : this(deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory, actionViewModelFactory,
                 specialActionRepository, profileSettingsService, environmentService, windowSystem, specialAction)
         {
         }
@@ -112,19 +113,21 @@ namespace DS4Windows.UI
         /// </summary>
         public AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IActionViewModelFactory actionViewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem)
             : this(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
-                editorWindowFactory, viewModelFactory, specialActionRepository, profileSettingsService, environmentService, windowSystem, null)
+                editorWindowFactory, viewModelFactory, actionViewModelFactory, specialActionRepository, profileSettingsService, environmentService, windowSystem, null)
         {
         }
 
         private AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
+            DS4Windows.UI.Abstractions.IActionViewModelFactory actionViewModelFactory,
             DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
@@ -134,6 +137,7 @@ namespace DS4Windows.UI
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
+            if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
             if (windowSystem == null) throw new ArgumentNullException(nameof(windowSystem));
@@ -151,17 +155,17 @@ namespace DS4Windows.UI
             }
             else
             {
-                specialActVM = viewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
+                specialActVM = actionViewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
             }
-            macroActVM = viewModelFactory.CreateMacroViewModel();
-            launchProgVM = viewModelFactory.CreateLaunchProgramViewModel();
-            loadProfileVM = viewModelFactory.CreateLoadProfileViewModel(profileList);
+            macroActVM = actionViewModelFactory.CreateMacroViewModel();
+            launchProgVM = actionViewModelFactory.CreateLaunchProgramViewModel();
+            loadProfileVM = actionViewModelFactory.CreateLoadProfileViewModel(profileList);
             pressKeyVM = viewModelFactory.CreatePressKeyViewModel(deviceNum);
-            disconnectBtVM = viewModelFactory.CreateSpecialActionViewModel(5);
-            checkBatteryVM = viewModelFactory.CreateCheckBatteryViewModel();
-            multiActButtonVM = viewModelFactory.CreateMultiActButtonViewModel();
-            calibrateGyroVM = viewModelFactory.CreateSpecialActionViewModel(9);
-            focusWindowVM = viewModelFactory.CreateFocusWindowViewModel();
+            disconnectBtVM = actionViewModelFactory.CreateSpecialActionViewModel(5);
+            checkBatteryVM = actionViewModelFactory.CreateCheckBatteryViewModel();
+            multiActButtonVM = actionViewModelFactory.CreateMultiActButtonViewModel();
+            calibrateGyroVM = actionViewModelFactory.CreateSpecialActionViewModel(9);
+            focusWindowVM = actionViewModelFactory.CreateFocusWindowViewModel();
 
             // Phase10-Step6 後の Step5: アナログな出力の強さの入力は、SA のモードだけに出す（Controls は、入力のアナログ値で強さが決まる）
             pressKeyVM.StrengthApplies = !controlMode;

@@ -14,9 +14,9 @@ namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// プロファイルの編集（割り当て・出力・ボタンの記録・出力ピッカー・プリセット）の ViewModel を作る。
-    /// <see cref="ViewModelFactory"/>（<see cref="IViewModelFactory"/> の窓口）が、生成をここへ委譲する。依存は、ここで作る ViewModel が使うものだけを受ける。
+    /// 窓口は <see cref="DS4Windows.UI.Abstractions.IProfileEditViewModelFactory"/>。依存は、ここで作る ViewModel が使うものだけを受ける。
     /// </summary>
-    public sealed class ProfileEditViewModelFactory
+    public sealed class ProfileEditViewModelFactory : DS4Windows.UI.Abstractions.IProfileEditViewModelFactory
     {
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileRepository _profileRepo;
