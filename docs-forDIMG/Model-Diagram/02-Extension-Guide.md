@@ -14,13 +14,16 @@
 | Core/Model | `InputDeviceFamily` と `InputDeviceType` に値を足し、`InputDeviceType` の値に `[InputDeviceFamily(...)]` を付ける（17-1 で表は不要になった） | |
 | 第2層 | `Processing/Services/XxxDeviceModule.cs`、`ServiceRegistration.Processing.cs` に `AddInputDevice<XxxDeviceCartridge, XxxDeviceModule>()` を 1 行 | `SwitchProDeviceModule` |
 | 設定 | `Core/Settings/XxxDeviceOptions.cs`、`XxxControllerOptions.cs`、`ControlServiceDeviceOptions` に系統を足す | |
-| 保存 | `XxxSupportSettings`、`XxxControllerOptsDTO`、`InputDeviceOptions`、`AppSettingsDTO`、`AppSettingsXmlSerializer` | 保存の黄金テスト（`appsettings-varied.xml`）が形を守る |
+| 保存（17-2 で簡素化） | `XxxDeviceOptions`（節の名前を `base(…)` に渡し、機種固有の項目は `ExtraSettings` に `ControllerSetting` で書く）、`XxxControllerOptions`（`SectionName` と `Schema` に `ControllerSetting` を並べる）。DTO・シリアライザー・`AppSettingsDTO` は変えない | 保存の黄金テスト（`appsettings-varied.xml`）が形を守る |
 | UI | `XxxControllerOptionsWrapper`、`ControllerRegDeviceOptsViewModel`、`FirstLauchUtilViewModel`、`SettingsViewModel`、各 XAML、`Strings.*.resx` | |
 | テスト | カートリッジ・モジュール・解析器の差分テスト | `DeviceModuleTests` ほか |
 
+### 単純な機種（ボタン・スティック・トリガーと、任意の電池・出力）の最短経路（17-3）
+`IDeviceProtocol`（`Parser`、`TryReadBattery`、`TryBuildOutputReport`、接続方式の判定）と、`ProtocolDeviceCartridge` の派生（`Family`、`KnownDevices`、`Protocol`）を書けば、読み取りループ・`Report`・出力の書き込み・切断は共通の `ProtocolDevice` が行う。そのうえで、(1) `InputDeviceFamily`・`InputDeviceType`（`[InputDeviceFamily]` つき）に値を足し、(2) `ControlServiceDeviceOptions` の系統の表に 1 行、(3) 接続フック（なければ `NullInputDeviceModule` 相当）を作り、(4) `AddInputDevice<…>()` を 1 行。保存は設定クラスの `ControllerSetting` の定義だけ（17-2）。見本は `ProtocolDeviceTests` の偽の機種。ジャイロ・タッチパッド・複数の接続方式を持つ機種は、従来どおり `DS4Device` の派生で書く。
+
 ### 今後（Phase17 の進行で更新する）
 - 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
-- 17-2: 保存と画面が、設定の定義から作られる（Wrapper・DTO・XAML が不要になる）。
+- 17-2（保存は済、画面は未）: 保存は設定の定義から作られる（DTO が不要になった）。画面（Wrapper・XAML）の自動生成は未着手。
 - 17-3〜17-5: 読み取りループ・出力・切断が `ControllerSession` に集まり、機種は `IDeviceProtocol` を書くだけになる。
 
 ## 2. 仮想パッドの出力の種類を足す
