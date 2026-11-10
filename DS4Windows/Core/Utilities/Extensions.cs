@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace DS4Windows.Input.Hid
+namespace DS4Windows.Core.Utilities
 {
     public static class Extensions
     {

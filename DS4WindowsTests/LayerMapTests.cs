@@ -73,9 +73,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void RecordOnlyRules_AreL2Only()
+        public void RecordOnlyRules_AreEmpty_BecauseEveryRuleIsForbidden()
         {
-            Assert.Equal(new[] { "L2" }, LayerMap.RecordOnlyRules);
+            Assert.Empty(LayerMap.RecordOnlyRules);
         }
 
         [Theory]

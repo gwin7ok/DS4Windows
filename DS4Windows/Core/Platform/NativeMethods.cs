@@ -4,7 +4,7 @@ using System.Security;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 
-namespace DS4Windows.Input.Hid
+namespace DS4Windows.Core.Platform
 {
     [SuppressUnmanagedCodeSecurity]
     internal static class NativeMethods

@@ -8,6 +8,7 @@ using DS4Windows.Input;
 using DS4Windows.Input.Hid;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Core.Model;
+using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Output.Services
 {

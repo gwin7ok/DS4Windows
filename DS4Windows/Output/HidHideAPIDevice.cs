@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using DS4Windows.Input.Hid;
+using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Output
 {

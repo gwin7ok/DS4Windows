@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Win32.SafeHandles;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Input.Hid
 {

@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Input.Hid
+﻿using DS4Windows.Core.Platform;
+
+namespace DS4Windows.Input.Hid
 {
     public class HidDeviceAttributes
     {

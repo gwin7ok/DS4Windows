@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Text;
-using DS4Windows.Input.Hid;
+using DS4Windows.Core.Utilities;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Phase7-Step10d W2（Q5＝A）: 旧 <c>Global.GetInstanceIdFromDevicePath／CheckIfVirtualDevice</c> ほか。デバイスパスから調べる、
