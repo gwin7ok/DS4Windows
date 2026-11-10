@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;

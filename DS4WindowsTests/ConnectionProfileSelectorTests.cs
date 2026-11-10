@@ -29,6 +29,12 @@ namespace DS4WindowsTests
                 return Result;
             }
 
+            public bool ApplyFromUi(int slotIndex, string profileName, ProfileChangeSource source, string prolog)
+            {
+                Calls.Add($"applyFromUi:{slotIndex}:{profileName}:{source}");
+                return Result;
+            }
+
             public void ReleaseSlot(int slotIndex) { Calls.Add("release:" + slotIndex); }
 
             public void PublishSlot(int slotIndex) { Calls.Add("publish:" + slotIndex); }

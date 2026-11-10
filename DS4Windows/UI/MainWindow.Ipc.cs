@@ -89,8 +89,5 @@ namespace DS4Windows.UI
             => conLvViewModel.ControllerCol[index]?.Device;
 
         void DS4Windows.Processing.Abstractions.IIpcCommandHost.LogDebug(string message) => AppLogger.Log(AppLogLevel.Info, message, LogOptions.UserFacing);
-
-        void DS4Windows.Processing.Abstractions.IIpcCommandHost.WriteQueryResult(string value)
-            => ipcResultWriter.WriteQueryResult(value);   // Phase14b-Step16: 旧 ((Application.Current) as App).WriteIPCResultDataMMF
     }
 }

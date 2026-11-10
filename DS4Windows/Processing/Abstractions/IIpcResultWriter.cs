@@ -1,4 +1,4 @@
-namespace DS4Windows.UI.Abstractions
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase14b-Step16（D11 と同じ形）: CLI の問い合わせ（<c>-command Query…</c>）の結果を、クライアントのプロセスへ書き込む窓口。

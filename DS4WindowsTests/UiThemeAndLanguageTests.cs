@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Abstractions;
 using System;
 using DS4Windows.Composition;
 using DS4Windows.Core.Settings;

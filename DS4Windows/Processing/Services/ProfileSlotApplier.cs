@@ -39,6 +39,11 @@ namespace DS4Windows.Processing.Services
             return _profileApplication.ApplyProfileWithoutHalt(slotIndex, profileName, false, false, source, null);
         }
 
+        public bool ApplyFromUi(int slotIndex, string profileName, ProfileChangeSource source, string prolog)
+        {
+            return _profileApplication.ApplyProfile(slotIndex, profileName, false, true, source, prolog);
+        }
+
         // Phase8-Step8 8d: 移行のスイッチは削除した。切断で消すのは、登録簿の束縛とエンジンの状態。
         // 種別ごとの切替が始まると、抑制の集合・実行中の状態・復帰の合図が実際に消える。
         public void ReleaseSlot(int slotIndex)

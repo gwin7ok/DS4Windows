@@ -82,13 +82,11 @@ namespace DS4Windows.UI
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
         private readonly DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService;
-        private readonly DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService;
         private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepo;
         // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
         private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
         private readonly DS4Windows.Core.Abstractions.INotificationService notificationService;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
-        private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;
         private readonly DS4Windows.UI.Abstractions.IViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
@@ -117,7 +115,6 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService,
-            DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService,
             DS4Windows.Core.Abstractions.IProfileRepository profileRepo,
             DS4Windows.Core.Abstractions.INotificationService notificationService,
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
@@ -128,13 +125,11 @@ namespace DS4Windows.UI
             IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
-            DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter,
             DS4Windows.Core.Abstractions.IChangelogService changelogService,
             DS4Windows.Processing.Abstractions.IControllerSlotQuery slots)
         {
             this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
             this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
-            this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
             this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
@@ -150,7 +145,6 @@ namespace DS4Windows.UI
             profileListHolder = new ProfileList(pathService);
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.appearanceSettingsService = appearanceSettingsService ?? throw new ArgumentNullException(nameof(appearanceSettingsService));
-            this.profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
@@ -403,7 +397,7 @@ namespace DS4Windows.UI
             {
                 string prolog = string.Format(Properties.Resources.UsingProfile,
                     (idx + 1).ToString(), profile, $"{devitem.Device.Battery}");
-                profileAppService.ApplyProfile(idx, profile, false, true,
+                profileSlotApplier.ApplyFromUi(idx, profile,
                     DS4Windows.Core.Logging.ProfileChangeSource.Manual, prolog);
             }
         }

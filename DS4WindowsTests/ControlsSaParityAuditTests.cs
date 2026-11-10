@@ -29,6 +29,7 @@ namespace DS4WindowsTests
             public int GetProfileActionCount(int deviceIndex) => _actions.Count;
             public int GetProfileActionIndexOf(int deviceIndex, string actionName) => _actions.FindIndex(a => a.name == actionName);
             public IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex) => _actions.Select(a => a.name).ToArray();
+            public int ActionDefinitionCount => 0;
         }
 
         private static IReadOnlyList<IActionBinding> BuildSa(SpecialAction sa, int device)

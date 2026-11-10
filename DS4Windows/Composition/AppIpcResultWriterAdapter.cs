@@ -1,5 +1,5 @@
 using System.Windows;
-using DS4Windows.UI.Abstractions;
+using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Composition
 {

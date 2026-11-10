@@ -10,9 +10,8 @@
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.Processing.Mapping|17",
-            "DS4Windows.UI.MainWindow|20",
-            "DS4Windows.UI.Services.MainWindowFactory|20",
+            "DS4Windows.UI.MainWindow|18",
+            "DS4Windows.UI.Services.MainWindowFactory|18",
         };
     }
 }

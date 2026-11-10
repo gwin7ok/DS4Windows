@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             // Phase15-1-7 で、使っていない 2 つ（IProfileXmlStore、IProfileLoadTarget）と、ViewModel の生成を IViewModelFactory へ移した 5 つ
             // （LightbarOverrides［Suspending 経由］、IProfileSettingsService、IOutputSlotService、ILogSettingsApplier、IStartupEntryService）を除き 21
             var parameters = typeof(MainWindow).GetConstructors().Single().GetParameters();
-            Assert.Equal(20, parameters.Length);   // 複製の名前入力欄のサービスは、MainWindowFactory が渡す（IProfileIdentityService を除いて 20）
+            Assert.Equal(18, parameters.Length);   // 複製の名前入力欄のサービスは、MainWindowFactory が渡す。整理: CLI の結果の書き込み［IIpcResultWriter］は IpcCommandProcessor が持ち、画面からの適用は IProfileSlotApplier に集約して 20 → 18
             Assert.Contains(parameters, p => p.ParameterType == typeof(IRuntimeFeatureSwitch));
             Assert.DoesNotContain(parameters, p => p.ParameterType == typeof(IOscService) || p.ParameterType == typeof(IUdpMotionService)
                 || p.ParameterType == typeof(IHidHideService) || p.ParameterType == typeof(ITouchpadToggleService));

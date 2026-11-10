@@ -66,10 +66,8 @@ namespace DS4WindowsTests
                 TestHost.GetService<IControlActivityReader>(),   // Phase9 9-B: 状態なし
                 new SyntheticInputCommitter(synthetic, kbm),
                 new TwoStageTriggerProcessor(),
-                TestActions.Manager,
                 TestHost.GetService<IDeviceSlotState>(),   // Phase13-Step5b: 旧 MapCustom の ctrl 引数の代わり（ホストの共有のものを使う。ControlService と同じ配列）
-                TestHost.GetService<IProfileActionProvider>(),
-                TestHost.GetService<ISpecialActionRepository>());   // Phase9 MapCustom の分割 M2: 状態なし   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
+                TestHost.GetService<IProfileActionProvider>());   // Phase9 MapCustom の分割 M2: 状態なし   // Phase9 MapCustom の分割 M1: ホイールの繰り返しの状態を持つため、独立の instance にする
         }
     }
 }

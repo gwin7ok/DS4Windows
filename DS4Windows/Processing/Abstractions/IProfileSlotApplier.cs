@@ -12,6 +12,12 @@ namespace DS4Windows.Processing.Abstractions
         bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source);
 
         /// <summary>
+        /// 画面の操作（プロファイルの選択）で、指定スロットへプロファイルを適用する。<see cref="ApplyToSlot"/> と違い、適用の前後で入力を止め（Halt）、
+        /// プロファイルに設定された外部プログラムを起動し、<paramref name="prolog"/> をログの先頭に出す（<c>IProfileApplicationService.ApplyProfile</c> への委譲）。
+        /// </summary>
+        bool ApplyFromUi(int slotIndex, string profileName, ProfileChangeSource source, string prolog);
+
+        /// <summary>
         /// Phase8-Step6 W2（Phase8-Step6-Plan.md §3.2。Q1＝A）: コントローラーが物理的に切断されたときの後始末。
         /// エンジンの状態（抑制の集合、束縛ごとの実行時の状態、復帰の合図）と、登録簿の束縛を消す（<c>ITriggerDispatchEngine.OnDeviceDisconnected</c>）。
         /// <c>Mapping.HandleDeviceDisconnect</c> はプロファイルの適用のたびにも呼ばれるため、そこには足せない。切断の経路（<c>On_DS4Removal</c>）だけが呼ぶ。

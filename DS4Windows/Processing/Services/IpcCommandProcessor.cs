@@ -25,10 +25,11 @@ namespace DS4Windows.Processing.Services
         private readonly IPathService _pathService;
         private readonly IDeviceSlotState _slots;
         private readonly IVirtualPadService _virtualPad;
+        private readonly IIpcResultWriter _resultWriter;
 
         public IpcCommandProcessor(IServiceLifecycle lifecycle, IOutputSlotService outputSlotService, IProfileRepository profileRepo,
             IProfileSettingsService profileSettings, IProfileApplicationService profileApplication, IProfileLoadTarget loadTarget,
-            IPathService pathService, IDeviceSlotState slots, IVirtualPadService virtualPad)
+            IPathService pathService, IDeviceSlotState slots, IVirtualPadService virtualPad, IIpcResultWriter resultWriter)
         {
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
@@ -38,6 +39,7 @@ namespace DS4Windows.Processing.Services
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _resultWriter = resultWriter ?? throw new ArgumentNullException(nameof(resultWriter));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
         }
 
@@ -267,7 +269,7 @@ namespace DS4Windows.Processing.Services
             }
 
             // Write out the property value to MMF result data file and notify a client process that the data is available
-            host.WriteQueryResult(propValue);
+            _resultWriter.WriteQueryResult(propValue);
         }
     }
 }

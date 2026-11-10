@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         public void Measure_CountsKnownTypesAndSkipsCompilerGeneratedTypes()
         {
             IReadOnlyDictionary<string, int> all = Measure();
-            Assert.True(all["DS4Windows.Processing.Mapping"] > Threshold);
+            Assert.Equal(15, all["DS4Windows.Processing.Mapping"]);   // 閾値ちょうどの型も数えること
             Assert.DoesNotContain(all.Keys, k => k.Contains('<') || k.Contains("DisplayClass"));
         }
 

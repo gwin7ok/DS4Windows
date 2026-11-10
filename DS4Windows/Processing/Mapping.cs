@@ -49,7 +49,6 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings;
         private readonly DS4Windows.Processing.Abstractions.IDeviceSlotState _slots;   // Phase13-Step5b: デバイス・状態の窓口（旧: MapCustom の ctrl.DS4Controllers）
         private readonly DS4Windows.Processing.Abstractions.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
-        private readonly DS4Windows.Core.Abstractions.ISpecialActionRepository _specialActionRepository;   // Phase13-Step5b: 旧 ctrl.SpecialActionRepository
         private readonly IVirtualKBM VirtualKBM;
         // Phase7-Step8 W3（Q6＝A）: 旧 静的クラス SyntheticDispatcher の呼び出し
         // Phase9 9-C: 旧 _deviceStateAccessor（マクロの振動イベントで使う遅延の取得）は MacroStepExecutor へ移した。マクロの再生は IMacroPlayback が担う
@@ -108,26 +107,12 @@ namespace DS4Windows.Processing
             DS4Windows.Processing.Abstractions.IControlActivityReader controlActivityReader,
             DS4Windows.Processing.Abstractions.ISyntheticInputCommitter syntheticCommitter,
             DS4Windows.Processing.Abstractions.ITwoStageTriggerProcessor twoStageTrigger,
-            DS4Windows.Processing.Actions.IManagedActionManager actionManager,
             DS4Windows.Processing.Abstractions.IDeviceSlotState slots,
-            DS4Windows.Processing.Abstractions.IProfileActionProvider profileActionProvider,
-            DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository)
+            DS4Windows.Processing.Abstractions.IProfileActionProvider profileActionProvider)
         {
-            // Phase13-Step4: ログ出力だけの購読。旧: 静的コンストラクターで静的イベントを購読していた（本番の Mapping は Singleton のため、購読は 1 回で変わらない）
-            if (actionManager == null) throw new ArgumentNullException(nameof(actionManager));
-            try
-            {
-                actionManager.ToggledOnChanged += (sa, dev, oldv, newv) =>
-                {
-                    try { AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
-                };
-            }
-            catch { }
-
             // Phase13-Step5b: 旧 MapCustom の ControlService 引数（逆依存）の代わりに、必要な 3 つの窓口をコンストラクターで受ける
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
-            _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
 
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
@@ -697,7 +682,7 @@ namespace DS4Windows.Processing
             try
             {
                 // 例外（プロファイルの編集との競合など）はここで記録して、フレームを続ける。
-                int totalActionCount = _specialActionRepository.ActionList.Count;
+                int totalActionCount = _profileActionProvider.ActionDefinitionCount;
 
                 // プロファイルのアクション名のスナップショット（UI スレッドが一覧を変更しても、列挙中に壊れないように）
                 string[] profileActions = _profileActionProvider.GetProfileActionsRaw(device)?.ToArray() ?? Array.Empty<string>();

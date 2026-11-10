@@ -95,7 +95,7 @@ namespace DS4WindowsTests
 
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)
         {
-            return new ProfileActionProvider(store ?? TestGlobals.Store);
+            return new ProfileActionProvider(store ?? TestGlobals.Store, TestHost.GetService<ISpecialActionRepository>());
         }
 
         public static AppSettingsService CreateAppSettingsService(IProfileXmlStore xmlStore = null,

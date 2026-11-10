@@ -32,18 +32,25 @@ namespace DS4WindowsTests
             public int ControllerCount => 0;
             public IControllerSlotView GetControllerDevice(int index) => null;
             public void LogDebug(string message) => Calls.Add("log");
-            public void WriteQueryResult(string value) { QueryResult = value; Calls.Add("query"); }
         }
 
-        private static IpcCommandProcessor Create() => new IpcCommandProcessor(
+        private sealed class RecordingWriter : IIpcResultWriter
+        {
+            private readonly RecordingHost _host;
+            public RecordingWriter(RecordingHost host) { _host = host; }
+            public void WriteQueryResult(string value) { _host.QueryResult = value; _host.Calls.Add("query"); }
+        }
+
+        private static IpcCommandProcessor Create(RecordingHost host = null) => new IpcCommandProcessor(
             TestHost.GetService<IServiceLifecycle>(), TestHost.GetService<IOutputSlotService>(), TestHost.GetService<IProfileRepository>(),
             TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IProfileApplicationService>(), TestHost.GetService<IProfileLoadTarget>(),
-            TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>());
+            TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>(),
+            new RecordingWriter(host ?? new RecordingHost()));
 
         private static RecordingHost Run(params string[] command)
         {
             var host = new RecordingHost();
-            Create().Execute(host, command);
+            Create(host).Execute(host, command);
             return host;
         }
 
@@ -128,7 +135,8 @@ namespace DS4WindowsTests
             Assert.Equal("lifecycle", Assert.Throws<ArgumentNullException>(() => new IpcCommandProcessor(
                 null, TestHost.GetService<IOutputSlotService>(), TestHost.GetService<IProfileRepository>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IProfileApplicationService>(), TestHost.GetService<IProfileLoadTarget>(),
-                TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>())).ParamName);
+                TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>(),
+                TestHost.GetService<IIpcResultWriter>())).ParamName);
         }
 
         [Fact]

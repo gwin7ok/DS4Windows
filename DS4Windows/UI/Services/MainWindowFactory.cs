@@ -20,7 +20,6 @@ namespace DS4Windows.UI.Services
         private readonly IPathService _pathService;
         private readonly IEnvironmentService _environmentService;
         private readonly IAppearanceSettingsService _appearanceSettings;
-        private readonly IProfileApplicationService _profileApplication;
         private readonly IProfileRepository _profileRepository;
         private readonly INotificationService _notificationService;
         private readonly IProfileSlotApplier _profileSlotApplier;
@@ -31,7 +30,6 @@ namespace DS4Windows.UI.Services
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: OSC／UDP／HidHide／タッチパッドの切り替えの窓口
         private readonly IServiceLifecycle _lifecycle;   // Phase13-Step9: MainWindow が running／suspending を直接読み書きする
         private readonly IUiThemeAndLanguage _themeLanguage;
-        private readonly IIpcResultWriter _ipcResultWriter;
         private readonly IChangelogService _changelogService;   // Phase14b-Step17（D10）: 更新の確認・変更履歴   // Phase14b-Step16: CLI の問い合わせの結果の書き込み   // Phase14b-Step16（D11）: テーマ・言語の切り替え   // Phase14b-Step15（D12）: 設定画面のスタートアップ登録
         private readonly IControllerSlotQuery _slots;
         private readonly IAutoProfileService _autoProfileService;   // Phase13-Step8 8-c: 旧 遅延取得デリゲート。画面の生成時（設定の場所の確定後）に解決される
@@ -42,7 +40,6 @@ namespace DS4Windows.UI.Services
             IPathService pathService,
             IEnvironmentService environmentService,
             IAppearanceSettingsService appearanceSettings,
-            IProfileApplicationService profileApplication,
             IProfileRepository profileRepository,
             INotificationService notificationService,
             IProfileSlotApplier profileSlotApplier,
@@ -54,20 +51,17 @@ namespace DS4Windows.UI.Services
             IIpcCommandProcessor ipcProcessor,
             IAutoProfileService autoProfileService,
             IUiThemeAndLanguage themeLanguage,
-            IIpcResultWriter ipcResultWriter,
             IChangelogService changelogService,
             IControllerSlotQuery slots)
         {
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
-            _ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));
             _themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            _profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
             _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             _profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
@@ -83,9 +77,9 @@ namespace DS4Windows.UI.Services
         public MainWindow Create(ArgumentParser parser)
         {
             var window = new MainWindow(parser, _appSettings, _editorWindowFactory,
-                _pathService, _environmentService, _appearanceSettings, _profileApplication,
+                _pathService, _environmentService, _appearanceSettings,
                 _profileRepository, _notificationService, _lifecycle, _runtimeFeatures, _ipcProcessor, _profileSlotApplier,
-                _mainWindowsViewModel, _autoProfileService, _viewModelFactory, _themeLanguage, _ipcResultWriter, _changelogService, _slots);
+                _mainWindowsViewModel, _autoProfileService, _viewModelFactory, _themeLanguage, _changelogService, _slots);
             // 複製の名前入力欄が使うサービスは、窓の引数を増やさないよう工場から渡す
             window.dupBox.Initialize(_pathService, _profileIdentityService);
             return window;

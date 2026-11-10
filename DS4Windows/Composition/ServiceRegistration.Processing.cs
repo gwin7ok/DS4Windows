@@ -38,7 +38,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<ISpecialActionRuntimeReset, SpecialActionRuntimeReset>();
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止
-            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(sp.GetRequiredService<BackingStore>()));
+            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<ISpecialActionRepository>()));
 
             // Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: Mapping の静的フィールド）
             services.AddSingleton<IKeyButtonControllerRegistry, KeyButtonControllerRegistry>();
