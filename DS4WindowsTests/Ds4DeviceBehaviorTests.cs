@@ -78,7 +78,7 @@ namespace DS4WindowsTests
                 transport.EnqueueRead(HidReadStatus.Success, frame);
             }
 
-            var device = new DS4Device(transport, "DS4", featureSet);
+            var device = new DualShock4Device(transport, "DS4", featureSet);
             device.PostInit();
 
             var reports = new StringBuilder();

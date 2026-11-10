@@ -39,7 +39,7 @@ using DS4Windows.Input.Parsers;
 namespace DS4Windows.Input
 {
 
-    public class DS4Device : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice
+    public abstract class DS4Device : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice
     {
         // Indicates PostInit completed and output buffers (etc.) are initialized
         protected volatile bool postInitDone = false;
@@ -741,7 +741,7 @@ namespace DS4Windows.Input
         }
 
         /// <summary>
-        /// DS4 の入力レポートの電源のバイト（30 番）から、電池残量（％）と充電中かを求める。読み取りループ（<c>performDs4Input</c>）と同じ式。
+        /// DS4 の入力レポートの電源のバイト（30 番）から、電池残量（％）と充電中かを求める。読み取りループ（<c>DualShock4Device</c>）と同じ式。
         /// </summary>
         public static int DecodeBatteryPercent(byte powerByte, out bool charging)
         {
@@ -829,7 +829,7 @@ namespace DS4Windows.Input
                     ds4Output.Start();
                 }
 
-                ds4Input = new Thread(performDs4Input);
+                ds4Input = new Thread(RunInputLoop);
                 ds4Input.Priority = ThreadPriority.AboveNormal;
                 ds4Input.Name = "DS4 Input thread: " + Mac;
                 ds4Input.IsBackground = true;
@@ -935,7 +935,7 @@ namespace DS4Windows.Input
             return priorInputReport30 != 0xff;
         }
 
-        private byte priorInputReport30 = 0xff;
+        protected byte priorInputReport30 = 0xff;
 
         protected bool synced = false;
         public bool Synced
@@ -978,361 +978,17 @@ namespace DS4Windows.Input
         protected bool ds4InactiveFrame = true;
         protected bool idleInput = true;
 
-        private readonly TimestampClock timestampClock = new TimestampClock(ushort.MaxValue, 16u);
-
 
         protected const int BT_INPUT_REPORT_CRC32_POS = 74; //last 4 bytes of the 78-sized input report are crc32
         public const uint DefaultPolynomial = 0xedb88320u;
-        private const int CRC32_NUM_ATTEMPTS = 10;
         private const int SONYWA_FEATURE_REPORT_LENGTH = 64;
         protected uint HamSeed = 2351727372;
 
-        protected unsafe void performDs4Input()
-        {
-            unchecked
-            {
-                firstActive = DateTime.UtcNow;
-                hDevice.SetNumInputBuffers(3);
-                LatencyWindow latencyWindow = new LatencyWindow();
-                long oldtime = 0;
-                string currerror = string.Empty;
-                long curtime = 0;
-                long testelapsed = 0;
-                timeoutEvent = false;
-                ds4InactiveFrame = true;
-                idleInput = true;
-                bool syncWriteReport = true;
-                bool forceWrite = false;
+        /// <summary>入力の読み取りのループ（専用のスレッドで走る）。機種ごとの派生が実装する（<see cref="DS4Windows.Input.Devices.InputLoopDevice"/>）。</summary>
+        protected abstract void RunInputLoop();
 
-                int maxBatteryValue = 0;
-                int tempBattery = 0;
-                bool tempCharging = charging;
-                uint tempStamp = 0;
-                double elapsedDeltaTime = 0.0;
-                uint tempDelta = 0;
-                byte tempByte = 0;
-                int CRC32_POS_1 = BT_INPUT_REPORT_CRC32_POS + 1,
-                    CRC32_POS_2 = BT_INPUT_REPORT_CRC32_POS + 2,
-                    CRC32_POS_3 = BT_INPUT_REPORT_CRC32_POS + 3;
-                int crcpos = BT_INPUT_REPORT_CRC32_POS;
-                int crcoffset = 0;
-
-                // Run continuous calibration on Gyro when starting input loop
-                sixAxis.ResetContinuousCalibration();
-                standbySw.Start();
-
-                while (!exitInputThread)
-                {
-                    oldCharging = charging;
-                    currerror = string.Empty;
-
-                    Latency = latencyWindow.Add(this.lastTimeElapsed);
-
-                    readWaitEv.Set();
-
-                    long rawReceivedTime = 0;
-
-                    // Sony DS4 and compatible gamepads send data packets with 0x11 type code in BT mode.
-                    // Will no longer support any third party fake DS4 that does not behave according to official DS4 specs
-                    //if (conType == ConnectionType.BT)
-                    if (conType == ConnectionType.BT && (this.featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0)
-                    {
-                        //HidReadStatus res = hDevice.ReadFile(btInputReport);
-                        //HidReadStatus res = hDevice.ReadAsyncWithFileStream(btInputReport, READ_STREAM_TIMEOUT);
-                        HidReadStatus res = hDevice.ReadFile(btInputReport);
-                        if (res == HidReadStatus.Success)
-                        {
-                            rawReceivedTime = Stopwatch.GetTimestamp();
-                            timeoutEvent = false;
-
-                            //Array.Copy(btInputReport, 2, inputReport, 0, inputReport.Length);
-                            fixed (byte* byteP = &btInputReport[2], imp = inputReport)
-                            {
-                                for (int j = 0; j < BT_INPUT_REPORT_LENGTH - 2; j++)
-                                {
-                                    imp[j] = byteP[j];
-                                }
-                            }
-
-                            //uint recvCrc32 = BitConverter.ToUInt32(btInputReport, BT_INPUT_REPORT_CRC32_POS);
-                            uint recvCrc32 = btInputReport[BT_INPUT_REPORT_CRC32_POS] |
-                                (uint)(btInputReport[CRC32_POS_1] << 8) |
-                                (uint)(btInputReport[CRC32_POS_2] << 16) |
-                                (uint)(btInputReport[CRC32_POS_3] << 24);
-
-                            uint calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref HamSeed, ref btInputReport, ref crcoffset, ref crcpos);
-                            if (recvCrc32 != calcCrc32)
-                            {
-                                //Log.LogToGui("Crc check failed", true);
-                                //Console.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "" +
-                                //                    "> invalid CRC32 in BT input report: 0x" + recvCrc32.ToString("X8") + " expected: 0x" + calcCrc32.ToString("X8"));
-
-                                cState.PacketCounter = pState.PacketCounter + 1; //still increase so we know there were lost packets
-
-                                // If the incoming data packet does not have the native DS4 type or CRC-32 checks keep failing. Fail out and disconnect controller.
-                                if (this.inputReportErrorCount >= CRC32_NUM_ATTEMPTS)
-                                {
-                                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_CrcFailedDisconnect", Mac.ToString(), CRC32_NUM_ATTEMPTS);
-
-                                    readWaitEv.Reset();
-                                    sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
-                                    StopOutputUpdate();
-                                    isDisconnecting = true;
-                                    Removal?.Invoke(this, EventArgs.Empty);
-
-                                    timeoutExecuted = true;
-                                    return;
-                                }
-                                else
-                                {
-                                    this.inputReportErrorCount++;
-                                }
-
-                                readWaitEv.Reset();
-                                continue;
-                            }
-                            else
-                            {
-                                this.inputReportErrorCount = 0;
-                            }
-                        }
-                        else
-                        {
-                            if (res == HidReadStatus.WaitTimedOut)
-                            {
-                                AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedTimeout", Mac.ToString());
-                            }
-                            else
-                            {
-                                int winError = Marshal.GetLastWin32Error();
-                                AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
-                                //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
-                                AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedReadFailure", Mac.ToString(), winError);
-                            }
-
-                            readWaitEv.Reset();
-                            sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
-                            StopOutputUpdate();
-                            isDisconnecting = true;
-                            Removal?.Invoke(this, EventArgs.Empty);
-
-                            timeoutExecuted = true;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        //HidReadStatus res = hDevice.ReadFile(inputReport);
-                        //Array.Clear(inputReport, 0, inputReport.Length);
-                        //HidReadStatus res = hDevice.ReadAsyncWithFileStream(inputReport, READ_STREAM_TIMEOUT);
-                        HidReadStatus res = hDevice.ReadFile(inputReport);
-                        if (res != HidReadStatus.Success)
-                        {
-                            if (res == HidReadStatus.WaitTimedOut)
-                            {
-                                AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedTimeout", Mac.ToString());
-                            }
-                            else
-                            {
-                                int winError = Marshal.GetLastWin32Error();
-                                AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
-                                //Log.LogToGui(Mac.ToString() + " disconnected due to read failure: " + winError, true);
-                            }
-
-                            readWaitEv.Reset();
-                            StopOutputUpdate();
-                            isDisconnecting = true;
-                            Removal?.Invoke(this, EventArgs.Empty);
-
-                            timeoutExecuted = true;
-                            return;
-                        }
-                        else
-                        {
-                            rawReceivedTime = Stopwatch.GetTimestamp();
-                        }
-                    }
-
-                    readWaitEv.Wait();
-                    readWaitEv.Reset();
-
-                    curtime = rawReceivedTime;
-                    lastInputReportTimestamp = curtime; // 受信開始時刻を保持
-                    testelapsed = curtime - oldtime;
-                    lastTimeElapsedDouble = testelapsed * (1.0 / Stopwatch.Frequency) * 1000.0;
-                    lastTimeElapsed = (long)lastTimeElapsedDouble;
-                    oldtime = curtime;
-
-                    // Not going to do featureSet check anymore
-                    if (conType == ConnectionType.BT && btInputReport[0] != 0x11 && (this.featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0)
-                    {
-                        //Received incorrect report, skip it
-                        continue;
-                    }
-
-                    utcNow = DateTime.UtcNow; // timestamp with UTC in case system time zone changes
-
-                    cState.PacketCounter = pState.PacketCounter + 1;
-                    cState.ReportTimeStamp = utcNow;
-                    ReportParser.Parse(inputReport, cState);
-
-                    if ((this.featureSet & VidPidFeatureSet.NoBatteryReading) == 0)
-                    {
-                        tempByte = inputReport[30];
-                        tempCharging = (tempByte & 0x10) != 0;
-                        UpdateCharging(tempCharging);
-
-                        maxBatteryValue = charging ? BATTERY_MAX_USB : BATTERY_MAX;
-                        tempBattery = (tempByte & 0x0f) * 100 / maxBatteryValue;
-                        tempBattery = Math.Min(tempBattery, 100);
-                        UpdateBattery(tempBattery);
-
-                        cState.Battery = (byte)battery;
-                        //Debug.WriteLine("CURRENT BATTERY: " + (inputReport[30] & 0x0f) + " | " + tempBattery + " | " + battery);
-                        if (tempByte != priorInputReport30)
-                        {
-                            priorInputReport30 = tempByte;
-                            //Debug.WriteLine(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + "> power subsystem octet: 0x" + inputReport[30].ToString("x02"));
-                        }
-                    }
-                    else
-                    {
-                        // Some gamepads don't send battery values in DS4 compatible data fields, so use dummy 99% value to avoid constant low battery warnings
-                        priorInputReport30 = 0x0F;
-                        battery = 99;
-                        cState.Battery = 99;
-                    }
-
-                    tempStamp = (uint)((ushort)(inputReport[11] << 8) | inputReport[10]);
-                    timestampClock.Advance(tempStamp, lastTimeElapsedDouble * .001, pState.totalMicroSec, out elapsedDeltaTime, out ulong clockTotalMicroSec);
-                    cState.totalMicroSec = clockTotalMicroSec;
-
-                    cState.elapsedTime = elapsedDeltaTime;
-                    cState.ds4Timestamp = (ushort)tempStamp;
-
-                    if (conType == ConnectionType.SONYWA)
-                    {
-                        bool controllerSynced = inputReport[31] == 0;
-                        if (controllerSynced != synced)
-                        {
-                            runCalib = synced = controllerSynced;
-                            SyncChange?.Invoke(this, EventArgs.Empty);
-                            if (synced)
-                            {
-                                forceWrite = true;
-                                sixAxis.ResetContinuousCalibration();
-                            }
-                            else
-                            {
-                                standbySw.Reset();
-                                sixAxis.StopContinuousCalibration();
-                            }
-                        }
-                    }
-
-                    // XXX DS4State mapping needs fixup, turn touches into an array[4] of structs.  And include the touchpad details there instead.
-                    try
-                    {
-                        // Only care if one touch packet is detected. Other touch packets
-                        // don't seem to contain relevant data. ds4drv does not use them either.
-                        for (int touches = Math.Max((int)(inputReport[-1 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET - 1]), 1), touchOffset = 0; touches > 0; touches--, touchOffset += 9)
-                        //for (int touches = inputReport[-1 + DS4Touchpad.TOUCHPAD_DATA_OFFSET - 1], touchOffset = 0; touches > 0; touches--, touchOffset += 9)
-                        {
-                            cState.TouchPacketCounter = inputReport[-1 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset];
-                            cState.Touch1 = (inputReport[0 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset] >> 7) != 0 ? false : true; // finger 1 detected
-                            cState.Touch1Identifier = (byte)(inputReport[0 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset] & 0x7f);
-                            cState.Touch2 = (inputReport[4 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset] >> 7) != 0 ? false : true; // finger 2 detected
-                            cState.Touch2Identifier = (byte)(inputReport[4 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset] & 0x7f);
-                            cState.Touch1Finger = cState.Touch1 || cState.Touch2; // >= 1 touch detected
-                            cState.Touch2Fingers = cState.Touch1 && cState.Touch2; // 2 touches detected
-                            int touchX = (((inputReport[2 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset] & 0xF) << 8) | inputReport[1 + DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET + touchOffset]);
-                            cState.TouchLeft = touchX >= DS4Touchpad.RESOLUTION_X_MAX * 2 / 5 ? false : true;
-                            cState.TouchRight = touchX < DS4Touchpad.RESOLUTION_X_MAX * 2 / 5 ? false : true;
-                            // Even when idling there is still a touch packet indicating no touch 1 or 2
-                            if (synced)
-                            {
-                                touchpad.handleTouchpad(inputReport, cState, DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET, touchOffset);
-                            }
-                        }
-                    }
-                    catch (Exception ex) { currerror = $"Touchpad: {ex.Message}"; }
-
-                    // Store Gyro and Accel values
-                    //Array.Copy(inputReport, 13, gyro, 0, 6);
-                    //Array.Copy(inputReport, 19, accel, 0, 6);
-
-                    // Store Gyro and Accel values. Use pointers here as it seems faster than using Array.Copy
-                    fixed (byte* pbInput = &inputReport[13], pbGyro = gyro, pbAccel = accel)
-                    {
-                        for (int i = 0; i < 6; i++)
-                        {
-                            pbGyro[i] = pbInput[i];
-                        }
-
-                        for (int i = 6; i < 12; i++)
-                        {
-                            pbAccel[i - 6] = pbInput[i];
-                        }
-
-                        if (synced)
-                        {
-                            sixAxis.handleSixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime);
-                        }
-                    }
-
-                    /* Debug output of incoming HID data:
-                    if (cState.L2 == 0xff && cState.R2 == 0xff)
-                    {
-                        Debug.Write(MacAddress.ToString() + " " + System.DateTime.UtcNow.ToString("o") + ">");
-                        for (int i = 0; i < inputReport.Length; i++)
-                        {
-                            Debug.Write(" " + inputReport[i].ToString("x2"));
-                        }
-
-                    }
-                    */
-
-                    ds4InactiveFrame = cState.FrameCounter == pState.FrameCounter;
-                    if (!ds4InactiveFrame)
-                    {
-                        isRemoved = false;
-                    }
-
-                    if (EvaluateIdleDisconnect(utcNow))
-                    {
-                        if (conType == ConnectionType.BT)
-                        {
-                            if (DisconnectBT(true))
-                            {
-                                timeoutExecuted = true;
-                                return; // all done
-                            }
-                        }
-                        else if (conType == ConnectionType.SONYWA)
-                        {
-                            DisconnectDongle();
-                        }
-                    }
-
-                    if (fireReport && Report != null)
-                        Report(this, EventArgs.Empty);
-
-                    sendOutputReport(syncWriteReport, forceWrite);
-                    forceWrite = false;
-
-                    if (!string.IsNullOrEmpty(currerror))
-                        error = currerror;
-                    else if (!string.IsNullOrEmpty(error))
-                        error = string.Empty;
-
-                    cState.CopyTo(pState);
-
-                    RunQueuedInputEvents();
-                }
-            }
-
-            timeoutExecuted = true;
-        }
+        /// <summary>派生のループから、アダプターの同期の変化（<c>SyncChange</c>）を通知する。</summary>
+        protected void RaiseSyncChange() => SyncChange?.Invoke(this, EventArgs.Empty);
 
         private unsafe void PrepareOutputReportInner(ref bool change, ref bool haptime)
         {
@@ -1400,7 +1056,7 @@ namespace DS4Windows.Input
             }
         }
 
-        private void sendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
+        protected void sendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
         {
             MergeStates();
             //setTestRumble();

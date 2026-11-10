@@ -19,7 +19,7 @@ namespace DS4WindowsTests
 
         private static DS4Device CreateUninitializedDevice()
         {
-            return (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(DS4Device));
+            return (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
         }
 
         private static object GetField(object target, string name)

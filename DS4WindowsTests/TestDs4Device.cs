@@ -20,6 +20,10 @@ namespace DS4WindowsTests
 
         public override DS4State getPreviousStateRef() => Previous;
 
+        protected override void RunInputLoop()
+        {
+        }
+
         public static TestDs4Device Create()
             => (TestDs4Device)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
     }

@@ -23,6 +23,9 @@ namespace DS4Windows.Input.Devices
 
             /// <summary>接続が切れた。止めて、切断（<c>Removal</c>）を通知する。</summary>
             Disconnected,
+
+            /// <summary>機種が切断の手順を済ませた。ループを今すぐ終える（<c>exitInputThread</c> は立てずに、スレッドを抜ける）。</summary>
+            Terminate,
         }
 
         // 基底の Report は仮想のイベント。派生で持ち直し、読み取りのスレッドから発火する
@@ -66,6 +69,9 @@ namespace DS4Windows.Input.Devices
             return status == HidReadStatus.Success ? FrameResult.Accept : FrameResult.Skip;
         }
 
+        /// <summary>このフレームの時刻（ストップウォッチの刻み）。既定は、読み取りが終わったあとの現在時刻。</summary>
+        protected virtual long GetFrameTicks() => Stopwatch.GetTimestamp();
+
         /// <summary>読み取ったレポートが、期待する種類か。違うレポートは捨てる（経過時間の計測のあとに呼ばれる）。</summary>
         protected virtual bool IsExpectedReport() => true;
 
@@ -84,6 +90,8 @@ namespace DS4Windows.Input.Devices
 
         /// <summary>出力（振動・ライトバーなど）を、必要なら書き込む。<c>Report</c> のあとに呼ばれる。</summary>
         protected abstract void WriteOutputFrame();
+
+        protected override void RunInputLoop() => ReadInput();
 
         /// <summary>読み取りのループの本体（スレッドから呼ぶ。テストでは直接呼べる）。</summary>
         protected internal void ReadInput()
@@ -115,12 +123,17 @@ namespace DS4Windows.Input.Devices
                     break;
                 }
 
+                if (received == FrameResult.Terminate)
+                {
+                    return;
+                }
+
                 if (received == FrameResult.Skip)
                 {
                     continue;
                 }
 
-                long now = Stopwatch.GetTimestamp();
+                long now = GetFrameTicks();
                 lastTimeElapsedDouble = (now - lastFrameTicks) * (1.0 / Stopwatch.Frequency) * 1000.0;
                 lastTimeElapsed = (long)lastTimeElapsedDouble;
                 previousFrameTicks = lastFrameTicks;

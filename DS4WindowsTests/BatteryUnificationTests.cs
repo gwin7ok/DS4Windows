@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDs4ReadLoop_WritesThroughTheUpdateMethods()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/Input/DS4Device.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Input/Devices/DualShock4Device.cs");
             if (code == null) return;
 
             Assert.Contains("UpdateCharging(tempCharging);", code);

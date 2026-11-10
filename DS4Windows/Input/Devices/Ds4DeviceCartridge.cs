@@ -68,7 +68,7 @@ namespace DS4Windows.Input.Devices
 
         public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
-            return new DS4Device(hidDevice, displayName, featureSet);
+            return new DualShock4Device(hidDevice, displayName, featureSet);
         }
     }
 }

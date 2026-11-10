@@ -89,7 +89,7 @@ namespace DS4WindowsTests
         /// <summary>実機のレポート処理と同様に <c>MapCustom</c> を 1 回実行し、出力の状態を返す。</summary>
         public DS4State RunMapCustom(DS4State input)
         {
-            var device = (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(DS4Device));
+            var device = (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
             var mouse = new Mouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
             var exposed = new DS4StateExposed(input);
             var mapped = new DS4State();
