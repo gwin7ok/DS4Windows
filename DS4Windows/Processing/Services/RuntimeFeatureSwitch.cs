@@ -59,7 +59,7 @@ namespace DS4Windows.Processing.Services
         {
             if (deviceNum < _controllerSlotLimit)
             {
-                DS4Device device = _slots.DS4Controllers[deviceNum];
+                InputDeviceCore device = _slots.DS4Controllers[deviceNum];
                 if (device != null)
                     _rumble.SetDevRumble(device, heavyMotor, lightMotor, deviceNum);
             }

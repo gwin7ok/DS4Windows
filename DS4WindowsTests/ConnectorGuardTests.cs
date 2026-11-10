@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("On_Report", text);
             Assert.DoesNotContain("IDeviceSlotHost", text.Replace("IDeviceSlotHost（ActiveControllers", ""));
             string processor = SourceText.ReadCode("DS4Windows/Processing/Services/InputReportProcessor.cs");
-            Assert.Contains("public void OnReport(DS4Device device, EventArgs e, int ind)", processor);
+            Assert.Contains("public void OnReport(InputDeviceCore device, EventArgs e, int ind)", processor);
         }
 
         [Fact]

@@ -170,7 +170,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
             services.AddSingleton<IConfigurableDeviceLookup>(sp => (IConfigurableDeviceLookup)sp.GetRequiredService<IDeviceSlotState>());   // Core の設定値・プロファイル読込が使う狭い窓口（同じインスタンス）
-            // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は DS4Device と ControlService を持たない）
+            // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は InputDeviceCore と ControlService を持たない）
             services.AddSingleton<IControllerSlotQuery, ControllerSlotQuery>();
             services.AddSingleton<IControllerSlotCommands, ControllerSlotCommands>();
             services.AddSingleton<IControllerReadingsSource, ControllerReadingsSource>();

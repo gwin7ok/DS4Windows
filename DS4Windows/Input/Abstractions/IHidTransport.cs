@@ -5,7 +5,7 @@ namespace DS4Windows.Input.Abstractions
 {
     /// <summary>
     /// HID 機器との通信（開閉、入力レポートの読み取り、出力レポート・特徴レポートの書き込み、シリアルの読み取り）の窓口。
-    /// <c>DS4Device</c> 系は、OS の具象（<see cref="HidDevice"/>）ではなく、この契約を通して通信する。
+    /// <c>InputDeviceCore</c> 系は、OS の具象（<see cref="HidDevice"/>）ではなく、この契約を通して通信する。
     /// 実装は <see cref="HidDevice"/>（Windows の HID API）。テストでは、読み取りの結果と書き込みの記録を台本で返す偽物に替えられる。
     /// </summary>
     public interface IHidTransport : IDisposable

@@ -20,7 +20,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <param name="lsDeadZone">左スティックのデッドゾーン設定値（0 のとき、小さな固定のデッドゾーンを使う）。</param>
         /// <param name="rsDeadZone">右スティックのデッドゾーン設定値（同上）。</param>
         /// <param name="deltaAccelProcessorGroup">そのデバイスのデルタ加速の処理。</param>
-        /// <param name="timeElapsed">前のフレームからの経過時間（ミリ秒。<c>DS4Device.lastTimeElapsedDouble</c>）。</param>
+        /// <param name="timeElapsed">前のフレームからの経過時間（ミリ秒。<c>InputDeviceCore.lastTimeElapsedDouble</c>）。</param>
         double Calculate(int device, DS4Controls control, int mnum, DS4State cState,
             DS4StateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
             DeltaSettingsProcessorGroup deltaAccelProcessorGroup, double timeElapsed);

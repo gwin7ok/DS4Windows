@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Services
     {
         protected override InputDeviceFamily? Family => InputDeviceFamily.DualSense;
 
-        public override List<DS4Controls> GetKnownExtraButtons(DS4Device device)
+        public override List<DS4Controls> GetKnownExtraButtons(InputDeviceCore device)
         {
             List<DS4Controls> result = new List<DS4Controls>();
             DS4Windows.Input.Devices.DualSenseDevice tempDev = device as DS4Windows.Input.Devices.DualSenseDevice;
@@ -31,7 +31,7 @@ namespace DS4Windows.Processing.Services
             return result;
         }
 
-        public override void HookSettings(DS4Device device, Func<int> activeControllers)
+        public override void HookSettings(InputDeviceCore device, Func<int> activeControllers)
         {
             DS4Windows.Input.Devices.DualSenseDevice tempDSDev = device as DS4Windows.Input.Devices.DualSenseDevice;
 
@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Services
             dSOpts.LedModeChanged += (sender, e) => { tempDSDev.CheckControllerNumDeviceSettings(activeControllers()); };
         }
 
-        public override void ApplyProfileOptions(DS4Device device, int ind, IProfileSettingsService settings)
+        public override void ApplyProfileOptions(InputDeviceCore device, int ind, IProfileSettingsService settings)
         {
             // DualSense specific profile settings
             if (device is DS4Windows.Input.Devices.DualSenseDevice dualsense)

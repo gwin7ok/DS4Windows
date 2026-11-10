@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// デバイスの種類ごとの部品（モジュール）の値の特性化。
     /// 旧 <c>ControlService.CheckForSupportedDevice</c> の判定を、このファイルの中の逐語コピーと突き合わせる（差分テスト）。
-    /// <c>DS4Device</c> は作れないため、デバイスを必要としない判定（有効設定、部品の引き当て）を調べる。
+    /// <c>InputDeviceCore</c> は作れないため、デバイスを必要としない判定（有効設定、部品の引き当て）を調べる。
     /// </summary>
     public class DeviceModuleTests
     {

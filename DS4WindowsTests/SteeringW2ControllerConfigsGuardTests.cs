@@ -6,7 +6,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase9 Steering 削除 W2（Phase9-SteeringWheel-Removal-Plan.md §3.2）: <c>ControllerConfigs.xml</c> の読み書きから、車輪の較正値（<c>wheelCenterPoint</c>／<c>wheel90DegPointLeft</c>／<c>wheel90DegPointRight</c>）だけが
-    /// 除かれ、コントローラーごとのオプション（<c>DS4Device.optionsStore</c>）と、Mac・ControllerType の属性の読み書きは残っていること（ソースの走査。<c>DS4Device</c> は実機が要るため、挙動のテストは作れない）。
+    /// 除かれ、コントローラーごとのオプション（<c>InputDeviceCore.optionsStore</c>）と、Mac・ControllerType の属性の読み書きは残っていること（ソースの走査。<c>InputDeviceCore</c> は実機が要るため、挙動のテストは作れない）。
     /// </summary>
     public class SteeringW2ControllerConfigsGuardTests
     {

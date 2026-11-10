@@ -28,12 +28,12 @@ namespace DS4WindowsTests
 
         private sealed class NoRumble : IDeviceRumbleService
         {
-            public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum) { }
+            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) { }
         }
 
         private sealed class NoControllers : IDeviceStateAccessor
         {
-            public DS4Device GetController(int deviceIndex) => null;
+            public InputDeviceCore GetController(int deviceIndex) => null;
         }
 
         private static VirtualPadService Create(RecordingHost host = null, IProfileSettingsService settings = null, DS4Windows.Output.Backend.IVirtualPadBackend backend = null, IDeviceRumbleService rumble = null)
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         private sealed class RecordingRumble : IDeviceRumbleService
         {
             public readonly System.Collections.Generic.List<(byte Heavy, byte Light, int Device)> Calls = new System.Collections.Generic.List<(byte, byte, int)>();
-            public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
+            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
         }
 
         [Fact]

@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         {
             var fake = new FakeHidTransport(inputReportByteLength: inputLength, numberFeatureDataIndices: featureIndices);
 
-            Assert.Equal(expected, DS4Device.HidConnectionType(fake));
+            Assert.Equal(expected, InputDeviceCore.HidConnectionType(fake));
         }
 
         [Fact]

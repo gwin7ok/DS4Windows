@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             // 台本が尽きると切断（NotConnected）として扱われる
 
             var cartridge = new FakeGamepadCartridge();
-            DS4Device device = cartridge.Create(InputDeviceType.SwitchPro, transport, "Fake Gamepad", VidPidFeatureSet.DefaultDS4);
+            InputDeviceCore device = cartridge.Create(InputDeviceType.SwitchPro, transport, "Fake Gamepad", VidPidFeatureSet.DefaultDS4);
             Assert.IsType<ProtocolDevice>(device);
             device.PostInit();
 

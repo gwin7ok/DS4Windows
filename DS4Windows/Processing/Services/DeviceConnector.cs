@@ -49,7 +49,7 @@ namespace DS4Windows.Processing.Services
             _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
         }
 
-        public void BeginPrepare(DS4Device device, bool showlog = false)
+        public void BeginPrepare(InputDeviceCore device, bool showlog = false)
         {
             if (_hidHideService.IsAffected(device))
             {
@@ -63,7 +63,7 @@ namespace DS4Windows.Processing.Services
             _deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _slots.ActiveControllers);
         }
 
-        public void PrepareConnected(int numControllers, DS4Device device, int index)
+        public void PrepareConnected(int numControllers, InputDeviceCore device, int index)
         {
             IInputReportProcessor inputReport = _inputReport;
             IDeviceSlotState slots = _slots;
@@ -104,14 +104,14 @@ namespace DS4Windows.Processing.Services
                 {
                     _deviceConnectionSetup.AttachTouchpad(index, device, touchPads);
                 }
-                else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
+                else if (device.JointDeviceSlotNumber != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
                 {
                     int otherIdx = device.JointDeviceSlotNumber;
-                    DS4Device tempDev = slots.DS4Controllers[otherIdx];
+                    InputDeviceCore tempDev = slots.DS4Controllers[otherIdx];
                     if (tempDev != null)
                     {
                         int mappedIdx = tempDev.PrimaryDevice ? otherIdx : index;
-                        DS4Device gyroDev = device.OutputMapGyro ? device : (tempDev.OutputMapGyro ? tempDev : null);
+                        InputDeviceCore gyroDev = device.OutputMapGyro ? device : (tempDev.OutputMapGyro ? tempDev : null);
                         if (gyroDev != null)
                         {
                             _deviceConnectionSetup.AttachTouchpad(mappedIdx, gyroDev, touchPads);
@@ -136,7 +136,7 @@ namespace DS4Windows.Processing.Services
 
         private void OnChargingChanged(object sender, EventArgs e)
         {
-            DS4Device device = sender as DS4Device;
+            InputDeviceCore device = sender as InputDeviceCore;
             if (device.ConnectionType == ConnectionType.BT && _appSettings.QuickCharge &&
                 device.Charging)
             {

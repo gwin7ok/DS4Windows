@@ -67,7 +67,7 @@ namespace DS4Windows.Processing.Services
 
         public event EventHandler RunningChanged;
 
-        public event Action<DS4Device, int> HotplugController;
+        public event Action<InputDeviceCore, int> HotplugController;
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
@@ -121,7 +121,7 @@ namespace DS4Windows.Processing.Services
                         _deviceRegistry.FindControllers();
                     });
 
-                    IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
+                    IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
                     int numControllers = devices.Count();
                     ActiveControllers = numControllers;
                     _lightbar.defaultLight = false;
@@ -129,7 +129,7 @@ namespace DS4Windows.Processing.Services
                     for (var devEnum = devices.GetEnumerator();
                         devEnum.MoveNext() && LoopControllers; i++)
                     {
-                        DS4Device device = devEnum.Current;
+                        InputDeviceCore device = devEnum.Current;
 
                         _deviceConnector.BeginPrepare(device, showlog: true);
 
@@ -179,7 +179,7 @@ namespace DS4Windows.Processing.Services
                 bool anyUnplugged = false;
                 for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
                 {
-                    DS4Device tempDevice = slots.DS4Controllers[i];
+                    InputDeviceCore tempDevice = slots.DS4Controllers[i];
                     if (tempDevice != null)
                     {
                         if ((_appSettings.DCBTatStop && !tempDevice.isCharging()) || Suspending)
@@ -264,12 +264,12 @@ namespace DS4Windows.Processing.Services
                     _deviceRegistry.FindControllers();
                 });
 
-                IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
+                IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
                 int numControllers = devices.Count();
                 ActiveControllers = numControllers;
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && LoopControllers;)
                 {
-                    DS4Device device = devEnum.Current;
+                    InputDeviceCore device = devEnum.Current;
 
                     if (device.isDisconnectingStatus())
                         continue;
@@ -323,7 +323,7 @@ namespace DS4Windows.Processing.Services
             IDeviceSlotState slots = _slots;
             for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
             {
-                DS4Device tempDevice = slots.DS4Controllers[i];
+                InputDeviceCore tempDevice = slots.DS4Controllers[i];
                 if (tempDevice != null)
                 {
                     tempDevice.PrepareAbort();

@@ -21,7 +21,7 @@ namespace DS4Windows.Processing.Services
 
         public string GetBatteryText(int index)
         {
-            DS4Device d = _devices.GetController(index);
+            InputDeviceCore d = _devices.GetController(index);
             if (d != null)
             {
                 string battery;

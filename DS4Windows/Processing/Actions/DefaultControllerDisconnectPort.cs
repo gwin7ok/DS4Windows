@@ -7,7 +7,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6b: <see cref="IControllerDisconnectPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>DS4Device</c> を操作する。
+    /// Phase8-Step7 7.6b: <see cref="IControllerDisconnectPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作する。
     /// ControlService は後から作られるため、遅延（<c>Func</c>）で受ける（<see cref="DefaultGyroCalibrationPort"/> と同じ方式）。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>
@@ -20,11 +20,11 @@ namespace DS4Windows.Processing.Actions
             _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
         }
 
-        private DS4Device Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
+        private InputDeviceCore Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
 
         public DisconnectTargetKind GetTargetKind(int deviceIndex)
         {
-            DS4Device d = Controller(deviceIndex);
+            InputDeviceCore d = Controller(deviceIndex);
             if (d == null || !d.isSynced() || d.isCharging()) return DisconnectTargetKind.None;
 
             switch (d.getConnectionType())
@@ -37,25 +37,25 @@ namespace DS4Windows.Processing.Actions
 
         public bool DisconnectBluetooth(int deviceIndex)
         {
-            DS4Device d = Controller(deviceIndex);
+            InputDeviceCore d = Controller(deviceIndex);
             return d != null && d.DisconnectBT();
         }
 
         public bool IsDongleSynced(int deviceIndex)
         {
-            DS4Device d = Controller(deviceIndex);
+            InputDeviceCore d = Controller(deviceIndex);
             return d != null && d.getConnectionType() == ConnectionType.SONYWA && d.isSynced();
         }
 
         public bool IsIdle(int deviceIndex)
         {
-            DS4Device d = Controller(deviceIndex);
+            InputDeviceCore d = Controller(deviceIndex);
             return d != null && d.isDS4Idle();
         }
 
         public bool DisconnectDongle(int deviceIndex)
         {
-            DS4Device d = Controller(deviceIndex);
+            InputDeviceCore d = Controller(deviceIndex);
             return d != null && d.DisconnectDongle();
         }
     }

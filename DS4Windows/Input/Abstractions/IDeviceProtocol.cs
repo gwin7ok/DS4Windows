@@ -8,7 +8,7 @@ namespace DS4Windows.Input.Abstractions
     /// 入力機種ごとの「プロトコル」: 共通のデバイス（<see cref="DS4Windows.Input.Devices.ProtocolDevice"/>）が使う、機種固有の取り決めだけを持つ契約。
     /// 読み取りのループ、切断、電池の更新、出力の書き込みの時機は共通のデバイスが受け持ち、プロトコルは、バイト列との変換だけを書く。
     /// 新しい単純な機種（ボタン・スティック・トリガーと、任意の電池・出力）は、プロトコルとカートリッジを書けば足せる。
-    /// ジャイロ・タッチパッド・複数の接続方式を持つ高機能な機種は、従来どおり <c>DS4Device</c> の派生で書く。
+    /// ジャイロ・タッチパッド・複数の接続方式を持つ高機能な機種は、従来どおり <c>InputDeviceCore</c> の派生で書く。
     /// </summary>
     public interface IDeviceProtocol
     {

@@ -464,7 +464,7 @@ namespace DS4Windows.Processing
             {
                 if (isRightStick && stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
                 {
-                    DS4Device d = _slots.DS4Controllers[device];
+                    InputDeviceCore d = _slots.DS4Controllers[device];
                     DS4State cRawState = d.getCurrentStateRef();
                     cRawState.calculateStickAngles();
 
@@ -503,7 +503,7 @@ namespace DS4Windows.Processing
                     case StickMode.None:
                         break;
                     case StickMode.FlickStick:
-                        DS4Device d = _slots.DS4Controllers[device];
+                        InputDeviceCore d = _slots.DS4Controllers[device];
                         DS4State cRawState = d.getCurrentStateRef();
                         DS4State pState = d.getPreviousStateRef();
 
@@ -801,7 +801,7 @@ namespace DS4Windows.Processing
         /// Slower version that does not take advantage of a generated DS4StateFieldMapping instance.
         /// Meant to be used outside of the Mapping class
         /// </summary>
-        /// <param name="device">Input slot number for DS4Device</param>
+        /// <param name="device">Input slot number for InputDeviceCore</param>
         /// <param name="control">Current control mapped</param>
         /// <param name="cState">Current input state</param>
         /// <param name="eState">Exposed input state helper</param>

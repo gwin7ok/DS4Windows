@@ -11,7 +11,7 @@ namespace DS4Windows.Processing.Services
         private readonly IProfileRepository _profileRepository;
         private readonly IProfileSettingsService _profileSettings;
         private readonly IDeviceStateService _deviceStateService;
-        private readonly DS4Device[] _ds4Controllers;
+        private readonly InputDeviceCore[] _ds4Controllers;
 
         public AppliedProfileRecorder(IProfileRepository profileRepository, IProfileSettingsService profileSettings,
             IDeviceStateService deviceStateService, IDeviceSlotState slots)
@@ -35,7 +35,7 @@ namespace DS4Windows.Processing.Services
                 int slot = e.DeviceIndex;
                 if (slot < 0 || slot >= _ds4Controllers.Length) return;
 
-                DS4Device device = _ds4Controllers[slot];
+                InputDeviceCore device = _ds4Controllers[slot];
                 if (device == null || !device.isValidSerial()) return;
 
                 // 一時プロファイル（自動プロファイル、一時の Load Profile）は記憶しない。

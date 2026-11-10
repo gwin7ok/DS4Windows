@@ -10,7 +10,7 @@ namespace DS4Windows.Input.Devices
     /// 機種ごとに違う部分（読み取りの検証、解析・電池・時間・動き、アイドル切断、出力の書き込み）を差し込み口にする。
     /// 機種の追加は、差し込み口だけを書く。
     /// </summary>
-    public abstract class InputLoopDevice : DS4Device
+    public abstract class InputLoopDevice : InputDeviceCore
     {
         /// <summary><see cref="InputLoopDevice.ReceiveFrame"/> の結果。</summary>
         protected enum FrameResult

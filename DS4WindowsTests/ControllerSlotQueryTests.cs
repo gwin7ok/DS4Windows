@@ -28,12 +28,12 @@ namespace DS4WindowsTests
             public event EventHandler ServiceStopped;
             public event EventHandler RunningChanged;
 #pragma warning restore CS0067
-            public event Action<DS4Device, int> HotplugController;
+            public event Action<InputDeviceCore, int> HotplugController;
             public bool Start(bool showlog = true) => true;
             public bool Stop(bool showlog = true, bool immediateUnplug = false) => true;
             public bool HotPlug() => true;
             public void PrepareAbort() { }
-            public void RaiseHotplug(DS4Device device, int index) => HotplugController?.Invoke(device, index);
+            public void RaiseHotplug(InputDeviceCore device, int index) => HotplugController?.Invoke(device, index);
         }
 
         private static (ControllerSlotQuery Query, DeviceSlotState State, FakeLifecycle Lifecycle) Create()
@@ -43,9 +43,9 @@ namespace DS4WindowsTests
             return (new ControllerSlotQuery(state, lifecycle, null), state, lifecycle);
         }
 
-        private static void RaiseDeviceEvent(DS4Device device, string eventName)
+        private static void RaiseDeviceEvent(InputDeviceCore device, string eventName)
         {
-            FieldInfo field = typeof(DS4Device).GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo field = typeof(InputDeviceCore).GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.NotNull(field);
             Delegate handler = (Delegate)field.GetValue(device);
             handler?.DynamicInvoke(device, EventArgs.Empty);

@@ -39,7 +39,11 @@ using DS4Windows.Input.Parsers;
 namespace DS4Windows.Input
 {
 
-    public abstract class DS4Device : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice
+    /// <summary>
+    /// 全ての入力機種が共有する中核: 状態（現在・直前）、電池・充電、イベント、設定、切断、出力の合成。
+    /// 読み取りのループは持たず、<see cref="DS4Windows.Input.Devices.InputLoopDevice"/> が機種ごとの差し込み口で動かす。
+    /// </summary>
+    public abstract class InputDeviceCore : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice
     {
         // Indicates PostInit completed and output buffers (etc.) are initialized
         protected volatile bool postInitDone = false;
@@ -115,7 +119,7 @@ namespace DS4Windows.Input
         protected object exitLocker = new object();
         protected DeviceExclusiveStatus exclusiveStatus = DeviceExclusiveStatus.Shared;
 
-        public delegate void ReportHandler<TEventArgs>(DS4Device sender, TEventArgs args);
+        public delegate void ReportHandler<TEventArgs>(InputDeviceCore sender, TEventArgs args);
 
         //public event EventHandler<EventArgs> Report = null;
         public abstract event ReportHandler<EventArgs> Report;
@@ -524,7 +528,7 @@ namespace DS4Windows.Input
         }
 
 
-        public DS4Device(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
+        public InputDeviceCore(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
         {
             hDevice = hidDevice;
             displayName = disName;

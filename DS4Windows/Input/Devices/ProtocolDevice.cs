@@ -10,7 +10,7 @@ namespace DS4Windows.Input.Devices
     /// <summary>
     /// <see cref="IDeviceProtocol"/> で動く、共通の単純なデバイス。読み取りのループ（読み取り→解析→電池→<c>Report</c>→出力）、
     /// 切断（接続が切れたら <c>Removal</c>）、停止を一通り持つ。機種固有のバイト列との変換は、プロトコルが受け持つ。
-    /// ジャイロ、タッチパッド、アイドル切断、複数の接続方式の動作は持たない（必要な機種は <c>DS4Device</c> の派生で書く）。
+    /// ジャイロ、タッチパッド、アイドル切断、複数の接続方式の動作は持たない（必要な機種は <c>InputDeviceCore</c> の派生で書く）。
     /// </summary>
     public class ProtocolDevice : InputLoopDevice
     {

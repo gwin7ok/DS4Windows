@@ -27,7 +27,7 @@ namespace DS4Windows.Processing.Abstractions
         /// 結合デバイスの相手側（<paramref name="toIndex"/>）が、<paramref name="fromIndex"/> に割り当て済みの出力デバイスを共有する。
         /// 割り当てがなければ何もせず false。あれば、戻りの処理（振動・ライトバー）を付けてから共有し、true。
         /// </summary>
-        bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, DS4Device device);
+        bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, InputDeviceCore device);
 
         /// <summary>共有している出力デバイスから、スロット <paramref name="index"/> を外す（戻りの処理を外し、割り当てを空にする）。割り当てがなければ何もしない。</summary>
         void ReleaseSharedOutputDevice(int index);
@@ -60,7 +60,7 @@ namespace DS4Windows.Processing.Abstractions
         void AssignInitialDevices();
 
         /// <summary>仮想パッドからの振動・ライトバーの要求を、デバイスへ戻す処理を付ける。</summary>
-        void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, DS4Device device);
+        void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device);
 
         /// <summary>仮想パッドからの振動・ライトバーの要求を戻す処理を外す。</summary>
         void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx);
@@ -72,10 +72,10 @@ namespace DS4Windows.Processing.Abstractions
         void DetachUnboundOutDev(OutSlotDevice slotDevice);
 
         /// <summary>デバイスに、設定の種類（Xbox 360／DS4）の仮想パッドを割り当てる。</summary>
-        void PluginOutDev(int index, DS4Device device);
+        void PluginOutDev(int index, InputDeviceCore device);
 
         /// <summary>デバイスから仮想パッドを外す。</summary>
-        void UnplugOutDev(int index, DS4Device device, bool immediate = false, bool force = false);
+        void UnplugOutDev(int index, InputDeviceCore device, bool immediate = false, bool force = false);
 
         /// <summary>イベントスレッドで、非同期に実行する（<c>OutputSlotService</c> が、画面からの抜き差しをイベントスレッドへ渡すのに使う）。</summary>
         void QueueOnEventThread(Action action);

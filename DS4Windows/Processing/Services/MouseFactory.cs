@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Services
             _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         }
 
-        public Mouse Create(int deviceIndex, DS4Device device)
+        public Mouse Create(int deviceIndex, InputDeviceCore device)
         {
             return new Mouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput, _timeProvider);
         }

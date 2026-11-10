@@ -40,12 +40,12 @@ namespace DS4Windows.Processing.Services
         }
 
         // 種類ごとの処理（Joy-Con の結合の初期値）は IInputDeviceModule が持つ
-        public void PostDS4DeviceInit(DS4Device device)
+        public void PostDS4DeviceInit(InputDeviceCore device)
         {
             _deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, _deviceOptions);
         }
 
-        public void PrepareDS4DeviceInit(DS4Device device)
+        public void PrepareDS4DeviceInit(InputDeviceCore device)
         {
             // 今は何もしない
         }

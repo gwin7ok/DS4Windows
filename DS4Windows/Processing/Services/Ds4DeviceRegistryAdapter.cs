@@ -26,13 +26,13 @@ namespace DS4Windows.Processing.Services
             _devices = devices ?? throw new ArgumentNullException(nameof(devices));
         }
 
-        public IEnumerable<DS4Device> FindControllers()
+        public IEnumerable<InputDeviceCore> FindControllers()
         {
             _devices.findControllers();
             return _devices.getDS4Controllers();
         }
 
-        public IEnumerable<DS4Device> GetDS4Controllers() => _devices.getDS4Controllers();
+        public IEnumerable<InputDeviceCore> GetDS4Controllers() => _devices.getDS4Controllers();
 
         public void StopControllers()
         {
@@ -41,7 +41,7 @@ namespace DS4Windows.Processing.Services
                 AppLogger.LogTrace("[DI] Ds4DeviceRegistryAdapter.StopControllers called");
         }
 
-        public bool RemoveDevice(DS4Device device)
+        public bool RemoveDevice(InputDeviceCore device)
         {
             if (device == null) return false;
             _devices.RemoveDevice(device);

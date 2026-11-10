@@ -17,7 +17,7 @@ namespace DS4Windows.Output.Services
 
         // sets the rumble adjusted with rumble boost. Method more used for
         // report handling. Avoid constant checking for a device.
-        public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum)
+        public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum)
         {
             byte boost = _profileSettings.GetRumbleBoost(deviceNum);
             Adjust(heavyMotor, lightMotor, boost, _profileSettings.InverseRumbleMotors[deviceNum], out byte right, out byte left);

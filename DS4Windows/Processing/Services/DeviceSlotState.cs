@@ -13,7 +13,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public class DeviceSlotState : IDeviceSlotState, DS4Windows.Core.Abstractions.IConfigurableDeviceLookup
     {
-        public DS4Device[] DS4Controllers { get; } = new DS4Device[ControllerLimits.MaxControllerCount];
+        public InputDeviceCore[] DS4Controllers { get; } = new InputDeviceCore[ControllerLimits.MaxControllerCount];
         public DS4State[] CurrentStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
         public DS4State[] PreviousStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
         public DS4State[] TempStates { get; } = new DS4State[ControllerLimits.MaxControllerCount];
@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Services
         DS4Windows.Core.Abstractions.IConfigurableDevice DS4Windows.Core.Abstractions.IConfigurableDeviceLookup.GetConfigurableDevice(int deviceIndex) => GetController(deviceIndex);
 
         /// <summary>範囲外は null（旧 <c>ControlService.GetController</c> と同じ）。</summary>
-        public DS4Device GetController(int deviceIndex)
+        public InputDeviceCore GetController(int deviceIndex)
         {
             if (deviceIndex < 0 || deviceIndex >= DS4Controllers.Length) return null;
             return DS4Controllers[deviceIndex];

@@ -65,7 +65,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    HID["HID 通信 IHidTransport"] --> Dev["デバイス DS4Device 系"]
+    HID["HID 通信 IHidTransport"] --> Dev["デバイス InputDeviceCore 系"]
     Dev --> Par["解析 IInputReportParser"]
     Par --> State["DS4State"]
     State --> Map["Mapping（割り当て・補正・アクション）"]
@@ -93,7 +93,7 @@ flowchart LR
 | `AutoProfileService` | 2 | 前面アプリによるプロファイルの自動切替 |
 | `InputDeviceModuleRegistry` | 2 | 機種ごとの接続フック（`IInputDeviceModule`）の登録簿 |
 | `Ds4DeviceModule` | 2 | DS4 の接続フック |
-| `DS4Device` | 1 | 入力デバイスの共通の基底（状態・イベント・設定・切断。読み取りのループは持たない抽象クラス） |
+| `InputDeviceCore` | 1 | 入力デバイスの共通の基底（状態・イベント・設定・切断。読み取りのループは持たない抽象クラス） |
 | `InputLoopDevice` | 1 | 読み取りのループの骨組み（1 フレームの流れと、機種が書く差し込み口） |
 | `DualShock4Device` | 1 | DualShock 4（USB／BT／ワイヤレスアダプター） |
 | `DS4Devices` | 1 | 接続デバイスの列挙と生成 |

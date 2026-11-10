@@ -5,7 +5,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 電池残量の一本化（案C）: 書き込みの入口は DS4Device 基底の UpdateBattery／UpdateCharging、
+    /// Phase11 電池残量の一本化（案C）: 書き込みの入口は InputDeviceCore 基底の UpdateBattery／UpdateCharging、
     /// 通知のイベントは基底の 1 組だけ、読み手は一覧のモデルを経由せずデバイスから直接読む。
     /// </summary>
     public class BatteryUnificationTests
@@ -19,7 +19,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheBase_OwnsTheOnlyPairOfEvents_AndTheWriters()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/Input/DS4Device.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Input/InputDeviceCore.cs");
             if (code == null) return;
 
             Assert.Contains("public event EventHandler BatteryChanged;", code);

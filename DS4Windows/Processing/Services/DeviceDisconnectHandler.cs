@@ -54,7 +54,7 @@ namespace DS4Windows.Processing.Services
         public void OnRemoval(object sender, EventArgs e)
         {
             IDeviceSlotState host = _host;
-            DS4Device device = (DS4Device)sender;
+            InputDeviceCore device = (InputDeviceCore)sender;
             int ind = -1;
             for (int i = 0, arlength = host.DS4Controllers.Length; ind == -1 && i < arlength; i++)
             {
@@ -157,11 +157,11 @@ namespace DS4Windows.Processing.Services
         public void OnSyncChange(object sender, EventArgs e)
         {
             IDeviceSlotState host = _host;
-            DS4Device device = (DS4Device)sender;
+            InputDeviceCore device = (InputDeviceCore)sender;
             int ind = -1;
             for (int i = 0, arlength = _controllerSlotLimit; ind == -1 && i < arlength; i++)
             {
-                DS4Device tempDev = host.DS4Controllers[i];
+                InputDeviceCore tempDev = host.DS4Controllers[i];
                 if (tempDev != null && device == tempDev)
                     ind = i;
             }
@@ -196,11 +196,11 @@ namespace DS4Windows.Processing.Services
         public void OnSerialChange(object sender, EventArgs e)
         {
             IDeviceSlotState host = _host;
-            DS4Device device = (DS4Device)sender;
+            InputDeviceCore device = (InputDeviceCore)sender;
             int ind = -1;
             for (int i = 0, arlength = ControllerLimits.MaxControllerCount; ind == -1 && i < arlength; i++)
             {
-                DS4Device tempDev = host.DS4Controllers[i];
+                InputDeviceCore tempDev = host.DS4Controllers[i];
                 if (tempDev != null && device == tempDev)
                     ind = i;
             }

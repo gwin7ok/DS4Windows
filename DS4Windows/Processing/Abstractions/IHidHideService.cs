@@ -20,9 +20,9 @@ namespace DS4Windows.Processing.Abstractions
         void UpdateAttributes();
 
         /// <summary>デバイスが HidHide の非表示の対象か（HidHide が有効なときだけ判定する）。</summary>
-        bool IsAffected(DS4Device dev);
+        bool IsAffected(InputDeviceCore dev);
 
         /// <summary>デバイスの排他状態を「HidHide の影響を受ける」にする（HidHide が導入済みのとき）。</summary>
-        void MarkAffected(DS4Device dev);
+        void MarkAffected(InputDeviceCore dev);
     }
 }

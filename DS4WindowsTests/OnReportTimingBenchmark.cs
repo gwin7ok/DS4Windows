@@ -54,8 +54,8 @@ namespace DS4WindowsTests
             // before（5b-a）は ControlService.On_Report のデリゲート。after（5b-c 以降）は IInputReportProcessor.OnReport のデリゲート
             TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
             var processor = TestHost.GetService<DS4Windows.Processing.Abstractions.IInputReportProcessor>();
-            var onReport = (Action<DS4Device, EventArgs, int>)Delegate.CreateDelegate(
-                typeof(Action<DS4Device, EventArgs, int>), processor, typeof(DS4Windows.Processing.Abstractions.IInputReportProcessor).GetMethod("OnReport"));
+            var onReport = (Action<InputDeviceCore, EventArgs, int>)Delegate.CreateDelegate(
+                typeof(Action<InputDeviceCore, EventArgs, int>), processor, typeof(DS4Windows.Processing.Abstractions.IInputReportProcessor).GetMethod("OnReport"));
 
             TestDs4Device d = TestDs4Device.Create();
             var cState = new DS4State { LX = 130, LY = 120 };
@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             Set(d, "jointPreviousState", new DS4State());
             Set(d, "primaryDevice", true);
             Set(d, "outputMapGyro", true);
-            Set(d, "jointDeviceSlotNumber", DS4Device.DEFAULT_JOINT_SLOT_NUMBER);
+            Set(d, "jointDeviceSlotNumber", InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER);
             d.firstReport = false;
             d.firstActive = DateTime.UtcNow;
 

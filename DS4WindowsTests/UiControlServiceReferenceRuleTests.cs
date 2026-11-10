@@ -6,7 +6,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// UI（4-a）が具象の <c>ControlService</c> を参照しないこと（規則 L8。規約 1 章「UI は第 2 層の契約だけに依存する」）。
-    /// <c>ControlService</c> は第 1 層・第 3 層の具象（<c>DS4Device</c>、<c>OutputSlotManager</c> ほか）への抜け道になるため、UI が持つと依存の向きが保てない。
+    /// <c>ControlService</c> は第 1 層・第 3 層の具象（<c>InputDeviceCore</c>、<c>OutputSlotManager</c> ほか）への抜け道になるため、UI が持つと依存の向きが保てない。
     /// 参照は 0 件で、許可リストはない。新しい参照は、第 2 層の契約（<c>IServiceLifecycle</c>、<c>IControllerSlotQuery</c> など）へ置き換える。
     /// 型の参照は <see cref="LayerDependencyScanner"/>（メソッド本体を含む実際の型参照）で調べる。
     /// </summary>

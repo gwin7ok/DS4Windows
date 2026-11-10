@@ -23,6 +23,6 @@ namespace DS4Windows.Input.Abstractions
         string ReadSerial(VidPidInfo info, IHidTransport hidDevice);
 
         /// <summary><paramref name="type"/> のデバイスを作る。<see cref="Handles"/> が true の種類だけ渡す。</summary>
-        DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet);
+        InputDeviceCore Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet);
     }
 }

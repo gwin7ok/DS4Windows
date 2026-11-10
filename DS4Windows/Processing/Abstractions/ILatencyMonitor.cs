@@ -11,7 +11,7 @@ namespace DS4Windows.Processing.Abstractions
     public interface ILatencyMonitor
     {
         /// <summary>レポートが届くたびに呼ぶ。デバイスのエラーをログに出し、接続 5 秒後から遅延を監視する。</summary>
-        void OnReport(DS4Device device, int ind);
+        void OnReport(InputDeviceCore device, int ind);
 
         /// <summary>切断・停止時に、そのスロットの監視状態を初期状態へ戻す（旧 <c>lag[i] = false; inWarnMonitor[i] = false;</c>）。</summary>
         void Reset(int ind);

@@ -14,7 +14,7 @@ namespace DS4Windows.Processing.Abstractions
     public interface IDeviceSlotState : IDeviceStateAccessor
     {
         /// <summary>接続中のデバイス（スロットごと。未接続は null）。</summary>
-        DS4Device[] DS4Controllers { get; }
+        InputDeviceCore[] DS4Controllers { get; }
         /// <summary>そのスロットのデバイスの現在の入力（旧 <c>ControlService.CurrentState</c>）。</summary>
         DS4State[] CurrentStates { get; }
         /// <summary>前回の入力（旧 <c>ControlService.PreviousState</c>）。</summary>

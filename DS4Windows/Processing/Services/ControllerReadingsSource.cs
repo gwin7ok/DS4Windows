@@ -34,8 +34,8 @@ namespace DS4Windows.Processing.Services
         public bool TryRead(int slot, int profileSlot, DS4State input, DS4State mapped, out ControllerReadingInfo info)
         {
             info = default;
-            DS4Device[] controllers = _slotState.DS4Controllers;
-            DS4Device device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
+            InputDeviceCore[] controllers = _slotState.DS4Controllers;
+            InputDeviceCore device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
             if (device == null || !device.IsAlive())
                 return false;
 

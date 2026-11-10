@@ -29,7 +29,7 @@ namespace DS4WindowsTests
             }
             else
             {
-                serial = hid.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
+                serial = hid.ReadSerial(InputDeviceCore.SERIAL_FEATURE_ID);
             }
 
             return (serial, hid.LastSerialFeatureId);

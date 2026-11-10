@@ -34,7 +34,7 @@ namespace DS4Windows.Processing.Abstractions
         event EventHandler RunningChanged;
 
         /// <summary>ホットプラグでコントローラーがスロットに入ったとき（デバイスとスロット番号）。</summary>
-        event Action<DS4Device, int> HotplugController;
+        event Action<InputDeviceCore, int> HotplugController;
 
         bool Start(bool showlog = true);
 

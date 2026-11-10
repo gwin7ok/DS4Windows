@@ -220,7 +220,7 @@ namespace DS4Windows.Processing.Services
             if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
             {
                 string propName = strData[2].ToLower();
-                DS4Device[] controllers = _slots.DS4Controllers;
+                InputDeviceCore[] controllers = _slots.DS4Controllers;
 
                 if (propName == "profilename")
                 {

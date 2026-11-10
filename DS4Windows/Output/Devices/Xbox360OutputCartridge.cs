@@ -37,7 +37,7 @@ namespace DS4Windows.Output.Devices
 
         public OutputDevice Narrow(OutputDevice device) => device as Xbox360OutDevice;
 
-        public void AttachFeedback(int index, OutputDevice outDevice, DS4Device device)
+        public void AttachFeedback(int index, OutputDevice outDevice, InputDeviceCore device)
         {
             int devIndex = index;
             Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;

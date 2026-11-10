@@ -40,10 +40,10 @@ namespace DS4Windows.Input
     /// </summary>
     public class DS4Devices
     {
-        // (HID device path, DS4Device)
-        private readonly Dictionary<string, DS4Device> Devices = new Dictionary<string, DS4Device>();
-        // (MacAddress, DS4Device)
-        private readonly Dictionary<string, DS4Device> serialDevices = new Dictionary<string, DS4Device>();
+        // (HID device path, InputDeviceCore)
+        private readonly Dictionary<string, InputDeviceCore> Devices = new Dictionary<string, InputDeviceCore>();
+        // (MacAddress, InputDeviceCore)
+        private readonly Dictionary<string, InputDeviceCore> serialDevices = new Dictionary<string, InputDeviceCore>();
         private readonly HashSet<string> deviceSerials = new HashSet<string>();
         private readonly HashSet<string> DevicePaths = new HashSet<string>();
         // Keep instance of opened exclusive mode devices not in use (Charging while using BT connection)
@@ -93,11 +93,11 @@ namespace DS4Windows.Input
                     return cartridges[i].ReadSerial(info, hidDevice);
             }
 
-            return DS4Device.BLANK_SERIAL;
+            return InputDeviceCore.BLANK_SERIAL;
         }
 
         // 種類に対応するカートリッジでデバイスを作る（対応するカートリッジがなければ null）
-        private DS4Device CreateDevice(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
+        private InputDeviceCore CreateDevice(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             for (int i = 0; i < cartridges.Length; i++)
             {
@@ -177,7 +177,7 @@ namespace DS4Windows.Input
                     VidPidInfo metainfo = knownDevices.Single(x => x.vid == d.Attributes.VendorId &&
                         x.pid == d.Attributes.ProductId);
 
-                    //return DS4Device.HidConnectionType(d);
+                    //return InputDeviceCore.HidConnectionType(d);
                     return metainfo.checkConnection(d);
                 });
 
@@ -242,12 +242,12 @@ namespace DS4Windows.Input
                     {
                         string serial = ReadSerial(metainfo, hDevice);
 
-                        bool validSerial = !serial.Equals(DS4Device.BLANK_SERIAL);
+                        bool validSerial = !serial.Equals(InputDeviceCore.BLANK_SERIAL);
                         bool newdev = true;
                         if (validSerial && deviceSerials.Contains(serial))
                         {
                             // Check if Quick Charge flag is engaged
-                            if (serialDevices.TryGetValue(serial, out DS4Device tempDev) && tempDev.ReadyQuickChargeDisconnect)
+                            if (serialDevices.TryGetValue(serial, out InputDeviceCore tempDev) && tempDev.ReadyQuickChargeDisconnect)
                             {
                                 // Need to disconnect callback here to avoid deadlock
                                 tempDev.Removal -= On_Removal;
@@ -275,8 +275,8 @@ namespace DS4Windows.Input
 
                         if (newdev && validSerial)
                         {
-                            DS4Device ds4Device = CreateDevice(metainfo.inputDevType, hDevice, metainfo.name, metainfo.featureSet);
-                            //DS4Device ds4Device = new DS4Device(hDevice, metainfo.name, metainfo.featureSet);
+                            InputDeviceCore ds4Device = CreateDevice(metainfo.inputDevType, hDevice, metainfo.name, metainfo.featureSet);
+                            //InputDeviceCore ds4Device = new InputDeviceCore(hDevice, metainfo.name, metainfo.featureSet);
                             if (ds4Device == null)
                             {
                                 // No compatible device type was found. Skip
@@ -308,11 +308,11 @@ namespace DS4Windows.Input
         }
 
         // Returns DS4 controllers that were found and are running
-        public IEnumerable<DS4Device> getDS4Controllers()
+        public IEnumerable<InputDeviceCore> getDS4Controllers()
         {
             lock (Devices)
             {
-                DS4Device[] controllers = new DS4Device[Devices.Count];
+                InputDeviceCore[] controllers = new InputDeviceCore[Devices.Count];
                 Devices.Values.CopyTo(controllers, 0);
                 return controllers;
             }
@@ -322,13 +322,13 @@ namespace DS4Windows.Input
         {
             lock (Devices)
             {
-                IEnumerable<DS4Device> devices = Devices.Values.ToArray();
-                //foreach (DS4Device device in devices)
+                IEnumerable<InputDeviceCore> devices = Devices.Values.ToArray();
+                //foreach (InputDeviceCore device in devices)
                 //for (int i = 0, devCount = devices.Count(); i < devCount; i++)
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext();)
                 {
-                    DS4Device device = devEnum.Current;
-                    //DS4Device device = devices.ElementAt(i);
+                    InputDeviceCore device = devEnum.Current;
+                    //InputDeviceCore device = devices.ElementAt(i);
                     device.StopUpdate();
                     //device.runRemoval();
                     device.HidDevice.CloseDevice();
@@ -345,11 +345,11 @@ namespace DS4Windows.Input
         // Called when devices is disconnected, timed out or has input reading failure
         public void On_Removal(object sender, EventArgs e)
         {
-            DS4Device device = (DS4Device)sender;
+            InputDeviceCore device = (InputDeviceCore)sender;
             RemoveDevice(device);
         }
 
-        public void RemoveDevice(DS4Device device)
+        public void RemoveDevice(InputDeviceCore device)
         {
             lock (Devices)
             {
@@ -357,7 +357,7 @@ namespace DS4Windows.Input
             }
         }
 
-        private void InnerRemoveDevice(DS4Device device)
+        private void InnerRemoveDevice(InputDeviceCore device)
         {
             if (device != null)
             {
@@ -374,7 +374,7 @@ namespace DS4Windows.Input
         {
             lock (Devices)
             {
-                DS4Device device = (DS4Device)sender;
+                InputDeviceCore device = (InputDeviceCore)sender;
                 if (device != null)
                 {
                     string devPath = device.HidDevice.DevicePath;
@@ -385,7 +385,7 @@ namespace DS4Windows.Input
                         serialDevices.Remove(serial);
                         device.updateSerial();
                         serial = device.getMacAddress();
-                        if (DS4Device.isValidSerial(serial))
+                        if (InputDeviceCore.isValidSerial(serial))
                         {
                             deviceSerials.Add(serial);
                             serialDevices.Add(serial, device);

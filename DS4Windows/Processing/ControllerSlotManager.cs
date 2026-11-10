@@ -31,22 +31,22 @@ namespace DS4Windows.Processing
         private ReaderWriterLockSlim collectionLocker = new ReaderWriterLockSlim();
         public ReaderWriterLockSlim CollectionLocker { get => collectionLocker; }
 
-        private List<DS4Device> controllerColl;
-        public List<DS4Device> ControllerColl { get => controllerColl; set => controllerColl = value; }
+        private List<InputDeviceCore> controllerColl;
+        public List<InputDeviceCore> ControllerColl { get => controllerColl; set => controllerColl = value; }
         
-        private Dictionary<int, DS4Device> controllerDict;
-        private Dictionary<DS4Device, int> reverseControllerDict;
-        public Dictionary<int, DS4Device> ControllerDict { get => controllerDict; }
-        public Dictionary<DS4Device, int> ReverseControllerDict { get => reverseControllerDict; }
+        private Dictionary<int, InputDeviceCore> controllerDict;
+        private Dictionary<InputDeviceCore, int> reverseControllerDict;
+        public Dictionary<int, InputDeviceCore> ControllerDict { get => controllerDict; }
+        public Dictionary<InputDeviceCore, int> ReverseControllerDict { get => reverseControllerDict; }
 
         public ControllerSlotManager()
         {
-            controllerColl = new List<DS4Device>();
-            controllerDict = new Dictionary<int, DS4Device>();
-            reverseControllerDict = new Dictionary<DS4Device, int>();
+            controllerColl = new List<InputDeviceCore>();
+            controllerDict = new Dictionary<int, InputDeviceCore>();
+            reverseControllerDict = new Dictionary<InputDeviceCore, int>();
         }
 
-        public void AddController(DS4Device device, int slotIdx)
+        public void AddController(InputDeviceCore device, int slotIdx)
         {
             using (WriteLocker locker = new WriteLocker(collectionLocker))
             {
@@ -56,7 +56,7 @@ namespace DS4Windows.Processing
             }
         }
 
-        public void RemoveController(DS4Device device, int slotIdx)
+        public void RemoveController(InputDeviceCore device, int slotIdx)
         {
             using (WriteLocker locker = new WriteLocker(collectionLocker))
             {

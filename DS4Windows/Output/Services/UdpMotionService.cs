@@ -143,11 +143,11 @@ namespace DS4Windows.Output.Services
 
         public void ChangeMotionEventStatus(bool state)
         {
-            IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
+            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
             if (state)
             {
                 int i = 0;
-                foreach (DS4Device dev in devices)
+                foreach (InputDeviceCore dev in devices)
                 {
                     int tempIdx = i;
                     dev.queueEvent(() =>
@@ -163,7 +163,7 @@ namespace DS4Windows.Output.Services
             }
             else
             {
-                foreach (DS4Device dev in devices)
+                foreach (InputDeviceCore dev in devices)
                 {
                     dev.queueEvent(() =>
                     {
@@ -186,8 +186,8 @@ namespace DS4Windows.Output.Services
         public async void UsePort()
         {
             ChangingPort = true;
-            IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
-            foreach (DS4Device dev in devices)
+            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetDS4Controllers();
+            foreach (InputDeviceCore dev in devices)
             {
                 dev.queueEvent(() =>
                 {
@@ -206,7 +206,7 @@ namespace DS4Windows.Output.Services
             try
             {
                 _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                foreach (DS4Device dev in devices)
+                foreach (InputDeviceCore dev in devices)
                 {
                     dev.queueEvent(() =>
                     {
@@ -229,82 +229,82 @@ namespace DS4Windows.Output.Services
             ChangingPort = false;
         }
 
-        /// <summary>
-        /// そのスロットのパッドの情報を <paramref name="meta"/> に書く（UDP モーションのサーバーが問い合わせる）。
-        /// Phase13-Step5: 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.DS4Controllers"/> と <c>DS4Device</c> のメソッドだけ）。
-        /// </summary>
-        public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
-        {
-            //meta = new DualShockPadMeta();
-            meta.PadId = (byte)padIdx;
-            meta.Model = DsModel.DS4;
-
-            var d = _slots.DS4Controllers[padIdx];
-            if (d == null)
-            {
-                meta.PadMacAddress = null;
-                meta.PadState = DsState.Disconnected;
-                meta.ConnectionType = DsConnection.None;
-                meta.Model = DsModel.None;
-                meta.BatteryStatus = 0;
-                meta.IsActive = false;
-                return;
-                //return meta;
-            }
-
-            bool isValidSerial = false;
-            string stringMac = d.getMacAddress();
-            if (!string.IsNullOrEmpty(stringMac))
-            {
-                stringMac = string.Join("", stringMac.Split(':'));
-                //stringMac = stringMac.Replace(":", "").Trim();
-                meta.PadMacAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(stringMac);
-                isValidSerial = d.isValidSerial();
-            }
-
-            if (!isValidSerial)
-            {
-                //meta.PadMacAddress = null;
-                meta.PadState = DsState.Disconnected;
-            }
-            else
-            {
-                if (d.isSynced() || d.IsAlive())
-                    meta.PadState = DsState.Connected;
-                else
-                    meta.PadState = DsState.Reserved;
-            }
-
-            meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
-            meta.IsActive = !d.isDS4Idle();
-
-            int batteryLevel = d.getBattery();
-            if (d.isCharging() && batteryLevel >= 100)
-                meta.BatteryStatus = DsBattery.Charged;
-            else
-            {
-                if (batteryLevel >= 95)
-                    meta.BatteryStatus = DsBattery.Full;
-                else if (batteryLevel >= 70)
-                    meta.BatteryStatus = DsBattery.High;
-                else if (batteryLevel >= 50)
-                    meta.BatteryStatus = DsBattery.Medium;
-                else if (batteryLevel >= 20)
-                    meta.BatteryStatus = DsBattery.Low;
-                else if (batteryLevel >= 5)
-                    meta.BatteryStatus = DsBattery.Dying;
-                else
-                    meta.BatteryStatus = DsBattery.None;
-            }
-
-            //return meta;
-        }
-
-        public void PrepareDeviceMotion(DS4Device device, int index)
+        /// <summary>
+        /// そのスロットのパッドの情報を <paramref name="meta"/> に書く（UDP モーションのサーバーが問い合わせる）。
+        /// Phase13-Step5: 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.DS4Controllers"/> と <c>InputDeviceCore</c> のメソッドだけ）。
+        /// </summary>
+        public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
+        {
+            //meta = new DualShockPadMeta();
+            meta.PadId = (byte)padIdx;
+            meta.Model = DsModel.DS4;
+
+            var d = _slots.DS4Controllers[padIdx];
+            if (d == null)
+            {
+                meta.PadMacAddress = null;
+                meta.PadState = DsState.Disconnected;
+                meta.ConnectionType = DsConnection.None;
+                meta.Model = DsModel.None;
+                meta.BatteryStatus = 0;
+                meta.IsActive = false;
+                return;
+                //return meta;
+            }
+
+            bool isValidSerial = false;
+            string stringMac = d.getMacAddress();
+            if (!string.IsNullOrEmpty(stringMac))
+            {
+                stringMac = string.Join("", stringMac.Split(':'));
+                //stringMac = stringMac.Replace(":", "").Trim();
+                meta.PadMacAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(stringMac);
+                isValidSerial = d.isValidSerial();
+            }
+
+            if (!isValidSerial)
+            {
+                //meta.PadMacAddress = null;
+                meta.PadState = DsState.Disconnected;
+            }
+            else
+            {
+                if (d.isSynced() || d.IsAlive())
+                    meta.PadState = DsState.Connected;
+                else
+                    meta.PadState = DsState.Reserved;
+            }
+
+            meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
+            meta.IsActive = !d.isDS4Idle();
+
+            int batteryLevel = d.getBattery();
+            if (d.isCharging() && batteryLevel >= 100)
+                meta.BatteryStatus = DsBattery.Charged;
+            else
+            {
+                if (batteryLevel >= 95)
+                    meta.BatteryStatus = DsBattery.Full;
+                else if (batteryLevel >= 70)
+                    meta.BatteryStatus = DsBattery.High;
+                else if (batteryLevel >= 50)
+                    meta.BatteryStatus = DsBattery.Medium;
+                else if (batteryLevel >= 20)
+                    meta.BatteryStatus = DsBattery.Low;
+                else if (batteryLevel >= 5)
+                    meta.BatteryStatus = DsBattery.Dying;
+                else
+                    meta.BatteryStatus = DsBattery.None;
+            }
+
+            //return meta;
+        }
+
+        public void PrepareDeviceMotion(InputDeviceCore device, int index)
         {
             IDeviceSlotState host = _slots;
             int tempIdx = index;
-            DS4Device.ReportHandler<EventArgs> tempEvnt = (sender, args) =>
+            InputDeviceCore.ReportHandler<EventArgs> tempEvnt = (sender, args) =>
             {
                 DualShockPadMeta padDetail = new DualShockPadMeta();
                 GetPadDetailForIdx(tempIdx, ref padDetail);

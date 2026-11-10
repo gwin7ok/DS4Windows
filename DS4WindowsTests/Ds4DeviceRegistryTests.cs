@@ -12,10 +12,10 @@ namespace DS4WindowsTests
     {
         private class MockDs4DeviceRegistry : IDs4DeviceRegistry
         {
-            public List<DS4Device> MockDevices { get; } = new List<DS4Device>();
+            public List<InputDeviceCore> MockDevices { get; } = new List<InputDeviceCore>();
             public int FindControllersCalls { get; private set; }
             public int StopControllersCalls { get; private set; }
-            public List<DS4Device> RemoveCalls { get; } = new List<DS4Device>();
+            public List<InputDeviceCore> RemoveCalls { get; } = new List<InputDeviceCore>();
             public bool IsExclusiveMode { get; set; }
 
             // CS0067 警告回避のための明示的空アクセサ
@@ -29,20 +29,20 @@ namespace DS4WindowsTests
             public PrepareInitDelegate PostDS4Init { get; set; }
             public CheckPendingDevice PreparePendingDevice { get; set; }
 
-            public IEnumerable<DS4Device> FindControllers()
+            public IEnumerable<InputDeviceCore> FindControllers()
             {
                 FindControllersCalls++;
                 return MockDevices;
             }
 
-            public IEnumerable<DS4Device> GetDS4Controllers() => MockDevices;
+            public IEnumerable<InputDeviceCore> GetDS4Controllers() => MockDevices;
 
             public void StopControllers()
             {
                 StopControllersCalls++;
             }
 
-            public bool RemoveDevice(DS4Device device)
+            public bool RemoveDevice(InputDeviceCore device)
             {
                 RemoveCalls.Add(device);
                 return MockDevices.Remove(device);

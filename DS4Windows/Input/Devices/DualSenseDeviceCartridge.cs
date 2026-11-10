@@ -28,7 +28,7 @@ namespace DS4Windows.Input.Devices
             return hidDevice.ReadSerial(DualSenseDevice.SERIAL_FEATURE_ID);
         }
 
-        public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
+        public InputDeviceCore Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new DualSenseDevice(hidDevice, displayName, featureSet);
         }

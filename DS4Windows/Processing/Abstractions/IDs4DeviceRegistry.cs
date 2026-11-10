@@ -7,12 +7,12 @@ namespace DS4Windows.Processing.Abstractions
     public interface IDs4DeviceRegistry
     {
         // === デバイス検出・列挙契約 ===
-        IEnumerable<DS4Device> FindControllers();
-        IEnumerable<DS4Device> GetDS4Controllers();
+        IEnumerable<InputDeviceCore> FindControllers();
+        IEnumerable<InputDeviceCore> GetDS4Controllers();
 
         // === ライフサイクル・切断制御 ===
         void StopControllers();
-        bool RemoveDevice(DS4Device device);
+        bool RemoveDevice(InputDeviceCore device);
         void OnRemoval(object sender, EventArgs e);
         void UpdateSerial(object sender, EventArgs e);
         // TODO(Phase7-Step2 W5 の調査で「接続」と判断。削除しない): 2026-09-20 に Actions/ から DI/ へ移した契約。本来は、上位層（App）が

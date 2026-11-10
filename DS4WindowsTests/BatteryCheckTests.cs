@@ -353,7 +353,7 @@ namespace DS4WindowsTests
 
         private sealed class NoControllerAccessor : IDeviceStateAccessor
         {
-            public DS4Device GetController(int deviceIndex) => null;
+            public InputDeviceCore GetController(int deviceIndex) => null;
         }
     }
 }

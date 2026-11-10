@@ -28,7 +28,7 @@ namespace DS4WindowsTests
 
         public void SendReport(int index, DS4State state) => _inner?.SendReport(index, state);
 
-        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, DS4Device device)
+        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, InputDeviceCore device)
             => _inner?.TryShareOutputDevice(fromIndex, toIndex, contType, device) ?? false;
 
         public void ReleaseSharedOutputDevice(int index) => _inner?.ReleaseSharedOutputDevice(index);
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
 
         public void AssignInitialDevices() => _inner?.AssignInitialDevices();
 
-        public void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, DS4Device device)
+        public void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device)
             => _inner?.EstablishOutFeedback(index, contType, outDevice, device);
 
         public void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
@@ -68,9 +68,9 @@ namespace DS4WindowsTests
 
         public void DetachUnboundOutDev(OutSlotDevice slotDevice) => _inner?.DetachUnboundOutDev(slotDevice);
 
-        public void PluginOutDev(int index, DS4Device device) => _inner?.PluginOutDev(index, device);
+        public void PluginOutDev(int index, InputDeviceCore device) => _inner?.PluginOutDev(index, device);
 
-        public void UnplugOutDev(int index, DS4Device device, bool immediate = false, bool force = false)
+        public void UnplugOutDev(int index, InputDeviceCore device, bool immediate = false, bool force = false)
             => _inner?.UnplugOutDev(index, device, immediate, force);
 
         public void QueueOnEventThread(Action action) => _inner?.QueueOnEventThread(action);

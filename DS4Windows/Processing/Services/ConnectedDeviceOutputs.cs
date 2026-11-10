@@ -38,7 +38,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void PlugVirtualPad(int index, DS4Device device)
+        public void PlugVirtualPad(int index, InputDeviceCore device)
         {
             if (!_profileSettings.GetDInputOnly(index) && device.isSynced())
             {
@@ -46,7 +46,7 @@ namespace DS4Windows.Processing.Services
                 {
                     _virtualPad.PluginOutDev(index, device);
                 }
-                else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
+                else if (device.JointDeviceSlotNumber != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
                 {
                     int otherIdx = device.JointDeviceSlotNumber;
                     OutContType tempConType = _activeOutDevType[otherIdx];
@@ -63,7 +63,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void PrepareMotion(int index, DS4Device device)
+        public void PrepareMotion(int index, InputDeviceCore device)
         {
             if (_udpMotion.HasServer && index < _udpMotion.SlotCount)
             {

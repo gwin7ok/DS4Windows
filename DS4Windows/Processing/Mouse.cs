@@ -34,7 +34,7 @@ namespace DS4Windows.Processing
         protected Touch firstTouch, secondTouch;
         private DS4State s = new DS4State();
         protected int deviceNum;
-        private DS4Device dev = null;
+        private InputDeviceCore dev = null;
         private readonly MouseCursor cursor;
         private readonly MouseWheel wheel;
         // Phase6-Step4-3: Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
@@ -115,7 +115,7 @@ namespace DS4Windows.Processing
         private OneEuroFilterPair touchStickFilter;
         private FakeTrackball touchStickTrackball;
 
-        public Mouse(int deviceID, DS4Device d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
+        public Mouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
             _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));

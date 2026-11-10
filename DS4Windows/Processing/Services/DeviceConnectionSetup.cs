@@ -34,7 +34,7 @@ namespace DS4Windows.Processing.Services
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
         }
 
-        public void ApplyProfileOptions(int ind, DS4Device device, Mouse touchPad, bool startUp = false)
+        public void ApplyProfileOptions(int ind, InputDeviceCore device, Mouse touchPad, bool startUp = false)
         {
             // Phase11 W6c（K-W6-12。D2＝案 B）: 書く状態から書かない状態（OFF）へ変わるときは、フラグを立てる前に、消灯・振動ゼロを 1 度だけ書く
             // （同じプロファイルの再適用でも、OFF の結果が見える。フラグ後は何も書かれず、パッドが最後の色を保持するため）
@@ -74,7 +74,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        private void CheckLauchProfileOption(int ind, DS4Device device)
+        private void CheckLauchProfileOption(int ind, InputDeviceCore device)
         {
             string programPath = _profileSettings.LaunchProgram[ind];
             if (programPath != string.Empty)
@@ -114,7 +114,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void WireInitialHooks(int ind, DS4Device device)
+        public void WireInitialHooks(int ind, InputDeviceCore device)
         {
             _udpMotion.ResetSmoothingFilters(ind);   // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters
 
@@ -181,7 +181,7 @@ namespace DS4Windows.Processing.Services
             };
         }
 
-        public void AttachTouchpad(int ind, DS4Device device, Mouse[] touchPads)
+        public void AttachTouchpad(int ind, InputDeviceCore device, Mouse[] touchPads)
         {
             Mouse tPad = touchPads[ind];
             //ITouchpadBehaviour tPad = touchPad[ind];

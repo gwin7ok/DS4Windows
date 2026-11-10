@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     {
         private sealed class NoRumble : IDeviceRumbleService
         {
-            public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum) { }
+            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) { }
         }
 
         public static IOutputDeviceCartridge[] For(IProfileSettingsService settings, IDeviceRumbleService rumble)

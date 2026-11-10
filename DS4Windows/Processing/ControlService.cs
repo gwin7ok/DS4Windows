@@ -52,7 +52,7 @@ namespace DS4Windows.Processing
         // Phase7-Step10b W4: USING_MAX_CONTROLLERS（静的シム）は、呼び出し元 3 箇所を IEnvironmentService.UsingMaxControllers の注入に替えて削除した。
         // Phase13-Step5: スロット状態の配列は IDeviceSlotState（DeviceSlotState）が所有する。ここは、コンストラクターで一度だけ取得した参照を保持する（ホットパス［On_Report］は従来どおりこのフィールドを読む。配列の参照は再代入されない）。
         private readonly DS4Windows.Processing.Abstractions.IInputReportProcessor _inputReport;   // Phase13-Step5b
-        private readonly DS4Device[] DS4Controllers;
+        private readonly InputDeviceCore[] DS4Controllers;
         // Phase9 9-E E-6f2: 状態は ServiceLifecycle が持つ。Phase9 9-F F-5b: 外部の参照が 0 件の activeControllers／loopControllers／inServiceTask の転送を削除した。
         // Phase13-Step9: running／suspending の転送は削除した（利用者の App／MainWindow／TrayIconViewModel は IServiceLifecycle を直接使う）。
         private readonly DS4State[] PreviousState;
@@ -161,7 +161,7 @@ namespace DS4Windows.Processing
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
 
-            Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
+            Crc32Algorithm.InitializeTable(InputDeviceCore.DefaultPolynomial);
 
             // Phase13-Step3: イベントスレッドの生成は EventThreadDispatcher のコンストラクターへ移した
 

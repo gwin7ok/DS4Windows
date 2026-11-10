@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase13-Step6 6-a: <c>Func&lt;ControlService&gt;</c> の撤廃（6-b 以降）の前に、置き換える側の挙動を固定する特性テスト。
     /// 入口は、置き換え前の経路（<c>ControlService</c> 経由）。6-b で入口を新しい経路に替えても、同じ結果になることを確かめる。
-    /// 書けなかったもの: <c>setRumble</c> と <c>RumbleAutostopTime</c> の実デバイスへの反映は、<c>DS4Device</c> の内部状態（<c>testRumble</c>、タイマー）が
+    /// 書けなかったもの: <c>setRumble</c> と <c>RumbleAutostopTime</c> の実デバイスへの反映は、<c>InputDeviceCore</c> の内部状態（<c>testRumble</c>、タイマー）が
     /// 未初期化のテスト用デバイスでは動かないため、6-b では <c>IDeviceRumbleService</c> の差し替えで検査する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -41,10 +41,10 @@ namespace DS4WindowsTests
         /// <summary>スロットにデバイスを置き、終わったら元に戻す。</summary>
         private sealed class SlotScope : IDisposable
         {
-            private readonly DS4Device _old;
+            private readonly InputDeviceCore _old;
             private readonly int _slot;
 
-            public SlotScope(int slot, DS4Device device)
+            public SlotScope(int slot, InputDeviceCore device)
             {
                 _slot = slot;
                 var slots = TestHost.GetService<IDeviceSlotState>();
@@ -105,7 +105,7 @@ namespace DS4WindowsTests
 
                 var dualSense = (DualSenseDevice)RuntimeHelpers.GetUninitializedObject(typeof(DualSenseDevice));
                 // コンストラクターを通さないため、DualSenseDevice が自分で設定する種類を同じ値にする（判定は DeviceType で行う）
-                typeof(DS4Device).GetField("deviceType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                typeof(InputDeviceCore).GetField("deviceType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                     .SetValue(dualSense, DS4Windows.Core.Model.InputDeviceType.DualSense);
                 using (new SlotScope(Slot, dualSense))
                     Assert.Equal(100, settings.GetRumbleBoost(Slot));   // DualSense で、汎用の再スケールなし → 100 固定

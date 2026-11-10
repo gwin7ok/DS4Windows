@@ -43,14 +43,14 @@ namespace DS4Windows.Processing.Services
 
         public bool HasOutputDevice(int ind) => _virtualPad.HasOutputDevice(ind);
 
-        // IConfigurableDevice を実装するのは DS4Device だけ（この層は具象を知ってよい）
-        public void PluginOutDev(int index, IConfigurableDevice device) => _virtualPad.PluginOutDev(index, (DS4Device)device);
+        // IConfigurableDevice を実装するのは InputDeviceCore だけ（この層は具象を知ってよい）
+        public void PluginOutDev(int index, IConfigurableDevice device) => _virtualPad.PluginOutDev(index, (InputDeviceCore)device);
 
         public void UnplugOutDev(int index, IConfigurableDevice device, bool immediate = false, bool force = false)
-            => _virtualPad.UnplugOutDev(index, (DS4Device)device, immediate, force);
+            => _virtualPad.UnplugOutDev(index, (InputDeviceCore)device, immediate, force);
 
         public void CheckProfileOptions(int ind, IConfigurableDevice device, bool startUp = false)
-            => _connectionSetup.ApplyProfileOptions(ind, (DS4Device)device, _slots.TouchPads[ind], startUp);
+            => _connectionSetup.ApplyProfileOptions(ind, (InputDeviceCore)device, _slots.TouchPads[ind], startUp);
 
         public void StartTPOff(int deviceID) => _touchpadToggle.StartTouchpadOff(deviceID);
 

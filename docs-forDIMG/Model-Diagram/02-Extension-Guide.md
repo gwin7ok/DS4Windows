@@ -10,7 +10,7 @@
 
 | 区分 | 足すもの（`Xxx` は系統名） | 参考にする既存の例 |
 |---|---|---|
-| 第1層 | `Input/Devices/XxxDevice.cs`（`DS4Device` の派生）、`XxxDeviceCartridge.cs`（VID/PID の表・生成）、`Input/Parsers/XxxReportParser.cs` | `SwitchProDevice`、`SwitchProDeviceCartridge`、`SwitchProReportParser` |
+| 第1層 | `Input/Devices/XxxDevice.cs`（`InputDeviceCore` の派生）、`XxxDeviceCartridge.cs`（VID/PID の表・生成）、`Input/Parsers/XxxReportParser.cs` | `SwitchProDevice`、`SwitchProDeviceCartridge`、`SwitchProReportParser` |
 | Core/Model | `InputDeviceFamily` と `InputDeviceType` に値を足し、`InputDeviceType` の値に `[InputDeviceFamily(...)]` を付ける（17-1 で表は不要になった） | |
 | 第2層 | `Processing/Services/XxxDeviceModule.cs`、`ServiceRegistration.Processing.cs` に `AddInputDevice<XxxDeviceCartridge, XxxDeviceModule>()` を 1 行 | `SwitchProDeviceModule` |
 | 設定 | `Core/Settings/XxxDeviceOptions.cs`、`XxxControllerOptions.cs`、`ControlServiceDeviceOptions` に系統を足す | |
@@ -19,12 +19,12 @@
 | テスト | カートリッジ・モジュール・解析器の差分テスト | `DeviceModuleTests` ほか |
 
 ### 単純な機種（ボタン・スティック・トリガーと、任意の電池・出力）の最短経路（17-3）
-`IDeviceProtocol`（`Parser`、`TryReadBattery`、`TryBuildOutputReport`、接続方式の判定）と、`ProtocolDeviceCartridge` の派生（`Family`、`KnownDevices`、`Protocol`）を書けば、読み取りループ・`Report`・出力の書き込み・切断は共通の `ProtocolDevice` が行う。そのうえで、(1) `InputDeviceFamily`・`InputDeviceType`（`[InputDeviceFamily]` つき）に値を足し、(2) `ControlServiceDeviceOptions` の系統の表に 1 行、(3) 接続フック（なければ `NullInputDeviceModule` 相当）を作り、(4) `AddInputDevice<…>()` を 1 行。保存は設定クラスの `ControllerSetting` の定義だけ（17-2）。見本は `ProtocolDeviceTests` の偽の機種。ジャイロ・タッチパッド・複数の接続方式を持つ機種は、従来どおり `DS4Device` の派生で書く。
+`IDeviceProtocol`（`Parser`、`TryReadBattery`、`TryBuildOutputReport`、接続方式の判定）と、`ProtocolDeviceCartridge` の派生（`Family`、`KnownDevices`、`Protocol`）を書けば、読み取りループ・`Report`・出力の書き込み・切断は共通の `ProtocolDevice` が行う。そのうえで、(1) `InputDeviceFamily`・`InputDeviceType`（`[InputDeviceFamily]` つき）に値を足し、(2) `ControlServiceDeviceOptions` の系統の表に 1 行、(3) 接続フック（なければ `NullInputDeviceModule` 相当）を作り、(4) `AddInputDevice<…>()` を 1 行。保存は設定クラスの `ControllerSetting` の定義だけ（17-2）。見本は `ProtocolDeviceTests` の偽の機種。ジャイロ・タッチパッド・複数の接続方式を持つ機種は、従来どおり `InputDeviceCore` の派生で書く。
 
 ### 今後（Phase17 の進行で更新する）
 - 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
 - 17-2（済）: 保存と画面が、設定の定義から作られる（DTO・Wrapper・XAML が不要）。
-- 17-3〜17-5（一部済）: 読み取りの 1 フレームの流れは `InputLoopDevice`（骨組み）に集まった。機種は差し込み口（`ReceiveFrame`／`IsExpectedReport`／`ProcessFrame`／`ProcessIdle`／`WriteOutputFrame`）だけを書く。`ProtocolDevice`・`DualSenseDevice`・`SwitchProDevice`・`DualShock4Device` が載っている。`DS4Device` は全機種の共通の基底（抽象クラス）で、自前のループは持たない（Phase18。`DeviceLoopStructureTests` が検査する）。
+- 17-3〜17-5（一部済）: 読み取りの 1 フレームの流れは `InputLoopDevice`（骨組み）に集まった。機種は差し込み口（`ReceiveFrame`／`IsExpectedReport`／`ProcessFrame`／`ProcessIdle`／`WriteOutputFrame`）だけを書く。`ProtocolDevice`・`DualSenseDevice`・`SwitchProDevice`・`DualShock4Device` が載っている。`InputDeviceCore` は全機種の共通の基底（抽象クラス）で、自前のループは持たない（Phase18。`DeviceLoopStructureTests` が検査する）。
 
 ## 2. 仮想パッドの出力の種類を足す
 

@@ -29,12 +29,12 @@ namespace DS4Windows.Processing
     {
         public int InstanceId => this.GetHashCode();
         private readonly int deviceNumber;
-        private DS4Device.GyroMouseSens gyroMouseSensSettings;
+        private InputDeviceCore.GyroMouseSens gyroMouseSensSettings;
         // Phase6-Step4-2: Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
 
-        public MouseCursor(int deviceNum, DS4Device.GyroMouseSens gyroMouseSens,
+        public MouseCursor(int deviceNum, InputDeviceCore.GyroMouseSens gyroMouseSens,
             IProfileSettingsService profileSettings, IVirtualKBM virtualKBM)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));

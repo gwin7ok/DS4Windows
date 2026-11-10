@@ -10,16 +10,16 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase6-Step4-5: `Mouse` が、コンストラクタで受け取った `IProfileSettingsService`／`IVirtualKBM` を
     /// 内部の `MouseCursor`／`MouseWheel` へ同一インスタンスのまま伝搬していることを検証する。
-    /// `DS4Device` は実機・HID が必要なため、コンストラクタを実行せずに生成した未初期化オブジェクトを渡す
+    /// `InputDeviceCore` は実機・HID が必要なため、コンストラクタを実行せずに生成した未初期化オブジェクトを渡す
     /// （`Mouse` のコンストラクタは `GyroMouseSensSettings`（null でよい）しか参照しない）。
     /// </summary>
     public class MouseDiWiringTests
     {
         private const int Slot = 0;
 
-        private static DS4Device CreateUninitializedDevice()
+        private static InputDeviceCore CreateUninitializedDevice()
         {
-            return (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
+            return (InputDeviceCore)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
         }
 
         private static object GetField(object target, string name)

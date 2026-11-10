@@ -5,7 +5,7 @@
 
 | 構想 | 旧図での名前 | 現状 |
 |---|---|---|
-| 入力ループの統括 | `InputLoopCoordinator`、`IInputLoopCoordinator` | 読み取りループは各 `DS4Device` 系が持つ。**Phase17-3 の `ControllerSession` が近い構想** |
+| 入力ループの統括 | `InputLoopCoordinator`、`IInputLoopCoordinator` | 読み取りループは各 `InputDeviceCore` 系が持つ。**Phase17-3 の `ControllerSession` が近い構想** |
 | マッピングの文脈オブジェクトとプロセッサー列 | `MappingPipelineContext`、`IInputMappingPipeline`、`StickProcessor` ほか | `Mapping` が段（`CurveAndDeadzoneStage`、`MouseConversionStage` ほか）を呼ぶ形に落ち着いた。残りの分割は Phase17-6 |
 | マウスエンジン | `IMouseEngine` | `MouseConversionStage` と `Mouse` などに分かれている |
 | ホットプラグ監視 | `IDeviceHotplugMonitor` | `DS4Devices` と `HidDevices` が列挙する |

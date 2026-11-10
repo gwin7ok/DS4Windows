@@ -31,7 +31,7 @@ namespace DS4Windows.Processing.Services
 
         public bool IsPressed(DS4Controls control)
         {
-            DS4Device device = Device;
+            InputDeviceCore device = Device;
             if (device == null)
                 return false;
 
@@ -40,11 +40,11 @@ namespace DS4Windows.Processing.Services
             return _mapping.GetBoolMappingExternal(0, control, state, null, touchPad);
         }
 
-        private DS4Device Device
+        private InputDeviceCore Device
         {
             get
             {
-                DS4Device[] controllers = _slotState.DS4Controllers;
+                InputDeviceCore[] controllers = _slotState.DS4Controllers;
                 return controllers != null && controllers.Length > 0 ? controllers[0] : null;
             }
         }

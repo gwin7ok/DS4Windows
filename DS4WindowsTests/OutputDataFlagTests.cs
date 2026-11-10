@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLightsOffWrite_SkipsPadsThatCannotWrite_NonDs4Types_AndNeverThrows()
         {
-            string code = Source("DS4Windows/Input/DS4Device.cs");
+            string code = Source("DS4Windows/Input/InputDeviceCore.cs");
             if (code == null) return;
 
             int start = code.IndexOf("public void WriteOutputOffOnce()", StringComparison.Ordinal);

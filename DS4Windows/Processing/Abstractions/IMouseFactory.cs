@@ -6,6 +6,6 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface IMouseFactory
     {
-        Mouse Create(int deviceIndex, DS4Windows.Input.DS4Device device);
+        Mouse Create(int deviceIndex, DS4Windows.Input.InputDeviceCore device);
     }
 }

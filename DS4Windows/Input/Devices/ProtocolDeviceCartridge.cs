@@ -21,10 +21,10 @@ namespace DS4Windows.Input.Devices
         /// <summary>既定は、特徴レポートから読む。読み方が違う機種は上書きする。</summary>
         public virtual string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
         {
-            return hidDevice.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
+            return hidDevice.ReadSerial(InputDeviceCore.SERIAL_FEATURE_ID);
         }
 
-        public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
+        public InputDeviceCore Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new ProtocolDevice(Protocol, hidDevice, displayName, featureSet);
         }

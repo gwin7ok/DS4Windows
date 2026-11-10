@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: 入力レポートの処理から切り出した 3 つの部品の値の特性化（旧 <c>ControlService</c> の挙動）。
     /// タッチパッドの切り替え（PS＋タッチで ON／OFF、離すまで再切り替えしない）、スライド、押されている入力の探索の順序。
-    /// <c>Mouse</c> と <c>DS4Device</c> は作れないため、それらを読まない経路（tp が null、デバイスなし）を調べる。
+    /// <c>Mouse</c> と <c>InputDeviceCore</c> は作れないため、それらを読まない経路（tp が null、デバイスなし）を調べる。
     /// </summary>
     public class InputReportPartsTests
     {

@@ -103,7 +103,7 @@ namespace DS4Windows.Processing.Services
             return 0.0;
         }
 
-        public void OnReport(DS4Device device, EventArgs e, int ind)
+        public void OnReport(InputDeviceCore device, EventArgs e, int ind)
         {
             if (ind != -1)
             {
@@ -160,7 +160,7 @@ namespace DS4Windows.Processing.Services
                     // Make sure a joined device is still linked
                     int jointInd = device.JointDeviceSlotNumber;
                     if (device.OutputMapGyro &&
-                        jointInd != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
+                        jointInd != InputDeviceCore.DEFAULT_JOINT_SLOT_NUMBER)
                     {
                         // Output changes from Gyro data early. Seems better to ME... REE
                         GyroOutMode imuOutMode = _profileSettings.GetGyroOutMode(device.JointDeviceSlotNumber);

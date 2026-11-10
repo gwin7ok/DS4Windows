@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>DS4Device</c> を操作し、
+    /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作し、
     /// ライトバーの強制色は静的な <c>DS4LightBar</c> を、通知は <c>AppLogger.LogToTray</c> を、この窓口の内側に閉じ込めて使う（Q6＝A）。
     /// 電池残量の文言は <see cref="IDeviceBatteryText"/>（旧 <c>ControlService.GetDS4Battery</c>。Phase13-Step6 6-b で移し、<c>Func&lt;ControlService&gt;</c> をやめた）。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Actions
             _batteryText = batteryText ?? throw new ArgumentNullException(nameof(batteryText));
         }
 
-        private DS4Device Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
+        private InputDeviceCore Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
 
         private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;   // 旧 DS4LightBar.forcelight.Length（同じ値）
 

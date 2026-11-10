@@ -84,7 +84,7 @@ namespace DS4WindowsTests
                 || ns.StartsWith("System.Windows", StringComparison.Ordinal) || ns.StartsWith("System.Threading", StringComparison.Ordinal)
                 || ns.StartsWith("System.Reflection", StringComparison.Ordinal) || ns.StartsWith("System.Text.RegularExpressions", StringComparison.Ordinal))
                 return true;
-            if (t.Name == "ControlService" || t.Name == "DS4Device" || t.Name == "OutputDevice")
+            if (t.Name == "ControlService" || t.Name == "InputDeviceCore" || t.Name == "OutputDevice")
                 return true;
             if (t.GetInterfaces().Any(i => i.Namespace == "DS4Windows.DI")) return true;
             return false;

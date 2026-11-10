@@ -10,14 +10,14 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Core が接続中のデバイスを扱う狭い契約（<see cref="IConfigurableDevice"/>、<see cref="IConfigurableDeviceLookup"/>）の確認。
-    /// DS4Device が実装すること、スロット状態が同じインスタンスで引けること、未接続・範囲外は null であること。
+    /// InputDeviceCore が実装すること、スロット状態が同じインスタンスで引けること、未接続・範囲外は null であること。
     /// </summary>
     public class ConfigurableDeviceTests
     {
         [Fact]
         public void DS4Device_ImplementsTheNarrowContract()
         {
-            Assert.True(typeof(IConfigurableDevice).IsAssignableFrom(typeof(DS4Device)));
+            Assert.True(typeof(IConfigurableDevice).IsAssignableFrom(typeof(InputDeviceCore)));
             Assert.True(typeof(IConfigurableDevice).IsAssignableFrom(typeof(DS4Windows.Input.Devices.DualSenseDevice)));
         }
 

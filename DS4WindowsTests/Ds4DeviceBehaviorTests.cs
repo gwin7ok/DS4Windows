@@ -161,7 +161,7 @@ namespace DS4WindowsTests
             "interrupt len=32 id=05 b1=07 b2=04 b3=00\n" +
             "Battery=72\n";
 
-        // 旧実装（DS4Device）が出した記録そのもの。移行後の実装は、これと同じ記録を出すこと
+        // 旧実装（InputDeviceCore）が出した記録そのもの。移行後の実装は、これと同じ記録を出すこと
         private const string Expected =
             "X=False Sq=False LX=10 LY=20 L2=0 Bat=62 Pkt=1 Us=533 Ts=100 El=0.000533\n" +
             "X=True Sq=False LX=200 LY=128 L2=255 Bat=72 Pkt=2 Us=1066 Ts=200 El=0.000533\n" +

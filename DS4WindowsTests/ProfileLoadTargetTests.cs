@@ -46,7 +46,7 @@ namespace DS4WindowsTests
             }
 
             var device = TestDs4Device.Create();
-            DS4Device old = slots.DS4Controllers[0];
+            InputDeviceCore old = slots.DS4Controllers[0];
             slots.DS4Controllers[0] = device;
             try
             {

@@ -9,7 +9,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase11 W6 K-W6-3: 接続直後のログ・通知の電池残量が 0% だった。プロファイルの適用（ログ・通知を作る）が、最初の入力レポートの読み取りより前に
-    /// 行われるため。読み取りのスレッドを始める前に、最初の入力レポートから電池残量だけを取り込む（<see cref="DS4Device.PrimeBatteryReading"/>）。
+    /// 行われるため。読み取りのスレッドを始める前に、最初の入力レポートから電池残量だけを取り込む（<see cref="InputDeviceCore.PrimeBatteryReading"/>）。
     /// HID の読み取りは単体で動かせないため、電池の式（読み取りのスレッドと共通）と、呼び出しの順序を検査する。
     /// </summary>
     public class BatteryPrimingTests
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         [InlineData(0x15, 45, true)]
         public void DecodeBatteryPercent_MatchesTheInputLoopFormula(byte power, int expectedPercent, bool expectedCharging)
         {
-            int percent = DS4Device.DecodeBatteryPercent(power, out bool charging);
+            int percent = InputDeviceCore.DecodeBatteryPercent(power, out bool charging);
 
             Assert.Equal(expectedPercent, percent);
             Assert.Equal(expectedCharging, charging);
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PrimeBatteryReading_DoesNotTouchTheChargingState_OrRaiseEvents()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/Input/DS4Device.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Input/InputDeviceCore.cs");
             if (code == null) return;
 
             int start = code.IndexOf("public void PrimeBatteryReading()", StringComparison.Ordinal);

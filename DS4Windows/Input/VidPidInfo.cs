@@ -47,7 +47,7 @@ namespace DS4Windows.Input
 
             if (checkConnection == null)
             {
-                this.checkConnection = DS4Device.HidConnectionType;
+                this.checkConnection = InputDeviceCore.HidConnectionType;
             }
             else
             {

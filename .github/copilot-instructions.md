@@ -13,7 +13,7 @@
 ## 1. アーキテクチャ原則
 
 - 本リポジトリの移行目標は `docs-forDIMG/DI-App-Wide-Migration-Plan.md` に定義された**全体4層モデル**に従う。
-  - **第1層**: コントローラー固有・入力読み取り層 (`DS4Device`, `InputDevices/*`)
+  - **第1層**: コントローラー固有・入力読み取り層 (`InputDeviceCore`, `InputDevices/*`)
   - **第2層**: 入力処理・マッピング層 (`Mapping`, `SyntheticDispatcher`)
   - **第3層**: 仮想出力層 (`DS4OutDevice`, `Xbox360OutDevice`, `OutputSlotManager`)
   - **第4層**: アプリケーション・UI・サービス層 (4-a UI, 4-b Composition Root, 4-c サービス群)

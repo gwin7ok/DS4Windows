@@ -63,10 +63,10 @@ namespace DS4Windows.Input.Devices
                 return hidDevice.GenerateFakeHwSerial();
             }
 
-            return hidDevice.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
+            return hidDevice.ReadSerial(InputDeviceCore.SERIAL_FEATURE_ID);
         }
 
-        public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
+        public InputDeviceCore Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             return new DualShock4Device(hidDevice, displayName, featureSet);
         }

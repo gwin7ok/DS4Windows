@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     public sealed class AnalogMouseTestHarness : IDisposable
     {
         private readonly TestDs4Device _device = TestDs4Device.Create();
-        private readonly DS4Device _savedDevice;
+        private readonly InputDeviceCore _savedDevice;
 
         public AnalogMouseTestHarness(double elapsedMs = 5.0)
         {

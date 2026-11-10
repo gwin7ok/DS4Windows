@@ -10,9 +10,9 @@ namespace DS4Windows.Processing.Abstractions
     public interface IDeviceConnector
     {
         /// <summary>接続の組み立ての前段（HidHide の影響を受けるデバイスの印、種類ごとの設定の変更への反応）。</summary>
-        void BeginPrepare(DS4Device device, bool showlog = false);
+        void BeginPrepare(InputDeviceCore device, bool showlog = false);
 
         /// <summary>接続の組み立て本体。<c>DS4Controllers[index]</c> へ入れた後に呼ぶ。最後にデバイスの更新（<c>StartUpdate</c>）を始める。</summary>
-        void PrepareConnected(int numControllers, DS4Device device, int index);
+        void PrepareConnected(int numControllers, InputDeviceCore device, int index);
     }
 }

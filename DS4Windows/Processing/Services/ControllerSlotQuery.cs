@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Services
     {
         private readonly IDeviceSlotState _slotState;
         private readonly IProfileXmlStore _profileXmlStore;
-        private readonly ConditionalWeakTable<DS4Device, ControllerSlotView> _views = new ConditionalWeakTable<DS4Device, ControllerSlotView>();
+        private readonly ConditionalWeakTable<InputDeviceCore, ControllerSlotView> _views = new ConditionalWeakTable<InputDeviceCore, ControllerSlotView>();
 
         public ControllerSlotQuery(IDeviceSlotState slotState, IServiceLifecycle lifecycle, IProfileXmlStore profileXmlStore)
         {
@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Services
 
         public IControllerSlotView GetSlot(int slot)
         {
-            DS4Device[] controllers = _slotState.DS4Controllers;
+            InputDeviceCore[] controllers = _slotState.DS4Controllers;
             if (controllers == null || slot < 0 || slot >= controllers.Length)
                 return null;
 
@@ -52,7 +52,7 @@ namespace DS4Windows.Processing.Services
             var result = new List<ControllerSlotEntry>();
             using (new ReadLocker(manager.CollectionLocker))
             {
-                foreach (DS4Device device in manager.ControllerColl)
+                foreach (InputDeviceCore device in manager.ControllerColl)
                 {
                     int slot = manager.ReverseControllerDict.TryGetValue(device, out int index) ? index : -1;
                     result.Add(new ControllerSlotEntry(slot, ViewOf(device)));
@@ -62,7 +62,7 @@ namespace DS4Windows.Processing.Services
             return result;
         }
 
-        private IControllerSlotView ViewOf(DS4Device device)
+        private IControllerSlotView ViewOf(InputDeviceCore device)
         {
             if (device == null)
                 return null;
