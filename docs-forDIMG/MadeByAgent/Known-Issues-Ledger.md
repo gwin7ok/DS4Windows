@@ -19,3 +19,6 @@
 |---|---|---|---|
 | K7b-1 | アプリが意図せず終了する（ヒープ破壊など、ダンプ 7 件） | 2026-11-05。是正（`7033089`、2026-10-23）の後、約 2 週間、新しいダンプなし（ユーザーが確認） | `K7b1-Investigation.md` §8 |
 | KI-4 | テスト `ProfileRepositoryTests.LinkedProfile_ChangeAndRemove_ShouldNotThrowAndShouldPersist` が、ときどき失敗する | 2026-11-08（Phase15-0-4）。共有の `BackingStore.m_linkedProfiles` が、ほかのテストの切り替えで消えた一時フォルダーを指していると保存に失敗する、と見られる（直列でも起きる。6 回の再実行では再現せず、断定はできない）。このテスト専用の一時フォルダーへ向けて切り離し、保存されたファイルの存在も確かめるようにした。再発したら再オープン | `Phase15-0-Plan.md` 15-0-4 |
+
+## 3. 実機で未確認の項目（2026-11-10。Phase16）
+- DualSense・Switch Pro・Joy-Con（左・右）・DS3 は実機がない。入力レポートの解析は `IInputReportParser` へ分離し、旧実装との差分テストで一致を確かめたが、実機では未確認。報告があれば最初に疑う場所は `Input/Parsers`。

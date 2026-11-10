@@ -209,3 +209,11 @@
 %% - 第 4 層 UI から第 1 層・第 3 層の具象型（DS4Device、OutSlotDevice、Xbox360OutDevice など）と ControlService への参照をなくした。UI が見る面は第 2 層の契約（IControllerSlotView／Query／Commands、IControllerReadingsSource、IMacroRecordingState、IOutputSlotView）で、通知の送り主はその面自身。
 %% - 層の依存の記録のみの規則 L7（UI → 第 1 層・第 3 層）の基準値は 5。
 %% - Phase15-4: 4-a UI に UI/Controls を新設（ControllerVisualizerControl と、ボタンの配置表 ControllerLayouts）。BindingWindow と ProfileEditor のコントローラーの図のボタンは、この部品が配置表から生成する。
+
+%% ---- Phase16 完了（2026-11-10）----
+%% - 第 1 層: 通信（IHidTransport。HidDevice が実装）と解析（IInputReportParser。Input/Parsers の Ds4／DualSense／SwitchPro／Ds3／JoyCon 左右）を分離。解析は状態を持たず、差分テストで旧実装と一致を確認。
+%% - ライトバーの色の計算は静的な DS4LightBar から、第 2 層の ILightbarService／LightbarService（時間は TimeProvider）へ。第 1 層は ILightbarDevice（Input/Abstractions）だけを見せる。
+%% - 第 3 層: 仮想パッドのドライバー（ViGEm）の型は Output/Backend の IVirtualPadBackend の内側だけ。出力の種類ごとの生成は IOutputDeviceCartridge（Xbox360／Ds4）、保存キーと選択肢の番号は Core/Model の OutContTypeInfo。
+%% - 第 2 層: Mapping は ICurveAndDeadzoneStage（入力の補正）と IDeviceInputCleanup（切断時の後始末）を切り出し、25 → 20 引数。ActionBindingBuilder は 16 → 5 引数。
+%% - 層の違反 L2・L7 は 0 件。禁止の規則はすべて許可リスト空。
+%% - フォルダ: Input/Parsers を新設。Output/Backend（ViGEm はここだけ）。規則 L9（ViGEm は Output.Backend だけ）、L10（HidDevice の具象は DS4Windows.Input.Hid だけ）。

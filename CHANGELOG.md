@@ -4,6 +4,9 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Changed
+- Internal: input report parsing, lightbar colour calculation and virtual pad output types were separated into replaceable parts. No behaviour change is intended. DualSense, Switch Pro, Joy-Con and DS3 are verified only by differential tests, not on real devices.
+
 ## [4.3.2] - 2026-11-10
 
 ### Fixed
@@ -268,4 +271,3 @@ Chore / Misc
 
 ## [3.11.0]
 - Special Action Button Suppression Fix: when a Special Action is triggered, the last pressed button's other assigned function is now prevented from executing alongside the Special Action to avoid duplicate inputs.
-

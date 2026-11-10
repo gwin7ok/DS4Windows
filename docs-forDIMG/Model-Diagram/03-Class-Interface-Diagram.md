@@ -1347,3 +1347,10 @@ classDiagram
 %% - 15-6g: 「その他」タブの一般項目も同じ形に分けた。`GeneralSlotSettings`（`ProfileSlotSettings.General`）、`GeneralSettingsPanel`（UserControl）、`GeneralSettingsViewModel`（`ProfileSettingsViewModel.General`）。
 %% - 15-6h: 6 軸（加速度 X・Z）も同じ形に分けた。`SixAxisSlotSettings`（`ProfileSlotSettings.SixAxis`）、`SixAxisSettingsPanel`（UserControl）、`SixAxisSettingsViewModel`（`ProfileSettingsViewModel.SixAxis`）。
 %% - 15-6Z: プロファイル編集画面（`ProfileEditor`、`ProfileSettingsViewModel`）は、設定サービスのスロット配列を直接触らず、領域の窓口だけを通す（`SettingsSlotWindowUsageTests`）。配列プロパティ自体は、処理・永続化の層が使うため残る。
+
+%% ---- Phase16 完了（2026-11-10）----
+%% - 第 1 層: 通信（IHidTransport。HidDevice が実装）と解析（IInputReportParser。Input/Parsers の Ds4／DualSense／SwitchPro／Ds3／JoyCon 左右）を分離。解析は状態を持たず、差分テストで旧実装と一致を確認。
+%% - ライトバーの色の計算は静的な DS4LightBar から、第 2 層の ILightbarService／LightbarService（時間は TimeProvider）へ。第 1 層は ILightbarDevice（Input/Abstractions）だけを見せる。
+%% - 第 3 層: 仮想パッドのドライバー（ViGEm）の型は Output/Backend の IVirtualPadBackend の内側だけ。出力の種類ごとの生成は IOutputDeviceCartridge（Xbox360／Ds4）、保存キーと選択肢の番号は Core/Model の OutContTypeInfo。
+%% - 第 2 層: Mapping は ICurveAndDeadzoneStage（入力の補正）と IDeviceInputCleanup（切断時の後始末）を切り出し、25 → 20 引数。ActionBindingBuilder は 16 → 5 引数。
+%% - 層の違反 L2・L7 は 0 件。禁止の規則はすべて許可リスト空。

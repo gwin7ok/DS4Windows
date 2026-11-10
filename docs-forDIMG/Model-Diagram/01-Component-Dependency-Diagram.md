@@ -322,3 +322,10 @@ flowchart TD
 %% - UI（4-a）は第 2 層の契約だけに依存する: IControllerSlotView／IControllerSlotQuery（機器の表示と一覧）、IControllerSlotCommands（振動テスト・ジャイロ較正）、IControllerReadingsSource／IMacroRecordingState（読み取り表示・マクロ記録）、IOutputSlotView（出力スロット）。実装は Processing/Services と Output/Services。
 %% - UI から ControlService への参照は 0 件（UiControlServiceReferenceRuleTests）。ControlService の利用者が 0 件の転送メンバーは削除した。
 %% - MainWindow は 21 引数（28 から削減）。ViewModel の生成（設定タブ・機器一覧・出力スロット）は IViewModelFactory へ移した。
+
+%% ---- Phase16 完了（2026-11-10）----
+%% - 第 1 層: 通信（IHidTransport。HidDevice が実装）と解析（IInputReportParser。Input/Parsers の Ds4／DualSense／SwitchPro／Ds3／JoyCon 左右）を分離。解析は状態を持たず、差分テストで旧実装と一致を確認。
+%% - ライトバーの色の計算は静的な DS4LightBar から、第 2 層の ILightbarService／LightbarService（時間は TimeProvider）へ。第 1 層は ILightbarDevice（Input/Abstractions）だけを見せる。
+%% - 第 3 層: 仮想パッドのドライバー（ViGEm）の型は Output/Backend の IVirtualPadBackend の内側だけ。出力の種類ごとの生成は IOutputDeviceCartridge（Xbox360／Ds4）、保存キーと選択肢の番号は Core/Model の OutContTypeInfo。
+%% - 第 2 層: Mapping は ICurveAndDeadzoneStage（入力の補正）と IDeviceInputCleanup（切断時の後始末）を切り出し、25 → 20 引数。ActionBindingBuilder は 16 → 5 引数。
+%% - 層の違反 L2・L7 は 0 件。禁止の規則はすべて許可リスト空。
