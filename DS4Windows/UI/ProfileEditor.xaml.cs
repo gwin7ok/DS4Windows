@@ -1256,7 +1256,7 @@ namespace DS4Windows.UI
             if (outConTypeCombo == null)
                 return;
 
-            OutContType selected = outConTypeCombo.SelectedIndex == 1 ? OutContType.DS4 : OutContType.X360;
+            OutContType selected = OutContTypeInfo.FromProfileChoiceIndex(outConTypeCombo.SelectedIndex);
 
             if (profileSettingsVM != null)
             {

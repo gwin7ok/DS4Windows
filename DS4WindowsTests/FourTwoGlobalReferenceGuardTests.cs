@@ -134,7 +134,6 @@ namespace DS4WindowsTests
             var types = new DS4Windows.Output.Services.OutputDeviceTypeState();
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
-            Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(null, store, types));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(virtualPad, null, types));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotService(virtualPad, store, null));
@@ -157,15 +156,6 @@ namespace DS4WindowsTests
             {
                 try { System.IO.Directory.Delete(dir, true); } catch { }
             }
-        }
-
-        [Fact]
-        public void OutputSlotManager_ReadsViGEmBusVersionFromProvider()
-        {
-            int calls = 0;
-            var manager = new OutputSlotManager(() => { calls++; return new Version(1, 0, 0, 0); }, 4);
-            Assert.NotNull(manager);
-            Assert.Equal(0, calls); // 生成時には読まない（割り当て時に都度読み取る）
         }
 
         [Fact]

@@ -62,10 +62,10 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>保存される出力の種類（0: Xbox 360、1: DS4）。</summary>
         public int ControllerTypeIndex
         {
-            get => output.OutContType == OutContType.DS4 ? 1 : 0;
+            get => OutContTypeInfo.ProfileChoiceIndex(output.OutContType);
             set
             {
-                OutContType target = value == 1 ? OutContType.DS4 : OutContType.X360;
+                OutContType target = OutContTypeInfo.FromProfileChoiceIndex(value);
                 if (output.OutContType == target) return;
                 output.OutContType = target;
             }
@@ -78,7 +78,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (tempControllerIndex == value) return;
                 tempControllerIndex = value;
-                OutContType type = value == 1 ? OutContType.DS4 : OutContType.X360;
+                OutContType type = OutContTypeInfo.FromProfileChoiceIndex(value);
                 output.OutContType = type;
                 // 出力ピッカー（BindingWindow）は OutDevTypeTemp から、Pad タブの表示（DS4／Xbox 360）を決める
                 outputSlotService.OutDevTypeTemp[slot] = type;
@@ -87,10 +87,10 @@ namespace DS4Windows.UI.ViewModels
 
         public OutContType TempConType
         {
-            get => tempControllerIndex == 1 ? OutContType.DS4 : OutContType.X360;
+            get => OutContTypeInfo.FromProfileChoiceIndex(tempControllerIndex);
             set
             {
-                int newIndex = value == OutContType.DS4 ? 1 : 0;
+                int newIndex = OutContTypeInfo.ProfileChoiceIndex(value);
                 if (tempControllerIndex == newIndex) return;
                 TempControllerIndex = newIndex;
             }

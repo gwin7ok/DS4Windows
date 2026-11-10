@@ -55,16 +55,9 @@ namespace DS4Windows.UI
 
         private void AcceptBtn_Click(object sender, RoutedEventArgs e)
         {
-            switch (devTypeCombo.SelectedIndex)
+            if (OutContTypeInfo.TryFromProfileChoiceIndex(devTypeCombo.SelectedIndex, out OutContType selectedType))
             {
-                case 0:
-                    contType = OutContType.X360;
-                    break;
-                case 1:
-                    contType = OutContType.DS4;
-                    break;
-                default:
-                    break;
+                contType = selectedType;
             }
 
             switch(reserveTypeCombo.SelectedIndex)

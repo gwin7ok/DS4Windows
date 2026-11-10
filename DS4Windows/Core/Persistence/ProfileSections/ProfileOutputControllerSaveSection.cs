@@ -37,21 +37,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlElement rootElement = context.RootElement;
             int device = context.Device;
 
-            string OutContDeviceString(OutContType id)
-            {
-                string result = "X360";
-                switch (id)
-                {
-                    case OutContType.None:
-                    case OutContType.X360: result = "X360"; break;
-                    case OutContType.DS4: result = "DS4"; break;
-                    default: break;
-                }
-
-                return result;
-            }
-
-            XmlNode xmlOutContDevice = m_Xdoc.CreateNode(XmlNodeType.Element, "OutputContDevice", null); xmlOutContDevice.InnerText = OutContDeviceString(store.outputDevType[device]); rootElement.AppendChild(xmlOutContDevice);
+            XmlNode xmlOutContDevice = m_Xdoc.CreateNode(XmlNodeType.Element, "OutputContDevice", null); xmlOutContDevice.InnerText = OutContTypeInfo.SaveKey(store.outputDevType[device]); rootElement.AppendChild(xmlOutContDevice);
         }
     }
 }

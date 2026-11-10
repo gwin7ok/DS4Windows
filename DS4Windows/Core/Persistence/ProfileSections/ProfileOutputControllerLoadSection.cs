@@ -47,21 +47,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            OutContType OutContDeviceId(string name)
-            {
-                OutContType id = OutContType.X360;
-                switch (name)
-                {
-                    case "None":
-                    case "X360": id = OutContType.X360; break;
-                    case "DS4": id = OutContType.DS4; break;
-                    default: break;
-                }
-
-                return id;
-            }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/OutputContDevice"); store.outputDevType[device] = OutContDeviceId(Item.InnerText); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/OutputContDevice"); store.outputDevType[device] = OutContTypeInfo.FromSaveKey(Item.InnerText); }
             catch { store.outputDevType[device] = OutContType.X360; missingSetting = true; }
 
             // Only change xinput devices under certain conditions. Avoid

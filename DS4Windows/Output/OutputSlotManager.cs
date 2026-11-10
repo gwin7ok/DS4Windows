@@ -85,20 +85,11 @@ namespace DS4Windows.Output
 
         public event EventHandler<int> ViGEmFailure;
 
-        // First ViGEmBus version that has usable XInput slot grabbing
-        private static Version xinputSlotMinVersion = new Version("1.17.333.0");
-
-        // Phase6-Step10-4-3a: ViGEmBus のバージョンは RefreshViGEmBusInfo で実行時に更新されるため、都度読み取る関数で受け取る
-        private readonly System.Func<System.Version> vigemBusVersionProvider;
-
-
-        public OutputSlotManager(System.Func<System.Version> vigemBusVersionProvider,
-            int slotLimit)
+        public OutputSlotManager(int slotLimit)
         {
             if (slotLimit <= 0)
                 throw new System.ArgumentOutOfRangeException(nameof(slotLimit));
             outputDevices = new OutputDevice[slotLimit];
-            this.vigemBusVersionProvider = vigemBusVersionProvider ?? throw new System.ArgumentNullException(nameof(vigemBusVersionProvider));
             outputSlots = new OutSlotDevice[slotLimit];
             for (int i = 0; i < slotLimit; i++)
             {
@@ -124,34 +115,6 @@ namespace DS4Windows.Output
 
             deviceDict.Clear();
             revDeviceDict.Clear();
-        }
-
-        public OutputDevice AllocateController(OutContType contType, IVirtualPadBackend backend)
-        {
-            OutputDevice outputDevice = null;
-            switch (contType)
-            {
-                case OutContType.X360:
-                    if (xinputSlotMinVersion.CompareTo(vigemBusVersionProvider()) <= 0)
-                    {
-                        outputDevice = new Xbox360OutDevice(backend,
-                            Xbox360OutDevice.X360Features.XInputSlotNum);
-                    }
-                    else
-                    {
-                        outputDevice = new Xbox360OutDevice(backend);
-                    }
-
-                    break;
-                case OutContType.DS4:
-                    outputDevice = DS4OutDeviceFactory.CreateDS4Device(backend, vigemBusVersionProvider());
-                    break;
-                case OutContType.None:
-                default:
-                    break;
-            }
-
-            return outputDevice;
         }
 
         private int FindEmptySlot()

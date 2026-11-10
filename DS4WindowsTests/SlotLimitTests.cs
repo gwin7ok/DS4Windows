@@ -170,7 +170,7 @@ namespace DS4WindowsTests
 
         private static OutputSlotManager NewSlotManager(int limit)
         {
-            return new OutputSlotManager(() => new Version(1, 0), limit);
+            return new OutputSlotManager(limit);
         }
 
         [Theory]

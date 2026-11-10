@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using DS4Windows.Output.Backend;
 using DS4Windows.Core.Abstractions;
@@ -6,6 +8,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
+using DS4Windows.Output.Abstractions;
 using DS4Windows.Output.Devices;
 using DS4Windows.Processing.Abstractions;
 
@@ -31,6 +34,8 @@ namespace DS4Windows.Output.Services
         private readonly OutputSlotManager outputslotMan;
         private readonly OutputDevice[] outputDevices = new OutputDevice[ControllerLimits.MaxControllerCount];
         private readonly IVirtualPadBackend _backend;
+        // 出力の種類（Xbox 360／DS4）ごとの生成・戻りの接続・型の絞り込み。種類を足すときは、カートリッジを足す
+        private readonly Dictionary<OutContType, IOutputDeviceCartridge> _cartridges;
 
         // Phase13-Step7 7-c: 旧: 遅延取得デリゲート（初回に1回だけ取得）。配列の参照は再代入されないため、コンストラクターで保持する
         private readonly OutContType[] _activeOutDevType;
@@ -38,9 +43,12 @@ namespace DS4Windows.Output.Services
 
         public VirtualPadService(IEnvironmentService environmentService, IProfileSettingsService profileSettings,
             IOutputDeviceTypeState outputDeviceTypes, IDeviceStateAccessor deviceAccessor,
-            IEventThreadDispatcher eventThread, IDeviceRumbleService rumble, IVirtualPadBackend backend)
+            IEventThreadDispatcher eventThread, IDeviceRumbleService rumble, IVirtualPadBackend backend,
+            IEnumerable<IOutputDeviceCartridge> cartridges)
         {
             _backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            if (cartridges == null) throw new ArgumentNullException(nameof(cartridges));
+            _cartridges = cartridges.ToDictionary(c => c.Type);
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
@@ -49,7 +57,7 @@ namespace DS4Windows.Output.Services
             _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
 
             // 旧 ControlService のコンストラクターにあった生成
-            outputslotMan = new OutputSlotManager(() => _environmentService.ViGEmBusVersion, _environmentService.ControllerSlotLimit);
+            outputslotMan = new OutputSlotManager(_environmentService.ControllerSlotLimit);
         }
 
         public OutputSlotManager OutputSlotManager => outputslotMan;
@@ -175,258 +183,26 @@ namespace DS4Windows.Output.Services
         private OutputDevice EstablishOutDevice(int index, OutContType contType)
         {
             OutputDevice temp = null;
-            temp = outputslotMan.AllocateController(contType, _backend);
+            temp = _cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge) ? cartridge.Create(_backend, _environmentService.ViGEmBusVersion) : null;
             return temp;
         }
 
         public void EstablishOutFeedback(int index, OutContType contType,
             OutputDevice outDevice, DS4Device device)
         {
-            int devIndex = index;
-
-            if (contType == OutContType.X360)
+            // 種類ごとの戻り（振動・ライトバー）の接続は、出力のカートリッジが持つ。種類がない（None）ときは何もしない
+            if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge))
             {
-                Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
-                IDisposable p = tempXbox.cont.SubscribeFeedback((largeMotor, smallMotor) =>
-                {
-                    //Trace.WriteLine(string.Format("Rumble ({0}, {1}) {2}",
-                    //    args.LargeMotor, args.SmallMotor, DateTime.Now.ToString("hh:mm:ss.FFFF")));
-                    _rumble.SetDevRumble(device, largeMotor, smallMotor, devIndex);
-                });
-                tempXbox.forceFeedbacksDict.Add(index, p);
+                cartridge.AttachFeedback(index, outDevice, device);
             }
-            else if (contType == OutContType.DS4)
-            {
-                DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
-                if (tempDS4.CanUseAwaitOutputBuffer)
-                {
-#pragma warning disable CS0219 // useRumble assigned but not read; keep variable for possible future use
-                    DS4OutDeviceExt.ReceivedOutBufferHandler processOutBuffAction = (DS4OutDeviceExt sender, byte[] reportData) =>
-                    {
-                        /*
-                        //DS4OutputBufferData outputData = new DS4OutputBufferData();
-                        DS4OutputBufferData outputData =
-                            DS4OutDeviceExtras.ConvertOutputBufferArrayToStruct(reportData);
-
-                        bool useRumble = false; bool useLight = false;
-                        byte flashOn = 0; byte flashOff = 0;
-                        DS4Color? color = null;
-
-                        //Trace.WriteLine(string.Join(" ", reportData));
-
-                        if ((outputData.featureFlags & DS4OutDevice.RUMBLE_FEATURE_FLAG) != 0)
-                        {
-                            useRumble = true;
-                            device.setRumble(outputData.rightFastRumble, outputData.leftSlowRumble);
-                            //SetDevRumble(device, devour[4], devour[5], devIndex);
-                        }
-
-                        if ((outputData.featureFlags & DS4OutDevice.LIGHTBAR_FEATURE_FLAG) != 0)
-                        {
-                            useLight = true;
-                            color = new DS4Color(outputData.lightbarRedColor,
-                                outputData.lightbarGreenColor,
-                                outputData.lightbarBlueColor);
-                        }
-                        else
-                        {
-                            color = device.LightBarColor;
-                        }
-
-                        if ((outputData.featureFlags & DS4OutDevice.FLASH_FEATURE_FLAG) != 0)
-                        {
-                            useLight = true;
-                            flashOn = outputData.flashOnDuration;
-                            flashOff = outputData.flashOffDuration;
-                        }
-                        else
-                        {
-                            ref DS4LightbarState currentLight =
-                                ref device.GetLightbarStateRef();
-
-                            flashOn = currentLight.LightBarFlashDurationOn;
-                            flashOff = currentLight.LightBarFlashDurationOff;
-                        }
-
-                        if (useLight)
-                        {
-                            DS4LightbarState lightState = new DS4LightbarState
-                            {
-                                LightBarColor = (DS4Color)color,
-                                LightBarFlashDurationOn = flashOn,
-                                LightBarFlashDurationOff = flashOff,
-                            };
-                            device.SetLightbarState(ref lightState);
-                        }
-                        //*/
-
-                        //*
-#pragma warning disable CS0219 // suppress useRumble assigned but not read in this legacy handler
-                        unchecked
-                        {
-                            //Trace.WriteLine($"INDEX: {devIndex}");
-                            //Trace.WriteLine(string.Join(" ", reportData));
-                            //Trace.WriteLine("");
-
-                            bool useRumble = false; bool useLight = false;
-                            byte flashOn = 0; byte flashOff = 0;
-                            DS4Color? color = null;
-                            if ((reportData[1] & DS4OutDevice.RUMBLE_FEATURE_FLAG) != 0)
-                            {
-                                useRumble = true;
-                                if (_profileSettings.InverseRumbleMotors[devIndex])
-                                    device.setRumble(reportData[5], reportData[4]);
-                                else
-                                    device.setRumble(reportData[4], reportData[5]);
-                                //SetDevRumble(device, devour[4], devour[5], devIndex);
-                            }
-
-                            if ((reportData[1] & DS4OutDevice.LIGHTBAR_FEATURE_FLAG) != 0)
-                            {
-                                useLight = true;
-                                color = new DS4Color(reportData[6],
-                                    reportData[7],
-                                    reportData[8]);
-                            }
-                            else
-                            {
-                                color = device.LightBarColor;
-                            }
-
-                            if ((reportData[1] & DS4OutDevice.FLASH_FEATURE_FLAG) != 0)
-                            {
-                                useLight = true;
-                                flashOn = reportData[9];
-                                flashOff = reportData[10];
-                            }
-                            else
-                            {
-                                ref DS4LightbarState currentLight =
-                                    ref device.GetLightbarStateRef();
-
-                                flashOn = currentLight.LightBarFlashDurationOn;
-                                flashOff = currentLight.LightBarFlashDurationOff;
-                            }
-
-                            if (useLight)
-                            {
-                                DS4LightbarState lightState = new DS4LightbarState
-                                {
-                                    LightBarColor = (DS4Color)color,
-                                    LightBarFlashDurationOn = flashOn,
-                                    LightBarFlashDurationOff = flashOff,
-                                };
-                                device.SetLightbarState(ref lightState);
-                            }
-                        }
-                        //*/
-                    };
-
-                    DS4OutDeviceExt tempDS4Ext = tempDS4 as DS4OutDeviceExt;
-#pragma warning restore CS0219
-                    tempDS4Ext.ReceivedOutBuffer += processOutBuffAction;
-                    tempDS4Ext.outBufferFeedbacksDict.TryAdd(index, processOutBuffAction);
-                    tempDS4Ext.StartOutputBufferThread();
-                }
-            }
-            //else if (contType == OutContType.DS4)
-            //{
-            //    DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
-            //    LightbarSettingInfo deviceLightbarSettingsInfo = Global.LightbarSettingsInfo[devIndex];
-
-            //    Nefarius.ViGEm.Client.Targets.DualShock4FeedbackReceivedEventHandler p = (sender, args) =>
-            //    {
-            //        bool useRumble = false; bool useLight = false;
-            //        byte largeMotor = args.LargeMotor;
-            //        byte smallMotor = args.SmallMotor;
-            //        //SetDevRumble(device, largeMotor, smallMotor, devIndex);
-            //        DS4Color color = new DS4Color(args.LightbarColor.Red,
-            //                args.LightbarColor.Green,
-            //                args.LightbarColor.Blue);
-
-            //        //Console.WriteLine("IN EVENT");
-            //        //Console.WriteLine("Rumble ({0}, {1}) | Light ({2}, {3}, {4}) {5}",
-            //        //    largeMotor, smallMotor, color.red, color.green, color.blue, DateTime.Now.ToString("hh:mm:ss.FFFF"));
-
-            //        if (largeMotor != 0 || smallMotor != 0)
-            //        {
-            //            useRumble = true;
-            //        }
-
-            //        // Let games to control lightbar only when the mode is Passthru (otherwise DS4Windows controls the light)
-            //        if (deviceLightbarSettingsInfo.Mode == LightbarMode.Passthru && (color.red != 0 || color.green != 0 || color.blue != 0))
-            //        {
-            //            useLight = true;
-            //        }
-
-            //        if (!useRumble && !useLight)
-            //        {
-            //            //Console.WriteLine("Fallback");
-            //            if (device.LeftHeavySlowRumble != 0 || device.RightLightFastRumble != 0)
-            //            {
-            //                useRumble = true;
-            //            }
-            //            else if (deviceLightbarSettingsInfo.Mode == LightbarMode.Passthru &&
-            //                (device.LightBarColor.red != 0 ||
-            //                device.LightBarColor.green != 0 ||
-            //                device.LightBarColor.blue != 0))
-            //            {
-            //                useLight = true;
-            //            }
-            //        }
-
-            //        if (useRumble)
-            //        {
-            //            //Console.WriteLine("Perform rumble");
-            //            SetDevRumble(device, largeMotor, smallMotor, devIndex);
-            //        }
-
-            //        if (useLight)
-            //        {
-            //            //Console.WriteLine("Change lightbar color");
-            //            /*DS4HapticState haptics = new DS4HapticState
-            //            {
-            //                LightBarColor = color,
-            //            };
-            //            device.SetHapticState(ref haptics);
-            //            */
-
-            //            DS4LightbarState lightState = new DS4LightbarState
-            //            {
-            //                LightBarColor = color,
-            //            };
-            //            device.SetLightbarState(ref lightState);
-            //        }
-
-            //        //Console.WriteLine();
-            //    };
-
-            //    tempDS4.cont.FeedbackReceived += p;
-            //    tempDS4.forceFeedbacksDict.Add(index, p);
-            //}
         }
 
         public void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
         {
-            if (contType == OutContType.X360)
+            if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge))
             {
-                Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
-                tempXbox.RemoveFeedback(inIdx);
-                //tempXbox.cont.FeedbackReceived -= tempXbox.forceFeedbackCall;
-                //tempXbox.forceFeedbackCall = null;
+                cartridge.RemoveFeedback(outDevice, inIdx);
             }
-            else if (contType == OutContType.DS4)
-            {
-                DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
-                tempDS4.RemoveFeedback(inIdx);
-            }
-            //else if (contType == OutContType.DS4)
-            //{
-            //    DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
-            //    tempDS4.RemoveFeedback(inIdx);
-            //    //tempDS4.cont.FeedbackReceived -= tempDS4.forceFeedbackCall;
-            //    //tempDS4.forceFeedbackCall = null;
-            //}
         }
 
         // TODO(技術的負債・Phase9 9-E E-4): 呼び出し元 0 件（旧 ControlService から移した）。画面は AttachUnboundOutDev（スロット指定）を使っている。
@@ -477,7 +253,7 @@ namespace DS4Windows.Output.Services
             {
                 bool success = false;
                 // Phase9 9-E E-4（Q3）: X360 の枝と DS4 の枝は、型の違い（Xbox360OutDevice／DS4OutDevice）以外が同一だったため、1 つにまとめた。
-                if (contType == OutContType.X360 || contType == OutContType.DS4)
+                if (_cartridges.ContainsKey(contType))
                 {
                     ActiveOutDevType[index] = contType;
 
@@ -486,7 +262,7 @@ namespace DS4Windows.Output.Services
                         slotDevice = outputslotMan.FindOpenSlot();
                         if (slotDevice != null)
                         {
-                            OutputDevice tempOut = CastOutDevice(EstablishOutDevice(index, contType), contType);
+                            OutputDevice tempOut = _cartridges[contType].Narrow(EstablishOutDevice(index, contType));
 
                             // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
                             EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
@@ -504,7 +280,7 @@ namespace DS4Windows.Output.Services
                     else
                     {
                         slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
-                        OutputDevice tempOut = CastOutDevice(slotDevice.OutputDevice, contType);
+                        OutputDevice tempOut = _cartridges[contType].Narrow(slotDevice.OutputDevice);
 
                         // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
                         EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
@@ -522,12 +298,6 @@ namespace DS4Windows.Output.Services
                     _profileSettings.UseDInputOnlyArray[index] = false;
                 }
             }
-        }
-
-        // 旧コードの "as Xbox360OutDevice"／"as DS4OutDevice" と同じ結果（種類が合わなければ null）にするための型の絞り込み
-        private static OutputDevice CastOutDevice(OutputDevice device, OutContType contType)
-        {
-            return contType == OutContType.X360 ? (OutputDevice)(device as Xbox360OutDevice) : (OutputDevice)(device as DS4OutDevice);
         }
 
         // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける（結合デバイスの相手側にも付ける）

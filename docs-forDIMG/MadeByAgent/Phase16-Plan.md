@@ -668,3 +668,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **見込みとの差**: `InputReportProcessor` の引数を約 10 に減らす分離（電池のトレイ表示・読み込みログ・仮想コントローラーへの送信段）は、ライトバーの移動と独立しており、15 の目標内のため見送った。必要になったら 16-9 以降で扱う。
 - **特性化テスト**（`LightbarServiceTests`。仮想時間 `ManualTimeProvider` に `GetTimestamp` の上書きを追加）: 固定色、モード対象外、強制表示と点滅、終了時の消灯、電池低下の点滅の時間表、虹色の進み、充電中の脈動、無操作のフェード、距離プロファイル。
 - Debug ALL: 警告 0・エラー 0・Actions 3,355 件合格。
+
+### Step 16-8（2026-11-10。完了。C10）
+- **出力のカートリッジ**: `IOutputDeviceCartridge`（`Output/Abstractions`。種類、生成、型の絞り込み、ゲームからの戻り［振動・ライトバー］の接続と解除）と、実装 `Xbox360OutputCartridge`（XInput スロット番号の機能は ViGEmBus 1.17.333.0 以降）・`Ds4OutputCartridge`（基本／拡張の選択は `DS4OutDeviceFactory`、出力バッファの戻りの処理）を作り、DI に種類ごとに 1 つ登録した。`VirtualPadService`（引数 7→8）は、種類の辞書引きで `Create`／`Narrow`／`AttachFeedback`／`RemoveFeedback` を呼ぶ。戻りの処理の本文は、動かさずに移した。旧コードのコメントアウトされた死んだ実装（DS4 の ViGEm イベント版）は、置き換えた範囲に含まれていたため一緒に消えた。
+- **`OutputSlotManager`**: `AllocateController`、`xinputSlotMinVersion`、ViGEmBus のバージョンの取得口を外した（生成はカートリッジの役目）。コンストラクターは `OutputSlotManager(int slotLimit)`。
+- **保存のキー・選択肢の番号**: `Core/Model/OutContTypeInfo`（純粋な定数の表）に集約し、`ProfileOutputControllerLoadSection`／`SaveSection`、`OutputSettingsViewModel`、`ProfileEditor`、`PluginOutDevWindow`、`SlotDeviceEntry` の switch／三項演算子を置き換えた。旧と同じ挙動（None は X360 として保存、未知のキーと範囲外の番号は X360）。
+- **残した分岐**: `OutContType` を比べる残りの箇所（UI の表示の切り替え、`InputReportProcessor` の DS4 の判定、`MacroParser`、プリセットの既定値など）は、種類ごとの生成・戻り・対応表ではなく、その場の振る舞いの条件であり、カートリッジに寄せると契約が肥大するため見送った。種類を足すときの追加箇所は、カートリッジ、`OutContTypeInfo`、DI の登録、画面の選択肢。
+- **テスト**: `OutContTypeInfoTests`（旧 switch との同値）、`OutputDeviceCartridgeTests`（登録、生成と絞り込み、バージョンでの機能の差）。`OutputSlotManager` のバージョンの取得口に関する旧テスト 1 件を削除し、生成のテストはカートリッジ経由（`TestOutputCartridges`）に替えた。
+- Debug ALL: 警告 0・エラー 0・Actions 3,381 件合格。実機確認（出力の種類の切り替え、プリセット）は最後の 1 回に回す。

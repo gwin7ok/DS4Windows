@@ -2,6 +2,7 @@ using DS4Windows.Output.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Output.Backend;
+using DS4Windows.Output.Devices;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
 
@@ -40,6 +41,9 @@ namespace DS4Windows.Composition
             services.AddSingleton<IHidHideService, HidHideService>();   // Phase9 9-E E-2: HidHide（ホワイトリストの確認、影響を受けるデバイスの判定）
             services.AddSingleton<IOutputSlotStore, OutputSlotStore>();   // OutputSlots.xml の永続化。出力スロットの型を使うため第 3 層に置く（IPathService だけに依存する）
             services.AddSingleton<IVirtualPadBackend, ViGEmVirtualPadBackend>();   // 仮想パッドのドライバー（ViGEmBus）の窓口。ViGEm の型を参照するのは Output/Backend だけ
+            // 出力の種類（Xbox 360／DS4）ごとの生成・戻りの接続。種類を足すときは、ここへカートリッジを足す
+            services.AddSingleton<IOutputDeviceCartridge, Xbox360OutputCartridge>();
+            services.AddSingleton<IOutputDeviceCartridge, Ds4OutputCartridge>();
             services.AddSingleton<IVirtualPadService, VirtualPadService>();   // Phase9 9-E E-4: 仮想パッド（ViGEm）の出力。OutputSlotManager、割り当て、振動・ライトバーの戻り
             // Phase13-Step7 7-d: 遅延取得デリゲート 2 本の登録は撤廃した（VirtualPadService ⇄ OutputSlotService の循環は、出力種別の配列を IOutputDeviceTypeState へ移して解消）
             // Phase 5 Step 10: UDP サーバーサービス（Cemuhook モーションサーバー境界化）

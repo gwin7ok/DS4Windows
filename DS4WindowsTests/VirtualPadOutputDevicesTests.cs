@@ -13,17 +13,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class VirtualPadOutputDevicesTests
     {
-        private static OutputSlotManager CreateManager(Version driverVersion)
-        {
-            return new OutputSlotManager(() => driverVersion, 4);
-        }
-
         [Fact]
         public void AllocateController_Xbox360_MapsButtonsAxesAndTriggers_ThroughTheTarget()
         {
             var backend = new FakeVirtualPadBackend();
             backend.Start();
-            OutputDevice device = CreateManager(new Version(1, 0)).AllocateController(OutContType.X360, backend);
+            OutputDevice device = TestOutputCartridges.Allocate(OutContType.X360, backend, new Version(1, 0));
             Assert.IsType<Xbox360OutDevice>(device);
             FakeXbox360Target target = Assert.Single(backend.Xbox360Targets);
 
@@ -49,7 +44,7 @@ namespace DS4WindowsTests
         {
             var backend = new FakeVirtualPadBackend();
             backend.Start();
-            var device = (Xbox360OutDevice)CreateManager(new Version(1, 0)).AllocateController(OutContType.X360, backend);
+            var device = (Xbox360OutDevice)TestOutputCartridges.Allocate(OutContType.X360, backend, new Version(1, 0));
             FakeXbox360Target target = backend.Xbox360Targets[0];
             device.Connect();
             device.forceFeedbacksDict.Add(0, target.SubscribeFeedback((l, s) => { }));
@@ -70,7 +65,7 @@ namespace DS4WindowsTests
         {
             var backend = new FakeVirtualPadBackend();
             backend.Start();
-            OutputDevice device = CreateManager(new Version(1, 0)).AllocateController(OutContType.X360, backend);
+            OutputDevice device = TestOutputCartridges.Allocate(OutContType.X360, backend, new Version(1, 0));
             FakeXbox360Target target = backend.Xbox360Targets[0];
 
             device.ResetState(submit: false);
@@ -89,7 +84,7 @@ namespace DS4WindowsTests
 
             var extBackend = new FakeVirtualPadBackend();
             extBackend.Start();
-            OutputDevice ext = CreateManager(new Version(1, 19, 0, 0)).AllocateController(OutContType.DS4, extBackend);
+            OutputDevice ext = TestOutputCartridges.Allocate(OutContType.DS4, extBackend, new Version(1, 19, 0, 0));
             ext.Connect();
             ext.ConvertandSendReport(state, 0);
             Assert.Single(extBackend.Ds4Targets[0].RawReports);
@@ -97,14 +92,14 @@ namespace DS4WindowsTests
 
             var midBackend = new FakeVirtualPadBackend();
             midBackend.Start();
-            OutputDevice mid = CreateManager(new Version(1, 17, 333, 0)).AllocateController(OutContType.DS4, midBackend);
+            OutputDevice mid = TestOutputCartridges.Allocate(OutContType.DS4, midBackend, new Version(1, 17, 333, 0));
             mid.Connect();
             mid.ConvertandSendReport(state, 0);
             Assert.Single(midBackend.Ds4Targets[0].RawReports);
 
             var basicBackend = new FakeVirtualPadBackend();
             basicBackend.Start();
-            OutputDevice basic = CreateManager(new Version(1, 16, 0, 0)).AllocateController(OutContType.DS4, basicBackend);
+            OutputDevice basic = TestOutputCartridges.Allocate(OutContType.DS4, basicBackend, new Version(1, 16, 0, 0));
             basic.Connect();
             basic.ConvertandSendReport(state, 0);
             Assert.Empty(basicBackend.Ds4Targets[0].RawReports);
@@ -116,7 +111,7 @@ namespace DS4WindowsTests
         {
             var backend = new FakeVirtualPadBackend();
             backend.Start();
-            OutputDevice device = CreateManager(new Version(1, 16, 0, 0)).AllocateController(OutContType.DS4, backend);
+            OutputDevice device = TestOutputCartridges.Allocate(OutContType.DS4, backend, new Version(1, 16, 0, 0));
             FakeDs4Target target = backend.Ds4Targets[0];
             device.Connect();
 
@@ -136,7 +131,7 @@ namespace DS4WindowsTests
         {
             var backend = new FakeVirtualPadBackend();
             backend.Start();
-            OutputDevice device = CreateManager(new Version(1, 16, 0, 0)).AllocateController(OutContType.DS4, backend);
+            OutputDevice device = TestOutputCartridges.Allocate(OutContType.DS4, backend, new Version(1, 16, 0, 0));
             device.Connect();
             device.RemoveFeedbacks();
             device.RemoveFeedback(3);
@@ -148,10 +143,10 @@ namespace DS4WindowsTests
         public void AllocateController_WithAStoppedBackend_Throws_AndNoneReturnsNull()
         {
             var backend = new FakeVirtualPadBackend();   // 未開始
-            OutputSlotManager manager = CreateManager(new Version(1, 19, 0, 0));
-            Assert.Throws<InvalidOperationException>(() => manager.AllocateController(OutContType.X360, backend));
-            Assert.Throws<InvalidOperationException>(() => manager.AllocateController(OutContType.DS4, backend));
-            Assert.Null(manager.AllocateController(OutContType.None, backend));
+            var version = new Version(1, 19, 0, 0);
+            Assert.Throws<InvalidOperationException>(() => TestOutputCartridges.Allocate(OutContType.X360, backend, version));
+            Assert.Throws<InvalidOperationException>(() => TestOutputCartridges.Allocate(OutContType.DS4, backend, version));
+            Assert.Null(TestOutputCartridges.Allocate(OutContType.None, backend, version));
         }
     }
 }

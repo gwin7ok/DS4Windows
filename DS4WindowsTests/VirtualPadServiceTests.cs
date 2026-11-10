@@ -42,7 +42,8 @@ namespace DS4WindowsTests
                 settings ?? TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IOutputDeviceTypeState>(),   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
                 new NoControllers(),
-                host ?? new RecordingHost(), rumble ?? new NoRumble(), backend ?? new FakeVirtualPadBackend());
+                host ?? new RecordingHost(), rumble ?? new NoRumble(), backend ?? new FakeVirtualPadBackend(),
+                TestOutputCartridges.For(settings ?? TestHost.GetService<IProfileSettingsService>(), rumble ?? new NoRumble()));
         }
 
         private sealed class RecordingRumble : IDeviceRumbleService
@@ -73,7 +74,7 @@ namespace DS4WindowsTests
             backend.Start();
             var rumble = new RecordingRumble();
             VirtualPadService service = Create(backend: backend, rumble: rumble);
-            DS4Windows.Output.OutputDevice dev = service.OutputSlotManager.AllocateController(DS4Windows.Core.Model.OutContType.X360, backend);
+            DS4Windows.Output.OutputDevice dev = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
             FakeXbox360Target target = backend.Xbox360Targets[0];
 
             service.EstablishOutFeedback(2, DS4Windows.Core.Model.OutContType.X360, dev, null);
@@ -96,7 +97,7 @@ namespace DS4WindowsTests
             service.SendReport(0, new DS4Windows.Core.Model.DS4State());   // 割り当てなし: 何もしない
             Assert.False(service.HasOutputDevice(0));
 
-            service.OutputDevices[0] = service.OutputSlotManager.AllocateController(DS4Windows.Core.Model.OutContType.X360, backend);
+            service.OutputDevices[0] = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
             service.OutputDevices[0].Connect();
             Assert.True(service.HasOutputDevice(0));
             service.SendReport(0, new DS4Windows.Core.Model.DS4State { Cross = true });
@@ -116,7 +117,7 @@ namespace DS4WindowsTests
             Assert.False(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
             Assert.False(service.HasOutputDevice(1));
 
-            service.OutputDevices[0] = service.OutputSlotManager.AllocateController(DS4Windows.Core.Model.OutContType.X360, backend);
+            service.OutputDevices[0] = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
             Assert.True(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
             Assert.Same(service.OutputDevices[0], service.OutputDevices[1]);
 
@@ -221,13 +222,15 @@ namespace DS4WindowsTests
             IEventThreadDispatcher host = new RecordingHost();
             IDeviceRumbleService rumble = new NoRumble();
             DS4Windows.Output.Backend.IVirtualPadBackend backend = new FakeVirtualPadBackend();
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(null, settings, slots, accessor, host, rumble, backend));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, null, slots, accessor, host, rumble, backend));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, null, accessor, host, rumble, backend));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, null, host, rumble, backend));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, null, rumble, backend));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, null, backend));
-            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, rumble, null));
+            var cartridges = TestOutputCartridges.Default();
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, rumble, backend, null));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(null, settings, slots, accessor, host, rumble, backend, cartridges));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, null, slots, accessor, host, rumble, backend, cartridges));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, null, accessor, host, rumble, backend, cartridges));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, null, host, rumble, backend, cartridges));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, null, rumble, backend, cartridges));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, null, backend, cartridges));
+            Assert.Throws<ArgumentNullException>(() => new VirtualPadService(env, settings, slots, accessor, host, rumble, null, cartridges));
         }
     }
 }
