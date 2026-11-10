@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         public void TheRememberedProfileOfAReconnect_IgnoresTemporaryProfiles()
         {
             // S9-5（実機）: 自動プロファイルの verifyG が「直前のプロファイル」として記憶され、再接続で最初から適用されていた
-            string code = SourceText.ReadNormalized("DS4Windows/Processing/ControlService.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/AppliedProfileRecorder.cs");
             if (code == null) return;
 
             int method = code.IndexOf("private void RememberAppliedProfile(", StringComparison.Ordinal);

@@ -615,3 +615,10 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **`Mouse` に `TimeProvider`**（16-2 から持ち越し）: タップのクリックを押し続ける時間（`tapClickHoldUntil`）だけを `TimeProvider` の時刻で数える。`onReleaseTime` など他の時刻は対象外。
 - 新テスト 4 件（`ConnectedDeviceOutputsTests` 3 件、`Mouse` の `TimeProvider` 2 件のうち null 検査と 50 ms の保持）。
 - Debug ALL: 警告 0・エラー 0・Actions 3,296 件・Standalone 11 件合格。
+
+### Step 16-5a（2026-11-10。完了）
+- **`DS4Devices` のインスタンス化**: 静的だったコントローラーの登録簿（開いているデバイスの表、シリアルの重複の検出、排他モード、静的なデリゲート 3 つと `RequestElevation`、`LayerSettings`）を、すべてインスタンスのメンバーにした。設定値はコンストラクターで受ける（null は Moonlight 無効・詳細ログ無効）。DI は `DS4Devices` を Singleton で登録し、`Ds4DeviceRegistryAdapter` はそれを受ける（昇格した補助プロセス用の引数なしの生成は、設定なしの登録簿を作る）。列挙・オープン・取り外しの手順と順序は変えていない。定数（`SONY_VID` など）と対応機器の表 `knownDevices` は静的な読み取り専用のまま。
+- **`ControlService`（引数 16→12。`ConstructorArityBaseline` から削除）**: 登録簿のフック（対応する種類の確認、初期化の直後の処理、昇格の要求）を `IDeviceRegistryHooks`／`DeviceRegistryHooks`、適用プロファイルの記憶を `IAppliedProfileRecorder`／`AppliedProfileRecorder`、仮想パッドの失敗での停止を `IBackendFailureHandler`／`BackendFailureHandler` へ分けた。結ぶ位置と順序（`ControlService` のコンストラクターが `Attach()` を呼ぶ）は元と同じ。ログの文言とレベルは変えていない。
+- **判断（2.4）**: `ControlService.WarnExclusiveModeFailure`（private。呼び出しは `DeviceConnector` でコメントアウト済みの残骸）は、使うべきでない並行の残骸として削除した。
+- 新テスト 5 件（`DeviceRegistryHooksTests`: 登録簿が状態を共有しない、Singleton の登録、`Attach` でフックが結ばれる、引数の null 検査）。引数の数・ソース文字列の守りのテスト 8 件を新しい置き場所に合わせて更新。
+- Debug ALL: 警告 0・エラー 0・Actions 3,301 件・Standalone 11 件合格。

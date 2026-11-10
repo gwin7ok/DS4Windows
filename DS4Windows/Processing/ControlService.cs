@@ -76,14 +76,8 @@ namespace DS4Windows.Processing
         // Phase9 9-E E-4: 旧 outputslotMan／vigemTestClient／tempThread は VirtualPadService へ移した
         private readonly DS4Windows.Processing.Abstractions.IVirtualPadService _virtualPad;
 
-        // Phase 3 Followup Step F-2: DS4Devices static access routed through DI.
-        private readonly IDs4DeviceRegistry _deviceRegistry;
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
 
-        // Phase6-Step2-1 (PR-1): Global 直接参照の解消。SSOT は Global/BackingStore のまま、
-        // 薄い委譲サービス経由で参照する（Pure DI: コンストラクタ注入のみ。AppHost.Services は使用しない）。
-        private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettings;
-        private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
 
         // Phase6-Step2-2 (PR-2)
         // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（OutputSlotService → ControlService の逆依存の回避）をやめ、直接注入にした。
@@ -95,15 +89,12 @@ namespace DS4Windows.Processing
         private OutContType[] ActiveOutDevType
             => _activeOutDevType ?? (_activeOutDevType = _outputSlotService.ActiveOutDevType);
         private readonly DS4Windows.Core.Abstractions.IProfileRepository _profileRepository;
-        private readonly DS4Windows.Processing.Abstractions.IDeviceStateService _deviceStateService;
 
         // Phase6-Step2-3 (PR-3): KBM 出力の送出（IVirtualKBM）とハンドラのライフサイクル（IVirtualKBMLifecycle）を分離（決定D3）
         // Phase13-Step5b-5b-e: 旧 _virtualKBM／_appearanceSettings／_profileActionProvider／_specialActionRepository は、On_Report（InputReportProcessor へ移設）と Mapping の逆依存の解消で、使われなくなったため削除した
 
         // Phase6-Step2-5 (PR-5): 入力処理ホットパス（On_Report）で参照するサービス。
         // いずれも呼び出し1回あたりの新規オブジェクト割り当て・ログ・キャッシュを行わない（ゼロアロケーション方針）。
-        // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IElevatedProcessLauncher>()。デバイス再有効化の昇格要求で使う
-        private readonly DS4Windows.Core.Abstractions.IElevatedProcessLauncher _elevatedProcessLauncher;
         // Phase7-Step8 W1: 旧 StickMotionState.Shared／SyntheticInputState.Shared（静的な窓口）。コンストラクターで受ける。
         private readonly StickMotionState _stickMotion;
         // Phase7-Step8 W2: 入力の評価の窓口（旧: Mapping の静的メソッド）。画面（ControllerReadingsControl、RecordBoxViewModel）も、これを経由して使う
@@ -127,15 +118,10 @@ namespace DS4Windows.Processing
 
         // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
 
-        // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）
-        private readonly DS4Windows.Processing.Abstractions.IInputDeviceModuleRegistry _deviceModules;
+        // デバイスの登録簿へのフック、適用プロファイルの記憶、仮想パッドの失敗の処理は、それぞれの部品が持つ（コンストラクターで結ぶ）
 
         // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
 
-        // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
-        private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle _lifecycle;
-
-        private ControlServiceDeviceOptions deviceOptions;
 
         //public event EventHandler HotplugFinished;
 
@@ -143,22 +129,19 @@ namespace DS4Windows.Processing
 
         // Phase13-Step5: 旧 GetPadDetailForIdx（UDP モーションのパッドの情報）は UdpMotionService へ移した
 
-        public ControlService(IDs4DeviceRegistry deviceRegistry,
+        public ControlService(
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
-            DS4Windows.Core.Abstractions.IAppSettingsService appSettings,
-            DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService,
             DS4Windows.Core.Abstractions.IProfileRepository profileRepository,
-            DS4Windows.Processing.Abstractions.IDeviceStateService deviceStateService,
-            DS4Windows.Core.Abstractions.IElevatedProcessLauncher elevatedProcessLauncher,
             StickMotionState stickMotion,
             DS4Windows.Processing.Abstractions.IMapping mapping,
             DS4Windows.Processing.Abstractions.IVirtualPadService virtualPadService,
-            DS4Windows.Processing.Abstractions.IInputDeviceModuleRegistry deviceModules,
-            DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IEventThreadDispatcher eventThread,
             DS4Windows.Processing.Abstractions.IDeviceSlotState slots,
-            DS4Windows.Processing.Abstractions.IInputReportProcessor inputReport)
+            DS4Windows.Processing.Abstractions.IInputReportProcessor inputReport,
+            DS4Windows.Processing.Abstractions.IDeviceRegistryHooks deviceRegistryHooks,
+            DS4Windows.Processing.Abstractions.IAppliedProfileRecorder appliedProfileRecorder,
+            DS4Windows.Processing.Abstractions.IBackendFailureHandler backendFailureHandler)
         {
             // Phase13-Step5b: 入力レポートの処理は InputReportProcessor が持つ（MappedState／CurrentStates／ExposedState の初期化も、その先頭で済んでいる）
             this._inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
@@ -166,23 +149,16 @@ namespace DS4Windows.Processing
             this.DS4Controllers = slots.DS4Controllers;
             this.PreviousState = slots.PreviousStates;
             this.TempState = slots.TempStates;
-            this._deviceRegistry = deviceRegistry;
             // TODO(技術的負債): 過渡期の防御コード。DI 経由の生成（ServiceRegistration）では profileSettings は常に非 null。
             // 旧シグネチャ（profileSettings = null）との互換のために残している。Phase6-Step12 で削除判断（Phase6-Step2-Plan.md 決定D2）。
             this._profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings)); // Phase6-Step10-4-5: Global のフォールバックを廃止
-            this._appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            this._pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             this._outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             this._profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            this._deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
             // 適用のたびに、そのスロットのコントローラー（MAC）に、適用したプロファイルを記憶する（再接続で使う）
-            this._profileRepository.SelectedProfileChanged += RememberAppliedProfile;
-            this._elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
+            (appliedProfileRecorder ?? throw new ArgumentNullException(nameof(appliedProfileRecorder))).Attach();
             this._stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             this._mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             this._virtualPad = virtualPadService ?? throw new ArgumentNullException(nameof(virtualPadService));
-            this._deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-            this._lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this._eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
 
             Crc32Algorithm.InitializeTable(DS4Device.DefaultPolynomial);
@@ -209,13 +185,8 @@ namespace DS4Windows.Processing
 
             // Phase9 9-E E-4: 旧 outputslotMan の生成は VirtualPadService のコンストラクターへ移した
             //outputslotMan.SlotAssigned += OutputslotMan_SlotAssigned;
-            deviceOptions = _appSettings.DeviceOptions;
-
-            _deviceRegistry.RequestElevation += DS4Devices_RequestElevation;
-            _deviceRegistry.PrepareDS4Init = PrepareDS4DeviceInit;
-            _deviceRegistry.PostDS4Init = PostDS4DeviceInit;
-            _deviceRegistry.PreparePendingDevice = CheckForSupportedDevice;
-            _virtualPad.BackendFailure += OutputslotMan_ViGEmFailure;
+            (deviceRegistryHooks ?? throw new ArgumentNullException(nameof(deviceRegistryHooks))).Attach();
+            (backendFailureHandler ?? throw new ArgumentNullException(nameof(backendFailureHandler))).Attach();
 
             // Phase9 9-E E-3: スムージング設定の変更の購読（旧 ChangeUdpSmoothingAttrs）は UdpMotionService のコンストラクターへ移した
 
@@ -234,38 +205,6 @@ namespace DS4Windows.Processing
 
         // Phase13-Step3: 旧 RefreshOutputKBMHandler（呼び出し元 0 件。38a41ffa で呼び出し元が削除された残骸）は削除、旧 InitOutputKBMHandler は OutputKbmInitializer へ移した。
 
-        private void OutputslotMan_ViGEmFailure(object sender, int errorCode)
-        {
-            _eventThread.Queue((Action)(() =>
-            {
-                _lifecycle.LoopControllers = false;
-                while (_lifecycle.InServiceTask)
-                    Thread.SpinWait(1000);
-
-                AppLogger.Log(AppLogLevel.Warn, string.Format(DS4Windows.Translations.Strings.ViGEmPluginFailure, errorCode), LogOptions.UserFacing);
-                _lifecycle.Stop();
-            }));
-        }
-
-        // Phase9 9-E E-6c: 種類ごとの処理（Joy-Con の結合の初期値）は IInputDeviceModule へ移した
-        public void PostDS4DeviceInit(DS4Device device)
-        {
-            _deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, deviceOptions);
-        }
-
-
-        public void PrepareDS4DeviceInit(DS4Device device)
-        {
-            // Does nothing now
-        }
-
-        // Phase9 9-E E-6c: 種類ごとの有効設定の判定は IInputDeviceModule へ移した（扱う部品がない種類は false）
-        public bool CheckForSupportedDevice(HidDevice device, VidPidInfo metaInfo)
-        {
-            return _deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(deviceOptions);
-        }
-
-
         public void ShutDown()
         {
             _virtualPad.ShutDownOutputSlots();
@@ -273,52 +212,6 @@ namespace DS4Windows.Processing
             _outputSlotService.SaveOutputSlots();
 
             _eventThread.Shutdown();
-        }
-
-        private void DS4Devices_RequestElevation(RequestElevationArgs args)
-        {
-            // Phase 3 Step 3-5: try DI-based IElevatedProcessLauncher first,
-            // fall back to the original direct Process.Start implementation.
-            bool handled = false;
-            try
-            {
-                var launcher = _elevatedProcessLauncher;
-                if (launcher != null)
-                {
-                    int? exitCode = launcher.RelaunchElevated("re-enabledevice " + args.InstanceId, 30000);
-                    if (exitCode.HasValue)
-                    {
-                        args.StatusCode = exitCode.Value;
-                    }
-                    handled = true;
-                }
-            }
-            catch { }
-
-            if (!handled)
-            {
-                // Launches an elevated child process to re-enable device
-                ProcessStartInfo startInfo =
-                    new ProcessStartInfo(_pathService.ExecutablePath);
-                startInfo.Verb = "runas";
-                startInfo.Arguments = "re-enabledevice " + args.InstanceId;
-                startInfo.UseShellExecute = true;
-
-                try
-                {
-                    Process child = Process.Start(startInfo);
-                    if (!child.WaitForExit(30000))
-                    {
-                        child.Kill();
-                    }
-                    else
-                    {
-                        args.StatusCode = child.ExitCode;
-                    }
-                    child.Dispose();
-                }
-                catch { }
-            }
         }
 
         // Phase13-Step10 10-c: CheckHidHidePresence／UpdateHidHiddenAttributes の転送は削除した（利用者は IRuntimeFeatureSwitch を使う）。
@@ -347,17 +240,6 @@ namespace DS4Windows.Processing
 
         // Phase9 9-E E-3: 旧 udpChangeStatus／changingUDPPort／UseUDPPort は UdpMotionService へ移した（UseUDPPort は呼び出し元 0 件のため、ここには委譲を残さない）。
 
-        private void WarnExclusiveModeFailure(DS4Device device)
-        {
-            if (_deviceRegistry.IsExclusiveMode && !device.isExclusive())
-            {
-                string message = DS4Windows.Properties.Resources.CouldNotOpenDS4.Replace("*Mac address*", device.getMacAddress()) + " " +
-                    DS4Windows.Properties.Resources.QuitOtherPrograms;
-                AppLogger.Log(AppLogLevel.Warn, message, LogOptions.UserFacing);
-                AppLogger.LogToTray(message, true);
-            }
-        }
-
         // Phase9 9-E E-4: 旧 StartViGEm／StopViGEm／AssignInitialDevices／EstablishOutDevice／EstablishOutFeedback／RemoveOutFeedback／AttachNewUnboundOutDev／
         // AttachUnboundOutDev／DetachUnboundOutDev／PluginOutDev／UnplugOutDev の本体は VirtualPadService へ移した。
         // Phase13-Step10 10-b: PluginOutDev／UnplugOutDev の転送は削除した（外部の利用者は 0 件。BackingStore／LegacyProfileXmlSerializer は IProfileLoadTarget を使う）。
@@ -385,32 +267,6 @@ namespace DS4Windows.Processing
         // Phase13-Step10 10-b: TouchPadOn の転送は削除した（外部の利用者は 0 件）。
 
         // Phase13-Step6 6-b: 旧 GetDS4Battery（電池残量の文言）は IDeviceBatteryText へ移した（呼び出し元は DefaultBatteryCheckPort だけだった）
-
-        // プロファイルを適用したとき（SelectedProfileChanged は、適用のたびに発火する）、そのスロットのコントローラーに、適用したプロファイルを記憶する。
-        // 再接続（同じコントローラー）のとき、切断前のプロファイルを適用するため（Reconnect-Profile-PerController-Fix-Plan.md）。適用のスレッドから呼ばれる。
-        private void RememberAppliedProfile(object sender, SelectedProfileChangedEventArgs e)
-        {
-            try
-            {
-                int slot = e.DeviceIndex;
-                if (slot < 0 || slot >= DS4Controllers.Length) return;
-
-                DS4Device device = DS4Controllers[slot];
-                if (device == null || !device.isValidSerial()) return;
-
-                // Phase11 W6 K-W6-11（S9-5 の実機で判明）: 一時プロファイル（自動プロファイル、一時の Load Profile）は記憶しない。
-                // 記憶すると、切断前に自動プロファイル（verifyG）だった場合、再接続でそれが「通常のプロファイル」として最初から適用されてしまう。
-                // 一時プロファイルの適用は LoadTempProfile が UseTempProfile を立てたあとで、このイベントが発火する
-                if (_profileSettings.GetUseTempProfile(slot)) return;
-
-                _deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);
-            }
-            catch
-            {
-                // 記憶できなくても、適用を止めない（再接続は、スロットの SelectedProfile に戻る）
-            }
-        }
-
 
         // Called when DS4 is disconnected or timed out
 

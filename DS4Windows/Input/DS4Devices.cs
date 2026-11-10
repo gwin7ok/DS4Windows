@@ -31,22 +31,27 @@ using DS4Windows.Input.Hid;
 namespace DS4Windows.Input
 {
 
+    /// <summary>
+    /// 接続されたコントローラーの登録簿と、HID 機器の列挙・オープン・取り外しの手順（インスタンス。DI の Singleton）。
+    /// 状態（開いているデバイスの表、シリアルの重複の検出、排他モードの記憶）はこのインスタンスが持つ。
+    /// 設定値は、コンストラクターで受ける（null のときは、Moonlight 無効・詳細ログ無効として扱う。補助プロセスと一部のテスト）。
+    /// </summary>
     public class DS4Devices
     {
         // (HID device path, DS4Device)
-        private static Dictionary<string, DS4Device> Devices = new Dictionary<string, DS4Device>();
+        private readonly Dictionary<string, DS4Device> Devices = new Dictionary<string, DS4Device>();
         // (MacAddress, DS4Device)
-        private static Dictionary<string, DS4Device> serialDevices = new Dictionary<string, DS4Device>();
-        private static HashSet<string> deviceSerials = new HashSet<string>();
-        private static HashSet<string> DevicePaths = new HashSet<string>();
+        private readonly Dictionary<string, DS4Device> serialDevices = new Dictionary<string, DS4Device>();
+        private readonly HashSet<string> deviceSerials = new HashSet<string>();
+        private readonly HashSet<string> DevicePaths = new HashSet<string>();
         // Keep instance of opened exclusive mode devices not in use (Charging while using BT connection)
-        private static List<HidDevice> DisabledDevices = new List<HidDevice>();
-        private static Stopwatch sw = new Stopwatch();
-        public static event RequestElevationDelegate RequestElevation;
-        public static PrepareInitDelegate PrepareDS4Init = null;
-        public static PrepareInitDelegate PostDS4Init = null;
-        public static CheckPendingDevice PreparePendingDevice = null;
-        public static bool isExclusiveMode = false;
+        private readonly List<HidDevice> DisabledDevices = new List<HidDevice>();
+        private readonly Stopwatch sw = new Stopwatch();
+        public event RequestElevationDelegate RequestElevation;
+        public PrepareInitDelegate PrepareDS4Init = null;
+        public PrepareInitDelegate PostDS4Init = null;
+        public CheckPendingDevice PreparePendingDevice = null;
+        public bool isExclusiveMode = false;
         internal const int SONY_VID = 0x054C;
         internal const int RAZER_VID = 0x1532;
         internal const int NACON_VID = 0x146B;
@@ -107,13 +112,17 @@ namespace DS4Windows.Input
         };
 
 
-        // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値（Moonlight／詳細ログ）。Ds4DeviceRegistryAdapter が設定する。
-        // 未設定のとき（テスト）は、Moonlight 無効・詳細ログ無効として扱う（旧: Global が BackingStore の既定値を返していた）。
-        public static DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings { get; set; }
+        // 第 1 層が読む設定値（Moonlight／詳細ログ）。未設定（null）のときは、Moonlight 無効・詳細ログ無効として扱う。
+        public DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings { get; }
 
-        private static bool detectNewControllers = true;
-        private static long timestamp;
-        private static bool DetectNewControllers
+        public DS4Devices(DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings)
+        {
+            LayerSettings = layerSettings;
+        }
+
+        private bool detectNewControllers = true;
+        private long timestamp;
+        private bool DetectNewControllers
         {
             get => detectNewControllers;
             set
@@ -123,7 +132,7 @@ namespace DS4Windows.Input
                 detectNewControllers = value;
             }
         }
-        private static bool IsRealDS4(HidDevice hDevice)
+        private bool IsRealDS4(HidDevice hDevice)
         {
             var layerSettings = LayerSettings;
             if (layerSettings == null || !layerSettings.UseMoonlight) return !DevicePathProbe.CheckIfVirtualDevice(hDevice.DevicePath);
@@ -157,7 +166,7 @@ namespace DS4Windows.Input
         }
 
         // Enumerates ds4 controllers in the system
-        public static void findControllers()
+        public void findControllers()
         {
             lock (Devices)
             {
@@ -331,7 +340,7 @@ namespace DS4Windows.Input
         }
 
         // Returns DS4 controllers that were found and are running
-        public static IEnumerable<DS4Device> getDS4Controllers()
+        public IEnumerable<DS4Device> getDS4Controllers()
         {
             lock (Devices)
             {
@@ -341,7 +350,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public static void stopControllers()
+        public void stopControllers()
         {
             lock (Devices)
             {
@@ -366,13 +375,13 @@ namespace DS4Windows.Input
         }
 
         // Called when devices is disconnected, timed out or has input reading failure
-        public static void On_Removal(object sender, EventArgs e)
+        public void On_Removal(object sender, EventArgs e)
         {
             DS4Device device = (DS4Device)sender;
             RemoveDevice(device);
         }
 
-        public static void RemoveDevice(DS4Device device)
+        public void RemoveDevice(DS4Device device)
         {
             lock (Devices)
             {
@@ -380,7 +389,7 @@ namespace DS4Windows.Input
             }
         }
 
-        private static void InnerRemoveDevice(DS4Device device)
+        private void InnerRemoveDevice(DS4Device device)
         {
             if (device != null)
             {
@@ -393,7 +402,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public static void UpdateSerial(object sender, EventArgs e)
+        public void UpdateSerial(object sender, EventArgs e)
         {
             lock (Devices)
             {
@@ -421,7 +430,7 @@ namespace DS4Windows.Input
             }
         }
 
-        private static void purgeHiddenExclusiveDevices()
+        private void purgeHiddenExclusiveDevices()
         {
             int disabledDevCount = DisabledDevices.Count;
             if (disabledDevCount > 0)
@@ -462,7 +471,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public static void reEnableDevice(string deviceInstanceId)
+        public void reEnableDevice(string deviceInstanceId)
         {
             bool success;
             Guid hidGuid = new Guid();

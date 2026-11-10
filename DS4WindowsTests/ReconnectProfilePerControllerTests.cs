@@ -116,7 +116,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlService_DecidesPerController_AndRemembersEveryAppliedProfile()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/AppliedProfileRecorder.cs");
             if (path == null) return;
 
             string controlServiceText = File.ReadAllText(path);
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
             Assert.Contains("_deviceStateService.RememberProfile(connectedMac, profileToApply);", text);
             Assert.DoesNotContain("_deviceStateService.IsFirstConnection(index)", text);   // スロット単位の判定は使わない
 
-            // 適用のたびに記憶する（こちらは ControlService に残っている）
+            // 適用のたびに記憶する（AppliedProfileRecorder が持つ）
             text = controlServiceText;
             Assert.Contains("_profileRepository.SelectedProfileChanged += RememberAppliedProfile;", text);
             Assert.Contains("_deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);", text);

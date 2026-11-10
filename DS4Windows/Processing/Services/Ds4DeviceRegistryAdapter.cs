@@ -10,34 +10,33 @@ namespace DS4Windows.Processing.Services
 {
     public class Ds4DeviceRegistryAdapter : IDs4DeviceRegistry
     {
-        // Phase7-Step10d W3（Q4＝A）: 第 1 層（DS4Devices）が読む設定値を、列挙の前に渡す（旧: 第 1 層が Global を直接参照していた）
-        private readonly IDeviceLayerSettings _layerSettings;
+        private readonly DS4Devices _devices;
 
         /// <summary>
         /// ホストを構築しない昇格した補助プロセス（デバイスの再有効化のみ）用。設定値は使わない（列挙はしない）。
         /// </summary>
         public Ds4DeviceRegistryAdapter()
+            : this(new DS4Devices(null))
         {
         }
 
-        public Ds4DeviceRegistryAdapter(IDeviceLayerSettings layerSettings)
+        /// <summary>登録簿のインスタンスを受ける（DI とテスト）。</summary>
+        public Ds4DeviceRegistryAdapter(DS4Devices devices)
         {
-            _layerSettings = layerSettings ?? throw new ArgumentNullException(nameof(layerSettings));
-            DS4Devices.LayerSettings = _layerSettings;
+            _devices = devices ?? throw new ArgumentNullException(nameof(devices));
         }
 
         public IEnumerable<DS4Device> FindControllers()
         {
-            if (_layerSettings != null) DS4Devices.LayerSettings = _layerSettings;
-            DS4Devices.findControllers();
-            return DS4Devices.getDS4Controllers();
+            _devices.findControllers();
+            return _devices.getDS4Controllers();
         }
 
-        public IEnumerable<DS4Device> GetDS4Controllers() => DS4Devices.getDS4Controllers();
+        public IEnumerable<DS4Device> GetDS4Controllers() => _devices.getDS4Controllers();
 
         public void StopControllers()
         {
-            DS4Devices.stopControllers();
+            _devices.stopControllers();
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] Ds4DeviceRegistryAdapter.StopControllers called");
         }
@@ -45,7 +44,7 @@ namespace DS4Windows.Processing.Services
         public bool RemoveDevice(DS4Device device)
         {
             if (device == null) return false;
-            DS4Devices.RemoveDevice(device);
+            _devices.RemoveDevice(device);
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] Ds4DeviceRegistryAdapter.RemoveDevice: Device removed");
             return true;
@@ -53,48 +52,48 @@ namespace DS4Windows.Processing.Services
 
         public void OnRemoval(object sender, EventArgs e)
         {
-            DS4Devices.On_Removal(sender, e);
+            _devices.On_Removal(sender, e);
         }
 
         public void UpdateSerial(object sender, EventArgs e)
         {
-            DS4Devices.UpdateSerial(sender, e);
+            _devices.UpdateSerial(sender, e);
         }
 
         public void ReEnableDevice(string deviceInstanceId)
         {
             if (string.IsNullOrEmpty(deviceInstanceId)) return;
-            DS4Devices.reEnableDevice(deviceInstanceId);
+            _devices.reEnableDevice(deviceInstanceId);
         }
 
         public bool IsExclusiveMode
         {
-            get => DS4Devices.isExclusiveMode;
-            set => DS4Devices.isExclusiveMode = value;
+            get => _devices.isExclusiveMode;
+            set => _devices.isExclusiveMode = value;
         }
 
         public event RequestElevationDelegate RequestElevation
         {
-            add => DS4Devices.RequestElevation += value;
-            remove => DS4Devices.RequestElevation -= value;
+            add => _devices.RequestElevation += value;
+            remove => _devices.RequestElevation -= value;
         }
 
         public PrepareInitDelegate PrepareDS4Init
         {
-            get => DS4Devices.PrepareDS4Init;
-            set => DS4Devices.PrepareDS4Init = value;
+            get => _devices.PrepareDS4Init;
+            set => _devices.PrepareDS4Init = value;
         }
 
         public PrepareInitDelegate PostDS4Init
         {
-            get => DS4Devices.PostDS4Init;
-            set => DS4Devices.PostDS4Init = value;
+            get => _devices.PostDS4Init;
+            set => _devices.PostDS4Init = value;
         }
 
         public CheckPendingDevice PreparePendingDevice
         {
-            get => DS4Devices.PreparePendingDevice;
-            set => DS4Devices.PreparePendingDevice = value;
+            get => _devices.PreparePendingDevice;
+            set => _devices.PreparePendingDevice = value;
         }
     }
 }

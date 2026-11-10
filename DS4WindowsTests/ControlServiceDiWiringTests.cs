@@ -49,11 +49,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Constructor_NullAppSettings_ThrowsArgumentNullException()
+        public void Constructor_NullDeviceRegistryHooks_ThrowsArgumentNullException()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create("appSettings"));
+            var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create("deviceRegistryHooks"));
 
-            Assert.Equal("appSettings", ex.ParamName);
+            Assert.Equal("deviceRegistryHooks", ex.ParamName);
         }
 
         [Fact]
@@ -72,11 +72,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void Constructor_NullPathService_ThrowsArgumentNullException()
+        public void Constructor_NullBackendFailureHandler_ThrowsArgumentNullException()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create("pathService"));
+            var ex = Assert.Throws<ArgumentNullException>(() => ControlServiceTestFactory.Create("backendFailureHandler"));
 
-            Assert.Equal("pathService", ex.ParamName);
+            Assert.Equal("backendFailureHandler", ex.ParamName);
         }
     }
 }

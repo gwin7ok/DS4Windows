@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
+using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
@@ -137,30 +138,29 @@ namespace DS4Windows.Composition
 
             // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
             services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
-            services.AddSingleton<IDs4DeviceRegistry>(sp => new Ds4DeviceRegistryAdapter(sp.GetRequiredService<IDeviceLayerSettings>()));
+            services.AddSingleton<DS4Devices>(sp => new DS4Devices(sp.GetRequiredService<IDeviceLayerSettings>()));   // 接続中のコントローラーの登録簿（状態を持つ）
+            services.AddSingleton<IDs4DeviceRegistry, Ds4DeviceRegistryAdapter>();
+            services.AddSingleton<IDeviceRegistryHooks, DeviceRegistryHooks>();   // 登録簿が列挙・初期化の途中で呼び返すフック（対応する種類の確認、初期化の直後の処理、昇格の要求）
+            services.AddSingleton<IAppliedProfileRecorder, AppliedProfileRecorder>();   // 適用のたびに、コントローラーごとにプロファイルを記憶する（再接続で使う）
+            services.AddSingleton<IBackendFailureHandler, BackendFailureHandler>();   // 仮想パッドのバックエンドの失敗でサービスを止める
             services.AddSingleton<ControlService>(sp =>
             {
                 // Phase7-Step5 W2（Q2＝A）: 旧 Program.rootHub ?? の分岐を削除した。シングルトンの生成は、このファクトリーだけが行う
                 return new ControlService(
                     // Phase13-Step3: 起動引数（-virtualkbm）は OutputKbmInitializer が Initialize() の時点で IStartupArguments から読む（旧: ここで渡していた）
-                    sp.GetRequiredService<IDs4DeviceRegistry>(),
                     sp.GetRequiredService<IProfileSettingsService>(),
-                    sp.GetRequiredService<IAppSettingsService>(),
-                    sp.GetRequiredService<IPathService>(),
                     sp.GetRequiredService<IOutputSlotService>(),   // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（逆依存は Phase9 E-4 で解消済み）
                     sp.GetRequiredService<IProfileRepository>(),
-                    sp.GetRequiredService<IDeviceStateService>(),
-                    // Phase13-Step5b-5b-e: IVirtualKBM／IAppearanceSettingsService／IProfileActionProvider／ISpecialActionRepository は、使われなくなったため外した
-                    sp.GetRequiredService<IElevatedProcessLauncher>(),
                     // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
                     sp.GetRequiredService<StickMotionState>(),
                     sp.GetRequiredService<IMapping>(),
                     sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4
-                    sp.GetRequiredService<IInputDeviceModuleRegistry>(),   // Phase9 9-E E-6c
-                    sp.GetRequiredService<IServiceLifecycle>(),   // Phase9 9-E E-6f2
                     sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
                     sp.GetRequiredService<IDeviceSlotState>(),   // Phase13-Step5
-                    sp.GetRequiredService<IInputReportProcessor>()   // Phase13-Step5b
+                    sp.GetRequiredService<IInputReportProcessor>(),   // Phase13-Step5b
+                    sp.GetRequiredService<IDeviceRegistryHooks>(),
+                    sp.GetRequiredService<IAppliedProfileRecorder>(),
+                    sp.GetRequiredService<IBackendFailureHandler>()
                 );
             });
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す

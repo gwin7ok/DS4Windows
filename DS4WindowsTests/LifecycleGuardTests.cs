@@ -73,10 +73,12 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("public bool loopControllers", text);
             Assert.DoesNotContain("public bool inServiceTask", text);
             Assert.DoesNotContain("public int activeControllers", text);
-            // 内部は _lifecycle を直接使う
-            Assert.Contains("_lifecycle.LoopControllers = false;", text);
-            Assert.Contains("while (_lifecycle.InServiceTask)", text);
-            Assert.Contains("_lifecycle.Stop();", text);
+            // 仮想パッドの失敗での停止は BackendFailureHandler が _lifecycle を直接使う
+            string handler = SourceText.ReadCode("DS4Windows/Processing/Services/BackendFailureHandler.cs");
+            if (handler == null) return;
+            Assert.Contains("_lifecycle.LoopControllers = false;", handler);
+            Assert.Contains("while (_lifecycle.InServiceTask)", handler);
+            Assert.Contains("_lifecycle.Stop();", handler);
         }
 
         [Fact]

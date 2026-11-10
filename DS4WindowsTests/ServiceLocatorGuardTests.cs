@@ -41,7 +41,7 @@ namespace DS4WindowsTests
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数と、コンテナが組み立てた結果を確かめる（AppHost を使わないことは RemovedApiRuleTests）
-            Assert.Contains(typeof(DS4Windows.Processing.ControlService).GetConstructors().Single().GetParameters(),
+            Assert.Contains(typeof(DS4Windows.Processing.Services.DeviceRegistryHooks).GetConstructors().Single().GetParameters(),
                 p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IElevatedProcessLauncher));
             var store = TestHost.GetService<DS4Windows.Core.Settings.BackingStore>();
             Assert.Same(TestHost.GetService<DS4Windows.Core.Abstractions.IProcessInspector>(), store.ProcessInspector);

@@ -42,25 +42,18 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
             Assert.Throws<ArgumentNullException>(() => new DeviceLayerSettings(null, TestHost.GetService<IProfileSettingsService>()));
-            Assert.Throws<ArgumentNullException>(() => new Ds4DeviceRegistryAdapter(null));
+            Assert.Throws<ArgumentNullException>(() => new Ds4DeviceRegistryAdapter((DS4Devices)null));
             Assert.Throws<ArgumentNullException>(() => new OutputSlotManager(null, 4));   // Phase9 Steering 削除 W3: 軸の取得口（第 2 引数）を削除した。バージョンの取得口の null を検査する
         }
 
         [Fact]
         public void RegistryAdapter_PassesTheSettingsToTheFirstLayer()
         {
-            var original = DS4Devices.LayerSettings;
-            try
-            {
-                var fake = new FakeDeviceLayerSettings { UseMoonlight = true };
-                var adapter = new Ds4DeviceRegistryAdapter(fake);
-                Assert.Same(fake, DS4Devices.LayerSettings);
-                Assert.NotNull(adapter);
-            }
-            finally
-            {
-                DS4Devices.LayerSettings = original;
-            }
+            var fake = new FakeDeviceLayerSettings { UseMoonlight = true };
+            var devices = new DS4Devices(fake);
+            var adapter = new Ds4DeviceRegistryAdapter(devices);
+            Assert.Same(fake, devices.LayerSettings);
+            Assert.NotNull(adapter);
         }
 
         [Fact]
