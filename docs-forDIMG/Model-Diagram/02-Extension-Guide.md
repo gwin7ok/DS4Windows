@@ -24,7 +24,7 @@
 ### 今後（Phase17 の進行で更新する）
 - 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
 - 17-2（済）: 保存と画面が、設定の定義から作られる（DTO・Wrapper・XAML が不要）。
-- 17-3〜17-5: 読み取りループ・出力・切断が `ControllerSession` に集まり、機種は `IDeviceProtocol` を書くだけになる。
+- 17-3〜17-5（一部済）: 読み取りの 1 フレームの流れは `InputLoopDevice`（骨組み）に集まった。機種は差し込み口（`ReceiveFrame`／`IsExpectedReport`／`ProcessFrame`／`ProcessIdle`／`WriteOutputFrame`）だけを書く。`ProtocolDevice`・`DualSenseDevice`・`SwitchProDevice` が載っている。`DS4Device`（全機種の基底。約 2,000 行）は、まだ自前のループを持つ。
 
 ## 2. 仮想パッドの出力の種類を足す
 
