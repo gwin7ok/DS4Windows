@@ -51,9 +51,7 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Processing.Abstractions.IProfileActionProvider _profileActionProvider;   // Phase13-Step5b: 旧 ctrl.ProfileActionProvider
         private readonly DS4Windows.Core.Abstractions.ISpecialActionRepository _specialActionRepository;   // Phase13-Step5b: 旧 ctrl.SpecialActionRepository
         private readonly IVirtualKBM VirtualKBM;
-        private readonly DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry _keyButtonControllers;
         // Phase7-Step8 W3（Q6＝A）: 旧 静的クラス SyntheticDispatcher の呼び出し
-        private readonly DS4Windows.Processing.Abstractions.ISyntheticDispatcher _syntheticDispatcher;
         // Phase9 9-C: 旧 _deviceStateAccessor（マクロの振動イベントで使う遅延の取得）は MacroStepExecutor へ移した。マクロの再生は IMacroPlayback が担う
         private readonly DS4Windows.Processing.Abstractions.IMacroPlayback _macroPlayback;
 
@@ -72,8 +70,6 @@ namespace DS4Windows.Processing
         private readonly FlickStickMappingData[] flickMappingData;
         private readonly TwoStageTriggerMappingData[] l2TwoStageMappingData;
         private readonly TwoStageTriggerMappingData[] r2TwoStageMappingData;
-        private readonly Queue<DS4TimedStickAxisValue>[][] stickValueHistory;   // Phase9 9-A(2)-B: StickMotionState.StickValueHistory の複製（旧: Mapping の public フィールド）
-        private readonly byte[][] lastStickAxisValues;   // Phase9 9-A(2)-B: StickMotionState.LastStickAxisValues の複製（[デバイス][LX, LY, RX, RY]）
         private readonly DeltaSettingsProcessorGroup[] deltaAccelProcessors;
 
         // SpecialAction名ごとのエラーログ抑制用（1プロファイル切り替えごとに1回だけ）
@@ -104,19 +100,14 @@ namespace DS4Windows.Processing
             StickMotionState stickMotion,
             DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
             IVirtualKBM virtualKBM,
-            DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry keyButtonControllers,
-            DS4Windows.Processing.Abstractions.ISyntheticDispatcher syntheticDispatcher,
+            DS4Windows.Processing.Abstractions.IDeviceInputCleanup inputCleanup,
             DS4Windows.Processing.Abstractions.IMacroPlayback macroPlayback,
             DS4Windows.Processing.Actions.ITriggerDispatchEngine triggerEngine,
-            DS4Windows.Processing.Abstractions.IStickDeadZoneProcessor stickDeadZone,
-            DS4Windows.Processing.Abstractions.IOutputCurveProcessor outputCurve,
-            DS4Windows.Processing.Abstractions.ITriggerDeadZoneProcessor triggerDeadZone,
-            DS4Windows.Processing.Abstractions.IGyroControlsProcessor gyroControls,
-            DS4Windows.Processing.Abstractions.IStickInputConditioner stickConditioner,
             DS4Windows.Processing.Abstractions.IFlickStickProcessor flickStick,
             DS4Windows.Processing.Abstractions.IButtonMouseMovementCalculator buttonMouseMovement,
             DS4Windows.Processing.Abstractions.IMouseMotionQuantizer mouseMotionQuantizer,
             DS4Windows.Processing.Abstractions.IGyroMouseStickBlender gyroMouseStickBlender,
+            DS4Windows.Processing.Abstractions.ICurveAndDeadzoneStage curveStage,
             DS4Windows.Processing.Abstractions.IControlActivityReader controlActivityReader,
             DS4Windows.Processing.Abstractions.ISyntheticInputCommitter syntheticCommitter,
             DS4Windows.Processing.Abstractions.ITwoStageTriggerProcessor twoStageTrigger,
@@ -146,15 +137,10 @@ namespace DS4Windows.Processing
             if (stickMotion == null) throw new ArgumentNullException(nameof(stickMotion));
             this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             this.VirtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
-            _syntheticDispatcher = syntheticDispatcher ?? throw new ArgumentNullException(nameof(syntheticDispatcher));
             _macroPlayback = macroPlayback ?? throw new ArgumentNullException(nameof(macroPlayback));
+            _inputCleanup = inputCleanup ?? throw new ArgumentNullException(nameof(inputCleanup));
             _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
-            _stickDeadZone = stickDeadZone ?? throw new ArgumentNullException(nameof(stickDeadZone));
-            _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
-            _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
-            _gyroControls = gyroControls ?? throw new ArgumentNullException(nameof(gyroControls));
-            _stickConditioner = stickConditioner ?? throw new ArgumentNullException(nameof(stickConditioner));
+            _curveStage = curveStage ?? throw new ArgumentNullException(nameof(curveStage));
             _flickStick = flickStick ?? throw new ArgumentNullException(nameof(flickStick));
             _buttonMouseMovement = buttonMouseMovement ?? throw new ArgumentNullException(nameof(buttonMouseMovement));
             _mouseMotionQuantizer = mouseMotionQuantizer ?? throw new ArgumentNullException(nameof(mouseMotionQuantizer));
@@ -185,8 +171,6 @@ namespace DS4Windows.Processing
             l2TwoStageMappingData = stickMotion.L2TwoStageMappingData;
             r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
             deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
-            stickValueHistory = stickMotion.StickValueHistory;
-            lastStickAxisValues = stickMotion.LastStickAxisValues;
         }
 
         // Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: keyButtonControllers／
@@ -264,11 +248,8 @@ namespace DS4Windows.Processing
         // （トリガー全体の成立/解除とは独立に、ボタン単位で管理する。詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1）。
         // 新旧の経路が別々の集合を持つと、通常の割り当ての抑制が食い違うため（Phase8-Step2-Design.md §23.3）。
         private readonly DS4Windows.Processing.Actions.ITriggerDispatchEngine _engine;
-        private readonly DS4Windows.Processing.Abstractions.IStickDeadZoneProcessor _stickDeadZone;   // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（共通の処理）
-        private readonly DS4Windows.Processing.Abstractions.IOutputCurveProcessor _outputCurve;   // Phase9 9-A(1) (c): スクエアスティックと出力カーブ（スティック、トリガー。共通の処理）
-        private readonly DS4Windows.Processing.Abstractions.ITriggerDeadZoneProcessor _triggerDeadZone;   // Phase9 9-A(1) (d): L2／R2 のデッドゾーン（共通の処理）
-        private readonly DS4Windows.Processing.Abstractions.IGyroControlsProcessor _gyroControls;   // Phase9 9-A(2)-A: ジャイロ → コントロールの補正（X／Z 共通の処理）
-        private readonly DS4Windows.Processing.Abstractions.IStickInputConditioner _stickConditioner;   // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズ（共通の処理）
+        private readonly DS4Windows.Processing.Abstractions.IDeviceInputCleanup _inputCleanup;   // 切断時の合成キーの解放・マクロのキュー・ボタンのコントローラーの後始末
+        private readonly DS4Windows.Processing.Abstractions.ICurveAndDeadzoneStage _curveStage;   // 入力の補正の段（回転・ドリフト・デッドゾーン・出力カーブ・ジャイロ）
         private readonly DS4Windows.Processing.Abstractions.IFlickStickProcessor _flickStick;   // Phase9 9-A(2)-C: フリックスティック（共通の処理）
         private readonly DS4Windows.Processing.Abstractions.IButtonMouseMovementCalculator _buttonMouseMovement;   // Phase9 9-B: ボタン・スティック・トリガー・ジャイロ方向 → マウスの生の移動量（旧 getMouseMapping。加速の状態はデバイスごと）
         private readonly DS4Windows.Processing.Abstractions.IMouseMotionQuantizer _mouseMotionQuantizer;   // Phase9 9-B: マウスの移動量の整数化と端数の持ち越し（旧 calculateFinalMouseMovement。端数はデバイスごと）
@@ -348,158 +329,11 @@ namespace DS4Windows.Processing
             return (value < min) ? min : (value > max) ? max : value;
         }
 
+        // 補正の段（回転・ドリフト・デッドゾーン・出力カーブ・ジャイロ）は CurveAndDeadzoneStage が行う
         public DS4State SetCurveAndDeadzone(int device, DS4State cState, DS4State dState,
                 DS4Windows.Core.Abstractions.IProfileSettingsService settings)
         {
-            double rotation = /*tempDoubleArray[device] =*/  settings.LSRotation[device];
-            if (rotation > 0.0 || rotation < 0.0)
-                cState.rotateLSCoordinates(rotation);
-
-            double rotationRS = /*tempDoubleArray[device] =*/ settings.RSRotation[device];
-            if (rotationRS > 0.0 || rotationRS < 0.0)
-                cState.rotateRSCoordinates(rotationRS);
-
-            StickAntiSnapbackInfo lsAntiSnapback = settings.LSAntiSnapbackInfo[device];
-            StickAntiSnapbackInfo rsAntiSnapback = settings.RSAntiSnapbackInfo[device];
-
-            if (lsAntiSnapback.enabled)
-            {
-                _stickConditioner.AntiSnapback(stickValueHistory[device][0], lsAntiSnapback.delta, lsAntiSnapback.timeout, DateTimeOffset.Now.ToUnixTimeMilliseconds(), ref cState.LX, ref cState.LY);
-            }
-
-            if (rsAntiSnapback.enabled)
-            {
-                _stickConditioner.AntiSnapback(stickValueHistory[device][1], rsAntiSnapback.delta, rsAntiSnapback.timeout, DateTimeOffset.Now.ToUnixTimeMilliseconds(), ref cState.RX, ref cState.RY);
-            }
-
-            StickDeadZoneInfo lsMod = settings.LSModInfo[device];
-            StickDeadZoneInfo rsMod = settings.RSModInfo[device];
-
-            if (lsMod.fuzz > 0)
-            {
-                _stickConditioner.Fuzz(lastStickAxisValues[device], 0, lsMod.fuzz, ref cState.LX, ref cState.LY);
-            }
-
-            if (rsMod.fuzz > 0)
-            {
-                _stickConditioner.Fuzz(lastStickAxisValues[device], 1, rsMod.fuzz, ref cState.RX, ref cState.RY);
-            }
-
-            cState.CopyTo(dState);
-            //DS4State dState = new DS4State(cState);
-
-            // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズは、共通の処理（IStickInputConditioner）が行う。状態（履歴、前回の値）は StickMotionState が持つ。
-            cState = _stickConditioner.ApplyDrift(device, dState, settings);
-
-
-            // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（Radial・Axial、Radial の外側の出力）は、共通の処理（IStickDeadZoneProcessor）が行う。
-            // 以前は、ここに、左右でほぼ同じコードが 2 回あった（約 470 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests が守る
-            _stickDeadZone.Process(lsMod, cState.LX, cState.LY, ref dState.LX, ref dState.LY, ref dState.OutputLSOuter);
-            _stickDeadZone.Process(rsMod, cState.RX, cState.RY, ref dState.RX, ref dState.RY, ref dState.OutputRSOuter);
-
-            /*byte l2Deadzone = getL2Deadzone(device);
-            int l2AntiDeadzone = getL2AntiDeadzone(device);
-            int l2Maxzone = getL2Maxzone(device);
-            */
-
-            // Phase9 9-A(1) (d): トリガーのデッドゾーン（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）は、L2／R2 とも共通の処理（ITriggerDeadZoneProcessor）が行う。
-            // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests と Phase7bTriggerDeadZoneRoundingTests が守る
-            TriggerDeadZoneZInfo l2ModInfo = settings.L2ModInfo[device];
-            if (l2ModInfo.deadZone > 0 || l2ModInfo.antiDeadZone > 0 || l2ModInfo.maxZone != 100 || l2ModInfo.maxOutput != 100.0)
-                _triggerDeadZone.Process(l2ModInfo, cState.L2, ref dState.L2);
-
-            /*byte r2Deadzone = getR2Deadzone(device);
-            int r2AntiDeadzone = getR2AntiDeadzone(device);
-            int r2Maxzone = getR2Maxzone(device);
-            */
-            TriggerDeadZoneZInfo r2ModInfo = settings.R2ModInfo[device];
-            if (r2ModInfo.deadZone > 0 || r2ModInfo.antiDeadZone > 0 || r2ModInfo.maxZone != 100 || r2ModInfo.maxOutput != 100.0)
-                _triggerDeadZone.Process(r2ModInfo, cState.R2, ref dState.R2);
-
-            // Only apply deprecated Sensitivity modifier for Radial DZ
-            if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-            {
-                double lsSens = settings.LSSens[device];
-                if (lsSens != 1.0)
-                {
-                    dState.LX = (byte)NumericUtil.Clamp(0, lsSens * (dState.LX - 128.0) + 128.0, 255);
-                    dState.LY = (byte)NumericUtil.Clamp(0, lsSens * (dState.LY - 128.0) + 128.0, 255);
-                }
-            }
-
-            // Only apply deprecated Sensitivity modifier for Radial DZ
-            if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-            {
-                double rsSens = settings.RSSens[device];
-                if (rsSens != 1.0)
-                {
-                    dState.RX = (byte)NumericUtil.Clamp(0, rsSens * (dState.RX - 128.0) + 128.0, 255);
-                    dState.RY = (byte)NumericUtil.Clamp(0, rsSens * (dState.RY - 128.0) + 128.0, 255);
-                }
-            }
-
-            double l2Sens = settings.L2Sens[device];
-            if (l2Sens != 1.0)
-                dState.L2 = (byte)NumericUtil.Clamp(0, l2Sens * dState.L2, 255);
-
-            double r2Sens = settings.R2Sens[device];
-            if (r2Sens != 1.0)
-                dState.R2 = (byte)NumericUtil.Clamp(0, r2Sens * dState.R2, 255);
-
-            SquareStickInfo squStk = settings.SquStickInfo[device];
-            // Phase9 9-A(1) (c): スクエアスティックと出力カーブは IOutputCurveProcessor へ切り出した（左右・L2／R2 は同じ処理）。条件の判定は、ここに残す
-            if (squStk.lsMode && (dState.LX != 128 || dState.LY != 128))
-                _outputCurve.ProcessSquareStick(squStk.lsRoundness, ref dState.LX, ref dState.LY);
-
-            int lsOutCurveMode = settings.GetLsOutCurveMode(device);
-            if (lsOutCurveMode > 0 && (dState.LX != 128 || dState.LY != 128))
-                _outputCurve.ProcessStickCurve(lsOutCurveMode, lsMod.deadzoneType, settings.LsOutBezierCurveObj[device], ref dState.LX, ref dState.LY);
-
-            if (squStk.rsMode && (dState.RX != 128 || dState.RY != 128))
-                _outputCurve.ProcessSquareStick(squStk.rsRoundness, ref dState.RX, ref dState.RY);
-
-            int rsOutCurveMode = settings.GetRsOutCurveMode(device);
-            if (rsOutCurveMode > 0 && (dState.RX != 128 || dState.RY != 128))
-                _outputCurve.ProcessStickCurve(rsOutCurveMode, rsMod.deadzoneType, settings.RsOutBezierCurveObj[device], ref dState.RX, ref dState.RY);
-
-            int l2OutCurveMode = settings.GetL2OutCurveMode(device);
-            if (l2OutCurveMode > 0 && dState.L2 != 0)
-                _outputCurve.ProcessTriggerCurve(l2OutCurveMode, settings.L2OutBezierCurveObj[device], ref dState.L2);
-
-            int r2OutCurveMode = settings.GetR2OutCurveMode(device);
-            if (r2OutCurveMode > 0 && dState.R2 != 0)
-                _outputCurve.ProcessTriggerCurve(r2OutCurveMode, settings.R2OutBezierCurveObj[device], ref dState.R2);
-
-
-            bool saControls = settings.GyroOutputMode[device] == GyroOutMode.Controls;
-            if (saControls && dState.Motion.outputGyroControls)
-            {
-                int SXD = (int)(128d * settings.SXDeadzone[device]);
-                int SZD = (int)(128d * settings.SZDeadzone[device]);
-                double SXMax = settings.SXMaxzone[device];
-                double SZMax = settings.SZMaxzone[device];
-                double sxAntiDead = settings.SXAntiDeadzone[device];
-                double szAntiDead = settings.SZAntiDeadzone[device];
-                double sxsens = settings.SXSens[device];
-                double szsens = settings.SZSens[device];
-
-                int gyroX = cState.Motion.accelX, gyroZ = cState.Motion.accelZ;
-
-                // Phase9 9-A(2)-A: ジャイロの補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）は、X／Z とも共通の処理（IGyroControlsProcessor）が行う。
-                // 以前は、ここに、X と Z で同じコードが 2 回あった（約 150 行）。値は Phase9A2GyroControlsGoldenTests が守る。出力カーブを適用する条件は、X と Z で違うため、ここに残す
-                dState.Motion.outputAccelX = _gyroControls.Correct(gyroX, SXD, SXMax, sxAntiDead, sxsens);
-                dState.Motion.outputAccelZ = _gyroControls.Correct(gyroZ, SZD, SZMax, szAntiDead, szsens);
-
-                int sxOutCurveMode = settings.GetSxOutCurveMode(device);
-                if (sxOutCurveMode > 0)
-                    dState.Motion.outputAccelX = _gyroControls.ApplyCurve(sxOutCurveMode, settings.SxOutBezierCurveObj[device], dState.Motion.outputAccelX);
-
-                int szOutCurveMode = settings.GetSzOutCurveMode(device);
-                if (szOutCurveMode > 0 && dState.Motion.outputAccelZ != 0)
-                    dState.Motion.outputAccelZ = _gyroControls.ApplyCurve(szOutCurveMode, settings.SzOutBezierCurveObj[device], dState.Motion.outputAccelZ);
-            }
-
-            return dState;
+            return _curveStage.Apply(device, cState, dState, settings);
         }
 
         /// <summary>
@@ -810,52 +644,15 @@ namespace DS4Windows.Processing
             deviceRuntime[device].UntriggerIndex = snapshot.Index;
         }
 
-        // Handle full device disconnect cleanup: release synthetic keys, clear queues and tasks,
-        // and remove any per-device runtime state. This consolidates the shutdown-like cleanup
-        // performed when the application exits so it can be used on disconnect as well.
+        // 切断（とプロファイルの適用）のときの後始末。合成キーの解放・マクロのキュー・ボタンのコントローラーは IDeviceInputCleanup が、
+        // デバイスごとの実行時の状態（deviceRuntime）の作り直しは、この型が持つ状態のため、ここで行う
         public void HandleDeviceDisconnect(int device)
         {
             try
             {
-                // Do not call back into ActionManager.ClearDeviceState here (ActionManager
-                // now calls this method). Perform per-mapping cleanup locally below.
+                _inputCleanup.Clear(device);
 
-                // Clear per-device synthetic state: send release for any remaining synthetic key presses
-                try
-                {
-                    if (deviceState != null && device >= 0 && device < deviceState.Length)
-                    {
-                        var ds = deviceState[device];
-                        if (ds?.keyPresses != null)
-                        {
-                            var keys = new List<ushort>(ds.keyPresses.Keys);
-                            foreach (var k in keys)
-                            {
-                                try
-                                {
-                                    uint native = 0;
-                                    ds.nativeKeyAlias?.TryGetValue(k, out native);
-                                    _syntheticDispatcher.SendRelease(device, k, native, false, null);
-                                }
-                                catch { }
-                            }
-                            try { ds.keyPresses.Clear(); } catch { }
-                            try { ds.nativeKeyAlias.Clear(); } catch { }
-                        }
-                    }
-                }
-                catch { }
-
-                // Clear macro task queue entries for device
-                // Phase9 9-C: キューのクリアは IMacroPlayback.ClearDevice へ移した（同じ処理）
-                try { _macroPlayback.ClearDevice(device); }
-                catch { }
-
-                // Reset any simple runtime structures that could hold device state
                 try { if (deviceRuntime != null && device >= 0 && device < deviceRuntime.Length) deviceRuntime[device] = new DeviceRuntimeState(); } catch { }
-
-                // Finally ensure any per-device controllers are removed (defensive)
-                try { _keyButtonControllers.ClearForDevice(device); } catch { }
             }
             catch { }
         }

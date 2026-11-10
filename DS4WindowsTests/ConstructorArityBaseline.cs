@@ -10,7 +10,7 @@
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.Processing.Mapping|25",
+            "DS4Windows.Processing.Mapping|20",
             "DS4Windows.UI.MainWindow|21",
             "DS4Windows.UI.Services.EditorWindowFactory|18",
             "DS4Windows.UI.Services.MainWindowFactory|20",

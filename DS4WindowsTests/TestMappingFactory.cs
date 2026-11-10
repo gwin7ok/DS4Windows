@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing;
@@ -43,27 +43,27 @@ namespace DS4WindowsTests
             // Phase8-Step4 W4: 抑制の集合を持つエンジンも、独立の instance にする（他のテストと状態を共有しない。ホストの登録簿は使わない）
             var triggerEngine = engine ?? new TriggerDispatchEngine(new ActionBindingRegistry(),
                 TestHost.GetService<IManagedActionManager>(), kbm);
+            // 独立の合成状態・マクロの再生に対して後始末する、独立の instance（他のテストと状態を共有しない）
+            var dispatcher = syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings);
+            var playback = new MacroPlayback(TestLightbar.State, new MacroStepExecutor(TestLightbar.State, kbm, profileSettings, macroState, TestHost.GetService<IDeviceStateAccessor>(), new RecordingWindowSystem()), macroState, TestActions.Manager, System.TimeProvider.System);
+            var cleanup = new DeviceInputCleanup(synthetic, dispatcher, playback, TestHost.GetService<IKeyButtonControllerRegistry>());
+            var stickMotionState = stickMotion ?? new StickMotionState();
             return new Mapping(
                 synthetic,
                 macroState,
-                stickMotion ?? new StickMotionState(),
+                stickMotionState,
                 profileSettings,
                 kbm,
-                TestHost.GetService<IKeyButtonControllerRegistry>(),
-                // 独立の合成状態（synthetic）に対して送出する、独立の送出役（出力先の既定はホストのアダプター）
-                syntheticDispatcher ?? new SyntheticDispatcherService(synthetic, TestHost.GetService<OutputKBMHandlerAdapter>(), profileSettings),
-                // Phase9 9-C: マクロの再生は、この Mapping と同じ macroState・kbm・設定を使う独立の instance にする（他のテストと状態を共有しない）
-                new MacroPlayback(TestLightbar.State, new MacroStepExecutor(TestLightbar.State, kbm, profileSettings, macroState, TestHost.GetService<IDeviceStateAccessor>(), new RecordingWindowSystem()), macroState, TestActions.Manager, System.TimeProvider.System),
+                cleanup,
+                playback,
                 triggerEngine,
-                TestHost.GetService<IStickDeadZoneProcessor>(),   // Phase9 9-A(1) (b): 状態のない処理なので、ホストの共有のものを使う
-                TestHost.GetService<IOutputCurveProcessor>(),   // Phase9 9-A(1) (c)
-                TestHost.GetService<ITriggerDeadZoneProcessor>(),   // Phase9 9-A(1) (d)
-                TestHost.GetService<IGyroControlsProcessor>(),   // Phase9 9-A(2)-A
-                TestHost.GetService<IStickInputConditioner>(),   // Phase9 9-A(2)-B
                 TestHost.GetService<IFlickStickProcessor>(),   // Phase9 9-A(2)-C
                 new ButtonMouseMovementCalculator(),   // Phase9 9-B: 加速の状態を持つため、独立の instance にする（他のテストと状態を共有しない）
                 new MouseMotionQuantizer(),   // Phase9 9-B: 端数を持つため、独立の instance にする
                 TestHost.GetService<IGyroMouseStickBlender>(),   // Phase9 9-B: 状態なし
+                new CurveAndDeadzoneStage(TestHost.GetService<IStickDeadZoneProcessor>(), TestHost.GetService<IOutputCurveProcessor>(),
+                    TestHost.GetService<ITriggerDeadZoneProcessor>(), TestHost.GetService<IGyroControlsProcessor>(),
+                    TestHost.GetService<IStickInputConditioner>(), stickMotionState),   // 状態は stickMotion を共有する
                 TestHost.GetService<IControlActivityReader>(),   // Phase9 9-B: 状態なし
                 new SyntheticInputCommitter(synthetic, kbm),
                 new TwoStageTriggerProcessor(),

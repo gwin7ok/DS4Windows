@@ -683,3 +683,11 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **`SpecialActionOutputFactory`（13／14）**: すでに 15 以下のため束ねない（計画の約 9 は、必須でない目標）。窓口の束ねが必要になったら、このクラスの内側で行う。
 - **テスト**: 組み立てる 19 か所は、窓口を直接渡す旧い形のまま使えるよう、テスト用の `TestActionBindingBuilders.Create`（出力の部品を作って、ビルダーへ渡す）に置き換えた。挙動は不変。
 - Debug ALL: 警告 0・エラー 0・Actions 3,381 件合格。
+
+### Step 16-10（2026-11-10。完了。見込み約 16 に対し 20。段 2 は見送り）
+- **C2＝A の 3 段のうち、段 1 と段 3 を実施**:
+  - 段 1: 入力の補正（回転・ドリフト・デッドゾーン・出力カーブ・ジャイロ）を `ICurveAndDeadzoneStage`／`CurveAndDeadzoneStage` へ切り出した。本体は旧 `Mapping.SetCurveAndDeadzone` の移動で、式・順序は不変。5 つの処理役と `StickMotionState` の履歴は、この段が受ける。`Mapping.SetCurveAndDeadzone` は薄い委譲のまま残す（呼び出し元の互換）。
+  - 段 3: 切断時の後始末（合成キーの解放、マクロのキュー消去、ボタンのコントローラーの解除）を `IDeviceInputCleanup`／`DeviceInputCleanup` へ切り出した。`deviceRuntime` の作り直しは `Mapping` が持つ状態のため `Mapping` に残る。
+- **段 2（マウス・スティックの変換）は見送り**: 共有の `_sampleState`／`_sampleFields` と絡み、切り出すと状態の受け渡しが増えて、読みにくくなるため。
+- **結果**: `Mapping` のコンストラクターは 25 → 20 引数（計画の約 16 には届かず、`ConstructorArityBaseline` に 20 で凍結）。`Func<IMapping>` は増減なし。
+- **テスト**: `TestMappingFactory` と `MappingInstanceGuardTests` を新しい引数に合わせた。値は既存の特性化テスト（デッドゾーン・出力カーブ・ジャイロ・切断）が守る。Actions 3,383 件合格（警告 0）。
