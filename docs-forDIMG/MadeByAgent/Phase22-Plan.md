@@ -53,3 +53,6 @@
 
 - 2026-11-10: 計画書を作成。コードは未着手。
 - 2026-11-11: 隠し方の決定（3・4・5・5a）を確定した。HID の子は利用者が GUI で隠す／USB の親は Other タブのチェックボックスで切り替える。対象は DS4Windows が認識した Xbox 系すべて（他社製の互換機を含む）。補足: 標準の Xbox コントローラーは親（XInput）だけを出力する。実機テストに使った機器は、子（DirectInput）も出力する特殊な機器なので、「子も GUI で隠す」案内は、チェックボックスの説明に書かない。
+- 2026-11-11: 22-0 の途中。
+  - **仮想パッドの区別（決定 6）の既存の判定**: `DevicePathProbe.CheckIfVirtualDevice(devicePath)`（`Core/Platform`）。HID のパスから、親を `HTREE\ROOT\0` の直前までたどり、(a) ハードウェア ID が `ROOT\HIDGAMEMAP`（reWASD）／`ROOT\VHUSB3HC`（VirtualHere）、または (b) 根の直下が `ROOT\SYSTEM*`／`ROOT\USB*` なら仮想とみなす。VID/PID ではなく親の系統で見る。ViGEm の仮想パッドは根の直下の機器なので、同じ判定で除外できる見込み（Xbox では実機で確認する）。`DS4Devices.IsRealDS4` が呼んでいる。`CheckVirtualInfo`／`CheckVirtualDelegate` は、判定の結果を運ぶ型（現状は判定本体の経路に使われていない）。
+  - **デコード**: 公開資料（FreeBSD `xb360gp.c`、Linux `xpad.c`、xboxdevwiki の XID）は、有線の生のレポート（20 バイト）の形で、Windows の `xinputhid` が見せる 15 バイトの HID レポートとは別物。そのため、実機の記録から決める。記録用のスクリプト: `docs-forDIMG/MadeByAgent/tools/Record-XboxHidReport.ps1`（操作ごとに 1.5 秒のレポートを集め、無操作との差分バイトを出す）。実機の記録待ち。
