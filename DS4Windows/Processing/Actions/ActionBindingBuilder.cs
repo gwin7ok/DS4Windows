@@ -24,31 +24,17 @@ namespace DS4Windows.Processing.Actions
         private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: 定義 → 束縛の組み立て（Controls タブ側と同じ部品）
         private readonly IControlBindingBuilder _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
 
-        /// <param name="outputFactory">
-        /// 種別ごとの出力と方針の作り方。省略時（テスト）は、同じ引数（窓口）から、この場で作る。DI からは、登録済みの共有のものが渡る。
-        /// 窓口の引数（<paramref name="actionRepository"/> 以降）は、<paramref name="outputFactory"/> を省略したときだけ使う。
-        /// </param>
+        /// <param name="outputFactory">種別ごとの出力と方針の作り方（Controls タブの束縛を作る側と共有する）。窓口（ポート）の束ねは、この部品が持つ。</param>
+        /// <param name="controlBuilder">Controls タブの束縛。省略時（テスト）は連結しない。</param>
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
-            IManagedActionManager manager, IMacroPlayer macroPlayer, IProcessLauncher processLauncher,
-            IProfileSwitcher profileSwitcher, ISpecialActionRepository actionRepository = null,
-            IMapping mapping = null, IGyroCalibrationPort gyroCalibration = null,
-            IControllerDisconnectPort disconnectPort = null, IBatteryCheckPort batteryCheckPort = null,
-            IMacroStringPlayer macroStringPlayer = null,
-            IControlBindingBuilder controlBuilder = null, ISpecialActionOutputFactory outputFactory = null,
-            IControlExtrasPort extrasPort = null, IKeyButtonControllerRegistry controllers = null)
+            ISpecialActionOutputFactory outputFactory, IControlBindingBuilder controlBuilder = null,
+            IControlExtrasPort extrasPort = null)
         {
             _controlBuilder = controlBuilder;
             _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            if (manager == null) throw new ArgumentNullException(nameof(manager));
-            if (macroPlayer == null) throw new ArgumentNullException(nameof(macroPlayer));
-            if (processLauncher == null) throw new ArgumentNullException(nameof(processLauncher));
-            if (profileSwitcher == null) throw new ArgumentNullException(nameof(profileSwitcher));
-
-            _outputFactory = outputFactory ?? new SpecialActionOutputFactory(profileSettings, manager, controllers, macroPlayer, processLauncher,
-                profileSwitcher, actionRepository, mapping, gyroCalibration, disconnectPort, batteryCheckPort,
-                macroStringPlayer);
-            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, extrasPort);   // Phase10-Step6 I4c: 束縛の組み立ては、共通の部品が行う
+            _outputFactory = outputFactory ?? throw new ArgumentNullException(nameof(outputFactory));
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, extrasPort);   // 束縛の組み立ては、共通の部品が行う
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)

@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         }
 
         private static ActionBindingBuilder NewBuilder(IControllerDisconnectPort port)
-            => new ActionBindingBuilder(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
+            => TestActionBindingBuilders.Create(TestHost.GetService<IProfileActionProvider>(), TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(),
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
                 TestHost.GetService<IMapping>(), null, port, controllers: TestActions.Controllers);

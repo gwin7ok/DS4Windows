@@ -95,7 +95,7 @@ namespace DS4WindowsTests
                 Sa = new SpecialAction("ex", "R1", "Program", "a.exe") { outputExtras = extras };
                 var provider = new FakeProvider();
                 provider.Add(Sa);
-                var builder = new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+                var builder = TestActionBindingBuilders.Create(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), extrasPort: Port, controllers: TestActions.Controllers);
                 var registry = new ActionBindingRegistry();
                 registry.Replace(Device, builder.Build(Device));

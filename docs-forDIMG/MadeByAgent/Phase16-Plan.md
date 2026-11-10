@@ -676,3 +676,10 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **残した分岐**: `OutContType` を比べる残りの箇所（UI の表示の切り替え、`InputReportProcessor` の DS4 の判定、`MacroParser`、プリセットの既定値など）は、種類ごとの生成・戻り・対応表ではなく、その場の振る舞いの条件であり、カートリッジに寄せると契約が肥大するため見送った。種類を足すときの追加箇所は、カートリッジ、`OutContTypeInfo`、DI の登録、画面の選択肢。
 - **テスト**: `OutContTypeInfoTests`（旧 switch との同値）、`OutputDeviceCartridgeTests`（登録、生成と絞り込み、バージョンでの機能の差）。`OutputSlotManager` のバージョンの取得口に関する旧テスト 1 件を削除し、生成のテストはカートリッジ経由（`TestOutputCartridges`）に替えた。
 - Debug ALL: 警告 0・エラー 0・Actions 3,381 件合格。実機確認（出力の種類の切り替え、プリセット）は最後の 1 回に回す。
+
+### Step 16-9（2026-11-10。完了。手段 B。C4 の A［3 束ね］ではなく、中継の除去で目標を超えた）
+- **所見**: `ActionBindingBuilder` が受けていた 10 個の窓口（`IManagedActionManager`、`IMacroPlayer`、`IProcessLauncher`、`IProfileSwitcher`、`ISpecialActionRepository`、`IMapping`、`IGyroCalibrationPort`、`IControllerDisconnectPort`、`IBatteryCheckPort`、`IMacroStringPlayer`、`IKeyButtonControllerRegistry`）は、DI では常に渡される `ISpecialActionOutputFactory` があるため、使われるのは「出力の部品が省略されたとき（テスト）にこの場で作る」経路だけだった。束ね（3 契約）を足すより、この中継を除くほうが、契約を増やさずに引数が減る。
+- **変更**: `ActionBindingBuilder` のコンストラクターを `(IProfileActionProvider, IProfileSettingsService, ISpecialActionOutputFactory, IControlBindingBuilder = null, IControlExtrasPort = null)` の 5 引数にした（16 → 5）。出力の部品を省略したときの組み立てはなくなり、必須にした。`ConstructorArityBaseline` から削除。
+- **`SpecialActionOutputFactory`（13／14）**: すでに 15 以下のため束ねない（計画の約 9 は、必須でない目標）。窓口の束ねが必要になったら、このクラスの内側で行う。
+- **テスト**: 組み立てる 19 か所は、窓口を直接渡す旧い形のまま使えるよう、テスト用の `TestActionBindingBuilders.Create`（出力の部品を作って、ビルダーへ渡す）に置き換えた。挙動は不変。
+- Debug ALL: 警告 0・エラー 0・Actions 3,381 件合格。

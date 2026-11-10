@@ -177,7 +177,7 @@ namespace DS4WindowsTests
             SpecialAction plain = new SpecialAction("q", "Circle", "Program", "b.exe");
             provider.Add(withExtras);
             provider.Add(plain);
-            var builder = new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+            var builder = TestActionBindingBuilders.Create(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), extrasPort: new SilentPort(), controllers: TestActions.Controllers);
 
             IReadOnlyList<IActionBinding> result = builder.Build(0);

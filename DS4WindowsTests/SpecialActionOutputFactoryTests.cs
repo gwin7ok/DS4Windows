@@ -101,7 +101,7 @@ namespace DS4WindowsTests
             {
                 var provider = new FakeProvider();
                 provider.Add(sa);
-                var builder = new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+                var builder = TestActionBindingBuilders.Create(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), outputFactory: factory, controllers: TestActions.Controllers);
 
                 TriggerBinding binding = Assert.IsType<TriggerBinding>(Assert.Single(builder.Build(0)));
@@ -138,9 +138,9 @@ namespace DS4WindowsTests
             var provider = new FakeProvider();
             provider.Add(sa);
             ActionBindingBuilder builder = factory != null
-                ? new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+                ? TestActionBindingBuilders.Create(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), outputFactory: factory, controllers: TestActions.Controllers)
-                : new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+                : TestActionBindingBuilders.Create(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                     new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), gyroCalibration: new RecordingGyroCalibrationPort(),
                     disconnectPort: new RecordingControllerDisconnectPort(), batteryCheckPort: new RecordingBatteryCheckPort(),
                     macroStringPlayer: new NoMacroStringPlayer(), controllers: TestActions.Controllers);

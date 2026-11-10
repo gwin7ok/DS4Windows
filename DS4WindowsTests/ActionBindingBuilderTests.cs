@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         }
 
         private static ActionBindingBuilder NewBuilder(FakeProvider provider)
-            => new ActionBindingBuilder(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
+            => TestActionBindingBuilders.Create(provider, TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), controllers: TestActions.Controllers);
 
         private static SpecialAction Button(string name, string triggers, string mode, double delay = 0)
@@ -210,12 +210,12 @@ namespace DS4WindowsTests
             var p = new FakeProvider();
             var s = TestHost.GetService<IProfileSettingsService>();
             var m = TestHost.GetService<IManagedActionManager>();
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(null, s, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, null, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, null, new NoLauncher(), new NoSwitcher(), controllers: TestActions.Controllers));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), null, new NoSwitcher()));
-            Assert.Throws<ArgumentNullException>(() => new ActionBindingBuilder(p, s, m, new NoMacroPlayer(), new NoLauncher(), null));
+            Assert.Throws<ArgumentNullException>(() => TestActionBindingBuilders.Create(null, s, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestActionBindingBuilders.Create(p, null, m, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestActionBindingBuilders.Create(p, s, null, new NoMacroPlayer(), new NoLauncher(), new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestActionBindingBuilders.Create(p, s, m, null, new NoLauncher(), new NoSwitcher(), controllers: TestActions.Controllers));
+            Assert.Throws<ArgumentNullException>(() => TestActionBindingBuilders.Create(p, s, m, new NoMacroPlayer(), null, new NoSwitcher()));
+            Assert.Throws<ArgumentNullException>(() => TestActionBindingBuilders.Create(p, s, m, new NoMacroPlayer(), new NoLauncher(), null));
         }
     }
 }
