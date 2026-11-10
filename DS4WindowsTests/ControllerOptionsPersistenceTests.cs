@@ -75,5 +75,44 @@ namespace DS4WindowsTests
             Assert.NotNull(parent.SelectSingleNode(DualSenseControllerOptions.XML_ELEMENT_NAME));
             Assert.Null(parent.SelectSingleNode(DS4ControllerOptions.XML_ELEMENT_NAME));
         }
+
+        [Fact]
+        public void DualSense_WritesTheLegacyXmlShape_AndRoundTripsTheModes()
+        {
+            XmlNode parent = NewParent(out XmlDocument doc);
+            var options = new DualSenseControllerOptions(InputDeviceType.DualSense)
+            {
+                LedMode = DualSenseControllerOptions.LEDBarMode.BatteryPercentage,
+                MuteLedMode = DualSenseControllerOptions.MuteLEDMode.Pulse,
+            };
+            options.PersistSettings(doc, parent);
+
+            // 従来の保存形式（宣言・名前空間なし、要素の順は LEDBarMode、MuteLEDMode）
+            Assert.Equal("<DualSenseSupportSettings><LEDBarMode>BatteryPercentage</LEDBarMode><MuteLEDMode>Pulse</MuteLEDMode></DualSenseSupportSettings>",
+                parent.FirstChild.OuterXml);
+
+            var loaded = new DualSenseControllerOptions(InputDeviceType.DualSense);
+            loaded.LoadSettings(doc, parent);
+            Assert.Equal(DualSenseControllerOptions.LEDBarMode.BatteryPercentage, loaded.LedMode);
+            Assert.Equal(DualSenseControllerOptions.MuteLEDMode.Pulse, loaded.MuteLedMode);
+        }
+
+        [Fact]
+        public void SwitchPro_WritesTheLegacyXmlShape()
+        {
+            XmlNode parent = NewParent(out XmlDocument doc);
+            new SwitchProControllerOptions(InputDeviceType.SwitchPro) { EnableHomeLED = false }.PersistSettings(doc, parent);
+            Assert.Equal("<SwitchProSupportSettings><EnableHomeLED>False</EnableHomeLED></SwitchProSupportSettings>", parent.FirstChild.OuterXml);
+        }
+
+        [Fact]
+        public void DualSense_WithAnUnknownEnumName_AppliesNothing()
+        {
+            XmlNode parent = NewParent(out XmlDocument doc);
+            parent.InnerXml = "<DualSenseSupportSettings><LEDBarMode>On</LEDBarMode><MuteLEDMode>Bogus</MuteLEDMode></DualSenseSupportSettings>";
+            var options = new DualSenseControllerOptions(InputDeviceType.DualSense);
+            options.LoadSettings(doc, parent);
+            Assert.Equal(DualSenseControllerOptions.LEDBarMode.MultipleControllers, options.LedMode);
+        }
     }
 }

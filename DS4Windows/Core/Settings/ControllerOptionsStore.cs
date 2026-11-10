@@ -41,68 +41,57 @@ namespace DS4Windows.Core.Settings
             this.deviceType = deviceType;
         }
 
-        public virtual void PersistSettings(XmlDocument xmlDoc, XmlNode node)
-        {
-        }
+        /// <summary>XML の節の名前。null のとき（保存する設定がない機種）は、保存も読み込みも何もしない。</summary>
+        protected virtual string SectionName => null;
 
-        public virtual void LoadSettings(XmlDocument xmlDoc, XmlNode node)
-        {
-        }
+        /// <summary>保存する設定項目の定義（保存する順）。</summary>
+        protected virtual IReadOnlyList<ControllerSetting> Schema => Array.Empty<ControllerSetting>();
 
-        // 機種ごとの設定の DTO を XML の断片にして、親の節の下へ置く（同名の節があれば置き換える）。保存形式は機種に関わらず同じ
-        protected static void PersistDto<TDto>(XmlDocument xmlDoc, XmlNode node, string elementName, TDto dto) where TDto : class
+        // 定義の並びを、親の節の下へ 1 つの節として置く（同名の節があれば置き換える）。保存形式は機種に関わらず同じ
+        public void PersistSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            string xmlText;
-            XmlSerializer serializer = new XmlSerializer(typeof(TDto));
+            string name = SectionName;
+            if (name == null)
+                return;
 
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
+            XmlElement section = xmlDoc.CreateElement(name);
+            foreach (ControllerSetting setting in Schema)
             {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = false,
-                        OmitXmlDeclaration = true, // 宣言なしの部分的な XML
-                    });
-
-                // xmlns:xsi と xmlns:xsd は出力しない
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                xmlText = strWriter.ToString();
+                XmlElement item = xmlDoc.CreateElement(setting.XmlName);
+                item.InnerText = setting.Read();
+                section.AppendChild(item);
             }
 
-            XmlNode fragment = xmlDoc.CreateDocumentFragment();
-            fragment.InnerXml = xmlText;
-
-            XmlNode existing = node.SelectSingleNode(elementName);
+            XmlNode existing = node.SelectSingleNode(name);
             if (existing != null)
             {
                 node.RemoveChild(existing);
             }
 
-            node.AppendChild(fragment);
+            node.AppendChild(section);
         }
 
-        // 親の節の下の該当の節を DTO として読み、適用する。節がない場合と、XML が DTO の形でない場合（InvalidOperationException）は、何もしない
-        protected static void LoadDto<TDto>(XmlNode node, string elementName, Action<TDto> apply) where TDto : class
+        // 親の節の下の該当の節を読み、適用する。節がない場合と、列挙型の値が解析できない場合は、何も適用しない（解析を終えてからまとめて適用する）
+        public void LoadSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(TDto));
-            XmlNode baseNode = node.SelectSingleNode(elementName);
-            if (baseNode == null)
+            string name = SectionName;
+            XmlNode section = name == null ? null : node.SelectSingleNode(name);
+            if (section == null)
                 return;
 
-            try
+            var applies = new List<Action>();
+            foreach (ControllerSetting setting in Schema)
             {
-                using var stringReader = new StringReader(baseNode.OuterXml);
-                using var xmlReader = XmlReader.Create(stringReader);
-                TDto dto = serializer.Deserialize(xmlReader) as TDto;
-                apply(dto);
+                Action apply = setting.Parse(section.SelectSingleNode(setting.XmlName)?.InnerText);
+                if (apply == null)
+                    return;
+
+                applies.Add(apply);
             }
-            catch (InvalidOperationException)
+
+            foreach (Action apply in applies)
             {
+                apply();
             }
         }
     }

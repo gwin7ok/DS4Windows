@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using DS4Windows.Core.Model;
-using DS4Windows.Core.Persistence.Dto;
 
 namespace DS4Windows.Core.Settings
 {
@@ -51,16 +50,13 @@ namespace DS4Windows.Core.Settings
         {
         }
 
-        public override void PersistSettings(XmlDocument xmlDoc, XmlNode node)
-        {
-            DS4ControllerOptsDTO dto = new DS4ControllerOptsDTO();
-            dto.MapFrom(this);
-            PersistDto(xmlDoc, node, XML_ELEMENT_NAME, dto);
-        }
+        protected override string SectionName => XML_ELEMENT_NAME;
 
-        public override void LoadSettings(XmlDocument xmlDoc, XmlNode node)
+        private IReadOnlyList<ControllerSetting> schema;
+
+        protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {
-            LoadDto<DS4ControllerOptsDTO>(node, XML_ELEMENT_NAME, dto => dto.MapTo(this));
-        }
+            ControllerSetting.Bool("Copycat", this, o => o.IsCopyCat, (o, v) => o.IsCopyCat = v),
+        };
     }
 }
