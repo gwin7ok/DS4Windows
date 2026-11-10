@@ -81,10 +81,10 @@ namespace DS4Windows.Core.Persistence
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.00 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
             store.outputDevType[device] = OutContType.DS4;
@@ -189,10 +189,10 @@ namespace DS4Windows.Core.Persistence
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.00 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
             store.gyroSlots[device].OutputMode = GyroOutMode.MouseJoystick;
@@ -274,10 +274,10 @@ namespace DS4Windows.Core.Persistence
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.00 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
             store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
@@ -410,10 +410,10 @@ namespace DS4Windows.Core.Persistence
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.20 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.20 * 255);
 
             // Flag to unplug virtual controller
@@ -516,10 +516,10 @@ namespace DS4Windows.Core.Persistence
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.20 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.20 * 255);
 
             store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;

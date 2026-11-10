@@ -1,59 +1,78 @@
 ﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
 
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// 1 つのスロットのトリガー（L2・R2）の設定の窓口。<see cref="IProfileSettingsService"/> のスロット番号の配列を、
-    /// スロット番号を渡さずに読み書きできるようにする（値は設定サービスの配列にあり、保存・読込の経路は変わらない）。
+    /// 1 つのスロットのTriggersの設定の持ち主（値そのもの）。<see cref="BackingStore"/> がスロットごとに 1 つ持ち、
+    /// 保存・読み込み（プロファイルの XML）、実行時の入力処理、設定画面の ViewModel が、同じ 1 つのオブジェクトを読み書きする。
     /// </summary>
     public class TriggerSlotSettings
     {
-        private readonly IProfileSettingsService _settings;
-        private readonly int _slot;
-
-        public TriggerSlotSettings(IProfileSettingsService settings, int slot)
+        public TriggerSlotSettings(int slot)
         {
-            _settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
-            _slot = slot;
+            Slot = slot;
+            L2Mod = new TriggerDeadZoneZInfo();
+            R2Mod = new TriggerDeadZoneZInfo();
+            L2Output = new TriggerOutputSettings();
+            R2Output = new TriggerOutputSettings();
+            L2Bezier = new BezierCurve();
+            R2Bezier = new BezierCurve();
+            L2Sens = BackingStore.DEFAULT_ANALOG_SENS;
+            R2Sens = BackingStore.DEFAULT_ANALOG_SENS;
         }
 
-        /// <summary>L2 のデッドゾーンなど（中身を直接書き換える）。</summary>
-        public TriggerDeadZoneZInfo L2Mod => _settings.L2ModInfo[_slot];
+        public int Slot { get; }
 
-        public TriggerDeadZoneZInfo R2Mod => _settings.R2ModInfo[_slot];
+        public TriggerDeadZoneZInfo L2Mod { get; }
+        public TriggerDeadZoneZInfo R2Mod { get; }
+        public double L2Sens { get; set; }
+        public double R2Sens { get; set; }
+        public TriggerOutputSettings L2Output { get; }
+        public TriggerOutputSettings R2Output { get; }
+        public BezierCurve L2Bezier { get; }
+        public BezierCurve R2Bezier { get; }
 
-        public double L2Sens
-        {
-            get => _settings.L2Sens[_slot];
-            set => _settings.L2Sens[_slot] = value;
-        }
+        // 出力カーブのモード。6（利用者の定義したカーブ）を選んだときだけ、ベジェ曲線の参照表を初期化する
+        // （1〜5 は、入力処理の側の計算式で扱う）
+        private int _l2CurveMode;
+        private int _r2CurveMode;
 
-        public double R2Sens
-        {
-            get => _settings.R2Sens[_slot];
-            set => _settings.R2Sens[_slot] = value;
-        }
-
-        /// <summary>二段トリガー・トリガー効果など（中身を直接書き換える）。</summary>
-        public TriggerOutputSettings L2Output => _settings.L2OutputSettings[_slot];
-
-        public TriggerOutputSettings R2Output => _settings.R2OutputSettings[_slot];
-
-        public BezierCurve L2Bezier => _settings.L2OutBezierCurveObj[_slot];
-
-        public BezierCurve R2Bezier => _settings.R2OutBezierCurveObj[_slot];
-
+        /// <summary>L2 の出力カーブのモード。画面から変えたときの値の設定（診断ログつき）。</summary>
         public int L2CurveMode
         {
-            get => _settings.GetL2OutCurveMode(_slot);
-            set => _settings.SetL2OutCurveMode(_slot, value);
+            get => _l2CurveMode;
+            set
+            {
+                ApplyL2CurveMode(value);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetL2OutCurveMode: Slot {Slot} = {value}");
+            }
         }
 
+        /// <summary>R2 の出力カーブのモード。画面から変えたときの値の設定（診断ログつき）。</summary>
         public int R2CurveMode
         {
-            get => _settings.GetR2OutCurveMode(_slot);
-            set => _settings.SetR2OutCurveMode(_slot, value);
+            get => _r2CurveMode;
+            set
+            {
+                ApplyR2CurveMode(value);
+                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetR2OutCurveMode: Slot {Slot} = {value}");
+            }
+        }
+
+        /// <summary>プロファイルの読み込み・初期化など、画面の操作ではない経路の設定（ログなし）。</summary>
+        public void ApplyL2CurveMode(int value)
+        {
+            if (value == 6) L2Bezier.InitBezierCurve(L2Bezier.CustomDefinition, BezierCurve.AxisType.L2R2);
+            _l2CurveMode = value;
+        }
+
+        public void ApplyR2CurveMode(int value)
+        {
+            if (value == 6) R2Bezier.InitBezierCurve(R2Bezier.CustomDefinition, BezierCurve.AxisType.L2R2);
+            _r2CurveMode = value;
         }
     }
 }

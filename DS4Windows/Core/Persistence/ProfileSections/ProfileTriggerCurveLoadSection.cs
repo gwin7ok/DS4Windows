@@ -95,17 +95,17 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             //
             // End of DualSense specific profile load
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveCustom"); store.l2OutBezierCurveObj[device].CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveCustom"); store.triggerSlots[device].L2Bezier.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveMode"); store.setL2OutCurveMode(device, axisOutputCurveId(Item.InnerText)); }
-            catch { store.setL2OutCurveMode(device, 0); missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveMode"); store.triggerSlots[device].ApplyL2CurveMode(axisOutputCurveId(Item.InnerText)); }
+            catch { store.triggerSlots[device].ApplyL2CurveMode(0); missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2TwoStageMode");
                 if (Enum.TryParse(Item?.InnerText, out TwoStageTriggerMode tempMode))
                 {
-                    store.l2OutputSettings[device].TwoStageMode = tempMode;
+                    store.triggerSlots[device].L2Output.TwoStageMode = tempMode;
                 }
             }
             catch { }
@@ -116,7 +116,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2HipFireTime");
                 if (int.TryParse(Item?.InnerText, out int temp))
                 {
-                    store.l2OutputSettings[device].hipFireMS = Math.Clamp(temp, 0, 5000);
+                    store.triggerSlots[device].L2Output.hipFireMS = Math.Clamp(temp, 0, 5000);
                 }
             }
             catch { }
@@ -126,22 +126,22 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2TriggerEffect");
                 if (Enum.TryParse(Item?.InnerText, out DS4Windows.Core.Model.TriggerEffects tempMode))
                 {
-                    store.l2OutputSettings[device].TriggerEffect = tempMode;
+                    store.triggerSlots[device].L2Output.TriggerEffect = tempMode;
                 }
             }
             catch { }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveCustom"); store.r2OutBezierCurveObj[device].CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveCustom"); store.triggerSlots[device].R2Bezier.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveMode"); store.setR2OutCurveMode(device, axisOutputCurveId(Item.InnerText)); }
-            catch { store.setR2OutCurveMode(device, 0); missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveMode"); store.triggerSlots[device].ApplyR2CurveMode(axisOutputCurveId(Item.InnerText)); }
+            catch { store.triggerSlots[device].ApplyR2CurveMode(0); missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2TwoStageMode");
                 if (Enum.TryParse(Item?.InnerText, out TwoStageTriggerMode tempMode))
                 {
-                    store.r2OutputSettings[device].TwoStageMode = tempMode;
+                    store.triggerSlots[device].R2Output.TwoStageMode = tempMode;
                 }
             }
             catch { }
@@ -151,7 +151,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2HipFireTime");
                 if (int.TryParse(Item?.InnerText, out int temp))
                 {
-                    store.r2OutputSettings[device].hipFireMS = Math.Clamp(temp, 0, 5000);
+                    store.triggerSlots[device].R2Output.hipFireMS = Math.Clamp(temp, 0, 5000);
                 }
             }
             catch { }
@@ -161,7 +161,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2TriggerEffect");
                 if (Enum.TryParse(Item?.InnerText, out DS4Windows.Core.Model.TriggerEffects tempMode))
                 {
-                    store.r2OutputSettings[device].TriggerEffect = tempMode;
+                    store.triggerSlots[device].R2Output.TriggerEffect = tempMode;
                 }
             }
             catch { }

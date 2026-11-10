@@ -33,8 +33,8 @@ namespace DS4WindowsTests
         {
             using var scope = new ControlsKeyTestScope();
             TriggerOutputSettings settings = isL2
-                ? scope.Scope.Settings.L2OutputSettings[scope.Device]
-                : scope.Scope.Settings.R2OutputSettings[scope.Device];
+                ? scope.Scope.Settings.ForSlot(scope.Device).Triggers.L2Output
+                : scope.Scope.Settings.ForSlot(scope.Device).Triggers.R2Output;
             TwoStageTriggerMode savedMode = settings.twoStageMode;
             int savedHipFire = settings.hipFireMS;
             try

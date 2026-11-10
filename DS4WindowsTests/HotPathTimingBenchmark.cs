@@ -81,18 +81,18 @@ namespace DS4WindowsTests
             var curves = new BackingStore(new EnvironmentService());
             curves.setLsOutCurveMode(Slot, 2);
             curves.setRsOutCurveMode(Slot, 2);
-            curves.setL2OutCurveMode(Slot, 2);
-            curves.setR2OutCurveMode(Slot, 2);
+            curves.triggerSlots[Slot].ApplyL2CurveMode(2);
+            curves.triggerSlots[Slot].ApplyR2CurveMode(2);
             MeasureNanosecondsPerCall("出力カーブあり（LS／RS／L2／R2）", curves);
 
             // 3. トリガーのデッドゾーン・アンチデッドゾーン・最大ゾーン
             var triggers = new BackingStore(new EnvironmentService());
-            triggers.l2ModInfo[Slot].deadZone = 20;
-            triggers.l2ModInfo[Slot].antiDeadZone = 10;
-            triggers.l2ModInfo[Slot].maxZone = 90;
-            triggers.r2ModInfo[Slot].deadZone = 20;
-            triggers.r2ModInfo[Slot].antiDeadZone = 10;
-            triggers.r2ModInfo[Slot].maxZone = 90;
+            triggers.triggerSlots[Slot].L2Mod.deadZone = 20;
+            triggers.triggerSlots[Slot].L2Mod.antiDeadZone = 10;
+            triggers.triggerSlots[Slot].L2Mod.maxZone = 90;
+            triggers.triggerSlots[Slot].R2Mod.deadZone = 20;
+            triggers.triggerSlots[Slot].R2Mod.antiDeadZone = 10;
+            triggers.triggerSlots[Slot].R2Mod.maxZone = 90;
             MeasureNanosecondsPerCall("トリガーの補正（L2／R2）", triggers);
 
             // 4. ジャイロ → コントロール＋ジャイロの出力カーブ

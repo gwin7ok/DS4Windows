@@ -241,7 +241,7 @@ namespace DS4WindowsTests
                 var zone = z;
                 yield return new Scenario($"trigger {zone.Name}", s =>
                 {
-                    foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] })
+                    foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod })
                     {
                         info.deadZone = zone.Dead;
                         info.antiDeadZone = zone.Anti;
@@ -253,13 +253,13 @@ namespace DS4WindowsTests
 
             yield return new Scenario("trigger sensitivity-1.4", s =>
             {
-                s.l2Sens[Slot] = 1.4;
-                s.r2Sens[Slot] = 1.4;
+                s.triggerSlots[Slot].L2Sens = 1.4;
+                s.triggerSlots[Slot].R2Sens = 1.4;
             });
             yield return new Scenario("trigger sensitivity-0.7", s =>
             {
-                s.l2Sens[Slot] = 0.7;
-                s.r2Sens[Slot] = 0.7;
+                s.triggerSlots[Slot].L2Sens = 0.7;
+                s.triggerSlots[Slot].R2Sens = 0.7;
             });
 
             for (int mode = 1; mode <= 5; mode++)
@@ -267,53 +267,53 @@ namespace DS4WindowsTests
                 int curve = mode;
                 yield return new Scenario($"trigger out-curve-{curve}", s =>
                 {
-                    s.setL2OutCurveMode(Slot, curve);
-                    s.setR2OutCurveMode(Slot, curve);
+                    s.triggerSlots[Slot].ApplyL2CurveMode(curve);
+                    s.triggerSlots[Slot].ApplyR2CurveMode(curve);
                 });
             }
 
             yield return new Scenario("trigger dz20-anti10-max90 out-curve-2", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] })
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod })
                 {
                     info.deadZone = 20;
                     info.antiDeadZone = 10;
                     info.maxZone = 90;
                 }
 
-                s.setL2OutCurveMode(Slot, 2);
-                s.setR2OutCurveMode(Slot, 2);
+                s.triggerSlots[Slot].ApplyL2CurveMode(2);
+                s.triggerSlots[Slot].ApplyR2CurveMode(2);
             });
 
             // (d) の前に追加: 単独の設定（アンチデッドゾーンのみ、小さい最大ゾーンのみ、最大出力のみ）と、L2 と R2 で設定が違う場面（取り違えの検出）
             yield return new Scenario("trigger anti15-only", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.antiDeadZone = 15;
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod }) info.antiDeadZone = 15;
             });
             yield return new Scenario("trigger max50-only", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.maxZone = 50;
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod }) info.maxZone = 50;
             });
             yield return new Scenario("trigger out40-only", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.maxOutput = 40.0;
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod }) info.maxOutput = 40.0;
             });
             yield return new Scenario("trigger dz10-max30 (L2 and R2 differ)", s =>
             {
-                s.l2ModInfo[Slot].deadZone = 10;
-                s.l2ModInfo[Slot].maxZone = 30;
-                s.r2ModInfo[Slot].deadZone = 60;
-                s.r2ModInfo[Slot].antiDeadZone = 20;
-                s.r2ModInfo[Slot].maxOutput = 70.0;
+                s.triggerSlots[Slot].L2Mod.deadZone = 10;
+                s.triggerSlots[Slot].L2Mod.maxZone = 30;
+                s.triggerSlots[Slot].R2Mod.deadZone = 60;
+                s.triggerSlots[Slot].R2Mod.antiDeadZone = 20;
+                s.triggerSlots[Slot].R2Mod.maxOutput = 70.0;
             });
 
             // (c) の前に追加: ベジェ曲線（モード 6）
             yield return new Scenario("trigger out-curve-6-bezier", s =>
             {
-                s.l2OutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.L2R2, true);
-                s.r2OutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.L2R2, true);
-                s.setL2OutCurveMode(Slot, 6);
-                s.setR2OutCurveMode(Slot, 6);
+                s.triggerSlots[Slot].L2Bezier.InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.L2R2, true);
+                s.triggerSlots[Slot].R2Bezier.InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.L2R2, true);
+                s.triggerSlots[Slot].ApplyL2CurveMode(6);
+                s.triggerSlots[Slot].ApplyR2CurveMode(6);
             });
         }
 

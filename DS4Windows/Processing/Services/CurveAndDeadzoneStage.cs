@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Services
 
             // Phase9 9-A(1) (d): トリガーのデッドゾーン（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）は、L2／R2 とも共通の処理（ITriggerDeadZoneProcessor）が行う。
             // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests と Phase7bTriggerDeadZoneRoundingTests が守る
-            TriggerDeadZoneZInfo l2ModInfo = settings.L2ModInfo[device];
+            TriggerDeadZoneZInfo l2ModInfo = settings.ForSlot(device).Triggers.L2Mod;
             if (l2ModInfo.deadZone > 0 || l2ModInfo.antiDeadZone > 0 || l2ModInfo.maxZone != 100 || l2ModInfo.maxOutput != 100.0)
                 _triggerDeadZone.Process(l2ModInfo, cState.L2, ref dState.L2);
 
@@ -99,7 +99,7 @@ namespace DS4Windows.Processing.Services
             int r2AntiDeadzone = getR2AntiDeadzone(device);
             int r2Maxzone = getR2Maxzone(device);
             */
-            TriggerDeadZoneZInfo r2ModInfo = settings.R2ModInfo[device];
+            TriggerDeadZoneZInfo r2ModInfo = settings.ForSlot(device).Triggers.R2Mod;
             if (r2ModInfo.deadZone > 0 || r2ModInfo.antiDeadZone > 0 || r2ModInfo.maxZone != 100 || r2ModInfo.maxOutput != 100.0)
                 _triggerDeadZone.Process(r2ModInfo, cState.R2, ref dState.R2);
 
@@ -125,11 +125,11 @@ namespace DS4Windows.Processing.Services
                 }
             }
 
-            double l2Sens = settings.L2Sens[device];
+            double l2Sens = settings.ForSlot(device).Triggers.L2Sens;
             if (l2Sens != 1.0)
                 dState.L2 = (byte)NumericUtil.Clamp(0, l2Sens * dState.L2, 255);
 
-            double r2Sens = settings.R2Sens[device];
+            double r2Sens = settings.ForSlot(device).Triggers.R2Sens;
             if (r2Sens != 1.0)
                 dState.R2 = (byte)NumericUtil.Clamp(0, r2Sens * dState.R2, 255);
 
@@ -149,13 +149,13 @@ namespace DS4Windows.Processing.Services
             if (rsOutCurveMode > 0 && (dState.RX != 128 || dState.RY != 128))
                 _outputCurve.ProcessStickCurve(rsOutCurveMode, rsMod.deadzoneType, settings.RsOutBezierCurveObj[device], ref dState.RX, ref dState.RY);
 
-            int l2OutCurveMode = settings.GetL2OutCurveMode(device);
+            int l2OutCurveMode = settings.ForSlot(device).Triggers.L2CurveMode;
             if (l2OutCurveMode > 0 && dState.L2 != 0)
-                _outputCurve.ProcessTriggerCurve(l2OutCurveMode, settings.L2OutBezierCurveObj[device], ref dState.L2);
+                _outputCurve.ProcessTriggerCurve(l2OutCurveMode, settings.ForSlot(device).Triggers.L2Bezier, ref dState.L2);
 
-            int r2OutCurveMode = settings.GetR2OutCurveMode(device);
+            int r2OutCurveMode = settings.ForSlot(device).Triggers.R2CurveMode;
             if (r2OutCurveMode > 0 && dState.R2 != 0)
-                _outputCurve.ProcessTriggerCurve(r2OutCurveMode, settings.R2OutBezierCurveObj[device], ref dState.R2);
+                _outputCurve.ProcessTriggerCurve(r2OutCurveMode, settings.ForSlot(device).Triggers.R2Bezier, ref dState.R2);
 
 
             bool saControls = settings.ForSlot(device).Gyro.OutputMode == GyroOutMode.Controls;

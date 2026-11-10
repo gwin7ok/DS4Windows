@@ -40,48 +40,48 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LeftTriggerMiddle"); byte.TryParse(Item.InnerText, out store.l2ModInfo[device].deadZone); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LeftTriggerMiddle"); byte.TryParse(Item.InnerText, out store.triggerSlots[device].L2Mod.deadZone); }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RightTriggerMiddle"); byte.TryParse(Item.InnerText, out store.r2ModInfo[device].deadZone); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RightTriggerMiddle"); byte.TryParse(Item.InnerText, out store.triggerSlots[device].R2Mod.deadZone); }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2AntiDeadZone"); int.TryParse(Item.InnerText, out store.l2ModInfo[device].antiDeadZone); }
-            catch { store.l2ModInfo[device].antiDeadZone = 0; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2AntiDeadZone"); int.TryParse(Item.InnerText, out store.triggerSlots[device].L2Mod.antiDeadZone); }
+            catch { store.triggerSlots[device].L2Mod.antiDeadZone = 0; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2AntiDeadZone"); int.TryParse(Item.InnerText, out store.r2ModInfo[device].antiDeadZone); }
-            catch { store.r2ModInfo[device].antiDeadZone = 0; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2AntiDeadZone"); int.TryParse(Item.InnerText, out store.triggerSlots[device].R2Mod.antiDeadZone); }
+            catch { store.triggerSlots[device].R2Mod.antiDeadZone = 0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2MaxZone"); int temp = 100;
                 int.TryParse(Item.InnerText, out temp);
-                store.l2ModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
+                store.triggerSlots[device].L2Mod.maxZone = Math.Min(Math.Max(temp, 0), 100);
             }
-            catch { store.l2ModInfo[device].maxZone = 100; missingSetting = true; }
+            catch { store.triggerSlots[device].L2Mod.maxZone = 100; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2MaxZone"); int temp = 100;
                 int.TryParse(Item.InnerText, out temp);
-                store.r2ModInfo[device].maxZone = Math.Min(Math.Max(temp, 0), 100);
+                store.triggerSlots[device].R2Mod.maxZone = Math.Min(Math.Max(temp, 0), 100);
             }
-            catch { store.r2ModInfo[device].maxZone = 100; missingSetting = true; }
+            catch { store.triggerSlots[device].R2Mod.maxZone = 100; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2MaxOutput"); double temp = 100.0;
                 temp = double.Parse(Item.InnerText);
-                store.l2ModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                store.triggerSlots[device].L2Mod.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
             }
-            catch { store.l2ModInfo[device].maxOutput = 100.0; missingSetting = true; }
+            catch { store.triggerSlots[device].L2Mod.maxOutput = 100.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2MaxOutput"); double temp = 100.0;
                 temp = double.Parse(Item.InnerText);
-                store.r2ModInfo[device].maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                store.triggerSlots[device].R2Mod.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
             }
-            catch { store.r2ModInfo[device].maxOutput = 100.0; missingSetting = true; }
+            catch { store.triggerSlots[device].R2Mod.maxOutput = 100.0; missingSetting = true; }
 
             try
             {

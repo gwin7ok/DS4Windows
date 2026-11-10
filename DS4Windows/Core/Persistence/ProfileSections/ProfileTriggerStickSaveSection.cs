@@ -41,17 +41,17 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlNode xmlTapSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "tapSensitivity", null); xmlTapSensitivity.InnerText = store.touchpadSlots[device].TapSensitivity.ToString(); rootElement.AppendChild(xmlTapSensitivity);
             XmlNode xmlDouble = m_Xdoc.CreateNode(XmlNodeType.Element, "doubleTap", null); xmlDouble.InnerText = store.touchpadSlots[device].DoubleTap.ToString(); rootElement.AppendChild(xmlDouble);
             XmlNode xmlScrollSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "scrollSensitivity", null); xmlScrollSensitivity.InnerText = store.touchpadSlots[device].ScrollSensitivity.ToString(); rootElement.AppendChild(xmlScrollSensitivity);
-            XmlNode xmlLeftTriggerMiddle = m_Xdoc.CreateNode(XmlNodeType.Element, "LeftTriggerMiddle", null); xmlLeftTriggerMiddle.InnerText = store.l2ModInfo[device].deadZone.ToString(); rootElement.AppendChild(xmlLeftTriggerMiddle);
-            XmlNode xmlRightTriggerMiddle = m_Xdoc.CreateNode(XmlNodeType.Element, "RightTriggerMiddle", null); xmlRightTriggerMiddle.InnerText = store.r2ModInfo[device].deadZone.ToString(); rootElement.AppendChild(xmlRightTriggerMiddle);
+            XmlNode xmlLeftTriggerMiddle = m_Xdoc.CreateNode(XmlNodeType.Element, "LeftTriggerMiddle", null); xmlLeftTriggerMiddle.InnerText = store.triggerSlots[device].L2Mod.deadZone.ToString(); rootElement.AppendChild(xmlLeftTriggerMiddle);
+            XmlNode xmlRightTriggerMiddle = m_Xdoc.CreateNode(XmlNodeType.Element, "RightTriggerMiddle", null); xmlRightTriggerMiddle.InnerText = store.triggerSlots[device].R2Mod.deadZone.ToString(); rootElement.AppendChild(xmlRightTriggerMiddle);
             XmlNode xmlTouchpadInvert = m_Xdoc.CreateNode(XmlNodeType.Element, "TouchpadInvert", null); xmlTouchpadInvert.InnerText = store.touchpadSlots[device].Invert.ToString(); rootElement.AppendChild(xmlTouchpadInvert);
             XmlNode xmlTouchClickPasthru = m_Xdoc.CreateNode(XmlNodeType.Element, "TouchpadClickPassthru", null); xmlTouchClickPasthru.InnerText = store.touchpadSlots[device].ClickPassthru.ToString(); rootElement.AppendChild(xmlTouchClickPasthru);
 
-            XmlNode xmlL2AD = m_Xdoc.CreateNode(XmlNodeType.Element, "L2AntiDeadZone", null); xmlL2AD.InnerText = store.l2ModInfo[device].antiDeadZone.ToString(); rootElement.AppendChild(xmlL2AD);
-            XmlNode xmlR2AD = m_Xdoc.CreateNode(XmlNodeType.Element, "R2AntiDeadZone", null); xmlR2AD.InnerText = store.r2ModInfo[device].antiDeadZone.ToString(); rootElement.AppendChild(xmlR2AD);
-            XmlNode xmlL2Maxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "L2MaxZone", null); xmlL2Maxzone.InnerText = store.l2ModInfo[device].maxZone.ToString(); rootElement.AppendChild(xmlL2Maxzone);
-            XmlNode xmlR2Maxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "R2MaxZone", null); xmlR2Maxzone.InnerText = store.r2ModInfo[device].maxZone.ToString(); rootElement.AppendChild(xmlR2Maxzone);
-            XmlNode xmlL2MaxOutput = m_Xdoc.CreateNode(XmlNodeType.Element, "L2MaxOutput", null); xmlL2MaxOutput.InnerText = store.l2ModInfo[device].maxOutput.ToString(); rootElement.AppendChild(xmlL2MaxOutput);
-            XmlNode xmlR2MaxOutput = m_Xdoc.CreateNode(XmlNodeType.Element, "R2MaxOutput", null); xmlR2MaxOutput.InnerText = store.r2ModInfo[device].maxOutput.ToString(); rootElement.AppendChild(xmlR2MaxOutput);
+            XmlNode xmlL2AD = m_Xdoc.CreateNode(XmlNodeType.Element, "L2AntiDeadZone", null); xmlL2AD.InnerText = store.triggerSlots[device].L2Mod.antiDeadZone.ToString(); rootElement.AppendChild(xmlL2AD);
+            XmlNode xmlR2AD = m_Xdoc.CreateNode(XmlNodeType.Element, "R2AntiDeadZone", null); xmlR2AD.InnerText = store.triggerSlots[device].R2Mod.antiDeadZone.ToString(); rootElement.AppendChild(xmlR2AD);
+            XmlNode xmlL2Maxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "L2MaxZone", null); xmlL2Maxzone.InnerText = store.triggerSlots[device].L2Mod.maxZone.ToString(); rootElement.AppendChild(xmlL2Maxzone);
+            XmlNode xmlR2Maxzone = m_Xdoc.CreateNode(XmlNodeType.Element, "R2MaxZone", null); xmlR2Maxzone.InnerText = store.triggerSlots[device].R2Mod.maxZone.ToString(); rootElement.AppendChild(xmlR2Maxzone);
+            XmlNode xmlL2MaxOutput = m_Xdoc.CreateNode(XmlNodeType.Element, "L2MaxOutput", null); xmlL2MaxOutput.InnerText = store.triggerSlots[device].L2Mod.maxOutput.ToString(); rootElement.AppendChild(xmlL2MaxOutput);
+            XmlNode xmlR2MaxOutput = m_Xdoc.CreateNode(XmlNodeType.Element, "R2MaxOutput", null); xmlR2MaxOutput.InnerText = store.triggerSlots[device].R2Mod.maxOutput.ToString(); rootElement.AppendChild(xmlR2MaxOutput);
             XmlNode xmlButtonMouseSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "ButtonMouseSensitivity", null); xmlButtonMouseSensitivity.InnerText = store.buttonMouseInfos[device].buttonSensitivity.ToString(); rootElement.AppendChild(xmlButtonMouseSensitivity);
             XmlNode xmlButtonMouseOffset = m_Xdoc.CreateNode(XmlNodeType.Element, "ButtonMouseOffset", null); xmlButtonMouseOffset.InnerText = store.buttonMouseInfos[device].mouseVelocityOffset.ToString(); rootElement.AppendChild(xmlButtonMouseOffset);
             XmlNode xmlRainbow = m_Xdoc.CreateNode(XmlNodeType.Element, "Rainbow", null); xmlRainbow.InnerText = lightInfo.rainbow.ToString(); rootElement.AppendChild(xmlRainbow);
@@ -132,7 +132,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlNode xmlSZAntiDeadzone = m_Xdoc.CreateNode(XmlNodeType.Element, "SZAntiDeadZone", null); xmlSZAntiDeadzone.InnerText = Convert.ToInt32(store.SZAntiDeadzone[device] * 100.0).ToString(); rootElement.AppendChild(xmlSZAntiDeadzone);
 
             XmlNode xmlSens = m_Xdoc.CreateNode(XmlNodeType.Element, "Sensitivity", null);
-            xmlSens.InnerText = $"{store.LSSens[device]}|{store.RSSens[device]}|{store.l2Sens[device]}|{store.r2Sens[device]}|{store.SXSens[device]}|{store.SZSens[device]}";
+            xmlSens.InnerText = $"{store.LSSens[device]}|{store.RSSens[device]}|{store.triggerSlots[device].L2Sens}|{store.triggerSlots[device].R2Sens}|{store.SXSens[device]}|{store.SZSens[device]}";
             rootElement.AppendChild(xmlSens);
 
             XmlNode xmlChargingType = m_Xdoc.CreateNode(XmlNodeType.Element, "ChargingType", null); xmlChargingType.InnerText = lightInfo.chargingType.ToString(); rootElement.AppendChild(xmlChargingType);

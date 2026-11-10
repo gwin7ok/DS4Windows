@@ -113,22 +113,24 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     store.RSSens[device] = 1;
                 }
 
-                if (double.TryParse(s[2], out store.l2Sens[device]))
+                bool parsedOk1 = double.TryParse(s[2], out double parsedValue1); store.triggerSlots[device].L2Sens = parsedValue1;
+                if (parsedOk1)
                 {
-                    store.l2Sens[device] = Math.Clamp(store.l2Sens[device], 0.1, 10.0);
+                    store.triggerSlots[device].L2Sens = Math.Clamp(store.triggerSlots[device].L2Sens, 0.1, 10.0);
                 }
                 else
                 {
-                    store.l2Sens[device] = 1;
+                    store.triggerSlots[device].L2Sens = 1;
                 }
 
-                if (double.TryParse(s[3], out store.r2Sens[device]))
+                bool parsedOk2 = double.TryParse(s[3], out double parsedValue2); store.triggerSlots[device].R2Sens = parsedValue2;
+                if (parsedOk2)
                 {
-                    store.r2Sens[device] = Math.Clamp(store.r2Sens[device], 0.1, 10.0);
+                    store.triggerSlots[device].R2Sens = Math.Clamp(store.triggerSlots[device].R2Sens, 0.1, 10.0);
                 }
                 else
                 {
-                    store.r2Sens[device] = 1;
+                    store.triggerSlots[device].R2Sens = 1;
                 }
 
                 if (double.TryParse(s[4], out store.SXSens[device]))

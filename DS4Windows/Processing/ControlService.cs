@@ -172,12 +172,12 @@ namespace DS4Windows.Processing
                 PreviousState[i] = new ControllerState();
 
                 int tempDev = i;
-                _profileSettings.L2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
+                _profileSettings.ForSlot(i).Triggers.L2Output.TwoStageModeChanged += (sender, e) =>
                 {
                     _stickMotion.L2TwoStageMappingData[tempDev].Reset();
                 };
 
-                _profileSettings.R2OutputSettings[i].TwoStageModeChanged += (sender, e) =>
+                _profileSettings.ForSlot(i).Triggers.R2Output.TwoStageModeChanged += (sender, e) =>
                 {
                     _stickMotion.R2TwoStageMappingData[tempDev].Reset();
                 };

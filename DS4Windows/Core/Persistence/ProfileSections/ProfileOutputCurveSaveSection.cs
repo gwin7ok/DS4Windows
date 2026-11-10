@@ -83,20 +83,20 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlNode xmlRsMinAngleThreshold = m_Xdoc.CreateNode(XmlNodeType.Element, "MinAngleThreshold", null); xmlRsMinAngleThreshold.InnerText = store.rsOutputSettings[device].outputSettings.flickSettings.minAngleThreshold.ToString(); xmlRsFlickStickGroupElement.AppendChild(xmlRsMinAngleThreshold);
             rootElement.AppendChild(xmlRsOutputSettingsElement);
 
-            XmlNode xmlL2OutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "L2OutputCurveMode", null); xmlL2OutputCurveMode.InnerText = axisOutputCurveString(store.getL2OutCurveMode(device)); rootElement.AppendChild(xmlL2OutputCurveMode);
-            XmlNode xmlL2OutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "L2OutputCurveCustom", null); xmlL2OutputCurveCustom.InnerText = store.l2OutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlL2OutputCurveCustom);
+            XmlNode xmlL2OutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "L2OutputCurveMode", null); xmlL2OutputCurveMode.InnerText = axisOutputCurveString(store.triggerSlots[device].L2CurveMode); rootElement.AppendChild(xmlL2OutputCurveMode);
+            XmlNode xmlL2OutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "L2OutputCurveCustom", null); xmlL2OutputCurveCustom.InnerText = store.triggerSlots[device].L2Bezier.ToString(); rootElement.AppendChild(xmlL2OutputCurveCustom);
 
-            XmlNode xmlL2TwoStageMode = m_Xdoc.CreateNode(XmlNodeType.Element, "L2TwoStageMode", null); xmlL2TwoStageMode.InnerText = store.l2OutputSettings[device].twoStageMode.ToString(); rootElement.AppendChild(xmlL2TwoStageMode);
-            XmlNode xmlR2TwoStageMode = m_Xdoc.CreateNode(XmlNodeType.Element, "R2TwoStageMode", null); xmlR2TwoStageMode.InnerText = store.r2OutputSettings[device].twoStageMode.ToString(); rootElement.AppendChild(xmlR2TwoStageMode);
+            XmlNode xmlL2TwoStageMode = m_Xdoc.CreateNode(XmlNodeType.Element, "L2TwoStageMode", null); xmlL2TwoStageMode.InnerText = store.triggerSlots[device].L2Output.twoStageMode.ToString(); rootElement.AppendChild(xmlL2TwoStageMode);
+            XmlNode xmlR2TwoStageMode = m_Xdoc.CreateNode(XmlNodeType.Element, "R2TwoStageMode", null); xmlR2TwoStageMode.InnerText = store.triggerSlots[device].R2Output.twoStageMode.ToString(); rootElement.AppendChild(xmlR2TwoStageMode);
 
-            XmlNode xmlL2HipFireTime = m_Xdoc.CreateNode(XmlNodeType.Element, "L2HipFireTime", null); xmlL2HipFireTime.InnerText = store.l2OutputSettings[device].hipFireMS.ToString(); rootElement.AppendChild(xmlL2HipFireTime);
-            XmlNode xmlR2HipFireTime = m_Xdoc.CreateNode(XmlNodeType.Element, "R2HipFireTime", null); xmlR2HipFireTime.InnerText = store.r2OutputSettings[device].hipFireMS.ToString(); rootElement.AppendChild(xmlR2HipFireTime);
+            XmlNode xmlL2HipFireTime = m_Xdoc.CreateNode(XmlNodeType.Element, "L2HipFireTime", null); xmlL2HipFireTime.InnerText = store.triggerSlots[device].L2Output.hipFireMS.ToString(); rootElement.AppendChild(xmlL2HipFireTime);
+            XmlNode xmlR2HipFireTime = m_Xdoc.CreateNode(XmlNodeType.Element, "R2HipFireTime", null); xmlR2HipFireTime.InnerText = store.triggerSlots[device].R2Output.hipFireMS.ToString(); rootElement.AppendChild(xmlR2HipFireTime);
 
-            XmlNode xmlL2TriggerEffect = m_Xdoc.CreateNode(XmlNodeType.Element, "L2TriggerEffect", null); xmlL2TriggerEffect.InnerText = store.l2OutputSettings[device].triggerEffect.ToString(); rootElement.AppendChild(xmlL2TriggerEffect);
-            XmlNode xmlR2TriggerEffect = m_Xdoc.CreateNode(XmlNodeType.Element, "R2TriggerEffect", null); xmlR2TriggerEffect.InnerText = store.r2OutputSettings[device].triggerEffect.ToString(); rootElement.AppendChild(xmlR2TriggerEffect);
+            XmlNode xmlL2TriggerEffect = m_Xdoc.CreateNode(XmlNodeType.Element, "L2TriggerEffect", null); xmlL2TriggerEffect.InnerText = store.triggerSlots[device].L2Output.triggerEffect.ToString(); rootElement.AppendChild(xmlL2TriggerEffect);
+            XmlNode xmlR2TriggerEffect = m_Xdoc.CreateNode(XmlNodeType.Element, "R2TriggerEffect", null); xmlR2TriggerEffect.InnerText = store.triggerSlots[device].R2Output.triggerEffect.ToString(); rootElement.AppendChild(xmlR2TriggerEffect);
 
-            XmlNode xmlR2OutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "R2OutputCurveMode", null); xmlR2OutputCurveMode.InnerText = axisOutputCurveString(store.getR2OutCurveMode(device)); rootElement.AppendChild(xmlR2OutputCurveMode);
-            XmlNode xmlR2OutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "R2OutputCurveCustom", null); xmlR2OutputCurveCustom.InnerText = store.r2OutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlR2OutputCurveCustom);
+            XmlNode xmlR2OutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "R2OutputCurveMode", null); xmlR2OutputCurveMode.InnerText = axisOutputCurveString(store.triggerSlots[device].R2CurveMode); rootElement.AppendChild(xmlR2OutputCurveMode);
+            XmlNode xmlR2OutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "R2OutputCurveCustom", null); xmlR2OutputCurveCustom.InnerText = store.triggerSlots[device].R2Bezier.ToString(); rootElement.AppendChild(xmlR2OutputCurveCustom);
 
             XmlNode xmlSXOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "SXOutputCurveMode", null); xmlSXOutputCurveMode.InnerText = axisOutputCurveString(store.getSXOutCurveMode(device)); rootElement.AppendChild(xmlSXOutputCurveMode);
             XmlNode xmlSXOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "SXOutputCurveCustom", null); xmlSXOutputCurveCustom.InnerText = store.sxOutBezierCurveObj[device].ToString(); rootElement.AppendChild(xmlSXOutputCurveCustom);

@@ -44,8 +44,8 @@ namespace DS4WindowsTests
             // 曲線のモード（private なフィールド。設定用のメソッドでだけ変えられる）
             store.setLsOutCurveMode(slot, 3);
             store.setRsOutCurveMode(slot, 2);
-            store.setL2OutCurveMode(slot, 4);
-            store.setR2OutCurveMode(slot, 5);
+            store.triggerSlots[slot].ApplyL2CurveMode(4);
+            store.triggerSlots[slot].ApplyR2CurveMode(5);
             store.setSXOutCurveMode(slot, 1);
             store.setSZOutCurveMode(slot, 6);
 

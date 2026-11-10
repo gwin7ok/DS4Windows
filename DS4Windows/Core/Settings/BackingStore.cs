@@ -196,22 +196,6 @@ namespace DS4Windows.Core.Settings
             new StickDeadZoneInfo(), new StickDeadZoneInfo(),
             new StickDeadZoneInfo(),
         };
-        public TriggerDeadZoneZInfo[] l2ModInfo = new TriggerDeadZoneZInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(),
-        };
-        public TriggerDeadZoneZInfo[] r2ModInfo = new TriggerDeadZoneZInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(),
-        };
 
         // Rotation angle expressed in radians
         public double[] LSRotation = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -232,14 +216,6 @@ namespace DS4Windows.Core.Settings
           DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE };
         public double[] SXAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
             SZAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-        public double[] l2Sens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public double[] r2Sens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
         public double[] LSSens = new double[ControllerLimits.TestProfileItemCount]
         { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
           DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
@@ -302,19 +278,7 @@ namespace DS4Windows.Core.Settings
             new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
         };
 
-        public TriggerOutputSettings[] l2OutputSettings = new TriggerOutputSettings[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-        };
 
-        public TriggerOutputSettings[] r2OutputSettings = new TriggerOutputSettings[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-        };
 
 
         // Start of DualSense specific profile options
@@ -349,8 +313,6 @@ namespace DS4Windows.Core.Settings
 
         public BezierCurve[] lsOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
         public BezierCurve[] rsOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] l2OutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] r2OutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
         public BezierCurve[] sxOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
         public BezierCurve[] szOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
 
@@ -368,22 +330,6 @@ namespace DS4Windows.Core.Settings
         {
             if (value >= 1) setOutBezierCurveObjArrayItem(rsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
             _rsOutCurveMode[index] = value;
-        }
-
-        private int[] _l2OutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getL2OutCurveMode(int index) { return _l2OutCurveMode[index]; }
-        public void setL2OutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(l2OutBezierCurveObj, index, value, BezierCurve.AxisType.L2R2);
-            _l2OutCurveMode[index] = value;
-        }
-
-        private int[] _r2OutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getR2OutCurveMode(int index) { return _r2OutCurveMode[index]; }
-        public void setR2OutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(r2OutBezierCurveObj, index, value, BezierCurve.AxisType.L2R2);
-            _r2OutCurveMode[index] = value;
         }
 
         private int[] _sxOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -487,6 +433,9 @@ namespace DS4Windows.Core.Settings
 
         /// <summary>Touchpadの設定の持ち主（スロットごとに 1 つ）。</summary>
         public readonly TouchpadSlotSettings[] touchpadSlots = new TouchpadSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Triggersの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly TriggerSlotSettings[] triggerSlots = new TriggerSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -681,6 +630,7 @@ namespace DS4Windows.Core.Settings
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
+            for (int i = 0; i < triggerSlots.Length; i++) triggerSlots[i] = new TriggerSlotSettings(i);
             for (int i = 0; i < touchpadSlots.Length; i++) touchpadSlots[i] = new TouchpadSlotSettings(i);
 
             for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
@@ -1188,12 +1138,12 @@ namespace DS4Windows.Core.Settings
             lsModInfo[device].maxOutput = rsModInfo[device].maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
             lsModInfo[device].fuzz = rsModInfo[device].fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
 
-            //l2ModInfo[device].deadZone = r2ModInfo[device].deadZone = 0;
-            //l2ModInfo[device].antiDeadZone = r2ModInfo[device].antiDeadZone = 0;
-            //l2ModInfo[device].maxZone = r2ModInfo[device].maxZone = 100;
-            //l2ModInfo[device].maxOutput = r2ModInfo[device].maxOutput = 100.0;
-            l2ModInfo[device].Reset();
-            r2ModInfo[device].Reset();
+            //triggerSlots[device].L2Mod.deadZone = triggerSlots[device].R2Mod.deadZone = 0;
+            //triggerSlots[device].L2Mod.antiDeadZone = triggerSlots[device].R2Mod.antiDeadZone = 0;
+            //triggerSlots[device].L2Mod.maxZone = triggerSlots[device].R2Mod.maxZone = 100;
+            //triggerSlots[device].L2Mod.maxOutput = triggerSlots[device].R2Mod.maxOutput = 100.0;
+            triggerSlots[device].L2Mod.Reset();
+            triggerSlots[device].R2Mod.Reset();
 
             // Rotation angles expressed in radians
             LSRotation[device] = 0.0;
@@ -1202,7 +1152,7 @@ namespace DS4Windows.Core.Settings
             SXDeadzone[device] = SZDeadzone[device] = DEFAULT_SX_TILT_DEADZONE;
             SXMaxzone[device] = SZMaxzone[device] = DEFAULT_RUMBLE;
             SXAntiDeadzone[device] = SZAntiDeadzone[device] = 0.0;
-            l2Sens[device] = r2Sens[device] = DEFAULT_ANALOG_SENS;
+            triggerSlots[device].L2Sens = triggerSlots[device].R2Sens = DEFAULT_ANALOG_SENS;
             LSSens[device] = RSSens[device] = DEFAULT_ANALOG_SENS;
             SXSens[device] = SZSens[device] = DEFAULT_ANALOG_SENS;
             touchpadSlots[device].TapSensitivity = 0;
@@ -1213,8 +1163,8 @@ namespace DS4Windows.Core.Settings
 
             lsOutputSettings[device].ResetSettings();
             rsOutputSettings[device].ResetSettings();
-            l2OutputSettings[device].ResetSettings();
-            r2OutputSettings[device].ResetSettings();
+            triggerSlots[device].L2Output.ResetSettings();
+            triggerSlots[device].R2Output.ResetSettings();
 
             LightbarSettingInfo lightbarSettings = lightbarSettingInfo[device];
             LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
@@ -1280,8 +1230,8 @@ namespace DS4Windows.Core.Settings
             lsAntiSnapbackInfo[device].enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
             setLsOutCurveMode(device, 0);
             setRsOutCurveMode(device, 0);
-            setL2OutCurveMode(device, 0);
-            setR2OutCurveMode(device, 0);
+            triggerSlots[device].L2CurveMode = 0;
+            triggerSlots[device].R2CurveMode = 0;
             setSXOutCurveMode(device, 0);
             setSZOutCurveMode(device, 0);
             touchpadSlots[device].Trackball = DEFAULT_TRACKBALL_MODE;

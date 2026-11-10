@@ -230,38 +230,10 @@ namespace DS4Windows.Core.Settings
         }
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
-        public TriggerDeadZoneZInfo[] L2ModInfo => SafeConfig?.l2ModInfo;
-        public TriggerDeadZoneZInfo[] R2ModInfo => SafeConfig?.r2ModInfo;
-        public double[] L2Sens => SafeConfig?.l2Sens;
-        public double[] R2Sens => SafeConfig?.r2Sens;
-        public TriggerOutputSettings[] L2OutputSettings => SafeConfig?.l2OutputSettings;
-        public TriggerOutputSettings[] R2OutputSettings => SafeConfig?.r2OutputSettings;
-        public BezierCurve[] L2OutBezierCurveObj => SafeConfig?.l2OutBezierCurveObj;
-        public BezierCurve[] R2OutBezierCurveObj => SafeConfig?.r2OutBezierCurveObj;
         public bool[] OutputVirtualTriggerButton => SafeConfig?.outputVirtualTriggerButtons;
         public DS4TriggerOutputMode[] OutputDS4TriggerMode => SafeConfig?.outputDS4TriggerMode;
 
-        public int GetL2OutCurveMode(int index) => SafeConfig != null ? SafeConfig.getL2OutCurveMode(index) : 0;
 
-        public void SetL2OutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setL2OutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetL2OutCurveMode: Slot {index} = {value}");
-            }
-        }
-
-        public int GetR2OutCurveMode(int index) => SafeConfig != null ? SafeConfig.getR2OutCurveMode(index) : 0;
-
-        public void SetR2OutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setR2OutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetR2OutCurveMode: Slot {index} = {value}");
-            }
-        }
 
         // ---- Step10-2-A-3: タッチパッド関連 (m_Config委譲) ----
 
@@ -477,7 +449,7 @@ namespace DS4Windows.Core.Settings
             ProfileSlotSettings window = _slotSettings[slot];
             if (window == null)
             {
-                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot]);
+                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot]);
                 _slotSettings[slot] = window;
             }
             return window;

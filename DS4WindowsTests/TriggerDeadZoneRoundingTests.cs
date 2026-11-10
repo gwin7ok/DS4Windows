@@ -42,8 +42,8 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.L2ModInfo[slot].deadZone = 0;
-                settings.R2ModInfo[slot].deadZone = 0;
+                settings.ForSlot(slot).Triggers.L2Mod.deadZone = 0;
+                settings.ForSlot(slot).Triggers.R2Mod.deadZone = 0;
             }
         }
 
@@ -56,18 +56,18 @@ namespace DS4WindowsTests
             try
             {
                 vm.Triggers.L2DeadZone = 0.5;   // 127.5 → 128（四捨五入。旧は 127 に切り捨て）
-                Assert.Equal(128, settings.L2ModInfo[slot].deadZone);
+                Assert.Equal(128, settings.ForSlot(slot).Triggers.L2Mod.deadZone);
                 vm.Triggers.L2DeadZone = 1.0;
-                Assert.Equal(255, settings.L2ModInfo[slot].deadZone);
+                Assert.Equal(255, settings.ForSlot(slot).Triggers.L2Mod.deadZone);
                 vm.Triggers.L2DeadZone = 1.5;   // 範囲外でも、byte が溢れない
-                Assert.Equal(255, settings.L2ModInfo[slot].deadZone);
+                Assert.Equal(255, settings.ForSlot(slot).Triggers.L2Mod.deadZone);
                 vm.Triggers.R2DeadZone = -0.5;
-                Assert.Equal(0, settings.R2ModInfo[slot].deadZone);
+                Assert.Equal(0, settings.ForSlot(slot).Triggers.R2Mod.deadZone);
             }
             finally
             {
-                settings.L2ModInfo[slot].deadZone = 0;
-                settings.R2ModInfo[slot].deadZone = 0;
+                settings.ForSlot(slot).Triggers.L2Mod.deadZone = 0;
+                settings.ForSlot(slot).Triggers.R2Mod.deadZone = 0;
             }
         }
 
@@ -85,10 +85,10 @@ namespace DS4WindowsTests
                 vm.Sticks.LSMaxZone = 0.29; vm.Sticks.RSMaxZone = 0.29;
                 vm.Sticks.LSAntiDeadZone = 0.29; vm.Sticks.RSAntiDeadZone = 0.29;
 
-                Assert.Equal(29, settings.L2ModInfo[slot].maxZone);
-                Assert.Equal(29, settings.R2ModInfo[slot].maxZone);
-                Assert.Equal(29, settings.L2ModInfo[slot].antiDeadZone);
-                Assert.Equal(29, settings.R2ModInfo[slot].antiDeadZone);
+                Assert.Equal(29, settings.ForSlot(slot).Triggers.L2Mod.maxZone);
+                Assert.Equal(29, settings.ForSlot(slot).Triggers.R2Mod.maxZone);
+                Assert.Equal(29, settings.ForSlot(slot).Triggers.L2Mod.antiDeadZone);
+                Assert.Equal(29, settings.ForSlot(slot).Triggers.R2Mod.antiDeadZone);
                 Assert.Equal(29, settings.LSModInfo[slot].maxZone);
                 Assert.Equal(29, settings.RSModInfo[slot].maxZone);
                 Assert.Equal(29, settings.LSModInfo[slot].antiDeadZone);
@@ -96,7 +96,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.L2ModInfo[slot].Reset(); settings.R2ModInfo[slot].Reset();
+                settings.ForSlot(slot).Triggers.L2Mod.Reset(); settings.ForSlot(slot).Triggers.R2Mod.Reset();
                 settings.LSModInfo[slot].Reset(); settings.RSModInfo[slot].Reset();
             }
         }

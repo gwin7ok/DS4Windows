@@ -17,8 +17,8 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             TriggerOutputSettings settings = isL2
-                ? scope.Settings.L2OutputSettings[MappingCharacterizationScope.Device]
-                : scope.Settings.R2OutputSettings[MappingCharacterizationScope.Device];
+                ? scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.L2Output
+                : scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.R2Output;
             TwoStageTriggerMode saved = settings.twoStageMode;
             try
             {
@@ -90,8 +90,8 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             TriggerOutputSettings settings = isL2
-                ? scope.Settings.L2OutputSettings[MappingCharacterizationScope.Device]
-                : scope.Settings.R2OutputSettings[MappingCharacterizationScope.Device];
+                ? scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.L2Output
+                : scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.R2Output;
             TwoStageTriggerMode saved = settings.twoStageMode;
             try
             {

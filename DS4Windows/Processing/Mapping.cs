@@ -363,11 +363,11 @@ namespace DS4Windows.Processing
             ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
                 ref tempMouseDeltaX, ref tempMouseDeltaY,
                 controlSetGroup.L2, controlSetGroup.L2FullPull, DS4Controls.L2, DS4Controls.L2FullPull,
-                cState.L2, cState.L2Raw, profileSettings.L2OutputSettings[device], l2TwoStageMappingData[device]);
+                cState.L2, cState.L2Raw, profileSettings.ForSlot(device).Triggers.L2Output, l2TwoStageMappingData[device]);
             ProcessTriggerWithTwoStage(device, cState, MappedState, eState, tp, fieldMapping, outputfieldMapping, deviceState,
                 ref tempMouseDeltaX, ref tempMouseDeltaY,
                 controlSetGroup.R2, controlSetGroup.R2FullPull, DS4Controls.R2, DS4Controls.R2FullPull,
-                cState.R2, cState.R2Raw, profileSettings.R2OutputSettings[device], r2TwoStageMappingData[device]);
+                cState.R2, cState.R2Raw, profileSettings.ForSlot(device).Triggers.R2Output, r2TwoStageMappingData[device]);
 
             // Process Standard buttons
             for (var settingEnum = controlSetGroup.ControlButtons.GetEnumerator(); settingEnum.MoveNext();)

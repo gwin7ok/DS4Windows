@@ -105,7 +105,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var halfSens = CreateIsolatedService(out BackingStore halfStore);
-            halfStore.l2Sens[Slot] = 0.5;
+            halfStore.triggerSlots[Slot].L2Sens = 0.5;
 
             ControllerState a = Run(neutral, l2: 200);
             ControllerState b = Run(halfSens, l2: 200);
@@ -118,7 +118,7 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var halfSens = CreateIsolatedService(out BackingStore halfStore);
-            halfStore.r2Sens[Slot] = 0.5;
+            halfStore.triggerSlots[Slot].R2Sens = 0.5;
 
             ControllerState a = Run(neutral, r2: 200);
             ControllerState b = Run(halfSens, r2: 200);
