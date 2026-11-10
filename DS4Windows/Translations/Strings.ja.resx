@@ -970,4 +970,43 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="WakeupFromSuspend" xml:space="preserve">
     <value>スリープから復帰しました</value>
   </data>
+  <data name="LightbarEmpty" xml:space="preserve">
+    <value>空の色</value>
+  </data>
+  <data name="LightbarFlashAt" xml:space="preserve">
+    <value>点滅（この残量以下）</value>
+  </data>
+  <data name="LightbarPulseAt" xml:space="preserve">
+    <value>明滅（この残量以下）</value>
+  </data>
+  <data name="LightbarWhileCharging" xml:space="preserve">
+    <value>充電中の表示</value>
+  </data>
+  <data name="LightbarChargingNormal" xml:space="preserve">
+    <value>通常のまま</value>
+  </data>
+  <data name="LightbarChargingPulse" xml:space="preserve">
+    <value>明滅</value>
+  </data>
+  <data name="LightbarChargingRainbow" xml:space="preserve">
+    <value>虹色</value>
+  </data>
+  <data name="LightbarChargingColor" xml:space="preserve">
+    <value>色を指定</value>
+  </data>
+  <data name="LightbarSecsPerCycle" xml:space="preserve">
+    <value>秒で一周</value>
+  </data>
+  <data name="LightbarMaxLight" xml:space="preserve">
+    <value>最大の明るさ {0:N2}%</value>
+  </data>
+  <data name="LightbarSectionBattery" xml:space="preserve">
+    <value>バッテリー残量</value>
+  </data>
+  <data name="LightbarSectionCharging" xml:space="preserve">
+    <value>充電</value>
+  </data>
+  <data name="LightbarSectionRainbow" xml:space="preserve">
+    <value>虹色</value>
+  </data>
 </root>

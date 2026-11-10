@@ -1845,4 +1845,43 @@ Suspend support not enabled.</value>
   <data name="Log_Battery_Notify" xml:space="preserve">
     <value>Controller {0}: {1}</value>
   </data>
+  <data name="LightbarEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="LightbarFlashAt" xml:space="preserve">
+    <value>Flash at</value>
+  </data>
+  <data name="LightbarPulseAt" xml:space="preserve">
+    <value>Pulse at</value>
+  </data>
+  <data name="LightbarWhileCharging" xml:space="preserve">
+    <value>While charging</value>
+  </data>
+  <data name="LightbarChargingNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="LightbarChargingPulse" xml:space="preserve">
+    <value>Pulse</value>
+  </data>
+  <data name="LightbarChargingRainbow" xml:space="preserve">
+    <value>Rainbow</value>
+  </data>
+  <data name="LightbarChargingColor" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="LightbarSecsPerCycle" xml:space="preserve">
+    <value>secs/cycle</value>
+  </data>
+  <data name="LightbarMaxLight" xml:space="preserve">
+    <value>Max light {0:N2}%</value>
+  </data>
+  <data name="LightbarSectionBattery" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="LightbarSectionCharging" xml:space="preserve">
+    <value>Charging</value>
+  </data>
+  <data name="LightbarSectionRainbow" xml:space="preserve">
+    <value>Rainbow</value>
+  </data>
 </root>
