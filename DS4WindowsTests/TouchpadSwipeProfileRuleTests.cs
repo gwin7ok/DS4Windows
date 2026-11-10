@@ -26,19 +26,5 @@ namespace DS4WindowsTests
         {
             Assert.Equal(expected, rule.NextIndex(selected, count, slide));
         }
-
-        [Theory]
-        [InlineData("t", true)]
-        [InlineData("leftt", true)]
-        // "left" / "right" も文字 t を含むため、スワイプでも通知が出る（元の挙動のまま）
-        [InlineData("left", true)]
-        [InlineData("right", true)]
-        [InlineData("up", false)]
-        [InlineData("", false)]
-        [InlineData(null, false)]
-        public void WantsNotification_WhenSlideContainsT(string slide, bool expected)
-        {
-            Assert.Equal(expected, rule.WantsNotification(slide));
-        }
     }
 }

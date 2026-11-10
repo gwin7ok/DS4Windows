@@ -3,7 +3,6 @@ namespace DS4Windows.UI.Services
     /// <summary>
     /// タッチパッドのスワイプによるプロファイルの切替の規則（画面に依存しない）。
     /// 「left」で 1 つ前、「right」で 1 つ次へ進み、先頭・末尾は反対側へ回り込む。
-    /// 通知（スライドの文字列に "t" が含まれるとき）の要否もここで決める。
     /// </summary>
     public sealed class TouchpadSwipeProfileRule
     {
@@ -26,8 +25,5 @@ namespace DS4Windows.UI.Services
 
             return selectedIndex;
         }
-
-        /// <summary>スライドの文字列が、プロファイルの通知（タップ）を求めているか。</summary>
-        public bool WantsNotification(string slide) => slide != null && slide.Contains("t");
     }
 }

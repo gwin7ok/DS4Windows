@@ -609,6 +609,7 @@ namespace DS4Windows.UI
                 //for (int i = 0; i < 4; i++)
                 {
                     string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
+                    // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
                     if (slide == "left" || slide == "right")
                     {
                         Dispatcher.BeginInvoke((Action)(() =>
@@ -616,35 +617,10 @@ namespace DS4Windows.UI
                             item.SelectedIndex = swipeRule.NextIndex(item.SelectedIndex, item.ProfileListCol.Count, slide);
                         }));
                     }
-
-                    if (swipeRule.WantsNotification(slide))
-                    {
-                        //int ind = i;
-                        Dispatcher.BeginInvoke((Action)(() =>
-                        {
-                            string temp = string.Format(Properties.Resources.UsingProfile, (item.DevIndex + 1).ToString(), item.SelectedProfile, $"{item.Device.Battery}");
-                            ShowHotkeyNotification(temp);
-                        }));
-                    }
                 }
             }
 
             hotkeysTimer.Start();
-        }
-
-        private void ShowHotkeyNotification(string message)
-        {
-            // Phase5-Step14 フェーズF: 「通知を表示」レベルによるイベント発火抑制を撤廃。
-            // プロファイル適用イベントは常に発火させ、表示可否は OnProfileChanged 側で
-            // ProfileChangedNotification を基準に一元判定する。
-            try
-            {
-                AppLogger.LogProfileChanged(-1, message, false, DS4Windows.Core.Logging.ProfileChangeSource.Hotkey);
-            }
-            catch
-            {
-                AppLogger.LogToTray(message);
-            }
         }
 
         private void PrepareForServiceStop(object sender, EventArgs e)
