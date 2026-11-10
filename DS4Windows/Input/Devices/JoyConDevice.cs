@@ -31,6 +31,7 @@ using DS4Windows.Core.Utilities;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
+using DS4Windows.Input.Parsers;
 
 namespace DS4Windows.Input.Devices
 {
@@ -61,6 +62,10 @@ namespace DS4Windows.Input.Devices
             public const byte SET_IMU_SENS = 0x41;
             public const byte ENABLE_VIBRATION = 0x48;
         }
+
+        // ボタン等の解析。状態を持たないため共有してよい
+        private static readonly IInputReportParser LeftReportParser = new JoyConLeftReportParser();
+        private static readonly IInputReportParser RightReportParser = new JoyConRightReportParser();
 
         public enum JoyConSide : uint
         {
@@ -808,27 +813,7 @@ namespace DS4Windows.Input.Devices
 
                     if (sideType == JoyConSide.Left)
                     {
-                        tempByte = inputReportBuffer[4];
-                        cState.Share = (tempByte & 0x01) != 0;
-                        cState.L3 = (tempByte & 0x08) != 0;
-
-                        // Capture Button
-                        //cState.PS = (tempByte & 0x20) != 0;
-                        cState.Capture = (tempByte & 0x20) != 0;
-
-                        tempByte = inputReportBuffer[5];
-                        cState.DpadUp = (tempByte & 0x02) != 0;
-                        cState.DpadDown = (tempByte & 0x01) != 0;
-                        cState.DpadLeft = (tempByte & 0x08) != 0;
-                        cState.DpadRight = (tempByte & 0x04) != 0;
-                        cState.L1 = (tempByte & 0x40) != 0;
-                        cState.L2Btn = (tempByte & 0x80) != 0;
-
-                        cState.L2 = (byte)(cState.L2Btn ? 255 : 0);
-                        cState.L2Raw = cState.L2;
-
-                        cState.SideL = (tempByte & 0x20) != 0;
-                        cState.SideR = (tempByte & 0x10) != 0;
+                        LeftReportParser.Parse(inputReportBuffer, cState);
 
                         stick_raw[0] = inputReportBuffer[6];
                         stick_raw[1] = inputReportBuffer[7];
@@ -874,24 +859,7 @@ namespace DS4Windows.Input.Devices
                     }
                     else if (sideType == JoyConSide.Right)
                     {
-                        tempByte = inputReportBuffer[3];
-                        cState.Circle = (tempByte & 0x08) != 0;
-                        cState.Cross = (tempByte & 0x04) != 0;
-                        cState.Triangle = (tempByte & 0x02) != 0;
-                        cState.Square = (tempByte & 0x01) != 0;
-                        cState.R1 = (tempByte & 0x40) != 0;
-
-                        cState.R2Btn = (tempByte & 0x80) != 0;
-                        cState.R2 = (byte)(cState.R2Btn ? 255 : 0);
-                        cState.R2Raw = cState.R2;
-
-                        cState.SideL = (tempByte & 0x20) != 0;
-                        cState.SideR = (tempByte & 0x10) != 0;
-
-                        tempByte = inputReportBuffer[4];
-                        cState.Options = (tempByte & 0x02) != 0;
-                        cState.R3 = (tempByte & 0x04) != 0;
-                        cState.PS = (tempByte & 0x10) != 0;
+                        RightReportParser.Parse(inputReportBuffer, cState);
 
                         stick_raw2[0] = inputReportBuffer[9];
                         stick_raw2[1] = inputReportBuffer[10];

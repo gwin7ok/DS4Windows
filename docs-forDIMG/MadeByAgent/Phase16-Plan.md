@@ -652,3 +652,10 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **A/B 計測**: 毎フレームの追加は、インターフェースの呼び出し 1 回のみ（`ReadOnlySpan<byte>` は配列から割り当てなしで作られ、境界チェックは従来と同じ）。割り当て 0 はテストで確認。実機での遅延の確認は 16-11 の実機確認 1 回で行う。
 - **C8 のゲート**: 通信（6a）・解析（6b）の分離は、差分テストと割り当て 0 の確認で問題なく成立。続行する。
 - Debug ALL: 警告 0・エラー 0・Actions 3,323 件・Standalone 11 件合格（Standalone は 6a の後から変更なし）。
+
+### Step 16-6c〜6f（2026-11-10。完了。DualSense・Switch Pro・DS3・Joy-Con）
+- **パーサー**（`Input/Parsers`。すべて `IInputReportParser`、状態を持たず、割り当て 0）: `DualSenseReportParser`（USB は 0、Bluetooth は 1 のずらし幅をコンストラクターで受ける。ボタン、スティック、トリガー、方向キー、ミュート・背面ボタン、タッチパッドの生値）、`SwitchProReportParser`（ボタン、方向キー、ZL／ZR の 2 値）、`Ds3ReportParser`（感圧付きの方向キー・面ボタン、トリガー、スティック）、`JoyConLeftReportParser`／`JoyConRightReportParser`（ボタン、方向キー、ZL／ZR、サイドボタン）。
+- **デバイスに残したもの**: 電池・充電、タイムスタンプ、タッチパッドの処理、ジャイロ・加速度。Switch Pro と Joy-Con のスティックは、機器ごとの校正値（最小・最大・オフセット。Joy-Con は最初のレポートで補正する）で換算するため、デバイスの状態に依存してデバイス側に残す（契約が状態を持たないための判断）。
+- **差分テスト**: 各パーサーについて、切り出す前のループの該当部分の写しを基準に、固定シードの乱数 20,000 件（DualSense は USB・Bluetooth の両方）と全 0・全 0xFF で `DS4State` の全公開フィールドが一致することを確認した。共通の `DS4StateSnapshot` を追加。
+- **所見（実機の差分）**: Joy-Con・Switch Pro・DS3 は実機を使わないため、バイト列の解析の一致は差分テストで担保した。通信・校正・出力は変えていない。実機確認は最後の 1 回（DS4 のみ）。
+- Debug ALL: 警告 0・エラー 0・Actions 3,346 件合格。
