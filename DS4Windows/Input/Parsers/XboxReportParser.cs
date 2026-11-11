@@ -11,6 +11,12 @@ namespace DS4Windows.Input.Parsers
     /// ボタンは 16 ビット、方向キーはハット値。ボタンの名前は、位置が対応する DS4 の名前へ揃える
     /// （A＝Cross、B＝Circle、X＝Square、Y＝Triangle、LB／RB＝L1／R1、Back＝Share、Start＝Options、押し込み＝L3／R3）。
     /// Guide は HID の子に出ないため扱わない。毎フレームの経路のため、割り当てを行わない（状態を持たない）。
+    /// <para>
+    /// TODO（Phase22-22-1b〜22-2）: 現在は、どこからも使われていない。標準の Xbox（USB）は HID の子を持たず、
+    /// HID の読み取りでは読めないと分かったため、Phase22 の入力は XInput を主経路にした（Phase22-Plan.md 決定 2）。
+    /// これは、HID の子も出す機器（PS4 と Xbox の両対応機など）の記録から作った解析器で、記録を台本にした単体テストがある。
+    /// XInput の経路の実機の確認が済んだ後（22-2）に、温存するか削除するかを決める（規則 2.4）。
+    /// </para>
     /// </summary>
     public sealed class XboxReportParser : IInputReportParser
     {
