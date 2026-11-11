@@ -16,8 +16,8 @@ namespace DS4Windows.Input.Xbox
 
         public InputDeviceType DeviceType => InputDeviceType.Xbox;
 
-        // XInput の機器は、USB と無線のアダプターのどちらでも同じ扱い（接続の種類は読めない）
-        public ConnectionType DetermineConnectionType(IHidTransport hidDevice) => ConnectionType.USB;
+        // XInput は接続方式を教えない。XUSB のインターフェースのパスから決める
+        public ConnectionType DetermineConnectionType(IHidTransport hidDevice) => XusbConnectionClassifier.Classify(hidDevice?.DevicePath);
 
         public IInputReportParser Parser => parser;
 
