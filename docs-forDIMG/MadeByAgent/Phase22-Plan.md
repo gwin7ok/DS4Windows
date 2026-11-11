@@ -160,3 +160,5 @@
 - 2026-11-11 BLE の Xbox の BT 切断は「非対応」と決定: 機器ノードの無効化（CR_NOT_DISABLEABLE=40）、HID サービスのノードの無効化（サポートされていません）、XInputPowerOffController（1167）は、いずれも Windows が拒否。切断の操作は成功と偽らず false を返し、ログ Log_Disconnect_NotSupported を 1 回だけ出す。ノードの無効→有効の実装と電源オフの実装は取り下げた。電池（接続直後の取り込み、GATT）と二重接続（IsAlive）の実機確認は OK。
 
 - 2026-11-11 22-5 振動: XboxProtocol.TryBuildOutputReport が、振動の強さ（左＝重く遅い、右＝軽く速い）を出力レポート [0]=0,[1]=左,[2]=右 へ組み立て、通信路が XInputSetState へ変える。停止のときは全て 0。実機確認待ち（仮想 DS4 の振動が Xbox に伝わるか）。
+
+- 2026-11-11 22-5 振動の実機確認 OK（左右とも動き、止めると止まる）。
