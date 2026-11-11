@@ -41,6 +41,9 @@ namespace DS4Windows.Core.Platform
             }
         }
 
+        /// <summary>XUSB（Xbox 系コントローラー）のデバイス インターフェースのクラス。HID を持たない Xbox の着脱を、ホットプラグで受けるために使う。</summary>
+        public Guid XusbClassGuid { get; } = new Guid("EC87F1E3-C13B-4100-B5F7-8B84D54260CB");
+
         public bool IsAdministrator() => AdminCheck.IsAdministrator();
 
         public string ApplicationVersion => PathService.ExecutableVersionState;

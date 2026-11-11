@@ -35,6 +35,9 @@ namespace DS4WindowsTests
                 case InputDeviceType.SwitchPro:
                     result = deviceOptions[InputDeviceFamily.SwitchPro].Enabled;
                     break;
+                case InputDeviceType.Xbox:
+                    result = deviceOptions[InputDeviceFamily.Xbox].Enabled;
+                    break;
                 default:
                     break;
             }
@@ -46,7 +49,7 @@ namespace DS4WindowsTests
         {
             return new InputDeviceModuleRegistry(new IInputDeviceModule[]
             {
-                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(),
+                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new XboxDeviceModule(),
             });
         }
 
@@ -54,12 +57,13 @@ namespace DS4WindowsTests
         public void IsEnabled_MatchesTheOldSwitch_ForEveryTypeAndEveryCombinationOfTheFlags()
         {
             var registry = NewRegistry();
-            for (int mask = 0; mask < 8; mask++)
+            for (int mask = 0; mask < 16; mask++)
             {
                 var options = new ControlServiceDeviceOptions();
                 options[InputDeviceFamily.DS4].Enabled = (mask & 1) != 0;
                 options[InputDeviceFamily.DualSense].Enabled = (mask & 2) != 0;
                 options[InputDeviceFamily.SwitchPro].Enabled = (mask & 4) != 0;
+                options[InputDeviceFamily.Xbox].Enabled = (mask & 8) != 0;
 
                 foreach (InputDeviceType type in AllTypes)
                 {
@@ -75,6 +79,7 @@ namespace DS4WindowsTests
             options[InputDeviceFamily.DS4].Enabled = true;
             options[InputDeviceFamily.DualSense].Enabled = true;
             options[InputDeviceFamily.SwitchPro].Enabled = true;
+            options[InputDeviceFamily.Xbox].Enabled = true;
 
             var unknown = (InputDeviceType)99;
             Assert.False(NewRegistry().Resolve(unknown).IsEnabled(options));
@@ -88,12 +93,13 @@ namespace DS4WindowsTests
             Assert.IsType<Ds4DeviceModule>(registry.Resolve(InputDeviceType.DS4));
             Assert.IsType<DualSenseDeviceModule>(registry.Resolve(InputDeviceType.DualSense));
             Assert.IsType<SwitchProDeviceModule>(registry.Resolve(InputDeviceType.SwitchPro));
+            Assert.IsType<XboxDeviceModule>(registry.Resolve(InputDeviceType.Xbox));
             Assert.IsType<NullInputDeviceModule>(registry.Resolve((InputDeviceType)99));
 
             // どの種類も、扱う部品がちょうど 1 つ
             var modules = new IInputDeviceModule[]
             {
-                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(),
+                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new XboxDeviceModule(),
             };
             foreach (InputDeviceType type in AllTypes)
             {

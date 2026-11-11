@@ -28,6 +28,7 @@ namespace DS4Windows.Core.Model
     {
         [InputDeviceFamily(InputDeviceFamily.DS4)] DS4,
         [InputDeviceFamily(InputDeviceFamily.SwitchPro)] SwitchPro,
-        [InputDeviceFamily(InputDeviceFamily.DualSense)] DualSense
+        [InputDeviceFamily(InputDeviceFamily.DualSense)] DualSense,
+        [InputDeviceFamily(InputDeviceFamily.Xbox)] Xbox
     }
 }

@@ -760,6 +760,9 @@ Disabled:
   <data name="ControllerSupportSwitchPro" xml:space="preserve">
     <value>Switch Pro Controller Support</value>
   </data>
+  <data name="ControllerSupportXbox" xml:space="preserve">
+    <value>Xbox Controller Support</value>
+  </data>
   <data name="Copycat" xml:space="preserve">
     <value>Copycat</value>
   </data>
@@ -834,6 +837,12 @@ Disabled:
   </data>
   <data name="FirstLaunch.SwitchProEnableText" xml:space="preserve">
     <value>Support for Switch Pro (Nintendo Switch) controllers</value>
+  </data>
+  <data name="FirstLaunch.XboxEnableCkbLabel" xml:space="preserve">
+    <value>Xbox Device Support</value>
+  </data>
+  <data name="FirstLaunch.XboxEnableText" xml:space="preserve">
+    <value>Support for Xbox 360 / Xbox One controllers (read through XInput)</value>
   </data>
   <data name="FirstLaunch.WinTitle" xml:space="preserve">
     <value>First Launch</value>

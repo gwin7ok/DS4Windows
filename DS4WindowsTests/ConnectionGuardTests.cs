@@ -79,14 +79,14 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheDeviceModules_AreRegistered_AllThreeOfThem_AndHaveNoStaticEntryPoints()
+        public void TheDeviceModules_AreRegistered_AllFourOfThem_AndHaveNoStaticEntryPoints()
         {
             var modules = new System.Collections.Generic.List<IInputDeviceModule>(
                 (System.Collections.Generic.IEnumerable<IInputDeviceModule>)TestHost.GetService(typeof(System.Collections.Generic.IEnumerable<IInputDeviceModule>)));
-            Assert.Equal(3, modules.Count);
+            Assert.Equal(4, modules.Count);
             Assert.IsType<InputDeviceModuleRegistry>(TestHost.GetService<IInputDeviceModuleRegistry>());
 
-            foreach (string file in new[] { "Ds4DeviceModule", "DualSenseDeviceModule", "SwitchProDeviceModule", "NullInputDeviceModule", "InputDeviceModuleBase", "InputDeviceModuleRegistry" })
+            foreach (string file in new[] { "Ds4DeviceModule", "DualSenseDeviceModule", "SwitchProDeviceModule", "XboxDeviceModule", "NullInputDeviceModule", "InputDeviceModuleBase", "InputDeviceModuleRegistry" })
             {
                 string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // Phase14d-Step1: 旧パス（DS4Control/Services/）のまま、黙って省略されていた
                 if (text == null) continue;

@@ -21,6 +21,15 @@ namespace DS4Windows.Input.Hid
         private short numberFeatureValueCaps;
         private short numberFeatureDataIndices;
 
+        /// <summary>OS の構造体を介さずに作る（HID を持たない通信路の機器、テスト用）。レポートの長さ以外は 0。</summary>
+        public HidDeviceCapabilities(short inputReportByteLength, short outputReportByteLength, short featureReportByteLength = 0)
+        {
+            this.inputReportByteLength = inputReportByteLength;
+            this.outputReportByteLength = outputReportByteLength;
+            this.featureReportByteLength = featureReportByteLength;
+            reserved = new short[17];
+        }
+
         internal HidDeviceCapabilities(NativeMethods.HIDP_CAPS capabilities)
         {
             usage = capabilities.Usage;

@@ -68,6 +68,7 @@ namespace DS4Windows.UI
         private TrayIconViewModel trayIconVM;
         private SettingsViewModel settingsWrapVM;
         private IntPtr regHandle = new IntPtr();
+        private IntPtr regHandleXusb = new IntPtr();
         private bool showAppInTaskbar = false;
         private ManagementEventWatcher managementEvWatcher;
         private bool wasrunning = false;
@@ -1038,6 +1039,10 @@ namespace DS4Windows.UI
             autoProfilesTimer.Stop();
             //autoProfileHolder.Save();
             Util.UnregisterNotify(regHandle);
+            if (regHandleXusb != IntPtr.Zero)
+            {
+                Util.UnregisterNotify(regHandleXusb);
+            }
 
             // Phase5-Watchpoints-Investigation-Report Watchpoint 2対応:
             // Singletonサービス(controlService/profileRepo, SystemEvents)へのイベント購読を
@@ -1184,6 +1189,16 @@ namespace DS4Windows.UI
             if (!result)
             {
                 Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
+            }
+
+            // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
+            try
+            {
+                Util.RegisterNotify(source.Handle, environmentService.XusbClassGuid, ref regHandleXusb);
+            }
+            catch (Exception)
+            {
+                regHandleXusb = IntPtr.Zero;
             }
         }
 

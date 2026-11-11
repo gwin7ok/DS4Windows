@@ -8,6 +8,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Devices;
+using DS4Windows.Input.Xbox;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
@@ -127,6 +128,11 @@ namespace DS4Windows.Composition
             services.AddInputDevice<Ds4DeviceCartridge, Ds4DeviceModule>();
             services.AddInputDevice<DualSenseDeviceCartridge, DualSenseDeviceModule>();
             services.AddInputDevice<SwitchProDeviceCartridge, SwitchProDeviceModule>();
+            services.AddInputDevice<XboxDeviceCartridge, XboxDeviceModule>();
+            // HID を持たない Xbox 系コントローラーは、HID の列挙ではなく XInput の供給元が見つける
+            services.AddSingleton<IXInputApi, XInputNativeApi>();
+            services.AddSingleton<IXusbInterfaceSource, XusbInterfaceSource>();
+            services.AddSingleton<IInputTransportSource, XInputTransportSource>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
             // Phase13-Step3: ブースト・反転つきの振動（IDeviceRumbleService）と KBM 出力の初期化（IOutputKbmInitializer）の登録は ServiceRegistration.Output.cs
@@ -155,7 +161,7 @@ namespace DS4Windows.Composition
             // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
             services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
             services.AddSingleton<InputDeviceRegistry>(sp => new InputDeviceRegistry(sp.GetRequiredService<IDeviceLayerSettings>(),
-                sp.GetServices<IInputDeviceCartridge>()));   // 接続中のコントローラーの登録簿（状態を持つ）
+                sp.GetServices<IInputDeviceCartridge>(), sp.GetServices<IInputTransportSource>()));   // 接続中のコントローラーの登録簿（状態を持つ）
             services.AddSingleton<IInputDeviceRegistry, InputDeviceRegistryAdapter>();
             services.AddSingleton<IDeviceRegistryHooks, DeviceRegistryHooks>();   // 登録簿が列挙・初期化の途中で呼び返すフック（対応する種類の確認、初期化の直後の処理、昇格の要求）
             services.AddSingleton<IAppliedProfileRecorder, AppliedProfileRecorder>();   // 適用のたびに、コントローラーごとにプロファイルを記憶する（再接続で使う）

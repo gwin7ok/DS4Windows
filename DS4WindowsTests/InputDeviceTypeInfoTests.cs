@@ -22,6 +22,7 @@ namespace DS4WindowsTests
                 [InputDeviceType.DS4] = InputDeviceFamily.DS4,
                 [InputDeviceType.SwitchPro] = InputDeviceFamily.SwitchPro,
                 [InputDeviceType.DualSense] = InputDeviceFamily.DualSense,
+                [InputDeviceType.Xbox] = InputDeviceFamily.Xbox,
             };
 
             foreach (InputDeviceType type in Enum.GetValues(typeof(InputDeviceType)))

@@ -9,5 +9,6 @@
         [InputDeviceFamilyUi("ControllerSupportDS4", "FirstLaunch.DS4EnableCkbLabel", "FirstLaunch.DS4EnableText")] DS4,
         [InputDeviceFamilyUi("ControllerSupportDualSense", "FirstLaunch.DSEnableCkbLabel", "FirstLaunch.DSEnableText")] DualSense,
         [InputDeviceFamilyUi("ControllerSupportSwitchPro", "FirstLaunch.SwitchProEnableCkbLabel", "FirstLaunch.SwitchProEnableText")] SwitchPro,
+        [InputDeviceFamilyUi("ControllerSupportXbox", "FirstLaunch.XboxEnableCkbLabel", "FirstLaunch.XboxEnableText")] Xbox,
     }
 }

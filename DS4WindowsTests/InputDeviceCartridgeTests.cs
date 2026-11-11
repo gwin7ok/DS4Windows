@@ -98,11 +98,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheFiveKindsOfDevice_HaveACartridgeEach()
+        public void TheKindsOfDevice_HaveACartridgeEach()
         {
             var cartridges = AllCartridges().ToList();
 
-            Assert.Equal(3, cartridges.Count);
+            Assert.Equal(4, cartridges.Count);
             foreach (InputDeviceType type in Enum.GetValues(typeof(InputDeviceType)))
             {
                 Assert.Single(cartridges, c => c.Handles(type));
@@ -123,6 +123,7 @@ namespace DS4WindowsTests
             Assert.True(new DS4DeviceOptions().Enabled);
             Assert.False(new DualSenseDeviceOptions().Enabled);
             Assert.False(new SwitchProDeviceOptions().Enabled);
+            Assert.False(new XboxDeviceOptions().Enabled);
 
             var options = new DualSenseDeviceOptions();
             int notified = 0;

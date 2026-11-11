@@ -38,7 +38,7 @@
 | 22-5 | 振動の出力（`XInputSetState`）。仮想パッドの振動の戻りを、物理コントローラーへ送る | 偽の窓口でのテスト |
 | 22-6 | 文書（モデル図 01・02、拡張の手順書、規則）、実機の確認の台帳 | |
 
-### 3.1 22-2 の設計（2026-11-11 提案。承認待ち）
+### 3.1 22-2 の設計（2026-11-11 承認。実装済み）
 
 **方針: 既存の HID 前提の仕組み（`IHidTransport`、`ProtocolDevice`、`InputDeviceRegistry`）を壊さず、XInput を「HID の通信路のふりをする部品」として差し込む。** 機種側（`ProtocolDevice`、カートリッジ、モジュール）は、ほぼ既存のまま使える。
 
@@ -52,7 +52,7 @@
 | `IInputTransportSource` | `Input/Abstractions` | 「HID 以外の通信路を列挙する窓口」。`Enumerate()` が、通信路と、その機種の `VidPidInfo` の組を返す。`XInputTransportSource` が、`XusbInterfaceSource` から作る |
 | `InputDeviceRegistry` の変更 | `Input/DS4Devices.cs` | コンストラクターに `IEnumerable<IInputTransportSource>` を足す。`findControllers` は、HID の列挙の結果と、窓口の結果を、同じ流れ（モジュールの有効判定、`IsRealDS4`［仮想の除外。ViGEm は `ROOT\SYSTEM` で除外される］、開く、シリアル、生成）に載せる。いま 3 か所ある `knownDevices.Single(VID/PID)` は、組で持ち回る `VidPidInfo` に替える（HID の動作は不変） |
 
-- **既定は無効**: Xbox 系を入力として使うかは、新しい設定（既定オフ）にする。オンにするまでは、今までどおり、Xbox コントローラーを DS4Windows は掴まない（既存の利用者の挙動を変えないため）。22-2 では、設定の値の入れ物（`ControlServiceDeviceOptions` の項目）と、モジュールの `IsEnabled` までを作り、保存・画面は 22-3 で行う。
+- **既定は無効（2026-11-11 承認）**: Xbox 系を入力として使うかは、**Other タブの「デバイス オプション」にチェックボックスを足し、そのチェックで切り替える。初回の起動時の初期値はオフ**。オンにするまでは、今までどおり、Xbox コントローラーを DS4Windows は掴まない（既存の利用者の挙動を変えないため）。実装は、既存の機種と同じ「系統」の仕組み（`InputDeviceFamily.Xbox` と `XboxDeviceOptions`［既定オフ、保存キー `XboxSupportSettings`］）に載せる。系統を足すと、保存・読み込み・Other タブの項目・はじめの起動画面が、定義から作られる。文言のリソースと、保存の黄金テストの更新は、22-2 の後半（系統の追加）か 22-3 で行う。
 - **接続の検出**: いまの検出（`HotPlug`）が、XUSB のインターフェースの抜き差しで呼ばれるかを、実装時に確かめる。呼ばれなければ、XUSB の GUID でも機器の変化の通知を登録する。
 - **22-1 の `XboxReportParser`（HID の 15 バイト用）は削除する**（使い道がなく、規則 2.4 の「使うべきでないもの」に当たるため）。デコード表は、この計画書に残る。
 - 同時に使えるのは XInput の 4 台まで。Razer の仮想（実機と同じ扱い）も 1 台として数える。
@@ -81,6 +81,14 @@
 
 - 2026-11-10: 計画書を作成。コードは未着手。
 - 2026-11-11: 隠し方の決定（3・4・5・5a）を確定した。HID の子は利用者が GUI で隠す／USB の親は Other タブのチェックボックスで切り替える。対象は DS4Windows が認識した Xbox 系すべて（他社製の互換機を含む）。補足: 標準の Xbox コントローラーは親（XInput）だけを出力する。実機テストに使った機器は、子（DirectInput）も出力する特殊な機器なので、「子も GUI で隠す」案内は、チェックボックスの説明に書かない。
+- 2026-11-11: **22-2 の実装（コード）が完了**（実機の確認は未）。HID の機種と同じカートリッジの仕組みに載せた（構造は壊していない）。
+  - 通信路: `XInputTransport : IHidTransport`（4ms 周期で XInput を読み、13 バイトの合成レポート［`XInputReportLayout`］にして返す。番号が変わったら XUSB から引き直し、読めなければ `NotConnected`。出力［`[0]`=ID、`[1]`=左、`[2]`=右］は XInput の振動へ変える。シリアルは XUSB のインスタンス ID からの擬似値）。`HidDeviceAttributes`／`HidDeviceCapabilities` に、OS の構造体を介さない公開のコンストラクターを足した。
+  - 発見: `IInputTransportSource`（HID の列挙に載らない通信路の供給元。実装 `XInputTransportSource`）。`InputDeviceRegistry` に供給元を足し、見つけた機器を HID の機器と同じ後続の流れ（有効設定の確認、仮想パッドの除外、シリアル、カートリッジによる生成）へ流す。機器ごとの情報（`VidPidInfo`）は供給元が持つ。**`XboxDeviceCartridge.KnownDevices` は空**にして、HID の列挙に Xbox の HID の子を載せない（決定 2: XInput のみ）。
+  - 系統: `InputDeviceFamily.Xbox`、`InputDeviceType.Xbox`、`XboxDeviceOptions`（**既定オフ**、保存キー `XboxSupportSettings`）、`XboxProtocol`（電池なし。出力は 22-5）、`XboxDeviceCartridge`、`XboxDeviceModule`。登録は `AddInputDevice<XboxDeviceCartridge, XboxDeviceModule>()` の 1 行と、XInput の窓口 3 件。文言は `Strings.resx`／`Strings.ja.resx`（`ControllerSupportXbox`、`FirstLaunch.XboxEnableCkbLabel`／`XboxEnableText`）。Other タブの項目・保存・はじめの起動画面は、系統の定義から作られる。保存の黄金テスト 2 件は、`XboxSupportSettings` の節が増えた分だけ更新。
+  - ホットプラグ: HID クラスの着脱通知だけでは、HID を持たない Xbox の着脱を拾えないため、`MainWindow` に **XUSB クラスの通知の登録**を足した（`IEnvironmentService.XusbClassGuid`）。
+  - 削除: 22-1 の HID 用 `XboxReportParser` とそのテスト（`XInputReportParser` に置き換えた）。
+  - テスト: `XInputTransportTests`（合成レポート、番号の引き直し、切断、振動、シリアル、供給元）、`XboxDeviceFlowTests`（共通のループ、登録簿での発見・無効時・二重生成なし）。既存の 7 件を更新。全件 3,331 件合格、警告 0・エラー 0。
+  - 残り: 実機での Other タブの切り替えと接続・切断・ホットプラグの確認、22-5（振動）、22-4（HidHide の親の指定）。
 - 2026-11-11: **経路の改定**。標準の Xbox（USB）は HID の子を持たないため、HID の直接の読み取り（旧決定 2）では標準の純正品が読めないと判明した。利用者の承認で、XInput を主経路にし（決定 2、Guide は決定 8）、実機の検証（22-1b）を足した。22-2 以降は、22-1b の結果を受けて設計する。22-1 の `XboxReportParser` は未使用になった（TODO 付きで温存）。
 - 2026-11-11: **22-1b の第 2 回（操作あり）と、番号と機器の対応づけの成立**（決定 7 の (a) が成立）。
   - 実機で A（0x1000）、十字キー（0x0001〜0x0008）、Guide（`btn=0x0400`）を操作し、**番号 1 だけが反応**、番号 0（Razer の仮想）は無反応。`XInputGetStateEx` で **Guide（0x0400）が読めた**（決定 8 は成立）。記録は `tools/xinput-probe.txt`。

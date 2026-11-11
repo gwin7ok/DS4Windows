@@ -71,6 +71,9 @@
     <SwitchProSupportSettings>
       <Enabled>False</Enabled>
     </SwitchProSupportSettings>
+    <XboxSupportSettings>
+      <Enabled>False</Enabled>
+    </XboxSupportSettings>
   </DeviceOptions>
   <CustomLed1>False:0,0,255</CustomLed1>
   <CustomLed2>False:0,0,255</CustomLed2>

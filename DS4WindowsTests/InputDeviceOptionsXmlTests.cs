@@ -39,7 +39,8 @@ namespace DS4WindowsTests
             string compact = System.Text.RegularExpressions.Regex.Replace(xml, @">\s+<", "><");
             Assert.Contains("<DeviceOptions><DS4SupportSettings><Enabled>True</Enabled></DS4SupportSettings>"
                 + "<DualSenseSupportSettings><Enabled>False</Enabled></DualSenseSupportSettings>"
-                + "<SwitchProSupportSettings><Enabled>False</Enabled></SwitchProSupportSettings></DeviceOptions>", compact);
+                + "<SwitchProSupportSettings><Enabled>False</Enabled></SwitchProSupportSettings>"
+                + "<XboxSupportSettings><Enabled>False</Enabled></XboxSupportSettings></DeviceOptions>", compact);
         }
 
         [Fact]

@@ -789,6 +789,12 @@ namespace DS4Windows.Translations {
                 return ResourceManager.GetString("ControllerSupportSwitchPro", resourceCulture);
             }
         }
+
+        public static string ControllerSupportXbox {
+            get {
+                return ResourceManager.GetString("ControllerSupportXbox", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Control Panel.
@@ -1489,6 +1495,18 @@ namespace DS4Windows.Translations {
         public static string FirstLaunch_SwitchProEnableText {
             get {
                 return ResourceManager.GetString("FirstLaunch.SwitchProEnableText", resourceCulture);
+            }
+        }
+
+        public static string FirstLaunch_XboxEnableCkbLabel {
+            get {
+                return ResourceManager.GetString("FirstLaunch.XboxEnableCkbLabel", resourceCulture);
+            }
+        }
+
+        public static string FirstLaunch_XboxEnableText {
+            get {
+                return ResourceManager.GetString("FirstLaunch.XboxEnableText", resourceCulture);
             }
         }
         

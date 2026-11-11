@@ -21,6 +21,9 @@
 ### 単純な機種（ボタン・スティック・トリガーと、任意の電池・出力）の最短経路（17-3）
 `IDeviceProtocol`（`Parser`、`TryReadBattery`、`TryBuildOutputReport`、接続方式の判定）と、`ProtocolDeviceCartridge` の派生（`Family`、`KnownDevices`、`Protocol`）を書けば、読み取りループ・`Report`・出力の書き込み・切断は共通の `ProtocolDevice` が行う。そのうえで、(1) `InputDeviceFamily`・`InputDeviceType`（`[InputDeviceFamily]` つき）に値を足し、(2) `ControlServiceDeviceOptions` の系統の表に 1 行、(3) 接続フック（なければ `NullInputDeviceModule` 相当）を作り、(4) `AddInputDevice<…>()` を 1 行。保存は設定クラスの `ControllerSetting` の定義だけ（17-2）。見本は `ProtocolDeviceTests` の偽の機種。ジャイロ・タッチパッド・複数の接続方式を持つ機種は、従来どおり `InputDeviceCore` の派生で書く。
 
+### HID を持たない機器（XInput の Xbox）の足し方（Phase22-2）
+通信路が HID でない機種は、`IHidTransport` を実装した通信路（例: `XInputTransport`。状態を合成レポートにして返す）と、機器を見つける `IInputTransportSource`（例: `XInputTransportSource`）を書く。供給元は機器ごとの `VidPidInfo` を返し、`InputDeviceRegistry` が HID の機器と同じ流れ（有効設定の確認、仮想パッドの除外、シリアル、カートリッジによる生成）で扱う。カートリッジの `KnownDevices` は空にする（HID の列挙に載せない）。系統・設定・登録は、上の手順のとおり。着脱をホットプラグで拾うには、その機器のインターフェースのクラスの GUID を `MainWindow` に通知登録する。
+
 ### 今後（Phase17 の進行で更新する）
 - 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
 - 17-2（済）: 保存と画面が、設定の定義から作られる（DTO・Wrapper・XAML が不要）。

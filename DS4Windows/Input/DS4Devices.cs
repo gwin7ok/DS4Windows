@@ -77,11 +77,21 @@ namespace DS4Windows.Input
         // 全カートリッジの表をつないだもの（VID／PID は表の中で一意。順序は結果に影響しない）
         private readonly VidPidInfo[] knownDevices;
 
+        // HID の列挙に載らない通信路（HID を持たない Xbox の XInput など）の供給元
+        private readonly IInputTransportSource[] transportSources;
+
         public InputDeviceRegistry(DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings, IEnumerable<IInputDeviceCartridge> cartridges)
+            : this(layerSettings, cartridges, Array.Empty<IInputTransportSource>())
+        {
+        }
+
+        public InputDeviceRegistry(DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings, IEnumerable<IInputDeviceCartridge> cartridges,
+            IEnumerable<IInputTransportSource> transportSources)
         {
             LayerSettings = layerSettings;
             this.cartridges = (cartridges ?? throw new ArgumentNullException(nameof(cartridges))).ToArray();
             knownDevices = this.cartridges.SelectMany(c => c.KnownDevices).ToArray();
+            this.transportSources = (transportSources ?? throw new ArgumentNullException(nameof(transportSources))).ToArray();
         }
 
         // 種類に対応するカートリッジでシリアルを読む（対応するカートリッジがなければ空のシリアル）
@@ -160,12 +170,30 @@ namespace DS4Windows.Input
             {
                 IEnumerable<IHidTransport> hDevices = HidDevices.EnumerateDS4(knownDevices, LayerSettings);
 
-                hDevices = hDevices.Where(d =>
+                // HID 以外の通信路の機器は、機器ごとの情報を供給元が持つ（パスで引く）。以降は HID の機器と同じ流れ
+                Dictionary<string, VidPidInfo> sourceInfos = null;
+                if (transportSources.Length > 0)
                 {
-                    VidPidInfo metainfo = knownDevices.Single(x => x.vid == d.Attributes.VendorId &&
-                        x.pid == d.Attributes.ProductId);
-                    return PreparePendingDevice(d, metainfo);
-                });
+                    sourceInfos = new Dictionary<string, VidPidInfo>();
+                    var sourceDevices = new List<IHidTransport>();
+                    foreach (IInputTransportSource source in transportSources)
+                    {
+                        foreach (InputTransportCandidate candidate in source.Enumerate())
+                        {
+                            sourceInfos[candidate.Transport.DevicePath] = candidate.Info;
+                            sourceDevices.Add(candidate.Transport);
+                        }
+                    }
+
+                    hDevices = hDevices.Concat(sourceDevices);
+                }
+
+                VidPidInfo InfoOf(IHidTransport d) =>
+                    sourceInfos != null && sourceInfos.TryGetValue(d.DevicePath, out VidPidInfo found)
+                        ? found
+                        : knownDevices.Single(x => x.vid == d.Attributes.VendorId && x.pid == d.Attributes.ProductId);
+
+                hDevices = hDevices.Where(d => PreparePendingDevice(d, InfoOf(d)));
 
                 hDevices = hDevices.Where(IsRealDS4).Select(dev => dev);
                 //hDevices = from dev in hDevices where IsRealDS4(dev) select dev;
@@ -174,8 +202,7 @@ namespace DS4Windows.Input
                 {
                     // Need VidPidInfo instance to get CheckConnectionDelegate and
                     // check the connection type
-                    VidPidInfo metainfo = knownDevices.Single(x => x.vid == d.Attributes.VendorId &&
-                        x.pid == d.Attributes.ProductId);
+                    VidPidInfo metainfo = InfoOf(d);
 
                     //return InputDeviceCore.HidConnectionType(d);
                     return metainfo.checkConnection(d);
@@ -192,8 +219,7 @@ namespace DS4Windows.Input
                 //foreach (HidDevice hDevice in hDevices)
                 {
                     IHidTransport hDevice = tempList[i];
-                    VidPidInfo metainfo = knownDevices.Single(x => x.vid == hDevice.Attributes.VendorId &&
-                        x.pid == hDevice.Attributes.ProductId);
+                    VidPidInfo metainfo = InfoOf(hDevice);
 
                     if (!metainfo.featureSet.HasFlag(VidPidFeatureSet.VendorDefinedDevice) &&
                         hDevice.Capabilities.UsagePage >= 0xFF00)

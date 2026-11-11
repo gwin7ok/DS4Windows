@@ -24,6 +24,9 @@
 
         /// <summary>HID デバイスのインターフェースクラスの GUID。ウィンドウに HID の抜き差しの通知を登録するときに使う。</summary>
         System.Guid HidClassGuid { get; }
+
+        /// <summary>XUSB（Xbox 系コントローラー）のデバイス インターフェースクラスの GUID。HID を持たない Xbox の抜き差しの通知を登録するときに使う。</summary>
+        System.Guid XusbClassGuid { get; }
         string ApplicationVersion { get; }
         void RefreshHidHideInfo();
         void RefreshFakerInputInfo();

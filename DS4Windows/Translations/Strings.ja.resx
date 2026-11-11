@@ -629,6 +629,15 @@
   <data name="FirstLaunch.SwitchProEnableText" xml:space="preserve">
     <value>Switch Pro（Nintendo Switch）コントローラーのサポート</value>
   </data>
+  <data name="FirstLaunch.XboxEnableCkbLabel" xml:space="preserve">
+    <value>Xbox デバイスのサポート</value>
+  </data>
+  <data name="FirstLaunch.XboxEnableText" xml:space="preserve">
+    <value>Xbox 360／Xbox One コントローラーのサポート（XInput で読み取ります）</value>
+  </data>
+  <data name="ControllerSupportXbox" xml:space="preserve">
+    <value>Xbox コントローラーのサポート</value>
+  </data>
   <data name="Welcome.WinTitle" xml:space="preserve">
     <value>DS4Windowsへようこそ</value>
   </data>
