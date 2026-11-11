@@ -14,24 +14,7 @@ namespace DS4Windows.Input.Xbox
     {
         private static readonly IInputReportParser parser = new XInputReportParser();
 
-        private readonly Func<string, bool> disconnectBle;
-
-        public XboxProtocol()
-            : this(BleDeviceNodeCycler.Disconnect)
-        {
-        }
-
-        /// <param name="disconnectBle">Bluetooth LE の機器を切断する手順（XUSB のインターフェースのパスを受ける）。テストで差し替える。</param>
-        public XboxProtocol(Func<string, bool> disconnectBle)
-        {
-            this.disconnectBle = disconnectBle ?? throw new ArgumentNullException(nameof(disconnectBle));
-        }
-
         public InputDeviceType DeviceType => InputDeviceType.Xbox;
-
-        // BLE の Xbox は、従来の Bluetooth 向けの切断が効かない。機器のノードを無効→有効にして切る。BLE でなければ、共通の手順（null）
-        public bool? TryDisconnectBluetooth(IHidTransport hidDevice) =>
-            XusbConnectionClassifier.IsBluetoothLowEnergy(hidDevice?.DevicePath) ? disconnectBle(hidDevice.DevicePath) : (bool?)null;
 
         // XInput は接続方式を教えない。XUSB のインターフェースのパスから決める
         public ConnectionType DetermineConnectionType(IHidTransport hidDevice) => XusbConnectionClassifier.Classify(hidDevice?.DevicePath);

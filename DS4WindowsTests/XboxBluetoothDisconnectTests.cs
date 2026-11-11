@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
@@ -90,70 +89,6 @@ namespace DS4WindowsTests
 
                 Assert.Equal(candidate.Transport.ReadSerial(), device.getMacAddress());
             }
-        }
-
-        private static InputDeviceCore NewDeviceWith(string path, int pid, Func<string, bool> disconnectBle)
-        {
-            var interfaces = new FakeXusbInterfaceSource();
-            interfaces.Add(path, 0x045E, pid, 0);
-            InputTransportCandidate candidate = new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single();
-            var device = new DS4Windows.Input.Devices.ProtocolDevice(new XboxProtocol(disconnectBle), candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
-            device.PostInit();
-            return device;
-        }
-
-        [Fact]
-        public void ABleDevice_IsDisconnectedByTheDeviceNodeProcedure_AndReportsItsRemoval()
-        {
-            string called = null;
-            InputDeviceCore device = NewDeviceWith(BlePath, 0x0B22, p => { called = p; return true; });
-            int removals = 0;
-            device.Removal += (s, e) => removals++;
-
-            Assert.True(device.DisconnectBT(callRemoval: true));
-
-            Assert.Equal(BlePath, called);
-            Assert.Equal(1, removals);
-            Assert.True(device.IsDisconnecting);
-        }
-
-        [Fact]
-        public void ABleDevice_StaysConnected_WhenTheDeviceNodeProcedureFails()
-        {
-            InputDeviceCore device = NewDeviceWith(BlePath, 0x0B22, p => false);
-            int removals = 0;
-            device.Removal += (s, e) => removals++;
-
-            Assert.False(device.DisconnectBT(callRemoval: true));
-            Assert.False(device.DisconnectWireless(callRemoval: true));
-
-            Assert.Equal(0, removals);
-            Assert.False(device.IsDisconnecting);
-        }
-
-        [Fact]
-        public void AUsbDevice_NeverUsesTheDeviceNodeProcedure()
-        {
-            bool called = false;
-            InputDeviceCore device = NewDeviceWith(UsbPath, 0x028E, p => { called = true; return true; });
-
-            Assert.False(device.DisconnectBT());
-            Assert.False(called);
-        }
-
-        [Fact]
-        public void TheDeviceNode_IsFoundByClimbingFromTheHidChild()
-        {
-            var parents = new System.Collections.Generic.Dictionary<string, string>
-            {
-                [@"HID\{00001812}&DEV&COL01&IG_00\D&1&0&0000"] = @"BTHLEDEVICE\{00001812}_DEV_VID&02045E_PID&0B22\C&1&0&0016",
-                [@"BTHLEDEVICE\{00001812}_DEV_VID&02045E_PID&0B22\C&1&0&0016"] = @"BTHLE\DEV_3CFA0617287C\B&1&0&3CFA0617287C",
-            };
-            string ParentOf(string id) => parents.TryGetValue(id, out string p) ? p : string.Empty;
-
-            Assert.Equal(@"BTHLE\DEV_3CFA0617287C\B&1&0&3CFA0617287C",
-                DS4Windows.Core.Platform.DevicePathProbe.FindBluetoothLeDeviceNode(@"HID\{00001812}&DEV&COL01&IG_00\D&1&0&0000", ParentOf));
-            Assert.Equal(string.Empty, DS4Windows.Core.Platform.DevicePathProbe.FindBluetoothLeDeviceNode(@"USB\VID_045E&PID_028E\A1", ParentOf));
         }
 
         [Fact]
