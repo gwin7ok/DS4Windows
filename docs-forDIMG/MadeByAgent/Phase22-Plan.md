@@ -38,6 +38,26 @@
 | 22-5 | 振動の出力（`XInputSetState`）。仮想パッドの振動の戻りを、物理コントローラーへ送る | 偽の窓口でのテスト |
 | 22-6 | 文書（モデル図 01・02、拡張の手順書、規則）、実機の確認の台帳 | |
 
+### 3.1 22-2 の設計（2026-11-11 提案。承認待ち）
+
+**方針: 既存の HID 前提の仕組み（`IHidTransport`、`ProtocolDevice`、`InputDeviceRegistry`）を壊さず、XInput を「HID の通信路のふりをする部品」として差し込む。** 機種側（`ProtocolDevice`、カートリッジ、モジュール）は、ほぼ既存のまま使える。
+
+| 部品 | 場所 | 役割 |
+|---|---|---|
+| `IXInputApi`／`XInputNativeApi` | `Input/Abstractions`／`Input/Xbox` | `XInputGetStateEx`（序数 100。取れなければ `XInputGetState`）と `XInputSetState` の窓口。テストは偽物に替える |
+| `IXusbInterfaceSource`／`XusbInterfaceSource` | 同上 | XUSB のデバイス インターフェース（GUID `EC87F1E3-…`）を列挙し、各機器の VID/PID（`IOCTL_XUSB_GET_INFORMATION`）、LED（`IOCTL_XUSB_GET_LED_STATE`。番号＝LED−6）、インスタンス ID を返す |
+| `XInputTransport : IHidTransport` | `Input/Xbox` | 1 台の XUSB 機器の通信路。`ReadFile` は、一定周期（4 ms＝250 Hz。DS4 と同じ。ストップウォッチで周期をそろえる）で XInput を読み、**合成レポート**（13 バイト: ID 0、ボタン 2、LT、RT、LX・LY・RX・RY 各 2。Guide は 0x0400）を作って返す。変化がなくても周期でフレームを返す（時間で動く機能が、フレームに頼っているため）。接続が切れたら `NotConnected`。番号が変わったら、LED から引き直す。`WriteOutputReportViaInterrupt` は、振動（22-5）で `XInputSetState` へ。`GenerateFakeHwSerial` は、インスタンス ID から、安定した 12 桁の疑似シリアルを作る |
+| `XInputReportParser : IInputReportParser` | `Input/Parsers` | 合成レポート → `ControllerState`。純粋関数。スティックは符号付き 16 ビット → 8 ビット（Y は上が 0 になるよう反転、中立 128）。ボタン名は位置が対応する DS4 の名前（A＝Cross、B＝Circle、X＝Square、Y＝Triangle、LB／RB＝L1／R1、Back＝Share、Start＝Options、押し込み＝L3／R3、**Guide＝PS**）。`L2Btn`／`R2Btn` は書かない |
+| `XboxProtocol : IDeviceProtocol`、`XboxDeviceCartridge : ProtocolDeviceCartridge`、`XboxDeviceModule` | `Input/Devices`、`Processing/Services`（既存の `*DeviceModule` と同じ場所） | `InputDeviceType.Xbox360` と `[InputDeviceFamily]` を足し、`AddInputDevice<…>()` を 1 行。接続方式は常に USB、電池なし（99%）、出力は 22-5 まで無し。VID/PID の表は持たない（発見は下の窓口が、VID/PID を問わず Xbox 系を返す） |
+| `IInputTransportSource` | `Input/Abstractions` | 「HID 以外の通信路を列挙する窓口」。`Enumerate()` が、通信路と、その機種の `VidPidInfo` の組を返す。`XInputTransportSource` が、`XusbInterfaceSource` から作る |
+| `InputDeviceRegistry` の変更 | `Input/DS4Devices.cs` | コンストラクターに `IEnumerable<IInputTransportSource>` を足す。`findControllers` は、HID の列挙の結果と、窓口の結果を、同じ流れ（モジュールの有効判定、`IsRealDS4`［仮想の除外。ViGEm は `ROOT\SYSTEM` で除外される］、開く、シリアル、生成）に載せる。いま 3 か所ある `knownDevices.Single(VID/PID)` は、組で持ち回る `VidPidInfo` に替える（HID の動作は不変） |
+
+- **既定は無効**: Xbox 系を入力として使うかは、新しい設定（既定オフ）にする。オンにするまでは、今までどおり、Xbox コントローラーを DS4Windows は掴まない（既存の利用者の挙動を変えないため）。22-2 では、設定の値の入れ物（`ControlServiceDeviceOptions` の項目）と、モジュールの `IsEnabled` までを作り、保存・画面は 22-3 で行う。
+- **接続の検出**: いまの検出（`HotPlug`）が、XUSB のインターフェースの抜き差しで呼ばれるかを、実装時に確かめる。呼ばれなければ、XUSB の GUID でも機器の変化の通知を登録する。
+- **22-1 の `XboxReportParser`（HID の 15 バイト用）は削除する**（使い道がなく、規則 2.4 の「使うべきでないもの」に当たるため）。デコード表は、この計画書に残る。
+- 同時に使えるのは XInput の 4 台まで。Razer の仮想（実機と同じ扱い）も 1 台として数える。
+- テスト: `XInputReportParserTests`（純粋関数）、`XInputTransportTests`（偽の `IXInputApi`: 周期、切断、番号の引き直し）、`ProtocolDevice` と偽の通信路での一通りの流れ、`InputDeviceRegistry` と偽の窓口（組の持ち回り、無効時は拾わない）。層の検査（`LayerDependencyRuleTests`）と、既存の HID の機種のテストが不変。
+
 ## 4. 追加の調査（実施時に行う）
 
 - 22-0: 全ボタンのデコード、Xbox 360 以外の同系統（Razer の Xbox 360 など、VID が違う機器）の扱い。
