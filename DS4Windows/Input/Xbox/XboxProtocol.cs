@@ -54,6 +54,18 @@ namespace DS4Windows.Input.Xbox
             return true;
         }
 
-        public bool TryBuildOutputReport(DS4HapticState state, int batteryPercent, byte[] report) => false;
+        // 振動だけ（ライトバーはない）。通信路の出力レポートは [0]=レポート ID（0）、[1]=左（重く遅い）、[2]=右（軽く速い）で、各 0〜255
+        public bool TryBuildOutputReport(DS4HapticState state, int batteryPercent, byte[] report)
+        {
+            if (report == null || report.Length < XInputTransport.OutputReportLength)
+            {
+                return false;
+            }
+
+            report[0] = 0;
+            report[1] = state.rumbleState.RumbleMotorStrengthLeftHeavySlow;
+            report[2] = state.rumbleState.RumbleMotorStrengthRightLightFast;
+            return true;
+        }
     }
 }
