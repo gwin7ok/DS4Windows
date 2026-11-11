@@ -33,6 +33,14 @@ namespace DS4WindowsTests
             }
         }
 
+        /// <summary>電池の台本（番号ごと）。なければ「読めない」になる。</summary>
+        public Dictionary<int, XInputBattery> Batteries { get; } = new Dictionary<int, XInputBattery>();
+
+        public bool TryGetBattery(int index, out XInputBattery battery)
+        {
+            lock (sync) return Batteries.TryGetValue(index, out battery);
+        }
+
         public bool TrySetVibration(int index, ushort leftMotor, ushort rightMotor)
         {
             lock (sync)

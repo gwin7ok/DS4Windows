@@ -42,6 +42,17 @@ namespace DS4Windows.Input.Xbox
         [DllImport("xinput1_4.dll", EntryPoint = "XInputSetState")]
         private static extern uint XInputSetState(uint userIndex, ref Vibration vibration);
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct BatteryInformation
+        {
+            public byte Type, Level;
+        }
+
+        private const byte BatteryDevTypeGamepad = 0;
+
+        [DllImport("xinput1_4.dll", EntryPoint = "XInputGetBatteryInformation")]
+        private static extern uint XInputGetBatteryInformation(uint userIndex, byte devType, out BatteryInformation information);
+
         private bool useDocumentedOnly;
 
         public bool TryGetState(int index, out XInputSnapshot state)
@@ -72,6 +83,18 @@ namespace DS4Windows.Input.Xbox
             }
 
             state = new XInputSnapshot(s.Packet, s.Pad.Buttons, s.Pad.LeftTrigger, s.Pad.RightTrigger, s.Pad.LX, s.Pad.LY, s.Pad.RX, s.Pad.RY);
+            return true;
+        }
+
+        public bool TryGetBattery(int index, out XInputBattery battery)
+        {
+            if (XInputGetBatteryInformation((uint)index, BatteryDevTypeGamepad, out BatteryInformation info) != ErrorSuccess)
+            {
+                battery = default;
+                return false;
+            }
+
+            battery = new XInputBattery(info.Type, info.Level);
             return true;
         }
 

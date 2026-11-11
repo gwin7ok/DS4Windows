@@ -7,8 +7,8 @@ using DS4Windows.Input.Parsers;
 namespace DS4Windows.Input.Xbox
 {
     /// <summary>
-    /// Xbox 系コントローラー（XInput で読む）のプロトコル。入力は <see cref="XInputReportParser"/> が受け持つ。XInput は電池の情報を持たないため
-    /// （電池の残量は別の API）、残量は 99% 固定になる。出力（振動）は後から足す。
+    /// Xbox 系コントローラー（XInput で読む）のプロトコル。入力は <see cref="XInputReportParser"/> が受け持つ。電池は、状態とは別の API（<c>XInputGetBatteryInformation</c>）で読み、
+    /// 通信路が合成レポートの末尾へ入れる。有線と、電池を読めない場合は、残量が 99% 固定になる。出力（振動）は後から足す。
     /// </summary>
     public sealed class XboxProtocol : IDeviceProtocol
     {
@@ -21,11 +21,36 @@ namespace DS4Windows.Input.Xbox
 
         public IInputReportParser Parser => parser;
 
+        // 電池式（アルカリ・ニッケル水素）のときだけ値を返す。有線・不明・読めないときは false（99% 固定。低電池の警告が出ない）
         public bool TryReadBattery(ReadOnlySpan<byte> report, out int percent, out bool charging)
         {
             percent = 0;
-            charging = false;
-            return false;
+            charging = false;   // XInput は、充電中かを教えない
+            if (report.Length < XInputReportLayout.ReportLength)
+            {
+                return false;
+            }
+
+            byte type = report[XInputReportLayout.BatteryTypeOffset];
+            if (type != XInputBattery.TypeAlkaline && type != XInputBattery.TypeNiMh)
+            {
+                return false;
+            }
+
+            percent = PercentOf(report[XInputReportLayout.BatteryLevelOffset]);
+            return true;
+        }
+
+        // XInput の残量は 4 段階（空・低・中・満）。0／33／66／100% にする
+        private static int PercentOf(byte level)
+        {
+            switch (level)
+            {
+                case 0: return 0;
+                case 1: return 33;
+                case 2: return 66;
+                default: return 100;
+            }
         }
 
         public bool TryBuildOutputReport(DS4HapticState state, int batteryPercent, byte[] report) => false;

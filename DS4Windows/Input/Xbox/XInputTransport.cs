@@ -22,10 +22,15 @@ namespace DS4Windows.Input.Xbox
 
         private const int PollIntervalMs = 4;
 
+        // 電池は、4 ms ごとに読む必要がない（変化はゆっくり）。間は前回の値を使う
+        private const int BatteryIntervalMs = 1000;
+
         private readonly IXInputApi api;
         private readonly IXusbInterfaceSource interfaces;
         private readonly ManualResetEventSlim cancelled = new ManualResetEventSlim(false);
         private long nextPollTicks;
+        private long nextBatteryTicks;
+        private XInputBattery battery = new XInputBattery(XInputBattery.TypeUnknown, 0);
         private int playerIndex;
         private bool disposed;
 
@@ -112,8 +117,23 @@ namespace DS4Windows.Input.Xbox
                 playerIndex = moved;
             }
 
+            RefreshBattery();
             Compose(state, inputBuffer);
+            inputBuffer[XInputReportLayout.BatteryTypeOffset] = battery.Type;
+            inputBuffer[XInputReportLayout.BatteryLevelOffset] = battery.Level;
             return HidReadStatus.Success;
+        }
+
+        private void RefreshBattery()
+        {
+            long now = Stopwatch.GetTimestamp();
+            if (now < nextBatteryTicks)
+            {
+                return;
+            }
+
+            nextBatteryTicks = now + Stopwatch.Frequency * BatteryIntervalMs / 1000;
+            battery = api.TryGetBattery(playerIndex, out XInputBattery read) ? read : new XInputBattery(XInputBattery.TypeUnknown, 0);
         }
 
         private void WaitForNextPoll()
