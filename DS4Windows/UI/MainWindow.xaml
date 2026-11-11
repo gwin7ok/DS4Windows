@@ -275,8 +275,12 @@
                         <CheckBox x:Name="hideDS4ContCk" Content="{lex:Loc HideDS4Controller}" x:Uid="hideDS4Checkbox"
                               Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" >
                         </CheckBox>
-                        <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}" ToolTip="{lex:Loc HideXboxControllerTip}"
-                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click" />
+                        <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}"
+                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click">
+                            <CheckBox.ToolTip>
+                                <TextBlock Text="{lex:Loc HideXboxControllerTip}" TextWrapping="Wrap" MaxWidth="420" />
+                            </CheckBox.ToolTip>
+                        </CheckBox>
                         <TextBlock x:Name="hideXboxHidHideMissingText" Text="{lex:Loc HideXboxHidHideMissing}" Foreground="Red" TextWrapping="Wrap" MaxWidth="420"
                               Margin="{StaticResource spaceMargin}" Visibility="{Binding ShowHidHideMissingNotice, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
                         <CheckBox x:Name="swipeTouchCk" Content="{lex:Loc SwipeTouchpadToSwitchProfiles}" Margin="{StaticResource spaceMargin}"
