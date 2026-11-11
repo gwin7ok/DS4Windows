@@ -66,9 +66,6 @@ namespace DS4Windows.Input.Xbox
         /// <summary>いま使っている XInput の番号（0〜3）。</summary>
         public int PlayerIndex => playerIndex;
 
-        /// <summary>ワイヤレスのコントローラーの電源を切る（切断させる）。</summary>
-        public bool TryPowerOff() => api.TryPowerOff(playerIndex);
-
         public bool IsOpen { get; private set; } = true;
         public bool IsExclusive => false;
         public bool IsConnected => !disposed && !cancelled.IsSet;

@@ -41,19 +41,6 @@ namespace DS4WindowsTests
             lock (sync) return Batteries.TryGetValue(index, out battery);
         }
 
-        /// <summary>電源を切る要求の記録と、その結果の台本。</summary>
-        public List<int> PowerOffs { get; } = new List<int>();
-        public bool PowerOffResult { get; set; } = false;
-
-        public bool TryPowerOff(int index)
-        {
-            lock (sync)
-            {
-                PowerOffs.Add(index);
-                return PowerOffResult;
-            }
-        }
-
         public bool TrySetVibration(int index, ushort leftMotor, ushort rightMotor)
         {
             lock (sync)

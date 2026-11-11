@@ -14,8 +14,5 @@ namespace DS4Windows.Input.Abstractions
 
         /// <summary>番号の振動を設定する（0〜65535）。接続されていなければ false。</summary>
         bool TrySetVibration(int index, ushort leftMotor, ushort rightMotor);
-
-        /// <summary>番号のワイヤレスのコントローラーの電源を切る（切断させる）。要求が通れば true。</summary>
-        bool TryPowerOff(int index);
     }
 }
