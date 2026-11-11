@@ -969,6 +969,24 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_Bezier_Invalid" xml:space="preserve">
     <value>{4} 軸のカスタムベジェ曲線 "{0}, {1}, {2}, {3}" が無効です。x1 と x2 は 0〜1 の範囲にしてください。直線の曲線を使います</value>
   </data>
+  <data name="Log_Driver_HidHideInstalled" xml:space="preserve">
+    <value>HidHide ドライバー: インストール済み</value>
+  </data>
+  <data name="Log_Driver_HidHideNotInstalled" xml:space="preserve">
+    <value>HidHide ドライバー: 未インストール</value>
+  </data>
+  <data name="Log_Driver_ViGEmBusInstalled" xml:space="preserve">
+    <value>ViGEmBus ドライバー: インストール済み（バージョン {0}）</value>
+  </data>
+  <data name="Log_Driver_ViGEmBusNotInstalled" xml:space="preserve">
+    <value>ViGEmBus ドライバー: 未インストール</value>
+  </data>
+  <data name="Log_Driver_FakerInputInstalled" xml:space="preserve">
+    <value>FakerInput ドライバー: インストール済み（バージョン {0}）</value>
+  </data>
+  <data name="Log_Driver_FakerInputNotInstalled" xml:space="preserve">
+    <value>FakerInput ドライバー: 未インストール</value>
+  </data>
   <data name="Log_App_RunningAsAdmin" xml:space="preserve">
     <value>管理者として実行中です</value>
   </data>

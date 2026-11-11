@@ -597,8 +597,7 @@ namespace DS4Windows
             bool runningAsAdmin = _environmentService.IsAdministrator();
             AppLogger.LogUser(AppLogLevel.Info, runningAsAdmin ? "Log_App_RunningAsAdmin" : "Log_App_RunningAsUser");
 
-            // 起動時に HidHide の導入を確認し、値を保存する（設定タブの「Xbox コントローラーを隠す」の赤文字の判断に使う）
-            _environmentService.RefreshHidHideInfo();
+            RefreshAndLogDriverStatus();
             if (_environmentService.HidHideInstalled)
             {
                 _runtimeFeatures.CheckHidHidePresence();
@@ -615,6 +614,42 @@ namespace DS4Windows
         /// 明示的なホスト構築と CreateControlService の直後に呼ぶ。解決できない場合は、CreateControlService と同じく
         /// 例外で起動を止める（ホスト構築の失敗は、従来から起動失敗である）。
         /// </summary>
+        // 起動時に、HidHide・ViGEmBus・FakerInput の導入状態を確認して保存し（EnvironmentService の保存値。
+        // 設定タブの「Xbox コントローラーを隠す」の赤文字などが参照する）、結果をログ（ファイルと画面）へ出す
+        private void RefreshAndLogDriverStatus()
+        {
+            _environmentService.RefreshHidHideInfo();
+            _environmentService.RefreshViGEmBusInfo();
+            _environmentService.RefreshFakerInputInfo();
+
+            if (_environmentService.HidHideInstalled)
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideInstalled");
+            }
+            else
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideNotInstalled");
+            }
+
+            if (_environmentService.IsViGEmBusInstalled())
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_ViGEmBusInstalled", _environmentService.ViGEmBusVersion);
+            }
+            else
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_ViGEmBusNotInstalled");
+            }
+
+            if (_environmentService.IsFakerInputInstalled())
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_FakerInputInstalled", _environmentService.FakerInputVersion);
+            }
+            else
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_FakerInputNotInstalled");
+            }
+        }
+
         private void InitializePostHostServices()
         {
             _themeCulture = ResolvePostHostService<DS4Windows.UI.Services.AppThemeAndCultureService>();
