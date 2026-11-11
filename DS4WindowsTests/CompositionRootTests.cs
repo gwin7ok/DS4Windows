@@ -30,7 +30,7 @@ namespace DS4WindowsTests
 
             // 第1層 入力監視層・デバイス状態管理サービス
             Assert.NotNull(TestHost.GetService<IDeviceStateService>());
-            Assert.NotNull(TestHost.GetService<IDs4DeviceRegistry>());
+            Assert.NotNull(TestHost.GetService<IInputDeviceRegistry>());
 
             // 第3層 信号出力層（仮想コントローラー出力スロット・プロセス起動）
             Assert.NotNull(TestHost.GetService<IOutputSlotService>());

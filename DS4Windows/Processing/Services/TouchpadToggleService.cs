@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using DS4Windows.Core.Abstractions;
@@ -32,9 +33,9 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void CheckForToggle(int deviceID, DS4State cState, DS4State pState)
+        public void CheckForToggle(int deviceID, ControllerState cState, ControllerState pState)
         {
-            if (_profileSettings.TouchOutMode[deviceID] != TouchpadOutMode.Controls && cState.Touch1 && pState.PS)
+            if (_profileSettings.ForSlot(deviceID).Touchpad.OutputMode != TouchpadOutMode.Controls && cState.Touch1 && pState.PS)
             {
                 if (_profileSettings.TouchpadActiveArray[deviceID] && _touchreleased[deviceID])
                 {
@@ -63,7 +64,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public string Slide(int ind, DS4State cState, Mouse touchPad, bool connected)
+        public string Slide(int ind, ControllerState cState, TouchpadMouse touchPad, bool connected)
         {
             string slidedir = "none";
             if (connected && cState.Touch2 &&

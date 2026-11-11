@@ -10,6 +10,17 @@ namespace DS4Windows.Input.Hid
         private string vendorHexId;
         private string productHexId;
 
+        /// <summary>OS の構造体を介さずに作る（HID を持たない通信路の機器、テスト用）。</summary>
+        public HidDeviceAttributes(int vendorId, int productId, int version)
+        {
+            this.vendorId = vendorId;
+            this.productId = productId;
+            this.version = version;
+
+            vendorHexId = "0x" + vendorId.ToString("X4");
+            productHexId = "0x" + productId.ToString("X4");
+        }
+
         internal HidDeviceAttributes(NativeMethods.HIDD_ATTRIBUTES attributes)
         {
             vendorId = attributes.VendorID;

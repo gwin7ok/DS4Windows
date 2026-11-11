@@ -50,7 +50,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsAxialDeadElement.SelectSingleNode("DeadZoneX");
                     int.TryParse(Item.InnerText, out int temp);
                     temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.lsModInfo[device].xAxisDeadInfo.deadZone = temp;
+                    store.stickSlots[device].LSMod.xAxisDeadInfo.deadZone = temp;
                 }
                 catch { }
 
@@ -59,7 +59,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsAxialDeadElement.SelectSingleNode("DeadZoneY");
                     int.TryParse(Item.InnerText, out int temp);
                     temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.lsModInfo[device].yAxisDeadInfo.deadZone = temp;
+                    store.stickSlots[device].LSMod.yAxisDeadInfo.deadZone = temp;
                 }
                 catch { }
 
@@ -67,7 +67,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = lsAxialDeadElement.SelectSingleNode("MaxZoneX");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.lsModInfo[device].xAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].LSMod.xAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = lsAxialDeadElement.SelectSingleNode("MaxZoneY");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.lsModInfo[device].yAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].LSMod.yAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -83,7 +83,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = lsAxialDeadElement.SelectSingleNode("AntiDeadZoneX");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.lsModInfo[device].xAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].LSMod.xAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -91,7 +91,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = lsAxialDeadElement.SelectSingleNode("AntiDeadZoneY");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.lsModInfo[device].yAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].LSMod.yAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -99,7 +99,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = lsAxialDeadElement.SelectSingleNode("MaxOutputX");
                     double.TryParse(Item.InnerText, out double temp);
-                    store.lsModInfo[device].xAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                    store.stickSlots[device].LSMod.xAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { }
 
@@ -107,7 +107,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = lsAxialDeadElement.SelectSingleNode("MaxOutputY");
                     double.TryParse(Item.InnerText, out double temp);
-                    store.lsModInfo[device].yAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                    store.stickSlots[device].LSMod.yAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { }
             }
@@ -121,7 +121,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsDeltaAccelElement.SelectSingleNode("Enabled");
                     if (bool.TryParse(Item.InnerText ?? "", out bool temp))
                     {
-                        store.lsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.enabled
+                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled
                             = temp;
                     }
                 }
@@ -132,7 +132,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsDeltaAccelElement.SelectSingleNode("Multiplier");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.lsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.multiplier =
+                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.multiplier =
                             Math.Clamp(temp, 0.0, 10.0);
                     }
                 }
@@ -143,7 +143,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsDeltaAccelElement.SelectSingleNode("MaxTravel");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.lsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.maxTravel =
+                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.maxTravel =
                             Math.Clamp(temp, 0.0, 1.0);
                     }
                 }
@@ -154,7 +154,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsDeltaAccelElement.SelectSingleNode("MinTravel");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.lsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.minTravel =
+                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.minTravel =
                             Math.Clamp(temp, 0.0, 1.0);
                     }
                 }
@@ -165,7 +165,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsDeltaAccelElement.SelectSingleNode("EasingDuration");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.lsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.easingDuration =
+                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.easingDuration =
                             Math.Clamp(temp, 0.0, 600.0);
                     }
                 }
@@ -176,7 +176,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = lsDeltaAccelElement.SelectSingleNode("MinFactor");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.lsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.minfactor =
+                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.minfactor =
                             Math.Clamp(temp, 1.0, 10.0);
                     }
                 }
@@ -188,7 +188,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSDeadZoneType");
                 if (Enum.TryParse(Item?.InnerText ?? "", out StickDeadZoneInfo.DeadZoneType temp))
                 {
-                    store.rsModInfo[device].deadzoneType = temp;
+                    store.stickSlots[device].RSMod.deadzoneType = temp;
                 }
             }
             catch { }
@@ -205,7 +205,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsAxialDeadElement.SelectSingleNode("DeadZoneX");
                     int.TryParse(Item.InnerText, out int temp);
                     temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.rsModInfo[device].xAxisDeadInfo.deadZone = temp;
+                    store.stickSlots[device].RSMod.xAxisDeadInfo.deadZone = temp;
                 }
                 catch { }
 
@@ -214,7 +214,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsAxialDeadElement.SelectSingleNode("DeadZoneY");
                     int.TryParse(Item.InnerText, out int temp);
                     temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.rsModInfo[device].yAxisDeadInfo.deadZone = temp;
+                    store.stickSlots[device].RSMod.yAxisDeadInfo.deadZone = temp;
                 }
                 catch { }
 
@@ -222,7 +222,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = rsAxialDeadElement.SelectSingleNode("MaxZoneX");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.rsModInfo[device].xAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].RSMod.xAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -230,7 +230,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = rsAxialDeadElement.SelectSingleNode("MaxZoneY");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.rsModInfo[device].yAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].RSMod.yAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -238,7 +238,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = rsAxialDeadElement.SelectSingleNode("AntiDeadZoneX");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.rsModInfo[device].xAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].RSMod.xAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -246,7 +246,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = rsAxialDeadElement.SelectSingleNode("AntiDeadZoneY");
                     int.TryParse(Item.InnerText, out int temp);
-                    store.rsModInfo[device].yAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
+                    store.stickSlots[device].RSMod.yAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
                 }
                 catch { }
 
@@ -254,7 +254,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = rsAxialDeadElement.SelectSingleNode("MaxOutputX");
                     double.TryParse(Item.InnerText, out double temp);
-                    store.rsModInfo[device].xAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                    store.stickSlots[device].RSMod.xAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { }
 
@@ -262,7 +262,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     Item = rsAxialDeadElement.SelectSingleNode("MaxOutputY");
                     double.TryParse(Item.InnerText, out double temp);
-                    store.rsModInfo[device].yAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
+                    store.stickSlots[device].RSMod.yAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
                 }
                 catch { }
             }
@@ -276,7 +276,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsDeltaAccelElement.SelectSingleNode("Enabled");
                     if (bool.TryParse(Item.InnerText ?? "", out bool temp))
                     {
-                        store.rsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.enabled
+                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled
                             = temp;
                     }
                 }
@@ -287,7 +287,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsDeltaAccelElement.SelectSingleNode("Multiplier");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.rsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.multiplier =
+                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.multiplier =
                             Math.Clamp(temp, 0.0, 10.0);
                     }
                 }
@@ -298,7 +298,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsDeltaAccelElement.SelectSingleNode("MaxTravel");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.rsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.maxTravel =
+                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.maxTravel =
                             Math.Clamp(temp, 0.0, 1.0);
                     }
                 }
@@ -309,7 +309,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsDeltaAccelElement.SelectSingleNode("MinTravel");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.rsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.minTravel =
+                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.minTravel =
                             Math.Clamp(temp, 0.0, 1.0);
                     }
                 }
@@ -320,7 +320,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsDeltaAccelElement.SelectSingleNode("EasingDuration");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.rsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.easingDuration =
+                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.easingDuration =
                             Math.Clamp(temp, 0.0, 600.0);
                     }
                 }
@@ -331,7 +331,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = rsDeltaAccelElement.SelectSingleNode("MinFactor");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.rsOutputSettings[device].outputSettings.controlSettings.deltaAccelSettings.minfactor =
+                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.minfactor =
                             Math.Clamp(temp, 1.0, 10.0);
                     }
                 }

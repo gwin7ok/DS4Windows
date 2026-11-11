@@ -20,20 +20,20 @@ namespace DS4Windows.Processing.Services
 
         public bool IsEnabled(ControlServiceDeviceOptions options) => Family.HasValue && options[Family.Value].Enabled;
 
-        public virtual List<DS4Controls> GetKnownExtraButtons(DS4Device device)
+        public virtual List<DS4Controls> GetKnownExtraButtons(InputDeviceCore device)
         {
             return new List<DS4Controls>();
         }
 
-        public virtual void OnDeviceInit(DS4Device device, ControlServiceDeviceOptions options)
+        public virtual void OnDeviceInit(InputDeviceCore device, ControlServiceDeviceOptions options)
         {
         }
 
-        public virtual void HookSettings(DS4Device device, Func<int> activeControllers)
+        public virtual void HookSettings(InputDeviceCore device, Func<int> activeControllers)
         {
         }
 
-        public virtual void ApplyProfileOptions(DS4Device device, int ind, IProfileSettingsService settings)
+        public virtual void ApplyProfileOptions(InputDeviceCore device, int ind, IProfileSettingsService settings)
         {
         }
     }

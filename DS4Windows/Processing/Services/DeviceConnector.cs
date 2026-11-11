@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -18,7 +19,7 @@ namespace DS4Windows.Processing.Services
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IAppSettingsService _appSettings;
-        private readonly IDs4DeviceRegistry _deviceRegistry;
+        private readonly IInputDeviceRegistry _deviceRegistry;
         private readonly IDeviceDisconnectHandler _deviceDisconnect;
         private readonly IConnectionProfileSelector _connectionProfileSelector;
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
@@ -26,13 +27,13 @@ namespace DS4Windows.Processing.Services
         private readonly IHidHideService _hidHideService;
         private readonly IDeviceSlotState _slots;   // Phase13-Step5: スロットの配列（直接注入）
         private readonly IInputReportProcessor _inputReport;   // Phase13-Step5b: 旧 Func<IDeviceSlotHost>.OnReport（入力レポートの処理）
-        private readonly IMouseFactory _mouseFactory;
+        private readonly ITouchpadMouseFactory _mouseFactory;
         private readonly IConnectedDeviceOutputs _outputs;
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
-            IDs4DeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
+            IInputDeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
             IDeviceConnectionSetup deviceConnectionSetup, IInputDeviceModuleRegistry deviceModules, IHidHideService hidHideService,
-            IDeviceSlotState slots, IInputReportProcessor inputReport, IMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
+            IDeviceSlotState slots, IInputReportProcessor inputReport, ITouchpadMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
@@ -49,7 +50,7 @@ namespace DS4Windows.Processing.Services
             _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
         }
 
-        public void BeginPrepare(DS4Device device, bool showlog = false)
+        public void BeginPrepare(InputDeviceCore device, bool showlog = false)
         {
             if (_hidHideService.IsAffected(device))
             {
@@ -63,11 +64,11 @@ namespace DS4Windows.Processing.Services
             _deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _slots.ActiveControllers);
         }
 
-        public void PrepareConnected(int numControllers, DS4Device device, int index)
+        public void PrepareConnected(int numControllers, InputDeviceCore device, int index)
         {
             IInputReportProcessor inputReport = _inputReport;
             IDeviceSlotState slots = _slots;
-            Mouse[] touchPads = slots.TouchPads;
+            TouchpadMouse[] touchPads = slots.TouchPads;
             _profileSettings.RefreshExtrasButtons(index, _deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device));
             _profileXmlStore.LoadControllerConfigsForDevice(device);
             device.LoadStoreSettings();
@@ -83,10 +84,6 @@ namespace DS4Windows.Processing.Services
             device.ChargingChanged += OnChargingChanged;
 
             touchPads[index] = _mouseFactory.Create(index, device);
-            // Phase7-Step5 W1: DS3 のジャイロトリガー（Controls モード）の判定を、このスロットの Mouse へつなぐ。
-            // DS4SixAxis は ControlService を直接参照しない（旧: Program.rootHub。DI 移行後は参照が失われていた）。
-            device.SixAxis.GyroControlsTriggerActive =
-                slot => touchPads[slot]?.IsGyroTriggerActive(GyroOutMode.Controls) ?? false;
             // Phase11 W6 K-W6-3: プロファイルの適用のログ・通知が電池残量を使うため、その前に、最初の入力レポートから電池残量を取り込む
             // （StartUpdate はこのあとのため、読み取りのスレッドはまだ動いていない）
             device.PrimeBatteryReading();
@@ -104,24 +101,7 @@ namespace DS4Windows.Processing.Services
 
                 _outputs.PlugVirtualPad(index, device);
 
-                if (device.PrimaryDevice && device.OutputMapGyro)
-                {
-                    _deviceConnectionSetup.AttachTouchpad(index, device, touchPads);
-                }
-                else if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                {
-                    int otherIdx = device.JointDeviceSlotNumber;
-                    DS4Device tempDev = slots.DS4Controllers[otherIdx];
-                    if (tempDev != null)
-                    {
-                        int mappedIdx = tempDev.PrimaryDevice ? otherIdx : index;
-                        DS4Device gyroDev = device.OutputMapGyro ? device : (tempDev.OutputMapGyro ? tempDev : null);
-                        if (gyroDev != null)
-                        {
-                            _deviceConnectionSetup.AttachTouchpad(mappedIdx, gyroDev, touchPads);
-                        }
-                    }
-                }
+                _deviceConnectionSetup.AttachTouchpad(index, device, touchPads);
 
                 _deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);
                 _deviceConnectionSetup.WireInitialHooks(index, device);
@@ -140,7 +120,7 @@ namespace DS4Windows.Processing.Services
 
         private void OnChargingChanged(object sender, EventArgs e)
         {
-            DS4Device device = sender as DS4Device;
+            InputDeviceCore device = sender as InputDeviceCore;
             if (device.ConnectionType == ConnectionType.BT && _appSettings.QuickCharge &&
                 device.Charging)
             {

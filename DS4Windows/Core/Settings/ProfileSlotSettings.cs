@@ -9,17 +9,22 @@ namespace DS4Windows.Core.Settings
     /// </summary>
     public class ProfileSlotSettings
     {
-        public ProfileSlotSettings(IProfileSettingsService settings, int slot)
+        public ProfileSlotSettings(IProfileSettingsService settings, int slot, GyroSlotSettings gyro,
+            TouchpadSlotSettings touchpad,
+            TriggerSlotSettings triggers,
+            StickSlotSettings sticks,
+            LightbarSlotSettings lightbar,
+            SixAxisSlotSettings sixAxis)
         {
             Slot = slot;
-            Gyro = new GyroSlotSettings(settings, slot);
-            Touchpad = new TouchpadSlotSettings(settings, slot);
-            Triggers = new TriggerSlotSettings(settings, slot);
-            Sticks = new StickSlotSettings(settings, slot);
-            Lightbar = new LightbarSlotSettings(settings, slot);
+            Gyro = gyro ?? throw new System.ArgumentNullException(nameof(gyro));
+            Touchpad = touchpad ?? throw new System.ArgumentNullException(nameof(touchpad));
+            Triggers = triggers ?? throw new System.ArgumentNullException(nameof(triggers));
+            Sticks = sticks ?? throw new System.ArgumentNullException(nameof(sticks));
+            Lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             Output = new OutputSlotSettings(settings, slot);
             General = new GeneralSlotSettings(settings, slot);
-            SixAxis = new SixAxisSlotSettings(settings, slot);
+            SixAxis = sixAxis ?? throw new System.ArgumentNullException(nameof(sixAxis));
         }
 
         public int Slot { get; }

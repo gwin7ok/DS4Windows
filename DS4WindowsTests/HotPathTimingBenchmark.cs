@@ -38,8 +38,8 @@ namespace DS4WindowsTests
         private double MeasureNanosecondsPerCall(string name, BackingStore store)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
             int sink = 0;
 
             void RunOnce()
@@ -79,27 +79,27 @@ namespace DS4WindowsTests
 
             // 2. 出力カーブあり（左右のスティックと L2／R2。ベジェ曲線の分岐を通す）
             var curves = new BackingStore(new EnvironmentService());
-            curves.setLsOutCurveMode(Slot, 2);
-            curves.setRsOutCurveMode(Slot, 2);
-            curves.setL2OutCurveMode(Slot, 2);
-            curves.setR2OutCurveMode(Slot, 2);
+            curves.stickSlots[Slot].ApplyLSCurveMode(2);
+            curves.stickSlots[Slot].ApplyRSCurveMode(2);
+            curves.triggerSlots[Slot].ApplyL2CurveMode(2);
+            curves.triggerSlots[Slot].ApplyR2CurveMode(2);
             MeasureNanosecondsPerCall("出力カーブあり（LS／RS／L2／R2）", curves);
 
             // 3. トリガーのデッドゾーン・アンチデッドゾーン・最大ゾーン
             var triggers = new BackingStore(new EnvironmentService());
-            triggers.l2ModInfo[Slot].deadZone = 20;
-            triggers.l2ModInfo[Slot].antiDeadZone = 10;
-            triggers.l2ModInfo[Slot].maxZone = 90;
-            triggers.r2ModInfo[Slot].deadZone = 20;
-            triggers.r2ModInfo[Slot].antiDeadZone = 10;
-            triggers.r2ModInfo[Slot].maxZone = 90;
+            triggers.triggerSlots[Slot].L2Mod.deadZone = 20;
+            triggers.triggerSlots[Slot].L2Mod.antiDeadZone = 10;
+            triggers.triggerSlots[Slot].L2Mod.maxZone = 90;
+            triggers.triggerSlots[Slot].R2Mod.deadZone = 20;
+            triggers.triggerSlots[Slot].R2Mod.antiDeadZone = 10;
+            triggers.triggerSlots[Slot].R2Mod.maxZone = 90;
             MeasureNanosecondsPerCall("トリガーの補正（L2／R2）", triggers);
 
             // 4. ジャイロ → コントロール＋ジャイロの出力カーブ
             var gyro = new BackingStore(new EnvironmentService());
-            gyro.gyroOutMode[Slot] = GyroOutMode.Controls;
-            gyro.setSXOutCurveMode(Slot, 2);
-            gyro.setSZOutCurveMode(Slot, 2);
+            gyro.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
+            gyro.sixAxisSlots[Slot].ApplySXCurveMode(2);
+            gyro.sixAxisSlots[Slot].ApplySZCurveMode(2);
             MeasureNanosecondsPerCall("ジャイロ → コントロール", gyro);
         }
     }

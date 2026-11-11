@@ -42,14 +42,14 @@ namespace DS4WindowsTests
             int slot = PersistenceHarness.Slot;
 
             // 曲線のモード（private なフィールド。設定用のメソッドでだけ変えられる）
-            store.setLsOutCurveMode(slot, 3);
-            store.setRsOutCurveMode(slot, 2);
-            store.setL2OutCurveMode(slot, 4);
-            store.setR2OutCurveMode(slot, 5);
-            store.setSXOutCurveMode(slot, 1);
-            store.setSZOutCurveMode(slot, 6);
+            store.stickSlots[slot].ApplyLSCurveMode(3);
+            store.stickSlots[slot].ApplyRSCurveMode(2);
+            store.triggerSlots[slot].ApplyL2CurveMode(4);
+            store.triggerSlots[slot].ApplyR2CurveMode(5);
+            store.sixAxisSlots[slot].ApplySXCurveMode(1);
+            store.sixAxisSlots[slot].ApplySZCurveMode(6);
 
-            store.lightbarSettingInfo[slot].mode = LightbarMode.Passthru;
+            store.lightbarSlots[slot].Info.mode = LightbarMode.Passthru;
 
             // 特殊アクション（Step5 の入力になる節）
             store.profileActions[slot].Clear();
@@ -57,9 +57,9 @@ namespace DS4WindowsTests
             store.profileActions[slot].Add("Golden_Program");
             store.profileActions[slot].Add("Golden_Key");
 
-            store.touchDisInvertTriggers[slot] = new int[] { 1, 2 };
-            store.lsModInfo[slot].outerBindDeadZone = 12.0;
-            store.rsModInfo[slot].outerBindDeadZone = 34.0;
+            store.touchpadSlots[slot].DisInvertTriggers = new int[] { 1, 2 };
+            store.stickSlots[slot].LSMod.outerBindDeadZone = 12.0;
+            store.stickSlots[slot].RSMod.outerBindDeadZone = 34.0;
             return store;
         }
 

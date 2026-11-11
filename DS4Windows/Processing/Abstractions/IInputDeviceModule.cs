@@ -22,15 +22,15 @@ namespace DS4Windows.Processing.Abstractions
         bool IsEnabled(ControlServiceDeviceOptions options);
 
         /// <summary>マッピングで追加に見るボタン（旧 <c>GetKnownExtraButtons</c> の switch）。なければ空のリスト。</summary>
-        List<DS4Controls> GetKnownExtraButtons(DS4Device device);
+        List<DS4Controls> GetKnownExtraButtons(InputDeviceCore device);
 
         /// <summary>デバイスの初期化の直後に呼ぶ（旧 <c>PostDS4DeviceInit</c>。Joy-Con の結合の初期値）。</summary>
-        void OnDeviceInit(DS4Device device, ControlServiceDeviceOptions options);
+        void OnDeviceInit(InputDeviceCore device, ControlServiceDeviceOptions options);
 
         /// <summary>接続時に、デバイス固有の設定の変更への反応を付ける（旧 <c>PrepareDS4DeviceSettingHooks</c>。DualSense の LED）。<paramref name="activeControllers"/> は発火のたびに読む。</summary>
-        void HookSettings(DS4Device device, Func<int> activeControllers);
+        void HookSettings(InputDeviceCore device, Func<int> activeControllers);
 
         /// <summary>プロファイルの設定のうち、この種類に固有のものをデバイスへ反映する（旧 <c>CheckProfileOptions</c> の DualSense の枝）。</summary>
-        void ApplyProfileOptions(DS4Device device, int ind, IProfileSettingsService settings);
+        void ApplyProfileOptions(InputDeviceCore device, int ind, IProfileSettingsService settings);
     }
 }

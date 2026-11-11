@@ -33,7 +33,7 @@ namespace DS4Windows.Core.Settings
     {
         public const bool DEFAULT_ENABLE = false;
 
-        public SwitchProDeviceOptions() : base(DEFAULT_ENABLE)
+        public SwitchProDeviceOptions() : base(DEFAULT_ENABLE, "SwitchProSupportSettings")
         {
         }
     }

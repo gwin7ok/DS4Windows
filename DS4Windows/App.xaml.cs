@@ -52,26 +52,15 @@ namespace DS4Windows
     [System.Security.SuppressUnmanagedCodeSecurity]
     public partial class App : Application
     {
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        [DllImport("user32.dll", EntryPoint = "FindWindow")]
-        private static extern IntPtr FindWindow(string sClass, string sWindow);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref DS4Windows.Core.Platform.COPYDATASTRUCT lParam);
-
-        // Phase14b-Step16: 旧 ネスト型 COPYDATASTRUCT は Core/Platform のトップレベルの型にした（UI の MainWindow.Ipc から App を参照しないため）
-
         private Thread controlThread;
         // Phase14b-Step17（決定 D10）: 旧 public static HttpClient requestClient（更新の確認・ドライバーのダウンロード）は、DI の Singleton の HttpClient にした
         private bool skipSave;
         private bool runShutdown;
         private bool exitApp;
-        private Thread testThread;
-        private bool exitComThread = false;
-        private const string SingleAppComEventName = "{a52b5b20-d9ee-4f32-8518-307fa14aa0c6}";
-        private EventWaitHandle threadComEvent = null;
+        private DS4Windows.Core.Platform.IpcMemoryMap _ipc;   // CLI との通信の窓口（ホストの構築後に解決する）
+        private readonly SingleInstanceGuard _singleInstance = new SingleInstanceGuard();
+        // 起動前（-driverinstall の分岐を含む）は、ブートストラップの BackingStore で作ったもの。ホストの構築後は、コンテナの Singleton に置き換える
+        private DS4Windows.UI.Services.AppThemeAndCultureService _themeCulture;
         private Timer collectTimer;
         public static LoggerHolder logHolder;
 
@@ -94,7 +83,7 @@ namespace DS4Windows
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
         // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
-        private volatile DS4Windows.Processing.ControlService _controlService;
+        private volatile DS4Windows.Processing.Abstractions.IRuntimeBootstrapper _runtimeBootstrapper;
         private volatile DS4Windows.Processing.Abstractions.IServiceLifecycle _lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
         private DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
 
@@ -106,86 +95,6 @@ namespace DS4Windows
         // Phase7-Step10d W5（Q3＝A）: 旧 Global.store（静的）。コンテナの構築より前に作り、CreateHost に渡して、コンテナへ同じインスタンスを登録する
         // （起動直後のログのローテーションと最小ログレベル、-driverinstall 分岐の言語・テーマの読み取りが使う）。
         private DS4Windows.Core.Settings.BackingStore _bootstrapBackingStore;
-
-        private MemoryMappedFile ipcClassNameMMF = null; // MemoryMappedFile for inter-process communication used to hold className of DS4Form window
-        private MemoryMappedFile ipcResultDataMMF = null; // MemoryMappedFile for inter-process communication used to exchange string result data between cmdline client process and the background running DS4Windows app
-
-        private static Dictionary<DS4Windows.Core.Settings.AppThemeChoice, string> themeLocs = new
-            Dictionary<DS4Windows.Core.Settings.AppThemeChoice, string>()
-        {
-            [DS4Windows.Core.Settings.AppThemeChoice.Default] = "UI/Themes/DefaultTheme.xaml",
-            [DS4Windows.Core.Settings.AppThemeChoice.Light] = "UI/Themes/DefaultTheme.xaml",
-            [DS4Windows.Core.Settings.AppThemeChoice.Dark] = "UI/Themes/DarkTheme.xaml",
-        };
-
-        public event EventHandler ThemeChanged;
-
-        /// <summary>
-        /// Apply culture settings to both Global and WPF LocalizeDictionary
-        /// </summary>
-        private void ApplyLanguageSetting(string cultureCode)
-        {
-            if (string.IsNullOrEmpty(cultureCode))
-                return;
-
-            try
-            {
-                try
-                {
-                    // Ensure Logs folder exists under application base directory so initial NLog writes succeed
-                    string baseLogs = Path.Combine(AppContext.BaseDirectory, "Logs");
-                    if (!Directory.Exists(baseLogs)) Directory.CreateDirectory(baseLogs);
-                }
-                catch { }
-                AppLogger.LogDebug($"ApplyLanguageSetting requested: {cultureCode}");
-                CultureInfo culture = CultureInfo.GetCultureInfo(cultureCode);
-                // 旧 TODO(Phase6-Step7 決定4＝K)（解消済み）: このメソッドは Post-Host だけでなく、Pre-Host の -driverinstall 分岐
-                // （CheckOptions。DI サービスのフィールドはまだ null）と、App の外（LanguagePackControl → ApplyLanguageSettingPublic）
-                // からも呼ばれる共用ヘルパーのため、DI 経由の二重経路を作らない。SetCulture はスレッドのカルチャを設定するだけの静的ユーティリティ。
-                // （Phase7c W3: 当時は Global を直接使っていた。Global は Phase7-Step10d で削除済みで、現在は Global を参照しない。）
-                // Phase7-Step10d W5: Global は削除した。ブートストラップの BackingStore（コンテナの Singleton と同一）へ書く。
-                _bootstrapBackingStore.useLang = cultureCode;
-                DS4Windows.Core.Settings.UiCulture.Set(cultureCode);
-
-                // Ensure thread and default thread cultures are set so UI localization applies
-                try
-                {
-                    CultureInfo.DefaultThreadCurrentCulture = culture;
-                    CultureInfo.DefaultThreadCurrentUICulture = culture;
-                    Thread.CurrentThread.CurrentCulture = culture;
-                    Thread.CurrentThread.CurrentUICulture = culture;
-                }
-                catch { }
-
-                // Enable WPFLocalizeExtension to apply culture to current thread resources
-                try { LocalizeDictionary.Instance.SetCurrentThreadCulture = true; } catch { }
-                LocalizeDictionary.Instance.Culture = culture;
-
-                AppLogger.LogDebug($"ApplyLanguageSetting applied: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
-            }
-            catch
-            {
-                // Skip if culture cannot be set
-            }
-        }
-
-        /// <summary>
-        /// Public wrapper for ApplyLanguageSetting to allow access from other components
-        /// </summary>
-        public void ApplyLanguageSettingPublic(string cultureCode)
-        {
-            if (string.IsNullOrEmpty(cultureCode))
-            {
-                // 「No (English UI)」（カルチャ名が空）の選択。ApplyLanguageSetting は空文字を無視して何も変えないため、
-                // 起動時に UseLang が空のときと同じ処理（SetUICulture。空文字はインバリアントカルチャ＝既定の英語 UI）を
-                // 実行時にも行う。これまでは、再起動するまで UI が切り替わらなかった。
-                // Global.UseLang は呼び出し元（LanguagePackViewModel.ChangeLanguagePack）が設定済み。
-                SetUICulture(string.Empty);
-                return;
-            }
-
-            ApplyLanguageSetting(cultureCode);
-        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -265,6 +174,7 @@ namespace DS4Windows
             _bootstrapEnvironmentService = new DS4Windows.Core.Platform.EnvironmentService();
             _bootstrapBackingStore = new DS4Windows.Core.Settings.BackingStore(_bootstrapEnvironmentService);
             _bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);
+            _themeCulture = new DS4Windows.UI.Services.AppThemeAndCultureService(_bootstrapBackingStore);
 
             // Locate config location as early as possible
             try
@@ -385,25 +295,11 @@ namespace DS4Windows
         /// </summary>
         private bool EnsureSingleInstance()
         {
-            // another instance is already running if TryOpenExisting returns true.
-            try
+            if (_singleInstance.TryNotifyExistingInstance())
             {
-                if (EventWaitHandleAcl.TryOpenExisting(SingleAppComEventName,
-                System.Security.AccessControl.EventWaitHandleRights.Synchronize |
-                System.Security.AccessControl.EventWaitHandleRights.Modify,
-                out EventWaitHandle tempComEvent))
-                {
-                    tempComEvent.Set();  // signal the other instance.
-                    tempComEvent.Close();
-
-                    runShutdown = false;
-                    Current.Shutdown();    // Quit temp instance
-                    return false;
-                }
-            }
-            catch (System.UnauthorizedAccessException)
-            {
-                // Ignore exception
+                runShutdown = false;
+                Current.Shutdown();    // Quit temp instance
+                return false;
             }
             return true;
         }
@@ -430,9 +326,13 @@ namespace DS4Windows
             // Phase7-Step4 W1／W4: 調べ物と状態は EnvironmentService（状態は static）が持つ。ブートストラップのインスタンスを使う。
             _bootstrapEnvironmentService.RefreshViGEmBusInfo();
 
-            // Create the Event handle
-            threadComEvent = new EventWaitHandle(false, EventResetMode.ManualReset, SingleAppComEventName);
-            CreateTempWorkerThread();
+            // 2 つ目のインスタンスからの知らせを待ち、来たら画面を前面へ出す（画面は UI スレッドで操作する）
+            _singleInstance.StartListening(() => Dispatcher.BeginInvoke((Action)(() =>
+            {
+                MainWindow.Show();
+                MainWindow.WindowState = WindowState.Normal;
+                MainWindow.Activate();
+            })));
         }
 
         /// <summary>
@@ -483,7 +383,7 @@ namespace DS4Windows
 
                 // Store selected language and apply it immediately for dialogs
                 selectedLanguage = langDialog.SelectedCulture;
-                ApplyLanguageSetting(selectedLanguage);
+                _themeCulture.ApplyLanguageSetting(selectedLanguage);
             }
             return true;
         }
@@ -548,7 +448,7 @@ namespace DS4Windows
             // Re-apply selected language after Load() and save to Profiles.xml
             if (firstRun && !string.IsNullOrEmpty(selectedLanguage))
             {
-                ApplyLanguageSetting(selectedLanguage);
+                _themeCulture.ApplyLanguageSetting(selectedLanguage);
                 _appSettingsService.Save();
             }
             return readAppConfig;
@@ -613,9 +513,9 @@ namespace DS4Windows
             // Steam Input
             if (firstRun)
             {
-                ApplyLanguageSetting(_appSettingsService.UseLang);
+                _themeCulture.ApplyLanguageSetting(_appSettingsService.UseLang);
                 DS4Windows.UI.FirstLaunchUtilWindow firstLaunchUtilWin =
-                    new DS4Windows.UI.FirstLaunchUtilWindow(ResolvePostHostService<DS4Windows.UI.Abstractions.IViewModelFactory>()
+                    new DS4Windows.UI.FirstLaunchUtilWindow(ResolvePostHostService<DS4Windows.UI.Abstractions.IShellViewModelFactory>()
                         .CreateFirstLaunchUtilViewModel(_appSettingsService.DeviceOptions));
                 firstLaunchUtilWin.ShowDialog();
                 _appSettingsService.Save();
@@ -629,7 +529,7 @@ namespace DS4Windows
                 _profileRepository.SaveAsProfile(0, "Default");
                 ProfileSlotNames profilePath = _profileRepository.ProfilePath;
                 ProfileSlotNames olderProfilePath = _profileRepository.OlderProfilePath;
-                for (int i = 0; i < DS4Windows.Processing.ControlService.MAX_DS4_CONTROLLER_COUNT; i++)
+                for (int i = 0; i < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount; i++)
                 {
                     profilePath[i] = olderProfilePath[i] = "Default";
                 }
@@ -661,12 +561,12 @@ namespace DS4Windows
             }
 
             // Have app use selected culture
-            SetUICulture(_appSettingsService.UseLang);
-            ApplyLanguageSetting(_appSettingsService.UseLang);
+            _themeCulture.SetUICulture(_appSettingsService.UseLang);
+            _themeCulture.ApplyLanguageSetting(_appSettingsService.UseLang);
             AppLogger.LogInfo($"Effective UI culture after initialization: CurrentUICulture={Thread.CurrentThread.CurrentUICulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, UseLang={_appSettingsService.UseLang}");
 
             DS4Windows.Core.Settings.AppThemeChoice themeChoice = _appearanceSettingsService.UseCurrentTheme;
-            ChangeTheme(_appearanceSettingsService.UseCurrentTheme, false);
+            _themeCulture.ChangeTheme(_appearanceSettingsService.UseCurrentTheme, false);
             // Diagnostic: log culture state after applying theme to detect theme-induced localization regressions
             AppLogger.LogDebug($"Post-ChangeTheme: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
 
@@ -690,13 +590,14 @@ namespace DS4Windows
 
             // Set up hooks for IPC command calls
             HwndSource source = PresentationSource.FromVisual(window) as HwndSource;
-            CreateIPCClassNameMMF(source.Handle);
+            _ipc.PublishWindowClassName(source.Handle);
 
             window.CheckMinStatus();
 
             bool runningAsAdmin = _environmentService.IsAdministrator();
             AppLogger.LogUser(AppLogLevel.Info, runningAsAdmin ? "Log_App_RunningAsAdmin" : "Log_App_RunningAsUser");
 
+            RefreshAndLogDriverStatus();
             if (_environmentService.HidHideInstalled)
             {
                 _runtimeFeatures.CheckHidHidePresence();
@@ -713,8 +614,46 @@ namespace DS4Windows
         /// 明示的なホスト構築と CreateControlService の直後に呼ぶ。解決できない場合は、CreateControlService と同じく
         /// 例外で起動を止める（ホスト構築の失敗は、従来から起動失敗である）。
         /// </summary>
+        // 起動時に、HidHide・ViGEmBus・FakerInput の導入状態を確認して保存し（EnvironmentService の保存値。
+        // 設定タブの「Xbox コントローラーを隠す」の赤文字などが参照する）、結果をログ（ファイルと画面）へ出す
+        private void RefreshAndLogDriverStatus()
+        {
+            _environmentService.RefreshHidHideInfo();
+            _environmentService.RefreshViGEmBusInfo();
+            _environmentService.RefreshFakerInputInfo();
+
+            if (_environmentService.HidHideInstalled)
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideInstalled", _environmentService.HidHideProductVersion, _environmentService.HidHideVersion);
+            }
+            else
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideNotInstalled");
+            }
+
+            if (_environmentService.IsViGEmBusInstalled())
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_ViGEmBusInstalled", _environmentService.ViGEmBusVersion);
+            }
+            else
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_ViGEmBusNotInstalled");
+            }
+
+            if (_environmentService.IsFakerInputInstalled())
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_FakerInputInstalled", _environmentService.FakerInputVersion);
+            }
+            else
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_FakerInputNotInstalled");
+            }
+        }
+
         private void InitializePostHostServices()
         {
+            _themeCulture = ResolvePostHostService<DS4Windows.UI.Services.AppThemeAndCultureService>();
+            _ipc = ResolvePostHostService<DS4Windows.Core.Platform.IpcMemoryMap>();
             _appSettingsService = ResolvePostHostService<IAppSettingsService>();
             _pathService = ResolvePostHostService<IPathService>();
             _environmentService = ResolvePostHostService<IEnvironmentService>();
@@ -875,10 +814,10 @@ namespace DS4Windows
                 if (readAppConfig)
                 {
                     // Have app use selected culture
-                    SetUICulture(_bootstrapBackingStore.useLang);
-                    ApplyLanguageSetting(_bootstrapBackingStore.useLang);
+                    _themeCulture.SetUICulture(_bootstrapBackingStore.useLang);
+                    _themeCulture.ApplyLanguageSetting(_bootstrapBackingStore.useLang);
                     DS4Windows.Core.Settings.AppThemeChoice themeChoice = _bootstrapBackingStore.useCurrentTheme;
-                    ChangeTheme(_bootstrapBackingStore.useCurrentTheme, false);
+                    _themeCulture.ChangeTheme(_bootstrapBackingStore.useCurrentTheme, false);
                 }
 
                 CreateBaseThread();
@@ -892,10 +831,10 @@ namespace DS4Windows
             }
             else if (parser.ReenableDevice)
             {
-                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な DS4Devices.reEnableDevice の直接呼び出しをやめ、IDs4DeviceRegistry の契約を通す。
+                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な InputDeviceRegistry.reEnableDevice の直接呼び出しをやめ、IInputDeviceRegistry の契約を通す。
                 // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
                 // 差: デバイスのインスタンス ID が空のときは、アダプタが何もせず戻る（旧: 例外で終了していた。不正な起動引数の場合のみ）。
-                DS4Windows.Processing.Abstractions.IDs4DeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.Ds4DeviceRegistryAdapter();
+                DS4Windows.Processing.Abstractions.IInputDeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.InputDeviceRegistryAdapter();
                 reEnableRegistry.ReEnableDevice(parser.DeviceInstanceId);
                 runShutdown = false;
                 exitApp = true;
@@ -911,78 +850,8 @@ namespace DS4Windows
             }
             else if (parser.Command)
             {
-                IntPtr hWndDS4WindowsForm = IntPtr.Zero;
-                hWndDS4WindowsForm = FindWindow(ReadIPCClassNameMMF(), "DS4Windows");
-                if (hWndDS4WindowsForm != IntPtr.Zero)
-                {
-                    bool bDoSendMsg = true;
-                    bool bWaitResultData = false;
-                    bool bOwnsMutex = false;
-                    Mutex ipcSingleTaskMutex = null;
-                    EventWaitHandle ipcNotifyEvent = null;
-
-                    DS4Windows.Core.Platform.COPYDATASTRUCT cds;
-                    cds.lpData = IntPtr.Zero;
-
-                    try
-                    {
-                        if (parser.CommandArgs.ToLower().StartsWith("query."))
-                        {
-                            // Query.device# (1..4) command returns a string result via memory mapped file. The cmd is sent to the background DS4Windows
-                            // process (via WM_COPYDATA wnd msg), then this client process waits for the availability of the result and prints it to console output pipe.
-                            // Use mutex obj to make sure that concurrent client calls won't try to write and read the same MMF result file at the same time.
-                            ipcSingleTaskMutex = new Mutex(false, "DS4Windows_IPCResultData_SingleTaskMtx");
-                            try
-                            {
-                                bOwnsMutex = ipcSingleTaskMutex.WaitOne(10000);
-                            }
-                            catch (AbandonedMutexException)
-                            {
-                                bOwnsMutex = true;
-                            }
-
-                            if (bOwnsMutex)
-                            {
-                                // This process owns the inter-process sync mutex obj. Let's proceed with creating the output MMF file and waiting for a result.
-                                bWaitResultData = true;
-                                CreateIPCResultDataMMF();
-                                ipcNotifyEvent = new EventWaitHandle(false, EventResetMode.AutoReset, "DS4Windows_IPCResultData_ReadyEvent");
-                            }
-                            else
-                                // If the mtx failed then something must be seriously wrong. Cannot do anything in that case because MMF file may be modified by concurrent processes.
-                                bDoSendMsg = false;
-                        }
-
-                        if (bDoSendMsg)
-                        {
-                            cds.dwData = IntPtr.Zero;
-                            // UTF-8 のバイト列で送る（日本語などの非 ASCII のプロファイル名を通すため。cbData は文字数ではなくバイト数）。ASCII だけの場合は従来と同一
-                            byte[] cmdBytes = System.Text.Encoding.UTF8.GetBytes(parser.CommandArgs);
-                            cds.cbData = cmdBytes.Length;
-                            cds.lpData = Marshal.AllocHGlobal(cmdBytes.Length + 1);
-                            Marshal.Copy(cmdBytes, 0, cds.lpData, cmdBytes.Length);
-                            Marshal.WriteByte(cds.lpData, cmdBytes.Length, 0);
-                            SendMessage(hWndDS4WindowsForm, DS4Windows.UI.MainWindow.WM_COPYDATA, IntPtr.Zero, ref cds);
-
-                            if (bWaitResultData)
-                                // 不具合の修正（2026-11-05）: |more なしでも表示し（起動元のコンソールに接続）、コンソールのコードページで書く（旧: Console.WriteLine）
-                                new DS4Windows.Composition.Startup.CliResultConsoleWriter().WriteLine(WaitAndReadIPCResultDataMMF(ipcNotifyEvent));
-                        }
-                    }
-                    finally
-                    {
-                        // Release the result MMF file in the client process before releasing the mtx and letting other client process to proceed with the same MMF file
-                        if (ipcResultDataMMF != null) ipcResultDataMMF.Dispose();
-                        ipcResultDataMMF = null;
-
-                        // If this was "Query.xxx" cmdline client call then release the inter-process mutex and let other concurrent clients to proceed (if there are anyone waiting for the MMF result file)
-                        if (bOwnsMutex && ipcSingleTaskMutex != null)
-                            ipcSingleTaskMutex.ReleaseMutex();
-
-                        if (cds.lpData != IntPtr.Zero)
-                            Marshal.FreeHGlobal(cds.lpData);
-                    }
-                }
+                // ホストを構築しない短命のクライアント。動いている本体へコマンドを送る
+                new CommandLineClient(new DS4Windows.Core.Platform.IpcMemoryMap()).Run(parser);
 
                 runShutdown = false;
                 exitApp = true;
@@ -997,10 +866,11 @@ namespace DS4Windows
                 // Phase 3 Followup Step F-2: registry comes from AppHost (registered in
                 // ServiceRegistration). AppHost.CreateHost() already ran before this method
                 // is called, so GetService should not be null; the null-coalesce is a
-                // startup-order safety net only, and 'new Ds4DeviceRegistryAdapter()' here
+                // startup-order safety net only, and 'new InputDeviceRegistryAdapter()' here
                 // is the same adapter class already registered, not a second implementation.
                 // Phase7-Step5 W4: 解決の窓口（ResolvePostHostService）を通す。解決できなければ InvalidOperationException（従来と同じ）
-                _controlService = ResolvePostHostService<DS4Windows.Processing.ControlService>();
+                _runtimeBootstrapper = ResolvePostHostService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>();
+                _runtimeBootstrapper.Initialize();
                 _lifecycle = ResolvePostHostService<DS4Windows.Processing.Abstractions.IServiceLifecycle>();
 
                 collectTimer = new Timer(GarbageTask, null, 30000, 30000);
@@ -1031,214 +901,6 @@ namespace DS4Windows
             GC.Collect(0, GCCollectionMode.Forced, false);
         }
 
-        private void CreateTempWorkerThread()
-        {
-            testThread = new Thread(SingleAppComThread_DoWork);
-            testThread.Priority = ThreadPriority.Lowest;
-            testThread.IsBackground = true;
-            testThread.Start();
-        }
-
-        private void SingleAppComThread_DoWork()
-        {
-            while (!exitComThread)
-            {
-                // check for a signal.
-                if (threadComEvent.WaitOne())
-                {
-                    threadComEvent.Reset();
-                    // The user tried to start another instance. We can't allow that,
-                    // so bring the other instance back into view and enable that one.
-                    // That form is created in another thread, so we need some thread sync magic.
-                    if (!exitComThread)
-                    {
-                        Dispatcher.BeginInvoke((Action)(() =>
-                        {
-                            MainWindow.Show();
-                            MainWindow.WindowState = WindowState.Normal;
-                            MainWindow.Activate();
-                        }));
-                    }
-                }
-            }
-        }
-
-        public void CreateIPCClassNameMMF(IntPtr hWnd)
-        {
-            if (ipcClassNameMMF != null) return; // Already holding a handle to MMF file. No need to re-write the data
-
-            try
-            {
-                StringBuilder wndClassNameStr = new StringBuilder(128);
-                if (GetClassName(hWnd, wndClassNameStr, wndClassNameStr.Capacity) != 0 && wndClassNameStr.Length > 0)
-                {
-                    byte[] buffer = ASCIIEncoding.ASCII.GetBytes(wndClassNameStr.ToString());
-
-                    ipcClassNameMMF = MemoryMappedFile.CreateNew("DS4Windows_IPCClassName.dat", 128);
-                    MemoryMappedViewAccessor ipcClassNameMMA_Now = ipcClassNameMMF.CreateViewAccessor(0, buffer.Length);
-                    ipcClassNameMMA_Now.WriteArray(0, buffer, 0, buffer.Length);
-                    ipcClassNameMMA_Now?.Dispose();
-                    // The MMF file is alive as long this process holds the file handle open
-                }
-            }
-            catch (Exception)
-            {
-                /* Eat all exceptions because errors here are not fatal for DS4Win */
-            }
-        }
-
-        private string ReadIPCClassNameMMF()
-        {
-            MemoryMappedFile mmf = null;
-            MemoryMappedViewAccessor mma = null;
-
-            try
-            {
-                byte[] buffer = new byte[128];
-                mmf = MemoryMappedFile.OpenExisting("DS4Windows_IPCClassName.dat");
-                mma = mmf.CreateViewAccessor(0, 128);
-                mma.ReadArray(0, buffer, 0, buffer.Length);
-                return ASCIIEncoding.ASCII.GetString(buffer);
-            }
-            catch (Exception)
-            {
-                // Eat all exceptions
-            }
-            finally
-            {
-                if (mma != null) mma.Dispose();
-                if (mmf != null) mmf.Dispose();
-            }
-
-            return null;
-        }
-
-        private void CreateIPCResultDataMMF()
-        {
-            // Cmdline client process calls this to create the MMF file used in inter-process-communications. The background DS4Windows process
-            // uses WriteIPCResultDataMMF method to write a command result and the client process reads the result from the same MMF file.
-            if (ipcResultDataMMF != null) return; // Already holding a handle to MMF file. No need to re-write the data
-
-            try
-            {
-                ipcResultDataMMF = MemoryMappedFile.CreateNew("DS4Windows_IPCResultData.dat", DS4Windows.Core.Platform.IpcResultText.BufferSize);
-                // The MMF file is alive as long this process holds the file handle open
-            }
-            catch (Exception)
-            {
-                /* Eat all exceptions because errors here are not fatal for DS4Win */
-            }
-        }
-
-        private string WaitAndReadIPCResultDataMMF(EventWaitHandle ipcNotifyEvent)
-        {
-            if (ipcResultDataMMF != null)
-            {
-                // Wait until the inter-process-communication (IPC) result data is available and read the result
-                try
-                {
-                    // Wait max 10 secs and if the result is still not available then timeout and return "empty" result
-                    if (ipcNotifyEvent == null || ipcNotifyEvent.WaitOne(10000))
-                    {
-                        byte[] buffer = new byte[DS4Windows.Core.Platform.IpcResultText.BufferSize];
-                        // 不具合の修正（2026-10-23。Phase10-Step4d W3 の dd10cbb で混入）: 結果の MMF（ipcResultDataMMF）ではなく、クラス名の MMF（ipcClassNameMMF。
-                        // クライアントのプロセスでは null）を読んでいたため、query の結果が常に空になっていた
-                        MemoryMappedViewAccessor ipcResultDataMMA = ipcResultDataMMF.CreateViewAccessor(0, buffer.Length);
-                        ipcResultDataMMA.ReadArray(0, buffer, 0, buffer.Length);
-                        ipcResultDataMMA.Dispose();
-                        // 不具合の修正（2026-11-05）: 旧 ASCII（非 ASCII の文字が「?」に化けた）→ UTF-8。最初の 0 まで
-                        return DS4Windows.Core.Platform.IpcResultText.Decode(buffer);
-                    }
-                }
-                catch (Exception)
-                {
-                    /* Eat all exceptions because errors here are not fatal for DS4Win */
-                }
-            }
-
-            return String.Empty;
-        }
-
-        public void WriteIPCResultDataMMF(string dataStr)
-        {
-            // The background DS4Windows process calls this method to write out the result of "-command QueryProfile.device#" command.
-            // The cmdline client process reads the result from the DS4Windows_IPCResultData.dat MMF file and sends the result to console output pipe.
-            MemoryMappedFile mmf = null;
-            MemoryMappedViewAccessor mma = null;
-            EventWaitHandle ipcNotifyEvent = null;
-
-            try
-            {
-                ipcNotifyEvent = EventWaitHandle.OpenExisting("DS4Windows_IPCResultData_ReadyEvent");
-
-                // 不具合の修正（2026-11-05）: 旧 ASCII（非 ASCII の文字が「?」に化けた）→ UTF-8。終端の 0 を残すため最大 255 バイト（文字の境目で切り詰める）
-                byte[] buffer = DS4Windows.Core.Platform.IpcResultText.Encode(dataStr);
-                mmf = MemoryMappedFile.OpenExisting("DS4Windows_IPCResultData.dat");
-                mma = mmf.CreateViewAccessor(0, DS4Windows.Core.Platform.IpcResultText.BufferSize);
-                mma.WriteArray(0, buffer, 0, buffer.Length);
-            }
-            catch (Exception)
-            {
-                // Eat all exceptions
-            }
-            finally
-            {
-                if (mma != null) mma.Dispose();
-                if (mmf != null) mmf.Dispose();
-
-                if (ipcNotifyEvent != null) ipcNotifyEvent.Set();
-            }
-        }
-
-        private void SetUICulture(string culture)
-        {
-            try
-            {
-                AppLogger.LogDebug($"SetUICulture requested: {culture}");
-                //CultureInfo ci = new CultureInfo("ja");
-                CultureInfo ci = CultureInfo.GetCultureInfo(culture);
-                LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
-                LocalizeDictionary.Instance.Culture = ci;
-                // fixes the culture in threads
-                CultureInfo.DefaultThreadCurrentCulture = ci;
-                CultureInfo.DefaultThreadCurrentUICulture = ci;
-                DS4Windows.Properties.Resources.Culture = ci;
-                Thread.CurrentThread.CurrentCulture = ci;
-                Thread.CurrentThread.CurrentUICulture = ci;
-                AppLogger.LogDebug($"SetUICulture applied: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
-            }
-            catch (CultureNotFoundException) { /* Skip setting culture that we cannot set */ }
-        }
-
-        public void ChangeTheme(DS4Windows.Core.Settings.AppThemeChoice themeChoice,
-            bool fireChanged = true)
-        {
-            if (themeChoice == DS4Windows.Core.Settings.AppThemeChoice.Default)
-            {
-                Application.Current.Resources.MergedDictionaries.Clear();
-
-                // 4.0.1: Default is the light theme (it used to follow the Windows apps theme mode, which made the
-                // dark theme the default for many users). Choose Dark explicitly to use the dark theme.
-                themeLocs.TryGetValue(DS4Windows.Core.Settings.AppThemeChoice.Light, out string loc);
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc, uriKind: UriKind.Relative) });
-
-                if (fireChanged)
-                {
-                    ThemeChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-            else if (themeLocs.TryGetValue(themeChoice, out string loc))
-            {
-                Application.Current.Resources.MergedDictionaries.Clear();
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc, uriKind: UriKind.Relative) });
-
-                if (fireChanged)
-                {
-                    ThemeChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
-
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             if (runShutdown)
@@ -1258,14 +920,14 @@ namespace DS4Windows
         {
             if (runShutdown)
             {
-                if (_controlService != null)
+                if (_runtimeBootstrapper != null)
                 {
                     Task.Run(() =>
                     {
                         if (_lifecycle != null && _lifecycle.Running)
                         {
                             _lifecycle.Stop(immediateUnplug: true);
-                            _controlService.ShutDown();
+                            _runtimeBootstrapper.Shutdown();
                         }
                     }).Wait();
                 }
@@ -1281,16 +943,9 @@ namespace DS4Windows
                 // Reset timer
                 DS4Windows.Core.Utilities.Util.timeEndPeriod(1);
 
-                exitComThread = true;
-                if (threadComEvent != null)
-                {
-                    threadComEvent.Set();  // signal the other instance.
-                    while (testThread.IsAlive)
-                        Thread.SpinWait(500);
-                    threadComEvent.Close();
-                }
+                _singleInstance.Stop();
 
-                if (ipcClassNameMMF != null) ipcClassNameMMF.Dispose();
+                if (_ipc != null) _ipc.Dispose();
 
                 // Dispose controllers registered in IControllerRegistry (if present)
                 // Phase7-Step5 W4: ServiceProviderHolder.Provider の直接呼び出しをやめ、InitializePostHostServices で解決した

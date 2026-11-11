@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         private readonly object _lock = new object();
 
         public FakeHidTransport(short inputReportByteLength = 64, short outputReportByteLength = 32, short numberFeatureDataIndices = 0,
-            ushort vendorId = 0x054C, ushort productId = 0x09CC)
+            ushort vendorId = 0x054C, ushort productId = 0x09CC, short featureReportByteLength = 0)
         {
             // 容量・属性の型は internal（OS の構造体を受ける）のため、リフレクションで作る。
             var asm = typeof(HidDeviceCapabilities).Assembly;
@@ -31,6 +31,7 @@ namespace DS4WindowsTests
             SetField(capsType, caps, "InputReportByteLength", inputReportByteLength);
             SetField(capsType, caps, "OutputReportByteLength", outputReportByteLength);
             SetField(capsType, caps, "NumberFeatureDataIndices", numberFeatureDataIndices);
+            SetField(capsType, caps, "FeatureReportByteLength", featureReportByteLength);
             SetField(capsType, caps, "Reserved", new short[17]);
             Capabilities = (HidDeviceCapabilities)Activator.CreateInstance(typeof(HidDeviceCapabilities),
                 BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { caps }, null);
@@ -62,6 +63,9 @@ namespace DS4WindowsTests
         /// <summary>特徴レポートを読んだときに、バッファへ入れるバイト列（先頭のレポート ID は残す）。</summary>
         public byte[] FeatureData { get; set; }
 
+        /// <summary>1 回の読み取りの前に待つミリ秒。実時間で間隔を見て、近すぎるフレームを読み飛ばす機種（Switch Pro）の台本に使う。</summary>
+        public int ReadDelayMs { get; set; }
+
         public void EnqueueRead(HidReadStatus status, byte[] data = null)
         {
             lock (_lock) _reads.Enqueue((status, data));
@@ -74,7 +78,7 @@ namespace DS4WindowsTests
         public HidDeviceCapabilities Capabilities { get; }
         public HidDeviceAttributes Attributes { get; }
         public string DevicePath { get; set; } = @"\\?\hid#fake";
-        public string ParentPath => null;
+        public string ParentPath { get; set; }
 
         public void OpenDevice(bool exclusive) { IsOpen = true; IsExclusive = exclusive; }
         public void CloseDevice() { IsOpen = false; }
@@ -84,6 +88,7 @@ namespace DS4WindowsTests
         public HidReadStatus ReadFile(Span<byte> inputBuffer, uint timeout = uint.MaxValue)
         {
             ReadCount++;
+            if (ReadDelayMs > 0) System.Threading.Thread.Sleep(ReadDelayMs);
             (HidReadStatus Status, byte[] Data) next;
             lock (_lock)
             {
@@ -114,8 +119,31 @@ namespace DS4WindowsTests
             return !FailWrites;
         }
 
+        private readonly Queue<byte[]> _featureScript = new Queue<byte[]>();
+
+        /// <summary>特徴レポートのポーリング（DS3）の台本。1 回の読み取りにつき 1 件を返し、尽きたら読み取りの失敗（切断）を返す。使わなければ <see cref="FeatureData"/> を返し続ける。</summary>
+        public void EnqueueFeature(byte[] data)
+        {
+            lock (_lock) { _featureScript.Enqueue(data); _useFeatureScript = true; }
+        }
+
+        private bool _useFeatureScript;
+
         public bool readFeatureData(byte[] inputBuffer)
         {
+            if (_useFeatureScript)
+            {
+                byte[] next;
+                lock (_lock)
+                {
+                    if (_featureScript.Count == 0) return false;
+                    next = _featureScript.Dequeue();
+                }
+
+                Array.Copy(next, 0, inputBuffer, 0, Math.Min(next.Length, inputBuffer.Length));
+                return true;
+            }
+
             if (FeatureData != null)
                 Array.Copy(FeatureData, 0, inputBuffer, 0, Math.Min(FeatureData.Length, inputBuffer.Length));
             return true;

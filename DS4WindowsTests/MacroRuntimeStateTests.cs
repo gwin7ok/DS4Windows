@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Macro;
 using DS4Windows.Core.Model;
 using System.Linq;
 using Xunit;
@@ -13,12 +14,12 @@ namespace DS4WindowsTests
     /// </summary>
     public class MacroRuntimeStateTests
     {
-        private static DS4State Apply(int flag, int device = 0, int applyDevice = 0)
+        private static ControllerState Apply(int flag, int device = 0, int applyDevice = 0)
         {
             var state = new MacroRuntimeState();
             state.MacroControl[device][flag] = true;
             state.MacroCount[device] = 1;
-            var mapped = new DS4State();
+            var mapped = new ControllerState();
             state.ApplyHeldControls(applyDevice, mapped);
             return mapped;
         }
@@ -38,7 +39,7 @@ namespace DS4WindowsTests
         {
             var state = new MacroRuntimeState();
             state.MacroControl[0][0] = true;   // フラグがあっても、個数が 0 なら重ねない（旧: MacroCount > 0 の条件）
-            var mapped = new DS4State();
+            var mapped = new ControllerState();
             state.ApplyHeldControls(0, mapped);
             Assert.False(mapped.Cross);
         }
@@ -78,10 +79,10 @@ namespace DS4WindowsTests
         public void ApplyHeldControls_OnlyAffectsTheDeviceThatHoldsTheFlags()
         {
             // ユーザー判断 Q2: デバイス 1 のマクロが押したボタンは、デバイス 2 の出力に重ならない（旧: 全コントローラーに重なっていた）
-            DS4State other = Apply(0, device: 1, applyDevice: 2);
+            ControllerState other = Apply(0, device: 1, applyDevice: 2);
             Assert.False(other.Cross);
 
-            DS4State same = Apply(0, device: 1, applyDevice: 1);
+            ControllerState same = Apply(0, device: 1, applyDevice: 1);
             Assert.True(same.Cross);
         }
 
@@ -91,7 +92,7 @@ namespace DS4WindowsTests
             var state = new MacroRuntimeState();
             state.MacroControl[0][1] = true;
             state.MacroCount[0] = 1;
-            var mapped = new DS4State { Cross = true, LX = 77 };
+            var mapped = new ControllerState { Cross = true, LX = 77 };
             state.ApplyHeldControls(0, mapped);
             Assert.True(mapped.Cross);   // 既にある出力は、そのまま（重ねるだけ）
             Assert.True(mapped.Circle);

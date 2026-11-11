@@ -53,7 +53,7 @@ namespace DS4WindowsTests
 
         private static void Stick(BackingStore store, StickDeadZoneInfo.DeadZoneType type, int dead, int anti, int maxZone, double maxOutput, bool force, double verticalScale = 100.0)
         {
-            foreach (StickDeadZoneInfo info in new[] { store.lsModInfo[Slot], store.rsModInfo[Slot] })
+            foreach (StickDeadZoneInfo info in new[] { store.stickSlots[Slot].LSMod, store.stickSlots[Slot].RSMod })
             {
                 info.deadzoneType = type;
                 info.deadZone = dead;
@@ -106,37 +106,37 @@ namespace DS4WindowsTests
             yield return new Scenario("stick radial dz10 sensitivity-1.5", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSSens[Slot] = 1.5;
-                s.RSSens[Slot] = 1.5;
+                s.stickSlots[Slot].LSSens = 1.5;
+                s.stickSlots[Slot].RSSens = 1.5;
             });
             yield return new Scenario("stick radial dz10 sensitivity-0.6", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSSens[Slot] = 0.6;
-                s.RSSens[Slot] = 0.6;
+                s.stickSlots[Slot].LSSens = 0.6;
+                s.stickSlots[Slot].RSSens = 0.6;
             });
             yield return new Scenario("stick axial dz10 sensitivity-1.5 (ignored for axial)", s =>
             {
                 Stick(s, axial, 10, 0, 100, 100.0, false);
-                s.LSSens[Slot] = 1.5;
-                s.RSSens[Slot] = 1.5;
+                s.stickSlots[Slot].LSSens = 1.5;
+                s.stickSlots[Slot].RSSens = 1.5;
             });
 
             yield return new Scenario("stick radial dz10 square-roundness-5", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].lsMode = true;
-                s.squStickInfo[Slot].rsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 5.0;
-                s.squStickInfo[Slot].rsRoundness = 5.0;
+                s.stickSlots[Slot].SquStick.lsMode = true;
+                s.stickSlots[Slot].SquStick.rsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 5.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 5.0;
             });
             yield return new Scenario("stick radial dz10 square-roundness-12", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].lsMode = true;
-                s.squStickInfo[Slot].rsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 12.0;
-                s.squStickInfo[Slot].rsRoundness = 12.0;
+                s.stickSlots[Slot].SquStick.lsMode = true;
+                s.stickSlots[Slot].SquStick.rsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 12.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 12.0;
             });
 
             for (int mode = 1; mode <= 5; mode++)
@@ -145,22 +145,22 @@ namespace DS4WindowsTests
                 yield return new Scenario($"stick radial dz10 out-curve-{curve}", s =>
                 {
                     Stick(s, radial, 10, 0, 100, 100.0, false);
-                    s.setLsOutCurveMode(Slot, curve);
-                    s.setRsOutCurveMode(Slot, curve);
+                    s.stickSlots[Slot].ApplyLSCurveMode(curve);
+                    s.stickSlots[Slot].ApplyRSCurveMode(curve);
                 });
             }
 
             yield return new Scenario("stick radial dz10 rotation-30", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSRotation[Slot] = 30.0;
-                s.RSRotation[Slot] = 30.0;
+                s.stickSlots[Slot].LSRotation = 30.0;
+                s.stickSlots[Slot].RSRotation = 30.0;
             });
             yield return new Scenario("stick radial dz10 rotation-minus-45", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.LSRotation[Slot] = -45.0;
-                s.RSRotation[Slot] = -45.0;
+                s.stickSlots[Slot].LSRotation = -45.0;
+                s.stickSlots[Slot].RSRotation = -45.0;
             });
 
             // (c) の前に追加: 出力カーブを Axial のデッドゾーンでも通す。ベジェ曲線（モード 6。Radial と Axial で分岐する）と、スクエアスティックの片側だけの場面
@@ -170,8 +170,8 @@ namespace DS4WindowsTests
                 yield return new Scenario($"stick axial dz10 out-curve-{curve}", s =>
                 {
                     Stick(s, axial, 10, 0, 100, 100.0, false);
-                    s.setLsOutCurveMode(Slot, curve);
-                    s.setRsOutCurveMode(Slot, curve);
+                    s.stickSlots[Slot].ApplyLSCurveMode(curve);
+                    s.stickSlots[Slot].ApplyRSCurveMode(curve);
                 });
             }
 
@@ -181,46 +181,46 @@ namespace DS4WindowsTests
                 yield return new Scenario($"stick {dzType} dz10 out-curve-6-bezier", s =>
                 {
                     Stick(s, dzType, 10, 0, 100, 100.0, false);
-                    s.lsOutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.LSRS, true);
-                    s.rsOutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.LSRS, true);
-                    s.setLsOutCurveMode(Slot, 6);
-                    s.setRsOutCurveMode(Slot, 6);
+                    s.stickSlots[Slot].LsBezier.InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.LSRS, true);
+                    s.stickSlots[Slot].RsBezier.InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.LSRS, true);
+                    s.stickSlots[Slot].ApplyLSCurveMode(6);
+                    s.stickSlots[Slot].ApplyRSCurveMode(6);
                 });
             }
 
             yield return new Scenario("stick radial dz10 square-left-only out-curve-2", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].lsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 8.0;
-                s.squStickInfo[Slot].rsRoundness = 3.0;
-                s.setLsOutCurveMode(Slot, 2);
-                s.setRsOutCurveMode(Slot, 3);
+                s.stickSlots[Slot].SquStick.lsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 8.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 3.0;
+                s.stickSlots[Slot].ApplyLSCurveMode(2);
+                s.stickSlots[Slot].ApplyRSCurveMode(3);
             });
             yield return new Scenario("stick axial dz10 square-right-only", s =>
             {
                 Stick(s, axial, 10, 0, 100, 100.0, false);
-                s.squStickInfo[Slot].rsMode = true;
-                s.squStickInfo[Slot].lsRoundness = 3.0;
-                s.squStickInfo[Slot].rsRoundness = 8.0;
+                s.stickSlots[Slot].SquStick.rsMode = true;
+                s.stickSlots[Slot].SquStick.lsRoundness = 3.0;
+                s.stickSlots[Slot].SquStick.rsRoundness = 8.0;
             });
 
             // 9-A(2)-B の前に追加: ドリフト補正（ApplyStickCalibration。左右・X／Y で量と符号を変える。範囲外はクランプ）
             yield return new Scenario("stick radial dz10 drift-ls10-minus20-rs-minus30-40", s =>
             {
                 Stick(s, radial, 10, 0, 100, 100.0, false);
-                s.leftStickDriftXAxis[Slot] = 10;
-                s.leftStickDriftYAxis[Slot] = -20;
-                s.rightStickDriftXAxis[Slot] = -30;
-                s.rightStickDriftYAxis[Slot] = 40;
+                s.stickSlots[Slot].LeftStickDriftXAxis = 10;
+                s.stickSlots[Slot].LeftStickDriftYAxis = -20;
+                s.stickSlots[Slot].RightStickDriftXAxis = -30;
+                s.stickSlots[Slot].RightStickDriftYAxis = 40;
             });
             yield return new Scenario("stick axial none drift-large", s =>
             {
                 Stick(s, axial, 0, 0, 100, 100.0, false);
-                s.leftStickDriftXAxis[Slot] = 100;
-                s.leftStickDriftYAxis[Slot] = -100;
-                s.rightStickDriftXAxis[Slot] = -100;
-                s.rightStickDriftYAxis[Slot] = 100;
+                s.stickSlots[Slot].LeftStickDriftXAxis = 100;
+                s.stickSlots[Slot].LeftStickDriftYAxis = -100;
+                s.stickSlots[Slot].RightStickDriftXAxis = -100;
+                s.stickSlots[Slot].RightStickDriftYAxis = 100;
             });
         }
 
@@ -241,7 +241,7 @@ namespace DS4WindowsTests
                 var zone = z;
                 yield return new Scenario($"trigger {zone.Name}", s =>
                 {
-                    foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] })
+                    foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod })
                     {
                         info.deadZone = zone.Dead;
                         info.antiDeadZone = zone.Anti;
@@ -253,13 +253,13 @@ namespace DS4WindowsTests
 
             yield return new Scenario("trigger sensitivity-1.4", s =>
             {
-                s.l2Sens[Slot] = 1.4;
-                s.r2Sens[Slot] = 1.4;
+                s.triggerSlots[Slot].L2Sens = 1.4;
+                s.triggerSlots[Slot].R2Sens = 1.4;
             });
             yield return new Scenario("trigger sensitivity-0.7", s =>
             {
-                s.l2Sens[Slot] = 0.7;
-                s.r2Sens[Slot] = 0.7;
+                s.triggerSlots[Slot].L2Sens = 0.7;
+                s.triggerSlots[Slot].R2Sens = 0.7;
             });
 
             for (int mode = 1; mode <= 5; mode++)
@@ -267,63 +267,63 @@ namespace DS4WindowsTests
                 int curve = mode;
                 yield return new Scenario($"trigger out-curve-{curve}", s =>
                 {
-                    s.setL2OutCurveMode(Slot, curve);
-                    s.setR2OutCurveMode(Slot, curve);
+                    s.triggerSlots[Slot].ApplyL2CurveMode(curve);
+                    s.triggerSlots[Slot].ApplyR2CurveMode(curve);
                 });
             }
 
             yield return new Scenario("trigger dz20-anti10-max90 out-curve-2", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] })
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod })
                 {
                     info.deadZone = 20;
                     info.antiDeadZone = 10;
                     info.maxZone = 90;
                 }
 
-                s.setL2OutCurveMode(Slot, 2);
-                s.setR2OutCurveMode(Slot, 2);
+                s.triggerSlots[Slot].ApplyL2CurveMode(2);
+                s.triggerSlots[Slot].ApplyR2CurveMode(2);
             });
 
             // (d) の前に追加: 単独の設定（アンチデッドゾーンのみ、小さい最大ゾーンのみ、最大出力のみ）と、L2 と R2 で設定が違う場面（取り違えの検出）
             yield return new Scenario("trigger anti15-only", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.antiDeadZone = 15;
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod }) info.antiDeadZone = 15;
             });
             yield return new Scenario("trigger max50-only", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.maxZone = 50;
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod }) info.maxZone = 50;
             });
             yield return new Scenario("trigger out40-only", s =>
             {
-                foreach (TriggerDeadZoneZInfo info in new[] { s.l2ModInfo[Slot], s.r2ModInfo[Slot] }) info.maxOutput = 40.0;
+                foreach (TriggerDeadZoneZInfo info in new[] { s.triggerSlots[Slot].L2Mod, s.triggerSlots[Slot].R2Mod }) info.maxOutput = 40.0;
             });
             yield return new Scenario("trigger dz10-max30 (L2 and R2 differ)", s =>
             {
-                s.l2ModInfo[Slot].deadZone = 10;
-                s.l2ModInfo[Slot].maxZone = 30;
-                s.r2ModInfo[Slot].deadZone = 60;
-                s.r2ModInfo[Slot].antiDeadZone = 20;
-                s.r2ModInfo[Slot].maxOutput = 70.0;
+                s.triggerSlots[Slot].L2Mod.deadZone = 10;
+                s.triggerSlots[Slot].L2Mod.maxZone = 30;
+                s.triggerSlots[Slot].R2Mod.deadZone = 60;
+                s.triggerSlots[Slot].R2Mod.antiDeadZone = 20;
+                s.triggerSlots[Slot].R2Mod.maxOutput = 70.0;
             });
 
             // (c) の前に追加: ベジェ曲線（モード 6）
             yield return new Scenario("trigger out-curve-6-bezier", s =>
             {
-                s.l2OutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.L2R2, true);
-                s.r2OutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.L2R2, true);
-                s.setL2OutCurveMode(Slot, 6);
-                s.setR2OutCurveMode(Slot, 6);
+                s.triggerSlots[Slot].L2Bezier.InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.L2R2, true);
+                s.triggerSlots[Slot].R2Bezier.InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.L2R2, true);
+                s.triggerSlots[Slot].ApplyL2CurveMode(6);
+                s.triggerSlots[Slot].ApplyR2CurveMode(6);
             });
         }
 
         // ---- 実行 ----
 
-        private static DS4State Run(Mapping mapper, BackingStore store, byte lx, byte ly, byte rx, byte ry, byte l2, byte r2)
+        private static ControllerState Run(Mapping mapper, BackingStore store, byte lx, byte ly, byte rx, byte ry, byte l2, byte r2)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
             cState.LX = lx; cState.LY = ly; cState.RX = rx; cState.RY = ry;
             cState.L2 = l2; cState.R2 = r2;
             return mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
@@ -346,7 +346,7 @@ namespace DS4WindowsTests
             {
                 foreach (byte y in StickGrid)
                 {
-                    DS4State result = Run(mapper, store, x, y, x, y, 0, 0);
+                    ControllerState result = Run(mapper, store, x, y, x, y, 0, 0);
                     text.AppendLine($"{x},{y} -> L {result.LX},{result.LY} R {result.RX},{result.RY}");
                 }
             }
@@ -362,7 +362,7 @@ namespace DS4WindowsTests
             text.AppendLine("## " + scenario.Name);
             foreach (byte v in TriggerGrid)
             {
-                DS4State result = Run(mapper, store, 128, 128, 128, 128, v, v);
+                ControllerState result = Run(mapper, store, 128, 128, 128, 128, v, v);
                 text.AppendLine($"{v} -> L2 {result.L2} R2 {result.R2}");
             }
 
@@ -407,7 +407,7 @@ namespace DS4WindowsTests
                 {
                     foreach (byte y in StickGrid)
                     {
-                        DS4State r = Run(mapper, store, x, y, x, y, 0, 0);
+                        ControllerState r = Run(mapper, store, x, y, x, y, 0, 0);
                         if (r.LX != r.RX || r.LY != r.RY)
                         {
                             differences++;
@@ -427,7 +427,7 @@ namespace DS4WindowsTests
                 int differences = 0;
                 foreach (byte v in TriggerGrid)
                 {
-                    DS4State r = Run(mapper, store, 128, 128, 128, 128, v, v);
+                    ControllerState r = Run(mapper, store, 128, 128, 128, 128, v, v);
                     if (r.L2 != r.R2) differences++;
                 }
 
@@ -452,13 +452,13 @@ namespace DS4WindowsTests
                 var mapper = TestMappingFactory.Create();
                 var store = new BackingStore(new EnvironmentService());
                 Stick(store, StickDeadZoneInfo.DeadZoneType.Radial, 0, 0, 100, 100.0, false);
-                store.lsModInfo[Slot].fuzz = fuzz;
-                store.rsModInfo[Slot].fuzz = fuzz;
+                store.stickSlots[Slot].LSMod.fuzz = fuzz;
+                store.stickSlots[Slot].RSMod.fuzz = fuzz;
 
                 text.AppendLine($"## fuzz {fuzz}");
                 foreach (var frame in sequence)
                 {
-                    DS4State r = Run(mapper, store, frame.X, frame.Y, frame.X, frame.Y, 0, 0);
+                    ControllerState r = Run(mapper, store, frame.X, frame.Y, frame.X, frame.Y, 0, 0);
                     text.AppendLine($"{frame.X},{frame.Y} -> L {r.LX},{r.LY} R {r.RX},{r.RY}");
                 }
             }

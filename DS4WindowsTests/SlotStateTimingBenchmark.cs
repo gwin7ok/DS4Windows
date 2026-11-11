@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using System.Diagnostics;
@@ -38,13 +39,13 @@ namespace DS4WindowsTests
         /// <summary>(a) 旧 ControlService と同じ形。配列はこのクラスが所有する private フィールド。</summary>
         private sealed class OwnerWithArrays
         {
-            private readonly DS4State[] CurrentState = new DS4State[ControllerLimits.MaxControllerCount];
-            private readonly DS4State[] TempState = new DS4State[ControllerLimits.MaxControllerCount];
-            private readonly Mouse[] touchPad = new Mouse[ControllerLimits.MaxControllerCount];
+            private readonly ControllerState[] CurrentState = new ControllerState[ControllerLimits.MaxControllerCount];
+            private readonly ControllerState[] TempState = new ControllerState[ControllerLimits.MaxControllerCount];
+            private readonly TouchpadMouse[] touchPad = new TouchpadMouse[ControllerLimits.MaxControllerCount];
 
             public OwnerWithArrays()
             {
-                for (int i = 0; i < CurrentState.Length; i++) { CurrentState[i] = new DS4State(); TempState[i] = new DS4State(); }
+                for (int i = 0; i < CurrentState.Length; i++) { CurrentState[i] = new ControllerState(); TempState[i] = new ControllerState(); }
             }
 
             public int Read(int ind)
@@ -60,16 +61,16 @@ namespace DS4WindowsTests
         /// <summary>(b) 5b 以降の形。窓口からコンストラクターで一度だけ取得して保持する。</summary>
         private sealed class OwnerWithCachedReferences
         {
-            private readonly DS4State[] _currentState;
-            private readonly DS4State[] _tempState;
-            private readonly Mouse[] _touchPad;
+            private readonly ControllerState[] _currentState;
+            private readonly ControllerState[] _tempState;
+            private readonly TouchpadMouse[] _touchPad;
 
             public OwnerWithCachedReferences(IDeviceSlotState slots)
             {
                 _currentState = slots.CurrentStates;
                 _tempState = slots.TempStates;
                 _touchPad = slots.TouchPads;
-                for (int i = 0; i < _currentState.Length; i++) { _currentState[i] = new DS4State(); _tempState[i] = new DS4State(); }
+                for (int i = 0; i < _currentState.Length; i++) { _currentState[i] = new ControllerState(); _tempState[i] = new ControllerState(); }
             }
 
             public int Read(int ind)

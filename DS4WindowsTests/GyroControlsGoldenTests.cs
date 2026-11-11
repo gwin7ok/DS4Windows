@@ -48,17 +48,17 @@ namespace DS4WindowsTests
         {
             if (x)
             {
-                store.SXDeadzone[Slot] = dead;
-                store.SXMaxzone[Slot] = max;
-                store.SXAntiDeadzone[Slot] = anti;
-                store.SXSens[Slot] = sens;
+                store.sixAxisSlots[Slot].SXDeadZone = dead;
+                store.sixAxisSlots[Slot].SXMaxZone = max;
+                store.sixAxisSlots[Slot].SXAntiDeadZone = anti;
+                store.sixAxisSlots[Slot].SXSens = sens;
             }
             else
             {
-                store.SZDeadzone[Slot] = dead;
-                store.SZMaxzone[Slot] = max;
-                store.SZAntiDeadzone[Slot] = anti;
-                store.SZSens[Slot] = sens;
+                store.sixAxisSlots[Slot].SZDeadZone = dead;
+                store.sixAxisSlots[Slot].SZMaxZone = max;
+                store.sixAxisSlots[Slot].SZAntiDeadZone = anti;
+                store.sixAxisSlots[Slot].SZSens = sens;
             }
         }
 
@@ -96,24 +96,24 @@ namespace DS4WindowsTests
                 yield return new Scenario($"gyro none out-curve-{curve}", s =>
                 {
                     Both(s, 0.0, 1.0, 0.0, 1.0);
-                    s.setSXOutCurveMode(Slot, curve);
-                    s.setSZOutCurveMode(Slot, curve);
+                    s.sixAxisSlots[Slot].ApplySXCurveMode(curve);
+                    s.sixAxisSlots[Slot].ApplySZCurveMode(curve);
                 });
                 yield return new Scenario($"gyro dz-0.1-anti-0.1 out-curve-{curve}", s =>
                 {
                     Both(s, 0.1, 1.0, 0.1, 1.0);
-                    s.setSXOutCurveMode(Slot, curve);
-                    s.setSZOutCurveMode(Slot, curve);
+                    s.sixAxisSlots[Slot].ApplySXCurveMode(curve);
+                    s.sixAxisSlots[Slot].ApplySZCurveMode(curve);
                 });
             }
 
             yield return new Scenario("gyro none out-curve-6-bezier", s =>
             {
                 Both(s, 0.0, 1.0, 0.0, 1.0);
-                s.sxOutBezierCurveObj[Slot].InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.SA, true);
-                s.szOutBezierCurveObj[Slot].InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.SA, true);
-                s.setSXOutCurveMode(Slot, 6);
-                s.setSZOutCurveMode(Slot, 6);
+                s.sixAxisSlots[Slot].SXCurve.InitBezierCurve("0.7,0.28,1.0,0.55", BezierCurve.AxisType.SA, true);
+                s.sixAxisSlots[Slot].SZCurve.InitBezierCurve("0.25,0.1,0.25,1.0", BezierCurve.AxisType.SA, true);
+                s.sixAxisSlots[Slot].ApplySXCurveMode(6);
+                s.sixAxisSlots[Slot].ApplySZCurveMode(6);
             });
 
             // X と Z で設定が違う場面（取り違えの検出）
@@ -121,18 +121,18 @@ namespace DS4WindowsTests
             {
                 Axis(s, true, 0.1, 1.0, 0.0, 1.2);
                 Axis(s, false, 0.3, 0.8, 0.2, 0.7);
-                s.setSXOutCurveMode(Slot, 2);
-                s.setSZOutCurveMode(Slot, 3);
+                s.sixAxisSlots[Slot].ApplySXCurveMode(2);
+                s.sixAxisSlots[Slot].ApplySZCurveMode(3);
             });
             yield return new Scenario("gyro only X curve", s =>
             {
                 Both(s, 0.0, 1.0, 0.0, 1.0);
-                s.setSXOutCurveMode(Slot, 4);
+                s.sixAxisSlots[Slot].ApplySXCurveMode(4);
             });
             yield return new Scenario("gyro only Z curve", s =>
             {
                 Both(s, 0.0, 1.0, 0.0, 1.0);
-                s.setSZOutCurveMode(Slot, 5);
+                s.sixAxisSlots[Slot].ApplySZCurveMode(5);
             });
         }
 
@@ -141,19 +141,19 @@ namespace DS4WindowsTests
         private static (int X, int Z) Run(Mapping mapper, BackingStore store, int accelX, int accelZ)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
             cState.Motion.accelX = accelX;
             cState.Motion.accelZ = accelZ;
             cState.Motion.outputGyroControls = true;
-            DS4State result = mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
+            ControllerState result = mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
             return (result.Motion.outputAccelX, result.Motion.outputAccelZ);
         }
 
         private static BackingStore NewStore(Scenario scenario)
         {
             var store = new BackingStore(new EnvironmentService());
-            store.gyroOutMode[Slot] = GyroOutMode.Controls;
+            store.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
             scenario.Configure(store);
             return store;
         }

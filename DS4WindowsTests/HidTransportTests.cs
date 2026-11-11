@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
+using DS4Windows.Input.Devices;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
 using Xunit;
@@ -50,14 +51,14 @@ namespace DS4WindowsTests
         {
             var fake = new FakeHidTransport(inputReportByteLength: inputLength, numberFeatureDataIndices: featureIndices);
 
-            Assert.Equal(expected, DS4Device.HidConnectionType(fake));
+            Assert.Equal(expected, InputDeviceCore.HidConnectionType(fake));
         }
 
         [Fact]
         public void TheDevice_KeepsTheTransportItWasGiven_AndReportsItsExclusiveMode()
         {
             var fake = new FakeHidTransport { IsExclusive = true };
-            var device = new DS4Device(fake, "Fake DS4");
+            var device = new DualShock4Device(fake, "Fake DS4");
 
             Assert.Same(fake, device.HidDevice);
             Assert.True(device.IsHidExclusive);
@@ -67,7 +68,7 @@ namespace DS4WindowsTests
         public void PostInit_OfAUsbDevice_ReadsTheSerialAndWritesTheFirstOutputReportThroughTheTransport()
         {
             var fake = new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 32);
-            var device = new DS4Device(fake, "Fake DS4", VidPidFeatureSet.NoGyroCalib);
+            var device = new DualShock4Device(fake, "Fake DS4", VidPidFeatureSet.NoGyroCalib);
 
             device.PostInit();
 
@@ -81,7 +82,7 @@ namespace DS4WindowsTests
         public void AFailedWrite_ThroughTheTransport_DoesNotThrow()
         {
             var fake = new FakeHidTransport { FailWrites = true };
-            var device = new DS4Device(fake, "Fake DS4", VidPidFeatureSet.NoGyroCalib);
+            var device = new DualShock4Device(fake, "Fake DS4", VidPidFeatureSet.NoGyroCalib);
 
             var ex = Record.Exception(() => device.PostInit());
 

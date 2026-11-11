@@ -49,6 +49,24 @@ namespace DS4Windows.UI.ViewModels
             set => _appSettings.UseExclusiveMode = value;
         }
 
+        /// <summary>検出した Xbox コントローラーすべての、元の XInput を HidHide で隠すか（Xbox の系統の設定。変更するとサービスを再起動する）。</summary>
+        public bool HideXboxController
+        {
+            get => _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent;
+            set
+            {
+                _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent = value;
+                OnPropertyChanged(nameof(HideXboxController));
+                OnPropertyChanged(nameof(ShowHidHideMissingNotice));
+            }
+        }
+
+        /// <summary>
+        /// 「Xbox コントローラーを隠す」がオンで、HidHide が導入されていないとき、導入を促す赤文字を出すか。
+        /// 導入の有無は、起動時の確認（<see cref="IEnvironmentService.RefreshHidHideInfo"/>）で保存した値（<see cref="IEnvironmentService.HidHideInstalled"/>）を参照する。
+        /// </summary>
+        public bool ShowHidHideMissingNotice => HideXboxController && !_environmentService.HidHideInstalled;
+
         public bool SwipeTouchSwitchProfile
         {
             get => _appSettings.SwipeProfiles;
@@ -665,6 +683,7 @@ namespace DS4Windows.UI.ViewModels
         public void DriverCheckRefresh()
         {
             OnPropertyChanged(nameof(HidHideClientFound));
+            OnPropertyChanged(nameof(ShowHidHideMissingNotice));
         }
 
         public int LogMaxArchiveFiles

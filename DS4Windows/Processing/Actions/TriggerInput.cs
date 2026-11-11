@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -22,13 +23,13 @@ namespace DS4Windows.Processing.Actions
         private readonly IProfileSettingsService _profileSettings;
         private readonly Func<DateTime> _utcNow;
         private readonly Func<long> _tickCount64;
-        private readonly DS4StateFieldMapping _previousFields = new DS4StateFieldMapping();
+        private readonly ControllerStateFieldMapping _previousFields = new ControllerStateFieldMapping();
 
-        private DS4State _current;
-        private DS4State _previous;
-        private DS4StateExposed _exposed;
-        private Mouse _mouse;
-        private DS4StateFieldMapping _fields;
+        private ControllerState _current;
+        private ControllerState _previous;
+        private ControllerStateExposed _exposed;
+        private TouchpadMouse _mouse;
+        private ControllerStateFieldMapping _fields;
         private bool _previousPopulated;
 
         /// <param name="utcNow">現在時刻の提供元（省略時は <c>DateTime.UtcNow</c>）。テストで固定できる。</param>
@@ -54,7 +55,7 @@ namespace DS4Windows.Processing.Actions
         /// 1 フレームの入力を設定する。<paramref name="fields"/> は、<c>Mapping</c> が展開済みの表（<c>PopulateFieldMapping</c> 済み）。
         /// <paramref name="previous"/>／<paramref name="exposed"/>／<paramref name="mouse"/> は、前フレームの表を遅延して作るときだけ使う（null でもよい）。
         /// </summary>
-        public void Update(DS4State current, DS4State previous, DS4StateExposed exposed, Mouse mouse, DS4StateFieldMapping fields)
+        public void Update(ControllerState current, ControllerState previous, ControllerStateExposed exposed, TouchpadMouse mouse, ControllerStateFieldMapping fields)
         {
             _current = current;
             _previous = previous;
@@ -136,18 +137,18 @@ namespace DS4Windows.Processing.Actions
             if (_current == null || _fields == null) return false;
 
             int controlNum = (int)control;
-            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length)
+            if (controlNum < 0 || controlNum >= ControllerStateFieldMapping.mappedType.Length)
                 return false;
 
-            DS4State cState = _current;
-            DS4StateFieldMapping fieldMap = _fields;
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+            ControllerState cState = _current;
+            ControllerStateFieldMapping fieldMap = _fields;
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
             bool result = false;
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 result = fieldMap.buttons[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 switch (control)
                 {
@@ -162,21 +163,21 @@ namespace DS4Windows.Processing.Actions
                     default: break;
                 }
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 result = fieldMap.triggers[controlNum] > 0;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Touch)
             {
                 result = fieldMap.buttons[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.SwipeDir)
             {
                 result = fieldMap.swipedirbools[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool gyroForControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool gyroForControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 bool safeTest = false;
 
                 switch (control)
@@ -204,19 +205,19 @@ namespace DS4Windows.Processing.Actions
             if (_fields == null) return 0;
 
             int controlNum = (int)control;
-            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length) return 0;
+            if (controlNum < 0 || controlNum >= ControllerStateFieldMapping.mappedType.Length) return 0;
 
-            DS4StateFieldMapping fieldMap = _fields;
+            ControllerStateFieldMapping fieldMap = _fields;
             bool alt = positive;
             byte trueVal = alt ? (byte)255 : (byte)0;
             byte result = 0;
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
 
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 result = fieldMap.buttons[controlNum] ? trueVal : falseVal;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 byte axisValue = fieldMap.axisdirs[controlNum];
 
@@ -229,27 +230,27 @@ namespace DS4Windows.Processing.Actions
                     default: if (!alt) result = axisValue > falseVal ? (byte)(255 - axisValue) : falseVal; else result = axisValue > falseVal ? axisValue : falseVal; break;
                 }
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 if (alt)
                     result = (byte)(128.0f + fieldMap.triggers[controlNum] / 2.0078740157480315f);
                 else
                     result = (byte)(128.0f - fieldMap.triggers[controlNum] / 2.0078740157480315f);
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Touch)
             {
                 result = fieldMap.buttons[controlNum] ? trueVal : falseVal;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.SwipeDir)
             {
                 if (alt)
                     result = (byte)(_mouse != null ? 128.0f + fieldMap.swipedirs[controlNum] / 2f : 0);
                 else
                     result = (byte)(_mouse != null ? 128.0f - fieldMap.swipedirs[controlNum] / 2f : 0);
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool saControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool saControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 int gyro = fieldMap.gryodirs[controlNum];
 
                 switch (control)
@@ -283,17 +284,17 @@ namespace DS4Windows.Processing.Actions
             if (_fields == null) return 0;
 
             int controlNum = (int)control;
-            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length) return 0;
+            if (controlNum < 0 || controlNum >= ControllerStateFieldMapping.mappedType.Length) return 0;
 
-            DS4StateFieldMapping fieldMap = _fields;
+            ControllerStateFieldMapping fieldMap = _fields;
             byte result = 0;
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
 
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 result = (byte)(fieldMap.buttons[controlNum] ? 255 : 0);
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 byte axisValue = fieldMap.axisdirs[controlNum];
 
@@ -306,21 +307,21 @@ namespace DS4Windows.Processing.Actions
                     default: result = (byte)(axisValue - 128.0f < 0 ? 0 : (axisValue - 128.0f) * 2.0078740157480315f); break;
                 }
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 result = fieldMap.triggers[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Touch)
             {
                 result = (byte)(_mouse != null && fieldMap.buttons[controlNum] ? 255 : 0);
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.SwipeDir)
             {
                 result = (byte)(_mouse != null ? fieldMap.swipedirs[controlNum] : 0);
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool saControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool saControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 int gyro = fieldMap.gryodirs[controlNum];
 
                 switch (control)
@@ -342,21 +343,21 @@ namespace DS4Windows.Processing.Actions
 
         // 現行の Mapping.getBoolSpecialActionMapping（cState／fieldMap を引数に取る形）と同じ判定。
         // digital が true のとき（R-5。SA の割り当て）は、軸と L2・R2 の閾値（幅 55／100）をなくす（軸は 128 から少しでも傾けば、L2・R2 は 0 を超えれば成立）
-        private bool Evaluate(DS4Controls control, DS4State cState, DS4StateFieldMapping fieldMap, bool digital = false)
+        private bool Evaluate(DS4Controls control, ControllerState cState, ControllerStateFieldMapping fieldMap, bool digital = false)
         {
             int axisWidth = digital ? 0 : AxisDeadWidth;
             int triggerThreshold = digital ? 0 : TriggerThreshold;
             int controlNum = (int)control;
-            if (controlNum < 0 || controlNum >= DS4StateFieldMapping.mappedType.Length)
+            if (controlNum < 0 || controlNum >= ControllerStateFieldMapping.mappedType.Length)
                 return false;
 
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
             bool result = false;
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 result = fieldMap.buttons[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 byte axisValue = fieldMap.axisdirs[controlNum];
 
@@ -369,21 +370,21 @@ namespace DS4Windows.Processing.Actions
                     default: result = axisValue > 128 + axisWidth; break;
                 }
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 result = fieldMap.triggers[controlNum] > triggerThreshold;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Touch)
             {
                 result = fieldMap.buttons[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.SwipeDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.SwipeDir)
             {
                 result = fieldMap.swipedirbools[controlNum];
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
-                bool gyroForControls = _profileSettings.GyroOutputMode[_device] == GyroOutMode.Controls;
+                bool gyroForControls = _profileSettings.ForSlot(_device).Gyro.OutputMode == GyroOutMode.Controls;
                 bool safeTest = false;
 
                 switch (control)

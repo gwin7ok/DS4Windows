@@ -52,26 +52,6 @@ namespace DS4Windows.UI.ViewModels
 
         public bool UsingMinViGEm173333 => environmentService.IsUsingMinViGEm117333();
 
-        // DS3 の傾きの擬似。プロファイル全体の設定だが、ジャイロのタブにある
-        public bool HasUseDs3PitchRollSimChanged { get; private set; }
-
-        public bool UseDs3PitchRollSim
-        {
-            get => gyro.UseDs3PitchRollSim;
-            set
-            {
-                // 再起動が要るのは、実行中の値と違うとき。元に戻したら、求めない
-                HasUseDs3PitchRollSimChanged = gyro.UseDs3PitchRollSim != value;
-                gyro.UseDs3PitchRollSim = value;
-            }
-        }
-
-        /// <summary>サービスの再起動を求めたあとに、<see cref="HasUseDs3PitchRollSimChanged"/> の印を戻す（同じ変更で再起動をくり返し求めない）。</summary>
-        public void AcknowledgeUseDs3PitchRollSimChange()
-        {
-            HasUseDs3PitchRollSimChanged = false;
-        }
-
         public int GyroOutModeIndex
         {
             get

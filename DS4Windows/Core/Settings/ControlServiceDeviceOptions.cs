@@ -37,8 +37,7 @@ namespace DS4Windows.Core.Settings
             [InputDeviceFamily.DS4] = new DS4DeviceOptions(),
             [InputDeviceFamily.DualSense] = new DualSenseDeviceOptions(),
             [InputDeviceFamily.SwitchPro] = new SwitchProDeviceOptions(),
-            [InputDeviceFamily.JoyCon] = new JoyConDeviceOptions(),
-            [InputDeviceFamily.DS3] = new DS3DeviceOptions(),
+            [InputDeviceFamily.Xbox] = new XboxDeviceOptions(),
         };
 
         /// <summary>系統の設定（有効・無効と変更の通知）。</summary>
@@ -49,6 +48,22 @@ namespace DS4Windows.Core.Settings
 
         /// <summary>設定を持つ系統の一覧。</summary>
         public IEnumerable<InputDeviceFamily> Families => byFamily.Keys;
+
+        /// <summary>
+        /// 別の入れ物の系統ごとの設定値（有効・無効と機種固有の項目）を、この入れ物へ写す。値が変わった項目だけが変更の通知を出す。
+        /// </summary>
+        public void CopyValuesFrom(ControlServiceDeviceOptions source)
+        {
+            foreach (InputDeviceFamily family in Families)
+            {
+                IReadOnlyList<ControllerSetting> from = source[family].Settings;
+                IReadOnlyList<ControllerSetting> to = this[family].Settings;
+                for (int i = 0; i < to.Count; i++)
+                {
+                    to[i].Parse(from[i].Read())?.Invoke();
+                }
+            }
+        }
 
         private bool verboseLogMessages;
         public bool VerboseLogMessages { get => verboseLogMessages; set => verboseLogMessages = value; }

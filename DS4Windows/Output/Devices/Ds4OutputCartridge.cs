@@ -24,12 +24,12 @@ namespace DS4Windows.Output.Devices
 
         public OutputDevice Create(IVirtualPadBackend backend, Version busVersion)
         {
-            return DS4OutDeviceFactory.CreateDS4Device(backend, busVersion);
+            return DS4OutDeviceFactory.CreateDS4OutDevice(backend, busVersion);
         }
 
         public OutputDevice Narrow(OutputDevice device) => device as DS4OutDevice;
 
-        public void AttachFeedback(int index, OutputDevice outDevice, DS4Device device)
+        public void AttachFeedback(int index, OutputDevice outDevice, InputDeviceCore device)
         {
             int devIndex = index;
                             DS4OutDevice tempDS4 = outDevice as DS4OutDevice;

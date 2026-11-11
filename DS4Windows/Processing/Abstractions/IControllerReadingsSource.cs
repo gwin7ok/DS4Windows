@@ -19,9 +19,9 @@ namespace DS4Windows.Processing.Abstractions
         /// 機器がない、生きていない、または読み取りの待機が 10ms で終わらなかったときは false を返し、何もコピーしない。
         /// <paramref name="profileSlot"/> が <paramref name="slot"/> と異なるときは、そのスロットのプロファイルの曲線とデッドゾーンをコピーに適用する。
         /// </summary>
-        bool TryRead(int slot, int profileSlot, DS4State input, DS4State mapped, out ControllerReadingInfo info);
+        bool TryRead(int slot, int profileSlot, ControllerState input, ControllerState mapped, out ControllerReadingInfo info);
 
         /// <summary>スロットの現在の入力（範囲外は例外）。</summary>
-        DS4State GetCurrentState(int slot);
+        ControllerState GetCurrentState(int slot);
     }
 }

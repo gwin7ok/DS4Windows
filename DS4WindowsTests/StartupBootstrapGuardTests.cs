@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// Phase7-Step4 W4（D3＝S1）: 起動前（Pre-Host）のブートストラップと、<c>-reenableDevice</c> の接続（Q1・Q4）の回帰ガード。
     /// - コンテナの構築より前に作った <see cref="PathService"/>／<see cref="EnvironmentService"/> を、<c>CreateHost</c> が同じインスタンスとして登録する。
     /// - App の Pre-Host は、ブートストラップのインスタンスを使う（個別の <c>new</c> や <c>Global</c> 経由の保存場所の参照をしない）。
-    /// - <c>-reenableDevice</c> 分岐は、<c>DS4Devices</c> を静的に呼ばず、<see cref="IDs4DeviceRegistry"/> を通す。
+    /// - <c>-reenableDevice</c> 分岐は、<c>InputDeviceRegistry</c> を静的に呼ばず、<see cref="IInputDeviceRegistry"/> を通す。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
     /// </summary>
     public class StartupBootstrapGuardTests
@@ -89,8 +89,8 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            Assert.DoesNotContain("DS4Devices.reEnableDevice", text);
-            Assert.Contains("new DS4Windows.Processing.Services.Ds4DeviceRegistryAdapter()", text);
+            Assert.DoesNotContain("InputDeviceRegistry.reEnableDevice", text);
+            Assert.Contains("new DS4Windows.Processing.Services.InputDeviceRegistryAdapter()", text);
             Assert.Contains(".ReEnableDevice(parser.DeviceInstanceId)", text);
         }
     }

@@ -70,11 +70,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AppHost_ShouldResolve_IViewModelFactory()
+        public void AppHost_ShouldResolve_TheViewModelFactories()
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
         }
 
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             var vm = factory.CreateProfileSettingsViewModel(0);
@@ -102,7 +102,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             var outputSlotService = TestHost.GetService<IOutputSlotService>();
@@ -127,7 +127,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
 
             var settings = new DS4ControlSettings(DS4Controls.Cross);
@@ -148,37 +148,37 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IProfileEditViewModelFactory>();
             Assert.NotNull(factory);
             var profileSettings = TestHost.GetService<IProfileSettingsService>();
             Assert.NotNull(profileSettings);
 
             // CURRENT_DS4_CONTROLLER_LIMIT は 4 または 8 のため、どちらでも範囲内の 1 を使う
             const int targetSlot = 1;
-            TouchpadOutMode savedTargetMode = profileSettings.TouchOutMode[targetSlot];
-            TouchpadOutMode savedEditSlotMode = profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex];
+            TouchpadOutMode savedTargetMode = profileSettings.ForSlot(targetSlot).Touchpad.OutputMode;
+            TouchpadOutMode savedEditSlotMode = profileSettings.ForSlot(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex).Touchpad.OutputMode;
             RecordBoxViewModel vm = null;
             try
             {
-                profileSettings.TouchOutMode[targetSlot] = TouchpadOutMode.Mouse;
-                profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex] = TouchpadOutMode.Mouse;
+                profileSettings.ForSlot(targetSlot).Touchpad.OutputMode = TouchpadOutMode.Mouse;
+                profileSettings.ForSlot(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex).Touchpad.OutputMode = TouchpadOutMode.Mouse;
 
                 vm = factory.CreateRecordBoxViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex,
                     new DS4ControlSettings(DS4Controls.Cross), false, targetSlot);
                 Assert.NotNull(vm);
                 Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, vm.DeviceNum);
                 Assert.Equal(targetSlot, vm.TargetDevice);
-                Assert.Equal(TouchpadOutMode.Passthru, profileSettings.TouchOutMode[targetSlot]);
-                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex]);
+                Assert.Equal(TouchpadOutMode.Passthru, profileSettings.ForSlot(targetSlot).Touchpad.OutputMode);
+                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.ForSlot(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex).Touchpad.OutputMode);
 
                 vm.RevertControlsSettings();
-                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.TouchOutMode[targetSlot]);
+                Assert.Equal(TouchpadOutMode.Mouse, profileSettings.ForSlot(targetSlot).Touchpad.OutputMode);
             }
             finally
             {
                 vm?.RevertControlsSettings();
-                profileSettings.TouchOutMode[targetSlot] = savedTargetMode;
-                profileSettings.TouchOutMode[DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex] = savedEditSlotMode;
+                profileSettings.ForSlot(targetSlot).Touchpad.OutputMode = savedTargetMode;
+                profileSettings.ForSlot(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex).Touchpad.OutputMode = savedEditSlotMode;
             }
         }
 
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IShellViewModelFactory>();
             Assert.NotNull(factory);
 
             var profileList = new ProfileList(TestHost.GetService<DS4Windows.Core.Abstractions.IPathService>());

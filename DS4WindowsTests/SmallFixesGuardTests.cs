@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mouse_ReadsTheGyroMouseStickHorizontalAxis_OfItsOwnDevice()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Mouse.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -33,8 +33,8 @@ namespace DS4WindowsTests
             }
 
             string code = SourceText.StripComments(File.ReadAllText(path));
-            Assert.Contains("GetGyroMouseStickHorizontalAxis(deviceNum)", code);
-            Assert.DoesNotMatch(@"GetGyroMouseStickHorizontalAxis\(\s*0\s*\)", code);
+            Assert.Contains("ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis", code);
+            Assert.DoesNotMatch(@"ForSlot\(\s*0\s*\)\.Gyro\.MouseStickHorizontalAxis", code);
         }
 
         [Fact]

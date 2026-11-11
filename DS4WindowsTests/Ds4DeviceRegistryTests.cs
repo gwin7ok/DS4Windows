@@ -10,12 +10,12 @@ namespace DS4WindowsTests
 {
     public class Ds4DeviceRegistryTests
     {
-        private class MockDs4DeviceRegistry : IDs4DeviceRegistry
+        private class MockDs4DeviceRegistry : IInputDeviceRegistry
         {
-            public List<DS4Device> MockDevices { get; } = new List<DS4Device>();
+            public List<InputDeviceCore> MockDevices { get; } = new List<InputDeviceCore>();
             public int FindControllersCalls { get; private set; }
             public int StopControllersCalls { get; private set; }
-            public List<DS4Device> RemoveCalls { get; } = new List<DS4Device>();
+            public List<InputDeviceCore> RemoveCalls { get; } = new List<InputDeviceCore>();
             public bool IsExclusiveMode { get; set; }
 
             // CS0067 警告回避のための明示的空アクセサ
@@ -29,20 +29,20 @@ namespace DS4WindowsTests
             public PrepareInitDelegate PostDS4Init { get; set; }
             public CheckPendingDevice PreparePendingDevice { get; set; }
 
-            public IEnumerable<DS4Device> FindControllers()
+            public IEnumerable<InputDeviceCore> FindControllers()
             {
                 FindControllersCalls++;
                 return MockDevices;
             }
 
-            public IEnumerable<DS4Device> GetDS4Controllers() => MockDevices;
+            public IEnumerable<InputDeviceCore> GetControllers() => MockDevices;
 
             public void StopControllers()
             {
                 StopControllersCalls++;
             }
 
-            public bool RemoveDevice(DS4Device device)
+            public bool RemoveDevice(InputDeviceCore device)
             {
                 RemoveCalls.Add(device);
                 return MockDevices.Remove(device);
@@ -57,10 +57,10 @@ namespace DS4WindowsTests
         [Fact]
         public void Adapter_InstantiatesAndImplementsInterfaceSafely()
         {
-            var adapter = new Ds4DeviceRegistryAdapter(new DS4Devices(new FakeDeviceLayerSettings(), System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>()));
+            var adapter = new InputDeviceRegistryAdapter(new InputDeviceRegistry(new FakeDeviceLayerSettings(), System.Array.Empty<DS4Windows.Input.Abstractions.IInputDeviceCartridge>()));
 
             Assert.NotNull(adapter);
-            Assert.NotNull(adapter.GetDS4Controllers());
+            Assert.NotNull(adapter.GetControllers());
 
             // Null 引数に対する安全性の検証
             bool removeNull = adapter.RemoveDevice(null);

@@ -4,7 +4,7 @@ namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// UI が、スロット番号で指定した接続中のコントローラーへ出す操作の窓口（振動のテスト、ジャイロ較正のリセット）。
-    /// UI が機器の具象型（<c>DS4Device</c>、<c>DualSenseDevice</c>）を知らずに済むようにする。
+    /// UI が機器の具象型（<c>InputDeviceCore</c>、<c>DualSenseDevice</c>）を知らずに済むようにする。
     /// スロットが範囲外、または機器が未接続のときは、何もせず false を返す（例外にしない）。
     /// </summary>
     public interface IControllerSlotCommands

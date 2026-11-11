@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
 using System.Diagnostics;
@@ -34,7 +35,7 @@ namespace DS4Windows.Processing.Services
             _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
         }
 
-        public void ApplyProfileOptions(int ind, DS4Device device, Mouse touchPad, bool startUp = false)
+        public void ApplyProfileOptions(int ind, InputDeviceCore device, TouchpadMouse touchPad, bool startUp = false)
         {
             // Phase11 W6c（K-W6-12。D2＝案 B）: 書く状態から書かない状態（OFF）へ変わるときは、フラグを立てる前に、消灯・振動ゼロを 1 度だけ書く
             // （同じプロファイルの再適用でも、OFF の結果が見える。フラグ後は何も書かれず、パッドが最後の色を保持するため）
@@ -47,19 +48,19 @@ namespace DS4Windows.Processing.Services
             device.setIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
             device.setBTPollRate(_profileSettings.GetBTPollRate(ind));
 
-            touchPad.ResetTrackAccel(_profileSettings.GetTrackballFriction(ind));
+            touchPad.ResetTrackAccel(_profileSettings.ForSlot(ind).Touchpad.TrackballFriction);
             touchPad.ResetToggleGyroModes();
 
-            //Global.TouchOutMode[ind] = TouchpadOutMode.MouseJoystick;
+            //Global.ForSlot(ind).Touchpad.OutputMode = TouchpadOutMode.MouseJoystick;
             touchPad.PostSetup();
 
-            _profileSettings.L2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.L2ModInfo[ind].maxOutput, _profileSettings.L2ModInfo[ind].maxZone) / 100.0 * 255);
-            _profileSettings.R2OutputSettings[ind].TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.R2ModInfo[ind].maxOutput, _profileSettings.R2ModInfo[ind].maxZone) / 100.0 * 255);
+            _profileSettings.ForSlot(ind).Triggers.L2Output.TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.ForSlot(ind).Triggers.L2Mod.maxOutput, _profileSettings.ForSlot(ind).Triggers.L2Mod.maxZone) / 100.0 * 255);
+            _profileSettings.ForSlot(ind).Triggers.R2Output.TrigEffectSettings.maxValue = (byte)(Math.Max(_profileSettings.ForSlot(ind).Triggers.R2Mod.maxOutput, _profileSettings.ForSlot(ind).Triggers.R2Mod.maxZone) / 100.0 * 255);
 
-            device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[ind].TriggerEffect,
-                _profileSettings.L2OutputSettings[ind].TrigEffectSettings);
-            device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[ind].TriggerEffect,
-                _profileSettings.R2OutputSettings[ind].TrigEffectSettings);
+            device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.ForSlot(ind).Triggers.L2Output.TriggerEffect,
+                _profileSettings.ForSlot(ind).Triggers.L2Output.TrigEffectSettings);
+            device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.ForSlot(ind).Triggers.R2Output.TriggerEffect,
+                _profileSettings.ForSlot(ind).Triggers.R2Output.TrigEffectSettings);
 
             device.RumbleAutostopTime = _profileSettings.GetRumbleAutostopTime(ind);
             device.setRumble(0, 0);
@@ -74,7 +75,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        private void CheckLauchProfileOption(int ind, DS4Device device)
+        private void CheckLauchProfileOption(int ind, InputDeviceCore device)
         {
             string programPath = _profileSettings.LaunchProgram[ind];
             if (programPath != string.Empty)
@@ -114,76 +115,76 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void WireInitialHooks(int ind, DS4Device device)
+        public void WireInitialHooks(int ind, InputDeviceCore device)
         {
             _udpMotion.ResetSmoothingFilters(ind);   // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters
 
             // Phase9 Steering 削除 W2: 旧「ステアリング用のフィルター（OneEuroFilter）の作成と、設定［スムージング］との連動」は削除した（機能ごと削除）
 
-            FlickStickSettings flickStickSettings = _profileSettings.LSOutputSettings[ind].outputSettings.flickSettings;
+            FlickStickSettings flickStickSettings = _profileSettings.ForSlot(ind).Sticks.LSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
             flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
 
-            flickStickSettings = _profileSettings.RSOutputSettings[ind].outputSettings.flickSettings;
+            flickStickSettings = _profileSettings.ForSlot(ind).Sticks.RSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
             flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
 
             int tempIdx = ind;
-            _profileSettings.L2OutputSettings[ind].ResetEvents();
-            _profileSettings.L2ModInfo[ind].ResetEvents();
-            _profileSettings.L2OutputSettings[ind].TriggerEffectChanged += (sender, e) =>
+            _profileSettings.ForSlot(ind).Triggers.L2Output.ResetEvents();
+            _profileSettings.ForSlot(ind).Triggers.L2Mod.ResetEvents();
+            _profileSettings.ForSlot(ind).Triggers.L2Output.TriggerEffectChanged += (sender, e) =>
             {
-                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
-                    _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings);
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TriggerEffect,
+                    _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TrigEffectSettings);
             };
-            _profileSettings.L2ModInfo[ind].MaxOutputChanged += (sender, e) =>
+            _profileSettings.ForSlot(ind).Triggers.L2Mod.MaxOutputChanged += (sender, e) =>
             {
                 TriggerDeadZoneZInfo tempInfo = sender as TriggerDeadZoneZInfo;
-                _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(Math.Max(tempInfo.maxOutput, tempInfo.maxZone) / 100.0 * 255.0);
+                _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TrigEffectSettings.maxValue = (byte)(Math.Max(tempInfo.maxOutput, tempInfo.maxZone) / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
-                    _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings);
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TriggerEffect,
+                    _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TrigEffectSettings);
             };
-            _profileSettings.L2ModInfo[ind].MaxZoneChanged += (sender, e) =>
+            _profileSettings.ForSlot(ind).Triggers.L2Mod.MaxZoneChanged += (sender, e) =>
             {
                 TriggerDeadZoneZInfo tempInfo = sender as TriggerDeadZoneZInfo;
-                _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(Math.Max(tempInfo.maxOutput, tempInfo.maxZone) / 100.0 * 255.0);
+                _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TrigEffectSettings.maxValue = (byte)(Math.Max(tempInfo.maxOutput, tempInfo.maxZone) / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.L2OutputSettings[tempIdx].TriggerEffect,
-                    _profileSettings.L2OutputSettings[tempIdx].TrigEffectSettings);
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.LeftTrigger, _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TriggerEffect,
+                    _profileSettings.ForSlot(tempIdx).Triggers.L2Output.TrigEffectSettings);
             };
 
-            _profileSettings.R2OutputSettings[ind].ResetEvents();
-            _profileSettings.R2OutputSettings[ind].TriggerEffectChanged += (sender, e) =>
+            _profileSettings.ForSlot(ind).Triggers.R2Output.ResetEvents();
+            _profileSettings.ForSlot(ind).Triggers.R2Output.TriggerEffectChanged += (sender, e) =>
             {
-                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
-                    _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings);
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TriggerEffect,
+                    _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TrigEffectSettings);
             };
-            _profileSettings.R2ModInfo[ind].MaxOutputChanged += (sender, e) =>
-            {
-                TriggerDeadZoneZInfo tempInfo = sender as TriggerDeadZoneZInfo;
-                _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(tempInfo.maxOutput / 100.0 * 255.0);
-
-                // Refresh trigger effect
-                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
-                    _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings);
-            };
-            _profileSettings.R2ModInfo[ind].MaxZoneChanged += (sender, e) =>
+            _profileSettings.ForSlot(ind).Triggers.R2Mod.MaxOutputChanged += (sender, e) =>
             {
                 TriggerDeadZoneZInfo tempInfo = sender as TriggerDeadZoneZInfo;
-                _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings.maxValue = (byte)(tempInfo.maxOutput / 100.0 * 255.0);
+                _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TrigEffectSettings.maxValue = (byte)(tempInfo.maxOutput / 100.0 * 255.0);
 
                 // Refresh trigger effect
-                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.R2OutputSettings[tempIdx].TriggerEffect,
-                    _profileSettings.R2OutputSettings[tempIdx].TrigEffectSettings);
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TriggerEffect,
+                    _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TrigEffectSettings);
+            };
+            _profileSettings.ForSlot(ind).Triggers.R2Mod.MaxZoneChanged += (sender, e) =>
+            {
+                TriggerDeadZoneZInfo tempInfo = sender as TriggerDeadZoneZInfo;
+                _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TrigEffectSettings.maxValue = (byte)(tempInfo.maxOutput / 100.0 * 255.0);
+
+                // Refresh trigger effect
+                device.PrepareTriggerEffect(DS4Windows.Input.Devices.TriggerId.RightTrigger, _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TriggerEffect,
+                    _profileSettings.ForSlot(tempIdx).Triggers.R2Output.TrigEffectSettings);
             };
         }
 
-        public void AttachTouchpad(int ind, DS4Device device, Mouse[] touchPads)
+        public void AttachTouchpad(int ind, InputDeviceCore device, TouchpadMouse[] touchPads)
         {
-            Mouse tPad = touchPads[ind];
+            TouchpadMouse tPad = touchPads[ind];
             //ITouchpadBehaviour tPad = touchPad[ind];
             device.Touchpad.TouchButtonDown += tPad.touchButtonDown;
             device.Touchpad.TouchButtonUp += tPad.touchButtonUp;

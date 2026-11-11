@@ -82,11 +82,15 @@
                                Height="130"
                                Stroke="{DynamicResource ForegroundBrush}">
                     </Rectangle>
+                    <Rectangle x:Name="lsDeadRect"
+                               Visibility="Collapsed"
+                               Fill="{DynamicResource Readings.DeadZoneFill}" />
                     <Ellipse x:Name="lsDeadEllipse"
                              Width="{Binding Path=Width, ElementName=lsCanvas}"
                              Height="{Binding Path=Height, ElementName=lsCanvas}"
                              Fill="{DynamicResource Readings.DeadZoneFill}">
                     </Ellipse>
+                    <Rectangle x:Name="lsDriftRect" Visibility="Collapsed" Fill="{DynamicResource Readings.AlertFill}" />
                     <Ellipse x:Name="lsDriftEllipse"
                              Width="{Binding Path=Width, ElementName=lsCanvas}"
                              Height="{Binding Path=Height, ElementName=lsCanvas}"
@@ -164,11 +168,15 @@
                                Height="{Binding Path=Height, ElementName=rsCanvas}"
                                Stroke="{DynamicResource ForegroundBrush}">
                     </Rectangle>
+                    <Rectangle x:Name="rsDeadRect"
+                               Visibility="Collapsed"
+                               Fill="{DynamicResource Readings.DeadZoneFill}" />
                     <Ellipse x:Name="rsDeadEllipse"
                              Width="{Binding Path=Width, ElementName=rsCanvas}"
                              Height="{Binding Path=Height, ElementName=rsCanvas}"
                              Fill="{DynamicResource Readings.DeadZoneFill}">
                     </Ellipse>
+                    <Rectangle x:Name="rsDriftRect" Visibility="Collapsed" Fill="{DynamicResource Readings.AlertFill}" />
                     <Ellipse x:Name="rsDriftEllipse"
                              Width="{Binding Path=Width, ElementName=rsCanvas}"
                              Height="{Binding Path=Height, ElementName=rsCanvas}"

@@ -51,10 +51,10 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
 
-            var registry = TestHost.GetService<IDs4DeviceRegistry>();
+            var registry = TestHost.GetService<IInputDeviceRegistry>();
 
             Assert.NotNull(registry);
-            Assert.IsType<Ds4DeviceRegistryAdapter>(registry);
+            Assert.IsType<InputDeviceRegistryAdapter>(registry);
         }
 
         [Fact]

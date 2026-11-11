@@ -135,7 +135,7 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public bool IsAffected(DS4Device dev)
+        public bool IsAffected(InputDeviceCore dev)
         {
             bool result = false;
             if (dev != null && hidDeviceHidingEnabled)
@@ -151,7 +151,7 @@ namespace DS4Windows.Output.Services
             return result;
         }
 
-        public void MarkAffected(DS4Device dev)
+        public void MarkAffected(InputDeviceCore dev)
         {
             if (_environmentService.HidHideInstalled)
             {

@@ -38,6 +38,18 @@ namespace DS4WindowsTests
             return true;
         }
 
+        public readonly List<List<string>> SetBlacklistCalls = new List<List<string>>();
+        /// <summary>false にすると、ブラックリストの書き込みが失敗（false）を返す。</summary>
+        public bool AllowBlacklistWrite = true;
+
+        public bool SetBlacklist(List<string> instances)
+        {
+            SetBlacklistCalls.Add(new List<string>(instances));
+            if (!AllowBlacklistWrite) return false;
+            Blacklist = new List<string>(instances);
+            return true;
+        }
+
         public void Dispose() { DisposeCount++; }
     }
 }

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Threading;
 using System.IO;
 using System.Linq;
@@ -156,7 +157,7 @@ namespace DS4WindowsTests
 
         // ---- Toggle の是正（Q8＝A） ----
 
-        private static (bool Toggle, int ToggleCount, int Left) Frame(ControlsKeyTestScope t, DS4State input)
+        private static (bool Toggle, int ToggleCount, int Left) Frame(ControlsKeyTestScope t, ControllerState input)
         {
             t.Run(input);
             SyntheticState state = t.Scope.Synthetic.DeviceState[t.Device];
@@ -173,7 +174,7 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse, DS4KeyType.Toggle);
             t.Publish();
 
-            DS4State held = ControlsKeyTestScope.Neutral();
+            ControllerState held = ControlsKeyTestScope.Neutral();
             held.Cross = true;
 
             // Toggle は Fresh-press ガードを見る（SA・Key と同じ）。ガードは、トリガーが 80ms 連続して未成立になるまで解除されない
@@ -200,7 +201,7 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Circle, X360Controls.RightMouse, DS4KeyType.Toggle);
             t.Publish();
 
-            DS4State crossHeld = ControlsKeyTestScope.Neutral();
+            ControllerState crossHeld = ControlsKeyTestScope.Neutral();
             crossHeld.Cross = true;
 
             SyntheticState state = t.Scope.Synthetic.DeviceState[t.Device];

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -114,7 +115,7 @@ namespace DS4WindowsTests
         public void TheAccumulator_IsEmptiedEveryFrame_AndTheFirstWriterWins()
         {
             var output = new FrameOutput();
-            output.Bind(new DS4StateFieldMapping(), new SyntheticState());
+            output.Bind(new ControllerStateFieldMapping(), new SyntheticState());
 
             output.SetMouseDeltaX(3.5);
             output.SetMouseDeltaX(-9.0);   // 先に書いた方が勝つ（0 のときだけ書く）
@@ -122,7 +123,7 @@ namespace DS4WindowsTests
             Assert.Equal(3.5, output.MouseDeltaX);
             Assert.Equal(-2.0, output.MouseDeltaY);
 
-            output.Bind(new DS4StateFieldMapping(), new SyntheticState());   // 次のフレーム
+            output.Bind(new ControllerStateFieldMapping(), new SyntheticState());   // 次のフレーム
             Assert.Equal(0.0, output.MouseDeltaX);
             Assert.Equal(0.0, output.MouseDeltaY);
         }
@@ -135,12 +136,12 @@ namespace DS4WindowsTests
             h.T.MapButton(DS4Controls.R2, X360Controls.WDOWN);
             h.T.Publish();
 
-            DS4State up = ControlsKeyTestScope.Neutral();
+            ControllerState up = ControlsKeyTestScope.Neutral();
             up.L2 = 255;
             h.Step(up);
             h.Step(up);   // 上の束縛が端数 2/3 を持つ
 
-            DS4State down = ControlsKeyTestScope.Neutral();
+            ControllerState down = ControlsKeyTestScope.Neutral();
             down.R2 = 255;
             h.Step(down);
             h.Step(down); // 下の束縛は自分の端数（2/3）。上の端数は捨てられない（旧経路は、向きを変えると捨てていた）
@@ -160,7 +161,7 @@ namespace DS4WindowsTests
             h.T.MapButton(DS4Controls.R2, X360Controls.WUP);
             h.T.Publish();
 
-            DS4State both = ControlsKeyTestScope.Neutral();
+            ControllerState both = ControlsKeyTestScope.Neutral();
             both.L2 = 255;
             both.R2 = 255;
             for (int i = 0; i < 3; i++) h.Step(both);

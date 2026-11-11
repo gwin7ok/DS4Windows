@@ -66,7 +66,8 @@ namespace DS4WindowsTests
         {
             string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             string main = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
-            if (editor == null || main == null) return;
+            string coordinator = SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
+            if (editor == null || main == null || coordinator == null) return;
 
             // 確認のプロンプトを出し、全プロファイルの参照を取り除き、MainWindow へ通知する
             Assert.Contains("MessageBoxButton.YesNo", editor);
@@ -77,8 +78,8 @@ namespace DS4WindowsTests
 
             // 再適用の実装は SyncProfileListAndControllers の 1 か所だけ（外部更新は、その経路を呼ぶだけ）
             Assert.Contains("SyncProfileListAndControllers(targetProfiles: profiles)", main);
-            Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(main,
-                System.Text.RegularExpressions.Regex.Escape("profileSlotApplier.ApplyToSlot(")).Count);
+            Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(coordinator,
+                System.Text.RegularExpressions.Regex.Escape("_profileSlotApplier.ApplyToSlot(")).Count);
         }
 
         [Fact]

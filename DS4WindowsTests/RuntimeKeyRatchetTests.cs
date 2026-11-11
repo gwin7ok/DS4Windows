@@ -29,7 +29,8 @@ namespace DS4WindowsTests
             ["DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs"] = (6, 0),
             ["DS4Windows/Processing/Services/AutoProfileService.cs"] = (2, 0),
             ["DS4Windows/Processing/Services/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
-            ["DS4Windows/Processing/Services/InputReportProcessor.cs"] = (1, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/FirstReportActionLogger.cs"] = (1, 0),   // InputReportProcessor から、最初のレポートのログを切り出した（合計は増えていない）
+            ["DS4Windows/Processing/Services/InputReportProcessor.cs"] = (0, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
             ["DS4Windows/Processing/Services/IpcCommandProcessor.cs"] = (2, 0),   // Phase13-Step11 11-b: IPC コマンド（loadprofile／query）の実行を MainWindow.Ipc.cs から移した（合計は増えていない）
             ["DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs"] = (1, 0),
             ["DS4Windows/Processing/Services/ProfileActionProvider.cs"] = (0, 2),
@@ -41,7 +42,8 @@ namespace DS4WindowsTests
             ["DS4Windows/Core/Persistence/ProfileSections/ProfileMotionSaveSection.cs"] = (0, 2),
             ["DS4Windows/Core/Settings/ProfileSettingsService.cs"] = (0, 3),
             ["DS4Windows/Core/Persistence/SpecialActionRepository.cs"] = (0, 2),
-            ["DS4Windows/UI/MainWindow.xaml.cs"] = (2, 0),   // Phase10-Step4d W7: 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った。Phase9 9-F F-2b: IPC の 2 件を MainWindow.Ipc.cs へ移した
+            ["DS4Windows/UI/Services/ProfileSelectionCoordinator.cs"] = (2, 0),   // MainWindow から、プロファイルの選択・同期の責務ごと移した（合計は増えていない）
+            ["DS4Windows/UI/MainWindow.xaml.cs"] = (0, 0),   // Phase10-Step4d W7: 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った。Phase9 9-F F-2b: IPC の 2 件を MainWindow.Ipc.cs へ移した
             ["DS4Windows/UI/ProfileEditor.xaml.cs"] = (1, 4),
             ["DS4Windows/UI/ViewModels/CompositeDeviceModel.cs"] = (5, 0),
             ["DS4Windows/UI/ViewModels/ControllerListViewModel.cs"] = (3, 0),

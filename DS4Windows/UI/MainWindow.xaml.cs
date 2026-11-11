@@ -68,28 +68,27 @@ namespace DS4Windows.UI
         private TrayIconViewModel trayIconVM;
         private SettingsViewModel settingsWrapVM;
         private IntPtr regHandle = new IntPtr();
+        private IntPtr regHandleXusb = new IntPtr();
         private bool showAppInTaskbar = false;
         private ManagementEventWatcher managementEvWatcher;
         private bool wasrunning = false;
         private AutoProfileHolder autoProfileHolder;
         private NonFormTimer hotkeysTimer;
+        // 更新の確認の判断（画面に依存しない）
+        private UpdateCheckPolicy updateCheckPolicy;
+        // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
+        private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         private NonFormTimer autoProfilesTimer;
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly IAutoProfileService _autoProfileService;
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
-        // Phase6-Step10-2-4a: ProfileEditor へ渡す、補助ウィンドウの生成の窓口
-        private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
-        private readonly DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService;
-        private readonly DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService;
-        private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepo;
-        // Phase6-Step10-4-5: Global.ApplyProfileToSlot の直接呼び出しの置換先（Global への薄い委譲）
-        private readonly DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier;
-        private readonly DS4Windows.Core.Abstractions.INotificationService notificationService;
+        // トレイ・通知・テーマの切り替えと、プロファイルの選択・編集後の同期は、それぞれの部品が受け持つ
+        private readonly TrayAppearanceController trayAppearance;
+        private readonly ProfileSelectionCoordinator profileSelection;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
-        private readonly DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter;
-        private readonly DS4Windows.UI.Abstractions.IViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
+        private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
@@ -113,29 +112,25 @@ namespace DS4Windows.UI
 
         public MainWindow(ArgumentParser parser,
             DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
-            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
             DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Core.Abstractions.IAppearanceSettingsService appearanceSettingsService,
-            DS4Windows.Processing.Abstractions.IProfileApplicationService profileAppService,
-            DS4Windows.Core.Abstractions.IProfileRepository profileRepo,
-            DS4Windows.Core.Abstractions.INotificationService notificationService,
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
-            DS4Windows.Processing.Abstractions.IProfileSlotApplier profileSlotApplier,
             MainWindowsViewModel mainWindowsViewModel,
             IAutoProfileService autoProfileService,
-            DS4Windows.UI.Abstractions.IViewModelFactory viewModelFactory,
-            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService,
+            DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
-            DS4Windows.UI.Abstractions.IIpcResultWriter ipcResultWriter,
             DS4Windows.Core.Abstractions.IChangelogService changelogService,
-            DS4Windows.Processing.Abstractions.IControllerSlotQuery slots)
+            DS4Windows.Processing.Abstractions.IControllerSlotQuery slots,
+            TrayAppearanceController trayAppearance,
+            ProfileSelectionCoordinator profileSelection)
         {
+            this.trayAppearance = trayAppearance ?? throw new ArgumentNullException(nameof(trayAppearance));
+            this.profileSelection = profileSelection ?? throw new ArgumentNullException(nameof(profileSelection));
             this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
+            updateCheckPolicy = new UpdateCheckPolicy(changelogService, appSettingsService);
             this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
-            this.ipcResultWriter = ipcResultWriter ?? throw new ArgumentNullException(nameof(ipcResultWriter));   // Phase14b-Step16: CLI の問い合わせの結果の書き込み
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
             this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
@@ -146,18 +141,12 @@ namespace DS4Windows.UI
             // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             profileListHolder = new ProfileList(pathService);
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.appearanceSettingsService = appearanceSettingsService ?? throw new ArgumentNullException(nameof(appearanceSettingsService));
-            this.profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
-            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            this.notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             this.ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));
-            this.profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
@@ -240,7 +229,6 @@ namespace DS4Windows.UI
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             autoProfControl.Initialize(pathService, appSettingsService, _autoProfileService,
                 viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)), environmentService);
-            dupBox.Initialize(pathService, profileIdentityService ?? throw new ArgumentNullException(nameof(profileIdentityService)));
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
@@ -352,35 +340,22 @@ namespace DS4Windows.UI
                 //newversion = "2.1.3";
             }
 
-            // Delegate newest-version detection (and skip handling) to Changelog helper
+            // 判断は UpdateCheckPolicy が行い、ここは結果に応じた画面の表示と、記録ファイルの後始末だけをする
             try
             {
-                if (!string.IsNullOrWhiteSpace(newversion) && version.CompareTo(newversion) != 0)
+                var outcome = updateCheckPolicy.Evaluate(version, newversion, out Version latest);
+                if (outcome == UpdateCheckOutcome.UpdateAvailable)
                 {
-                    // Ensure CheckNewerVersionExists compares against the provided file version
-                    Version parsedVersion;
-                    if (Version.TryParse(newversion, out parsedVersion))
-                    {
-                        // Temporarily set cached/latest if needed - call helper allowing fresh check
-                        if (changelogService.CheckNewerVersionExists(out var latest, appSettingsService.LastVersionChecked, allowCached: false))
-                        {
-                            Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
-                        }
-                        else
-                        {
-                            if (showstatus)
-                                Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
-                        }
-                    }
+                    Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
                 }
-                else
+                else if (outcome == UpdateCheckOutcome.UpToDate && showstatus)
                 {
-                    if (showstatus)
-                        Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
+                    Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
                 }
             }
             catch
             {
+                // 画面の表示で例外が出たときも、元の処理どおり、確認を求められたときは「最新です」と知らせる
                 if (showstatus)
                     Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
             }
@@ -401,65 +376,9 @@ namespace DS4Windows.UI
         {
             int idx = item.Index;
             CompositeDeviceModel devitem = conLvViewModel.ControllerDict[idx];
-            if (devitem != null && devitem.Device != null)
-            {
-                string prolog = string.Format(Properties.Resources.UsingProfile,
-                    (idx + 1).ToString(), profile, $"{devitem.Device.Battery}");
-                profileAppService.ApplyProfile(idx, profile, false, true,
-                    DS4Windows.Core.Logging.ProfileChangeSource.Manual, prolog);
-            }
+            profileSelection.ApplyFromTray(idx, profile, devitem);
         }
 
-        // 構想1: 情報通知の本体。切替のきっかけは Global.Notifications のみ。outputDestination is modern toast only.
-        // 1. イベント登録用のオーバーロード（購読先を INotificationService.NotificationTriggered へ変更、Phase5-Step14）
-        private void ShowSystemNotification(object sender, DS4Windows.Core.Abstractions.NotificationEventArgs e)
-        {
-            ShowSystemNotification(e.Message, e.Warning);
-        }
-
-        // 2. 通知実行の本体（エラー CS0117 を解消）
-        private void ShowSystemNotification(string message, bool isWarning)
-        {
-            int notifLevel = appSettingsService.Notifications;
-            bool levelPass = notifLevel == 2 || (notifLevel == 1 && isWarning);
-
-            if (levelPass)
-            {
-                // TrayIconViewModel.balloonTitle の代わりに "DS4Windows" を直接指定
-                string title = "DS4Windows";
-
-                try
-                {
-                    AppNotificationRegistration.ShowModernToast(title, message);
-                }
-                catch (Exception ex)
-                {
-                    DS4Windows.Core.Logging.AppLogger.LogWarn($"[Toast] ShowModernToast failed: {ex.GetType().Name}: {ex.Message}");
-                }
-            }
-        }
-
-        // 機能2: プロファイル切替通知の表示制御（通知仕様を一元管理）
-        private void ShowProfileSwitchNotification(string message)
-        {
-            bool isProfileWinOn = appSettingsService.ProfileChangedNotification;
-            int notifLevel = appSettingsService.Notifications;
-
-            if (isProfileWinOn)
-            {
-                // ケース 1, 2, 3: チェックボックスが ON -> 独自デスクトップウィンドウを表示
-                ProfileNotificationWindow.ShowNotification(message);
-            }
-            else if (notifLevel == 2)
-            {
-                // ケース 4: チェックボックスが OFF かつ 通知設定が「すべて(2)」 -> トースト通知を表示
-                ShowSystemNotification(message, false);
-            }
-            else
-            {
-                // ケース 5, 6: 抑制（非表示）
-            }
-        }
         private void SetupEvents()
         {
             WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += OnLocalizationCultureChanged;
@@ -468,7 +387,7 @@ namespace DS4Windows.UI
             lifecycle.PreServiceStop += PrepareForServiceStop;
             //root.rootHubtest.RunningChanged += ControlServiceChanged;
             conLvViewModel.ControllerCol.CollectionChanged += ControllerCol_CollectionChanged;
-            notificationService.NotificationTriggered += ShowSystemNotification;
+            trayAppearance.SubscribeNotifications();
 
             // 型付きプロファイル変更イベントを購読
             AppLogger.ProfileChanged += OnProfileChanged;
@@ -523,23 +442,7 @@ namespace DS4Windows.UI
 
         private void SettingsWrapVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
-            {
-                case nameof(SettingsViewModel.AppChoiceIndex): SettingsWrapVM_AppChoiceIndexChanged(sender, EventArgs.Empty); break;
-                case nameof(SettingsViewModel.IconChoiceIndex): SettingsWrapVM_IconChoiceIndexChanged(sender, EventArgs.Empty); break;
-            }
-        }
-
-        private void SettingsWrapVM_AppChoiceIndexChanged(object sender, EventArgs e)
-        {
-            AppThemeChoice choice = appearanceSettingsService.UseCurrentTheme;
-            themeLanguage.ChangeTheme(choice);   // Phase14b-Step16（D11）: 旧 (App.Current as App).ChangeTheme
-            trayIconVM.PopulateContextMenu();
-        }
-
-        private void SettingsWrapVM_IconChoiceIndexChanged(object sender, EventArgs e)
-        {
-            trayIconVM.IconSource = TrayIconResources.iconChoiceResources[appearanceSettingsService.UseIconChoice];
+            trayAppearance.OnSettingsPropertyChanged(e.PropertyName, trayIconVM);
         }
 
         private void MainWinVM_FullTabsEnabledChanged(object sender, EventArgs e)
@@ -697,65 +600,18 @@ namespace DS4Windows.UI
                 //for (int i = 0; i < 4; i++)
                 {
                     string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
-                    if (slide == "left")
+                    // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
+                    if (slide == "left" || slide == "right")
                     {
-                        //int ind = i;
                         Dispatcher.BeginInvoke((Action)(() =>
                         {
-                            if (item.SelectedIndex <= 0)
-                            {
-                                item.SelectedIndex = item.ProfileListCol.Count - 1;
-                            }
-                            else
-                            {
-                                item.SelectedIndex--;
-                            }
-                        }));
-                    }
-                    else if (slide == "right")
-                    {
-                        //int ind = i;
-                        Dispatcher.BeginInvoke((Action)(() =>
-                        {
-                            if (item.SelectedIndex == (item.ProfileListCol.Count - 1))
-                            {
-                                item.SelectedIndex = 0;
-                            }
-                            else
-                            {
-                                item.SelectedIndex++;
-                            }
-                        }));
-                    }
-
-                    if (slide.Contains("t"))
-                    {
-                        //int ind = i;
-                        Dispatcher.BeginInvoke((Action)(() =>
-                        {
-                            string temp = string.Format(Properties.Resources.UsingProfile, (item.DevIndex + 1).ToString(), item.SelectedProfile, $"{item.Device.Battery}");
-                            ShowHotkeyNotification(temp);
+                            item.SelectedIndex = swipeRule.NextIndex(item.SelectedIndex, item.ProfileListCol.Count, slide);
                         }));
                     }
                 }
             }
 
             hotkeysTimer.Start();
-        }
-
-        private void ShowHotkeyNotification(string message)
-        {
-            // Phase5-Step14 フェーズF: 「通知を表示」レベルによるイベント発火抑制を撤廃。
-            // プロファイル適用イベントは常に発火させ、表示可否は OnProfileChanged 側で
-            // ProfileChangedNotification を基準に一元判定する。
-            try
-            {
-                AppLogger.LogProfileChanged(-1, message, false, DS4Windows.Core.Logging.ProfileChangeSource.Hotkey);
-            }
-            catch
-            {
-                AppLogger.LogToTray(message);
-            }
         }
 
         private void PrepareForServiceStop(object sender, EventArgs e)
@@ -832,7 +688,7 @@ namespace DS4Windows.UI
                     // 2026-10-19: 自動プロファイル由来は AutoProfileSwitchNotifyChoice と接続の有無で判定する（AutoProfileNotificationPolicy）
                     if (DS4Windows.UI.Services.AutoProfileNotificationPolicy.ShouldNotify(
                             e.Source, _autoProfileService.AutoProfileSwitchNotifyChoice, item != null))
-                        ShowProfileSwitchNotification(prolog);
+                        trayAppearance.ShowProfileSwitchNotification(prolog);
                 }
                 catch { }
             }));
@@ -1108,30 +964,8 @@ namespace DS4Windows.UI
             if (idx > -1 && conLvViewModel.ControllerDict.ContainsKey(idx))
             {
                 CompositeDeviceModel item = conLvViewModel.ControllerDict[idx];
-
-                // ★統合抑制フラグ: バックエンドからのプロファイル変更同期中は手動適用をスキップ（無限ループ防止）
-                if (item.suppressSelectedIndexChanged)
+                if (profileSelection.ApplySelection(idx, item))
                 {
-                    DS4Windows.Core.Logging.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Suppressed for device {idx}");
-                    return;
-                }
-
-                if (item.SelectedIndex > -1 && item.SelectedIndex < item.ProfileListCol.Count)
-                {
-                    string prof = item.ProfileListCol[item.SelectedIndex].Name;
-
-                    // 既に同じプロファイルが適用されていればスキップ
-                    if (profileRepo.SelectedProfile[idx] == prof)
-                    {
-                        DS4Windows.Core.Logging.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Profile '{prof}' already applied for device {idx}, skipping");
-                        return;
-                    }
-
-                    DS4Windows.Core.Logging.AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Applying profile '{prof}' for device {idx}");
-
-                    // ★共通適用窓口 ApplyProfileToSlot を呼び出す（すべての切り替え手段を統一）
-                    profileSlotApplier.ApplyToSlot(idx, prof, ProfileChangeSource.Manual);
-
                     trayIconVM.PopulateContextMenu();
                 }
             }
@@ -1205,6 +1039,10 @@ namespace DS4Windows.UI
             autoProfilesTimer.Stop();
             //autoProfileHolder.Save();
             Util.UnregisterNotify(regHandle);
+            if (regHandleXusb != IntPtr.Zero)
+            {
+                Util.UnregisterNotify(regHandleXusb);
+            }
 
             // Phase5-Watchpoints-Investigation-Report Watchpoint 2対応:
             // Singletonサービス(controlService/profileRepo, SystemEvents)へのイベント購読を
@@ -1352,6 +1190,16 @@ namespace DS4Windows.UI
             {
                 Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
             }
+
+            // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
+            try
+            {
+                Util.RegisterNotify(source.Handle, environmentService.XusbClassGuid, ref regHandleXusb);
+            }
+            catch (Exception)
+            {
+                regHandleXusb = IntPtr.Zero;
+            }
         }
 
         private void ProfEditSBtn_Click(object sender, RoutedEventArgs e)
@@ -1396,6 +1244,24 @@ namespace DS4Windows.UI
             await serviceTask;
 
             hideDS4ContCk.IsEnabled = true;
+            StartStopBtn.IsEnabled = true;
+        }
+
+        // Xbox の USB の親を隠す設定は、接続のときに適用されるため、サービスを再起動して、検出済みの Xbox すべてへ反映する
+        private async void HideXboxContCk_Click(object sender, RoutedEventArgs e)
+        {
+            StartStopBtn.IsEnabled = false;
+            hideXboxContCk.IsEnabled = false;
+            Task serviceTask = Task.Run(() =>
+            {
+                lifecycle.Stop();
+                lifecycle.Start();
+            });
+
+            Util.LogAssistBackgroundTask(serviceTask);
+            await serviceTask;
+
+            hideXboxContCk.IsEnabled = true;
             StartStopBtn.IsEnabled = true;
         }
 
@@ -1758,9 +1624,8 @@ namespace DS4Windows.UI
                 //     this.Height = WindowLayoutDefaults.PROFILE_EDITOR_HEIGHT;
                 // }
 
-                editor = editorWindowFactory.CreateProfileEditor(targetDevice);
+                editor = profileSelection.CreateEditor(targetDevice);
                 editor.ProfileSaved += Editor_ProfileSaved;
-                editor.ServiceRestartRequested += Editor_ServiceRestartRequested;
                 editor.ProfilesUpdatedExternally += Editor_ProfilesUpdatedExternally;
                 editor.Closed += ProfileEditor_Closed;
                 profDockPanel.Children.Add(editor);
@@ -1770,18 +1635,7 @@ namespace DS4Windows.UI
                 // per editor-open. We temporarily clear the per-load suppression set
                 // so the same missing-action messages will be logged every time the
                 // editor is opened (user expectation).
-                try
-                {
-                    // Force emitting missing-action logs for this editor open (ignore suppression).
-                    // Pass explicit profile name to avoid confusion with device's currently-assigned profile.
-                    string profileNameForLog = entity != null ? entity.Name : "(new profile)";
-                    // Phase6-Step7b: 読み込んだプロファイルのアクションを調べるため、実機ではなく作業スロットを渡す
-                    profileRepo.EmitMissingActionLogsForDevice(ControllerLimits.TestProfileIndex, true, profileNameForLog);
-                }
-                catch (Exception ex)
-                {
-                    AppLogger.LogError($"[MainWindow] Failed to emit missing action logs: {ex.Message}");
-                }
+                profileSelection.EmitMissingActionLogsForEditor(entity);
             }
 
         }
@@ -1789,89 +1643,10 @@ namespace DS4Windows.UI
         #region Profile List & Controllers Synchronization (4-Stage Transaction)
 
 
-        /// <summary>
-        /// プロファイル保存・更新・リネーム時の4段階トランザクション同期メソッド。
-        /// ComboBoxの選択解除・イベント抑制を行い、ディスク正本からリストを安全に再構築した上で、
-        /// 各スロットの選択復元および最新設定のホットリロードを一括実行します。
-        /// </summary>
-        /// <param name="oldProfile">Rename時の旧プロファイル名（保存・更新時はnull）</param>
-        /// <param name="newProfile">Rename時の新プロファイル名（保存・更新時はnull）</param>
-        /// <param name="targetProfiles">
-        /// Phase6-Step10-3b-3: 複数のプロファイルの XML が書き換えられた場合（アクションの除去・名前変更）の対象一覧。
-        /// 指定すると、これらのプロファイルを使っているスロットだけに再適用する（oldProfile／newProfile は null にする）
-        /// </param>
         private void SyncProfileListAndControllers(string oldProfile = null, string newProfile = null,
             IReadOnlyCollection<string> targetProfiles = null)
-        {
-            int slotCount = environmentService.ControllerSlotLimit;
-
-            string[] activeProfiles = new string[slotCount];
-            try
-            {
-                for (int i = 0; i < slotCount; i++)
-                {
-                    activeProfiles[i] = profileRepo.ProfilePath[i] ?? string.Empty;
-                }
-
-                // ② 【SSOT 再構築 (Rebuild)】
-                bool isRename = !string.IsNullOrWhiteSpace(oldProfile) && !string.IsNullOrWhiteSpace(newProfile);
-                if (isRename)
-                {
-                    // Phase10-Step4d W7: 実行時の保持（スロットの現在・直前・選択、一時プロファイル、リンク、自動プロファイルのルール）は、プロファイルの固定 ID を保管する窓口のため
-                    // （W5b〜W5d）、名前を変えても、読み出す名前が自動で現在の名前になる。ここで配列や一覧を書き換える処理は、不要になった。
-                    // 保存先のファイルの名前と ID を、現在の状態で書き直す（名前変更の直後に、1 回）
-                    profileRepo.SaveLinkedProfiles();
-                    _autoProfileService?.Holder?.Save();
-                    appSettingsService.Save();
-                    // SA（Actions.xml）の切り替え先は、ID から現在の名前に引き直して保存する
-                    profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);
-                    // Phase10-Step4 W6: Controls の Load Profile の切り替え先（各プロファイルの <Control><Special>）は、ID のない古いプロファイルのファイルのため、旧名を新名へ書き換える処理を残す
-                    // （TODO（Phase10-Step4d W7）: 全プロファイルのファイルに ID を書き足す移行ができたら撤去する。ReplaceActionReference も同じ）
-                    profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);
-                }
-
-                // ディスク全XMLを正（SSOT）としてプロファイル一覧を再構築
-                // （※isProfileSyncing中のため、Clear()が走ってもTargetExceptionクラッシュは完全に防止される）
-                ProfileListHolder.Refresh();
-
-                // ③ 【復元・再選択 (Re-attach)】
-                // メモリ上の ProfilePath を確定させ、ComboBox の選択状態を復元
-                for (int i = 0; i < slotCount; i++)
-                {
-                    if (!string.IsNullOrEmpty(activeProfiles[i]))
-                    {
-                        profileRepo.ProfilePath[i] = activeProfiles[i];
-                    }
-                }
-            }
-            finally
-            {
-            }
-
-            // ④ 【再適用・ホットリロード (Re-apply)】
-            // 保存またはリネームの影響を受けたスロットに対し、共通窓口経由で再適用を実行
-            string targetProfile = !string.IsNullOrWhiteSpace(newProfile) ? newProfile : oldProfile;
-            for (int i = 0; i < slotCount; i++)
-            {
-                bool matches = targetProfiles != null
-                    ? !string.IsNullOrEmpty(activeProfiles[i]) && targetProfiles.Any(p =>
-                        string.Equals(p, activeProfiles[i], StringComparison.CurrentCultureIgnoreCase))
-                    : string.IsNullOrEmpty(targetProfile) ||
-                      string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase);
-                // Phase11 W6 K-W6-2: コントローラーが接続されているスロットにだけ適用する。サービスの停止中は、ProfilePath が同じ名前のまま残っているため、
-                // 接続していないスロットにも適用され、無意味なログと通知が出ていた。プロファイルの XML は保存済みで、次の接続時に読まれる
-                if (matches && IsSlotConnected(i))
-                {
-                    profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual);
-                }
-            }
-        }
-
-        // Phase11 W6 K-W6-2: そのスロットに、接続中のコントローラーがあるか（サービス停止中は、どのスロットも false）
-        private bool IsSlotConnected(int slot)
-        {
-            return slots.GetSlot(slot) != null;
-        }
+            => profileSelection.SyncProfileListAndControllers(ProfileListHolder, () => _autoProfileService?.Holder?.Save(),
+                oldProfile, newProfile, targetProfiles);
 
         #endregion
 
@@ -1885,33 +1660,6 @@ namespace DS4Windows.UI
             SyncProfileListAndControllers(oldProfile: profile, newProfile: null);
         }
 
-        // Phase11 W4（Issue #4 の 1）: 編集画面が保存のときに求める、サービスの再起動（DS3 のピッチ／ロールの擬似の設定が変わったとき）
-        private void Editor_ServiceRestartRequested(object sender, EventArgs e)
-        {
-            RestartService();
-        }
-
-        /// <summary>
-        /// Phase11 W4: サービスを、停止→開始の順に 1 つの処理で再起動する。旧 ProfileEditor.SaveBtn_Click は、ChangeService
-        /// （停止／開始の切り替え）を 2 回続けて呼んでおり、1 回目の完了を待たなかった。ここでは切り替えを使わず、順に行う。
-        /// 止まっているサービスは開始しない（ユーザーが止めたものを勝手に動かさない。設定は、次の開始で効く）。
-        /// </summary>
-        private async void RestartService()
-        {
-            if (!lifecycle.Running) { return; }
-
-            AppLogger.LogDebug("[MainWindow] UseDs3PitchRollSim の変更を反映するため、サービスを再起動する");
-            StartStopBtn.IsEnabled = false;
-            Task serviceTask = Task.Run(() =>
-            {
-                lifecycle.Stop(immediateUnplug: true);
-                lifecycle.Start();
-            });
-
-            // Log exceptions that might occur
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-        }
         // Phase6-Step10-3b-3: アクションの除去・名前変更でプロファイルの XML が書き換わったときも、
         // 保存時と同じ経路（一覧の読み直し＋該当スロットへの再適用）を使う
         private void Editor_ProfilesUpdatedExternally(IReadOnlyList<string> profiles)

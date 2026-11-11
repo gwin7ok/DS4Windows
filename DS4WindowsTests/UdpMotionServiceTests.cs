@@ -35,8 +35,8 @@ namespace DS4WindowsTests
                 var slots = new DS4Windows.Processing.Services.DeviceSlotState();
                 for (int i = 0; i < slots.CurrentStates.Length; i++)
                 {
-                    slots.CurrentStates[i] = new DS4State();
-                    slots.TempStates[i] = new DS4State();
+                    slots.CurrentStates[i] = new ControllerState();
+                    slots.TempStates[i] = new ControllerState();
                 }
                 return slots;
             }
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
                 _savedPort = Settings.UdpServerPort;
                 _savedAddress = Settings.UdpServerListenAddress;
                 _savedSmoothing = Settings.UseUdpServerSmoothing;
-                Service = new UdpMotionService(Settings, TestHost.GetService<IDs4DeviceRegistry>(), Factory, Host, Events);
+                Service = new UdpMotionService(Settings, TestHost.GetService<IInputDeviceRegistry>(), Factory, Host, Events);
                 _sink = (s, e) => { string text = e.FileData ?? e.Data; if (text != null && text.Contains("UDP")) Logs.Add((text, e.Warning)); };
                 AppLogger.GuiLog += _sink;
             }
@@ -244,7 +244,7 @@ namespace DS4WindowsTests
                 f.Settings.UDPServerSmoothingBeta = 0.2;
                 f.Service.ResetSmoothingFilters(2);   // 設定を反映した、新しいフィルターから始める
 
-                DS4State s = f.Host.CurrentStates[2];
+                ControllerState s = f.Host.CurrentStates[2];
                 s.elapsedTime = 0.004;
                 s.Motion.accelXG = 1.0;
                 Fire(device);
@@ -289,7 +289,7 @@ namespace DS4WindowsTests
         public void Constructor_RejectsNull()
         {
             IAppSettingsService settings = TestHost.GetService<IAppSettingsService>();
-            IDs4DeviceRegistry registry = TestHost.GetService<IDs4DeviceRegistry>();
+            IInputDeviceRegistry registry = TestHost.GetService<IInputDeviceRegistry>();
             var factory = new FakeUdpMotionServerFactory();
             IDeviceSlotState host = new DS4Windows.Processing.Services.DeviceSlotState();
             IEventThreadDispatcher events = new FakeEventThreadDispatcher();

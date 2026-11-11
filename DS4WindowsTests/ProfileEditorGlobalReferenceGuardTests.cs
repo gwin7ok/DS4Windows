@@ -68,8 +68,8 @@ namespace DS4WindowsTests
             if (editor == null) return;
             Assert.Contains("throw new ArgumentNullException(nameof(appSettingsService))", editor);
             Assert.Contains("appSettingsService.UseLang", editor);
-            string main = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
-            Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", main);
+            string main = SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
+            Assert.Contains("_editorWindowFactory.CreateProfileEditor(targetDevice)", main);
         }
     }
 }

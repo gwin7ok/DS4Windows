@@ -1,4 +1,5 @@
-﻿using DS4Windows.Core.Model;
+﻿using DS4Windows.Processing.Gyro;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 
@@ -12,8 +13,8 @@ namespace DS4Windows.Processing.Abstractions
     public interface IMouseConversionStage
     {
         /// <summary>ボタン・スティック・トリガー・ジャイロ方向からの、生のマウスの移動量（<see cref="IButtonMouseMovementCalculator.Calculate"/>）。</summary>
-        double CalculateButtonMouseMovement(int device, DS4Controls control, int mnum, DS4State cState,
-            DS4StateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
+        double CalculateButtonMouseMovement(int device, DS4Controls control, int mnum, ControllerState cState,
+            ControllerStateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
             DeltaSettingsProcessorGroup deltaAccelProcessorGroup, double timeElapsed);
 
         /// <summary>フリックスティックの処理（<see cref="IFlickStickProcessor.Process"/>）。</summary>
@@ -24,6 +25,6 @@ namespace DS4Windows.Processing.Abstractions
         void QuantizeMouseMotion(int device, ref double rawMouseX, ref double rawMouseY, out int mouseX, out int mouseY);
 
         /// <summary>ジャイロのマウススティック出力の合成（<see cref="IGyroMouseStickBlender.Blend"/>）。</summary>
-        void BlendGyroMouseStick(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, DS4State MappedState, PostMapStickData mapStickData);
+        void BlendGyroMouseStick(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, ControllerState MappedState, PostMapStickData mapStickData);
     }
 }

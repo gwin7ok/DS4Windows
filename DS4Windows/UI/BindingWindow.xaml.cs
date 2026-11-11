@@ -33,6 +33,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI
@@ -50,6 +51,8 @@ namespace DS4Windows.UI
         private Dictionary<DS4Windows.Core.Model.X360Controls, Button> mouseBtnMap =
             new Dictionary<DS4Windows.Core.Model.X360Controls, Button>();
         private BindingWindowViewModel bindingVM;
+        // 振動テストボタンの動作（画面に依存しない判断）
+        private readonly ActionRumbleTestController rumbleTest;
         private readonly DS4Windows.Processing.Abstractions.IControllerSlotCommands slotCommands;
         // Phase6-Step10-2-4b: Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
@@ -94,6 +97,7 @@ namespace DS4Windows.UI
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
 
             this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
+            rumbleTest = new ActionRumbleTestController(slotCommands);
             this.expose = expose;
             bindingVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 
@@ -851,33 +855,18 @@ namespace DS4Windows.UI
 
         private void TestRumbleBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Phase6-Step7b: 振動させるのは実機（targetDevice）。モーターの左右反転は、編集中の設定
-            // （編集スロット DeviceNum）の値を読む（Phase6-Step7b-Plan.md 決定4 と同じ考え方）
-            if (bindingVM.HasTargetDevice)
-            {
-                int slot = bindingVM.TargetDevice;
-                if (slotCommands.IsConnected(slot))
-                {
-                    if (!bindingVM.RumbleActive)
-                    {
-                        bindingVM.RumbleActive = true;
-                        if (profileSettingsService.ForSlot(bindingVM.DeviceNum).Output.InverseRumbleMotors)
-                            slotCommands.SetRumble(slot, (byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble),
-                                (byte)Math.Min(255, bindingVM.ActionBinding.LightRumble));
-                        else
-                            slotCommands.SetRumble(slot, (byte)Math.Min(255, bindingVM.ActionBinding.LightRumble),
-                                (byte)Math.Min(255, bindingVM.ActionBinding.HeavyRumble));
+            // 振動させるのは実機（targetDevice）。モーターの左右反転は、編集中の設定（編集スロット DeviceNum）の値を読む。
+            // 判断は ActionRumbleTestController が行い、ここはボタンの文字と動作中の印だけを変える
+            if (!bindingVM.HasTargetDevice) return;
 
-                        testRumbleBtn.Content = Properties.Resources.StopText;
-                    }
-                    else
-                    {
-                        bindingVM.RumbleActive = false;
-                        slotCommands.SetRumble(slot, 0, 0);
-                        testRumbleBtn.Content = Properties.Resources.TestText;
-                    }
-                }
-            }
+            var outcome = rumbleTest.Toggle(bindingVM.TargetDevice, bindingVM.RumbleActive,
+                bindingVM.ActionBinding.HeavyRumble, bindingVM.ActionBinding.LightRumble,
+                profileSettingsService.ForSlot(bindingVM.DeviceNum).Output.InverseRumbleMotors);
+            if (outcome == RumbleTestOutcome.None) return;
+
+            bool started = outcome == RumbleTestOutcome.Started;
+            bindingVM.RumbleActive = started;
+            testRumbleBtn.Content = started ? Properties.Resources.StopText : Properties.Resources.TestText;
         }
 
         private void ExtrasColorChoosebtn_Click(object sender, RoutedEventArgs e)

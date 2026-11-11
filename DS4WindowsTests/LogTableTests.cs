@@ -29,9 +29,9 @@ namespace DS4WindowsTests
     {
         private const int Device = MappingCharacterizationScope.Device;
 
-        private static DS4State Pressed(params DS4Controls[] controls)
+        private static ControllerState Pressed(params DS4Controls[] controls)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             foreach (DS4Controls c in controls)
             {
                 switch (c)
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
             return state;
         }
 
-        private static void RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static void RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
             var sw = Stopwatch.StartNew();
             do
@@ -126,7 +126,7 @@ namespace DS4WindowsTests
             {
                 using var t = new ControlsKeyTestScope();
                 t.MapSpecial(DS4Controls.Share, new ControlSpecialItem { Type = SpecialAction.ActionTypeId.GyroCalibrate });
-                var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+                var factory = TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                     TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                     TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>(), gyroCalibration: gyro);
                 t.PublishWith(new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory));

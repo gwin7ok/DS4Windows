@@ -55,9 +55,13 @@ namespace DS4Windows.UI
             Close();
         }
 
-        private void DsHidMiniLink_Click(object sender, RoutedEventArgs e)
+        // 系統の補足のリンク（例: DS3 の DsHidMini）を開く。URL は系統の属性が持つ
+        private void HelpLink_Click(object sender, RoutedEventArgs e)
         {
-            Util.StartProcessHelper("https://vigem.org/projects/DsHidMini/");
+            if (((System.Windows.Documents.Hyperlink)sender).DataContext is FamilyToggleItem item && item.HelpUrl != null)
+            {
+                Util.StartProcessHelper(item.HelpUrl);
+            }
         }
     }
 }

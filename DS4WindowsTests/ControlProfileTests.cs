@@ -77,7 +77,7 @@ namespace DS4WindowsTests
             => new ControlSpecialItem { Type = SpecialAction.ActionTypeId.Profile, ProfileName = name, AutomaticUntrigger = auto };
 
         private static SpecialActionOutputFactory NewFactory(IProfileSwitcher switcher)
-            => new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+            => TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), switcher,
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>());
 
@@ -154,16 +154,16 @@ namespace DS4WindowsTests
             Assert.Equal((Device, "Other", true), Assert.Single(switcher.Switches));
         }
 
-        private static DS4State Cross(bool held)
+        private static ControllerState Cross(bool held)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = held;
             return state;
         }
 
-        private static DS4State RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static ControllerState RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
-            DS4State last = null;
+            ControllerState last = null;
             var sw = Stopwatch.StartNew();
             do
             {
@@ -187,7 +187,7 @@ namespace DS4WindowsTests
             RunFor(t, Cross(false), 150);   // SA と同じ Fresh-press ガード
             Assert.Empty(switcher.Switches);
 
-            DS4State held = RunFor(t, Cross(true), 300);
+            ControllerState held = RunFor(t, Cross(true), 300);
             Assert.Single(switcher.Switches);
             Assert.False(held.Cross);       // 割り当てたボタンの通常の出力は消える
             Assert.Empty(switcher.Restores);
@@ -414,12 +414,12 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRename_IsCalledFromTheMainWindowRename_NextToTheSaTargetUpdate()
         {
-            string path = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
             if (path == null) return;
 
             string source = File.ReadAllText(path);
-            int sa = source.IndexOf("profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);");
-            int controls = source.IndexOf("profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);");
+            int sa = source.IndexOf("_profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);");
+            int controls = source.IndexOf("_profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);");
             Assert.True(sa >= 0 && controls > sa, "名前変更の処理に、Controls の切り替え先の更新が、SA の更新の後にあること");
         }
     }

@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using DS4Windows.Processing.Touchpad;
 using Sensorit.Base;
 using System;
 using System.Collections.Generic;
@@ -154,12 +155,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4,
           DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4,
           DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4 };
-        public bool[] touchpadJitterCompensation = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP,
-          DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP,
-          DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP, DEFAULT_TOUCHPAD_JITTER_COMP };
-        public bool[] lowerRCOn = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public bool[] touchClickPassthru = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
         public ProfileSlotNames profilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames olderProfilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames selectedProfile = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
@@ -185,156 +180,23 @@ namespace DS4Windows.Core.Settings
           DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE,
           DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE };
         public int[] rumbleAutostopTime = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Value in milliseconds (0=autustop timer disabled)
-        public Byte[] touchSensitivity = new Byte[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS,
-          DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS,
-          DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS, DEFAULT_TOUCHPAD_SENS };
-        public StickDeadZoneInfo[] lsModInfo = new StickDeadZoneInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(),
-        };
-        public StickDeadZoneInfo[] rsModInfo = new StickDeadZoneInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(), new StickDeadZoneInfo(),
-            new StickDeadZoneInfo(),
-        };
-        public TriggerDeadZoneZInfo[] l2ModInfo = new TriggerDeadZoneZInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(),
-        };
-        public TriggerDeadZoneZInfo[] r2ModInfo = new TriggerDeadZoneZInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(), new TriggerDeadZoneZInfo(),
-            new TriggerDeadZoneZInfo(),
-        };
 
         // Rotation angle expressed in radians
-        public double[] LSRotation = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
         // Rotation angle expressed in radians
-        public double[] RSRotation = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-        public double[] SXDeadzone = new double[ControllerLimits.TestProfileItemCount] { DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE },
-            SZDeadzone = new double[ControllerLimits.TestProfileItemCount] { DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE, DEFAULT_SX_TILT_DEADZONE };
 
-        public double[] SXMaxzone = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-            DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-            DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE };
-        public double[] SZMaxzone = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-          DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE,
-          DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE, DEFAULT_SX_TILT_MAXZONE };
-        public double[] SXAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-            SZAntiDeadzone = new double[ControllerLimits.TestProfileItemCount] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-        public double[] l2Sens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public double[] r2Sens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public double[] LSSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS};
-        public double[] RSSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public double[] SXSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public double[] SZSens = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS,
-          DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS, DEFAULT_ANALOG_SENS };
-        public Byte[] tapSensitivity = new Byte[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public bool[] doubleTap = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public int[] scrollSensitivity = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int[] touchpadInvert = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public int[] btPollRate = new int[ControllerLimits.TestProfileItemCount]
         { DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
           DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE };
-        public int[] gyroMouseDZ = new int[ControllerLimits.TestProfileItemCount] { MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE, MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE,MouseCursor.GYRO_MOUSE_DEADZONE,
-            MouseCursor.GYRO_MOUSE_DEADZONE,};
-        public bool[] gyroMouseToggle = new bool[ControllerLimits.TestProfileItemCount] { false, false, false,
-            false, false, false, false, false, false };
 
-        public SquareStickInfo[] squStickInfo = new SquareStickInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(), new SquareStickInfo(),
-            new SquareStickInfo(),
-        };
 
-        public StickAntiSnapbackInfo[] lsAntiSnapbackInfo = new StickAntiSnapbackInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(),
-        };
 
-        public StickAntiSnapbackInfo[] rsAntiSnapbackInfo = new StickAntiSnapbackInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(), new StickAntiSnapbackInfo(),
-            new StickAntiSnapbackInfo(),
-        };
 
-        public StickOutputSetting[] lsOutputSettings = new StickOutputSetting[ControllerLimits.TestProfileItemCount]
-        {
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-        };
 
-        public StickOutputSetting[] rsOutputSettings = new StickOutputSetting[ControllerLimits.TestProfileItemCount]
-        {
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-            new StickOutputSetting(), new StickOutputSetting(), new StickOutputSetting(),
-        };
 
-        public TriggerOutputSettings[] l2OutputSettings = new TriggerOutputSettings[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-        };
 
-        public TriggerOutputSettings[] r2OutputSettings = new TriggerOutputSettings[ControllerLimits.TestProfileItemCount]
-        {
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-            new TriggerOutputSettings(), new TriggerOutputSettings(), new TriggerOutputSettings(),
-        };
 
 
         // Start of DualSense specific profile options
@@ -351,85 +213,7 @@ namespace DS4Windows.Core.Settings
         //
         // End of DualSense specific profile options
 
-        private void setOutBezierCurveObjArrayItem(BezierCurve[] bezierCurveArray, int device, int curveOptionValue, BezierCurve.AxisType axisType)
-        {
-            // Set bezier curve obj of axis. 0=Linear (no curve mapping), 1-5=Pre-defined curves, 6=User supplied custom curve string value of a profile (comma separated list of 4 decimal numbers)
-            switch (curveOptionValue)
-            {
-                // Commented out case 1..5 because Mapping.cs:SetCurveAndDeadzone function has the original IF-THEN-ELSE code logic for those original 1..5 output curve mappings (ie. no need to initialize the lookup result table).
-                // Only the new bezier custom curve option 6 uses the lookup result table (initialized in BezierCurve class based on an input curve definition).
-                //case 1: bezierCurveArray[device].InitBezierCurve(99.0, 91.0, 0.00, 0.00, axisType); break;  // Enhanced Precision (hard-coded curve) (almost the same curve as bezier 0.70, 0.28, 1.00, 1.00)
-                //case 2: bezierCurveArray[device].InitBezierCurve(99.0, 92.0, 0.00, 0.00, axisType); break;  // Quadric
-                //case 3: bezierCurveArray[device].InitBezierCurve(99.0, 93.0, 0.00, 0.00, axisType); break;  // Cubic
-                //case 4: bezierCurveArray[device].InitBezierCurve(99.0, 94.0, 0.00, 0.00, axisType); break;  // Easeout Quad
-                //case 5: bezierCurveArray[device].InitBezierCurve(99.0, 95.0, 0.00, 0.00, axisType); break;  // Easeout Cubic
-                case 6: bezierCurveArray[device].InitBezierCurve(bezierCurveArray[device].CustomDefinition, axisType); break;  // Custom output curve
-            }
-        }
 
-        public BezierCurve[] lsOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] rsOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] l2OutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] r2OutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] sxOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-        public BezierCurve[] szOutBezierCurveObj = new BezierCurve[ControllerLimits.TestProfileItemCount] { new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve(), new BezierCurve() };
-
-        private int[] _lsOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getLsOutCurveMode(int index) { return _lsOutCurveMode[index]; }
-        public void setLsOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(lsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
-            _lsOutCurveMode[index] = value;
-        }
-
-        private int[] _rsOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getRsOutCurveMode(int index) { return _rsOutCurveMode[index]; }
-        public void setRsOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(rsOutBezierCurveObj, index, value, BezierCurve.AxisType.LSRS);
-            _rsOutCurveMode[index] = value;
-        }
-
-        private int[] _l2OutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getL2OutCurveMode(int index) { return _l2OutCurveMode[index]; }
-        public void setL2OutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(l2OutBezierCurveObj, index, value, BezierCurve.AxisType.L2R2);
-            _l2OutCurveMode[index] = value;
-        }
-
-        private int[] _r2OutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getR2OutCurveMode(int index) { return _r2OutCurveMode[index]; }
-        public void setR2OutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(r2OutBezierCurveObj, index, value, BezierCurve.AxisType.L2R2);
-            _r2OutCurveMode[index] = value;
-        }
-
-        private int[] _sxOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getSXOutCurveMode(int index) { return _sxOutCurveMode[index]; }
-        public void setSXOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(sxOutBezierCurveObj, index, value, BezierCurve.AxisType.SA);
-            _sxOutCurveMode[index] = value;
-        }
-
-        private int[] _szOutCurveMode = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public int getSZOutCurveMode(int index) { return _szOutCurveMode[index]; }
-        public void setSZOutCurveMode(int index, int value)
-        {
-            if (value >= 1) setOutBezierCurveObjArrayItem(szOutBezierCurveObj, index, value, BezierCurve.AxisType.SA);
-            _szOutCurveMode[index] = value;
-        }
-
-        public LightbarSettingInfo[] lightbarSettingInfo = new LightbarSettingInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(), new LightbarSettingInfo(),
-            new LightbarSettingInfo(),
-        };
 
         public int processPriority;
         public string[] launchProgram = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
@@ -437,21 +221,6 @@ namespace DS4Windows.Core.Settings
         { DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY,
           DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY,
           DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY };
-        public bool[] startTouchpadOff = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public TouchpadOutMode[] touchOutMode = new TouchpadOutMode[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE,
-          DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE,
-          DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE, DEFAULT_TOUCH_OUT_MODE };
-        public GyroOutMode[] gyroOutMode = new GyroOutMode[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE,
-          DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE,
-          DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE, DEFAULT_GYRO_OUT_MODE };
-        public GyroControlsInfo[] gyroControlsInf = new GyroControlsInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
-            new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
-            new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
-        };
 
         public RumbleSettings[] rumbleSettings = new RumbleSettings[ControllerLimits.TestProfileItemCount]
                 {
@@ -462,43 +231,8 @@ namespace DS4Windows.Core.Settings
             new RumbleSettings(),
                 };
 
-        public string[] sATriggers = new string[ControllerLimits.TestProfileItemCount]
-        { BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS,
-          BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS,
-          BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS };
-        public string[] sAMouseStickTriggers = new string[ControllerLimits.TestProfileItemCount]
-        { BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS,
-          BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS,
-          BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS, BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS };
-        public bool[] sATriggerCond = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND,
-          DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND,
-          DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND, DEFAULT_SA_TRIGGER_COND };
-        public bool[] sAMouseStickTriggerCond = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND,
-          DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND,
-          DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND, DEFAULT_SA_MSTICK_TRIGGER_COND };
-        public bool[] gyroMouseStickTriggerTurns = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS,
-          DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS,
-          DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS, DEFAULT_GYRO_MSTICK_TRIGGER_TURNS };
-        public GyroMouseStickInfo[] gyroMStickInfo = new GyroMouseStickInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(), new GyroMouseStickInfo(),
-            new GyroMouseStickInfo(),
-        };
 
-        public bool[] gyroMouseStickToggle = new bool[ControllerLimits.TestProfileItemCount] { false, false, false,
-            false, false, false, false, false, false };
 
-        public int[][] touchDisInvertTriggers = new int[ControllerLimits.TestProfileItemCount][]
-        { new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
-          new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER }, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER },
-          new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER }, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER}, new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER } };
         public Boolean useExclusiveMode = false; // Re-enable Ex Mode
 
         public const int DEFAULT_FORM_WIDTH = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
@@ -551,7 +285,24 @@ namespace DS4Windows.Core.Settings
         /// Phase8-Step8 8-0（Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定（<c>&lt;GyroSwipeSettings&gt;</c>、<c>&lt;Control&gt;</c> 内の <c>GyroSwipe*</c> の割り当て、
         /// ジャイロの出力モード <c>DirectionalSwipe</c>）を、解釈せずに保持する。スロットごと。読込のたびに取り込み直し、保存で、そのまま書き出す。
         /// </summary>
-        public readonly RemovedGyroSwipeSettings[] removedGyroSwipeSettings = new RemovedGyroSwipeSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>ジャイロの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly GyroSlotSettings[] gyroSlots = new GyroSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Touchpadの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly TouchpadSlotSettings[] touchpadSlots = new TouchpadSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Triggersの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly TriggerSlotSettings[] triggerSlots = new TriggerSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Sticksの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly StickSlotSettings[] stickSlots = new StickSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>Lightbarの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly LightbarSlotSettings[] lightbarSlots = new LightbarSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        /// <summary>SixAxisの設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly SixAxisSlotSettings[] sixAxisSlots = new SixAxisSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -607,22 +358,6 @@ namespace DS4Windows.Core.Settings
         public AppThemeChoice useCurrentTheme;
         public string fakeExeFileName = string.Empty;
 
-        public sbyte[] leftStickDriftXAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
-        public sbyte[] leftStickDriftYAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
-        public sbyte[] rightStickDriftXAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
-        public sbyte[] rightStickDriftYAxis = new sbyte[ControllerLimits.TestProfileItemCount]
-        {
-            0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
 
         // Phase11 K-W6-10: debouncingMs（デバウンス時間）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
 
@@ -630,7 +365,6 @@ namespace DS4Windows.Core.Settings
             false, false, false, false, false, false, false, false, false
         };
 
-        public bool useDs3PitchRollSim = false;
 
         public ControlServiceDeviceOptions deviceOptions =
             new ControlServiceDeviceOptions();
@@ -641,62 +375,15 @@ namespace DS4Windows.Core.Settings
         // Cache whether profile has custom extras
         public bool[] containsCustomExtras = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
 
-        public int[] gyroSensitivity = new int[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS,
-          DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS,
-          DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS, DEFAULT_GYRO_SENS };
-        public int[] gyroSensVerticalScale = new int[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE,
-          DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE,
-          DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE, DEFAULT_GYRO_SENS_VERTICAL_SCALE };
-        public int[] gyroInvert = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public bool[] gyroTriggerTurns = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS,
-          DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS,
-          DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS, DEFAULT_GYRO_TRIGGER_TURNS };
 
-        public GyroMouseInfo[] gyroMouseInfo = new GyroMouseInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(), new GyroMouseInfo(),
-            new GyroMouseInfo(),
-        };
 
-        public int[] gyroMouseHorizontalAxis = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public int[] gyroMouseStickHorizontalAxis = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public bool[] trackballMode = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE,
-          DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE,
-          DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE, DEFAULT_TRACKBALL_MODE };
-        public double[] trackballFriction = new double[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION,
-          DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION,
-          DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION, DEFAULT_TRACKBALL_FRICTION };
         //public bool[] touchStickTrackballMode = new bool[Global.TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         //public double[] touchStickTrackballFriction = new double[Global.TEST_PROFILE_ITEM_COUNT] { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 };
 
-        public TouchMouseStickInfo[] touchMStickInfo = new TouchMouseStickInfo[ControllerLimits.TestProfileItemCount]
-        {
-            new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(), new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(), new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(), new TouchMouseStickInfo(),
-            new TouchMouseStickInfo(),
-        };
 
-        public TouchpadRelMouseSettings[] touchpadRelMouse = new TouchpadRelMouseSettings[ControllerLimits.TestProfileItemCount] { new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(),
-            new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings(), new TouchpadRelMouseSettings() };
 
-        public TouchButtonActivationMode[] touchpadButtonMode = new TouchButtonActivationMode[ControllerLimits.TestProfileItemCount]
-        {
-            new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(),
-            new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(), new TouchButtonActivationMode(),
-        };
 
         // Used to hold the controller type desired in a profile
         public OutContType[] outputDevType = new OutContType[ControllerLimits.TestProfileItemCount]
@@ -793,6 +480,12 @@ namespace DS4Windows.Core.Settings
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
+            for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
+            for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
+            for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
+            for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
+            for (int i = 0; i < triggerSlots.Length; i++) triggerSlots[i] = new TriggerSlotSettings(i);
+            for (int i = 0; i < touchpadSlots.Length; i++) touchpadSlots[i] = new TouchpadSlotSettings(i);
 
             for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
             {
@@ -804,7 +497,6 @@ namespace DS4Windows.Core.Settings
 
                 ds4controlSettings[i] = new ControlSettingsGroup(ds4settings[i]);
                 removedShiftSettings[i] = new RemovedShiftSettings();
-                removedGyroSwipeSettings[i] = new RemovedGyroSwipeSettings();
 
                 // RumbleSettings の変更を生配列 rumble / rumbleAutostopTime に連動させる
                 int slot = i;
@@ -848,24 +540,24 @@ namespace DS4Windows.Core.Settings
             containsCustomExtras[device] = HasCustomExtras(device);
 
             {
-                customAct = gyroOutMode[device] == GyroOutMode.MouseJoystick;
-                customAct = customAct || lsOutputSettings[device].mode != StickMode.Controls;
-                customAct = customAct || rsOutputSettings[device].mode != StickMode.Controls;
+                customAct = gyroSlots[device].OutputMode == GyroOutMode.MouseJoystick;
+                customAct = customAct || stickSlots[device].LSOutput.mode != StickMode.Controls;
+                customAct = customAct || stickSlots[device].RSOutput.mode != StickMode.Controls;
                 containsCustomAction[device] = customAct;
             }
         }
 
         private void SetupDefaultColors()
         {
-            lightbarSettingInfo[0].ds4winSettings.m_Led = new DS4Color(Color.Blue);
-            lightbarSettingInfo[1].ds4winSettings.m_Led = new DS4Color(Color.Red);
-            lightbarSettingInfo[2].ds4winSettings.m_Led = new DS4Color(Color.Green);
-            lightbarSettingInfo[3].ds4winSettings.m_Led = new DS4Color(Color.Pink);
-            lightbarSettingInfo[4].ds4winSettings.m_Led = new DS4Color(Color.Blue);
-            lightbarSettingInfo[5].ds4winSettings.m_Led = new DS4Color(Color.Red);
-            lightbarSettingInfo[6].ds4winSettings.m_Led = new DS4Color(Color.Green);
-            lightbarSettingInfo[7].ds4winSettings.m_Led = new DS4Color(Color.Pink);
-            lightbarSettingInfo[8].ds4winSettings.m_Led = new DS4Color(Color.White);
+            lightbarSlots[0].Info.ds4winSettings.m_Led = new DS4Color(Color.Blue);
+            lightbarSlots[1].Info.ds4winSettings.m_Led = new DS4Color(Color.Red);
+            lightbarSlots[2].Info.ds4winSettings.m_Led = new DS4Color(Color.Green);
+            lightbarSlots[3].Info.ds4winSettings.m_Led = new DS4Color(Color.Pink);
+            lightbarSlots[4].Info.ds4winSettings.m_Led = new DS4Color(Color.Blue);
+            lightbarSlots[5].Info.ds4winSettings.m_Led = new DS4Color(Color.Red);
+            lightbarSlots[6].Info.ds4winSettings.m_Led = new DS4Color(Color.Green);
+            lightbarSlots[7].Info.ds4winSettings.m_Led = new DS4Color(Color.Pink);
+            lightbarSlots[8].Info.ds4winSettings.m_Led = new DS4Color(Color.White);
         }
 
         public void CacheExtraProfileInfo(int device)
@@ -1025,41 +717,21 @@ namespace DS4Windows.Core.Settings
 
         public void SetSaTriggerCond(int index, string text)
         {
-            sATriggerCond[index] = SaTriggerCondValue(text);
+            gyroSlots[index].MouseTriggerCondAnd = SaTriggerCondValue(text);
         }
 
         public void SetSaMouseStickTriggerCond(int index, string text)
         {
-            sAMouseStickTriggerCond[index] = SaTriggerCondValue(text);
+            gyroSlots[index].MouseStickTriggerCondAnd = SaTriggerCondValue(text);
         }
 
-        public void SetGyroMouseDZ(int index, int value, IProfileLoadTarget control)
-        {
-            gyroMouseDZ[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).CursorGyroDead = value;
-        }
+        public void SetGyroMouseDZ(int index, int value, IProfileLoadTarget control) => gyroSlots[index].SetMouseDeadZone(value, control);
 
-        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control)
-        {
-            gyroControlsInf[index].triggerToggle = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).ToggleGyroControls = value;
-        }
+        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetControlsToggle(value, control);
 
-        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control)
-        {
-            gyroMouseToggle[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).ToggleGyroMouse = value;
-        }
+        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseToggle(value, control);
 
-        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control)
-        {
-            gyroMouseStickToggle[index] = value;
-            if (index < _environmentService.ControllerSlotLimit && control.GetTouchPad(index) != null)
-                control.GetTouchPad(index).ToggleGyroStick = value;
-        }
+        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseStickToggle(value, control);
 
 
         // Phase7-Step10b W1: getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
@@ -1126,8 +798,8 @@ namespace DS4Windows.Core.Settings
                 throw new ArgumentOutOfRangeException();
             }
 
-            lightbarSettingInfo[index].ds4winSettings.useCustomLed = source.useCustomLed;
-            lightbarSettingInfo[index].ds4winSettings.m_CustomLed = source.m_CustomLed;
+            lightbarSlots[index].Info.ds4winSettings.useCustomLed = source.useCustomLed;
+            lightbarSlots[index].Info.ds4winSettings.m_CustomLed = source.m_CustomLed;
         }
 
         public LightbarDS4WinInfo ObtainLightbarDS4WinInfo(int index)
@@ -1137,7 +809,7 @@ namespace DS4Windows.Core.Settings
                 throw new ArgumentOutOfRangeException();
             }
 
-            return lightbarSettingInfo[index].ds4winSettings;
+            return lightbarSlots[index].Info.ds4winSettings;
         }
 
 
@@ -1290,66 +962,65 @@ namespace DS4Windows.Core.Settings
         public void ResetProfile(int device)
         {
             removedShiftSettings[device].Clear();
-            removedGyroSwipeSettings[device].Clear();
+            gyroSlots[device].RemovedSwipe.Clear();
             buttonMouseInfos[device].Reset();
-            gyroControlsInf[device].Reset();
+            gyroSlots[device].Controls.Reset();
 
             enableTouchToggle[device] = DEFAULT_TOUCH_TOGGLE;
             idleDisconnectTimeout[device] = 0;
             enableOutputDataToDS4[device] = DEFAULT_OUTPUT_TO_DS4;
-            touchpadJitterCompensation[device] = DEFAULT_TOUCHPAD_JITTER_COMP;
+            touchpadSlots[device].JitterCompensation = DEFAULT_TOUCHPAD_JITTER_COMP;
             // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
-            // useDs3PitchRollSim は全体で 1 つの値のため、ここではリセットしない。
             inverseRumbleMotors[device] = false;
-            leftStickDriftXAxis[device] = 0;
-            leftStickDriftYAxis[device] = 0;
-            rightStickDriftXAxis[device] = 0;
-            rightStickDriftYAxis[device] = 0;
+            stickSlots[device].LeftStickDriftXAxis = 0;
+            stickSlots[device].LeftStickDriftYAxis = 0;
+            stickSlots[device].RightStickDriftXAxis = 0;
+            stickSlots[device].RightStickDriftYAxis = 0;
             outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
-            lowerRCOn[device] = false;
-            touchClickPassthru[device] = false;
+            touchpadSlots[device].LowerRightAsRightClick = false;
+            touchpadSlots[device].ClickPassthru = false;
 
             rumble[device] = DEFAULT_RUMBLE;
             rumbleAutostopTime[device] = 0;
-            touchSensitivity[device] = DEFAULT_TOUCHPAD_SENS;
+            touchpadSlots[device].TouchSensitivity = DEFAULT_TOUCHPAD_SENS;
 
-            lsModInfo[device].Reset();
-            rsModInfo[device].Reset();
-            lsModInfo[device].deadZone = rsModInfo[device].deadZone = StickDeadZoneInfo.DEFAULT_DEADZONE;
-            lsModInfo[device].antiDeadZone = rsModInfo[device].antiDeadZone = StickDeadZoneInfo.DEFAULT_ANTIDEADZONE;
-            lsModInfo[device].maxZone = rsModInfo[device].maxZone = StickDeadZoneInfo.DEFAULT_MAXZONE;
-            lsModInfo[device].maxOutput = rsModInfo[device].maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
-            lsModInfo[device].fuzz = rsModInfo[device].fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
+            stickSlots[device].LSMod.Reset();
+            stickSlots[device].RSMod.Reset();
+            stickSlots[device].LSMod.deadZone = stickSlots[device].RSMod.deadZone = StickDeadZoneInfo.DEFAULT_DEADZONE;
+            stickSlots[device].LSMod.antiDeadZone = stickSlots[device].RSMod.antiDeadZone = StickDeadZoneInfo.DEFAULT_ANTIDEADZONE;
+            stickSlots[device].LSMod.maxZone = stickSlots[device].RSMod.maxZone = StickDeadZoneInfo.DEFAULT_MAXZONE;
+            stickSlots[device].LSMod.maxOutput = stickSlots[device].RSMod.maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
+            stickSlots[device].LSMod.fuzz = stickSlots[device].RSMod.fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
 
-            //l2ModInfo[device].deadZone = r2ModInfo[device].deadZone = 0;
-            //l2ModInfo[device].antiDeadZone = r2ModInfo[device].antiDeadZone = 0;
-            //l2ModInfo[device].maxZone = r2ModInfo[device].maxZone = 100;
-            //l2ModInfo[device].maxOutput = r2ModInfo[device].maxOutput = 100.0;
-            l2ModInfo[device].Reset();
-            r2ModInfo[device].Reset();
+            //triggerSlots[device].L2Mod.deadZone = triggerSlots[device].R2Mod.deadZone = 0;
+            //triggerSlots[device].L2Mod.antiDeadZone = triggerSlots[device].R2Mod.antiDeadZone = 0;
+            //triggerSlots[device].L2Mod.maxZone = triggerSlots[device].R2Mod.maxZone = 100;
+            //triggerSlots[device].L2Mod.maxOutput = triggerSlots[device].R2Mod.maxOutput = 100.0;
+            triggerSlots[device].L2Mod.Reset();
+            triggerSlots[device].R2Mod.Reset();
 
             // Rotation angles expressed in radians
-            LSRotation[device] = 0.0;
-            RSRotation[device] = 0.0;
+            stickSlots[device].LSRotation = 0.0;
+            stickSlots[device].RSRotation = 0.0;
 
-            SXDeadzone[device] = SZDeadzone[device] = DEFAULT_SX_TILT_DEADZONE;
-            SXMaxzone[device] = SZMaxzone[device] = DEFAULT_RUMBLE;
-            SXAntiDeadzone[device] = SZAntiDeadzone[device] = 0.0;
-            l2Sens[device] = r2Sens[device] = DEFAULT_ANALOG_SENS;
-            LSSens[device] = RSSens[device] = DEFAULT_ANALOG_SENS;
-            SXSens[device] = SZSens[device] = DEFAULT_ANALOG_SENS;
-            tapSensitivity[device] = 0;
-            doubleTap[device] = false;
-            scrollSensitivity[device] = 0;
-            touchpadInvert[device] = 0;
+            sixAxisSlots[device].SXDeadZone = sixAxisSlots[device].SZDeadZone = DEFAULT_SX_TILT_DEADZONE;
+            sixAxisSlots[device].SXMaxZone = sixAxisSlots[device].SZMaxZone = DEFAULT_RUMBLE;
+            sixAxisSlots[device].SXAntiDeadZone = sixAxisSlots[device].SZAntiDeadZone = 0.0;
+            triggerSlots[device].L2Sens = triggerSlots[device].R2Sens = DEFAULT_ANALOG_SENS;
+            stickSlots[device].LSSens = stickSlots[device].RSSens = DEFAULT_ANALOG_SENS;
+            sixAxisSlots[device].SXSens = sixAxisSlots[device].SZSens = DEFAULT_ANALOG_SENS;
+            touchpadSlots[device].TapSensitivity = 0;
+            touchpadSlots[device].DoubleTap = false;
+            touchpadSlots[device].ScrollSensitivity = 0;
+            touchpadSlots[device].Invert = 0;
             btPollRate[device] = DEFAULT_DS4_BT_POLL_RATE;
 
-            lsOutputSettings[device].ResetSettings();
-            rsOutputSettings[device].ResetSettings();
-            l2OutputSettings[device].ResetSettings();
-            r2OutputSettings[device].ResetSettings();
+            stickSlots[device].LSOutput.ResetSettings();
+            stickSlots[device].RSOutput.ResetSettings();
+            triggerSlots[device].L2Output.ResetSettings();
+            triggerSlots[device].R2Output.ResetSettings();
 
-            LightbarSettingInfo lightbarSettings = lightbarSettingInfo[device];
+            LightbarSettingInfo lightbarSettings = lightbarSlots[device].Info;
             LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
             lightbarSettings.Mode = LightbarMode.DS4Win;
             lightInfo.m_LowLed = new DS4Color(Color.Black);
@@ -1382,46 +1053,46 @@ namespace DS4Windows.Core.Settings
 
             launchProgram[device] = string.Empty;
             dinputOnly[device] = DEFAULT_DINPUT_ONLY;
-            startTouchpadOff[device] = false;
-            touchOutMode[device] = DEFAULT_TOUCH_OUT_MODE;
-            sATriggers[device] = BackingStore.DEFAULT_SA_TRIGGERS;
-            sATriggerCond[device] = DEFAULT_SA_TRIGGER_COND;
-            gyroOutMode[device] = DEFAULT_GYRO_OUT_MODE;
-            sAMouseStickTriggers[device] = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
-            sAMouseStickTriggerCond[device] = true;
+            touchpadSlots[device].StartOff = false;
+            touchpadSlots[device].OutputMode = DEFAULT_TOUCH_OUT_MODE;
+            gyroSlots[device].MouseTriggers = BackingStore.DEFAULT_SA_TRIGGERS;
+            gyroSlots[device].MouseTriggerCondAnd = DEFAULT_SA_TRIGGER_COND;
+            gyroSlots[device].OutputMode = DEFAULT_GYRO_OUT_MODE;
+            gyroSlots[device].MouseStickTriggers = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
+            gyroSlots[device].MouseStickTriggerCondAnd = true;
 
-            gyroMStickInfo[device].Reset();
+            gyroSlots[device].MouseStick.Reset();
 
-            gyroMouseStickToggle[device] = false;
-            gyroMouseStickTriggerTurns[device] = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
-            touchDisInvertTriggers[device] = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
-            gyroSensitivity[device] = DEFAULT_GYRO_SENS;
-            gyroSensVerticalScale[device] = DEFAULT_GYRO_SENS_VERTICAL_SCALE;
-            gyroInvert[device] = 0;
-            gyroTriggerTurns[device] = DEFAULT_GYRO_TRIGGER_TURNS;
-            gyroMouseInfo[device].Reset();
+            gyroSlots[device].MouseStickToggle = false;
+            gyroSlots[device].MouseStickTriggerTurns = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
+            touchpadSlots[device].DisInvertTriggers = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
+            gyroSlots[device].Sensitivity = DEFAULT_GYRO_SENS;
+            gyroSlots[device].SensVerticalScale = DEFAULT_GYRO_SENS_VERTICAL_SCALE;
+            gyroSlots[device].Invert = 0;
+            gyroSlots[device].TriggerTurns = DEFAULT_GYRO_TRIGGER_TURNS;
+            gyroSlots[device].Mouse.Reset();
 
-            gyroMouseHorizontalAxis[device] = 0;
-            gyroMouseToggle[device] = false;
-            //squStickInfo[device].lsMode = false;
-            //squStickInfo[device].rsMode = false;
-            //squStickInfo[device].lsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
-            //squStickInfo[device].rsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
-            squStickInfo[device].Reset();
-            lsAntiSnapbackInfo[device].timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT;
-            lsAntiSnapbackInfo[device].delta = StickAntiSnapbackInfo.DEFAULT_DELTA;
-            lsAntiSnapbackInfo[device].enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
-            setLsOutCurveMode(device, 0);
-            setRsOutCurveMode(device, 0);
-            setL2OutCurveMode(device, 0);
-            setR2OutCurveMode(device, 0);
-            setSXOutCurveMode(device, 0);
-            setSZOutCurveMode(device, 0);
-            trackballMode[device] = DEFAULT_TRACKBALL_MODE;
-            trackballFriction[device] = DEFAULT_TRACKBALL_FRICTION;
-            touchpadRelMouse[device].Reset();
-            touchMStickInfo[device].Reset();
-            touchpadButtonMode[device] = TouchButtonActivationMode.Click;
+            gyroSlots[device].MouseHorizontalAxis = 0;
+            gyroSlots[device].MouseToggle = false;
+            //stickSlots[device].SquStick.lsMode = false;
+            //stickSlots[device].SquStick.rsMode = false;
+            //stickSlots[device].SquStick.lsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
+            //stickSlots[device].SquStick.rsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
+            stickSlots[device].SquStick.Reset();
+            stickSlots[device].LSAntiSnapback.timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT;
+            stickSlots[device].LSAntiSnapback.delta = StickAntiSnapbackInfo.DEFAULT_DELTA;
+            stickSlots[device].LSAntiSnapback.enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
+            stickSlots[device].ApplyLSCurveMode(0);
+            stickSlots[device].ApplyRSCurveMode(0);
+            triggerSlots[device].L2CurveMode = 0;
+            triggerSlots[device].R2CurveMode = 0;
+            sixAxisSlots[device].ApplySXCurveMode(0);
+            sixAxisSlots[device].ApplySZCurveMode(0);
+            touchpadSlots[device].Trackball = DEFAULT_TRACKBALL_MODE;
+            touchpadSlots[device].TrackballFriction = DEFAULT_TRACKBALL_FRICTION;
+            touchpadSlots[device].RelMouse.Reset();
+            touchpadSlots[device].MouseStick.Reset();
+            touchpadSlots[device].ButtonMode = TouchButtonActivationMode.Click;
             outputDevType[device] = DEFAULT_OUT_CONT_TYPE;
             ds4Mapping = false;
         }
@@ -1473,7 +1144,7 @@ namespace DS4Windows.Core.Settings
                 {
                     //tempDev.setIdleTimeout(idleDisconnectTimeout[device]);
                     //tempDev.setBTPollRate(btPollRate[device]);
-                    if (xinputStatus && tempDev.PrimaryDevice)
+                    if (xinputStatus)
                     {
                         if (xinputPlug)
                         {
@@ -1500,7 +1171,7 @@ namespace DS4Windows.Core.Settings
                     control.CheckProfileOptions(device, tempDev, true);
                 });
 
-                //Program.rootHub.touchPad[device]?.ResetTrackAccel(trackballFriction[device]);
+                //Program.rootHub.touchPad[device]?.ResetTrackAccel(touchpadSlots[device].TrackballFriction);
             }
         }
     }

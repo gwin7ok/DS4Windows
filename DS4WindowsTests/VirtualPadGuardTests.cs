@@ -24,38 +24,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\boutputslotMan\b")]
-        [InlineData(@"\bvigemTestClient\b")]
-        [InlineData(@"\btempThread\b")]
-        [InlineData(@"(?<!_virtualPad\.)\bStartViGEm\(")]   // Start からの呼び出し（_virtualPad.StartViGEm()）は残る
-        [InlineData(@"\bEstablishOutDevice\(")]
-        [InlineData(@"\bnew OutputSlotManager\(")]
-        [InlineData(@"(?<!_virtualPad\.)\bAssignInitialDevices\b")]   // Start からの呼び出し（_virtualPad.AssignInitialDevices()）は残る
-        [InlineData(@"\bAttachNewUnboundOutDev\b")]
-        [InlineData(@"\bAttachUnboundOutDev\b")]
-        [InlineData(@"\bDetachUnboundOutDev\b")]
-        public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-4 で VirtualPadService へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_KeepsTheThinDelegates_ForTheCallers()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase13-Step10 10-b: 利用者が 0 件だった PluginOutDev／UnplugOutDev の転送は削除した（IVirtualPadService／IProfileLoadTarget が持つ）
-            Assert.DoesNotContain("public void PluginOutDev(", text);
-            Assert.DoesNotContain("public void UnplugOutDev(", text);
-            // 同様に、利用者が 0 件になった outputDevices の転送も削除した（IVirtualPadService.OutputDevices を使う）
-            Assert.DoesNotContain("outputDevices", text);
-        }
-
         [Fact]
         public void NewComponents_AreRegistered_AndTheHostIsTheControlService()
         {

@@ -13,7 +13,7 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class GyroMouseStickBlender : IGyroMouseStickBlender
     {
-        public void Blend(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, DS4State MappedState, PostMapStickData mapStickData)
+        public void Blend(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, ControllerState MappedState, PostMapStickData mapStickData)
         {
             byte gyroTempX = gyroX;
             if (msinfo.OutputHorizontal() && gyroTempX != 128)

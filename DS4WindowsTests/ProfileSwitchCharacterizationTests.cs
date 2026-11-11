@@ -29,9 +29,9 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        private static DS4State Held(params DS4Controls[] controls)
+        private static ControllerState Held(params DS4Controls[] controls)
         {
-            DS4State s = SpecialActionTestScope.Neutral();
+            ControllerState s = SpecialActionTestScope.Neutral();
             foreach (DS4Controls c in controls)
             {
                 switch (c)

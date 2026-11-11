@@ -208,9 +208,9 @@ namespace DS4Windows.UI
         public event EventHandler RsDriftYChanged;
 
 
-        private DS4State baseState = new DS4State();
-        private DS4State interState = new DS4State();
-        private DS4StateExposed exposeState;
+        private ControllerState baseState = new ControllerState();
+        private ControllerState interState = new ControllerState();
+        private ControllerStateExposed exposeState;
         private Label outputDelayLabel; // XAMLコントロール参照キャッシュ
         private const int CANVAS_WIDTH = 130;
         private const int CANVAS_MIDPOINT = CANVAS_WIDTH / 2;
@@ -254,7 +254,7 @@ namespace DS4Windows.UI
             l2ValLbBrush.Color = ThemeForegroundColor();
             r2ValLbBrush.Color = ThemeForegroundColor();
             inputContNum.Content = $"#{deviceNum + 1}";
-            exposeState = new DS4StateExposed(baseState);
+            exposeState = new ControllerStateExposed(baseState);
 
             readingTimer = new NonFormTimer();
             readingTimer.Interval = 66.0; // 約15fps (66ms): 診断用として十分滑らかかつCPU負荷を最小化
@@ -310,34 +310,62 @@ namespace DS4Windows.UI
 
         private void ChangeRsDriftControls(object sender, EventArgs e)
         {
-            rsDriftEllipse.Width = rsDeadX * CANVAS_WIDTH;
-            rsDriftEllipse.Height = rsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(rsDriftEllipse, (1 + (RsDriftX / 127.0) - rsDeadX) * CANVAS_MIDPOINT);
-            Canvas.SetTop(rsDriftEllipse, (1 + (RsDriftY / 127.0) - rsDeadY) * CANVAS_MIDPOINT);
+            Shape shape = rsDeadAxial ? rsDriftRect : (Shape)rsDriftEllipse;
+            rsDriftEllipse.Visibility = rsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            rsDriftRect.Visibility = rsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = rsDeadX * CANVAS_WIDTH;
+            shape.Height = rsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, (1 + (RsDriftX / 127.0) - rsDeadX) * CANVAS_MIDPOINT);
+            Canvas.SetTop(shape, (1 + (RsDriftY / 127.0) - rsDeadY) * CANVAS_MIDPOINT);
         }
 
         private void ChangeLsDriftControls(object sender, EventArgs e)
         {
-            lsDriftEllipse.Width = lsDeadX * CANVAS_WIDTH;
-            lsDriftEllipse.Height = lsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(lsDriftEllipse, (1 + (LsDriftX / 127.0) - lsDeadX) * CANVAS_MIDPOINT);
-            Canvas.SetTop(lsDriftEllipse, (1 + (LsDriftY / 127.0) - lsDeadY) * CANVAS_MIDPOINT);
+            Shape shape = lsDeadAxial ? lsDriftRect : (Shape)lsDriftEllipse;
+            lsDriftEllipse.Visibility = lsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            lsDriftRect.Visibility = lsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = lsDeadX * CANVAS_WIDTH;
+            shape.Height = lsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, (1 + (LsDriftX / 127.0) - lsDeadX) * CANVAS_MIDPOINT);
+            Canvas.SetTop(shape, (1 + (LsDriftY / 127.0) - lsDeadY) * CANVAS_MIDPOINT);
         }
+
+        /// <summary>左スティックのデッドゾーンが「軸ごと」のとき true（長方形で描く。円形は楕円）。</summary>
+        public bool LsDeadAxial
+        {
+            get => lsDeadAxial;
+            set { lsDeadAxial = value; ChangeLsDeadControls(this, EventArgs.Empty); ChangeLsDriftControls(this, EventArgs.Empty); }
+        }
+        private bool lsDeadAxial;
+
+        /// <summary>右スティックのデッドゾーンが「軸ごと」のとき true。</summary>
+        public bool RsDeadAxial
+        {
+            get => rsDeadAxial;
+            set { rsDeadAxial = value; ChangeRsDeadControls(this, EventArgs.Empty); ChangeRsDriftControls(this, EventArgs.Empty); }
+        }
+        private bool rsDeadAxial;
 
         private void ChangeRsDeadControls(object sender, EventArgs e)
         {
-            rsDeadEllipse.Width = rsDeadX * CANVAS_WIDTH;
-            rsDeadEllipse.Height = rsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(rsDeadEllipse, CANVAS_MIDPOINT - (rsDeadX * CANVAS_WIDTH / 2.0));
-            Canvas.SetTop(rsDeadEllipse, CANVAS_MIDPOINT - (rsDeadX * CANVAS_WIDTH / 2.0));
+            Shape shape = rsDeadAxial ? rsDeadRect : (Shape)rsDeadEllipse;
+            rsDeadEllipse.Visibility = rsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            rsDeadRect.Visibility = rsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = rsDeadX * CANVAS_WIDTH;
+            shape.Height = rsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, CANVAS_MIDPOINT - (rsDeadX * CANVAS_WIDTH / 2.0));
+            Canvas.SetTop(shape, CANVAS_MIDPOINT - (rsDeadY * CANVAS_WIDTH / 2.0));
         }
 
         private void ChangeLsDeadControls(object sender, EventArgs e)
         {
-            lsDeadEllipse.Width = lsDeadX * CANVAS_WIDTH;
-            lsDeadEllipse.Height = lsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(lsDeadEllipse, CANVAS_MIDPOINT - (lsDeadX * CANVAS_WIDTH / 2.0));
-            Canvas.SetTop(lsDeadEllipse, CANVAS_MIDPOINT - (lsDeadX * CANVAS_WIDTH / 2.0));
+            Shape shape = lsDeadAxial ? lsDeadRect : (Shape)lsDeadEllipse;
+            lsDeadEllipse.Visibility = lsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            lsDeadRect.Visibility = lsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = lsDeadX * CANVAS_WIDTH;
+            shape.Height = lsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, CANVAS_MIDPOINT - (lsDeadX * CANVAS_WIDTH / 2.0));
+            Canvas.SetTop(shape, CANVAS_MIDPOINT - (lsDeadY * CANVAS_WIDTH / 2.0));
         }
 
         public void UseDevice(int index, int profileDevIdx)

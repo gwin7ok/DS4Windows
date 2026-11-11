@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -17,19 +18,17 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class InputReportProcessor : IInputReportProcessor
     {
-        private readonly DS4State[] _currentState;
-        private readonly DS4State[] _tempState;
-        private readonly Mouse[] _touchPad;
-        private readonly DS4State[] _mappedState = new DS4State[ControllerLimits.MaxControllerCount];
-        private readonly DS4StateExposed[] _exposedState = new DS4StateExposed[ControllerLimits.MaxControllerCount];
+        private readonly ControllerState[] _currentState;
+        private readonly ControllerState[] _tempState;
+        private readonly TouchpadMouse[] _touchPad;
+        private readonly ControllerState[] _mappedState = new ControllerState[ControllerLimits.MaxControllerCount];
+        private readonly ControllerStateExposed[] _exposedState = new ControllerStateExposed[ControllerLimits.MaxControllerCount];
         private readonly double[] _processingDelayMs = new double[ControllerLimits.MaxControllerCount];
 
         private readonly ILatencyMonitor _latencyMonitor;
-        private readonly IPathService _pathService;
-        private readonly IProfileRepository _profileRepository;
+        private readonly FirstReportActionLogger _firstReportLogger;
         private readonly IAppearanceSettingsService _appearanceSettings;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IVirtualKBM _virtualKBM;
         private readonly IMapping _mapping;
         private readonly ITouchpadToggleService _touchpadToggle;
         private readonly IProfileActionProvider _profileActionProvider;
@@ -44,7 +43,7 @@ namespace DS4Windows.Processing.Services
         public bool RecordingMacro { get; set; }
         public bool IsMeasuringProcessingDelay { get; set; }
         public double[] ProcessingDelayMs => _processingDelayMs;
-        public DS4StateExposed[] ExposedState => _exposedState;
+        public ControllerStateExposed[] ExposedState => _exposedState;
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly ILightbarService _lightbar;
@@ -52,11 +51,9 @@ namespace DS4Windows.Processing.Services
         public InputReportProcessor(ILightbarService lightbar, 
             IDeviceSlotState slots,
             ILatencyMonitor latencyMonitor,
-            IPathService pathService,
-            IProfileRepository profileRepository,
+            FirstReportActionLogger firstReportLogger,
             IAppearanceSettingsService appearanceSettings,
             IProfileSettingsService profileSettings,
-            IVirtualKBM virtualKBM,
             IMapping mapping,
             ITouchpadToggleService touchpadToggle,
             IProfileActionProvider profileActionProvider,
@@ -71,11 +68,9 @@ namespace DS4Windows.Processing.Services
             _tempState = slots.TempStates;
             _touchPad = slots.TouchPads;
             _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            _firstReportLogger = firstReportLogger ?? throw new ArgumentNullException(nameof(firstReportLogger));
             _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
             _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
             _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
@@ -88,13 +83,13 @@ namespace DS4Windows.Processing.Services
             // ExposedState は CurrentStates[i] を参照するため、同じ場所で、CurrentStates[i] を作った後に作る（順序は旧と同じ）
             for (int i = 0; i < _currentState.Length; i++)
             {
-                _mappedState[i] = new DS4State();
-                _currentState[i] = new DS4State();
-                _exposedState[i] = new DS4StateExposed(_currentState[i]);
+                _mappedState[i] = new ControllerState();
+                _currentState[i] = new ControllerState();
+                _exposedState[i] = new ControllerStateExposed(_currentState[i]);
             }
         }
 
-        public DS4State GetMappedState(int ind) => _mappedState[ind];
+        public ControllerState GetMappedState(int ind) => _mappedState[ind];
 
         public double GetProcessingDelay(int deviceIndex)
         {
@@ -103,94 +98,32 @@ namespace DS4Windows.Processing.Services
             return 0.0;
         }
 
-        public void OnReport(DS4Device device, EventArgs e, int ind)
+        public void OnReport(InputDeviceCore device, EventArgs e, int ind)
         {
             if (ind != -1)
             {
                 _latencyMonitor.OnReport(device, ind);
 
-                DS4State cState, tempControlState;
-                if (!device.PerformStateMerge)
-                {
-                    cState = _currentState[ind];
-                    device.getRawCurrentState(cState);
-                    tempControlState = _currentState[ind];
-                }
-                else
-                {
-                    cState = device.JointState;
-                    device.MergeStateData(cState);
-                    // Need to copy state object info for use in UDP server
-                    cState.CopyTo(_currentState[ind]);
-                    tempControlState = _currentState[ind];
-                }
+                ControllerState cState = _currentState[ind];
+                device.getRawCurrentState(cState);
 
-                DS4State pState = device.getPreviousStateRef();
+                ControllerState pState = device.getPreviousStateRef();
                 //device.getPreviousState(PreviousState[ind]);
-                //DS4State pState = PreviousState[ind];
+                //ControllerState pState = PreviousState[ind];
 
 
                 if (device.firstReport && device.isSynced())
                 {
-                    // Only send Log message when device is considered a primary device
-                    if (device.PrimaryDevice)
-                    {
-                        // Emit missing-action logs once per profile-apply (respect suppression).
-                        // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents
-                        if (File.Exists(Path.Combine(_pathService.AppDataPath, "Profiles", $"{_profileRepository.ProfilePath[ind]}.xml")))
-                        {
-                            try
-                            {
-                                _profileRepository.EmitMissingActionLogsForDevice(ind, false);
-                            }
-                            catch { }
-                        }
-                    }
+                    // Emit missing-action logs once per profile-apply (respect suppression).
+                    // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents
+                    _firstReportLogger.Emit(ind);
 
                     device.firstReport = false;
                 }
 
-                if (device.PrimaryDevice && _appearanceSettings.UseIconChoice == TrayIconChoice.Battery)
+                if (_appearanceSettings.UseIconChoice == TrayIconChoice.Battery)
                 {
                     _appearanceSettings.InvokeBatteryChanged(cState.Battery);
-                }
-
-                if (!device.PrimaryDevice)
-                {
-                    // Make sure a joined device is still linked
-                    int jointInd = device.JointDeviceSlotNumber;
-                    if (device.OutputMapGyro &&
-                        jointInd != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-                    {
-                        // Output changes from Gyro data early. Seems better to ME... REE
-                        GyroOutMode imuOutMode = _profileSettings.GetGyroOutMode(device.JointDeviceSlotNumber);
-                        if (imuOutMode != GyroOutMode.None)
-                        {
-                            if (imuOutMode == GyroOutMode.Mouse)
-                            {
-                                _virtualKBM.Sync();
-                            }
-                            else if (imuOutMode == GyroOutMode.MouseJoystick)
-                            {
-                                // Add new Mapping method and add data to
-                                // parent device state
-                                DS4State tempMapState = _mappedState[jointInd];
-                                _mapping.TempMouseJoystick(jointInd, tempMapState);
-                                if (!_profileSettings.UseDInputOnlyArray[jointInd])
-                                {
-                                    _virtualPad.SendReport(jointInd, tempMapState);
-                                }
-                            }
-                        }
-                    }
-                    else if (!device.OutputMapGyro)
-                    {
-                        // Copy for use in UDP
-                        tempControlState.Motion = device.GetRawCurrentStateRef().Motion;
-                    }
-
-                    // Skip mapping routine if part of a joined device
-                    return;
                 }
 
                 if (_profileSettings.GetEnableTouchToggle(ind))
@@ -204,7 +137,7 @@ namespace DS4Windows.Processing.Services
                     _profileSettings.ContainsCustomAction(ind) || _profileSettings.ContainsCustomExtras(ind) ||
                     _profileActionProvider.GetProfileActionCount(ind) > 0))
                 {
-                    DS4State tempMapState = _mappedState[ind];
+                    ControllerState tempMapState = _mappedState[ind];
 
                     if (_appSettings.UseOscSender)
                     {
@@ -214,7 +147,7 @@ namespace DS4Windows.Processing.Services
                     _mapping.MapCustom(ind, cState, tempMapState, _exposedState[ind], _touchPad[ind]);
 
                     // Copy current Touchpad and Gyro data
-                    // Might change to use new DS4State.CopyExtrasTo method
+                    // Might change to use new ControllerState.CopyExtrasTo method
                     tempMapState.Motion = cState.Motion;
                     tempMapState.ds4Timestamp = cState.ds4Timestamp;
                     tempMapState.FrameCounter = cState.FrameCounter;
@@ -289,17 +222,6 @@ namespace DS4Windows.Processing.Services
 
                 // Update the Lightbar color
                 _lightbar.Update(device, ind);
-
-                if (device.PerformStateMerge)
-                {
-                    device.PreserveMergedStateData();
-                }
-
-                if (device.PerformStateMerge && !device.OutputMapGyro)
-                {
-                    // Copy for use in UDP
-                    tempControlState.Motion = device.GetRawCurrentStateRef().Motion;
-                }
             }
         }
     }

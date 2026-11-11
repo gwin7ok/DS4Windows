@@ -26,5 +26,8 @@ namespace DS4Windows.Processing.Abstractions
 
         /// <summary>ホワイトリストを置き換える。</summary>
         bool SetWhitelist(List<string> instances);
+
+        /// <summary>非表示にするデバイスのインスタンス ID の一覧を置き換える。</summary>
+        bool SetBlacklist(List<string> instances);
     }
 }

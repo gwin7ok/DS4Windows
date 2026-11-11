@@ -136,7 +136,7 @@ namespace DS4Windows.Core.Persistence
                 }
 
                 OutContType oldContType = store.ActiveOutDevType[device];
-                LightbarSettingInfo lightbarSettings = store.lightbarSettingInfo[device];
+                LightbarSettingInfo lightbarSettings = store.lightbarSlots[device].Info;
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileLoadContext(store, m_Xdoc, rootname, device, control, lightbarSettings, lightInfo)
                 {
@@ -231,16 +231,16 @@ namespace DS4Windows.Core.Persistence
                 //if (device < Global.MAX_DS4_CONTROLLER_COUNT && control.GetTouchPad(device) != null)
                 //{
                 //    control.GetTouchPad(device)?.ResetToggleGyroModes();
-                //    GyroOutMode currentGyro = gyroOutMode[device];
+                //    GyroOutMode currentGyro = gyroSlots[device].OutputMode;
                 //    if (currentGyro == GyroOutMode.Mouse)
                 //    {
                 //        control.GetTouchPad(device).ToggleGyroMouse =
-                //            gyroMouseToggle[device];
+                //            gyroSlots[device].MouseToggle;
                 //    }
                 //    else if (currentGyro == GyroOutMode.MouseJoystick)
                 //    {
                 //        control.GetTouchPad(device).ToggleGyroMouse =
-                //            gyroMouseStickToggle[device];
+                //            gyroSlots[device].MouseStickToggle;
                 //    }
                 //}
 
@@ -266,18 +266,15 @@ namespace DS4Windows.Core.Persistence
             if (bool.TryParse(ReadLegacyElement(rootname, "InverseRumbleMotors"), out bool inverseRumble))
                 store.inverseRumbleMotors[device] = inverseRumble;
 
-            // useDs3PitchRollSim は全体で 1 つの値（ProfileDTO.MapTo と同じ扱い）。要素があるときだけ代入する
-            if (bool.TryParse(ReadLegacyElement(rootname, "UseDs3PitchRollSim"), out bool ds3Sim))
-                store.useDs3PitchRollSim = ds3Sim;
 
             if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftXAxis"), out sbyte value))
-                store.leftStickDriftXAxis[device] = value;
+                store.stickSlots[device].LeftStickDriftXAxis = value;
             if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftYAxis"), out value))
-                store.leftStickDriftYAxis[device] = value;
+                store.stickSlots[device].LeftStickDriftYAxis = value;
             if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftXAxis"), out value))
-                store.rightStickDriftXAxis[device] = value;
+                store.stickSlots[device].RightStickDriftXAxis = value;
             if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftYAxis"), out value))
-                store.rightStickDriftYAxis[device] = value;
+                store.stickSlots[device].RightStickDriftYAxis = value;
 
             string triggerMode = ReadLegacyElement(rootname, "DS4OutputTriggerMode");
             if (triggerMode != null && Enum.TryParse(triggerMode, out DS4TriggerOutputMode mode) &&
@@ -287,9 +284,9 @@ namespace DS4Windows.Core.Persistence
             }
 
             if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseJitterCompensation"), out bool gyroMouseJitter))
-                store.gyroMouseInfo[device].jitterCompensation = gyroMouseJitter;
+                store.gyroSlots[device].Mouse.jitterCompensation = gyroMouseJitter;
             if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseStickJitterCompensation"), out bool gyroStickJitter))
-                store.gyroMStickInfo[device].jitterCompensation = gyroStickJitter;
+                store.gyroSlots[device].MouseStick.jitterCompensation = gyroStickJitter;
         }
 
         public bool SaveAsProfile(int device, string proName)
@@ -331,7 +328,7 @@ namespace DS4Windows.Core.Persistence
                 rootElement.SetAttribute("app_version", _environment.ApplicationVersion);
                 rootElement.SetAttribute("config_version", ConfigVersion.ToString());
 
-                LightbarSettingInfo lightbarSettings = store.lightbarSettingInfo[device];
+                LightbarSettingInfo lightbarSettings = store.lightbarSlots[device].Info;
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileSaveContext(store, m_Xdoc, rootElement, device, lightbarSettings, lightInfo);
 
@@ -401,14 +398,13 @@ namespace DS4Windows.Core.Persistence
         public void SaveLegacyExtraSettings(XmlNode rootElement, int device)
         {
             AppendLegacyElement(rootElement, "InverseRumbleMotors", store.inverseRumbleMotors[device].ToString());
-            AppendLegacyElement(rootElement, "UseDs3PitchRollSim", store.useDs3PitchRollSim.ToString());
-            AppendLegacyElement(rootElement, "LeftStickDriftXAxis", store.leftStickDriftXAxis[device].ToString());
-            AppendLegacyElement(rootElement, "LeftStickDriftYAxis", store.leftStickDriftYAxis[device].ToString());
-            AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.rightStickDriftXAxis[device].ToString());
-            AppendLegacyElement(rootElement, "RightStickDriftYAxis", store.rightStickDriftYAxis[device].ToString());
+            AppendLegacyElement(rootElement, "LeftStickDriftXAxis", store.stickSlots[device].LeftStickDriftXAxis.ToString());
+            AppendLegacyElement(rootElement, "LeftStickDriftYAxis", store.stickSlots[device].LeftStickDriftYAxis.ToString());
+            AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.stickSlots[device].RightStickDriftXAxis.ToString());
+            AppendLegacyElement(rootElement, "RightStickDriftYAxis", store.stickSlots[device].RightStickDriftYAxis.ToString());
             AppendLegacyElement(rootElement, "DS4OutputTriggerMode", store.outputDS4TriggerMode[device].ToString());
-            AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", store.gyroMouseInfo[device].jitterCompensation.ToString());
-            AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", store.gyroMStickInfo[device].jitterCompensation.ToString());
+            AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", store.gyroSlots[device].Mouse.jitterCompensation.ToString());
+            AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", store.gyroSlots[device].MouseStick.jitterCompensation.ToString());
         }
 
         private void AppendLegacyElement(XmlNode parent, string name, string value)

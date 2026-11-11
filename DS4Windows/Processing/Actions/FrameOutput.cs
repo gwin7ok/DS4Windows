@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -12,11 +13,11 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public sealed class FrameOutput : IPadFrameOutput, IToggleFrameOutput, IMouseMoveFrameOutput, IFrameOutputTrace
     {
-        private DS4StateFieldMapping _outputFields;
+        private ControllerStateFieldMapping _outputFields;
         private SyntheticState _deviceState;
 
         /// <summary>このフレームの出力の表と、デバイスの合成状態（マウスのクリックのカウンター）を設定する。</summary>
-        public void Bind(DS4StateFieldMapping outputFields, SyntheticState deviceState)
+        public void Bind(ControllerStateFieldMapping outputFields, SyntheticState deviceState)
         {
             _outputFields = outputFields;
             _deviceState = deviceState;
@@ -42,26 +43,26 @@ namespace DS4Windows.Processing.Actions
         // 現行の Mapping.ResetToDefaultValue と同じ
         public void ResetTriggerControl(DS4Controls control)
         {
-            DS4StateFieldMapping fieldMap = _outputFields;
+            ControllerStateFieldMapping fieldMap = _outputFields;
             if (fieldMap == null) return;
 
             int controlNum = (int)control;
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 fieldMap.buttons[controlNum] = false;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 fieldMap.axisdirs[controlNum] = 128;
                 int controlRelation = (controlNum % 2 == 0 ? controlNum - 1 : controlNum + 1);
                 fieldMap.axisdirs[controlRelation] = 128;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 fieldMap.triggers[controlNum] = 0;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Touch)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Touch)
             {
                 fieldMap.buttons[controlNum] = false;
             }
@@ -70,7 +71,7 @@ namespace DS4Windows.Processing.Actions
         // Phase8-Step7 7.8f-1: 旧 customMapQueue の処理（Mapping の全 dcs のあと）が出力の表へ書いていたものと同じ
         public void SetAxisPair(DS4Controls outControl, byte value)
         {
-            DS4StateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping fields = _outputFields;
             if (fields == null) return;
 
             int tempOutControl = (int)outControl;
@@ -81,7 +82,7 @@ namespace DS4Windows.Processing.Actions
 
         public void SetTrigger(DS4Controls outControl, byte value)
         {
-            DS4StateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping fields = _outputFields;
             if (fields == null) return;
 
             fields.triggers[(int)outControl] = value;
@@ -89,7 +90,7 @@ namespace DS4Windows.Processing.Actions
 
         public void SetButton(DS4Controls outControl)
         {
-            DS4StateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping fields = _outputFields;
             if (fields == null) return;
 
             fields.buttons[(int)outControl] = true;
@@ -115,7 +116,7 @@ namespace DS4Windows.Processing.Actions
         // Phase8-Step7 7.1-W2: 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式
         public void AppendOutputCombo(List<string> parts)
         {
-            DS4StateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping fields = _outputFields;
             SyntheticState ds = _deviceState;
             if (fields == null) return;
 
@@ -140,7 +141,7 @@ namespace DS4Windows.Processing.Actions
         // 現行の Stage3 の出力の分岐と同じ
         public void PressX360(X360Controls xboxControl)
         {
-            DS4StateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping fields = _outputFields;
             SyntheticState deviceState = _deviceState;
             if (fields == null || deviceState == null) return;
 

@@ -8,45 +8,45 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Services
 {
-    public class Ds4DeviceRegistryAdapter : IDs4DeviceRegistry
+    public class InputDeviceRegistryAdapter : IInputDeviceRegistry
     {
-        private readonly DS4Devices _devices;
+        private readonly InputDeviceRegistry _devices;
 
         /// <summary>
         /// ホストを構築しない昇格した補助プロセス（デバイスの再有効化のみ）用。設定値は使わない（列挙はしない）。
         /// </summary>
-        public Ds4DeviceRegistryAdapter()
-            : this(new DS4Devices(null, System.Array.Empty<IInputDeviceCartridge>()))
+        public InputDeviceRegistryAdapter()
+            : this(new InputDeviceRegistry(null, System.Array.Empty<IInputDeviceCartridge>()))
         {
         }
 
         /// <summary>登録簿のインスタンスを受ける（DI とテスト）。</summary>
-        public Ds4DeviceRegistryAdapter(DS4Devices devices)
+        public InputDeviceRegistryAdapter(InputDeviceRegistry devices)
         {
             _devices = devices ?? throw new ArgumentNullException(nameof(devices));
         }
 
-        public IEnumerable<DS4Device> FindControllers()
+        public IEnumerable<InputDeviceCore> FindControllers()
         {
             _devices.findControllers();
-            return _devices.getDS4Controllers();
+            return _devices.GetControllers();
         }
 
-        public IEnumerable<DS4Device> GetDS4Controllers() => _devices.getDS4Controllers();
+        public IEnumerable<InputDeviceCore> GetControllers() => _devices.GetControllers();
 
         public void StopControllers()
         {
             _devices.stopControllers();
             if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[DI] Ds4DeviceRegistryAdapter.StopControllers called");
+                AppLogger.LogTrace("[DI] InputDeviceRegistryAdapter.StopControllers called");
         }
 
-        public bool RemoveDevice(DS4Device device)
+        public bool RemoveDevice(InputDeviceCore device)
         {
             if (device == null) return false;
             _devices.RemoveDevice(device);
             if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[DI] Ds4DeviceRegistryAdapter.RemoveDevice: Device removed");
+                AppLogger.LogTrace("[DI] InputDeviceRegistryAdapter.RemoveDevice: Device removed");
             return true;
         }
 

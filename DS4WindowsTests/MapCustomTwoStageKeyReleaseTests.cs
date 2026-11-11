@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Threading;
 using Xunit;
 using DS4Windows.Core.Model;
@@ -16,7 +17,7 @@ namespace DS4WindowsTests
     {
         private static void Frame(ControlsKeyTestScope scope, bool isL2, byte value, byte raw)
         {
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             if (isL2) { input.L2 = value; input.L2Raw = raw; } else { input.R2 = value; input.R2Raw = raw; }
             scope.Scope.RunMapCustom(input);
         }
@@ -32,8 +33,8 @@ namespace DS4WindowsTests
         {
             using var scope = new ControlsKeyTestScope();
             TriggerOutputSettings settings = isL2
-                ? scope.Scope.Settings.L2OutputSettings[scope.Device]
-                : scope.Scope.Settings.R2OutputSettings[scope.Device];
+                ? scope.Scope.Settings.ForSlot(scope.Device).Triggers.L2Output
+                : scope.Scope.Settings.ForSlot(scope.Device).Triggers.R2Output;
             TwoStageTriggerMode savedMode = settings.twoStageMode;
             int savedHipFire = settings.hipFireMS;
             try

@@ -38,6 +38,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IOscTransportFactory, SharpOscTransportFactory>();   // Phase9 9-E E-1: OSC の通信（SharpOSC）の生成
             services.AddSingleton<IOscService, OscService>();   // Phase9 9-E E-1: OSC（受信の解釈、送信、入力への重ね合わせ、変化の送信）
             services.AddSingleton<IHidHideApiFactory, HidHideApiFactory>();   // Phase9 9-E E-2: HidHide ドライバーの窓口の生成
+            services.AddSingleton<IXboxParentHider, XboxParentHider>();   // Xbox 系コントローラーの USB の親を HidHide で隠す・戻す（足した分だけを記録する）
             services.AddSingleton<IHidHideService, HidHideService>();   // Phase9 9-E E-2: HidHide（ホワイトリストの確認、影響を受けるデバイスの判定）
             services.AddSingleton<IOutputSlotStore, OutputSlotStore>();   // OutputSlots.xml の永続化。出力スロットの型を使うため第 3 層に置く（IPathService だけに依存する）
             services.AddSingleton<IVirtualPadBackend, ViGEmVirtualPadBackend>();   // 仮想パッドのドライバー（ViGEmBus）の窓口。ViGEm の型を参照するのは Output/Backend だけ

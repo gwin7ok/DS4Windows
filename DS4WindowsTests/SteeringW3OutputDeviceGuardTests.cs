@@ -37,10 +37,9 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows/Processing/ControlService.cs")]
         [InlineData("DS4Windows/Output/OutputDevice.cs")]
         [InlineData("DS4Windows/Output/OutputSlotManager.cs")]
-        [InlineData("DS4Windows/Core/Model/DS4State.cs")]
+        [InlineData("DS4Windows/Core/Model/ControllerState.cs")]
         public void TheVJoyAndTheSteeringUnit_AreGone(string relativePath)
         {
             string code = SourceText.ReadCode(relativePath);

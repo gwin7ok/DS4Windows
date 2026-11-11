@@ -33,6 +33,7 @@ namespace DS4WindowsTests
             public int GetProfileActionCount(int deviceIndex) => Names.Count;
             public int GetProfileActionIndexOf(int deviceIndex, string actionName) => 100 + Names.IndexOf(actionName);
             public IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex) => Names;
+            public int ActionDefinitionCount => 0;
         }
 
         private sealed class NoMacroPlayer : IMacroPlayer

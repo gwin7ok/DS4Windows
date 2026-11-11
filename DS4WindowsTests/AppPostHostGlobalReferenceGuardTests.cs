@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RetainedGlobalReferences_HaveTodoComments()
         {
-            // 温存を決めた箇所（決定3＝P1、決定4＝K）に、copilot-instructions.md §3.3 原則4 の TODO が付いていること。
+            // 温存を決めた箇所（決定3＝P1。決定4＝K は解消済みで、言語の切り替えは AppThemeAndCultureService へ移した）に、copilot-instructions.md §3.3 原則4 の TODO が付いていること。
             string path = SourceFileLocator.Find(AppSourcePath);
             if (path == null)
             {
@@ -74,7 +74,6 @@ namespace DS4WindowsTests
 
             string raw = File.ReadAllText(path);
             Assert.Contains("TODO(Phase6-Step7 決定3＝P1)", raw);
-            Assert.Contains("TODO(Phase6-Step7 決定4＝K)", raw);
         }
 
         [Fact]

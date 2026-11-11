@@ -71,20 +71,20 @@ namespace DS4Windows.Core.Persistence
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.deadZone = (int)(0.00 * 127);
             lsInfo.antiDeadZone = 0;
             lsInfo.maxZone = 100;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.00 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.00 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
             store.outputDevType[device] = OutContType.DS4;
@@ -159,12 +159,12 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            store.gyroOutMode[device] = GyroOutMode.MouseJoystick;
-            store.sAMouseStickTriggers[device] = "4";
-            store.sAMouseStickTriggerCond[device] = true;
-            store.gyroMouseStickTriggerTurns[device] = false;
-            store.gyroMStickInfo[device].useSmoothing = true;
-            store.gyroMStickInfo[device].smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.MouseJoystick;
+            store.gyroSlots[device].MouseStickTriggers = "4";
+            store.gyroSlots[device].MouseStickTriggerCondAnd = true;
+            store.gyroSlots[device].MouseStickTriggerTurns = false;
+            store.gyroSlots[device].MouseStick.useSmoothing = true;
+            store.gyroSlots[device].MouseStick.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
@@ -179,28 +179,28 @@ namespace DS4Windows.Core.Persistence
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.deadZone = (int)(0.00 * 127);
             lsInfo.antiDeadZone = 0;
             lsInfo.maxZone = 100;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.00 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.00 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
-            store.gyroOutMode[device] = GyroOutMode.MouseJoystick;
-            store.sAMouseStickTriggers[device] = "4";
-            store.sAMouseStickTriggerCond[device] = true;
-            store.gyroMouseStickTriggerTurns[device] = false;
-            store.gyroMStickInfo[device].useSmoothing = true;
-            store.gyroMStickInfo[device].smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.MouseJoystick;
+            store.gyroSlots[device].MouseStickTriggers = "4";
+            store.gyroSlots[device].MouseStickTriggerCondAnd = true;
+            store.gyroSlots[device].MouseStickTriggerTurns = false;
+            store.gyroSlots[device].MouseStick.useSmoothing = true;
+            store.gyroSlots[device].MouseStick.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
 
             store.outputDevType[device] = OutContType.DS4;
 
@@ -239,14 +239,14 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            store.gyroOutMode[device] = GyroOutMode.Mouse;
-            store.sATriggers[device] = "4";
-            store.sATriggerCond[device] = true;
-            store.gyroTriggerTurns[device] = false;
-            store.gyroMouseInfo[device].enableSmoothing = true;
-            store.gyroMouseInfo[device].smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
+            store.gyroSlots[device].MouseTriggers = "4";
+            store.gyroSlots[device].MouseTriggerCondAnd = true;
+            store.gyroSlots[device].TriggerTurns = false;
+            store.gyroSlots[device].Mouse.enableSmoothing = true;
+            store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.10 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -264,28 +264,28 @@ namespace DS4Windows.Core.Persistence
         {
             PrepareBlankingProfile(device, control, out bool xinputPlug, out bool xinputStatus, xinputChange);
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.deadZone = (int)(0.00 * 127);
             lsInfo.antiDeadZone = 0;
             lsInfo.maxZone = 100;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.10 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 100;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.00 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
-            store.gyroOutMode[device] = GyroOutMode.Mouse;
-            store.sATriggers[device] = "4";
-            store.sATriggerCond[device] = true;
-            store.gyroTriggerTurns[device] = false;
-            store.gyroMouseInfo[device].enableSmoothing = true;
-            store.gyroMouseInfo[device].smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
+            store.gyroSlots[device].MouseTriggers = "4";
+            store.gyroSlots[device].MouseTriggerCondAnd = true;
+            store.gyroSlots[device].TriggerTurns = false;
+            store.gyroSlots[device].Mouse.enableSmoothing = true;
+            store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
             store.outputDevType[device] = OutContType.DS4;
 
@@ -311,7 +311,7 @@ namespace DS4Windows.Core.Persistence
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
             setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.035 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -362,7 +362,7 @@ namespace DS4Windows.Core.Persistence
             setting = store.GetDS4CSetting(device, DS4Controls.RXPos);
             setting.UpdateSettings(X360Controls.MouseRight, "", DS4KeyType.None);
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.035 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
@@ -402,18 +402,18 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.antiDeadZone = 0;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.035 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.20 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.20 * 255);
 
             // Flag to unplug virtual controller
@@ -508,26 +508,26 @@ namespace DS4Windows.Core.Persistence
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
 
-            StickDeadZoneInfo lsInfo = store.lsModInfo[device];
+            StickDeadZoneInfo lsInfo = store.stickSlots[device].LSMod;
             lsInfo.antiDeadZone = 0;
 
-            StickDeadZoneInfo rsInfo = store.rsModInfo[device];
+            StickDeadZoneInfo rsInfo = store.stickSlots[device].RSMod;
             rsInfo.deadZone = (int)(0.105 * 127);
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
 
-            TriggerDeadZoneZInfo l2Info = store.l2ModInfo[device];
+            TriggerDeadZoneZInfo l2Info = store.triggerSlots[device].L2Mod;
             l2Info.deadZone = (byte)(0.20 * 255);
 
-            TriggerDeadZoneZInfo r2Info = store.r2ModInfo[device];
+            TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.20 * 255);
 
-            store.gyroOutMode[device] = GyroOutMode.Mouse;
-            store.sATriggers[device] = "4";
-            store.sATriggerCond[device] = true;
-            store.gyroTriggerTurns[device] = false;
-            store.gyroMouseInfo[device].enableSmoothing = true;
-            store.gyroMouseInfo[device].smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+            store.gyroSlots[device].OutputMode = GyroOutMode.Mouse;
+            store.gyroSlots[device].MouseTriggers = "4";
+            store.gyroSlots[device].MouseTriggerCondAnd = true;
+            store.gyroSlots[device].TriggerTurns = false;
+            store.gyroSlots[device].Mouse.enableSmoothing = true;
+            store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
             // Flag to unplug virtual controller
             store.dinputOnly[device] = true;

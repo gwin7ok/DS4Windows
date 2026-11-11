@@ -25,7 +25,7 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State Neutral() => ControlsKeyTestScope.Neutral();
+        private static ControllerState Neutral() => ControlsKeyTestScope.Neutral();
 
         // ---- マウスの移動 ----
 
@@ -41,10 +41,10 @@ namespace DS4WindowsTests
             h.T.Publish();
             h.T.MouseInfo.activeButtonSensitivity = 100;   // 1 フレームで 1 以上動く大きさにする（小さいと、端数が次のフレームに持ち越される）
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             input.Square = true;   // 割り当てのないボタンは、そのまま
-            DS4State output = h.Step(input);
+            ControllerState output = h.Step(input);
 
             _output.WriteLine($"[7.8f-3 W1 new] {target}: moves = {string.Join(" ", h.Moves)}");
             Assert.False(output.Cross);
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             h.T.Publish();
             h.T.MouseInfo.activeButtonSensitivity = 100;
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             input.Circle = true;
             h.Step(input);
@@ -86,9 +86,9 @@ namespace DS4WindowsTests
             h.T.MapButton(DS4Controls.LXPos, X360Controls.MouseRight);
             h.T.Publish();
 
-            DS4State full = Neutral();
+            ControllerState full = Neutral();
             full.LX = 255;
-            DS4State output = h.Step(full);
+            ControllerState output = h.Step(full);
             Assert.Equal(128, output.LX);   // 割り当てた軸の出力は消える
             (int X, int Y) fullMove = Assert.Single(h.Moves);
             _output.WriteLine($"[7.8f-3 W1 new] stick full right, 5ms: {fullMove}");
@@ -109,9 +109,9 @@ namespace DS4WindowsTests
             h.T.MapButton(DS4Controls.L2, X360Controls.WUP);
             h.T.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.L2 = 255;   // 全押しは、3 回で 1 目盛り（端数を持ち越す）
-            DS4State output = h.Step(input);
+            ControllerState output = h.Step(input);
             Assert.Equal(0, output.L2);   // 割り当てたトリガーの出力は消える
             Assert.Empty(h.Wheels);
             h.Step(input);
@@ -131,7 +131,7 @@ namespace DS4WindowsTests
             h.T.MapButton(DS4Controls.LYPos, X360Controls.WDOWN);   // 左スティックを下へ（値が大きい向き）
             h.T.Publish();
 
-            DS4State full = Neutral();
+            ControllerState full = Neutral();
             full.LY = 255;
             for (int i = 0; i < 3; i++) h.Step(full);
             Assert.Single(h.Wheels);
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
 
             // 軽く倒すと、1 回あたりの量が小さく（0.05 + 0.95 × 値/255）、3 回では 1 目盛りに届かない
             h.Wheels.Clear();
-            DS4State light = Neutral();
+            ControllerState light = Neutral();
             light.LY = 128 + 70;   // 幅 55 を超えて、成立する
             for (int i = 0; i < 3; i++) h.Step(light);
             _output.WriteLine($"[7.8f-3 W1 new] light press wheel events: {h.Wheels.Count}");
@@ -167,9 +167,9 @@ namespace DS4WindowsTests
             h.T.MouseInfo.activeButtonSensitivity = 100;
 
             h.Step(Neutral());
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
-            DS4State output = h.Step(input);
+            ControllerState output = h.Step(input);
 
             Assert.False(output.Cross);        // Button が処理した（移動の大きさは、Extras が感度を一時的に変えるため、ここでは見ない）
             Assert.True(h.T.ForceLight);       // Extras も動く

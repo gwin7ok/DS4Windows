@@ -23,49 +23,25 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\b_udpServer\b")]
-        [InlineData(@"\budpEuroPair\w+")]
-        [InlineData(@"\budpOutBuffers\b")]
-        [InlineData(@"\budpChangeStatus\b")]
-        [InlineData(@"\bchangingUDPPort\b")]
-        [InlineData(@"\bPrepareDevUDPMotion\b")]
-        [InlineData(@"\bResetUdpSmoothingFilters\b")]
-        [InlineData(@"\bChangeUdpSmoothingAttrs\b")]
-        [InlineData(@"\bTestQueueBus\b")]
-        [InlineData(@"\bUseUDPPort\b")]
-        [InlineData(@"\bnew UdpServer\(")]
-        public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-3 で UdpMotionService へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_KeepsTheThinDelegates_ForTheCallers()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            Assert.DoesNotContain("public void ChangeUDPStatus(", text);
-            Assert.DoesNotContain("public void ChangeMotionEventStatus(", text);
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
-            if (sw == null) return;
-            Assert.Contains("_udpMotion.ChangeStatus(state, openPort)", sw);
-            Assert.Contains("_udpMotion.ChangeMotionEventStatus(state)", sw);
-        }
-
         [Fact]
         public void NewComponents_AreRegistered_AndTheUdpHostInterfaceIsGone()
         {
             Assert.IsType<UdpMotionService>(TestHost.GetService<IUdpMotionService>());
             Assert.IsType<UdpMotionServerFactory>(TestHost.GetService<IUdpMotionServerFactory>());
             Assert.Same(TestHost.GetService<IUdpMotionService>(), TestHost.GetService<IUdpMotionService>());
-            Assert.Null(typeof(ControlService).Assembly.GetType("DS4Windows.DI.IUdpMotionHost"));
-            Assert.DoesNotContain(typeof(ControlService).GetInterfaces(), i => i.Name == "IUdpMotionHost");
+            Assert.Null(typeof(DS4Windows.Processing.Abstractions.IRuntimeBootstrapper).Assembly.GetType("DS4Windows.DI.IUdpMotionHost"));
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetInterfaces(), i => i.Name == "IUdpMotionHost");
+        }
+
+        [Fact]
+        public void TheOtherFiles_ForTheCallers()
+        {
+
+            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            if (sw == null) return;
+            Assert.Contains("_udpMotion.ChangeStatus(state, openPort)", sw);
+            Assert.Contains("_udpMotion.ChangeMotionEventStatus(state)", sw);
         }
     }
 }

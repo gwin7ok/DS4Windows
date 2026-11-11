@@ -6,11 +6,11 @@ namespace DS4Windows.Input.Parsers
 {
     /// <summary>
     /// DS4（USB 形式に揃えた 64 バイトの入力レポート。Bluetooth は先頭 2 バイトを除いて同じ並びにしたもの）の解析。
-    /// 毎フレームの経路のため、割り当てを行わない（状態を持たず、既存の <see cref="DS4State"/> へ書くだけ）。
+    /// 毎フレームの経路のため、割り当てを行わない（状態を持たず、既存の <see cref="ControllerState"/> へ書くだけ）。
     /// </summary>
     public sealed class Ds4ReportParser : IInputReportParser
     {
-        public void Parse(ReadOnlySpan<byte> inputReport, DS4State cState)
+        public void Parse(ReadOnlySpan<byte> inputReport, ControllerState cState)
         {
             cState.LX = inputReport[1];
             cState.LY = inputReport[2];

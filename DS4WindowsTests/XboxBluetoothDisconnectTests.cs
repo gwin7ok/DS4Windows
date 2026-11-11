@@ -1,0 +1,127 @@
+using System.Linq;
+using DS4Windows.Core.Model;
+using DS4Windows.Input;
+using DS4Windows.Input.Abstractions;
+using DS4Windows.Input.Xbox;
+using Xunit;
+
+namespace DS4WindowsTests
+{
+    /// <summary>
+    /// Bluetooth の Xbox の切断。切断の手順は DS4 などと共通の基底（<c>InputDeviceCore.DisconnectBT</c>）を使い、Xbox は、パスから Bluetooth のアドレスだけを教える。
+    /// USB の Xbox は、これまでどおり切断できない（false）。実際の Windows の切断の API は、ここでは呼ばない（OS の状態に触れない）。
+    /// </summary>
+    public class XboxBluetoothDisconnectTests
+    {
+        private const string BlePath = @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}&dev&vid_045e&pid_0b22&rev_0521&3cfa0617287c&col01&ig_00#d&14fe1d93&0&0000#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
+        private const string UsbPath = @"\\?\usb#vid_045e&pid_028e#a02014100201#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
+
+        private static InputDeviceCore NewDevice(string path, int pid)
+        {
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(path, 0x045E, pid, 0);
+            InputTransportCandidate candidate = new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single();
+            InputDeviceCore device = new XboxDeviceCartridge().Create(InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
+            device.PostInit();
+            return device;
+        }
+
+        [Fact]
+        public void TheProtocol_ReadsTheBluetoothAddressFromTheBlePath()
+        {
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(BlePath, 0x045E, 0x0B22, 0);
+            InputTransportCandidate candidate = new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single();
+
+            Assert.Equal("3C:FA:06:17:28:7C", new XboxProtocol().TryGetBluetoothAddress(candidate.Transport));
+        }
+
+        [Fact]
+        public void TheProtocol_HasNoBluetoothAddress_ForAUsbPad()
+        {
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(UsbPath, 0x045E, 0x028E, 0);
+            InputTransportCandidate candidate = new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single();
+
+            Assert.Null(new XboxProtocol().TryGetBluetoothAddress(candidate.Transport));
+        }
+
+        [Fact]
+        public void ABluetoothDevice_UsesTheAddressAsItsIdentity()
+        {
+            InputDeviceCore device = NewDevice(BlePath, 0x0B22);
+
+            Assert.Equal(ConnectionType.BT, device.getConnectionType());
+            Assert.Equal("3C:FA:06:17:28:7C", device.getMacAddress());
+        }
+
+        [Fact]
+        public void ABluetoothDevice_CanBeFoundAgain_AfterItWasRemoved()
+        {
+            // 登録簿は、追加のときにシリアル、削除のときに Mac をキーにする。2 つが食い違うと、切断のあとの再接続が「すでにある」として拒まれる
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(BlePath, 0x045E, 0x0B22, 0);
+            var registry = new InputDeviceRegistry(null, new IInputDeviceCartridge[] { new XboxDeviceCartridge() },
+                new IInputTransportSource[] { new XInputTransportSource(new FakeXInputApi(), interfaces) });
+            registry.PreparePendingDevice = (device, info) => true;
+
+            registry.findControllers();
+            InputDeviceCore first = Assert.Single(registry.GetControllers());
+            registry.RemoveDevice(first);
+            Assert.Empty(registry.GetControllers());
+
+            registry.findControllers();
+
+            Assert.Single(registry.GetControllers());
+            registry.stopControllers();
+        }
+
+        [Fact]
+        public void TheTransportSerial_EqualsTheDeviceIdentity_ForBluetoothAndUsb()
+        {
+            foreach ((string path, int pid) in new[] { (BlePath, 0x0B22), (UsbPath, 0x028E) })
+            {
+                var interfaces = new FakeXusbInterfaceSource();
+                interfaces.Add(path, 0x045E, pid, 0);
+                InputTransportCandidate candidate = new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single();
+                InputDeviceCore device = new XboxDeviceCartridge().Create(InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
+                device.PostInit();
+
+                Assert.Equal(candidate.Transport.ReadSerial(), device.getMacAddress());
+            }
+        }
+
+        [Fact]
+        public void ABleDevice_CannotBeDisconnected_AndReportsFailureWithoutRemoval()
+        {
+            // Windows は BLE の Xbox の切断の手段を出していない。成功と偽らず、何も起こさない
+            InputDeviceCore device = NewDevice(BlePath, 0x0B22);
+            int removals = 0;
+            device.Removal += (s, e) => removals++;
+
+            Assert.False(device.DisconnectBT(callRemoval: true));
+            Assert.False(device.DisconnectWireless(callRemoval: true));
+
+            Assert.Equal(0, removals);
+            Assert.False(device.IsDisconnecting);
+            Assert.False(new XboxProtocol().SupportsBluetoothDisconnect(NewBleTransport()));
+        }
+
+        private static IHidTransport NewBleTransport()
+        {
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(BlePath, 0x045E, 0x0B22, 0);
+            return new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single().Transport;
+        }
+
+        [Fact]
+        public void AUsbDevice_CannotBeDisconnected_AsBefore()
+        {
+            InputDeviceCore device = NewDevice(UsbPath, 0x028E);
+
+            Assert.False(device.DisconnectBT());
+            Assert.False(device.DisconnectWireless());
+            Assert.False(device.DisconnectDongle());
+        }
+    }
+}

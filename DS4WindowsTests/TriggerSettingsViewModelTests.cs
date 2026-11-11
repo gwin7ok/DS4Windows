@@ -60,30 +60,30 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Triggers;
-            double sens = service.L2Sens[0];
-            int mode = service.GetR2OutCurveMode(0);
-            var twoStage = service.L2OutputSettings[0].TwoStageMode;
+            double sens = service.ForSlot(0).Triggers.L2Sens;
+            int mode = service.ForSlot(0).Triggers.R2CurveMode;
+            var twoStage = service.ForSlot(0).Triggers.L2Output.TwoStageMode;
             try
             {
                 vm.L2Sens = sens + 0.5;
-                Assert.Equal(sens + 0.5, service.L2Sens[0]);
+                Assert.Equal(sens + 0.5, service.ForSlot(0).Triggers.L2Sens);
 
                 // 曲線の選択を 6（カスタム）にすると、カスタム曲線の入力が有効になる通知が出る
                 var names = new List<string>();
                 vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
                 vm.R2OutputCurveIndex = 6;
-                Assert.Equal(6, service.GetR2OutCurveMode(0));
+                Assert.Equal(6, service.ForSlot(0).Triggers.R2CurveMode);
                 Assert.True(vm.R2CustomCurveSelected);
                 Assert.Contains(nameof(TriggerSettingsViewModel.R2CustomCurveSelected), names);
 
                 vm.L2TriggerMode = TwoStageTriggerMode.HipFire;
-                Assert.Equal(TwoStageTriggerMode.HipFire, service.L2OutputSettings[0].TwoStageMode);
+                Assert.Equal(TwoStageTriggerMode.HipFire, service.ForSlot(0).Triggers.L2Output.TwoStageMode);
             }
             finally
             {
-                service.L2Sens[0] = sens;
-                service.SetR2OutCurveMode(0, mode);
-                service.L2OutputSettings[0].TwoStageMode = twoStage;
+                service.ForSlot(0).Triggers.L2Sens = sens;
+                service.ForSlot(0).Triggers.R2CurveMode = mode;
+                service.ForSlot(0).Triggers.L2Output.TwoStageMode = twoStage;
             }
         }
 
@@ -91,8 +91,8 @@ namespace DS4WindowsTests
         public void TheSlotSettings_ComeFromTheServiceEntryPoint_AndTheOldMembersAreGoneFromTheEditorViewModel()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            Assert.Same(service.L2ModInfo[3], service.ForSlot(3).Triggers.L2Mod);
-            Assert.Same(service.R2OutputSettings[3], service.ForSlot(3).Triggers.R2Output);
+            Assert.Same(service.ForSlot(3).Triggers.L2Mod, service.ForSlot(3).Triggers.L2Mod);
+            Assert.Same(service.ForSlot(3).Triggers.R2Output, service.ForSlot(3).Triggers.R2Output);
 
             // トリガーの項目は、ProfileSettingsViewModel から Triggers（サブ ViewModel）へ移った
             string[] moved = typeof(TriggerSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)

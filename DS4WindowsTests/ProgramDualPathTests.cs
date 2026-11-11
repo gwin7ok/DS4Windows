@@ -21,9 +21,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class ProgramDualPathTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
 
         /// <summary>入力の列を流し、フレームごとの（累計の起動の試行、<c>BeingTriggered</c>、<c>IsExecuting</c>）を返す。</summary>
         private static List<(int Launches, bool Being, bool Executing)> Run(string triggers, string extras, double delay,
-            bool freshPressGuard, bool executing, DS4State[] frames, int applyBeforeFrame = -1)
+            bool freshPressGuard, bool executing, ControllerState[] frames, int applyBeforeFrame = -1)
         {
             string path = NewPath();
             using var counter = new LaunchCounter(path);
@@ -87,7 +87,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Sequence_GivesTheLaunchesAndState()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(true), Frame(false) };
 
             var result = Run("L1", string.Empty, 0, false, false, frames);
 
@@ -97,7 +97,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WithTheHiddenKeyword_GivesTheLaunches()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true) };
 
             var result = Run("L1", "-a $hidden -b", 0, false, false, frames);
 
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileTheFreshPressGuardIsOn_NothingLaunches()
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(true) };
 
             var result = Run("L1", string.Empty, 0, true, false, frames);
 
@@ -118,7 +118,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhileExecuting_NothingLaunches()
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
 
             var result = Run("L1", string.Empty, 0, false, true, frames);
 
@@ -128,7 +128,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_GivesTheLaunches()
         {
-            DS4State[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
+            ControllerState[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
 
             var result = Run("L1/R1", string.Empty, 0, false, false, frames);
 

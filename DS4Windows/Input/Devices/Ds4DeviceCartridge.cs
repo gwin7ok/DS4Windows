@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using static DS4Windows.Input.DS4Devices;
+using static DS4Windows.Input.InputDeviceRegistry;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
@@ -8,7 +8,7 @@ namespace DS4Windows.Input.Devices
 {
     /// <summary>
     /// DS4 系（DS4 と互換機。DS4 の USB／Bluetooth／Sony ワイヤレスアダプター）のカートリッジ。対応する VID／PID の表と、デバイスの生成を持つ。
-    /// 表は、<c>DS4Devices</c> の対応機器の表から、この種類の行をそのまま（順序・コメントとも）移したもの。
+    /// 表は、<c>InputDeviceRegistry</c> の対応機器の表から、この種類の行をそのまま（順序・コメントとも）移したもの。
     /// </summary>
     public sealed class Ds4DeviceCartridge : IInputDeviceCartridge
     {
@@ -53,10 +53,7 @@ namespace DS4Windows.Input.Devices
 
         public IReadOnlyList<VidPidInfo> KnownDevices => knownDevices;
 
-        public bool Handles(InputDeviceType type)
-        {
-            return InputDeviceTypeInfo.IsFamily(type, InputDeviceFamily.DS4);
-        }
+        public InputDeviceFamily Family => InputDeviceFamily.DS4;
 
         /// <summary>Sony ワイヤレスアダプターは機器固有のシリアルを持たないため、擬似のシリアルを作る。それ以外は特徴レポートから読む。</summary>
         public string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
@@ -66,12 +63,12 @@ namespace DS4Windows.Input.Devices
                 return hidDevice.GenerateFakeHwSerial();
             }
 
-            return hidDevice.ReadSerial(DS4Device.SERIAL_FEATURE_ID);
+            return hidDevice.ReadSerial(InputDeviceCore.SERIAL_FEATURE_ID);
         }
 
-        public DS4Device Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
+        public InputDeviceCore Create(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
-            return new DS4Device(hidDevice, displayName, featureSet);
+            return new DualShock4Device(hidDevice, displayName, featureSet);
         }
     }
 }

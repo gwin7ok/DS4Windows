@@ -25,40 +25,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\boscState\b")]
-        [InlineData(@"\boscCallback\b")]
-        [InlineData(@"\boscListener\b")]
-        [InlineData(@"\boscSender\b")]
-        [InlineData(@"\bSendOsc\(")]
-        [InlineData(@"\bOSCPreMappingStep\b")]
-        [InlineData(@"\bOSCPostMappingStep\b")]
-        [InlineData(@"\bCompareAndSendChangesToOSC\b")]
-        [InlineData(@"\bCreateOSCCallback\b")]
-        [InlineData(@"\bMapMonitoringOscMessageToCommand\b")]
-        public void ControlService_NoLongerContains_TheMovedMembers(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-1 で OscService へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_KeepsTheThinDelegates_ForTheCallers()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            Assert.DoesNotContain("public void ChangeOSCListenerStatus(", text);
-            Assert.DoesNotContain("public void ChangeOSCSenderStatus(", text);
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
-            if (sw == null) return;
-            Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
-            Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
-        }
-
         [Fact]
         public void OscService_AndTheContracts_DoNotUseTheSharpOscTypes()
         {
@@ -83,6 +49,17 @@ namespace DS4WindowsTests
             Assert.IsType<OscService>(TestHost.GetService<IOscService>());
             Assert.IsType<SharpOscTransportFactory>(TestHost.GetService<IOscTransportFactory>());
             Assert.Same(TestHost.GetService<IOscService>(), TestHost.GetService<IOscService>());
+        }
+
+        [Fact]
+        public void TheOtherFiles_ForTheCallers()
+        {
+
+            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            if (sw == null) return;
+            Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
+            Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
         }
     }
 }

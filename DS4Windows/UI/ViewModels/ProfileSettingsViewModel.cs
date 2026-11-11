@@ -87,69 +87,6 @@ namespace DS4Windows.UI.ViewModels
 
         // Phase11 K-W6-10: DebouncingMs（デバウンス時間）のプロパティとイベントは機能廃止で削除した
 
-        // DS3 の傾きの擬似はジャイロのタブにある。保存時の補正（DS4 への補正）と、画面の再起動の確認が使うため、窓口をここにも残す
-        public bool HasUseDs3PitchRollSimChanged => Gyro.HasUseDs3PitchRollSimChanged;
-
-        public bool UseDs3PitchRollSim
-        {
-            get => Gyro.UseDs3PitchRollSim;
-            set => Gyro.UseDs3PitchRollSim = value;
-        }
-
-        /// <summary>サービスの再起動を求めたあとに、<see cref="HasUseDs3PitchRollSimChanged"/> の印を戻す。同じ変更のために、再起動をくり返し求めないようにするため。</summary>
-        public void AcknowledgeUseDs3PitchRollSimChange() => Gyro.AcknowledgeUseDs3PitchRollSimChange();
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /// <summary>
-        /// Phase11 W4（Issue #4 の 1）: DS4 の出力でしか成り立たない設定が ON なのに、出力の種類（Emulated Controller）が DS4 でないとき、
-        /// DS4 へ補正する。保存・適用の両方が通る <c>ProfileEditor.ExecuteSaveOrApply</c> から、保存する前に呼ぶ。
-        /// 2026-09-14 の保存・適用の統合（<c>9da60b85</c>）で失われた、旧 <c>ProfileEditor</c> の補正の復元（旧コードの動きに合わせる）:
-        /// <list type="bullet">
-        /// <item>(a) <see cref="UseDs3PitchRollSim"/> が ON なら DS4（旧 <c>SaveBtn_Click</c>。GUI ログなし）</item>
-        /// <item>(c) <see cref="GeneralSettingsViewModel.EnableOutputDataToDS4"/> が ON で、(a) のあとも DS4 でなければ DS4（旧 <c>SetLateProperties</c> の
-        /// Phase5-Step14 (c)-2。呼び出し側が GUI ログを出す）</item>
-        /// </list>
-        /// OFF のときは何もしない（DS4 から X360 へ戻すことはしない）。
-        /// 「DS4 でない」の判定は、保存される値（<see cref="OutputSettingsViewModel.ControllerTypeIndex"/>）と画面の選択（<see cref="OutputSettingsViewModel.TempControllerIndex"/>）の
-        /// どちらかが DS4 でなければ、とする（ずれていても、保存される値を DS4 にそろえるため）。
-        /// </summary>
-        /// <returns>DS4 へ変えた理由。変えなかった場合は <see cref="Ds4OutputCorrectionReason.None"/></returns>
-        public Ds4OutputCorrectionReason CorrectOutputTypeToDs4()
-        {
-            bool notDs4 = Output.ControllerTypeIndex != 1 || Output.TempControllerIndex != 1;
-            if (!notDs4)
-            {
-                return Ds4OutputCorrectionReason.None;
-            }
-
-            Ds4OutputCorrectionReason reason;
-            if (UseDs3PitchRollSim)
-            {
-                reason = Ds4OutputCorrectionReason.Ds3PitchRollSim;
-            }
-            // Phase11 W6c（K-W6-12。ユーザー指示 2026-11-03）: (c)［EnableOutputDataToDS4 が ON なら DS4 へ強制］は廃止した。
-            // この設定は「物理コントローラーへ出力データを送るか」であり、仮想パッドの種類（Emulated Controller）とは無関係
-            else
-            {
-                return Ds4OutputCorrectionReason.None;
-            }
-
-            Output.ControllerTypeIndex = 1;   // 保存される値（profileSettings.OutContType）
-            Output.TempControllerIndex = 1;   // 画面の選択
-            return reason;
-        }
-
         // ---- Phase6-Step8-4: ProfileEditor のバックエンド操作（保存・ブランク読み込み・キャッシュ更新）----
         // 編集スロット（device）に対する操作だけを行い、コントローラーのスロットへの再適用はしない
         // （再適用は ProfileSaved を受けた MainWindow.SyncProfileListAndControllers の責務。Step7b 決定8）。

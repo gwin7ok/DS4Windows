@@ -16,28 +16,28 @@ namespace DS4Windows.Processing.Services
     /// </summary>
     public sealed class StickInputConditioner : IStickInputConditioner
     {
-        public DS4State ApplyDrift(int device, DS4State state, IProfileSettingsService settings)
+        public ControllerState ApplyDrift(int device, ControllerState state, IProfileSettingsService settings)
         {
-            if (settings.RightStickDriftXAxis[device] != 0)
+            if (settings.ForSlot(device).Sticks.RightStickDriftXAxis != 0)
             {
-                var translated = state.RX - settings.RightStickDriftXAxis[device];
+                var translated = state.RX - settings.ForSlot(device).Sticks.RightStickDriftXAxis;
                 state.RX = (byte)Math.Clamp(translated, 0, 255);
             }
-            if (settings.RightStickDriftYAxis[device] != 0)
+            if (settings.ForSlot(device).Sticks.RightStickDriftYAxis != 0)
             {
-                var translated = state.RY - settings.RightStickDriftYAxis[device];
+                var translated = state.RY - settings.ForSlot(device).Sticks.RightStickDriftYAxis;
                 state.RY = (byte)Math.Clamp(translated, 0, 255);
             }
 
-            if (settings.LeftStickDriftXAxis[device] != 0)
+            if (settings.ForSlot(device).Sticks.LeftStickDriftXAxis != 0)
             {
-                var translated = state.LX - settings.LeftStickDriftXAxis[device];
+                var translated = state.LX - settings.ForSlot(device).Sticks.LeftStickDriftXAxis;
                 state.LX = (byte)Math.Clamp(translated, 0, 255);
             }
 
-            if (settings.LeftStickDriftYAxis[device] != 0)
+            if (settings.ForSlot(device).Sticks.LeftStickDriftYAxis != 0)
             {
-                var translated = state.LY - settings.LeftStickDriftYAxis[device];
+                var translated = state.LY - settings.ForSlot(device).Sticks.LeftStickDriftYAxis;
                 state.LY = (byte)Math.Clamp(translated, 0, 255);
             }
 

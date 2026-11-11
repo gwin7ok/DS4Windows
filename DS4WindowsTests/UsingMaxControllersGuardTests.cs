@@ -32,9 +32,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStaticShims_AreGone()
         {
-            Assert.Null(typeof(ControlService).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            Assert.Null(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
             // Phase7-Step10e W2: CURRENT_DS4_CONTROLLER_LIMIT も削除した
-            Assert.Null(typeof(ControlService).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            Assert.Null(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace DS4WindowsTests
         public void TheViewModel_FollowsTheEnvironment()
         {
             DS4Windows.Composition.AppHost.CreateHost();
-            var factory = TestHost.GetService<IViewModelFactory>();
+            var factory = TestHost.GetService<IShellViewModelFactory>();
             var env = TestHost.GetService<IEnvironmentService>();
             var vm = factory.CreateAutoProfilesViewModel(TestRepositoryFactory.CreateAutoProfileHolder(),
                 new ProfileList(TestHost.GetService<IPathService>()));

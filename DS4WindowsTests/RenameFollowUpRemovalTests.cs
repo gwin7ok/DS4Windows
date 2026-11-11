@@ -157,27 +157,28 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRenamePath_SavesTheFiles_ThroughTheCommonSyncPath()
         {
-            string main = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
+            string main = SourceFileLocator.Find("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
             string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (main == null || editor == null) return;
 
             string source = File.ReadAllText(main);
             int start = source.IndexOf("if (isRename)", StringComparison.Ordinal);
-            int end = source.IndexOf("ProfileListHolder.Refresh();", start, StringComparison.Ordinal);
+            int end = source.IndexOf("profileListHolder.Refresh();", start, StringComparison.Ordinal);
             string block = source.Substring(start, end - start);
 
-            Assert.Contains("profileRepo.SaveLinkedProfiles();", block);
-            Assert.Contains("_autoProfileService?.Holder?.Save();", block);
-            Assert.Contains("appSettingsService.Save();", block);
-            Assert.Contains("profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);", block);
-            Assert.Contains("profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);", block);   // 古いプロファイルのために残す
+            Assert.Contains("_profileRepo.SaveLinkedProfiles();", block);
+            Assert.Contains("saveAutoProfiles?.Invoke();", block);
+            Assert.Contains("_appSettings.Save();", block);
+            Assert.Contains("_profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);", block);
+            Assert.Contains("_profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);", block);   // 古いプロファイルのために残す
             Assert.DoesNotContain("ProfilePath[i] =", block);        // スロットの配列の書き換えは、窓口が追従するため、不要
             Assert.DoesNotContain("OlderProfilePath[i] =", block);
             Assert.DoesNotContain("ReplaceLinkedProfileName", block);
             Assert.DoesNotContain("ReplaceProfileName", block);
 
             // プロファイル一覧からの名前変更は、この共通の経路を通る
-            Assert.Contains("SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName)", source);
+            Assert.Contains("SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName)",
+                File.ReadAllText(SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs")));
             // SA の名前変更は、古いプロファイルのファイルのため、ReplaceActionReference を残している
             Assert.Contains("profileRepository.ReplaceActionReference(oldName, newName)", File.ReadAllText(editor));
         }

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class SwitchProReportParserTests
     {
-        private static void LegacyParse(byte[] inputReport, DS4State cState)
+        private static void LegacyParse(byte[] inputReport, ControllerState cState)
         {
             byte tempByte;
             tempByte = inputReport[3];
@@ -45,8 +45,8 @@ namespace DS4WindowsTests
 
         private static void AssertSame(byte[] report)
         {
-            var expected = new DS4State();
-            var actual = new DS4State();
+            var expected = new ControllerState();
+            var actual = new ControllerState();
             LegacyParse(report, expected);
             new SwitchProReportParser().Parse(report, actual);
             Assert.Equal(DS4StateSnapshot.Of(expected), DS4StateSnapshot.Of(actual));
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
             var parser = new SwitchProReportParser();
             var report = new byte[64];
             new Random(1).NextBytes(report);
-            var state = new DS4State();
+            var state = new ControllerState();
             parser.Parse(report, state);
 
             long before = GC.GetAllocatedBytesForCurrentThread();
@@ -94,7 +94,7 @@ namespace DS4WindowsTests
         {
             var report = new byte[64];
             report[3] = 0x80;   // ZR
-            var state = new DS4State();
+            var state = new ControllerState();
 
             new SwitchProReportParser().Parse(report, state);
 

@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -206,12 +207,12 @@ namespace DS4WindowsTests
             IProfileSettingsService settings = t.Scope.Settings;
 
             var input = new TriggerInput(Device, settings);
-            var state = new DS4State { LX = 128, LY = 128, RX = 128, RY = 128 };
-            var fields = new DS4StateFieldMapping();
+            var state = new ControllerState { LX = 128, LY = 128, RX = 128, RY = 128 };
+            var fields = new ControllerStateFieldMapping();
             fields.buttons[(int)DS4Controls.Cross] = true;
             input.Update(state, null, null, null, fields);
 
-            var outFields = new DS4StateFieldMapping();
+            var outFields = new ControllerStateFieldMapping();
             var frame = new FrameOutput();
             frame.Bind(outFields, new SyntheticState());
 
@@ -227,7 +228,7 @@ namespace DS4WindowsTests
 
         // ---- 割り当て ----
 
-        private static long Allocated(ControlsKeyTestScope t, DS4State input)
+        private static long Allocated(ControlsKeyTestScope t, ControllerState input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 1000; i++) t.Run(input);

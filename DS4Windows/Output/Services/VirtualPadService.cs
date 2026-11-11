@@ -67,32 +67,9 @@ namespace DS4Windows.Output.Services
 
         public bool HasOutputDevice(int index) => outputDevices[index] != null;
 
-        public void SendReport(int index, DS4State state)
+        public void SendReport(int index, ControllerState state)
         {
             outputDevices[index]?.ConvertandSendReport(state, index);
-        }
-
-        public bool TryShareOutputDevice(int fromIndex, int toIndex, OutContType contType, DS4Device device)
-        {
-            OutputDevice shared = outputDevices[fromIndex];
-            if (shared == null)
-            {
-                return false;
-            }
-
-            EstablishOutFeedback(toIndex, contType, shared, device);
-            outputDevices[toIndex] = shared;
-            return true;
-        }
-
-        public void ReleaseSharedOutputDevice(int index)
-        {
-            OutputDevice outDev = outputDevices[index];
-            if (outDev != null)
-            {
-                outDev.RemoveFeedback(index);
-                outputDevices[index] = null;
-            }
         }
 
         public bool IsOutputQueueRunning => outputslotMan.RunningQueue;
@@ -188,7 +165,7 @@ namespace DS4Windows.Output.Services
         }
 
         public void EstablishOutFeedback(int index, OutContType contType,
-            OutputDevice outDevice, DS4Device device)
+            OutputDevice outDevice, InputDeviceCore device)
         {
             // 種類ごとの戻り（振動・ライトバー）の接続は、出力のカートリッジが持つ。種類がない（None）ときは何もしない
             if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge))
@@ -239,7 +216,7 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public void PluginOutDev(int index, DS4Device device)
+        public void PluginOutDev(int index, InputDeviceCore device)
         {
             OutContType contType = _profileSettings.OutContType[index];
 
@@ -300,25 +277,17 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける（結合デバイスの相手側にも付ける）
-        private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, DS4Device device)
+        // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける
+        private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device)
         {
             if (_profileSettings.EnableOutputDataToDS4[index])
             {
                 EstablishOutFeedback(index, contType, outDevice, device);
 
-                if (device.JointDeviceSlotNumber != -1)
-                {
-                    DS4Device tempDS4Device = _deviceAccessor.GetController(device.JointDeviceSlotNumber);
-                    if (tempDS4Device != null)
-                    {
-                        EstablishOutFeedback(device.JointDeviceSlotNumber, contType, outDevice, tempDS4Device);
-                    }
-                }
             }
         }
 
-        public void UnplugOutDev(int index, DS4Device device, bool immediate = false, bool force = false)
+        public void UnplugOutDev(int index, InputDeviceCore device, bool immediate = false, bool force = false)
         {
             if (!_profileSettings.UseDInputOnlyArray[index])
             {

@@ -60,26 +60,26 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Gyro;
-            int sensitivity = service.GyroSensitivity[0];
-            int invert = service.GyroInvert[0];
+            int sensitivity = service.ForSlot(0).Gyro.Sensitivity;
+            int invert = service.ForSlot(0).Gyro.Invert;
             try
             {
                 vm.GyroSensitivity = sensitivity + 7;
-                Assert.Equal(sensitivity + 7, service.GyroSensitivity[0]);
+                Assert.Equal(sensitivity + 7, service.ForSlot(0).Gyro.Sensitivity);
 
                 // 反転は 1 つの整数のビット（1＝縦、2＝横）
                 vm.GyroMouseInvertX = true;
                 vm.GyroMouseInvertY = true;
-                Assert.Equal(3, service.GyroInvert[0] & 3);
+                Assert.Equal(3, service.ForSlot(0).Gyro.Invert & 3);
                 vm.GyroMouseInvertX = false;
-                Assert.Equal(1, service.GyroInvert[0] & 3);
+                Assert.Equal(1, service.ForSlot(0).Gyro.Invert & 3);
                 Assert.False(vm.GyroMouseInvertX);
                 Assert.True(vm.GyroMouseInvertY);
             }
             finally
             {
-                service.GyroSensitivity[0] = sensitivity;
-                service.GyroInvert[0] = invert;
+                service.ForSlot(0).Gyro.Sensitivity = sensitivity;
+                service.ForSlot(0).Gyro.Invert = invert;
             }
         }
 
@@ -88,22 +88,22 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Gyro;
-            GyroOutMode original = service.GyroOutputMode[0];
+            GyroOutMode original = service.ForSlot(0).Gyro.OutputMode;
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
                 vm.GyroOutModeIndex = 2;
-                Assert.Equal(GyroOutMode.MouseJoystick, service.GyroOutputMode[0]);
+                Assert.Equal(GyroOutMode.MouseJoystick, service.ForSlot(0).Gyro.OutputMode);
                 Assert.Equal(2, vm.GyroOutModeIndex);
                 Assert.Contains(nameof(GyroSettingsViewModel.GyroOutModeIndex), names);
 
                 vm.GyroOutModeIndex = 3;
-                Assert.Equal(GyroOutMode.Passthru, service.GyroOutputMode[0]);
+                Assert.Equal(GyroOutMode.Passthru, service.ForSlot(0).Gyro.OutputMode);
             }
             finally
             {
-                service.GyroOutputMode[0] = original;
+                service.ForSlot(0).Gyro.OutputMode = original;
             }
         }
 
@@ -132,7 +132,7 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             Assert.Equal(3, service.ForSlot(3).Slot);
-            Assert.Same(service.GyroMouseInfo[3], service.ForSlot(3).Gyro.Mouse);
+            Assert.Same(service.ForSlot(3).Gyro.Mouse, service.ForSlot(3).Gyro.Mouse);
 
             // ジャイロの項目は、ProfileSettingsViewModel から Gyro（サブ ViewModel）へ移った
             string[] left = typeof(ProfileSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)

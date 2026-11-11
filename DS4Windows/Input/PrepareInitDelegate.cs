@@ -26,5 +26,5 @@ using System.Security.Principal;
 
 namespace DS4Windows.Input
 {
-    public delegate void PrepareInitDelegate(DS4Device device);
+    public delegate void PrepareInitDelegate(InputDeviceCore device);
 }

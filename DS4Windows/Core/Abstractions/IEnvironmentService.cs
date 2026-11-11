@@ -24,6 +24,9 @@
 
         /// <summary>HID デバイスのインターフェースクラスの GUID。ウィンドウに HID の抜き差しの通知を登録するときに使う。</summary>
         System.Guid HidClassGuid { get; }
+
+        /// <summary>XUSB（Xbox 系コントローラー）のデバイス インターフェースクラスの GUID。HID を持たない Xbox の抜き差しの通知を登録するときに使う。</summary>
+        System.Guid XusbClassGuid { get; }
         string ApplicationVersion { get; }
         void RefreshHidHideInfo();
         void RefreshFakerInputInfo();
@@ -31,6 +34,10 @@
         // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>HidHide が導入済みかどうか（RefreshHidHideInfo で更新される現在値）。</summary>
         bool HidHideInstalled { get; }
+        /// <summary>導入済みの HidHide ドライバーのバージョン（RefreshHidHideInfo で更新される現在値。未導入や不明のときは 0.0.0.0）。</summary>
+        string HidHideVersion { get; }
+        /// <summary>導入済みの HidHide 製品（設定画面アプリ <c>HidHideClient.exe</c>）のバージョン。「プログラムと機能」の表示と同じ（RefreshHidHideInfo で更新される現在値。見つからないときは 0.0.0.0）。</summary>
+        string HidHideProductVersion { get; }
         string GetInstanceIdFromDevicePath(string devicePath);
         bool CheckHidHideAffectedStatus(string deviceInstanceId,
             System.Collections.Generic.HashSet<string> affectedDevs,

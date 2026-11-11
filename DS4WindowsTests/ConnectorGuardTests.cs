@@ -21,44 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\bLoadControllerConfigsForDevice\b")]
-        [InlineData(@"\bLoadStoreSettings\(")]
-        [InlineData(@"\.AddController\(")]
-        [InlineData(@"\bnew Mouse\(")]
-        [InlineData(@"\.StartUpdate\(\)")]
-        [InlineData(@"\bChargingChanged\b")]
-        [InlineData(@"\bRefreshExtrasButtons\(")]
-        [InlineData(@"\bQuickCharge\b")]
-        [InlineData(@"\bPrepareDeviceMotion\(")]
-        public void ControlService_NoLongerContains_TheMovedConnection(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"ControlService.cs に '{pattern}' が残っている（9-E E-6f1 で DeviceConnector へ移した）");
-        }
-
-        [Fact]
-        public void ControlService_NoLongerHoldsOnReport_AndTheLifecycleCallsTheConnector()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/ControlService.cs");
-            if (text == null) return;
-
-            // Phase9 9-E E-6f2: Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
-            Assert.DoesNotContain("PrepareConnectedInputControllerSettingEvents", text);
-            Assert.DoesNotContain("BeginPrepareConnectedInputController", text);
-            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
-            if (lifecycle == null) return;
-            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
-            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
-            // Phase13-Step5b: 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
-            Assert.DoesNotContain("On_Report", text);
-            Assert.DoesNotContain("IDeviceSlotHost", text.Replace("IDeviceSlotHost（ActiveControllers", ""));
-            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/InputReportProcessor.cs");
-            Assert.Contains("public void OnReport(DS4Device device, EventArgs e, int ind)", processor);
-        }
-
         [Fact]
         public void TheConnection_KeepsTheOriginalOrder()
         {
@@ -78,7 +40,6 @@ namespace DS4WindowsTests
                 "device.SerialChange += _deviceDisconnect.OnSerialChange;",
                 "device.ChargingChanged += OnChargingChanged;",
                 "touchPads[index] = _mouseFactory.Create(index, device);",
-                "device.SixAxis.GyroControlsTriggerActive",
                 "_connectionProfileSelector.ApplyOnConnect(",
                 "_outputs.PlugVirtualPad(index, device);",
                 "_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);",
@@ -116,6 +77,20 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceConnector が ControlService を参照している");
+        }
+
+        [Fact]
+        public void TheOtherFiles_NoLongerHoldsOnReport_AndTheLifecycleCallsTheConnector()
+        {
+
+            // Phase9 9-E E-6f2: Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
+            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            if (lifecycle == null) return;
+            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
+            Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
+            // Phase13-Step5b: 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
+            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/InputReportProcessor.cs");
+            Assert.Contains("public void OnReport(InputDeviceCore device, EventArgs e, int ind)", processor);
         }
     }
 }

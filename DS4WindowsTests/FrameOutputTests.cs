@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -54,15 +55,15 @@ namespace DS4WindowsTests
             Assert.NotNull(legacy);
 
             var random = new Random(8401);
-            for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
+            for (int c = 0; c <= ControllerStateFieldMapping.LAST_DS4_ACTION; c++)
             {
                 var control = (DS4Controls)c;
                 for (int iteration = 0; iteration < 5; iteration++)
                 {
-                    DS4StateFieldMapping expected = RandomFields(random);
-                    DS4StateFieldMapping actual = Clone(expected);
+                    ControllerStateFieldMapping expected = RandomFields(random);
+                    ControllerStateFieldMapping actual = Clone(expected);
 
-                    legacy.Invoke(mapping, new object[] { control, new DS4State(), expected });
+                    legacy.Invoke(mapping, new object[] { control, new ControllerState(), expected });
                     var frame = new FrameOutput();
                     frame.Bind(actual, new SyntheticState());
                     frame.ResetTriggerControl(control);
@@ -72,9 +73,9 @@ namespace DS4WindowsTests
             }
         }
 
-        private static DS4StateFieldMapping RandomFields(Random random)
+        private static ControllerStateFieldMapping RandomFields(Random random)
         {
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             for (int i = 0; i < fields.buttons.Length; i++)
             {
                 fields.buttons[i] = random.Next(2) == 0;
@@ -85,9 +86,9 @@ namespace DS4WindowsTests
             return fields;
         }
 
-        private static DS4StateFieldMapping Clone(DS4StateFieldMapping source)
+        private static ControllerStateFieldMapping Clone(ControllerStateFieldMapping source)
         {
-            var copy = new DS4StateFieldMapping();
+            var copy = new ControllerStateFieldMapping();
             Array.Copy(source.buttons, copy.buttons, source.buttons.Length);
             Array.Copy(source.axisdirs, copy.axisdirs, source.axisdirs.Length);
             Array.Copy(source.triggers, copy.triggers, source.triggers.Length);
@@ -95,7 +96,7 @@ namespace DS4WindowsTests
             return copy;
         }
 
-        private static void AssertEqualFields(DS4StateFieldMapping expected, DS4StateFieldMapping actual, DS4Controls control)
+        private static void AssertEqualFields(ControllerStateFieldMapping expected, ControllerStateFieldMapping actual, DS4Controls control)
         {
             Assert.True(expected.buttons.SequenceEqual(actual.buttons), $"{control}: buttons");
             Assert.True(expected.axisdirs.SequenceEqual(actual.axisdirs), $"{control}: axisdirs");
@@ -110,7 +111,7 @@ namespace DS4WindowsTests
         {
             foreach (X360Controls control in Enum.GetValues(typeof(X360Controls)))
             {
-                var fields = new DS4StateFieldMapping();
+                var fields = new ControllerStateFieldMapping();
                 var state = new SyntheticState();
                 var frame = new FrameOutput();
                 frame.Bind(fields, state);
@@ -141,7 +142,7 @@ namespace DS4WindowsTests
         {
             var state = new SyntheticState();
             var frame = new FrameOutput();
-            frame.Bind(new DS4StateFieldMapping(), state);
+            frame.Bind(new ControllerStateFieldMapping(), state);
 
             frame.PressX360(X360Controls.LeftMouse);
             frame.PressX360(X360Controls.LeftMouse);
@@ -168,7 +169,7 @@ namespace DS4WindowsTests
             frame.ResetTriggerControl(DS4Controls.Cross);   // 例外にならない
             frame.PressX360(X360Controls.A);
 
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             var state = new SyntheticState();
             frame.Bind(fields, state);
             for (int i = 0; i < 100; i++) { frame.PressX360(X360Controls.A); frame.PressX360(X360Controls.LeftMouse); frame.ResetTriggerControl(DS4Controls.Cross); }

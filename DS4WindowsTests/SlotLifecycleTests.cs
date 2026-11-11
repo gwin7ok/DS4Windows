@@ -180,7 +180,7 @@ namespace DS4WindowsTests
         public void TheHost_ResolvesTheSlotApplierWithTheEngine()
         {
             Assert.IsType<ProfileSlotApplier>(TestHost.GetService<IProfileSlotApplier>());
-            Assert.NotNull(TestHost.GetService<ControlService>());
+            Assert.NotNull(TestHost.GetService<IRuntimeBootstrapper>());
         }
 
         // ---- 構造 ----
@@ -188,11 +188,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_ReleasesTheSlotOnlyOnThePhysicalRemoval_AndPublishesOnAReconnectionWithoutAnApply()
         {
-            string controlService = SourceFileLocator.Find("DS4Windows/Processing/ControlService.cs");
             string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            if (controlService == null || mapping == null) return;
+            if (mapping == null) return;
 
-            string text = File.ReadAllText(controlService);
             // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
             string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
@@ -218,6 +216,5 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("OnDeviceDisconnected", handler);
             Assert.DoesNotContain("_engine", handler);
         }
-
     }
 }

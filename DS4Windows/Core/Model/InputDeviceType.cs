@@ -26,12 +26,9 @@ namespace DS4Windows.Core.Model
 {
     public enum InputDeviceType : uint
     {
-        DS4,
-        SwitchPro,
-        JoyConL,
-        JoyConR,
-        JoyConGrip,
-        DualSense,
-        DS3
+        [InputDeviceFamily(InputDeviceFamily.DS4)] DS4,
+        [InputDeviceFamily(InputDeviceFamily.SwitchPro)] SwitchPro,
+        [InputDeviceFamily(InputDeviceFamily.DualSense)] DualSense,
+        [InputDeviceFamily(InputDeviceFamily.Xbox)] Xbox
     }
 }

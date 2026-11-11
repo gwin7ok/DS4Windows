@@ -73,7 +73,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             string body = SourceText.BodyByPattern(text, @"void\s+CleanShutdown\s*\(");
-            int stop = body.IndexOf("_controlService.ShutDown()", System.StringComparison.Ordinal);
+            int stop = body.IndexOf("_runtimeBootstrapper.Shutdown()", System.StringComparison.Ordinal);
             int clearRegistry = body.IndexOf("ClearControllersForDevice", System.StringComparison.Ordinal);
             int dispose = body.IndexOf("AppHost.Dispose()", System.StringComparison.Ordinal);
             int flush = body.IndexOf("LogManager.Flush()", System.StringComparison.Ordinal);

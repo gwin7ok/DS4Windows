@@ -45,25 +45,25 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Cross, X360Controls.B, DS4KeyType.Toggle);   // B の標準の割り当ては Circle
             t.Publish();
 
-            DS4State Pressed() { DS4State s = ControlsKeyTestScope.Neutral(); s.Cross = true; return s; }
+            ControllerState Pressed() { ControllerState s = ControlsKeyTestScope.Neutral(); s.Cross = true; return s; }
 
             // Toggle は Fresh-press ガードを見る（SA・Key の Toggle と同じ）。ガードは、トリガーが 80ms 連続して未成立になるまで解除されない
             t.Run(ControlsKeyTestScope.Neutral());
             Thread.Sleep(120);
-            DS4State idle = t.Run(ControlsKeyTestScope.Neutral());
+            ControllerState idle = t.Run(ControlsKeyTestScope.Neutral());
             Assert.False(idle.Circle);
 
-            DS4State firstPress = t.Run(Pressed());
+            ControllerState firstPress = t.Run(Pressed());
             Assert.True(firstPress.Circle);    // ON
             Assert.False(firstPress.Cross);    // 元のボタンの通常の出力は消える
 
-            DS4State released = t.Run(ControlsKeyTestScope.Neutral());
+            ControllerState released = t.Run(ControlsKeyTestScope.Neutral());
             Assert.True(released.Circle);      // 離しても、ON のまま
 
-            DS4State secondPress = t.Run(Pressed());
+            ControllerState secondPress = t.Run(Pressed());
             Assert.False(secondPress.Circle);  // OFF
 
-            DS4State releasedAgain = t.Run(ControlsKeyTestScope.Neutral());
+            ControllerState releasedAgain = t.Run(ControlsKeyTestScope.Neutral());
             Assert.False(releasedAgain.Circle);
         }
     }

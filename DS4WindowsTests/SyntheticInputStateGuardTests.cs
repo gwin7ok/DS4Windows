@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -30,9 +31,9 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("SyntheticState", mapping.GetNestedTypes(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Select(t => t.Name));
             foreach ((string field, Type type) in new[]
             {
-                ("_syntheticInput", typeof(DS4Windows.Processing.SyntheticInputState)),
+                ("_syntheticInput", typeof(DS4Windows.Processing.Synthetic.SyntheticInputState)),
                 ("syncStateLock", typeof(System.Threading.ReaderWriterLockSlim)),
-                ("deviceState", typeof(DS4Windows.Processing.SyntheticState[])),
+                ("deviceState", typeof(DS4Windows.Processing.Synthetic.SyntheticState[])),
             })
             {
                 System.Reflection.FieldInfo f = mapping.GetField(field, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
@@ -41,7 +42,7 @@ namespace DS4WindowsTests
                 Assert.True(f.IsInitOnly, field + " が readonly でない");
             }
             var instance = TestHost.GetService<DS4Windows.Processing.Abstractions.IMapping>();
-            var holder = TestHost.GetService<DS4Windows.Processing.SyntheticInputState>();
+            var holder = TestHost.GetService<DS4Windows.Processing.Synthetic.SyntheticInputState>();
             Assert.Same(holder.SyncStateLock, mapping.GetField("syncStateLock", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(instance));
             Assert.Same(holder.DeviceState, mapping.GetField("deviceState", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(instance));
         }
@@ -70,7 +71,7 @@ namespace DS4WindowsTests
             var handler = (Action)typeof(DS4Windows.Core.Settings.BackingStore).GetField("_actionsLoadedHandler", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(store);
             Assert.NotNull(handler);
             Assert.Same(TestHost.GetService<DS4Windows.Processing.Services.ActionsLoadedRuntimeReset>(), handler.Target);
-            Assert.Same(TestHost.GetService<DS4Windows.Processing.SyntheticInputState>(), TestHost.GetService<DS4Windows.Processing.SyntheticInputState>());
+            Assert.Same(TestHost.GetService<DS4Windows.Processing.Synthetic.SyntheticInputState>(), TestHost.GetService<DS4Windows.Processing.Synthetic.SyntheticInputState>());
         }
 
         [Fact]

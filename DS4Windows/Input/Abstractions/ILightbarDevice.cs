@@ -6,7 +6,7 @@ namespace DS4Windows.Input.Abstractions
 {
     /// <summary>
     /// ライトバーの色の計算（<see cref="ILightbarService"/>）が、入力デバイスから読む値と、計算した状態を書く先。
-    /// 実装は <c>DS4Device</c>（第 1 層）。第 2 層の計算は、デバイスの具象ではなくこの契約だけを知る。
+    /// 実装は <c>InputDeviceCore</c>（第 1 層）。第 2 層の計算は、デバイスの具象ではなくこの契約だけを知る。
     /// </summary>
     public interface ILightbarDevice
     {

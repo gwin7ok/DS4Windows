@@ -32,10 +32,10 @@ namespace DS4WindowsTests
         {
             using var t = new SpecialActionTestScope();
             t.AddButtonPress("L1");
-            DS4State input = SpecialActionTestScope.Neutral();
+            ControllerState input = SpecialActionTestScope.Neutral();
             input.L1 = true;
 
-            DS4State output = t.RunFrame(input);
+            ControllerState output = t.RunFrame(input);
 
             Assert.True(output.Cross);   // 出力先は X360 の A ＝ DS4 の Cross
             Assert.False(output.L1);     // トリガーのボタンは出力から消える
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             t.AddButtonPress("L1");
 
-            DS4State output = t.RunFrame(SpecialActionTestScope.Neutral());
+            ControllerState output = t.RunFrame(SpecialActionTestScope.Neutral());
 
             Assert.False(output.Cross);
             Assert.False(output.L1);
@@ -59,16 +59,16 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             t.AddButtonPress("L1/R1");
 
-            DS4State onlyL1 = SpecialActionTestScope.Neutral();
+            ControllerState onlyL1 = SpecialActionTestScope.Neutral();
             onlyL1.L1 = true;
-            DS4State partial = t.RunFrame(onlyL1);
+            ControllerState partial = t.RunFrame(onlyL1);
             Assert.False(partial.Cross);  // 片方だけでは不成立
             Assert.True(partial.L1);      // 不成立のときは素通し
 
-            DS4State both = SpecialActionTestScope.Neutral();
+            ControllerState both = SpecialActionTestScope.Neutral();
             both.L1 = true;
             both.R1 = true;
-            DS4State full = t.RunFrame(both);
+            ControllerState full = t.RunFrame(both);
             Assert.True(full.Cross);
             Assert.False(full.L1);
             Assert.False(full.R1);
@@ -81,10 +81,10 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             SpecialAction sa = t.AddButtonPress("L1");
             t.StateOf(sa).RequiresFreshPressAfterReset = true;
-            DS4State input = SpecialActionTestScope.Neutral();
+            ControllerState input = SpecialActionTestScope.Neutral();
             input.L1 = true;
 
-            DS4State output = t.RunFrame(input);
+            ControllerState output = t.RunFrame(input);
 
             Assert.True(output.Cross);
         }
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
             // Phase8-Step4 W4: 抑制の集合はエンジンの所有。IsSuppressed で観測する
             bool Suppressed(DS4Controls control) => t.Engine.IsSuppressed(t.Device, control);
 
-            DS4State both = SpecialActionTestScope.Neutral();
+            ControllerState both = SpecialActionTestScope.Neutral();
             both.L1 = true;
             both.R1 = true;
             t.RunFrame(both);
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
             Assert.True(Suppressed(DS4Controls.R1));
 
             // R1 を離す: 冒頭の解除パスが、離されたボタンだけを個別に外す
-            DS4State onlyL1 = SpecialActionTestScope.Neutral();
+            ControllerState onlyL1 = SpecialActionTestScope.Neutral();
             onlyL1.L1 = true;
             t.RunFrame(onlyL1);
             Assert.True(Suppressed(DS4Controls.L1));
@@ -128,7 +128,7 @@ namespace DS4WindowsTests
             ActionInstanceState state = t.StateOf(sa);
             state.RequiresFreshPressAfterReset = true;
             state.UntriggeredTimestampTicks = Environment.TickCount64 - 5000; // 未成立が長く続いていた
-            DS4State input = SpecialActionTestScope.Neutral();
+            ControllerState input = SpecialActionTestScope.Neutral();
             input.L1 = true;
 
             t.RunFrame(input);
@@ -199,7 +199,7 @@ namespace DS4WindowsTests
             ActionInstanceState state = t.StateOf(sa);
             state.RequiresFreshPressAfterReset = freshPressGuard;
             state.IsExecuting = isExecuting;
-            DS4State input = SpecialActionTestScope.Neutral();
+            ControllerState input = SpecialActionTestScope.Neutral();
             input.L1 = true;
 
             try
@@ -225,7 +225,7 @@ namespace DS4WindowsTests
             SpecialAction sa = t.AddKey("L1", toggle: false);
             int index = t.IndexOf(sa);
             t.StateOf(sa).RequiresFreshPressAfterReset = false;
-            DS4State held = SpecialActionTestScope.Neutral();
+            ControllerState held = SpecialActionTestScope.Neutral();
             held.L1 = true;
 
             t.RunFrame(held);
@@ -247,7 +247,7 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             SpecialAction sa = t.AddKey("L1", toggle: false);
             t.StateOf(sa).RequiresFreshPressAfterReset = true;
-            DS4State held = SpecialActionTestScope.Neutral();
+            ControllerState held = SpecialActionTestScope.Neutral();
             held.L1 = true;
 
             t.RunFrame(held);
@@ -263,7 +263,7 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             SpecialAction sa = t.AddKey("L1", toggle: true);
             t.StateOf(sa).RequiresFreshPressAfterReset = false;
-            DS4State held = SpecialActionTestScope.Neutral();
+            ControllerState held = SpecialActionTestScope.Neutral();
             held.L1 = true;
 
             t.RunFrame(held);
@@ -303,7 +303,7 @@ namespace DS4WindowsTests
 
             try
             {
-                DS4State input = SpecialActionTestScope.Neutral();
+                ControllerState input = SpecialActionTestScope.Neutral();
                 input.L1 = true;
                 t.RunFrame(input); // ウォームアップ
                 reloader.Start();

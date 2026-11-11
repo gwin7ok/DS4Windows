@@ -38,29 +38,29 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballMode"); bool.TryParse(Item.InnerText, out store.trackballMode[device]); }
-            catch { store.trackballMode[device] = false; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballMode"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].Trackball = parsedValue; }; }
+            catch { store.touchpadSlots[device].Trackball = false; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballFriction"); double.TryParse(Item.InnerText, out store.trackballFriction[device]); }
-            catch { store.trackballFriction[device] = 10.0; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballFriction"); { double.TryParse(Item.InnerText, out double parsedValue); store.touchpadSlots[device].TrackballFriction = parsedValue; }; }
+            catch { store.touchpadSlots[device].TrackballFriction = 10.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchRelMouseRotation");
                 int.TryParse(Item.InnerText, out int temp);
                 temp = Math.Min(Math.Max(temp, -180), 180);
-                store.touchpadRelMouse[device].rotation = temp * Math.PI / 180.0;
+                store.touchpadSlots[device].RelMouse.rotation = temp * Math.PI / 180.0;
             }
-            catch { store.touchpadRelMouse[device].rotation = 0.0; missingSetting = true; }
+            catch { store.touchpadSlots[device].RelMouse.rotation = 0.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchRelMouseMinThreshold");
                 double.TryParse(Item.InnerText, out double temp);
                 temp = Math.Min(Math.Max(temp, 1.0), 40.0);
-                store.touchpadRelMouse[device].minThreshold = temp;
+                store.touchpadSlots[device].RelMouse.minThreshold = temp;
             }
-            catch { store.touchpadRelMouse[device].minThreshold = TouchpadRelMouseSettings.DEFAULT_MIN_THRESHOLD; missingSetting = true; }
+            catch { store.touchpadSlots[device].RelMouse.minThreshold = TouchpadRelMouseSettings.DEFAULT_MIN_THRESHOLD; missingSetting = true; }
 
 
             bool touchMStickGroup = false;
@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 //    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("UseSmoothing");
                 //    if (bool.TryParse(Item?.InnerText ?? "", out bool tempSmoothing))
                 //    {
-                //        gyroMStickInfo[device].useSmoothing = tempSmoothing;
+                //        gyroSlots[device].MouseStick.useSmoothing = tempSmoothing;
                 //    }
                 //}
                 //catch { }
@@ -85,7 +85,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("DeadZone");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
-                        store.touchMStickInfo[device].deadZone = temp;
+                        store.touchpadSlots[device].MouseStick.deadZone = temp;
                     }
                 }
                 catch { }
@@ -95,7 +95,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("MaxZone");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
-                        store.touchMStickInfo[device].maxZone = Math.Max(temp, 1);
+                        store.touchpadSlots[device].MouseStick.maxZone = Math.Max(temp, 1);
                     }
                 }
                 catch { }
@@ -106,7 +106,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (Enum.TryParse(Item?.InnerText ?? "",
                         out TouchMouseStickInfo.OutputStick temp))
                     {
-                        store.touchMStickInfo[device].outputStick = temp;
+                        store.touchpadSlots[device].MouseStick.outputStick = temp;
                     }
                 }
                 catch { }
@@ -124,7 +124,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (Enum.TryParse(Item?.InnerText ?? "",
                         out TouchMouseStickInfo.OutputStickAxes temp))
                     {
-                        store.touchMStickInfo[device].outputStickDir = temp;
+                        store.touchpadSlots[device].MouseStick.outputStickDir = temp;
                     }
                 }
                 catch { }
@@ -134,7 +134,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("AntiDeadX");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.touchMStickInfo[device].antiDeadX = temp;
+                        store.touchpadSlots[device].MouseStick.antiDeadX = temp;
                     }
                 }
                 catch { }
@@ -144,7 +144,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("AntiDeadY");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.touchMStickInfo[device].antiDeadY = temp;
+                        store.touchpadSlots[device].MouseStick.antiDeadY = temp;
                     }
                 }
                 catch { }
@@ -155,7 +155,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (uint.TryParse(Item?.InnerText ?? "",
                         out uint temp))
                     {
-                        store.touchMStickInfo[device].inverted = temp;
+                        store.touchpadSlots[device].MouseStick.inverted = temp;
                     }
                 }
                 catch { }
@@ -165,7 +165,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("MaxOutput");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
-                        store.touchMStickInfo[device].maxOutput = Math.Clamp(temp, 0.0, 100.0);
+                        store.touchpadSlots[device].MouseStick.maxOutput = Math.Clamp(temp, 0.0, 100.0);
                     }
                 }
                 catch { }
@@ -175,7 +175,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("MaxOutputEnabled");
                     if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
                     {
-                        store.touchMStickInfo[device].maxOutputEnabled = temp;
+                        store.touchpadSlots[device].MouseStick.maxOutputEnabled = temp;
                     }
                 }
                 catch { }
@@ -185,7 +185,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("VerticalScale");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
-                        store.touchMStickInfo[device].vertScale = temp;
+                        store.touchpadSlots[device].MouseStick.vertScale = temp;
                     }
                 }
                 catch { }
@@ -195,7 +195,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     Item = xmlTouchMStickSmoothingElement.SelectSingleNode("OutputCurve");
                     if (Enum.TryParse(Item?.InnerText ?? "", out StickOutCurve.Curve temp))
                     {
-                        store.touchMStickInfo[device].outputCurve = temp;
+                        store.touchpadSlots[device].MouseStick.outputCurve = temp;
                     }
                 }
                 catch { }
@@ -206,7 +206,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
                         temp = Math.Clamp(temp, -180, 180);
-                        store.touchMStickInfo[device].rotationRad = temp * Math.PI / 180.0;
+                        store.touchpadSlots[device].MouseStick.rotationRad = temp * Math.PI / 180.0;
                     }
                 }
                 catch { }
@@ -223,9 +223,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     //{
                     //    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("UseSmoothing");
                     //    bool.TryParse(Item.InnerText, out bool tempSmoothing);
-                    //    gyroMStickInfo[device].useSmoothing = tempSmoothing;
+                    //    gyroSlots[device].MouseStick.useSmoothing = tempSmoothing;
                     //}
-                    //catch { gyroMStickInfo[device].useSmoothing = false; missingSetting = true; }
+                    //catch { gyroSlots[device].MouseStick.useSmoothing = false; missingSetting = true; }
 
                     try
                     {
@@ -233,7 +233,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                         if (Enum.TryParse(Item?.InnerText ?? "",
                             out TouchMouseStickInfo.SmoothingMethod temp))
                         {
-                            store.touchMStickInfo[device].smoothingMethod = temp;
+                            store.touchpadSlots[device].MouseStick.smoothingMethod = temp;
                         }
                     }
                     catch { }
@@ -243,7 +243,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                         Item = xmlTouchMStickSmoothingElement.SelectSingleNode("SmoothingMinCutoff");
                         if (double.TryParse(Item?.InnerText ?? "", out double temp))
                         {
-                            store.touchMStickInfo[device].minCutoff = Math.Clamp(temp, 0.0, 100.0);
+                            store.touchpadSlots[device].MouseStick.minCutoff = Math.Clamp(temp, 0.0, 100.0);
                         }
                     }
                     catch { }
@@ -253,7 +253,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                         Item = xmlTouchMStickSmoothingElement.SelectSingleNode("SmoothingBeta");
                         if (double.TryParse(Item?.InnerText ?? "", out double temp))
                         {
-                            store.touchMStickInfo[device].beta = Math.Clamp(temp, 0.0, 1.0);
+                            store.touchpadSlots[device].MouseStick.beta = Math.Clamp(temp, 0.0, 1.0);
                         }
                     }
                     catch { }
@@ -266,10 +266,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode($"/{rootname}/TouchpadButtonMode");
                 if (Enum.TryParse(Item?.InnerText ?? "", out TouchButtonActivationMode tempMode))
                 {
-                    store.touchpadButtonMode[device] = tempMode;
+                    store.touchpadSlots[device].ButtonMode = tempMode;
                 }
             }
-            catch { store.touchpadButtonMode[device] = TouchButtonActivationMode.Click; missingSetting = true; }
+            catch { store.touchpadSlots[device].ButtonMode = TouchButtonActivationMode.Click; missingSetting = true; }
 
             context.MissingSetting = missingSetting;
         }

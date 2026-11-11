@@ -8,14 +8,14 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services
 {
     /// <summary>
-    /// <see cref="DS4Device"/> を <see cref="IControllerSlotView"/> として UI に見せるアダプター。
+    /// <see cref="InputDeviceCore"/> を <see cref="IControllerSlotView"/> として UI に見せるアダプター。
     /// 機器のイベントは作成時に一度だけ購読して転送する（機器と同じ寿命。機器が破棄されれば、機器が持つこの参照も消える）。
     /// </summary>
     internal sealed class ControllerSlotView : IControllerSlotView
     {
         private readonly IProfileXmlStore _profileXmlStore;
 
-        internal ControllerSlotView(DS4Device device, IProfileXmlStore profileXmlStore)
+        internal ControllerSlotView(InputDeviceCore device, IProfileXmlStore profileXmlStore)
         {
             Device = device ?? throw new ArgumentNullException(nameof(device));
             _profileXmlStore = profileXmlStore;
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Services
         }
 
         /// <summary>包んでいる機器。第 2 層の内側（このアセンブリ）だけが使う。</summary>
-        internal DS4Device Device { get; }
+        internal InputDeviceCore Device { get; }
 
         public string DisplayName => Device.DisplayName;
 
@@ -48,7 +48,6 @@ namespace DS4Windows.Processing.Services
 
         public bool IsRemoving => Device.IsRemoving;
 
-        public bool PrimaryDevice => Device.PrimaryDevice;
 
         public DeviceExclusiveStatus ExclusiveStatus => Device.CurrentExclusiveStatus;
 

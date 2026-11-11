@@ -64,8 +64,8 @@ namespace DS4WindowsTests
         public void SetCurveAndDeadzone_DoesNotAllocate()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
-            var cState = new DS4State();
-            var dState = new DS4State();
+            var cState = new ControllerState();
+            var dState = new ControllerState();
 
             int sink = 0;
 
@@ -88,18 +88,18 @@ namespace DS4WindowsTests
         {
             // ジャイロ→コントロール変換（Step3-5 で引数渡しへ移した SX/SZ 系）の分岐を実際に通す。
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            store.gyroOutMode[Slot] = GyroOutMode.Controls;
-            store.setSXOutCurveMode(Slot, 2); // 出力カーブの分岐も通す
-            store.setSZOutCurveMode(Slot, 2);
+            store.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
+            store.sixAxisSlots[Slot].ApplySXCurveMode(2); // 出力カーブの分岐も通す
+            store.sixAxisSlots[Slot].ApplySZCurveMode(2);
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
 
-            var cState = new DS4State();
+            var cState = new ControllerState();
             var motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
             motion.accelX = 64;
             motion.accelZ = -64;
             motion.outputGyroControls = true;
             cState.Motion = motion;
-            var dState = new DS4State();
+            var dState = new ControllerState();
 
             int sink = 0;
 
@@ -121,12 +121,12 @@ namespace DS4WindowsTests
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             // 4軸すべてで補正の分岐（減算とクランプ）を通す。
-            store.rightStickDriftXAxis[Slot] = 3;
-            store.rightStickDriftYAxis[Slot] = -3;
-            store.leftStickDriftXAxis[Slot] = 5;
-            store.leftStickDriftYAxis[Slot] = -5;
+            store.stickSlots[Slot].RightStickDriftXAxis = 3;
+            store.stickSlots[Slot].RightStickDriftYAxis = -3;
+            store.stickSlots[Slot].LeftStickDriftXAxis = 5;
+            store.stickSlots[Slot].LeftStickDriftYAxis = -5;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
-            var state = new DS4State();
+            var state = new ControllerState();
 
             int sink = 0;
 

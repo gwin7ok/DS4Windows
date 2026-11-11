@@ -21,9 +21,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class ButtonDualPathTests
     {
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -31,7 +31,7 @@ namespace DS4WindowsTests
 
         /// <summary>1 つの Button 特殊アクションを登録し、入力の列を流して、フレームごとの出力を記録する。</summary>
         private static List<(bool Cross, bool L1, bool R1, bool Touch, int LeftClicks)> Run(
-            string triggers, string details, string extras, int delayMs, bool freshPressGuard, DS4State[] frames)
+            string triggers, string details, string extras, int delayMs, bool freshPressGuard, ControllerState[] frames)
         {
             using var t = new SpecialActionTestScope();
             SpecialAction sa = t.Add(new SpecialAction("p8s7_btn_" + Guid.NewGuid().ToString("N"), triggers, "Button", details, delayMs, extras));
@@ -41,9 +41,9 @@ namespace DS4WindowsTests
             state.UntriggeredTimestampTicks = 0;
 
             var result = new List<(bool, bool, bool, bool, int)>();
-            foreach (DS4State frame in frames)
+            foreach (ControllerState frame in frames)
             {
-                DS4State output = t.RunFrame(frame);
+                ControllerState output = t.RunFrame(frame);
                 result.Add((output.Cross, output.L1, output.R1, output.OutputTouchButton,
                     t.Scope.Synthetic.DeviceState[t.Device].currentClicks.leftCount));
             }
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Press_Sequence_GivesTheOutput()
         {
-            DS4State[] frames = { Frame(false), Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false), Frame(false), Frame(true), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false), Frame(false), Frame(true), Frame(true), Frame(false) };
 
             var result = Run("L1", Cross, "Press\n", 0, false, frames);
 
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Toggle_Sequence_GivesTheOutput()
         {
-            DS4State[] frames = { Frame(false), Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(true), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var result = Run("L1", Cross, "Toggle\n", 0, false, frames);
 
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
         public void Toggle_WhileTheFreshPressGuardIsOn_DoesNotFlip()
         {
             // 押しっぱなしの間は未成立のフレームがなく、ガードは解除されない（時刻に依存しない）
-            DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(true) };
 
             var result = Run("L1", Cross, "Toggle\n", 0, true, frames);
 
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Press_AndCondition_GivesTheOutput_IncludingThePassThrough()
         {
-            DS4State[] frames =
+            ControllerState[] frames =
             {
                 Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true),
                 Frame(false, true), Frame(true, true), Frame(false, false)
@@ -104,7 +104,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchpadClickOutput_GivesTheOutput()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false) };
             string details = ((int)X360Controls.TouchpadClick).ToString();
 
             var result = Run("L1", details, "Press\n", 0, false, frames);
@@ -115,7 +115,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseClickOutput_GivesTheClickCounts()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(true), Frame(false) };
             string details = ((int)X360Controls.LeftMouse).ToString();
 
             var result = Run("L1", details, "Press\n", 0, false, frames);
@@ -127,7 +127,7 @@ namespace DS4WindowsTests
         public void UnreadableDetails_OutputNothing()
         {
             // 現行の Stage3 と同じ: details が整数として読めなければ、何も出力しない（トリガーのボタンは消える）
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false) };
 
             var result = Run("L1", "not-a-number", "Press\n", 0, false, frames);
 
@@ -137,7 +137,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Delay_DoesNotGateTheButtonOutput()
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(true), Frame(false), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(true), Frame(false), Frame(true) };
 
             var result = Run("L1", Cross, "Press\n", 60_000, false, frames);
 

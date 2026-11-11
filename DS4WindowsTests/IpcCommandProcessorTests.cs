@@ -32,18 +32,25 @@ namespace DS4WindowsTests
             public int ControllerCount => 0;
             public IControllerSlotView GetControllerDevice(int index) => null;
             public void LogDebug(string message) => Calls.Add("log");
-            public void WriteQueryResult(string value) { QueryResult = value; Calls.Add("query"); }
         }
 
-        private static IpcCommandProcessor Create() => new IpcCommandProcessor(
+        private sealed class RecordingWriter : IIpcResultWriter
+        {
+            private readonly RecordingHost _host;
+            public RecordingWriter(RecordingHost host) { _host = host; }
+            public void WriteQueryResult(string value) { _host.QueryResult = value; _host.Calls.Add("query"); }
+        }
+
+        private static IpcCommandProcessor Create(RecordingHost host = null) => new IpcCommandProcessor(
             TestHost.GetService<IServiceLifecycle>(), TestHost.GetService<IOutputSlotService>(), TestHost.GetService<IProfileRepository>(),
             TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IProfileApplicationService>(), TestHost.GetService<IProfileLoadTarget>(),
-            TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>());
+            TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>(),
+            new RecordingWriter(host ?? new RecordingHost()));
 
         private static RecordingHost Run(params string[] command)
         {
             var host = new RecordingHost();
-            Create().Execute(host, command);
+            Create(host).Execute(host, command);
             return host;
         }
 
@@ -80,7 +87,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { "led:0:255:0:10" }, Run("changeledcolor", "1", "255", "0", "10").Calls);
             Assert.Empty(Run("changeledcolor", "1", "255", "0").Calls);                       // 引数が足りない
             Assert.Empty(Run("changeledcolor", "0", "1", "2", "3").Calls);                    // スロット番号は 1 から
-            Assert.Empty(Run("changeledcolor", (ControlService.MAX_DS4_CONTROLLER_COUNT + 1).ToString(), "1", "2", "3").Calls);
+            Assert.Empty(Run("changeledcolor", (DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount + 1).ToString(), "1", "2", "3").Calls);
             Assert.Equal(new[] { "led:0:0:0:0" }, Run("changeledcolor", "1", "x", "300", "-1").Calls);   // 解釈できない値は 0
         }
 
@@ -128,7 +135,8 @@ namespace DS4WindowsTests
             Assert.Equal("lifecycle", Assert.Throws<ArgumentNullException>(() => new IpcCommandProcessor(
                 null, TestHost.GetService<IOutputSlotService>(), TestHost.GetService<IProfileRepository>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IProfileApplicationService>(), TestHost.GetService<IProfileLoadTarget>(),
-                TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>())).ParamName);
+                TestHost.GetService<IPathService>(), TestHost.GetService<IDeviceSlotState>(), TestHost.GetService<IVirtualPadService>(),
+                TestHost.GetService<IIpcResultWriter>())).ParamName);
         }
 
         [Fact]

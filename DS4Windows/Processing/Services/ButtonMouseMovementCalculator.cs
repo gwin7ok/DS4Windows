@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Gyro;
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
@@ -29,8 +30,8 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public double Calculate(int device, DS4Controls control, int mnum, DS4State cState,
-            DS4StateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
+        public double Calculate(int device, DS4Controls control, int mnum, ControllerState cState,
+            ControllerStateFieldMapping fieldMapping, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
             DeltaSettingsProcessorGroup deltaAccelProcessorGroup, double timeElapsed)
         {
             int deadzoneL = 0;
@@ -46,8 +47,8 @@ namespace DS4Windows.Processing.Services
             const double divide = 10000d;
 
             int controlNum = (int)control;
-            DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
-            //long timeElapsed = ctrl.DS4Controllers[device].getLastTimeElapsed();
+            ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
+            //long timeElapsed = ctrl.Controllers[device].getLastTimeElapsed();
             //double mouseOffset = 0.025;
             double mouseVerticalScale = 1.0;
             bool verticalDir = false;
@@ -58,13 +59,13 @@ namespace DS4Windows.Processing.Services
                 mouseVerticalScale = buttonMouseInfo.buttonVerticalScale;
             }
 
-            if (controlType == DS4StateFieldMapping.ControlType.Button)
+            if (controlType == ControllerStateFieldMapping.ControlType.Button)
             {
                 bool active = fieldMapping.buttons[controlNum];
                 value = (active ? Math.Pow(root + speed / divide, 100) - 1 : 0);
                 if (verticalDir) value *= mouseVerticalScale;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
             {
                 double timeDelta = timeElapsed * 0.001;
                 int mouseVelocity = speed * Mapping.MOUSESPEEDFACTOR;
@@ -109,13 +110,13 @@ namespace DS4Windows.Processing.Services
                     default: break;
                 }
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+            else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
             {
                 byte trigger = fieldMapping.triggers[controlNum];
                 value = Math.Pow(root + speed / divide, trigger / 2d) - 1;
                 if (verticalDir) value *= mouseVerticalScale;
             }
-            else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+            else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
             {
                 //double SXD = getSXDeadzone(device);
                 //double SZD = getSZDeadzone(device);

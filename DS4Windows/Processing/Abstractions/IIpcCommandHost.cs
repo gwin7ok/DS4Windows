@@ -38,8 +38,5 @@ namespace DS4Windows.Processing.Abstractions
 
         /// <summary>ログ（GUI のログ、ログファイル。旧 <c>ControlService.LogDebug</c>）。</summary>
         void LogDebug(string message);
-
-        /// <summary>問い合わせ（query）の結果を、クライアントへ書き込んで通知する（旧 <c>App.WriteIPCResultDataMMF</c>）。</summary>
-        void WriteQueryResult(string value);
     }
 }

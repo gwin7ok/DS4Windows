@@ -26,16 +26,16 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>コントローラーの接続（plugged）／切断の通知を送る。呼び出し側が <c>UseOscSender</c> を確かめてから呼ぶ。</summary>
         void SendPlug(int index, bool plugged);
 
-        /// <summary>そのデバイスの OSC 側の入力状態を初期化する（旧: <c>oscState[i] = new DS4State()</c>）。</summary>
+        /// <summary>そのデバイスの OSC 側の入力状態を初期化する（旧: <c>oscState[i] = new ControllerState()</c>）。</summary>
         void ResetDeviceState(int index);
 
         /// <summary>受信した OSC メッセージ（アドレス、引数）を解釈し、そのデバイスの OSC 側の入力状態を更新する。</summary>
         void HandleMessage(string address, IList<object> arguments);
 
         /// <summary>マッピングの前: バッテリーとボタン等の変化を送信し、OSC 側の入力を入力 <paramref name="cState"/> に重ねる。</summary>
-        void PreMappingStep(int ind, DS4State cState, DS4State tempMapState);
+        void PreMappingStep(int ind, ControllerState cState, ControllerState tempMapState);
 
         /// <summary>マッピングの後: OSC 側の入力をマッピング結果 <paramref name="tempMapState"/> に重ねる。</summary>
-        void PostMappingStep(int ind, DS4State tempMapState);
+        void PostMappingStep(int ind, ControllerState tempMapState);
     }
 }

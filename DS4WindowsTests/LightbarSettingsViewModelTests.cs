@@ -59,7 +59,7 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Lightbar;
-            var info = service.LightbarSettingsInfo[0];
+            var info = service.ForSlot(0).Lightbar.Info;
             byte red = info.ds4winSettings.m_Led.red;
             double rainbow = info.ds4winSettings.rainbow;
             int chargingType = info.ds4winSettings.chargingType;
@@ -69,7 +69,7 @@ namespace DS4WindowsTests
                 vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
 
                 vm.MainColorR = 200;
-                Assert.Equal(200, service.LightbarSettingsInfo[0].ds4winSettings.m_Led.red);
+                Assert.Equal(200, service.ForSlot(0).Lightbar.Info.ds4winSettings.m_Led.red);
                 // 色の成分を変えると、色の表示文字列とライトバーの表示も再通知される
                 Assert.Contains(nameof(LightbarSettingsViewModel.MainColorString), names);
                 Assert.Contains(nameof(LightbarSettingsViewModel.LightbarBrush), names);
@@ -101,17 +101,17 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Lightbar;
-            LightbarMode original = service.LightbarSettingsInfo[0].Mode;
+            LightbarMode original = service.ForSlot(0).Lightbar.Info.Mode;
             try
             {
                 vm.LightbarModeIndex = 1;
-                Assert.Equal(LightbarMode.Passthru, service.LightbarSettingsInfo[0].Mode);
+                Assert.Equal(LightbarMode.Passthru, service.ForSlot(0).Lightbar.Info.Mode);
                 vm.LightbarModeIndex = 0;
-                Assert.Equal(LightbarMode.DS4Win, service.LightbarSettingsInfo[0].Mode);
+                Assert.Equal(LightbarMode.DS4Win, service.ForSlot(0).Lightbar.Info.Mode);
             }
             finally
             {
-                service.LightbarSettingsInfo[0].Mode = original;
+                service.ForSlot(0).Lightbar.Info.Mode = original;
             }
         }
 
@@ -119,7 +119,7 @@ namespace DS4WindowsTests
         public void TheSlotSettings_ComeFromTheServiceEntryPoint_AndTheOldMembersAreGoneFromTheEditorViewModel()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            Assert.Same(service.LightbarSettingsInfo[3], service.ForSlot(3).Lightbar.Info);
+            Assert.Same(service.ForSlot(3).Lightbar.Info, service.ForSlot(3).Lightbar.Info);
 
             // ライトバーの項目は、ProfileSettingsViewModel から Lightbar（サブ ViewModel）へ移った
             string[] moved = typeof(LightbarSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)

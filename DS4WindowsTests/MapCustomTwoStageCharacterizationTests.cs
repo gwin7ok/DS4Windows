@@ -13,12 +13,12 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class MapCustomTwoStageCharacterizationTests
     {
-        private static DS4State Run(bool isL2, TwoStageTriggerMode mode, byte value, byte raw)
+        private static ControllerState Run(bool isL2, TwoStageTriggerMode mode, byte value, byte raw)
         {
             using var scope = new MappingCharacterizationScope();
             TriggerOutputSettings settings = isL2
-                ? scope.Settings.L2OutputSettings[MappingCharacterizationScope.Device]
-                : scope.Settings.R2OutputSettings[MappingCharacterizationScope.Device];
+                ? scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.L2Output
+                : scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.R2Output;
             TwoStageTriggerMode saved = settings.twoStageMode;
             try
             {
@@ -28,7 +28,7 @@ namespace DS4WindowsTests
                 scope.RemapToButton(soft, X360Controls.Y);   // 浅い引き → Y（Triangle）
                 scope.RemapToButton(full, X360Controls.B);   // 深い引き → B（Circle）
 
-                DS4State input = MappingCharacterizationScope.NeutralState();
+                ControllerState input = MappingCharacterizationScope.NeutralState();
                 if (isL2) { input.L2 = value; input.L2Raw = raw; }
                 else { input.R2 = value; input.R2Raw = raw; }
                 return scope.RunMapCustom(input);
@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         [InlineData(false)]
         public void Disabled_OnlyTheNormalBindingApplies(bool isL2)
         {
-            DS4State output = Run(isL2, TwoStageTriggerMode.Disabled, 220, 220);
+            ControllerState output = Run(isL2, TwoStageTriggerMode.Disabled, 220, 220);
 
             Assert.True(output.Triangle);
             Assert.False(output.Circle);
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         [InlineData(false)]
         public void Normal_SoftPull_OutputsOnlyTheSoftBinding(bool isL2)
         {
-            DS4State output = Run(isL2, TwoStageTriggerMode.Normal, 220, 220);
+            ControllerState output = Run(isL2, TwoStageTriggerMode.Normal, 220, 220);
 
             Assert.True(output.Triangle);
             Assert.False(output.Circle);
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         [InlineData(false)]
         public void Normal_FullPull_OutputsBothBindings(bool isL2)
         {
-            DS4State output = Run(isL2, TwoStageTriggerMode.Normal, 255, 255);
+            ControllerState output = Run(isL2, TwoStageTriggerMode.Normal, 255, 255);
 
             Assert.True(output.Triangle);
             Assert.True(output.Circle);
@@ -77,7 +77,7 @@ namespace DS4WindowsTests
         [InlineData(false)]
         public void ExclusiveButtons_FullPull_OutputsOnlyTheFullBinding(bool isL2)
         {
-            DS4State output = Run(isL2, TwoStageTriggerMode.ExclusiveButtons, 255, 255);
+            ControllerState output = Run(isL2, TwoStageTriggerMode.ExclusiveButtons, 255, 255);
 
             Assert.False(output.Triangle);
             Assert.True(output.Circle);
@@ -90,8 +90,8 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             TriggerOutputSettings settings = isL2
-                ? scope.Settings.L2OutputSettings[MappingCharacterizationScope.Device]
-                : scope.Settings.R2OutputSettings[MappingCharacterizationScope.Device];
+                ? scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.L2Output
+                : scope.Settings.ForSlot(MappingCharacterizationScope.Device).Triggers.R2Output;
             TwoStageTriggerMode saved = settings.twoStageMode;
             try
             {
@@ -99,30 +99,30 @@ namespace DS4WindowsTests
                 scope.RemapToButton(isL2 ? DS4Controls.L2 : DS4Controls.R2, X360Controls.Y);
                 scope.RemapToButton(isL2 ? DS4Controls.L2FullPull : DS4Controls.R2FullPull, X360Controls.B);
 
-                DS4State Frame(byte v, byte raw)
+                ControllerState Frame(byte v, byte raw)
                 {
-                    DS4State input = MappingCharacterizationScope.NeutralState();
+                    ControllerState input = MappingCharacterizationScope.NeutralState();
                     if (isL2) { input.L2 = v; input.L2Raw = raw; } else { input.R2 = v; input.R2Raw = raw; }
                     return scope.RunMapCustom(input);
                 }
 
-                DS4State soft = Frame(120, 120);
+                ControllerState soft = Frame(120, 120);
                 Assert.True(soft.Triangle);
                 Assert.False(soft.Circle);
 
-                DS4State full = Frame(255, 255);
+                ControllerState full = Frame(255, 255);
                 Assert.False(full.Triangle);
                 Assert.True(full.Circle);
 
-                DS4State returning = Frame(150, 150);   // 戻る途中: 浅い引きも出さない
+                ControllerState returning = Frame(150, 150);   // 戻る途中: 浅い引きも出さない
                 Assert.False(returning.Triangle);
                 Assert.False(returning.Circle);
 
-                DS4State released = Frame(0, 0);
+                ControllerState released = Frame(0, 0);
                 Assert.False(released.Triangle);
                 Assert.False(released.Circle);
 
-                DS4State again = Frame(120, 120);       // 離した後の次の浅い引きは、また出る
+                ControllerState again = Frame(120, 120);       // 離した後の次の浅い引きは、また出る
                 Assert.True(again.Triangle);
             }
             finally
@@ -138,7 +138,7 @@ namespace DS4WindowsTests
         [InlineData(false, TwoStageTriggerMode.ExclusiveButtons)]
         public void Released_OutputsNothing(bool isL2, TwoStageTriggerMode mode)
         {
-            DS4State output = Run(isL2, mode, 0, 0);
+            ControllerState output = Run(isL2, mode, 0, 0);
 
             Assert.False(output.Triangle);
             Assert.False(output.Circle);

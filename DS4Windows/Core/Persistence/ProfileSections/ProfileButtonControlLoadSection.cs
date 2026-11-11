@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
-                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Button", item);
+                        store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Button", item);
                         continue;
                     }
 
@@ -77,7 +77,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
-                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Macro", item);
+                        store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Macro", item);
                         continue;
                     }
 
@@ -113,7 +113,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
-                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Key", item);
+                        store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Key", item);
                         continue;
                     }
 
@@ -133,7 +133,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
-                        store.removedGyroSwipeSettings[device].CaptureControlEntry("Extras", item);
+                        store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Extras", item);
                         continue;
                     }
 
@@ -155,7 +155,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
-                        store.removedGyroSwipeSettings[device].CaptureControlEntry("KeyType", item);
+                        store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("KeyType", item);
                         continue;
                     }
 

@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class DualSenseReportParserTests
     {
-        private static void LegacyParse(byte[] inputReport, DS4State cState, int reportOffset)
+        private static void LegacyParse(byte[] inputReport, ControllerState cState, int reportOffset)
         {
             byte tempByte;
                         cState.LX = inputReport[1 + reportOffset];
@@ -86,8 +86,8 @@ namespace DS4WindowsTests
 
         private static void AssertSame(byte[] report, int reportOffset)
         {
-            var expected = new DS4State();
-            var actual = new DS4State();
+            var expected = new ControllerState();
+            var actual = new ControllerState();
             LegacyParse(report, expected, reportOffset);
             new DualSenseReportParser(reportOffset).Parse(report, actual);
             Assert.Equal(DS4StateSnapshot.Of(expected), DS4StateSnapshot.Of(actual));
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
             var report = new byte[78];
             report[2] = 55;     // Bluetooth の LX（1 + 1）
             report[8] = 200;    // フレームカウンター（7 + 1）。DS4 の範囲（0〜127）へ畳む
-            var state = new DS4State();
+            var state = new ControllerState();
 
             new DualSenseReportParser(1).Parse(report, state);
 
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
             var parser = new DualSenseReportParser(1);
             var report = new byte[78];
             new Random(1).NextBytes(report);
-            var state = new DS4State();
+            var state = new ControllerState();
             parser.Parse(report, state);
 
             long before = GC.GetAllocatedBytesForCurrentThread();

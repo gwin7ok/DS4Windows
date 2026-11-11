@@ -28,6 +28,7 @@ using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 using DS4Windows.UI.Abstractions;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
@@ -71,7 +72,7 @@ namespace DS4Windows.UI
         private readonly IAppSettingsService appSettingsService;
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
-        private readonly IViewModelFactory _viewModelFactory;
+        private readonly IProfileEditViewModelFactory _viewModelFactory;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
@@ -106,12 +107,6 @@ namespace DS4Windows.UI
         public event ProfileSavedHandler ProfileSaved;
 
         /// <summary>
-        /// Phase11 W4（Issue #4 の 1）: 保存のときに、DS3 のピッチ／ロールの擬似の設定が変わっていた場合に、サービスの再起動を求める
-        /// （旧 SaveBtn_Click の復元。受けるのは MainWindow。編集画面は、サービスを直接操作しない）。
-        /// </summary>
-        public event EventHandler ServiceRestartRequested;
-
-        /// <summary>
         /// Phase6-Step10-3b-3: アクションの除去・名前変更により、編集中以外も含むプロファイルの XML を書き換えたときに、
         /// 書き換えたプロファイル名の一覧を通知する。MainWindow が、保存時と同じ再適用の経路（SyncProfileListAndControllers）を呼ぶ。
         /// </summary>
@@ -141,6 +136,9 @@ namespace DS4Windows.UI
         // （重複していた空のコンストラクタ宣言を削除）
         // 並べ替えを適用して一覧を更新する。見出しの文字（矢印）は SpecialActionsListViewModel の
         // ヘッダー文字プロパティが変更通知で更新する
+        // 振動テストボタンの動作（画面に依存しない判断）
+        private readonly RumbleTestController rumbleTest;
+
         private void SortSpecialActionsList(string columnName, bool asc)
         {
             ListSortDirection sortDirection = asc ? ListSortDirection.Ascending : ListSortDirection.Descending;
@@ -173,10 +171,11 @@ namespace DS4Windows.UI
         /// </param>
         public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IViewModelFactory viewModelFactory,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
+            IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IProfileEditViewModelFactory viewModelFactory,
+            IActionViewModelFactory actionViewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             IControllerSlotCommands slotCommands)
         {
+            if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));   // Phase13-Step10 10-d: 旧 ControlService.setRumble／GetActiveInputControl の転送
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
@@ -193,6 +192,7 @@ namespace DS4Windows.UI
             this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
             this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
             this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
+            rumbleTest = new RumbleTestController(slotCommands, environmentService);
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(readingsSource ?? throw new ArgumentNullException(nameof(readingsSource)));
 
@@ -212,7 +212,7 @@ namespace DS4Windows.UI
             picBoxHover2.Visibility = Visibility.Hidden;
 
             mappingListVM = vmFactory.CreateMappingListViewModel(deviceNum, profileSettingsVM.Output.ContType);
-            specialActionsVM = vmFactory.CreateSpecialActionsListViewModel(deviceNum);
+            specialActionsVM = actionViewModelFactory.CreateSpecialActionsListViewModel(deviceNum);
 
             // S9-10: 削除されたプロファイルを参照する Load Profile は、一覧でも「(none)」と表示する（割り当て編集画面と同じ）
             mappingListVM.ProfileExists = LoadProfileTargetExists;
@@ -407,11 +407,32 @@ namespace DS4Windows.UI
             }
         }
 
+        /// <summary>デッドゾーンの種類（円形／軸ごと）に合わせて、入力の表示の値と形（楕円／長方形）を更新する。</summary>
+        private void ApplyReadingsDeadZoneShape()
+        {
+            var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
+            if (dead.LsDeadX.HasValue)
+            {
+                conReadingsUserCon.LsDeadX = dead.LsDeadX.Value;
+                conReadingsUserCon.LsDeadY = dead.LsDeadY.Value;
+            }
+            if (dead.RsDeadX.HasValue)
+            {
+                conReadingsUserCon.RsDeadX = dead.RsDeadX.Value;
+                conReadingsUserCon.RsDeadY = dead.RsDeadY.Value;
+            }
+            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.LSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.RSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+        }
+
         private void SticksVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // デッドゾーンを変えたら、コントローラーの読み取り値の表示（試験表示）へ反映する
             switch (e.PropertyName)
             {
+                case nameof(StickSettingsViewModel.LSDeadTypeIndex):
+                case nameof(StickSettingsViewModel.RSDeadTypeIndex):
+                    ApplyReadingsDeadZoneShape(); break;
                 case nameof(StickSettingsViewModel.LSDeadZone): UpdateReadingsLsDeadZone(sender, EventArgs.Empty); break;
                 case nameof(StickSettingsViewModel.RSDeadZone): UpdateReadingsRsDeadZone(sender, EventArgs.Empty); break;
                 case nameof(StickSettingsViewModel.LeftStickDriftXAxis):
@@ -718,7 +739,7 @@ namespace DS4Windows.UI
                 // Phase8-Step7 7.8d: 廃止された「シフト」の設定が残っていれば、警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）
                 RemovedShiftNotice.Apply(profileSettingsService.GetRemovedShiftSettings(deviceNum), profile.Name, removedShiftPrompt);
                 // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の設定が残っていれば、同じく警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）
-                RemovedGyroSwipeNotice.Apply(profileSettingsService.GetRemovedGyroSwipeSettings(deviceNum), profile.Name, removedGyroSwipePrompt);
+                RemovedGyroSwipeNotice.Apply(profileSettingsService.ForSlot(deviceNum).Gyro.RemovedSwipe, profile.Name, removedGyroSwipePrompt);
                 profileNameTxt.Text = profile.Name;
                 profileNameTxt.IsEnabled = false;
             }
@@ -766,39 +787,20 @@ namespace DS4Windows.UI
             // （コンストラクタでの配置は読み込み前の値で行われ、TouchpadOutputIndex の setter を通らない変更では更新されない）
             TouchpadButtonControlDisplaySetup();
 
-            StickDeadZoneInfo lsMod = profileSettingsVM.Sticks.LSMod;
-            if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-            {
-                conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.LSDeadZone;
-                conReadingsUserCon.LsDeadY = profileSettingsVM.Sticks.LSDeadZone;
-            }
-            else if (lsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-            {
-                conReadingsUserCon.LsDeadX = sticksPanel.AxialLeft.AxialVM.DeadZoneX;
-                conReadingsUserCon.LsDeadY = sticksPanel.AxialLeft.AxialVM.DeadZoneY;
-            }
-
-            StickDeadZoneInfo rsMod = profileSettingsVM.Sticks.RSMod;
-            if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Radial)
-            {
-                conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.RSDeadZone;
-                conReadingsUserCon.RsDeadY = profileSettingsVM.Sticks.RSDeadZone;
-            }
-            else if (rsMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
-            {
-                conReadingsUserCon.RsDeadX = sticksPanel.AxialRight.AxialVM.DeadZoneX;
-                conReadingsUserCon.RsDeadY = sticksPanel.AxialRight.AxialVM.DeadZoneY;
-            }
-
-            conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
-            conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
-            conReadingsUserCon.SixAxisXDead = profileSettingsVM.SixAxis.SXDeadZone;
-            conReadingsUserCon.SixAxisZDead = profileSettingsVM.SixAxis.SZDeadZone;
-
-            conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.LeftStickDriftXAxis;
-            conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.LeftStickDriftYAxis;
-            conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.RightStickDriftXAxis;
-            conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.RightStickDriftYAxis;
+            // 入力の表示へ渡す値の判断は ReadingsDeadZoneSnapshot が行い、ここは値を渡すだけにする
+            var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
+            if (dead.LsDeadX.HasValue) { conReadingsUserCon.LsDeadX = dead.LsDeadX.Value; conReadingsUserCon.LsDeadY = dead.LsDeadY.Value; }
+            if (dead.RsDeadX.HasValue) { conReadingsUserCon.RsDeadX = dead.RsDeadX.Value; conReadingsUserCon.RsDeadY = dead.RsDeadY.Value; }
+            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.LSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.RSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.L2Dead = dead.L2Dead;
+            conReadingsUserCon.R2Dead = dead.R2Dead;
+            conReadingsUserCon.SixAxisXDead = dead.SixAxisXDead;
+            conReadingsUserCon.SixAxisZDead = dead.SixAxisZDead;
+            conReadingsUserCon.LsDriftX = dead.LsDriftX;
+            conReadingsUserCon.LsDriftY = dead.LsDriftY;
+            conReadingsUserCon.RsDriftX = dead.RsDriftX;
+            conReadingsUserCon.RsDriftY = dead.RsDriftY;
 
             sticksPanel.AxialLeft.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
             sticksPanel.AxialRight.AxialVM.PropertyChanged += AxialStick_PropertyChanged;
@@ -1028,18 +1030,6 @@ namespace DS4Windows.UI
                 return false;
             }
 
-            // Phase11 W4（Issue #4 の 1）: DS4 の出力でしか成り立たない設定（DS3 のピッチ／ロール擬似、DS4 固有データの出力）が ON なのに、
-            // 出力が DS4 でないときは、保存する前に DS4 へ補正する。保存・適用の両方が通る、この合流点で行う
-            // （2026-09-14 の統合［9da60b85］で失われた、旧 SaveBtn_Click／SetLateProperties の補正の復元）。名前の検査で止まる場合は、何も変えない
-            Ds4OutputCorrectionReason correction = profileSettingsVM.CorrectOutputTypeToDs4();
-            if (correction != Ds4OutputCorrectionReason.None)
-            {
-                // 画面の選択も DS4 にそろえる（SelectionChanged が、設定・マッピング一覧の出力の種類も更新する）
-                outputPanel.OutConTypeCombo.SelectedIndex = 1;
-                // Phase11 W6c（K-W6-12）: EnableOutputDataToDS4 による補正（と、その GUI ログ）は廃止した。残るのは UseDs3PitchRollSim の補正だけ
-                AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が有効なため、Emulated Controller を DS4 へ補正した");
-            }
-
             // Phase 5 Step 14: SpecialActionsListViewModel から有効なアクション名リストを取得し、Global.ProfileActions に確実に反映
             if (specialActionsVM != null)
             {
@@ -1074,31 +1064,12 @@ namespace DS4Windows.UI
         {
             if (ExecuteSaveOrApply(isApply: false))
             {
-                RequestServiceRestartIfNeeded();
                 Close();
             }
         }
         private void ApplyBtn_Click(object sender, RoutedEventArgs e)
         {
             ExecuteSaveOrApply(isApply: true);
-        }
-
-        /// <summary>
-        /// Phase11 W4（Issue #4 の 1）: DS3 のピッチ／ロールの擬似の設定が変わっていたら、サービスの再起動を求める。保存のときだけ
-        /// （旧 SaveBtn_Click の復元。旧コードのメッセージは「DS3 のジャイロ擬似を効かせるには、再起動が要る」。
-        /// 適用は、編集画面を開いたまま実機を作り直さないため、再起動を求めない）。
-        /// 再起動そのものは MainWindow が行う（編集画面は Application.Current.MainWindow を触らない）。
-        /// </summary>
-        private void RequestServiceRestartIfNeeded()
-        {
-            if (!profileSettingsVM.HasUseDs3PitchRollSimChanged)
-            {
-                return;
-            }
-
-            AppLogger.LogDebug("[ProfileEditor] UseDs3PitchRollSim が変わったため、サービスの再起動を求める");
-            ServiceRestartRequested?.Invoke(this, EventArgs.Empty);
-            profileSettingsVM.AcknowledgeUseDs3PitchRollSimChange();
         }
 
         #endregion
@@ -1133,94 +1104,19 @@ namespace DS4Windows.UI
 
         private void RumbleTestBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Phase6-Step7b: 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
-            // モーターの左右反転（InverseRumbleMotors）は、編集中の設定（作業スロット deviceNum）の値を読む（決定4＝I1）
-            int rumbleDevice = profileSettingsVM.FuncDevNum;
-            if (rumbleDevice < environmentService.ControllerSlotLimit)
-            {
-                if (slotCommands.IsConnected(rumbleDevice))
-                {
-                    RumbleType type;
-                    var btn = sender as Button;
-                    if (!profileSettingsVM.Output.InverseRumbleMotors)
-                    {
-                        type = btn.Name == "heavyRumbleTestBtn" ? RumbleType.Heavy : RumbleType.Light;
-                    }
-                    else
-                    {
-                        type = btn.Name == "heavyRumbleTestBtn" ? RumbleType.Light : RumbleType.Heavy;
-                    }
+            // 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
+            // モーターの左右反転は、編集中の設定（作業スロット deviceNum）の値を読む。判断は RumbleTestController が行い、
+            // ここは押したボタンの文字だけを変える
+            var btn = sender as Button;
+            bool heavyButton = btn.Name == "heavyRumbleTestBtn";
+            var outcome = rumbleTest.Toggle(profileSettingsVM.Output, profileSettingsVM.FuncDevNum, heavyButton);
+            if (outcome == RumbleTestOutcome.None) return;
 
-                    bool rumbleActive;
-                    if (type == RumbleType.Heavy)
-                        rumbleActive = profileSettingsVM.Output.HeavyRumbleActive;
-                    else
-                        rumbleActive = profileSettingsVM.Output.LightRumbleActive;
-                    if (!rumbleActive)
-                    {
-                        var rumbleBoost = profileSettingsVM.Output.RumbleBoost;
-
-                        // Check if device is DualSense and adjust/update accordingly
-                        if (slotCommands.ApplyDualSenseRumbleOptions(rumbleDevice,
-                            (int)profileSettingsVM.Output.DualSenseRumbleEmulationPerIndex,
-                            (byte)profileSettingsVM.Output.DualSenseHapticPowerLevelPerIndex))
-                        {
-                            if (!profileSettingsVM.Output.EnableGenericRumbleStrRescaleForDualSenseDevices)
-                                rumbleBoost = 100;
-                        }
-
-                        if (type == RumbleType.Heavy)
-                            profileSettingsVM.Output.HeavyRumbleActive = true;
-                        else
-                            profileSettingsVM.Output.LightRumbleActive = true;
-
-                        if (type == RumbleType.Heavy)
-                        {
-                            slotCommands.SetHeavyRumble(rumbleDevice, (byte)Math.Min(255, 255 * rumbleBoost / 100));
-                        }
-                        else
-                        {
-                            slotCommands.SetLightRumble(rumbleDevice, (byte)Math.Min(255, 255 * rumbleBoost / 100));
-                        }
-
-                        if (type == RumbleType.Heavy)
-                        {
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.StopHText;
-                            else
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.StopLText;
-                        }
-                        else
-                        {
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.StopLText;
-                            else
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.StopHText;
-                        }
-                    }
-                    else
-                    {
-                        if (type == RumbleType.Heavy)
-                        {
-                            profileSettingsVM.Output.HeavyRumbleActive = false;
-                            slotCommands.SetHeavyRumble(rumbleDevice, 0);
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.TestHText;
-                            else
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.TestLText;
-                        }
-                        else
-                        {
-                            profileSettingsVM.Output.LightRumbleActive = false;
-                            slotCommands.SetLightRumble(rumbleDevice, 0);
-                            if (!profileSettingsVM.Output.InverseRumbleMotors)
-                                outputPanel.LightRumbleTestBtn.Content = Properties.Resources.TestLText;
-                            else
-                                outputPanel.HeavyRumbleTestBtn.Content = Properties.Resources.TestHText;
-                        }
-                    }
-                }
-            }
+            bool started = outcome == RumbleTestOutcome.Started;
+            if (heavyButton)
+                outputPanel.HeavyRumbleTestBtn.Content = started ? Properties.Resources.StopHText : Properties.Resources.TestHText;
+            else
+                outputPanel.LightRumbleTestBtn.Content = started ? Properties.Resources.StopLText : Properties.Resources.TestLText;
         }
 
         private void SixAxisPanel_CustomCurveEditorRequested(object sender, string target)

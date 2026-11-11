@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using DS4Windows.Core.Model;
-using DS4Windows.Core.Persistence.Dto;
 
 namespace DS4Windows.Core.Settings
 {
@@ -81,16 +80,27 @@ namespace DS4Windows.Core.Settings
         {
         }
 
-        public override void PersistSettings(XmlDocument xmlDoc, XmlNode node)
-        {
-            DualSenseControllerOptsDTO dto = new DualSenseControllerOptsDTO();
-            dto.MapFrom(this);
-            PersistDto(xmlDoc, node, XML_ELEMENT_NAME, dto);
-        }
+        protected override string SectionName => XML_ELEMENT_NAME;
 
-        public override void LoadSettings(XmlDocument xmlDoc, XmlNode node)
+        private IReadOnlyList<ControllerSetting> schema;
+
+        protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {
-            LoadDto<DualSenseControllerOptsDTO>(node, XML_ELEMENT_NAME, dto => dto.MapTo(this));
-        }
+            ControllerSetting.Enum("LEDBarMode", this, o => o.LedMode, (o, v) => o.LedMode = v)
+                .WithUi("ControllerRegOptWin.PlayerLEDMode", choices: new[]
+                {
+                    new SettingChoice("Off", "Off"),
+                    new SettingChoice("Only for multiple controllers", "MultipleControllers"),
+                    new SettingChoice("Battery Percentage", "BatteryPercentage"),
+                    new SettingChoice("On", "On"),
+                }),
+            ControllerSetting.Enum("MuteLEDMode", this, o => o.MuteLedMode, (o, v) => o.MuteLedMode = v)
+                .WithUi("ControllerRegOptWin.MuteLEDMode", choices: new[]
+                {
+                    new SettingChoice("Off", "Off"),
+                    new SettingChoice("On", "On"),
+                    new SettingChoice("Pulse", "Pulse"),
+                }),
+        };
     }
 }

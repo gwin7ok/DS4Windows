@@ -23,9 +23,11 @@ namespace DS4Windows.Processing.Services
         private readonly IOscService _oscService;
         private readonly IUdpMotionService _udpMotion;
         private readonly IHidHideService _hidHideService;
+        private readonly IXboxParentHider _xboxParentHider;
 
         public OutputServicesLifecycle(IAppSettingsService appSettings, IEnvironmentService environmentService, IVirtualPadService virtualPad,
-            IOutputKbmInitializer kbmInitializer, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion, IHidHideService hidHideService)
+            IOutputKbmInitializer kbmInitializer, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion, IHidHideService hidHideService,
+            IXboxParentHider xboxParentHider)
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
@@ -35,6 +37,7 @@ namespace DS4Windows.Processing.Services
             _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
+            _xboxParentHider = xboxParentHider ?? throw new ArgumentNullException(nameof(xboxParentHider));
         }
 
         public bool StartVirtualOutputs(bool showlog)
@@ -85,6 +88,8 @@ namespace DS4Windows.Processing.Services
 
         public void UpdateHidHide()
         {
+            // 前回の異常終了で、Xbox の USB の親を隠したまま残っていれば戻す（接続のときに、設定に従って、改めて隠す）
+            _xboxParentHider.RecoverStale();
             _hidHideService.UpdateAttributes();
         }
 
@@ -156,6 +161,12 @@ namespace DS4Windows.Processing.Services
             // Disconnect from KBM system when stopping ControlService
             AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_KbmClosing", _virtualKBM.GetDisplayName());
             _virtualKBM.Disconnect();
+
+            // 停止のとき、自分が隠した Xbox の USB の親を戻す
+            if (_xboxParentHider.RestoreAll())
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_HidHide_XboxRestored");
+            }
         }
     }
 }

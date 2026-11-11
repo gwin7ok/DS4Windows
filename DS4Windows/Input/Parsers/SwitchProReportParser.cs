@@ -11,7 +11,7 @@ namespace DS4Windows.Input.Parsers
     /// </summary>
     public sealed class SwitchProReportParser : IInputReportParser
     {
-        public void Parse(ReadOnlySpan<byte> inputReport, DS4State cState)
+        public void Parse(ReadOnlySpan<byte> inputReport, ControllerState cState)
         {
             byte tempByte;
             tempByte = inputReport[3];

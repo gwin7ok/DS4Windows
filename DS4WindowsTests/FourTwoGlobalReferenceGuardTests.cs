@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, null, actionsXml, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, null, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(config, settings, store, path, control, linkedXml, actionsXml, null, new EnvironmentService()));
-            Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileActionProvider(null, null));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.Core.Profiles.AutoProfileHolder(null, new EnvironmentService()));
         }
 

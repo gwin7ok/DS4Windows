@@ -37,7 +37,7 @@ namespace DS4WindowsTests
             string readerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/ControlActivityReader.cs");
             if (readerPath == null) return;
             string reader = File.ReadAllText(readerPath);
-            Assert.Contains("settings.GyroOutputMode[device] == GyroOutMode.Controls", reader);
+            Assert.Contains("settings.ForSlot(device).Gyro.OutputMode == GyroOutMode.Controls", reader);
         }
     }
 }

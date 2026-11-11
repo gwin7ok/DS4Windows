@@ -57,23 +57,10 @@ namespace DS4Windows.UI
             deviceOptsVM.ControllerSelectedIndexChanged += ChangeActiveDeviceTab;
         }
 
+        // 選んだコントローラーの設定パネルを作り直す
         private void ChangeActiveDeviceTab(object sender, EventArgs e)
         {
-            TabItem currentTab = deviceSettingsTabControl.SelectedItem as TabItem;
-            if (currentTab != null)
-            {
-                currentTab.DataContext = null;
-            }
-
-            int tabIdx = deviceOptsVM.FindTabOptionsIndex();
-            if (tabIdx >= 0)
-            {
-                TabItem pendingTab = deviceSettingsTabControl.Items[tabIdx] as TabItem;
-                deviceOptsVM.FindFittingDataContext();
-                pendingTab.DataContext = deviceOptsVM.DataContextObject;
-            }
-
-            deviceOptsVM.CurrentTabSelectedIndex = tabIdx;
+            deviceSettingsHost.Content = deviceOptsVM.BuildCurrentPanel();
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

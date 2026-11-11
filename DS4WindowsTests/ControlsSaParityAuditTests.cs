@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace DS4WindowsTests
             public int GetProfileActionCount(int deviceIndex) => _actions.Count;
             public int GetProfileActionIndexOf(int deviceIndex, string actionName) => _actions.FindIndex(a => a.name == actionName);
             public IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex) => _actions.Select(a => a.name).ToArray();
+            public int ActionDefinitionCount => 0;
         }
 
         private static IReadOnlyList<IActionBinding> BuildSa(SpecialAction sa, int device)
@@ -96,7 +98,7 @@ namespace DS4WindowsTests
         public void ThePadButtonTargetOfTheSa_IsTheSameDs4OutputAsTheControlsMapping(X360Controls target)
         {
             // SA の PressX360 は、Controls と同じ変換表（reverseX360ButtonMapping）の DS4 のボタンへ書く（以前は、番号をそのまま使い、Back・Start だけ別のボタンへ書いていた）
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             var frame = new FrameOutput();
             frame.Bind(fields, new SyntheticState());
 

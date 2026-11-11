@@ -22,7 +22,7 @@ namespace DS4Windows.Processing.Services
 
         public bool SetRumble(int slot, byte rightLightFast, byte leftHeavySlow)
         {
-            DS4Device device = DeviceAt(slot);
+            InputDeviceCore device = DeviceAt(slot);
             if (device == null) return false;
 
             device.setRumble(rightLightFast, leftHeavySlow);
@@ -31,7 +31,7 @@ namespace DS4Windows.Processing.Services
 
         public bool SetHeavyRumble(int slot, byte strength)
         {
-            DS4Device device = DeviceAt(slot);
+            InputDeviceCore device = DeviceAt(slot);
             if (device == null) return false;
 
             device.setRumble(device.RightLightFastRumble, strength);
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Services
 
         public bool SetLightRumble(int slot, byte strength)
         {
-            DS4Device device = DeviceAt(slot);
+            InputDeviceCore device = DeviceAt(slot);
             if (device == null) return false;
 
             device.setRumble(strength, device.LeftHeavySlowRumble);
@@ -74,22 +74,16 @@ namespace DS4Windows.Processing.Services
 
         public bool ResetGyroCalibration(int slot)
         {
-            DS4Device device = DeviceAt(slot);
+            InputDeviceCore device = DeviceAt(slot);
             if (device == null) return false;
 
             device.SixAxis.ResetContinuousCalibration();
-            if (device.JointDeviceSlotNumber != DS4Device.DEFAULT_JOINT_SLOT_NUMBER)
-            {
-                // 相手側が未接続（null）でも落ちない
-                DeviceAt(device.JointDeviceSlotNumber)?.SixAxis.ResetContinuousCalibration();
-            }
-
             return true;
         }
 
-        private DS4Device DeviceAt(int slot)
+        private InputDeviceCore DeviceAt(int slot)
         {
-            DS4Device[] controllers = _slotState.DS4Controllers;
+            InputDeviceCore[] controllers = _slotState.Controllers;
             if (controllers == null || slot < 0 || slot >= controllers.Length)
                 return null;
 

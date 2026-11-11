@@ -20,5 +20,8 @@ namespace DS4Windows.Processing.Abstractions
         /// 割り当てを避けたい呼び出し元は本メンバを使う）。呼び出し元は返された参照を変更しないこと。
         /// </summary>
         IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex);
+
+        /// <summary>定義済みのスペシャルアクションの総数（プロファイルのアクション名から引いた番号の範囲の検査に使う。毎レポート呼ぶため、割り当てなし）。</summary>
+        int ActionDefinitionCount { get; }
     }
 }

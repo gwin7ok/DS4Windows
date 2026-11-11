@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System.Diagnostics;
 using System.Threading;
 using Xunit;
@@ -78,14 +79,14 @@ namespace DS4WindowsTests
             Assert.False(manager.GetStateFor(sa, 0).IsToggledOn);
         }
 
-        private static DS4State Cross(bool held)
+        private static ControllerState Cross(bool held)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = held;
             return state;
         }
 
-        private static void RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static void RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
             var sw = Stopwatch.StartNew();
             do

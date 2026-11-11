@@ -12,13 +12,13 @@ namespace DS4Windows.Processing.Abstractions
     public interface IInputReportProcessor
     {
         /// <summary>入力レポートが届いたときの処理（旧 <c>ControlService.On_Report</c>）。<paramref name="ind"/> が -1 のときは何もしない。</summary>
-        void OnReport(DS4Device device, EventArgs e, int ind);
+        void OnReport(InputDeviceCore device, EventArgs e, int ind);
 
         /// <summary>スロットごとの、マッピング後の状態（旧 <c>ControlService.MappedState</c>）。</summary>
-        DS4State GetMappedState(int ind);
+        ControllerState GetMappedState(int ind);
 
         /// <summary>スロットごとの、マッピングに渡す公開用の状態（旧 <c>ControlService.ExposedState</c>）。</summary>
-        DS4StateExposed[] ExposedState { get; }
+        ControllerStateExposed[] ExposedState { get; }
 
         /// <summary>マクロの記録中は、マッピングを飛ばす（旧 <c>ControlService.recordingMacro</c>。<c>RecordBox</c> が書く）。</summary>
         bool RecordingMacro { get; set; }

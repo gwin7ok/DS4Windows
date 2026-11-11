@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Actions
             // 旧 ControlService.setRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
             if (deviceIndex < _environment.ControllerSlotLimit)
             {
-                DS4Device device = _devices.GetController(deviceIndex);
+                InputDeviceCore device = _devices.GetController(deviceIndex);
                 if (device != null)
                     _rumble.SetDevRumble(device, heavy, light, deviceIndex);
             }

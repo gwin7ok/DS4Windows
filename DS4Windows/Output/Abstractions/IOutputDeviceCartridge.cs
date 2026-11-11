@@ -21,7 +21,7 @@ namespace DS4Windows.Output.Abstractions
         OutputDevice Narrow(OutputDevice device);
 
         /// <summary>ゲームからの振動・ライトバーの戻りを、入力デバイスへつなぐ。</summary>
-        void AttachFeedback(int index, OutputDevice outDevice, DS4Device device);
+        void AttachFeedback(int index, OutputDevice outDevice, InputDeviceCore device);
 
         /// <summary>つないだ戻りを外す。</summary>
         void RemoveFeedback(OutputDevice outDevice, int inputIndex);

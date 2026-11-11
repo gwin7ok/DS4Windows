@@ -26,7 +26,7 @@ namespace DS4WindowsTests
             return TestHost.GetService<IProfileSettingsService>();
         }
 
-        private static DS4StateFieldMapping NewFields() => new DS4StateFieldMapping();
+        private static ControllerStateFieldMapping NewFields() => new ControllerStateFieldMapping();
 
         /// <summary>ジャイロ制御の設定を一時的に変える（終了時に戻す）。</summary>
         private sealed class GyroModeScope : IDisposable
@@ -37,11 +37,11 @@ namespace DS4WindowsTests
             public GyroModeScope(IProfileSettingsService settings, GyroOutMode mode)
             {
                 _settings = settings;
-                _saved = settings.GyroOutputMode[Device];
-                settings.GyroOutputMode[Device] = mode;
+                _saved = settings.ForSlot(Device).Gyro.OutputMode;
+                settings.ForSlot(Device).Gyro.OutputMode = mode;
             }
 
-            public void Dispose() => _settings.GyroOutputMode[Device] = _saved;
+            public void Dispose() => _settings.ForSlot(Device).Gyro.OutputMode = _saved;
         }
 
         // ---- 現行の判定との一致（全コントロール × 多数の入力 × ジャイロ制御の有無）----
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
-            DS4StateFieldMapping fields = NewFields();
+            ControllerStateFieldMapping fields = NewFields();
 
             // 負の向きは cState の値（< 73）、正の向きは表の値（> 183）
             foreach ((byte value, bool negative, bool positive) in new[]
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
                 ((byte)72, true, false), ((byte)73, false, false), ((byte)128, false, false), ((byte)183, false, false), ((byte)184, false, true),
             })
             {
-                var state = new DS4State { LX = value, LY = value, RX = value, RY = value };
+                var state = new ControllerState { LX = value, LY = value, RX = value, RY = value };
                 fields.axisdirs[(int)DS4Controls.LXPos] = value;
                 fields.axisdirs[(int)DS4Controls.LYPos] = value;
                 fields.axisdirs[(int)DS4Controls.RXPos] = value;
@@ -83,8 +83,8 @@ namespace DS4WindowsTests
         public void IsActive_Triggers_AreActiveAbove100()
         {
             var input = new TriggerInput(Device, Settings());
-            DS4StateFieldMapping fields = NewFields();
-            var state = new DS4State();
+            ControllerStateFieldMapping fields = NewFields();
+            var state = new ControllerState();
 
             fields.triggers[(int)DS4Controls.L2] = 100;
             fields.triggers[(int)DS4Controls.R2] = 101;
@@ -99,8 +99,8 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
-            DS4StateFieldMapping fields = NewFields();
-            var state = new DS4State();
+            ControllerStateFieldMapping fields = NewFields();
+            var state = new ControllerState();
             fields.gryodirs[(int)DS4Controls.GyroXPos] = 68;
             fields.gryodirs[(int)DS4Controls.GyroXNeg] = -68;
             fields.gryodirs[(int)DS4Controls.GyroZPos] = 67;
@@ -128,12 +128,12 @@ namespace DS4WindowsTests
             var input = new TriggerInput(Device, Settings());
             Assert.False(input.IsActive(DS4Controls.Cross));
 
-            DS4StateFieldMapping fields = NewFields();
+            ControllerStateFieldMapping fields = NewFields();
             fields.buttons[(int)DS4Controls.Cross] = true;
-            input.Update(new DS4State(), null, null, null, fields);
+            input.Update(new ControllerState(), null, null, null, fields);
 
             Assert.True(input.IsActive(DS4Controls.Cross));
-            Assert.False(input.IsActive((DS4Controls)(DS4StateFieldMapping.LAST_DS4_ACTION + 1)));
+            Assert.False(input.IsActive((DS4Controls)(ControllerStateFieldMapping.LAST_DS4_ACTION + 1)));
             Assert.False(input.IsActive(unchecked((DS4Controls)(-1))));
         }
 
@@ -143,20 +143,20 @@ namespace DS4WindowsTests
         public void WasActive_ReadsThePreviousFrame_AndFollowsTheNextUpdate()
         {
             var input = new TriggerInput(Device, Settings());
-            var previous = new DS4State { Cross = true };
-            var current = new DS4State { Cross = false };
-            DS4StateFieldMapping fields = NewFields();
+            var previous = new ControllerState { Cross = true };
+            var current = new ControllerState { Cross = false };
+            ControllerStateFieldMapping fields = NewFields();
             fields.buttons[(int)DS4Controls.Cross] = false;
 
-            input.Update(current, previous, new DS4StateExposed(current), null, fields);
+            input.Update(current, previous, new ControllerStateExposed(current), null, fields);
 
             Assert.False(input.IsActive(DS4Controls.Cross));
             Assert.True(input.WasActive(DS4Controls.Cross));
             Assert.False(input.WasActive(DS4Controls.Circle));
 
             // 次のフレームでは、前フレームの表が作り直される
-            var nextPrevious = new DS4State { Circle = true };
-            input.Update(current, nextPrevious, new DS4StateExposed(current), null, fields);
+            var nextPrevious = new ControllerState { Circle = true };
+            input.Update(current, nextPrevious, new ControllerStateExposed(current), null, fields);
             Assert.False(input.WasActive(DS4Controls.Cross));
             Assert.True(input.WasActive(DS4Controls.Circle));
         }
@@ -165,7 +165,7 @@ namespace DS4WindowsTests
         public void WasActive_WithoutAPreviousState_ReturnsFalse()
         {
             var input = new TriggerInput(Device, Settings());
-            input.Update(new DS4State(), null, null, null, NewFields());
+            input.Update(new ControllerState(), null, null, null, NewFields());
 
             Assert.False(input.WasActive(DS4Controls.Cross));
         }
@@ -213,13 +213,13 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
-            DS4StateFieldMapping fields = NewFields();
-            var current = new DS4State { LX = 10 };
-            var previous = new DS4State { Cross = true };
-            input.Update(current, previous, new DS4StateExposed(current), null, fields);
+            ControllerStateFieldMapping fields = NewFields();
+            var current = new ControllerState { LX = 10 };
+            var previous = new ControllerState { Cross = true };
+            input.Update(current, previous, new ControllerStateExposed(current), null, fields);
 
             // ウォームアップ（JIT、前フレームの表の展開）
-            for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
+            for (int c = 0; c <= ControllerStateFieldMapping.LAST_DS4_ACTION; c++)
             {
                 input.IsActive((DS4Controls)c);
                 input.WasActive((DS4Controls)c);
@@ -228,7 +228,7 @@ namespace DS4WindowsTests
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 2000; i++)
             {
-                for (int c = 0; c <= DS4StateFieldMapping.LAST_DS4_ACTION; c++)
+                for (int c = 0; c <= ControllerStateFieldMapping.LAST_DS4_ACTION; c++)
                 {
                     input.IsActive((DS4Controls)c);
                     input.WasActive((DS4Controls)c);

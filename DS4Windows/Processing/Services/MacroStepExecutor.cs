@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Macro;
+using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
@@ -103,7 +105,7 @@ namespace DS4Windows.Processing.Services
             else if (macroCodeValue >= 1000000)
             {
                 // Rumble event
-                DS4Device d = null;
+                InputDeviceCore d = null;
                 try
                 {
                     var accessor = _deviceStateAccessor;

@@ -43,8 +43,7 @@ namespace DS4WindowsTests
             [typeof(IVirtualKBM)] = typeof(OutputKBMHandlerAdapter),
             [typeof(IDeviceStateAccessor)] = typeof(DeviceSlotState),
             [typeof(IInputReportProcessor)] = typeof(InputReportProcessor),
-            [typeof(IDs4DeviceRegistry)] = typeof(Ds4DeviceRegistryAdapter),
-            [typeof(ControlService)] = typeof(ControlService),
+            [typeof(IInputDeviceRegistry)] = typeof(InputDeviceRegistryAdapter),
             [typeof(IOutputDeviceTypeState)] = typeof(OutputDeviceTypeState),
         };
 
@@ -96,7 +95,7 @@ namespace DS4WindowsTests
         [InlineData(typeof(IMapping), typeof(SpecialActionOutputFactory))]
         [InlineData(typeof(IMapping), typeof(ActionBindingBuilder))]
         [InlineData(typeof(IAutoProfileService), typeof(MainWindowFactory))]
-        [InlineData(typeof(IAutoProfileService), typeof(ViewModelFactory))]
+        [InlineData(typeof(IAutoProfileService), typeof(ShellViewModelFactory))]
         [InlineData(typeof(IActionBindingBuilder), typeof(ProfileApplicationService))]
         public void Probe_PrintsWhetherTheUserIsInsideTheGraphOfTheTarget(Type target, Type user)
         {

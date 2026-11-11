@@ -44,7 +44,7 @@ namespace DS4WindowsTests
 
         private static ControlBindingBuilder BuilderWith(RecordingMacroStringPlayer player)
         {
-            var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+            var factory = TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>(), macroStringPlayer: player);
             return new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory);
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
             {
                 var dcs = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = item };
                 ControlsAssignmentReader.TryReadSpecial(EngineDevice, dcs, out AssignmentDefinition definition, out SpecialAction source);
-                var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+                var factory = TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                     TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                     macroStringPlayer: Player);
                 TriggerBinding binding = new AssignmentBindingBuilder(factory).Build(EngineDevice, definition, source, -1);

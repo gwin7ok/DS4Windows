@@ -9,6 +9,6 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface ICurveAndDeadzoneStage
     {
-        DS4State Apply(int device, DS4State cState, DS4State dState, IProfileSettingsService settings);
+        ControllerState Apply(int device, ControllerState cState, ControllerState dState, IProfileSettingsService settings);
     }
 }

@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             return result;
         }
 
-        private static void RunFrame(TriggerInput input, DS4State state, DS4StateFieldMapping fields, ComboTriggerInputAction[] bindings, int frame)
+        private static void RunFrame(TriggerInput input, ControllerState state, ControllerStateFieldMapping fields, ComboTriggerInputAction[] bindings, int frame)
         {
             input.Update(state, null, null, null, fields);
             for (int i = 0; i < bindings.Length; i++)
@@ -62,8 +62,8 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
-            var state = new DS4State();
-            var fields = new DS4StateFieldMapping();
+            var state = new ControllerState();
+            var fields = new ControllerStateFieldMapping();
             ComboTriggerInputAction[] bindings = BuildBindings(settings);
 
             // 押下と解放が混ざる入力（準備状態・遅延の更新も通る）
@@ -89,8 +89,8 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
-            var state = new DS4State();
-            var fields = new DS4StateFieldMapping();
+            var state = new ControllerState();
+            var fields = new ControllerStateFieldMapping();
             ComboTriggerInputAction[] bindings = BuildBindings(settings);
 
             for (int frame = 0; frame < 500; frame++)
@@ -120,7 +120,7 @@ namespace DS4WindowsTests
             Assert.Equal(0L, allocated);
         }
 
-        private static void SetInput(DS4StateFieldMapping fields, int frame)
+        private static void SetInput(ControllerStateFieldMapping fields, int frame)
         {
             // 周期的に押下・解放する（ボタンごとに周期を変える）
             for (int c = 0; c < fields.buttons.Length; c++)

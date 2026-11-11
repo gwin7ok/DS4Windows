@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Model;
@@ -25,7 +26,7 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        private static DS4State Neutral() => ControlsKeyTestScope.Neutral();
+        private static ControllerState Neutral() => ControlsKeyTestScope.Neutral();
 
         private static SyntheticState StateOf(ControlsKeyTestScope t) => t.Scope.Synthetic.DeviceState[t.Device];
 
@@ -40,9 +41,9 @@ namespace DS4WindowsTests
         }
 
         /// <summary>1 フレーム流して、そのフレームのクリックの数を取り、Commit のデバイスごとの後始末（カウンターのクリア）をする。</summary>
-        private static (DS4State Output, SyntheticState.MouseClick Clicks) Frame(ControlsKeyTestScope t, DS4State input)
+        private static (ControllerState Output, SyntheticState.MouseClick Clicks) Frame(ControlsKeyTestScope t, ControllerState input)
         {
-            DS4State output = t.Run(input);
+            ControllerState output = t.Run(input);
             SyntheticState state = StateOf(t);
             SyntheticState.MouseClick clicks = state.currentClicks;
             state.SaveToPrevious(true);
@@ -61,7 +62,7 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Cross, target);
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             input.Square = true;   // 割り当てのないボタンは、そのまま
             var (output, clicks) = Frame(t, input);
@@ -98,7 +99,7 @@ namespace DS4WindowsTests
             t.Publish();
 
             // Phase10-Step4c W4（ユーザー承認、2026-10-21）で、マウスのボタンは SA と同じ閾値の判定になった。R-5（ユーザー決定 2026-10-23）: SA も Controls も閾値なし
-            DS4State slightlyLeft = Neutral();
+            ControllerState slightlyLeft = Neutral();
             slightlyLeft.LX = 100;   // 128 − 100 ＝ 28。閾値なしなので押下
             var (output, clicks) = Frame(t, slightlyLeft);
             Assert.Equal(1, clicks.rightCount);
@@ -106,7 +107,7 @@ namespace DS4WindowsTests
 
             (output, clicks) = Frame(t, Neutral());
 
-            DS4State slightTrigger = Neutral();
+            ControllerState slightTrigger = Neutral();
             slightTrigger.L2 = 1;   // 0 を超えれば押下
             (output, clicks) = Frame(t, slightTrigger);
             Assert.Equal(1, clicks.middleCount);
@@ -124,7 +125,7 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.LXNeg, X360Controls.TouchpadClick);
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             var (output, clicks) = Frame(t, input);
             Assert.True(output.OutputTouchButton);
@@ -132,11 +133,11 @@ namespace DS4WindowsTests
             Assert.Equal(0, clicks.leftCount);   // マウスのカウンターは動かない
 
             // スティックは、Controls の判定（扇形）ではなく、SA と同じデジタルな判定。R-5（ユーザー決定 2026-10-23）: 閾値なし（以前は、幅 55）
-            DS4State slightlyLeft = Neutral();
+            ControllerState slightlyLeft = Neutral();
             slightlyLeft.LX = 100;
             Assert.True(Frame(t, slightlyLeft).Output.OutputTouchButton);
 
-            DS4State farLeft = Neutral();
+            ControllerState farLeft = Neutral();
             farLeft.LX = 60;
             Assert.True(Frame(t, farLeft).Output.OutputTouchButton);
 
@@ -151,14 +152,14 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Circle, X360Controls.WDOWN);
             t.Publish();
 
-            DS4State up = Neutral();
+            ControllerState up = Neutral();
             up.Cross = true;
             var (output, clicks) = Frame(t, up);
             Assert.Equal(1, clicks.wUpCount);
             Assert.Equal(0, clicks.wDownCount);
             Assert.False(output.Cross);
 
-            DS4State down = Neutral();
+            ControllerState down = Neutral();
             down.Circle = true;
             (output, clicks) = Frame(t, down);
             Assert.Equal(0, clicks.wUpCount);
@@ -178,7 +179,7 @@ namespace DS4WindowsTests
             t.PublishControlsOnly();
 
             Frame(t, Neutral());
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             var (output, clicks) = Frame(t, input);
 
@@ -199,7 +200,7 @@ namespace DS4WindowsTests
             t.MapButton(DS4Controls.Square, X360Controls.LeftMouse); // マウス（7.8f-2）
             t.Publish();
 
-            DS4State input = Neutral();
+            ControllerState input = Neutral();
             input.Cross = true;
             input.Square = true;
             var (output, clicks) = Frame(t, input);

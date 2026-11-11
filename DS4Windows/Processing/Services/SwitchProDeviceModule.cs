@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Services
     {
         protected override InputDeviceFamily? Family => InputDeviceFamily.SwitchPro;
 
-        public override List<DS4Controls> GetKnownExtraButtons(DS4Device device)
+        public override List<DS4Controls> GetKnownExtraButtons(InputDeviceCore device)
         {
             List<DS4Controls> result = new List<DS4Controls>();
             result.AddRange(new DS4Controls[] { DS4Controls.Capture });

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TapClick_UsesHoldInsteadOfSingleFramePulse()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
             if (text == null) return;
 
             Assert.Matches(@"const\s+double\s+TapClickHoldMs\s*=\s*50\.0\s*;", text);
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchUnchanged_ContinuesSynthesis_WhileTapPendingOrHeld()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mouse.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
             if (text == null) return;
 
             Assert.Matches(@"releaseButtonActive\s*\|\|\s*releaseButtonChanged\s*\|\|\s*tappedOnce\s*\|\|\s*_time\.GetUtcNow\(\)\.UtcDateTime\s*<\s*tapClickHoldUntil", text);

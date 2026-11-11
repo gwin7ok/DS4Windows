@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using DS4Windows.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,9 @@ namespace DS4WindowsTests
     {
         private const ushort KeyA = 65;
 
-        private static DS4State Frame(bool l1, bool r1 = false)
+        private static ControllerState Frame(bool l1, bool r1 = false)
         {
-            DS4State state = SpecialActionTestScope.Neutral();
+            ControllerState state = SpecialActionTestScope.Neutral();
             state.L1 = l1;
             state.R1 = r1;
             return state;
@@ -46,7 +47,7 @@ namespace DS4WindowsTests
         }
 
         private static List<(bool Being, bool Toggled, int Vk, int Scan, int ToggleCount, int Releases)> Run(
-            string triggers, bool toggle, double delay, bool freshPressGuard, DS4State[] frames, bool applyBeforeFrame3 = false)
+            string triggers, bool toggle, double delay, bool freshPressGuard, ControllerState[] frames, bool applyBeforeFrame3 = false)
         {
             using var t = new SpecialActionTestScope();
             SpecialAction sa = t.Add(new SpecialAction("p8s72_key_" + Guid.NewGuid().ToString("N"), triggers, "Key", KeyA.ToString(), delay,
@@ -72,7 +73,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Press_Sequence_GivesTheState()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false) };
 
             var result = Run("L1", false, 0, false, frames);
 
@@ -83,7 +84,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Toggle_Sequence_GivesTheState()
         {
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(true), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(false), Frame(false), Frame(true), Frame(false), Frame(true), Frame(false) };
 
             var result = Run("L1", true, 0, false, frames);
 
@@ -95,7 +96,7 @@ namespace DS4WindowsTests
         [InlineData(true)]
         public void WhileTheFreshPressGuardIsOn_NothingFires(bool toggle)
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(true) };
 
             var result = Run("L1", toggle, 0, true, frames);
 
@@ -105,7 +106,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AndCondition_GivesTheState()
         {
-            DS4State[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
+            ControllerState[] frames = { Frame(false, false), Frame(true, false), Frame(true, true), Frame(true, true), Frame(false, true), Frame(false, false) };
 
             var result = Run("L1/R1", false, 0, false, frames);
 
@@ -115,7 +116,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ADelay_StillTriggers()
         {
-            DS4State[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
+            ControllerState[] frames = { Frame(true), Frame(true), Frame(false), Frame(true) };
 
             var result = Run("L1", false, 60, false, frames);
 
@@ -129,7 +130,7 @@ namespace DS4WindowsTests
         public void AProfileApplyWhileHeld_GivesTheState(bool toggle)
         {
             // 押している最中（フレーム 3 の前）に、適用の後始末（状態の初期化・束縛の差し替え）が入る
-            DS4State[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
+            ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var result = Run("L1", toggle, 0, false, frames, applyBeforeFrame3: true);
 
@@ -152,12 +153,12 @@ namespace DS4WindowsTests
                 state.RequiresFreshPressAfterReset = false;
             }
 
-            DS4State[] frames = releaseFirstKeyFirst
+            ControllerState[] frames = releaseFirstKeyFirst
                 ? new[] { Frame(false, false), Frame(true, true), Frame(false, true), Frame(false, true), Frame(false, false), Frame(false, false) }
                 : new[] { Frame(false, false), Frame(true, true), Frame(true, false), Frame(true, false), Frame(false, false), Frame(false, false) };
 
             var result = new List<(bool, bool)>();
-            foreach (DS4State frame in frames)
+            foreach (ControllerState frame in frames)
             {
                 t.RunFrame(frame);
                 result.Add((t.StateOf(first).BeingTriggered, t.StateOf(second).BeingTriggered));

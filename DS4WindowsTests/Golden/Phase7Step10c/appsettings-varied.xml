@@ -72,14 +72,10 @@
     <SwitchProSupportSettings>
       <Enabled>True</Enabled>
     </SwitchProSupportSettings>
-    <JoyConSupportSettings>
+    <XboxSupportSettings>
       <Enabled>True</Enabled>
-      <LinkMode>Split</LinkMode>
-      <JoinedGyroProvider>JoyConL</JoinedGyroProvider>
-    </JoyConSupportSettings>
-    <DS3SupportSettings>
-      <Enabled>True</Enabled>
-    </DS3SupportSettings>
+      <HideUsbParent>False</HideUsbParent>
+    </XboxSupportSettings>
   </DeviceOptions>
   <CustomLed1>True:0,0,255</CustomLed1>
   <CustomLed2>False:0,0,255</CustomLed2>

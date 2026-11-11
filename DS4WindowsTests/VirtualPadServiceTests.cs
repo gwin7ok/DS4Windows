@@ -28,12 +28,12 @@ namespace DS4WindowsTests
 
         private sealed class NoRumble : IDeviceRumbleService
         {
-            public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum) { }
+            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) { }
         }
 
         private sealed class NoControllers : IDeviceStateAccessor
         {
-            public DS4Device GetController(int deviceIndex) => null;
+            public InputDeviceCore GetController(int deviceIndex) => null;
         }
 
         private static VirtualPadService Create(RecordingHost host = null, IProfileSettingsService settings = null, DS4Windows.Output.Backend.IVirtualPadBackend backend = null, IDeviceRumbleService rumble = null)
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         private sealed class RecordingRumble : IDeviceRumbleService
         {
             public readonly System.Collections.Generic.List<(byte Heavy, byte Light, int Device)> Calls = new System.Collections.Generic.List<(byte, byte, int)>();
-            public void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
+            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
         }
 
         [Fact]
@@ -94,37 +94,17 @@ namespace DS4WindowsTests
             var backend = new FakeVirtualPadBackend();
             backend.Start();
             VirtualPadService service = Create(backend: backend);
-            service.SendReport(0, new DS4Windows.Core.Model.DS4State());   // 割り当てなし: 何もしない
+            service.SendReport(0, new DS4Windows.Core.Model.ControllerState());   // 割り当てなし: 何もしない
             Assert.False(service.HasOutputDevice(0));
 
             service.OutputDevices[0] = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
             service.OutputDevices[0].Connect();
             Assert.True(service.HasOutputDevice(0));
-            service.SendReport(0, new DS4Windows.Core.Model.DS4State { Cross = true });
+            service.SendReport(0, new DS4Windows.Core.Model.ControllerState { Cross = true });
 
             FakeXbox360Target target = backend.Xbox360Targets[0];
             Assert.Equal(1, target.SubmitCount);
             Assert.Equal(DS4Windows.Output.Backend.Xbox360Buttons.A, target.Buttons);
-        }
-
-        [Fact]
-        public void TryShareOutputDevice_SharesTheDevice_OnlyWhenTheSourceSlotHasOne()
-        {
-            var backend = new FakeVirtualPadBackend();
-            backend.Start();
-            VirtualPadService service = Create(backend: backend);
-
-            Assert.False(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
-            Assert.False(service.HasOutputDevice(1));
-
-            service.OutputDevices[0] = TestOutputCartridges.Allocate(DS4Windows.Core.Model.OutContType.X360, backend);
-            Assert.True(service.TryShareOutputDevice(0, 1, DS4Windows.Core.Model.OutContType.X360, null));
-            Assert.Same(service.OutputDevices[0], service.OutputDevices[1]);
-
-            service.ReleaseSharedOutputDevice(1);
-            Assert.False(service.HasOutputDevice(1));
-            Assert.True(service.HasOutputDevice(0));
-            service.ReleaseSharedOutputDevice(1);   // 空のスロットでも安全
         }
 
         [Fact]

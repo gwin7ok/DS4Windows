@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Gyro;
 using System;
 using System.IO;
 using System.Linq;
@@ -67,8 +68,8 @@ namespace DS4WindowsTests
             // 状態の配列は、コントローラーの台数ぶんだけ持つ（添字 = device）。最後のスロットでも例外にならない
             int last = ControllerLimits.MaxControllerCount - 1;
             var info = new ButtonMouseInfo();
-            var state = new DS4State();
-            var fields = new DS4StateFieldMapping();
+            var state = new ControllerState();
+            var fields = new ControllerStateFieldMapping();
             new ButtonMouseMovementCalculator().Calculate(last, DS4Controls.Cross, 0, state, fields, info, 0, 0, new DeltaSettingsProcessorGroup(), 1.0);
 
             double x = 1.5, y = -1.5;

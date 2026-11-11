@@ -107,16 +107,16 @@ namespace DS4WindowsTests
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
 
-            service.SetL2OutCurveMode(0, 2);
-            service.SetR2OutCurveMode(0, 3);
+            service.ForSlot(0).Triggers.L2CurveMode = 2;
+            service.ForSlot(0).Triggers.R2CurveMode = 3;
 
-            Assert.Equal(2, service.GetL2OutCurveMode(0));
-            Assert.Equal(3, service.GetR2OutCurveMode(0));
+            Assert.Equal(2, service.ForSlot(0).Triggers.L2CurveMode);
+            Assert.Equal(3, service.ForSlot(0).Triggers.R2CurveMode);
 
-            service.SetL2OutCurveMode(0, 0);
-            service.SetR2OutCurveMode(0, 0);
-            Assert.Equal(0, service.GetL2OutCurveMode(0));
-            Assert.Equal(0, service.GetR2OutCurveMode(0));
+            service.ForSlot(0).Triggers.L2CurveMode = 0;
+            service.ForSlot(0).Triggers.R2CurveMode = 0;
+            Assert.Equal(0, service.ForSlot(0).Triggers.L2CurveMode);
+            Assert.Equal(0, service.ForSlot(0).Triggers.R2CurveMode);
         }
 
         [Fact]

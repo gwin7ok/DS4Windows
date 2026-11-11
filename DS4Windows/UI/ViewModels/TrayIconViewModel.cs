@@ -335,7 +335,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void PopulateControllerList()
         {
-            //IEnumerable<DS4Device> devices = DS4Devices.getDS4Controllers();
+            //IEnumerable<InputDeviceCore> devices = InputDeviceRegistry.GetControllers();
             int idx = 0;
             _colLocker.EnterWriteLock();
             foreach (ControllerSlotEntry entry in slots.Snapshot())
@@ -359,9 +359,9 @@ namespace DS4Windows.UI.ViewModels
         {
             List<string> items = new List<string>();
             items.Add(trayTitle);
-            //IEnumerable<DS4Device> devices = DS4Devices.getDS4Controllers();
+            //IEnumerable<InputDeviceCore> devices = InputDeviceRegistry.GetControllers();
             int idx = 1;
-            //foreach (DS4Device currentDev in devices)
+            //foreach (InputDeviceCore currentDev in devices)
             _colLocker.EnterReadLock();
             foreach (ControllerHolder holder in controllerList)
             {
@@ -376,8 +376,8 @@ namespace DS4Windows.UI.ViewModels
 
         private void SetupEvents()
         {
-            //IEnumerable<DS4Device> devices = DS4Devices.getDS4Controllers();
-            //foreach (DS4Device currentDev in devices)
+            //IEnumerable<InputDeviceCore> devices = InputDeviceRegistry.GetControllers();
+            //foreach (InputDeviceCore currentDev in devices)
             _colLocker.EnterReadLock();
             foreach (ControllerHolder holder in controllerList)
             {

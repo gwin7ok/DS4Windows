@@ -21,6 +21,8 @@ namespace DS4WindowsTests
             "ProfileSettings",
             "lastVersionChecked", "lastVersionCheckedNum", "useLang", "fakeExeFileName", "loggedInvalidActions",
             "actions", "linkedProfiles",
+            // 出力カーブのモードは、以前は非公開のフィールドで、ゴールデンは既定値のまま固定している（変えると、カーブの定義の保存も変わる）
+            "L2CurveMode", "R2CurveMode", "LSCurveMode", "RSCurveMode", "SXCurveMode", "SZCurveMode",
         };
 
         // パス・ファイル・言語・バージョン・アドレスなど、値の形式に意味がある文字列は変えない
@@ -43,7 +45,7 @@ namespace DS4WindowsTests
             Type t = target.GetType();
             foreach (FieldInfo f in t.GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (ExcludedNames.Contains(f.Name) || f.IsInitOnly || f.IsLiteral) continue;
+                if (ExcludedNames.Contains(f.Name) || (f.IsInitOnly && !f.FieldType.IsArray) || f.IsLiteral) continue;
                 try { FillMember(target, reference, f.Name, f.FieldType, () => f.GetValue(target), v => f.SetValue(target, v),
                     () => reference == null ? null : f.GetValue(reference), slot, depth); } catch { }
             }
@@ -87,7 +89,12 @@ namespace DS4WindowsTests
                 else
                 {
                     object element = arr.GetValue(idx);
-                    if (element != null && depth < 3 && IsOwnType(element.GetType())) FillObject(element, null, slot, depth + 1);
+                    if (element != null && depth < 3 && IsOwnType(element.GetType()))
+                    {
+                        // 領域の持ち主（…SlotSettings）は、以前の「項目ごとの配列」の 1 段に当たるため、深さを数えない
+                        int nextDepth = element.GetType().Name.EndsWith("SlotSettings", StringComparison.Ordinal) ? depth : depth + 1;
+                        FillObject(element, null, slot, nextDepth);
+                    }
                 }
                 return;
             }

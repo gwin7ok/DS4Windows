@@ -24,12 +24,10 @@ namespace DS4Windows.Processing.Services
     public sealed class ServiceLifecycle : IServiceLifecycle
     {
         private readonly IAppSettingsService _appSettings;
-        private readonly IEnvironmentService _environmentService;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IDs4DeviceRegistry _deviceRegistry;
+        private readonly IInputDeviceRegistry _deviceRegistry;
         private readonly IVirtualPadService _virtualPad;
         private readonly ILatencyMonitor _latencyMonitor;
-        private readonly IJoyConLinker _joyConLinker;
         private readonly IDeviceConnector _deviceConnector;
         private readonly IDeviceSlotState _slots;
         private readonly IEventThreadDispatcher _eventThread;
@@ -68,31 +66,29 @@ namespace DS4Windows.Processing.Services
 
         public event EventHandler RunningChanged;
 
-        public event Action<DS4Device, int> HotplugController;
+        public event Action<InputDeviceCore, int> HotplugController;
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
         private readonly ILightbarService _lightbarService;
 
         public ServiceLifecycle(DS4Windows.Core.Model.LightbarOverrides lightbar, ILightbarService lightbarService, IAppSettingsService appSettings, IEnvironmentService environmentService, IProfileSettingsService profileSettings,
-            IDs4DeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor, IJoyConLinker joyConLinker,
+            IInputDeviceRegistry deviceRegistry, IVirtualPadService virtualPad, ILatencyMonitor latencyMonitor,
             IDeviceConnector deviceConnector, IDeviceSlotState slots,
             IEventThreadDispatcher eventThread, IOutputServicesLifecycle outputs)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _lightbarService = lightbarService ?? throw new System.ArgumentNullException(nameof(lightbarService));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _joyConLinker = joyConLinker ?? throw new ArgumentNullException(nameof(joyConLinker));
             _deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
             _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
-            _controllerSlotLimit = environmentService.ControllerSlotLimit;
+            _controllerSlotLimit = (environmentService ?? throw new ArgumentNullException(nameof(environmentService))).ControllerSlotLimit;
         }
 
         public bool Start(bool showlog = true)
@@ -123,24 +119,19 @@ namespace DS4Windows.Processing.Services
                         _deviceRegistry.FindControllers();
                     });
 
-                    IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
+                    IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
                     int numControllers = devices.Count();
                     ActiveControllers = numControllers;
                     _lightbar.defaultLight = false;
                     int i = 0;
-                    IJoinableDevice tempPrimaryJoyDev = null;
                     for (var devEnum = devices.GetEnumerator();
                         devEnum.MoveNext() && LoopControllers; i++)
                     {
-                        DS4Device device = devEnum.Current;
+                        InputDeviceCore device = devEnum.Current;
 
                         _deviceConnector.BeginPrepare(device, showlog: true);
 
-                        // Phase9 9-E E-6d: Joy-Con の結合の手順（先に来たものを主にして順に組む）は JoyConLinker へ移した
-                        tempPrimaryJoyDev = _joyConLinker.LinkOnStart(new JoinableDeviceAdapter(device), tempPrimaryJoyDev,
-                            _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
-
-                        slots.DS4Controllers[i] = device;
+                        slots.Controllers[i] = device;
                         device.DeviceSlotNumber = i;
                         _deviceConnector.PrepareConnected(numControllers, device, index: i);
 
@@ -184,9 +175,9 @@ namespace DS4Windows.Processing.Services
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Svc_VigemClosing");
 
                 bool anyUnplugged = false;
-                for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
+                for (int i = 0, arlength = slots.Controllers.Length; i < arlength; i++)
                 {
-                    DS4Device tempDevice = slots.DS4Controllers[i];
+                    InputDeviceCore tempDevice = slots.Controllers[i];
                     if (tempDevice != null)
                     {
                         if ((_appSettings.DCBTatStop && !tempDevice.isCharging()) || Suspending)
@@ -212,7 +203,7 @@ namespace DS4Windows.Processing.Services
                             _lightbar.forcelight[i] = false;
                             _lightbar.forcedFlash[i] = 0;
                             _lightbar.defaultLight = true;
-                            _lightbarService.Update(slots.DS4Controllers[i], i);
+                            _lightbarService.Update(slots.Controllers[i], i);
                             tempDevice.IsRemoved = true;
                             tempDevice.StopUpdate();
                             _deviceRegistry.RemoveDevice(tempDevice);
@@ -230,7 +221,7 @@ namespace DS4Windows.Processing.Services
                         //useDInputOnly[i] = true;
                         //Global.activeOutDevType[i] = OutContType.None;
                         _profileSettings.UseDInputOnlyArray[i] = true;
-                        slots.DS4Controllers[i] = null;
+                        slots.Controllers[i] = null;
                         _outputs.ResetDeviceState(i);
                         slots.TouchPads[i] = null;
                         _latencyMonitor.Reset(i);
@@ -271,18 +262,12 @@ namespace DS4Windows.Processing.Services
                     _deviceRegistry.FindControllers();
                 });
 
-                IEnumerable<DS4Device> devices = _deviceRegistry.GetDS4Controllers();
+                IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
                 int numControllers = devices.Count();
                 ActiveControllers = numControllers;
-                // Phase9 9-E E-6d: Joy-Con の結合の手順（主と副を先に探してから組む）は JoyConLinker へ移した
-                IJoinableDevice tempPrimaryJoyDev = null;
-                IJoinableDevice tempSecondaryJoyDev = null;
-                _joyConLinker.FindPendingForHotPlug(devices.Select(d => (IJoinableDevice)new JoinableDeviceAdapter(d)),
-                    _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode, out tempPrimaryJoyDev, out tempSecondaryJoyDev);
-
                 for (var devEnum = devices.GetEnumerator(); devEnum.MoveNext() && LoopControllers;)
                 {
-                    DS4Device device = devEnum.Current;
+                    InputDeviceCore device = devEnum.Current;
 
                     if (device.isDisconnectingStatus())
                         continue;
@@ -290,10 +275,10 @@ namespace DS4Windows.Processing.Services
                     // Use local method rather than Func
                     bool checkAlreadyExists()
                     {
-                        for (int Index = 0, arlength = slots.DS4Controllers.Length; Index < arlength; Index++)
+                        for (int Index = 0, arlength = slots.Controllers.Length; Index < arlength; Index++)
                         {
-                            if (slots.DS4Controllers[Index] != null &&
-                                slots.DS4Controllers[Index].getMacAddress() == device.getMacAddress())
+                            if (slots.Controllers[Index] != null &&
+                                slots.Controllers[Index].getMacAddress() == device.getMacAddress())
                             {
                                 device.CheckControllerNumDeviceSettings(numControllers);
                                 return true;
@@ -308,17 +293,14 @@ namespace DS4Windows.Processing.Services
                         continue;
                     }
 
-                    for (int Index = 0, arlength = slots.DS4Controllers.Length;
+                    for (int Index = 0, arlength = slots.Controllers.Length;
                         Index < arlength && Index < _controllerSlotLimit; Index++)
                     {
-                        if (slots.DS4Controllers[Index] == null)
+                        if (slots.Controllers[Index] == null)
                         {
                             _deviceConnector.BeginPrepare(device);
 
-                            _joyConLinker.LinkOnHotPlug(new JoinableDeviceAdapter(device), ref tempPrimaryJoyDev, ref tempSecondaryJoyDev,
-                                _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.JoyConDeviceOptions>(InputDeviceFamily.JoyCon).LinkedMode);
-
-                            slots.DS4Controllers[Index] = device;
+                            slots.Controllers[Index] = device;
                             device.DeviceSlotNumber = Index;
                             _deviceConnector.PrepareConnected(numControllers, device, Index);
 
@@ -337,9 +319,9 @@ namespace DS4Windows.Processing.Services
         public void PrepareAbort()
         {
             IDeviceSlotState slots = _slots;
-            for (int i = 0, arlength = slots.DS4Controllers.Length; i < arlength; i++)
+            for (int i = 0, arlength = slots.Controllers.Length; i < arlength; i++)
             {
-                DS4Device tempDevice = slots.DS4Controllers[i];
+                InputDeviceCore tempDevice = slots.Controllers[i];
                 if (tempDevice != null)
                 {
                     tempDevice.PrepareAbort();

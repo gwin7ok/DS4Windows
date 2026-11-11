@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// 自プロセスをUAC昇格(runas)で子プロセス再起動し、終了を待ち合わせる抽象化。
-    /// DS4Devices.RequestElevation（デバイス再有効化のための昇格要求）専用。
+    /// InputDeviceRegistry.RequestElevation（デバイス再有効化のための昇格要求）専用。
     /// IProcessLauncher（Actions/、単純起動用）とは責務が異なるため統合しない。
     /// Phase 3 Step 3-5.
     /// </summary>

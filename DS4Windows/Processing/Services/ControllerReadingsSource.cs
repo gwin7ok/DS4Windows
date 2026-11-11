@@ -31,16 +31,16 @@ namespace DS4Windows.Processing.Services
             set => _inputReport.IsMeasuringProcessingDelay = value;
         }
 
-        public bool TryRead(int slot, int profileSlot, DS4State input, DS4State mapped, out ControllerReadingInfo info)
+        public bool TryRead(int slot, int profileSlot, ControllerState input, ControllerState mapped, out ControllerReadingInfo info)
         {
             info = default;
-            DS4Device[] controllers = _slotState.DS4Controllers;
-            DS4Device device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
+            InputDeviceCore[] controllers = _slotState.Controllers;
+            InputDeviceCore device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
             if (device == null || !device.IsAlive())
                 return false;
 
-            DS4State currentState = _slotState.GetCurrentState(slot);
-            DS4State tempState = _slotState.GetTempState(slot);
+            ControllerState currentState = _slotState.GetCurrentState(slot);
+            ControllerState tempState = _slotState.GetTempState(slot);
             long calibrationCount = device.SixAxis.CntCalibrating;
 
             // 待機が長引いても入力レポートの処理を止めないよう、最大 10ms で諦める
@@ -67,6 +67,6 @@ namespace DS4Windows.Processing.Services
             return true;
         }
 
-        public DS4State GetCurrentState(int slot) => _slotState.GetCurrentState(slot);
+        public ControllerState GetCurrentState(int slot) => _slotState.GetCurrentState(slot);
     }
 }

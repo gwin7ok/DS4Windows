@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Macro;
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,7 +203,7 @@ namespace DS4WindowsTests
                 else if (macroCodeValue >= 1000000)
                 {
                     // Rumble event
-                    DS4Device d = null;
+                    InputDeviceCore d = null;
                     try
                     {
                         var accessor = _deviceStateAccessor();
@@ -336,10 +338,10 @@ namespace DS4WindowsTests
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 押下: 例外にならない
             Assert.True(state.MacroControl[NewDevice][code - 261]);
             Assert.Equal(1u, state.MacroCount[NewDevice]);
-            var mapped = new DS4State();
+            var mapped = new ControllerState();
             state.ApplyHeldControls(NewDevice, mapped);   // 対応する出力がないので、何も重ならない
             Assert.False(mapped.Cross);
-            Assert.Equal(new DS4State().LX, mapped.LX);
+            Assert.Equal(new ControllerState().LX, mapped.LX);
 
             newImpl.Execute(NewDevice, DS4KeyType.None, code, keydown);   // 離上
             Assert.False(state.MacroControl[NewDevice][code - 261]);

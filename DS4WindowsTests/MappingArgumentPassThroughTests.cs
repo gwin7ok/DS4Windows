@@ -35,11 +35,11 @@ namespace DS4WindowsTests
             return TestRepositoryFactory.CreateProfileSettingsService(store);
         }
 
-        private static DS4State Run(ProfileSettingsService settings,
+        private static ControllerState Run(ProfileSettingsService settings,
             byte lx = 128, byte ly = 128, byte rx = 128, byte ry = 128, byte l2 = 0, byte r2 = 0)
         {
-            var cState = new DS4State { LX = lx, LY = ly, RX = rx, RY = ry, L2 = l2, R2 = r2 };
-            var dState = new DS4State();
+            var cState = new ControllerState { LX = lx, LY = ly, RX = rx, RY = ry, L2 = l2, R2 = r2 };
+            var dState = new ControllerState();
             return Mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
         }
 
@@ -48,10 +48,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var rotated = CreateIsolatedService(out BackingStore rotatedStore);
-            rotatedStore.LSRotation[Slot] = Math.PI / 2.0; // 90度回転（右入力が上下方向へ移る）
+            rotatedStore.stickSlots[Slot].LSRotation = Math.PI / 2.0; // 90度回転（右入力が上下方向へ移る）
 
-            DS4State a = Run(neutral, lx: 200, ly: 128);
-            DS4State b = Run(rotated, lx: 200, ly: 128);
+            ControllerState a = Run(neutral, lx: 200, ly: 128);
+            ControllerState b = Run(rotated, lx: 200, ly: 128);
 
             Assert.True(a.LX != b.LX || a.LY != b.LY,
                 $"LS回転が反映されていない: neutral=({a.LX},{a.LY}) rotated=({b.LX},{b.LY})");
@@ -62,10 +62,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var rotated = CreateIsolatedService(out BackingStore rotatedStore);
-            rotatedStore.RSRotation[Slot] = Math.PI / 2.0;
+            rotatedStore.stickSlots[Slot].RSRotation = Math.PI / 2.0;
 
-            DS4State a = Run(neutral, rx: 200, ry: 128);
-            DS4State b = Run(rotated, rx: 200, ry: 128);
+            ControllerState a = Run(neutral, rx: 200, ry: 128);
+            ControllerState b = Run(rotated, rx: 200, ry: 128);
 
             Assert.True(a.RX != b.RX || a.RY != b.RY,
                 $"RS回転が反映されていない: neutral=({a.RX},{a.RY}) rotated=({b.RX},{b.RY})");
@@ -76,10 +76,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var wideDead = CreateIsolatedService(out BackingStore wideStore);
-            wideStore.lsModInfo[Slot].deadZone = 127; // 入力（中心から72）を完全にデッドゾーン内へ収める
+            wideStore.stickSlots[Slot].LSMod.deadZone = 127; // 入力（中心から72）を完全にデッドゾーン内へ収める
 
-            DS4State a = Run(neutral, lx: 200, ly: 128);
-            DS4State b = Run(wideDead, lx: 200, ly: 128);
+            ControllerState a = Run(neutral, lx: 200, ly: 128);
+            ControllerState b = Run(wideDead, lx: 200, ly: 128);
 
             Assert.Equal(128, b.LX);
             Assert.Equal(128, b.LY);
@@ -91,10 +91,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var halfSens = CreateIsolatedService(out BackingStore halfStore);
-            halfStore.LSSens[Slot] = 0.5;
+            halfStore.stickSlots[Slot].LSSens = 0.5;
 
-            DS4State a = Run(neutral, lx: 200, ly: 128);
-            DS4State b = Run(halfSens, lx: 200, ly: 128);
+            ControllerState a = Run(neutral, lx: 200, ly: 128);
+            ControllerState b = Run(halfSens, lx: 200, ly: 128);
 
             Assert.True(Math.Abs(b.LX - 128) < Math.Abs(a.LX - 128),
                 $"LS感度が反映されていない: neutral.LX={a.LX} halfSens.LX={b.LX}");
@@ -105,10 +105,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var halfSens = CreateIsolatedService(out BackingStore halfStore);
-            halfStore.l2Sens[Slot] = 0.5;
+            halfStore.triggerSlots[Slot].L2Sens = 0.5;
 
-            DS4State a = Run(neutral, l2: 200);
-            DS4State b = Run(halfSens, l2: 200);
+            ControllerState a = Run(neutral, l2: 200);
+            ControllerState b = Run(halfSens, l2: 200);
 
             Assert.True(b.L2 < a.L2, $"L2感度が反映されていない: neutral.L2={a.L2} halfSens.L2={b.L2}");
         }
@@ -118,10 +118,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var halfSens = CreateIsolatedService(out BackingStore halfStore);
-            halfStore.r2Sens[Slot] = 0.5;
+            halfStore.triggerSlots[Slot].R2Sens = 0.5;
 
-            DS4State a = Run(neutral, r2: 200);
-            DS4State b = Run(halfSens, r2: 200);
+            ControllerState a = Run(neutral, r2: 200);
+            ControllerState b = Run(halfSens, r2: 200);
 
             Assert.True(b.R2 < a.R2, $"R2感度が反映されていない: neutral.R2={a.R2} halfSens.R2={b.R2}");
         }
@@ -131,9 +131,9 @@ namespace DS4WindowsTests
         private const int GyroInput = 64;      // 中心から64（±128 の範囲）
         private const int GyroSentinel = 999;  // 「ジャイロ→コントロール変換が実行されなかった」ことを判別する初期値
 
-        private static DS4State RunGyro(ProfileSettingsService settings)
+        private static ControllerState RunGyro(ProfileSettingsService settings)
         {
-            var cState = new DS4State();
+            var cState = new ControllerState();
             var motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.0);
             motion.accelX = GyroInput;
             motion.accelZ = GyroInput;
@@ -142,7 +142,7 @@ namespace DS4WindowsTests
             motion.outputGyroControls = true;
             cState.Motion = motion;
 
-            var dState = new DS4State();
+            var dState = new ControllerState();
             // SetCurveAndDeadzone は cState.CopyTo(dState) で Motion の参照を共有するため、結果は cState.Motion から読める。
             Mapper.SetCurveAndDeadzone(Slot, cState, dState, settings);
             return cState;
@@ -151,7 +151,7 @@ namespace DS4WindowsTests
         private static ProfileSettingsService CreateGyroControlsService(out BackingStore store)
         {
             var service = CreateIsolatedService(out store);
-            store.gyroOutMode[Slot] = GyroOutMode.Controls;
+            store.gyroSlots[Slot].OutputMode = GyroOutMode.Controls;
             return service;
         }
 
@@ -160,10 +160,10 @@ namespace DS4WindowsTests
         {
             var controls = CreateGyroControlsService(out _);
             var notControls = CreateIsolatedService(out BackingStore otherStore);
-            otherStore.gyroOutMode[Slot] = GyroOutMode.None;
+            otherStore.gyroSlots[Slot].OutputMode = GyroOutMode.None;
 
-            DS4State a = RunGyro(controls);
-            DS4State b = RunGyro(notControls);
+            ControllerState a = RunGyro(controls);
+            ControllerState b = RunGyro(notControls);
 
             Assert.NotEqual(GyroSentinel, a.Motion.outputAccelX); // Controls: 変換が実行される
             Assert.Equal(GyroSentinel, b.Motion.outputAccelX);    // Controls 以外: 変換されず初期値のまま
@@ -174,10 +174,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var halfSens = CreateGyroControlsService(out BackingStore halfStore);
-            halfStore.SXSens[Slot] = 0.5;
+            halfStore.sixAxisSlots[Slot].SXSens = 0.5;
 
-            DS4State a = RunGyro(neutral);
-            DS4State b = RunGyro(halfSens);
+            ControllerState a = RunGyro(neutral);
+            ControllerState b = RunGyro(halfSens);
 
             Assert.True(Math.Abs(b.Motion.outputAccelX) < Math.Abs(a.Motion.outputAccelX),
                 $"SX感度が反映されていない: neutral={a.Motion.outputAccelX} halfSens={b.Motion.outputAccelX}");
@@ -188,10 +188,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var halfSens = CreateGyroControlsService(out BackingStore halfStore);
-            halfStore.SZSens[Slot] = 0.5;
+            halfStore.sixAxisSlots[Slot].SZSens = 0.5;
 
-            DS4State a = RunGyro(neutral);
-            DS4State b = RunGyro(halfSens);
+            ControllerState a = RunGyro(neutral);
+            ControllerState b = RunGyro(halfSens);
 
             Assert.True(Math.Abs(b.Motion.outputAccelZ) < Math.Abs(a.Motion.outputAccelZ),
                 $"SZ感度が反映されていない: neutral={a.Motion.outputAccelZ} halfSens={b.Motion.outputAccelZ}");
@@ -202,10 +202,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var wideDead = CreateGyroControlsService(out BackingStore wideStore);
-            wideStore.SXDeadzone[Slot] = 0.9; // 入力（64）を完全にデッドゾーン内（0.9*128=115）へ収める
+            wideStore.sixAxisSlots[Slot].SXDeadZone = 0.9; // 入力（64）を完全にデッドゾーン内（0.9*128=115）へ収める
 
-            DS4State a = RunGyro(neutral);
-            DS4State b = RunGyro(wideDead);
+            ControllerState a = RunGyro(neutral);
+            ControllerState b = RunGyro(wideDead);
 
             Assert.Equal(0, b.Motion.outputAccelX);
             Assert.NotEqual(0, a.Motion.outputAccelX); // 既定のデッドゾーンでは0にならない（引数の値が効いている対照）
@@ -216,10 +216,10 @@ namespace DS4WindowsTests
         {
             var neutral = CreateGyroControlsService(out _);
             var wideDead = CreateGyroControlsService(out BackingStore wideStore);
-            wideStore.SZDeadzone[Slot] = 0.9;
+            wideStore.sixAxisSlots[Slot].SZDeadZone = 0.9;
 
-            DS4State a = RunGyro(neutral);
-            DS4State b = RunGyro(wideDead);
+            ControllerState a = RunGyro(neutral);
+            ControllerState b = RunGyro(wideDead);
 
             Assert.Equal(0, b.Motion.outputAccelZ);
             Assert.NotEqual(0, a.Motion.outputAccelZ);
@@ -230,10 +230,10 @@ namespace DS4WindowsTests
         {
             var linear = CreateGyroControlsService(out _);
             var squared = CreateGyroControlsService(out BackingStore squaredStore);
-            squaredStore.setSXOutCurveMode(Slot, 2); // 2乗カーブ（出力が小さくなる）
+            squaredStore.sixAxisSlots[Slot].ApplySXCurveMode(2); // 2乗カーブ（出力が小さくなる）
 
-            DS4State a = RunGyro(linear);
-            DS4State b = RunGyro(squared);
+            ControllerState a = RunGyro(linear);
+            ControllerState b = RunGyro(squared);
 
             Assert.True(Math.Abs(b.Motion.outputAccelX) < Math.Abs(a.Motion.outputAccelX),
                 $"SX出力カーブが反映されていない: linear={a.Motion.outputAccelX} squared={b.Motion.outputAccelX}");
@@ -244,10 +244,10 @@ namespace DS4WindowsTests
         {
             var linear = CreateGyroControlsService(out _);
             var squared = CreateGyroControlsService(out BackingStore squaredStore);
-            squaredStore.setSZOutCurveMode(Slot, 2);
+            squaredStore.sixAxisSlots[Slot].ApplySZCurveMode(2);
 
-            DS4State a = RunGyro(linear);
-            DS4State b = RunGyro(squared);
+            ControllerState a = RunGyro(linear);
+            ControllerState b = RunGyro(squared);
 
             Assert.True(Math.Abs(b.Motion.outputAccelZ) < Math.Abs(a.Motion.outputAccelZ),
                 $"SZ出力カーブが反映されていない: linear={a.Motion.outputAccelZ} squared={b.Motion.outputAccelZ}");
@@ -260,13 +260,13 @@ namespace DS4WindowsTests
         {
             var neutral = CreateIsolatedService(out _);
             var drifted = CreateIsolatedService(out BackingStore driftStore);
-            driftStore.rightStickDriftXAxis[Slot] = 10;
-            driftStore.rightStickDriftYAxis[Slot] = 20;
-            driftStore.leftStickDriftXAxis[Slot] = 30;
-            driftStore.leftStickDriftYAxis[Slot] = 40;
+            driftStore.stickSlots[Slot].RightStickDriftXAxis = 10;
+            driftStore.stickSlots[Slot].RightStickDriftYAxis = 20;
+            driftStore.stickSlots[Slot].LeftStickDriftXAxis = 30;
+            driftStore.stickSlots[Slot].LeftStickDriftYAxis = 40;
 
-            DS4State a = Conditioner.ApplyDrift(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
-            DS4State b = Conditioner.ApplyDrift(Slot, new DS4State { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
+            ControllerState a = Conditioner.ApplyDrift(Slot, new ControllerState { LX = 100, LY = 100, RX = 100, RY = 100 }, neutral);
+            ControllerState b = Conditioner.ApplyDrift(Slot, new ControllerState { LX = 100, LY = 100, RX = 100, RY = 100 }, drifted);
 
             // 補正なし（対照）: 入力がそのまま出力される
             Assert.Equal(100, a.RX);
@@ -285,9 +285,9 @@ namespace DS4WindowsTests
         public void ApplyStickCalibration_ClampsToByteRange()
         {
             var drifted = CreateIsolatedService(out BackingStore driftStore);
-            driftStore.leftStickDriftXAxis[Slot] = 50; // 10 - 50 が負になる → 0 に丸める
+            driftStore.stickSlots[Slot].LeftStickDriftXAxis = 50; // 10 - 50 が負になる → 0 に丸める
 
-            DS4State b = Conditioner.ApplyDrift(Slot, new DS4State { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
+            ControllerState b = Conditioner.ApplyDrift(Slot, new ControllerState { LX = 10, LY = 128, RX = 128, RY = 128 }, drifted);
 
             Assert.Equal(0, b.LX);
         }

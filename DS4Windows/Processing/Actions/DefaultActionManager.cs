@@ -32,6 +32,12 @@ namespace DS4Windows.Processing.Actions
             {
                 try { AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
             };
+
+            // 旧 Mapping のコンストラクターが購読していたトレースログ（文言は同じ。動作の確認用）
+            ToggledOnChanged += (sa, dev, oldv, newv) =>
+            {
+                try { AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+            };
         }
 
         private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action)

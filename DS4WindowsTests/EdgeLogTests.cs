@@ -54,7 +54,7 @@ namespace DS4WindowsTests
             }
         }
 
-        private static void RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static void RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
             var sw = Stopwatch.StartNew();
             do
@@ -114,7 +114,7 @@ namespace DS4WindowsTests
                 t.MapKey(DS4Controls.LXPos, 66);
                 t.PublishControlsOnly();
 
-                DS4State pressed = ControlsKeyTestScope.Neutral();
+                ControllerState pressed = ControlsKeyTestScope.Neutral();
                 pressed.Triangle = true;
                 pressed.LX = 255;
                 RunFor(t, ControlsKeyTestScope.Neutral(), 100);
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
                 t.MapButton(DS4Controls.Cross, X360Controls.A);
                 t.PublishControlsOnly();
 
-                DS4State pressed = ControlsKeyTestScope.Neutral();
+                ControllerState pressed = ControlsKeyTestScope.Neutral();
                 pressed.Cross = true;
                 RunFor(t, ControlsKeyTestScope.Neutral(), 50);
                 RunFor(t, pressed, 150);
@@ -167,7 +167,7 @@ namespace DS4WindowsTests
                 player.Stop(t.Device);
                 foreach (bool l1 in new[] { false, true, true, false, false })
                 {
-                    DS4State frame = SpecialActionTestScope.Neutral();
+                    ControllerState frame = SpecialActionTestScope.Neutral();
                     frame.L1 = l1;
                     t.RunFrame(frame);
                 }

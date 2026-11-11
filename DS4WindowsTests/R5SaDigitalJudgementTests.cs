@@ -40,9 +40,9 @@ namespace DS4WindowsTests
         public void Triggers_TheDigitalJudgementHasNoThreshold_TheControlsJudgementKeepsOver100(byte value, bool digital, bool threshold)
         {
             var input = new TriggerInput(Device, Settings());
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             fields.triggers[(int)DS4Controls.L2] = value;
-            input.Update(new DS4State(), null, null, null, fields);
+            input.Update(new ControllerState(), null, null, null, fields);
 
             Assert.Equal(digital, input.IsDigitalActive(DS4Controls.L2));
             Assert.Equal(threshold, input.IsActive(DS4Controls.L2));
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
         public void StickNegative_TheDigitalJudgementIsActiveOnAnyDeflection(byte value, bool digital, bool threshold)
         {
             var input = new TriggerInput(Device, Settings());
-            input.Update(new DS4State { LX = value, LY = value, RX = value, RY = value }, null, null, null, new DS4StateFieldMapping());
+            input.Update(new ControllerState { LX = value, LY = value, RX = value, RY = value }, null, null, null, new ControllerStateFieldMapping());
 
             foreach (DS4Controls control in new[] { DS4Controls.LXNeg, DS4Controls.LYNeg, DS4Controls.RXNeg, DS4Controls.RYNeg })
             {
@@ -73,10 +73,10 @@ namespace DS4WindowsTests
         public void StickPositive_TheDigitalJudgementIsActiveOnAnyDeflection(byte value, bool digital, bool threshold)
         {
             var input = new TriggerInput(Device, Settings());
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             foreach (DS4Controls control in new[] { DS4Controls.LXPos, DS4Controls.LYPos, DS4Controls.RXPos, DS4Controls.RYPos })
                 fields.axisdirs[(int)control] = value;
-            input.Update(new DS4State(), null, null, null, fields);
+            input.Update(new ControllerState(), null, null, null, fields);
 
             foreach (DS4Controls control in new[] { DS4Controls.LXPos, DS4Controls.LYPos, DS4Controls.RXPos, DS4Controls.RYPos })
             {
@@ -90,14 +90,14 @@ namespace DS4WindowsTests
         {
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
-            var fields = new DS4StateFieldMapping();
+            var fields = new ControllerStateFieldMapping();
             fields.buttons[(int)DS4Controls.Cross] = true;
             fields.gryodirs[(int)DS4Controls.GyroXPos] = 68;
             fields.gryodirs[(int)DS4Controls.GyroZPos] = 67;
-            input.Update(new DS4State(), null, null, null, fields);
+            input.Update(new ControllerState(), null, null, null, fields);
 
-            GyroOutMode saved = settings.GyroOutputMode[Device];
-            settings.GyroOutputMode[Device] = GyroOutMode.Controls;
+            GyroOutMode saved = settings.ForSlot(Device).Gyro.OutputMode;
+            settings.ForSlot(Device).Gyro.OutputMode = GyroOutMode.Controls;
             try
             {
                 Assert.True(input.IsDigitalActive(DS4Controls.Cross));
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                settings.GyroOutputMode[Device] = saved;
+                settings.ForSlot(Device).Gyro.OutputMode = saved;
             }
         }
 
@@ -114,12 +114,12 @@ namespace DS4WindowsTests
         public void WasDigitalActive_ReadsThePreviousFrame_WithoutAThreshold()
         {
             var input = new TriggerInput(Device, Settings());
-            var previous = new DS4State { L2 = 1 };
-            var current = new DS4State();
-            var fields = new DS4StateFieldMapping();
+            var previous = new ControllerState { L2 = 1 };
+            var current = new ControllerState();
+            var fields = new ControllerStateFieldMapping();
             fields.triggers[(int)DS4Controls.L2] = 0;
 
-            input.Update(current, previous, new DS4StateExposed(current), null, fields);
+            input.Update(current, previous, new ControllerStateExposed(current), null, fields);
 
             Assert.True(input.WasDigitalActive(DS4Controls.L2));
             Assert.False(input.WasActive(DS4Controls.L2));   // 従来の判定は、1 では不成立

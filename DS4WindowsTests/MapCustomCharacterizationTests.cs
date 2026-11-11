@@ -18,7 +18,7 @@ namespace DS4WindowsTests
         public void Default_PassesButtonsSticksAndTriggersThrough()
         {
             using var scope = new MappingCharacterizationScope();
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             input.Cross = true;
             input.DpadUp = true;
             input.L1 = true;
@@ -26,7 +26,7 @@ namespace DS4WindowsTests
             input.LY = 60;
             input.L2 = 180;
 
-            DS4State output = scope.RunMapCustom(input);
+            ControllerState output = scope.RunMapCustom(input);
 
             Assert.True(output.Cross);
             Assert.True(output.DpadUp);
@@ -46,10 +46,10 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             scope.RemapToButton(DS4Controls.Cross, X360Controls.B); // Cross → B（B の標準の割り当ては Circle）
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             input.Cross = true;
 
-            DS4State output = scope.RunMapCustom(input);
+            ControllerState output = scope.RunMapCustom(input);
 
             Assert.True(output.Circle);
             Assert.False(output.Cross);
@@ -61,7 +61,7 @@ namespace DS4WindowsTests
             using var scope = new MappingCharacterizationScope();
             scope.RemapToButton(DS4Controls.Cross, X360Controls.B);
 
-            DS4State output = scope.RunMapCustom(MappingCharacterizationScope.NeutralState());
+            ControllerState output = scope.RunMapCustom(MappingCharacterizationScope.NeutralState());
 
             Assert.False(output.Circle);
             Assert.False(output.Cross);
@@ -72,10 +72,10 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             scope.RemapToButton(DS4Controls.LXPos, X360Controls.A); // 左スティック右 → A（A の標準の割り当ては Cross）
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             input.LX = 255;
 
-            DS4State output = scope.RunMapCustom(input);
+            ControllerState output = scope.RunMapCustom(input);
 
             Assert.True(output.Cross);
             Assert.Equal(128, output.LX);
@@ -86,10 +86,10 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             scope.RemapToButton(DS4Controls.L2, X360Controls.Y); // L2 → Y（Y の標準の割り当ては Triangle）
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             input.L2 = 220;
 
-            DS4State output = scope.RunMapCustom(input);
+            ControllerState output = scope.RunMapCustom(input);
 
             Assert.True(output.Triangle);
             Assert.Equal(0, output.L2);
@@ -100,10 +100,10 @@ namespace DS4WindowsTests
         {
             using var scope = new MappingCharacterizationScope();
             scope.RemapToButton(DS4Controls.Square, X360Controls.LeftMouse);
-            DS4State input = MappingCharacterizationScope.NeutralState();
+            ControllerState input = MappingCharacterizationScope.NeutralState();
             input.Square = true;
 
-            DS4State output = scope.RunMapCustom(input);
+            ControllerState output = scope.RunMapCustom(input);
 
             Assert.False(output.Square);
             Assert.Equal(1, scope.Synthetic.DeviceState[MappingCharacterizationScope.Device].currentClicks.leftCount);

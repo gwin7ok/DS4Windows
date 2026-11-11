@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         {
             using var ctx = new PersistenceGoldenContext();
             BackingStore original = PersistenceHarness.NewStore();
-            original.gyroSensitivity[PersistenceHarness.Slot] = 123;   // 既定でない値（ほかの設定が壊れずに読まれることの目印）
+            original.gyroSlots[PersistenceHarness.Slot].Sensitivity = 123;   // 既定でない値（ほかの設定が壊れずに読まれることの目印）
             string xml = PersistenceHarness.SaveProfile(ctx, original, "SteeringW4Legacy");
 
             int close = xml.LastIndexOf("</DS4Windows>");
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
 
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, legacy, "SteeringW4LegacyLoad");
 
-            Assert.Equal(123, loaded.gyroSensitivity[PersistenceHarness.Slot]);
+            Assert.Equal(123, loaded.gyroSlots[PersistenceHarness.Slot].Sensitivity);
 
             string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "SteeringW4Resaved");
             foreach (string element in RemovedElements)

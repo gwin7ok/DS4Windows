@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using System.IO;
 using System.Linq;
@@ -78,7 +79,7 @@ namespace DS4WindowsTests
             using var ctx = new PersistenceGoldenContext();
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, DefaultXml(ctx, "SwipeIn1"), "SwipeLoad1");
 
-            Assert.False(loaded.removedGyroSwipeSettings[Slot].HasContent);
+            Assert.False(loaded.gyroSlots[Slot].RemovedSwipe.HasContent);
 
             string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "SwipeResave1");
             Assert.Equal(DefaultSettings, SettingsNodeOf(resaved));   // 廃止前も、既定値のときは、この形で毎回書いていた
@@ -92,7 +93,7 @@ namespace DS4WindowsTests
 
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, xml, "SwipeLoad2");
 
-            Assert.True(loaded.removedGyroSwipeSettings[Slot].HasContent);
+            Assert.True(loaded.gyroSlots[Slot].RemovedSwipe.HasContent);
             string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "SwipeResave2");
             Assert.Equal(ChangedSettings, SettingsNodeOf(resaved));
         }
@@ -106,7 +107,7 @@ namespace DS4WindowsTests
 
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, WithControls(DefaultXml(ctx, "SwipeIn3")), "SwipeLoad3");
 
-            RemovedGyroSwipeSettings kept = loaded.removedGyroSwipeSettings[Slot];
+            RemovedGyroSwipeSettings kept = loaded.gyroSlots[Slot].RemovedSwipe;
             Assert.True(kept.HasContent);
             Assert.Equal(5, kept.EntryCount);   // GyroSwipe の項目だけ（Button・Macro・Key・Extras・KeyType の各 1 つ。Cross は含めない）
         }
@@ -134,7 +135,7 @@ namespace DS4WindowsTests
             using var ctx = new PersistenceGoldenContext();
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, WithControls(DefaultXml(ctx, "SwipeIn5")), "SwipeLoad5");
 
-            loaded.removedGyroSwipeSettings[Slot].Clear();
+            loaded.gyroSlots[Slot].RemovedSwipe.Clear();
             string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "SwipeResave5");
 
             Assert.DoesNotContain("GyroSwipeLeft", resaved);
@@ -162,9 +163,9 @@ namespace DS4WindowsTests
 
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, WithDirectionalSwipeMode(DefaultXml(ctx, "SwipeIn7")), "SwipeLoad7");
 
-            Assert.Equal(GyroOutMode.None, loaded.gyroOutMode[Slot]);
-            Assert.True(loaded.removedGyroSwipeSettings[Slot].HadDirectionalSwipeMode);
-            Assert.True(loaded.removedGyroSwipeSettings[Slot].HasContent);
+            Assert.Equal(GyroOutMode.None, loaded.gyroSlots[Slot].OutputMode);
+            Assert.True(loaded.gyroSlots[Slot].RemovedSwipe.HadDirectionalSwipeMode);
+            Assert.True(loaded.gyroSlots[Slot].RemovedSwipe.HasContent);
         }
 
         [Fact]
@@ -176,7 +177,7 @@ namespace DS4WindowsTests
             string kept = PersistenceHarness.SaveProfile(ctx, loaded, "SwipeResave8a");
             Assert.Equal("DirectionalSwipe", Doc(kept).SelectSingleNode("/DS4Windows/GyroOutputMode").InnerText);
 
-            loaded.removedGyroSwipeSettings[Slot].Clear();
+            loaded.gyroSlots[Slot].RemovedSwipe.Clear();
             string deleted = PersistenceHarness.SaveProfile(ctx, loaded, "SwipeResave8b");
             Assert.Equal("None", Doc(deleted).SelectSingleNode("/DS4Windows/GyroOutputMode").InnerText);
         }
@@ -187,8 +188,8 @@ namespace DS4WindowsTests
             using var ctx = new PersistenceGoldenContext();
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, WithDirectionalSwipeMode(DefaultXml(ctx, "SwipeIn9")), "SwipeLoad9");
 
-            loaded.gyroOutMode[Slot] = GyroOutMode.Mouse;
-            loaded.removedGyroSwipeSettings[Slot].ForgetDirectionalSwipeMode();   // 編集画面で選び直したとき（ProfileSettingsViewModel.GyroOutModeIndex）
+            loaded.gyroSlots[Slot].OutputMode = GyroOutMode.Mouse;
+            loaded.gyroSlots[Slot].RemovedSwipe.ForgetDirectionalSwipeMode();   // 編集画面で選び直したとき（ProfileSettingsViewModel.GyroOutModeIndex）
             string resaved = PersistenceHarness.SaveProfile(ctx, loaded, "SwipeResave9");
 
             Assert.Equal("Mouse", Doc(resaved).SelectSingleNode("/DS4Windows/GyroOutputMode").InnerText);
@@ -199,12 +200,12 @@ namespace DS4WindowsTests
         {
             using var ctx = new PersistenceGoldenContext();
             BackingStore loaded = PersistenceHarness.LoadProfile(ctx, WithDirectionalSwipeMode(WithControls(DefaultXml(ctx, "SwipeIn10"))), "SwipeLoad10");
-            Assert.True(loaded.removedGyroSwipeSettings[Slot].HasContent);
+            Assert.True(loaded.gyroSlots[Slot].RemovedSwipe.HasContent);
 
             loaded.ResetProfile(Slot);
 
-            Assert.False(loaded.removedGyroSwipeSettings[Slot].HasContent);
-            Assert.Equal(0, loaded.removedGyroSwipeSettings[Slot].EntryCount);
+            Assert.False(loaded.gyroSlots[Slot].RemovedSwipe.HasContent);
+            Assert.Equal(0, loaded.gyroSlots[Slot].RemovedSwipe.EntryCount);
         }
 
         // ---- 存在しないこと ----
@@ -218,7 +219,7 @@ namespace DS4WindowsTests
             Assert.Null(typeof(ControlSettingsGroup).GetField("GyroSwipeLeft"));
             Assert.Null(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService).GetProperty("GyroSwipeInf"));
             Assert.Null(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService).GetMethod("GetGyroSwipeInfo"));
-            Assert.Null(typeof(Mouse).GetField("gyroSwipe"));
+            Assert.Null(typeof(TouchpadMouse).GetField("gyroSwipe"));
         }
 
         [Fact]

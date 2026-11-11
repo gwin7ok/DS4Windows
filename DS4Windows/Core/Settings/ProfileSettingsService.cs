@@ -193,130 +193,24 @@ namespace DS4Windows.Core.Settings
         }
 
         // ---- Step10-2-A-1: スティック関連 (m_Config委譲) ----
-        public StickDeadZoneInfo[] LSModInfo => SafeConfig?.lsModInfo;
-        public StickDeadZoneInfo[] RSModInfo => SafeConfig?.rsModInfo;
-        public double[] LSRotation => SafeConfig?.LSRotation;
-        public double[] RSRotation => SafeConfig?.RSRotation;
-        public double[] LSSens => SafeConfig?.LSSens;
-        public double[] RSSens => SafeConfig?.RSSens;
-        public SquareStickInfo[] SquStickInfo => SafeConfig?.squStickInfo;
-        public StickAntiSnapbackInfo[] LSAntiSnapbackInfo => SafeConfig?.lsAntiSnapbackInfo;
-        public StickAntiSnapbackInfo[] RSAntiSnapbackInfo => SafeConfig?.rsAntiSnapbackInfo;
-        public StickOutputSetting[] LSOutputSettings => SafeConfig?.lsOutputSettings;
-        public StickOutputSetting[] RSOutputSettings => SafeConfig?.rsOutputSettings;
-        public BezierCurve[] LsOutBezierCurveObj => SafeConfig?.lsOutBezierCurveObj;
-        public BezierCurve[] RsOutBezierCurveObj => SafeConfig?.rsOutBezierCurveObj;
 
-        public int GetLsOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getLsOutCurveMode(index) : 0;
 
-        public void SetLsOutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setLsOutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetLsOutCurveMode: Slot {index} = {value}");
-            }
-        }
-
-        public int GetRsOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getRsOutCurveMode(index) : 0;
-
-        public void SetRsOutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setRsOutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetRsOutCurveMode: Slot {index} = {value}");
-            }
-        }
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
-        public TriggerDeadZoneZInfo[] L2ModInfo => SafeConfig?.l2ModInfo;
-        public TriggerDeadZoneZInfo[] R2ModInfo => SafeConfig?.r2ModInfo;
-        public double[] L2Sens => SafeConfig?.l2Sens;
-        public double[] R2Sens => SafeConfig?.r2Sens;
-        public TriggerOutputSettings[] L2OutputSettings => SafeConfig?.l2OutputSettings;
-        public TriggerOutputSettings[] R2OutputSettings => SafeConfig?.r2OutputSettings;
-        public BezierCurve[] L2OutBezierCurveObj => SafeConfig?.l2OutBezierCurveObj;
-        public BezierCurve[] R2OutBezierCurveObj => SafeConfig?.r2OutBezierCurveObj;
         public bool[] OutputVirtualTriggerButton => SafeConfig?.outputVirtualTriggerButtons;
         public DS4TriggerOutputMode[] OutputDS4TriggerMode => SafeConfig?.outputDS4TriggerMode;
 
-        public int GetL2OutCurveMode(int index) => SafeConfig != null ? SafeConfig.getL2OutCurveMode(index) : 0;
 
-        public void SetL2OutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setL2OutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetL2OutCurveMode: Slot {index} = {value}");
-            }
-        }
-
-        public int GetR2OutCurveMode(int index) => SafeConfig != null ? SafeConfig.getR2OutCurveMode(index) : 0;
-
-        public void SetR2OutCurveMode(int index, int value)
-        {
-            if (SafeConfig != null)
-            {
-                SafeConfig.setR2OutCurveMode(index, value);
-                AppLogger.Log(AppLogLevel.Debug, $"[DI] ProfileSettingsService.SetR2OutCurveMode: Slot {index} = {value}");
-            }
-        }
 
         // ---- Step10-2-A-3: タッチパッド関連 (m_Config委譲) ----
-        public byte[] TouchSensitivity => SafeConfig?.touchSensitivity;
-        public byte[] TapSensitivity => SafeConfig?.tapSensitivity;
-        public int[] TouchpadInvert => SafeConfig?.touchpadInvert;
-        public bool[] TouchpadJitterCompensation => SafeConfig?.touchpadJitterCompensation;
-        public bool[] TouchClickPassthru => SafeConfig?.touchClickPassthru;
-        public TouchButtonActivationMode[] TouchpadButtonMode => SafeConfig?.touchpadButtonMode;
-        public bool[] StartTouchpadOff => SafeConfig?.startTouchpadOff;
-        public TouchpadOutMode[] TouchOutMode => SafeConfig?.touchOutMode;
-        public int[][] TouchDisInvertTriggers => SafeConfig?.touchDisInvertTriggers;
-        public TouchMouseStickInfo[] TouchMouseStickInf => SafeConfig?.touchMStickInfo;
-        public TouchpadRelMouseSettings[] TouchRelMouse => SafeConfig?.touchpadRelMouse;
 
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
-        public GyroMouseStickInfo[] GyroMouseStickInf => SafeConfig?.gyroMStickInfo;
-        public GyroMouseInfo[] GyroMouseInfo => SafeConfig?.gyroMouseInfo;
-        public GyroControlsInfo[] GyroControlsInf => SafeConfig?.gyroControlsInf;
-        public int[] GyroInvert => SafeConfig?.gyroInvert;
-        public int[] GyroSensitivity => SafeConfig?.gyroSensitivity;
-        public int[] GyroSensVerticalScale => SafeConfig?.gyroSensVerticalScale;
-        public GyroOutMode[] GyroOutputMode => SafeConfig?.gyroOutMode;
-        public bool[] GyroTriggerTurns => SafeConfig?.gyroTriggerTurns;
-        public bool[] GyroMouseStickTriggerTurns => SafeConfig?.gyroMouseStickTriggerTurns;
-        public int[] GyroMouseHorizontalAxis => SafeConfig?.gyroMouseHorizontalAxis;
-        public int[] GyroMouseStickHorizontalAxis => SafeConfig?.gyroMouseStickHorizontalAxis;
-        public int[] GyroMouseDeadZone => SafeConfig?.gyroMouseDZ;
-        public bool[] GyroMouseToggle => SafeConfig?.gyroMouseToggle;
-        public bool[] GyroMouseStickToggle => SafeConfig?.gyroMouseStickToggle;
 
-        public GyroOutMode GetGyroOutMode(int deviceIndex) => SafeConfig != null && SafeConfig.gyroOutMode != null ? SafeConfig.gyroOutMode[deviceIndex] : GyroOutMode.None;
-        public bool GetGyroMouseStickTriggerTurns(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseStickTriggerTurns != null && SafeConfig.gyroMouseStickTriggerTurns[deviceIndex];
-        public int GetGyroMouseStickHorizontalAxis(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseStickHorizontalAxis != null ? SafeConfig.gyroMouseStickHorizontalAxis[deviceIndex] : 0;
-        public GyroMouseStickInfo GetGyroMouseStickInfo(int deviceIndex) => SafeConfig?.gyroMStickInfo?[deviceIndex];
-        public int GetGyroSensitivity(int deviceIndex) => SafeConfig != null && SafeConfig.gyroSensitivity != null ? SafeConfig.gyroSensitivity[deviceIndex] : 0;
-        public int GetGyroSensVerticalScale(int deviceIndex) => SafeConfig != null && SafeConfig.gyroSensVerticalScale != null ? SafeConfig.gyroSensVerticalScale[deviceIndex] : 0;
-        public int GetGyroInvert(int deviceIndex) => SafeConfig != null && SafeConfig.gyroInvert != null ? SafeConfig.gyroInvert[deviceIndex] : 0;
-        public bool GetGyroTriggerTurns(int deviceIndex) => SafeConfig != null && SafeConfig.gyroTriggerTurns != null && SafeConfig.gyroTriggerTurns[deviceIndex];
-        public int GetGyroMouseHorizontalAxis(int deviceIndex) => SafeConfig != null && SafeConfig.gyroMouseHorizontalAxis != null ? SafeConfig.gyroMouseHorizontalAxis[deviceIndex] : 0;
-        public GyroControlsInfo GetGyroControlsInfo(int deviceIndex) => SafeConfig?.gyroControlsInf?[deviceIndex];
 
-        public void SetGyroMouseDeadZone(int index, int value, IProfileLoadTarget control)
-            => SafeConfig?.SetGyroMouseDZ(index, value, control);
 
-        public void SetGyroMouseToggle(int index, bool value, IProfileLoadTarget control)
-            => SafeConfig?.SetGyroMouseToggle(index, value, control);
 
-        public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control)
-            => SafeConfig?.SetGyroControlsToggle(index, value, control);
-
-        public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control)
-            => SafeConfig?.SetGyroMouseStickToggle(index, value, control);
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
-        public LightbarSettingInfo[] LightbarSettingsInfo => SafeConfig?.lightbarSettingInfo;
         public bool[] InverseRumbleMotors => SafeConfig?.inverseRumbleMotors;
 
         public byte[] RumbleBoost
@@ -356,7 +250,6 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public LightbarSettingInfo GetLightbarSettingsInfo(int deviceIndex) => SafeConfig?.lightbarSettingInfo?[deviceIndex];
 
         public byte GetRumbleBoost(int deviceIndex)
         {
@@ -379,7 +272,7 @@ namespace DS4Windows.Core.Settings
             return SafeConfig?.rumbleAutostopTime != null ? SafeConfig.rumbleAutostopTime[deviceIndex] : 0;
         }
 
-        public ref DS4Color GetMainColor(int deviceIndex) => ref SafeConfig.lightbarSettingInfo[deviceIndex].ds4winSettings.m_Led;
+        public ref DS4Color GetMainColor(int deviceIndex) => ref SafeConfig.lightbarSlots[deviceIndex].Info.ds4winSettings.m_Led;
 
         public void SetRumbleAutostopTime(int index, int value)
         {
@@ -399,38 +292,9 @@ namespace DS4Windows.Core.Settings
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         public ButtonMouseInfo[] ButtonMouseInfos => SafeConfig?.buttonMouseInfos;
         public bool[] EnableTouchToggle => SafeConfig?.enableTouchToggle;
-        public bool[] DoubleTap => SafeConfig?.doubleTap;
-        public int[] ScrollSensitivity => SafeConfig?.scrollSensitivity;
-        public bool[] TrackballMode => SafeConfig?.trackballMode;
-        public double[] TrackballFriction => SafeConfig?.trackballFriction;
         public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.enableTouchToggle != null && SafeConfig.enableTouchToggle[deviceIndex];
-        public bool GetDoubleTap(int deviceIndex) => SafeConfig != null && SafeConfig.doubleTap != null && SafeConfig.doubleTap[deviceIndex];
-        public bool GetTrackballMode(int deviceIndex) => SafeConfig != null && SafeConfig.trackballMode != null && SafeConfig.trackballMode[deviceIndex];
-        public double GetTrackballFriction(int deviceIndex) => SafeConfig != null && SafeConfig.trackballFriction != null ? SafeConfig.trackballFriction[deviceIndex] : 0;
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
-        public string[] SATriggers => SafeConfig?.sATriggers;
-        public string[] SAMousestickTriggers => SafeConfig?.sAMouseStickTriggers;
-        public double[] SXDeadzone => SafeConfig?.SXDeadzone;
-        public double[] SZDeadzone => SafeConfig?.SZDeadzone;
-        public double[] SXSens => SafeConfig?.SXSens;
-        public double[] SZSens => SafeConfig?.SZSens;
-        public double[] SXMaxzone => SafeConfig?.SXMaxzone;
-        public double[] SZMaxzone => SafeConfig?.SZMaxzone;
-        public double[] SXAntiDeadzone => SafeConfig?.SXAntiDeadzone;
-        public double[] SZAntiDeadzone => SafeConfig?.SZAntiDeadzone;
-        public BezierCurve[] SxOutBezierCurveObj => SafeConfig?.sxOutBezierCurveObj;
-        public BezierCurve[] SzOutBezierCurveObj => SafeConfig?.szOutBezierCurveObj;
-        public string GetSATriggers(int deviceIndex) => SafeConfig != null && SafeConfig.sATriggers != null ? SafeConfig.sATriggers[deviceIndex] : string.Empty;
-        public bool GetSATriggerCond(int deviceIndex) => SafeConfig != null && SafeConfig.sATriggerCond != null && SafeConfig.sATriggerCond[deviceIndex];
-        public string GetSAMouseStickTriggers(int deviceIndex) => SafeConfig != null && SafeConfig.sAMouseStickTriggers != null ? SafeConfig.sAMouseStickTriggers[deviceIndex] : string.Empty;
-        public bool GetSAMouseStickTriggerCond(int deviceIndex) => SafeConfig != null && SafeConfig.sAMouseStickTriggerCond != null && SafeConfig.sAMouseStickTriggerCond[deviceIndex];
-        public void SetSaTriggerCond(int index, string text) => SafeConfig?.SetSaTriggerCond(index, text);
-        public void SetSaMouseStickTriggerCond(int index, string text) => SafeConfig?.SetSaMouseStickTriggerCond(index, text);
-        public int GetSxOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getSXOutCurveMode(index) : 0;
-        public void SetSxOutCurveMode(int index, int value) => SafeConfig?.setSXOutCurveMode(index, value);
-        public int GetSzOutCurveMode(int index) => SafeConfig != null ? SafeConfig.getSZOutCurveMode(index) : 0;
-        public void SetSzOutCurveMode(int index, int value) => SafeConfig?.setSZOutCurveMode(index, value);
 
         // ---- Step10-2-A-8: 残余設定・デバイスオプション (m_Config委譲) ----
         public int[] BTPollRate => SafeConfig?.btPollRate;
@@ -444,10 +308,6 @@ namespace DS4Windows.Core.Settings
         }
         public bool[] DinputOnly => SafeConfig?.dinputOnly;
         public int[] IdleDisconnectTimeout => SafeConfig?.idleDisconnectTimeout;
-        public sbyte[] RightStickDriftXAxis => SafeConfig?.rightStickDriftXAxis;
-        public sbyte[] RightStickDriftYAxis => SafeConfig?.rightStickDriftYAxis;
-        public sbyte[] LeftStickDriftXAxis => SafeConfig?.leftStickDriftXAxis;
-        public sbyte[] LeftStickDriftYAxis => SafeConfig?.leftStickDriftYAxis;
         public bool[] EnableOutputDataToDS4 => SafeConfig?.enableOutputDataToDS4;
 
         // Issue7是正: Global.OutContType と同一の _config.outputDevType への読み取り専用委譲。
@@ -466,15 +326,6 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public bool UseDs3PitchRollSim
-        {
-            get => SafeConfig != null && SafeConfig.useDs3PitchRollSim;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.useDs3PitchRollSim = value;
-            }
-        }
-        public bool[] LowerRCOn => SafeConfig?.lowerRCOn;
         public string[] LaunchProgram => SafeConfig?.launchProgram;
         public int GetBTPollRate(int deviceIndex) => SafeConfig != null && SafeConfig.btPollRate != null ? SafeConfig.btPollRate[deviceIndex] : 0;
         public bool GetDInputOnly(int deviceIndex) => SafeConfig != null && SafeConfig.dinputOnly != null && SafeConfig.dinputOnly[deviceIndex];
@@ -536,8 +387,19 @@ namespace DS4Windows.Core.Settings
         public ControlSettingsGroup GetControlSettingsGroup(int deviceIndex) => SafeConfig?.ds4controlSettings[deviceIndex];
 
         public RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex) => SafeConfig?.removedShiftSettings[deviceIndex];
-        public RemovedGyroSwipeSettings GetRemovedGyroSwipeSettings(int deviceIndex) => SafeConfig?.removedGyroSwipeSettings[deviceIndex];
 
-        public ProfileSlotSettings ForSlot(int slot) => new ProfileSlotSettings(this, slot);
+        // 毎入力レポートの経路からも呼ばれるため、スロットごとに 1 度だけ作って使い回す（呼び出しごとに作らない）
+        private readonly ProfileSlotSettings[] _slotSettings = new ProfileSlotSettings[ControllerLimits.TestProfileItemCount];
+
+        public ProfileSlotSettings ForSlot(int slot)
+        {
+            ProfileSlotSettings window = _slotSettings[slot];
+            if (window == null)
+            {
+                window = new ProfileSlotSettings(this, slot, SafeConfig.gyroSlots[slot], SafeConfig.touchpadSlots[slot], SafeConfig.triggerSlots[slot], SafeConfig.stickSlots[slot], SafeConfig.lightbarSlots[slot], SafeConfig.sixAxisSlots[slot]);
+                _slotSettings[slot] = window;
+            }
+            return window;
+        }
     }
 }

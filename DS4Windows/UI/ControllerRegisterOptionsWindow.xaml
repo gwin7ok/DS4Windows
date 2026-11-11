@@ -17,11 +17,13 @@
     <DockPanel x:Name="devOptionsDockPanel" Margin="4">
         <DockPanel>
             <StackPanel DockPanel.Dock="Top">
-                <CheckBox Content="{lex:Loc ControllerSupportDS4}" IsChecked="{Binding DS4DeviceOpts.Enabled}" />
-                <CheckBox Content="{lex:Loc ControllerSupportDualSense}" IsChecked="{Binding DSDeviceOpts.Enabled}" />
-                <CheckBox Content="{lex:Loc ControllerSupportSwitchPro}" IsChecked="{Binding SwitchProDeviceOpts.Enabled}" />
-                <CheckBox Content="{lex:Loc ControllerSupportJoyCon}" IsChecked="{Binding JoyConDeviceOpts.Enabled}" />
-                <CheckBox Content="{lex:Loc ControllerSupportDS3}" IsChecked="{Binding DS3DeviceOpts.Enabled}" />
+                <ItemsControl ItemsSource="{Binding FamilyToggles}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding SupportLabel}" IsChecked="{Binding Enabled}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
                 <CheckBox Content="{lex:Loc ControllerSupportMoonlight}" IsChecked="{Binding UseMoonlight}" />
                 <CheckBox Content="{lex:Loc AdvancedSupport}" IsChecked="{Binding UseAdvancedMoonlight}"
                           Visibility="{Binding Path=UseMoonlight, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="20 0 0 0"/>
@@ -51,73 +53,46 @@
 
         </DockPanel>
 
-        <TabControl x:Name="deviceSettingsTabControl" DockPanel.Dock="Right" SelectedIndex="{Binding CurrentTabSelectedIndex}" Margin="40,4,4,4">
-            <TabItem Header="Blank" Visibility="Collapsed">
-            </TabItem>
-
-            <TabItem x:Name="ds4OptsTabItem" Header="DS4" Visibility="Collapsed">
-                <StackPanel Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="4">
-                    <CheckBox Content="{lex:Loc Copycat}" IsChecked="{Binding Options.IsCopyCat, FallbackValue='False'}" ToolTip="{lex:Loc CopycatTip}" />
-                </StackPanel>
-            </TabItem>
-
-            <TabItem x:Name="dualSenseOptsTabItem" Header="DualSense" Visibility="Collapsed">
-                <StackPanel Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="4">
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="{lex:Loc ControllerRegOptWin.PlayerLEDMode}" ContentStringFormat="{}{0}:" />
-                        <ComboBox ItemsSource="{Binding Path=DsLEDModes}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" SelectedValue="{Binding Options.LedMode}" Margin="8,0,0,0" />
+        <ContentControl x:Name="deviceSettingsHost" DockPanel.Dock="Right" Margin="40,4,4,4">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <!-- 内容が null のとき、テンプレートの固定の文字だけが出るのを避ける -->
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+            <ContentControl.ContentTemplate>
+                <DataTemplate>
+                    <StackPanel Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="4">
+                        <TextBlock Foreground="{DynamicResource WarningBrush}" FontWeight="Bold"
+                                   Visibility="{Binding ShowNewConnectionNotice, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Run Text="*  -  " />
+                            <Run Text="{Binding NewConnectionNotice, Mode=OneWay}" />
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding Items}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                        <TextBlock Text="*" Foreground="{DynamicResource WarningBrush}" Margin="0,0,8,0" VerticalAlignment="Center"
+                                                   Visibility="{Binding AppliesOnNewConnection, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <CheckBox Content="{Binding Label}" IsChecked="{Binding BoolValue}" ToolTip="{Binding Tooltip}"
+                                                  Visibility="{Binding IsBool, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <StackPanel Orientation="Horizontal"
+                                                    Visibility="{Binding IsChoice, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Label Content="{Binding Label}" ContentStringFormat="{}{0}:" />
+                                            <ComboBox ItemsSource="{Binding Choices}" DisplayMemberPath="Display" SelectedValuePath="Value"
+                                                      SelectedValue="{Binding ChoiceValue}" Margin="8,0,0,0" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <Label Content="{lex:Loc ControllerRegOptWin.MuteLEDMode}" ContentStringFormat="{}{0}:" />
-                        <ComboBox ItemsSource="{Binding Path=DsMuteLEDModes}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" SelectedValue="{Binding Options.MuteLedMode}" Margin="8,0,0,0" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-
-            <TabItem x:Name="switchProOptsTabItem" Header="Switch Pro" Visibility="Collapsed">
-                <StackPanel Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="4">
-                    <TextBlock Foreground="{DynamicResource WarningBrush}" FontWeight="Bold">
-                        <Run Text="*  -  " />
-                        <Run Text="{lex:Loc ChangeOnNewDeviceConn}" />
-                    </TextBlock>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                        <TextBlock Text="*" Foreground="{DynamicResource WarningBrush}" />
-                        <CheckBox Content="{lex:Loc ControllerRegOptWin.EnableHomeLED}" IsChecked="{Binding Options.EnableHomeLED, FallbackValue='False'}" Margin="8,0,0,0" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-
-            <TabItem x:Name="joyConOptsTabItem" Header="JoyCon" Visibility="Collapsed">
-                <StackPanel Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="4">
-                    <TextBlock Foreground="{DynamicResource WarningBrush}" FontWeight="Bold">
-                        <Run Text="*  -  " />
-                        <Run Text="{lex:Loc ChangeOnNewDeviceConn}" />
-                    </TextBlock>
-
-                    <GroupBox Header="JoyCon Global Options" Margin="0,8,0,0">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                <TextBlock Text="*" Foreground="{DynamicResource WarningBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                <Label Content="{lex:Loc ControllerRegOptWin.LinkMode}" ContentStringFormat="{}{0}:" />
-                                <ComboBox ItemsSource="{Binding Path=LinkModes}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" SelectedValue="{Binding ParentOptions.LinkedMode}" Margin="8,0,0,0" />
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                <TextBlock Text="*" Foreground="{DynamicResource WarningBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
-                                <Label Content="{lex:Loc ControllerRegOptWin.JoinedGyroProvider}" ContentStringFormat="{}{0}:" />
-                                <ComboBox ItemsSource="{Binding Path=JoinGyroOptions}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" SelectedValue="{Binding ParentOptions.JoinGyroProv}" Margin="8,0,0,0" />
-                            </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-                        <TextBlock Text="*" Foreground="{DynamicResource WarningBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
-                        <CheckBox Content="{lex:Loc ControllerRegOptWin.EnableHomeLED}" IsChecked="{Binding Options.EnableHomeLED, FallbackValue='False'}" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-        </TabControl>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
     </DockPanel>
 </Window>

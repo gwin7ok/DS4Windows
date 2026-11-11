@@ -25,10 +25,11 @@ namespace DS4Windows.Processing.Services
         private readonly IPathService _pathService;
         private readonly IDeviceSlotState _slots;
         private readonly IVirtualPadService _virtualPad;
+        private readonly IIpcResultWriter _resultWriter;
 
         public IpcCommandProcessor(IServiceLifecycle lifecycle, IOutputSlotService outputSlotService, IProfileRepository profileRepo,
             IProfileSettingsService profileSettings, IProfileApplicationService profileApplication, IProfileLoadTarget loadTarget,
-            IPathService pathService, IDeviceSlotState slots, IVirtualPadService virtualPad)
+            IPathService pathService, IDeviceSlotState slots, IVirtualPadService virtualPad, IIpcResultWriter resultWriter)
         {
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
@@ -38,6 +39,7 @@ namespace DS4Windows.Processing.Services
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _resultWriter = resultWriter ?? throw new ArgumentNullException(nameof(resultWriter));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
         }
 
@@ -110,7 +112,7 @@ namespace DS4Windows.Processing.Services
             int tdevice = -1;
             if (int.TryParse(strData[1], out tdevice))
                 tdevice--;
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 byte.TryParse(strData[2], out byte red);
                 byte.TryParse(strData[3], out byte green);
@@ -126,7 +128,7 @@ namespace DS4Windows.Processing.Services
             int tdevice = -1;
             if (int.TryParse(strData[1], out tdevice)) tdevice--;
 
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount &&
                     File.Exists(_pathService.AppDataPath + "\\Profiles\\" + strData[2] + ".xml"))
             {
                 if (strData[0] == "loadprofile")
@@ -195,7 +197,7 @@ namespace DS4Windows.Processing.Services
             if (int.TryParse(strData[1], out tdevice))
                 tdevice--;
 
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 strData[2] = strData[2].ToLower();
                 // Phase6-Step10-5: 抜き差しの正式な入口（IOutputSlotService）経由。事前条件の確認と UI スレッドへの切り替えは、サービスが行う
@@ -217,10 +219,10 @@ namespace DS4Windows.Processing.Services
             if (int.TryParse(strData[1], out tdevice))
                 tdevice--;
 
-            if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT)
+            if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 string propName = strData[2].ToLower();
-                DS4Device[] controllers = _slots.DS4Controllers;
+                InputDeviceCore[] controllers = _slots.Controllers;
 
                 if (propName == "profilename")
                 {
@@ -267,7 +269,7 @@ namespace DS4Windows.Processing.Services
             }
 
             // Write out the property value to MMF result data file and notify a client process that the data is available
-            host.WriteQueryResult(propValue);
+            _resultWriter.WriteQueryResult(propValue);
         }
     }
 }

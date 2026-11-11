@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DS4Windows.Processing.Macro;
+using DS4Windows.Processing.Synthetic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -69,7 +71,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(17, parameters.Length); // 設計の経緯は git の履歴と Phase16-Plan.md（16-1: 読まれていなかった 3 つを削除し 28 → 25。16-10: 補正の段と切断の後始末を切り出し 25 → 20。16-13a: マウスの変換の段を窓口にして 20 → 17）
+            Assert.Equal(15, parameters.Length); // 設計の経緯は git の履歴と Phase16-Plan.md（16-1: 28 → 25。16-10: 25 → 20。16-13a: 20 → 17）。Phase18 後の整理: ログだけに使っていた IManagedActionManager と、個数の取得だけに使っていた ISpecialActionRepository を外し 17 → 15
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]
@@ -85,10 +87,8 @@ namespace DS4WindowsTests
                 TestHost.GetService<IControlActivityReader>(),
                 TestHost.GetService<ISyntheticInputCommitter>(),
                 TestHost.GetService<ITwoStageTriggerProcessor>(),
-                TestHost.GetService<IManagedActionManager>(),   // Phase13-Step4: 静的 ActionManager の廃止で追加
                 TestHost.GetService<IDeviceSlotState>(),   // Phase13-Step5b
                 TestHost.GetService<IProfileActionProvider>(),   // Phase13-Step5b
-                TestHost.GetService<ISpecialActionRepository>(),   // Phase13-Step5b
             };
 
             for (int i = 0; i < valid.Length; i++)

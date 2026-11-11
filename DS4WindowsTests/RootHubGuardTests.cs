@@ -25,22 +25,22 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void App_HoldsTheControlServiceInAVolatileField()
+        public void App_HoldsTheRuntimeBootstrapperInAVolatileField()
         {
             // Phase14d-Step3: ソースの文字列ではなく、フィールドの型と volatile の修飾子を確かめる（取得の経路は ServiceLocatorGuardTests が守る）
-            System.Reflection.FieldInfo field = typeof(DS4Windows.App).GetField("_controlService", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
+            System.Reflection.FieldInfo field = typeof(DS4Windows.App).GetField("_runtimeBootstrapper", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
             Assert.NotNull(field);
-            Assert.Equal(typeof(DS4Windows.Processing.ControlService), field.FieldType);
+            Assert.Equal(typeof(DS4Windows.Processing.Abstractions.IRuntimeBootstrapper), field.FieldType);
             Assert.Contains(typeof(System.Runtime.CompilerServices.IsVolatile), field.GetRequiredCustomModifiers());
         }
 
         [Fact]
-        public void ServiceRegistration_AlwaysCreatesTheControlService()
+        public void ServiceRegistration_AlwaysCreatesTheRuntimeBootstrapper()
         {
-            // Phase14d-Step3: 登録の文字列ではなく、コンテナが ControlService を 1 つ作って返すことを確かめる
-            var first = TestHost.GetService<DS4Windows.Processing.ControlService>();
+            // Phase14d-Step3: 登録の文字列ではなく、コンテナが IRuntimeBootstrapper を 1 つ作って返すことを確かめる
+            var first = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>();
             Assert.NotNull(first);
-            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.ControlService>());
+            Assert.Same(first, TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>());
         }
     }
 }

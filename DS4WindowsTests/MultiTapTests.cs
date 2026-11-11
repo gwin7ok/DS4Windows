@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -338,16 +339,16 @@ namespace DS4WindowsTests
                 using (var t = new SpecialActionTestScope())
                 {
                     TestDs4Device device = TestDs4Device.Create();
-                    TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[t.Device] = device;
+                    TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[t.Device] = device;
                     try
                     {
                         SpecialAction sa = t.Add(new SpecialAction(name, "L1", "MultiAction", "65/65,,", 0, string.Empty));
                         t.StateOf(sa).RequiresFreshPressAfterReset = false;
 
-                        DS4State previous = SpecialActionTestScope.Neutral();
+                        ControllerState previous = SpecialActionTestScope.Neutral();
                         void Step(bool l1)
                         {
-                            DS4State input = SpecialActionTestScope.Neutral();
+                            ControllerState input = SpecialActionTestScope.Neutral();
                             input.L1 = l1;
                             device.Previous = previous;
                             t.RunFrame(input);
@@ -369,7 +370,7 @@ namespace DS4WindowsTests
                     }
                     finally
                     {
-                        TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().DS4Controllers[t.Device] = null;
+                        TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>().Controllers[t.Device] = null;
                     }
                 }
 
@@ -408,7 +409,7 @@ namespace DS4WindowsTests
 
         private static long AllocatedWhileHeld(SpecialActionTestScope t)
         {
-            DS4State held = SpecialActionTestScope.Neutral();
+            ControllerState held = SpecialActionTestScope.Neutral();
             held.L1 = true;
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // JIT は、測定の外へ
 

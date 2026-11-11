@@ -60,44 +60,44 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Touchpad;
-            byte touchSens = service.TouchSensitivity[0];
-            int invert = service.TouchpadInvert[0];
-            uint stickInverted = service.TouchMouseStickInf[0].inverted;
-            bool lowerRc = service.LowerRCOn[0];
+            byte touchSens = service.ForSlot(0).Touchpad.TouchSensitivity;
+            int invert = service.ForSlot(0).Touchpad.Invert;
+            uint stickInverted = service.ForSlot(0).Touchpad.MouseStick.inverted;
+            bool lowerRc = service.ForSlot(0).Touchpad.LowerRightAsRightClick;
             try
             {
                 vm.TouchSens = 55;
-                Assert.Equal(55, service.TouchSensitivity[0]);
+                Assert.Equal(55, service.ForSlot(0).Touchpad.TouchSensitivity);
                 // 0 にすると「感度あり」の印が外れる
                 var names = new List<string>();
                 vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
                 vm.TouchSens = 0;
                 Assert.Contains(nameof(TouchpadSettingsViewModel.TouchSenExists), names);
                 vm.TouchSenExists = true;
-                Assert.Equal(100, service.TouchSensitivity[0]);
+                Assert.Equal(100, service.ForSlot(0).Touchpad.TouchSensitivity);
 
                 // 反転の選択番号は、保存する値（0, 2, 1, 3）と対応する
                 vm.TouchInvertIndex = 1;
-                Assert.Equal(2, service.TouchpadInvert[0]);
+                Assert.Equal(2, service.ForSlot(0).Touchpad.Invert);
                 Assert.Equal(1, vm.TouchInvertIndex);
 
                 // マウスジョイスティックの反転は 1 つの整数のビット（1＝横、2＝縦）
                 vm.TouchMouseStickInvertX = true;
                 vm.TouchMouseStickInvertY = true;
-                Assert.Equal(3u, service.TouchMouseStickInf[0].inverted & 3u);
+                Assert.Equal(3u, service.ForSlot(0).Touchpad.MouseStick.inverted & 3u);
                 vm.TouchMouseStickInvertX = false;
-                Assert.Equal(2u, service.TouchMouseStickInf[0].inverted & 3u);
+                Assert.Equal(2u, service.ForSlot(0).Touchpad.MouseStick.inverted & 3u);
                 Assert.True(vm.TouchMouseStickInvertY);
 
                 vm.LowerRightTouchRMB = !lowerRc;
-                Assert.Equal(!lowerRc, service.LowerRCOn[0]);
+                Assert.Equal(!lowerRc, service.ForSlot(0).Touchpad.LowerRightAsRightClick);
             }
             finally
             {
-                service.TouchSensitivity[0] = touchSens;
-                service.TouchpadInvert[0] = invert;
-                service.TouchMouseStickInf[0].inverted = stickInverted;
-                service.LowerRCOn[0] = lowerRc;
+                service.ForSlot(0).Touchpad.TouchSensitivity = touchSens;
+                service.ForSlot(0).Touchpad.Invert = invert;
+                service.ForSlot(0).Touchpad.MouseStick.inverted = stickInverted;
+                service.ForSlot(0).Touchpad.LowerRightAsRightClick = lowerRc;
             }
         }
 
@@ -106,22 +106,22 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Touchpad;
-            TouchpadOutMode original = service.TouchOutMode[0];
+            TouchpadOutMode original = service.ForSlot(0).Touchpad.OutputMode;
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
                 vm.TouchpadOutputIndex = 2;
-                Assert.Equal(TouchpadOutMode.MouseJoystick, service.TouchOutMode[0]);
+                Assert.Equal(TouchpadOutMode.MouseJoystick, service.ForSlot(0).Touchpad.OutputMode);
                 Assert.Equal(2, vm.TouchpadOutputIndex);
                 Assert.Contains(nameof(TouchpadSettingsViewModel.TouchpadOutputIndex), names);
 
                 vm.TouchpadOutputIndex = 3;
-                Assert.Equal(TouchpadOutMode.Passthru, service.TouchOutMode[0]);
+                Assert.Equal(TouchpadOutMode.Passthru, service.ForSlot(0).Touchpad.OutputMode);
             }
             finally
             {
-                service.TouchOutMode[0] = original;
+                service.ForSlot(0).Touchpad.OutputMode = original;
             }
         }
 
@@ -129,8 +129,8 @@ namespace DS4WindowsTests
         public void TheSlotSettings_ComeFromTheServiceEntryPoint_AndTheOldMembersAreGoneFromTheEditorViewModel()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            Assert.Same(service.TouchMouseStickInf[3], service.ForSlot(3).Touchpad.MouseStick);
-            Assert.Same(service.TouchRelMouse[3], service.ForSlot(3).Touchpad.RelMouse);
+            Assert.Same(service.ForSlot(3).Touchpad.MouseStick, service.ForSlot(3).Touchpad.MouseStick);
+            Assert.Same(service.ForSlot(3).Touchpad.RelMouse, service.ForSlot(3).Touchpad.RelMouse);
 
             // タッチパッドの項目は、ProfileSettingsViewModel から Touchpad（サブ ViewModel）へ移った
             // （UsingMinViGEm173333 は、複数のタブが同じ判定を使うため、親にも残る）

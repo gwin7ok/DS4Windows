@@ -25,7 +25,7 @@ namespace DS4WindowsTests
 
         public void Stop() { Stops++; }
 
-        public void NewReportIncoming(ref DualShockPadMeta padMeta, DS4State hidReport, byte[] outputData)
+        public void NewReportIncoming(ref DualShockPadMeta padMeta, ControllerState hidReport, byte[] outputData)
         {
             Reports.Add((padMeta.PadId, hidReport.Motion.accelXG, hidReport.Motion.angVelYaw, outputData));
         }

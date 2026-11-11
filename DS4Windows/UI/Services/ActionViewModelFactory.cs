@@ -14,9 +14,9 @@ namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// 特殊アクション（割り当て編集画面の各アクション、マクロ、プログラム起動など）の ViewModel を作る。
-    /// <see cref="ViewModelFactory"/>（<see cref="IViewModelFactory"/> の窓口）が、生成をここへ委譲する。依存は、ここで作る ViewModel が使うものだけを受ける。
+    /// 窓口は <see cref="DS4Windows.UI.Abstractions.IActionViewModelFactory"/>。依存は、ここで作る ViewModel が使うものだけを受ける。
     /// </summary>
-    public sealed class ActionViewModelFactory
+    public sealed class ActionViewModelFactory : DS4Windows.UI.Abstractions.IActionViewModelFactory
     {
         private readonly IProfileRepository _profileRepo;
         private readonly ISpecialActionRepository _actionRepo;

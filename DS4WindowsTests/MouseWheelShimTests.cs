@@ -23,7 +23,7 @@ namespace DS4WindowsTests
     {
         private const int Slot = 0;
 
-        private static readonly Type WheelType = typeof(Mapping).Assembly.GetType("DS4Windows.Processing.MouseWheel");
+        private static readonly Type WheelType = typeof(Mapping).Assembly.GetType("DS4Windows.Processing.Touchpad.MouseWheel");
 
         private static object CreateWheel(int deviceNum, IProfileSettingsService settings, IVirtualKBM kbm)
         {
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         private static ProfileSettingsService CreateSettings(int scrollSensitivity, int tickUp, int tickDown)
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            store.scrollSensitivity[Slot] = scrollSensitivity;
+            store.touchpadSlots[Slot].ScrollSensitivity = scrollSensitivity;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var mapping = new SendInputMapping { WHEEL_TICK_UP = tickUp, WHEEL_TICK_DOWN = tickDown };
             settings.OutputKBMMapping = mapping;

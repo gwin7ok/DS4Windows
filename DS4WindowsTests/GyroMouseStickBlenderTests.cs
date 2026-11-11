@@ -21,7 +21,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RightStick_TakesTheGyroValue_WhenTheNormalStickIsCentered()
         {
-            var state = new DS4State();
+            var state = new ControllerState();
             var data = new PostMapStickData();
             new GyroMouseStickBlender().Blend(Info(GyroMouseStickInfo.OutputStick.RightStick, GyroMouseStickInfo.OutputStickAxes.XY), 200, 30, state, data);
 
@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TakesTheValueFartherFromCenter_PerAxis()
         {
-            var state = new DS4State { RX = 250, RY = 120 };   // X: 通常の方が遠い（122 > 72）。Y: ジャイロの方が遠い（98 > 8）
+            var state = new ControllerState { RX = 250, RY = 120 };   // X: 通常の方が遠い（122 > 72）。Y: ジャイロの方が遠い（98 > 8）
             var data = new PostMapStickData();
             new GyroMouseStickBlender().Blend(Info(GyroMouseStickInfo.OutputStick.RightStick, GyroMouseStickInfo.OutputStickAxes.XY), 200, 30, state, data);
 
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LeftStick_WritesTheLeftStickAndItsData()
         {
-            var state = new DS4State();
+            var state = new ControllerState();
             var data = new PostMapStickData();
             new GyroMouseStickBlender().Blend(Info(GyroMouseStickInfo.OutputStick.LeftStick, GyroMouseStickInfo.OutputStickAxes.XY), 10, 240, state, data);
 
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AxesX_LeavesTheVerticalAxisAlone()
         {
-            var state = new DS4State();
+            var state = new ControllerState();
             var data = new PostMapStickData();
             new GyroMouseStickBlender().Blend(Info(GyroMouseStickInfo.OutputStick.RightStick, GyroMouseStickInfo.OutputStickAxes.X), 200, 30, state, data);
 
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AxesY_LeavesTheHorizontalAxisAlone()
         {
-            var state = new DS4State();
+            var state = new ControllerState();
             var data = new PostMapStickData();
             new GyroMouseStickBlender().Blend(Info(GyroMouseStickInfo.OutputStick.RightStick, GyroMouseStickInfo.OutputStickAxes.Y), 200, 30, state, data);
 
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         [Fact]
         public void CenteredGyro_ChangesNothingAndIsNotDirty()
         {
-            var state = new DS4State { RX = 77, RY = 99 };
+            var state = new ControllerState { RX = 77, RY = 99 };
             var data = new PostMapStickData();
             new GyroMouseStickBlender().Blend(Info(GyroMouseStickInfo.OutputStick.RightStick, GyroMouseStickInfo.OutputStickAxes.XY), 128, 128, state, data);
 

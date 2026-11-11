@@ -44,8 +44,8 @@ namespace DS4WindowsTests
 
         private sealed class Harness : IDisposable
         {
-            private readonly DS4StateFieldMapping _fields = new DS4StateFieldMapping();
-            private readonly DS4State _state = new DS4State();
+            private readonly ControllerStateFieldMapping _fields = new ControllerStateFieldMapping();
+            private readonly ControllerState _state = new ControllerState();
             private DateTime _now = T;
 
             public Harness()
@@ -213,16 +213,16 @@ namespace DS4WindowsTests
 
         // ---- 実際の実行 ----
 
-        private static DS4State Cross(bool held)
+        private static ControllerState Cross(bool held)
         {
-            DS4State state = ControlsKeyTestScope.Neutral();
+            ControllerState state = ControlsKeyTestScope.Neutral();
             state.Cross = held;
             return state;
         }
 
-        private static DS4State RunFor(ControlsKeyTestScope t, DS4State input, int milliseconds)
+        private static ControllerState RunFor(ControlsKeyTestScope t, ControllerState input, int milliseconds)
         {
-            DS4State last = null;
+            ControllerState last = null;
             var sw = Stopwatch.StartNew();
             do
             {
@@ -236,7 +236,7 @@ namespace DS4WindowsTests
 
         private static ControlBindingBuilder BuilderWith(RecordingGyroCalibrationPort gyro)
         {
-            var factory = new SpecialActionOutputFactory(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+            var factory = TestOutputFactory.Create(TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 TestHost.GetService<IMacroPlayer>(), TestHost.GetService<IProcessLauncher>(), TestHost.GetService<IProfileSwitcher>(),
                 TestHost.GetService<ISpecialActionRepository>(), TestHost.GetService<IMapping>(), gyroCalibration: gyro);
             return new ControlBindingBuilder(TestHost.GetService<IProfileSettingsService>(), null, null, factory);
@@ -254,7 +254,7 @@ namespace DS4WindowsTests
             RunFor(t, Cross(false), 150);   // SA と同じ Fresh-press ガード（離して 80ms 続くまで実行しない）
             Assert.Empty(gyro.Calls);
 
-            DS4State held = RunFor(t, Cross(true), 300);
+            ControllerState held = RunFor(t, Cross(true), 300);
             Assert.Equal(new[] { Device }, gyro.Calls.ToArray());   // 押して 1 回
             Assert.False(held.Cross);                               // 割り当てたボタンの通常の出力は消える
 

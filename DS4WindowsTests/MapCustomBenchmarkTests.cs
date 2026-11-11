@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Synthetic;
 using DS4Windows.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -52,8 +53,8 @@ namespace DS4WindowsTests
             {
                 AddActions(t);
 
-                DS4State idle = SpecialActionTestScope.Neutral();
-                DS4State pressed = SpecialActionTestScope.Neutral();
+                ControllerState idle = SpecialActionTestScope.Neutral();
+                ControllerState pressed = SpecialActionTestScope.Neutral();
                 pressed.Cross = true;
                 pressed.L1 = true;
 
@@ -71,8 +72,8 @@ namespace DS4WindowsTests
             {
                 AddActions(t);
 
-                DS4State idle = SpecialActionTestScope.Neutral();
-                DS4State pressed = SpecialActionTestScope.Neutral();
+                ControllerState idle = SpecialActionTestScope.Neutral();
+                ControllerState pressed = SpecialActionTestScope.Neutral();
                 pressed.Cross = true;
                 pressed.L1 = true;
 
@@ -81,7 +82,7 @@ namespace DS4WindowsTests
             }
         }
 
-        private double Measure(SpecialActionTestScope t, string label, DS4State input)
+        private double Measure(SpecialActionTestScope t, string label, ControllerState input)
         {
             for (int i = 0; i < Warmup; i++) t.RunFrame(input);
 
@@ -109,14 +110,14 @@ namespace DS4WindowsTests
             using (var t = new SpecialActionTestScope())
             {
                 List<SpecialAction> actions = AddActions(t);
-                DS4State pressed = SpecialActionTestScope.Neutral();
+                ControllerState pressed = SpecialActionTestScope.Neutral();
                 pressed.Cross = true;
                 pressed.L1 = true;
                 double mapCustom = Measure(t, "baseline", pressed);
 
                 ITriggerDispatchEngine engine = t.Engine;
                 var input = new TriggerInput(t.Device, TestHost.GetService<IProfileSettingsService>());
-                var fields = new DS4StateFieldMapping();
+                var fields = new ControllerStateFieldMapping();
                 var frame = new FrameOutput();
                 frame.Bind(fields, new SyntheticState());
 

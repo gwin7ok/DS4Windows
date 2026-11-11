@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class ReapplyConnectedSlotsOnlyTests
     {
-        private const string MainWindowCode = "DS4Windows/UI/MainWindow.xaml.cs";
+        private const string MainWindowCode = "DS4Windows/UI/Services/ProfileSelectionCoordinator.cs";   // 責務ごと MainWindow から移した先
 
         private readonly ITestOutputHelper _output;
 
@@ -29,8 +29,8 @@ namespace DS4WindowsTests
             if (code == null) return;
 
             // 再適用の ApplyToSlot（Manual）は、接続の判定の後ろにだけある
-            Assert.Single(Regex.Matches(code, @"profileSlotApplier\.ApplyToSlot\(i, activeProfiles\[i\], ProfileChangeSource\.Manual\)"));
-            Assert.Contains("if (matches && IsSlotConnected(i)) { profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual); }", code);
+            Assert.Single(Regex.Matches(code, @"_profileSlotApplier\.ApplyToSlot\(i, activeProfiles\[i\], ProfileChangeSource\.Manual\)"));
+            Assert.Contains("if (matches && IsSlotConnected(i)) { _profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual); }", code);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             if (code == null) return;
 
             Assert.Contains("private bool IsSlotConnected(int slot)", code);
-            Assert.Contains("return slots.GetSlot(slot) != null;", code);
+            Assert.Contains("return _slots.GetSlot(slot) != null;", code);
         }
     }
 }

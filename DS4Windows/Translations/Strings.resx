@@ -757,11 +757,11 @@ Disabled:
   <data name="ControllerSupportDualSense" xml:space="preserve">
     <value>DualSense Controller Support</value>
   </data>
-  <data name="ControllerSupportJoyCon" xml:space="preserve">
-    <value>JoyCon Controller Support</value>
-  </data>
   <data name="ControllerSupportSwitchPro" xml:space="preserve">
     <value>Switch Pro Controller Support</value>
+  </data>
+  <data name="ControllerSupportXbox" xml:space="preserve">
+    <value>Xbox Controller Support</value>
   </data>
   <data name="Copycat" xml:space="preserve">
     <value>Copycat</value>
@@ -814,17 +814,8 @@ Disabled:
   <data name="WakeupFromSuspend" xml:space="preserve">
     <value>Waking Up From Suspend</value>
   </data>
-  <data name="ControllerSupportDS3" xml:space="preserve">
-    <value>DS3 Controller Support</value>
-  </data>
   <data name="FirstLaunch.DeviceIntroText" xml:space="preserve">
     <value>Due to other mappers enabling support for multiple device types by default (Steam Input), DS4Windows only enables support for reading from DS4 controllers by default. You can specify mapper support for other supported device types here. Be careful when using DS4Windows with other possible mappers running at the same time.</value>
-  </data>
-  <data name="FirstLaunch.DS3EnableCkbLabel" xml:space="preserve">
-    <value>DS3 Device Support</value>
-  </data>
-  <data name="FirstLaunch.DS3EnableText" xml:space="preserve">
-    <value>Support for DualShock 3 (PS3) controllers. Requires the use of the DsHidMini driver from the ViGEm project (nefarius).</value>
   </data>
   <data name="FirstLaunch.DS4EnableCkbLabel" xml:space="preserve">
     <value>DS4 Device Support</value>
@@ -841,17 +832,17 @@ Disabled:
   <data name="FirstLaunch.Header" xml:space="preserve">
     <value>Enabled Devices Mapper Support</value>
   </data>
-  <data name="FirstLaunch.JoyConEnableCkbLabel" xml:space="preserve">
-    <value>JoyCon Device Support</value>
-  </data>
-  <data name="FirstLaunch.JoyConEnableText" xml:space="preserve">
-    <value>Support for JoyCon (Nintendo Switch) controllers</value>
-  </data>
   <data name="FirstLaunch.SwitchProEnableCkbLabel" xml:space="preserve">
     <value>Switch Pro Device Support</value>
   </data>
   <data name="FirstLaunch.SwitchProEnableText" xml:space="preserve">
     <value>Support for Switch Pro (Nintendo Switch) controllers</value>
+  </data>
+  <data name="FirstLaunch.XboxEnableCkbLabel" xml:space="preserve">
+    <value>Xbox Device Support</value>
+  </data>
+  <data name="FirstLaunch.XboxEnableText" xml:space="preserve">
+    <value>Support for Xbox 360 / Xbox One controllers (read through XInput)</value>
   </data>
   <data name="FirstLaunch.WinTitle" xml:space="preserve">
     <value>First Launch</value>
@@ -1523,9 +1514,6 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="AdvancedSupport" xml:space="preserve">
     <value>Advanced Support</value>
   </data>
-  <data name="UseDs3PitchRollSim" xml:space="preserve">
-    <value>[EXPERIMENTAL] Use DS3 gyro simulation</value>
-  </data>
   <data name="StickCalibration" xml:space="preserve">
     <value>Stick Calibration</value>
   </data>
@@ -1648,6 +1636,48 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   </data>
   <data name="Log_HidHide_Found" xml:space="preserve">
     <value>HidHide control device found</value>
+  </data>
+  <data name="Log_HidHide_XboxHidden" xml:space="preserve">
+    <value>Xbox controller hidden from other apps with HidHide</value>
+  </data>
+  <data name="Log_HidHide_XboxAlreadyHidden" xml:space="preserve">
+    <value>Xbox controller was already hidden in HidHide</value>
+  </data>
+  <data name="Log_HidHide_XboxRestored" xml:space="preserve">
+    <value>Xbox controller is no longer hidden in HidHide</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NotInstalled" xml:space="preserve">
+    <value>Cannot hide the Xbox controller: HidHide is not installed</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NoAccess" xml:space="preserve">
+    <value>Cannot hide the Xbox controller: the HidHide control device cannot be opened (try running as administrator)</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_Inverse" xml:space="preserve">
+    <value>Cannot hide the Xbox controller: the HidHide application list is inverted. DS4Windows does not change it</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_CloakOff" xml:space="preserve">
+    <value>Cannot hide the Xbox controller: device hiding is turned off in HidHide. DS4Windows does not change it</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
+    <value>Cannot hide the Xbox controller: writing the HidHide device list failed</value>
+  </data>
+  <data name="Log_Disconnect_NotSupported" xml:space="preserve">
+    <value>{0} is connected by Bluetooth LE and cannot be disconnected from DS4Windows (Windows provides no way to do so); hold the button on the controller to turn it off</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NotUsb" xml:space="preserve">
+    <value>Xbox controller connected by Bluetooth is not hidden by DS4Windows (the setting applies to USB only); hide it with HidHide if needed</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_DeviceNotFound" xml:space="preserve">
+    <value>Cannot hide the Xbox controller: the device could not be identified (reconnect it and try again)</value>
+  </data>
+  <data name="HideXboxController" xml:space="preserve">
+    <value>Hide Xbox Controller (USB)</value>
+  </data>
+  <data name="HideXboxHidHideMissing" xml:space="preserve">
+    <value>HidHide is not installed. Install HidHide to hide the original Xbox controller from other programs.</value>
+  </data>
+  <data name="HideXboxControllerTip" xml:space="preserve">
+    <value>Hides the original input of Xbox controllers connected by USB (wired) from other programs (requires HidHide). Turn this on if games receive double input. XInput is hidden, but apps that use Windows.Gaming.Input (for example Chrome) may still see the original controller because HidHide cannot hide it from them; if double input still occurs, set the virtual controller to DS4 instead. Bluetooth-connected Xbox controllers are not handled by this setting: hide them with HidHide itself, as with DS4 controllers. DS4Windows restarts its service when this is changed.</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} not found in HidHide whitelist. Adding to list</value>
@@ -1814,6 +1844,24 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="Log_Bezier_Invalid" xml:space="preserve">
     <value>Invalid custom bezier curve "{0}, {1}, {2}, {3}" in {4} axis. x1 and x2 should be in 0..1 range. Using linear curve.</value>
   </data>
+  <data name="Log_Driver_HidHideInstalled" xml:space="preserve">
+    <value>HidHide: installed (product {0} / driver {1})</value>
+  </data>
+  <data name="Log_Driver_HidHideNotInstalled" xml:space="preserve">
+    <value>HidHide: not installed</value>
+  </data>
+  <data name="Log_Driver_ViGEmBusInstalled" xml:space="preserve">
+    <value>ViGEmBus driver: installed (version {0})</value>
+  </data>
+  <data name="Log_Driver_ViGEmBusNotInstalled" xml:space="preserve">
+    <value>ViGEmBus driver: not installed</value>
+  </data>
+  <data name="Log_Driver_FakerInputInstalled" xml:space="preserve">
+    <value>FakerInput driver: installed (version {0})</value>
+  </data>
+  <data name="Log_Driver_FakerInputNotInstalled" xml:space="preserve">
+    <value>FakerInput driver: not installed</value>
+  </data>
   <data name="Log_App_RunningAsAdmin" xml:space="preserve">
     <value>Running as Admin</value>
   </data>
@@ -1844,5 +1892,44 @@ Suspend support not enabled.</value>
   </data>
   <data name="Log_Battery_Notify" xml:space="preserve">
     <value>Controller {0}: {1}</value>
+  </data>
+  <data name="LightbarEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="LightbarFlashAt" xml:space="preserve">
+    <value>Flash at</value>
+  </data>
+  <data name="LightbarPulseAt" xml:space="preserve">
+    <value>Pulse at</value>
+  </data>
+  <data name="LightbarWhileCharging" xml:space="preserve">
+    <value>While charging</value>
+  </data>
+  <data name="LightbarChargingNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="LightbarChargingPulse" xml:space="preserve">
+    <value>Pulse</value>
+  </data>
+  <data name="LightbarChargingRainbow" xml:space="preserve">
+    <value>Rainbow</value>
+  </data>
+  <data name="LightbarChargingColor" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="LightbarSecsPerCycle" xml:space="preserve">
+    <value>secs/cycle</value>
+  </data>
+  <data name="LightbarMaxLight" xml:space="preserve">
+    <value>Max light {0:N2}%</value>
+  </data>
+  <data name="LightbarSectionBattery" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="LightbarSectionCharging" xml:space="preserve">
+    <value>Charging</value>
+  </data>
+  <data name="LightbarSectionRainbow" xml:space="preserve">
+    <value>Rainbow</value>
   </data>
 </root>

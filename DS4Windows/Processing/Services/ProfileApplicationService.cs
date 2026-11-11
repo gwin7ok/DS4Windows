@@ -100,7 +100,7 @@ namespace DS4Windows.Processing.Services
                 return;
             }
 
-            DS4Device device = (DS4Device)_control.GetController(deviceIndex);   // IConfigurableDevice の実装は DS4Device だけ
+            InputDeviceCore device = (InputDeviceCore)_control.GetController(deviceIndex);   // IConfigurableDevice の実装は InputDeviceCore だけ
 
             // Phase10-Step4d W5c: 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
             string target = ResolveTarget(action);
@@ -200,7 +200,7 @@ namespace DS4Windows.Processing.Services
             bool success = false;
             try
             {
-                DS4Device device = (DS4Device)_control.GetController(deviceIndex);   // IConfigurableDevice の実装は DS4Device だけ
+                InputDeviceCore device = (InputDeviceCore)_control.GetController(deviceIndex);   // IConfigurableDevice の実装は InputDeviceCore だけ
 
                 Action applyAction = () =>
                 {
@@ -308,7 +308,7 @@ namespace DS4Windows.Processing.Services
 
             if (prolog == null)
             {
-                DS4Device ds4Device = (DS4Device)control.GetController(device);   // IConfigurableDevice の実装は DS4Device だけ
+                InputDeviceCore ds4Device = (InputDeviceCore)control.GetController(device);   // IConfigurableDevice の実装は InputDeviceCore だけ
                 string battery = ds4Device != null ? $"{ds4Device.Battery}" : "N/A";
                 prolog = AppLogger.UserText("Log_Profile_NowUsing", device + 1, profileName, battery);
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Profile_NowUsing", device + 1, profileName, battery);

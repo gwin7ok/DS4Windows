@@ -8,6 +8,6 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface IDeviceRumbleService
     {
-        void SetDevRumble(DS4Device device, byte heavyMotor, byte lightMotor, int deviceNum);
+        void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum);
     }
 }

@@ -30,6 +30,7 @@ namespace DS4WindowsTests
             public int GetProfileActionCount(int deviceIndex) => _actions.Count;
             public int GetProfileActionIndexOf(int deviceIndex, string actionName) => _actions.FindIndex(a => a.name == actionName);
             public IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex) => _actions.Select(a => a.name).ToArray();
+            public int ActionDefinitionCount => 0;
         }
 
         private sealed class NoMacroPlayer : IMacroPlayer
@@ -68,7 +69,7 @@ namespace DS4WindowsTests
         private static AssignmentBindingBuilder NewBuilder(bool withPort = true)
         {
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            var factory = new SpecialActionOutputFactory(settings, TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
+            var factory = TestOutputFactory.Create(settings, TestHost.GetService<IManagedActionManager>(), TestHost.GetService<IKeyButtonControllerRegistry>(),
                 new NoMacroPlayer(), new NoLauncher(), new NoSwitcher(), macroStringPlayer: new NoMacroStringPlayer());
             return new AssignmentBindingBuilder(factory, withPort ? new SilentPort() : null);
         }

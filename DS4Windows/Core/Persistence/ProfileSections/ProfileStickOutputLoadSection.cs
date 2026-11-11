@@ -48,47 +48,47 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             catch { store.btPollRate[device] = 4; missingSetting = true; }
 
             // Note! xxOutputCurveCustom property needs to be read before xxOutputCurveMode property in case the curveMode is value 6
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveCustom"); store.lsOutBezierCurveObj[device].CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveCustom"); store.stickSlots[device].LsBezier.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveMode"); store.setLsOutCurveMode(device, store.stickOutputCurveId(Item.InnerText)); }
-            catch { store.setLsOutCurveMode(device, 0); missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveMode"); store.stickSlots[device].ApplyLSCurveMode(store.stickOutputCurveId(Item.InnerText)); }
+            catch { store.stickSlots[device].ApplyLSCurveMode(0); missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveCustom"); store.rsOutBezierCurveObj[device].CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveCustom"); store.stickSlots[device].RsBezier.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveMode"); store.setRsOutCurveMode(device, store.stickOutputCurveId(Item.InnerText)); }
-            catch { store.setRsOutCurveMode(device, 0); missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveMode"); store.stickSlots[device].ApplyRSCurveMode(store.stickOutputCurveId(Item.InnerText)); }
+            catch { store.stickSlots[device].ApplyRSCurveMode(0); missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSSquareStick"); bool.TryParse(Item.InnerText, out store.squStickInfo[device].lsMode); }
-            catch { store.squStickInfo[device].lsMode = false; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSSquareStick"); bool.TryParse(Item.InnerText, out store.stickSlots[device].SquStick.lsMode); }
+            catch { store.stickSlots[device].SquStick.lsMode = false; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareStickRoundness"); double.TryParse(Item.InnerText, out store.squStickInfo[device].lsRoundness); }
-            catch { store.squStickInfo[device].lsRoundness = 5.0; missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareRStickRoundness"); double.TryParse(Item.InnerText, out store.squStickInfo[device].rsRoundness); }
-            catch { store.squStickInfo[device].rsRoundness = 5.0; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareStickRoundness"); double.TryParse(Item.InnerText, out store.stickSlots[device].SquStick.lsRoundness); }
+            catch { store.stickSlots[device].SquStick.lsRoundness = 5.0; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SquareRStickRoundness"); double.TryParse(Item.InnerText, out store.stickSlots[device].SquStick.rsRoundness); }
+            catch { store.stickSlots[device].SquStick.rsRoundness = 5.0; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSSquareStick"); bool.TryParse(Item.InnerText, out store.squStickInfo[device].rsMode); }
-            catch { store.squStickInfo[device].rsMode = false; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSSquareStick"); bool.TryParse(Item.InnerText, out store.stickSlots[device].SquStick.rsMode); }
+            catch { store.stickSlots[device].SquStick.rsMode = false; missingSetting = true; }
 
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiSnapback"); bool.TryParse(Item.InnerText, out store.lsAntiSnapbackInfo[device].enabled); }
-            catch { store.lsAntiSnapbackInfo[device].enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED; missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiSnapback"); bool.TryParse(Item.InnerText, out store.rsAntiSnapbackInfo[device].enabled); }
-            catch { store.rsAntiSnapbackInfo[device].enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiSnapback"); bool.TryParse(Item.InnerText, out store.stickSlots[device].LSAntiSnapback.enabled); }
+            catch { store.stickSlots[device].LSAntiSnapback.enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiSnapback"); bool.TryParse(Item.InnerText, out store.stickSlots[device].RSAntiSnapback.enabled); }
+            catch { store.stickSlots[device].RSAntiSnapback.enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiSnapbackDelta"); double.TryParse(Item.InnerText, out store.lsAntiSnapbackInfo[device].delta); }
-            catch { store.lsAntiSnapbackInfo[device].delta = StickAntiSnapbackInfo.DEFAULT_DELTA; missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiSnapbackDelta"); double.TryParse(Item.InnerText, out store.rsAntiSnapbackInfo[device].delta); }
-            catch { store.rsAntiSnapbackInfo[device].delta = StickAntiSnapbackInfo.DEFAULT_DELTA; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiSnapbackDelta"); double.TryParse(Item.InnerText, out store.stickSlots[device].LSAntiSnapback.delta); }
+            catch { store.stickSlots[device].LSAntiSnapback.delta = StickAntiSnapbackInfo.DEFAULT_DELTA; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiSnapbackDelta"); double.TryParse(Item.InnerText, out store.stickSlots[device].RSAntiSnapback.delta); }
+            catch { store.stickSlots[device].RSAntiSnapback.delta = StickAntiSnapbackInfo.DEFAULT_DELTA; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiSnapbackTimeout"); int.TryParse(Item.InnerText, out store.lsAntiSnapbackInfo[device].timeout); }
-            catch { store.lsAntiSnapbackInfo[device].timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT; missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiSnapbackTimeout"); int.TryParse(Item.InnerText, out store.rsAntiSnapbackInfo[device].timeout); }
-            catch { store.rsAntiSnapbackInfo[device].timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSAntiSnapbackTimeout"); int.TryParse(Item.InnerText, out store.stickSlots[device].LSAntiSnapback.timeout); }
+            catch { store.stickSlots[device].LSAntiSnapback.timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT; missingSetting = true; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSAntiSnapbackTimeout"); int.TryParse(Item.InnerText, out store.stickSlots[device].RSAntiSnapback.timeout); }
+            catch { store.stickSlots[device].RSAntiSnapback.timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputMode"); Enum.TryParse(Item.InnerText, out store.lsOutputSettings[device].mode); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputMode"); Enum.TryParse(Item.InnerText, out store.stickSlots[device].LSOutput.mode); }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputMode"); Enum.TryParse(Item.InnerText, out store.rsOutputSettings[device].mode); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputMode"); Enum.TryParse(Item.InnerText, out store.stickSlots[device].RSOutput.mode); }
             catch { missingSetting = true; }
 
             XmlNode xmlLSOutputSettingsElement =
@@ -107,7 +107,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickLSElement.SelectSingleNode("RealWorldCalibration");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.lsOutputSettings[device].outputSettings.flickSettings.realWorldCalibration = temp;
+                        store.stickSlots[device].LSOutput.outputSettings.flickSettings.realWorldCalibration = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -115,7 +115,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickLSElement.SelectSingleNode("FlickThreshold");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.lsOutputSettings[device].outputSettings.flickSettings.flickThreshold = temp;
+                        store.stickSlots[device].LSOutput.outputSettings.flickSettings.flickThreshold = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -123,7 +123,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickLSElement.SelectSingleNode("FlickTime");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.lsOutputSettings[device].outputSettings.flickSettings.flickTime = temp;
+                        store.stickSlots[device].LSOutput.outputSettings.flickSettings.flickTime = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -131,7 +131,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickLSElement.SelectSingleNode("MinAngleThreshold");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.lsOutputSettings[device].outputSettings.flickSettings.minAngleThreshold = temp;
+                        store.stickSlots[device].LSOutput.outputSettings.flickSettings.minAngleThreshold = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -162,7 +162,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickRSElement.SelectSingleNode("RealWorldCalibration");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.rsOutputSettings[device].outputSettings.flickSettings.realWorldCalibration = temp;
+                        store.stickSlots[device].RSOutput.outputSettings.flickSettings.realWorldCalibration = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -170,7 +170,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickRSElement.SelectSingleNode("FlickThreshold");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.rsOutputSettings[device].outputSettings.flickSettings.flickThreshold = temp;
+                        store.stickSlots[device].RSOutput.outputSettings.flickSettings.flickThreshold = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -178,7 +178,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickRSElement.SelectSingleNode("FlickTime");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.rsOutputSettings[device].outputSettings.flickSettings.flickTime = temp;
+                        store.stickSlots[device].RSOutput.outputSettings.flickSettings.flickTime = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -186,7 +186,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlFlickStickRSElement.SelectSingleNode("MinAngleThreshold");
                         double.TryParse(Item.InnerText, out double temp);
-                        store.rsOutputSettings[device].outputSettings.flickSettings.minAngleThreshold = temp;
+                        store.stickSlots[device].RSOutput.outputSettings.flickSettings.minAngleThreshold = temp;
                     }
                     catch { missingSetting = true; }
                 }

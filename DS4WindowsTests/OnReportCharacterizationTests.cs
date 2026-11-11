@@ -28,22 +28,17 @@ namespace DS4WindowsTests
         {
             _output = output;
             DS4Windows.Composition.AppHost.CreateHost();
-            TestHost.GetService<ControlService>();   // TempStates／PreviousStates は ControlService のコンストラクターが作る（本番では起動時に必ず構築される）
+            TestHost.InitializeRuntime();   // 起動時の取り付け（TempStates などは DeviceSlotState が作る）
         }
 
         /// <summary>レポート処理が読む、保護フィールドを持つテスト用デバイス（受信した 1 回分の入力［cState］を指定できる）。</summary>
-        private static TestDs4Device NewDevice(Action<DS4State> fill = null, bool primary = true, bool outputMapGyro = true)
+        private static TestDs4Device NewDevice(Action<ControllerState> fill = null)
         {
             TestDs4Device d = TestDs4Device.Create();
-            var cState = new DS4State();
+            var cState = new ControllerState();
             fill?.Invoke(cState);
             Set(d, "cState", cState);
-            Set(d, "pState", new DS4State());
-            Set(d, "jointState", new DS4State());
-            Set(d, "jointPreviousState", new DS4State());
-            Set(d, "primaryDevice", primary);
-            Set(d, "outputMapGyro", outputMapGyro);
-            Set(d, "jointDeviceSlotNumber", DS4Device.DEFAULT_JOINT_SLOT_NUMBER);
+            Set(d, "pState", new ControllerState());
             d.firstReport = false;
             d.firstActive = DateTime.UtcNow;
             return d;
@@ -59,49 +54,37 @@ namespace DS4WindowsTests
         }
 
         /// <summary>入口。5b-c で、ControlService.On_Report（リフレクション）から IInputReportProcessor.OnReport の直接呼び出しに替えた。</summary>
-        private static void Invoke(DS4Device device, int ind)
+        private static void Invoke(InputDeviceCore device, int ind)
         {
             TestHost.GetService<IInputReportProcessor>().OnReport(device, EventArgs.Empty, ind);
         }
 
-        private static DS4State Current(int ind) => TestHost.GetService<IDeviceSlotState>().CurrentStates[ind];
+        private static ControllerState Current(int ind) => TestHost.GetService<IDeviceSlotState>().CurrentStates[ind];
 
         [Fact]
         public void Index_MinusOne_DoesNothing()
         {
-            DS4Device d = NewDevice(s => s.LX = 10);
+            InputDeviceCore d = NewDevice(s => s.LX = 10);
             Invoke(d, -1);   // 例外なし
         }
 
         [Fact]
         public void ThePrimaryDevice_CopiesTheRawInput_IntoTheSlotsCurrentState()
         {
-            DS4Device d = NewDevice(s => { s.LX = 200; s.LY = 40; s.R2 = 77; });
+            InputDeviceCore d = NewDevice(s => { s.LX = 200; s.LY = 40; s.R2 = 77; });
             Invoke(d, Slot);
 
-            DS4State current = Current(Slot);
+            ControllerState current = Current(Slot);
             Assert.Equal(200, current.LX);
             Assert.Equal(40, current.LY);
             Assert.Equal(77, current.R2);
         }
 
         [Fact]
-        public void ANonPrimaryDevice_WithoutGyroOutput_CopiesTheMotion_AndSkipsTheMapping()
-        {
-            DS4Device d = NewDevice(s => s.LX = 150, primary: false, outputMapGyro: false);
-            d.GetRawCurrentStateRef().Motion.accelXG = 0.25;
-
-            Invoke(d, Slot);
-
-            Assert.Equal(150, Current(Slot).LX);
-            Assert.Equal(0.25, Current(Slot).Motion.accelXG);
-        }
-
-        [Fact]
         public void TheProcessingDelay_IsRecorded_OnlyWhileMeasuring()
         {
             var control = TestHost.GetService<IInputReportProcessor>();
-            DS4Device d = NewDevice(s => s.LX = 128);
+            InputDeviceCore d = NewDevice(s => s.LX = 128);
             d.lastInputReportTimestamp = Stopwatch.GetTimestamp() - Stopwatch.Frequency / 100;   // 約 10 ms 前に受信した
 
             // 遅延の記録は、仮想コントローラーへ出力する経路（DInput 専用でない）でだけ行われる
@@ -131,7 +114,7 @@ namespace DS4WindowsTests
         public void RecordingMacro_DoesNotStopTheReportProcessing()
         {
             var control = TestHost.GetService<IInputReportProcessor>();
-            DS4Device d = NewDevice(s => s.LX = 99);
+            InputDeviceCore d = NewDevice(s => s.LX = 99);
             control.RecordingMacro = true;
             try
             {
@@ -147,7 +130,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheReportPath_AllocatesNothingPerReport()
         {
-            DS4Device d = NewDevice(s => { s.LX = 130; s.LY = 120; });
+            InputDeviceCore d = NewDevice(s => { s.LX = 130; s.LY = 120; });
             for (int i = 0; i < 2000; i++) Invoke(d, Slot);   // ウォームアップ
 
             const int n = 2000;

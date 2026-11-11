@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// UI が見る、接続中のコントローラー 1 台の面。第 1 層の <c>DS4Device</c> を UI に直接持たせないための窓口（規約 1 章）。
+    /// UI が見る、接続中のコントローラー 1 台の面。第 1 層の <c>InputDeviceCore</c> を UI に直接持たせないための窓口（規約 1 章）。
     /// 実装は機器ごとに 1 つだけ作る（<see cref="IControllerSlotQuery"/> が返す）ため、同じ機器なら参照が同じで、一覧での同一判定に使える。
     /// 各イベントの <c>sender</c> は、この面自身（機器ではない）。購読の解除は、購読したときと同じデリゲートで行う。
     /// </summary>
@@ -30,9 +30,6 @@ namespace DS4Windows.Processing.Abstractions
         bool HasValidSerial { get; }
 
         bool IsRemoving { get; }
-
-        /// <summary>合体した機器（Joy-Con）の主側か。</summary>
-        bool PrimaryDevice { get; }
 
         DeviceExclusiveStatus ExclusiveStatus { get; }
 

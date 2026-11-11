@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
@@ -10,11 +11,15 @@ namespace DS4Windows.Processing.Services
     public class ProfileActionProvider : IProfileActionProvider
     {
         private readonly BackingStore _config;
+        private readonly ISpecialActionRepository _specialActions;
 
-        public ProfileActionProvider(BackingStore config)
+        public ProfileActionProvider(BackingStore config, ISpecialActionRepository specialActions)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _specialActions = specialActions ?? throw new ArgumentNullException(nameof(specialActions));
         }
+
+        public int ActionDefinitionCount => _specialActions.ActionList.Count;
 
         public IReadOnlyList<string> GetProfileActionNames(int deviceIndex)
         {

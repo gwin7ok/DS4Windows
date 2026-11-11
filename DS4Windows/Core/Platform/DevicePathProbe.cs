@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DS4Windows.Core.Utilities;
@@ -59,6 +60,98 @@ namespace DS4Windows.Core.Platform
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// XInput の入り口（XUSB インターフェース）を持つ機器のインスタンス ID から、隠す対象の一覧（USB の複合機器と、その下のすべての機器）を返す。
+        /// 入り口の位置は機種で違う: Xbox 360 は USB の親（<c>USB\VID_…\シリアル</c>）、Xbox One 世代は HID の子（<c>HID\VID_…&amp;IG_00\…</c>）にある。
+        /// どちらも、XInput を他のアプリに見せないには、複合機器とその下の機器（USB のインターフェース、HID）の全部が要る。
+        /// </summary>
+        public static IReadOnlyList<string> GetUsbDeviceTreeInstanceIds(string ownerInstanceId)
+        {
+            var result = new List<string>();
+            if (string.IsNullOrEmpty(ownerInstanceId))
+            {
+                return result;
+            }
+
+            string root = FindUsbDeviceRoot(ownerInstanceId, GetParentInstanceId);
+            result.Add(root);
+            if (NativeMethods.CM_Locate_DevNodeW(out uint node, root, 0) == 0)
+            {
+                CollectDescendants(node, result, 0);
+            }
+
+            // 持ち主が、複合機器の下にないとき（探せなかった場合）でも、持ち主は必ず含める
+            if (!result.Contains(ownerInstanceId, StringComparer.OrdinalIgnoreCase))
+            {
+                result.Add(ownerInstanceId);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 機器から親へたどり、USB のインターフェース（<c>&amp;IG_</c>・<c>&amp;MI_</c>）と HID を抜けた先の、USB の複合機器（または単体の USB 機器）を返す。
+        /// USB の機器でなければ、元の機器のまま返す（無関係な機器の木を隠さない）。
+        /// </summary>
+        public static string FindUsbDeviceRoot(string instanceId, Func<string, string> parentOf)
+        {
+            string node = instanceId;
+            for (int i = 0; i < 4 && IsInterfaceNode(node); i++)
+            {
+                string parent = parentOf(node);
+                if (string.IsNullOrEmpty(parent))
+                {
+                    break;
+                }
+
+                node = parent;
+            }
+
+            return node.StartsWith(@"USB\", StringComparison.OrdinalIgnoreCase) && !IsInterfaceNode(node) ? node : instanceId;
+        }
+
+        private static bool IsInterfaceNode(string instanceId) =>
+            instanceId.StartsWith(@"HID\", StringComparison.OrdinalIgnoreCase) ||
+            instanceId.IndexOf("&IG_", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            instanceId.IndexOf("&MI_", StringComparison.OrdinalIgnoreCase) >= 0;
+
+        private static string GetParentInstanceId(string instanceId)
+        {
+            if (NativeMethods.CM_Locate_DevNodeW(out uint node, instanceId, 0) != 0 ||
+                NativeMethods.CM_Get_Parent(out uint parent, node, 0) != 0)
+            {
+                return string.Empty;
+            }
+
+            var id = new StringBuilder(512);
+            return NativeMethods.CM_Get_Device_IDW(parent, id, id.Capacity, 0) == 0 ? id.ToString() : string.Empty;
+        }
+
+        private static void CollectDescendants(uint node, List<string> result, int depth)
+        {
+            if (depth > 8 || NativeMethods.CM_Get_Child(out uint child, node, 0) != 0)
+            {
+                return;
+            }
+
+            while (true)
+            {
+                var id = new StringBuilder(512);
+                if (NativeMethods.CM_Get_Device_IDW(child, id, id.Capacity, 0) == 0)
+                {
+                    result.Add(id.ToString());
+                }
+
+                CollectDescendants(child, result, depth + 1);
+                if (NativeMethods.CM_Get_Sibling(out uint next, child, 0) != 0)
+                {
+                    break;
+                }
+
+                child = next;
+            }
         }
 
         internal static string[] GetStringArrayDeviceProperty(string deviceInstanceId,

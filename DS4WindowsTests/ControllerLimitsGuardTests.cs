@@ -26,7 +26,6 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRedeclaredConstants_MatchControllerLimits()
         {
-            Assert.Equal(ControllerLimits.MaxControllerCount, ControlService.MAX_DS4_CONTROLLER_COUNT);
             Assert.Equal(ControllerLimits.MaxControllerCount, ProfileSettingsService.MAX_DS4_CONTROLLER_COUNT);
             Assert.Equal(ControllerLimits.TestProfileItemCount, ProfileSettingsService.TEST_PROFILE_ITEM_COUNT);
         }

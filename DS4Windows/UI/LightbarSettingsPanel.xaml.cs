@@ -16,6 +16,12 @@ namespace DS4Windows.UI
         {
             InitializeComponent();
             emptyColorGB.Visibility = Visibility.Collapsed;
+            // 「最大の明るさ」の書式は表示言語の文言（XAML の StringFormat は固定の英語のため、ここで差し替える）
+            maxLightText.SetBinding(System.Windows.Controls.TextBlock.TextProperty, new System.Windows.Data.Binding("MaxSatRainbow")
+            {
+                FallbackValue = 100,
+                StringFormat = DS4Windows.UI.Services.LocalizedText.Get("LightbarMaxLight")
+            });
         }
 
         private LightbarSettingsViewModel ViewModel => (LightbarSettingsViewModel)DataContext;

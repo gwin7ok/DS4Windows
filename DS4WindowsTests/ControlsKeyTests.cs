@@ -49,8 +49,8 @@ namespace DS4WindowsTests
             IProfileSettingsService settings = Settings();
             var input = new TriggerInput(Device, settings);
             var action = new ControlButtonInputAction("p8s78b", DS4Controls.L2);
-            DS4StateFieldMapping fields = new DS4StateFieldMapping();
-            var state = new DS4State();
+            ControllerStateFieldMapping fields = new ControllerStateFieldMapping();
+            var state = new ControllerState();
 
             fields.triggers[(int)DS4Controls.L2] = 1;   // 0 より大きい（Controls の判定）。100 より大きくはない（特殊アクションの判定）
             input.Update(state, null, null, null, fields);
@@ -183,7 +183,7 @@ namespace DS4WindowsTests
 
         // ---- 割り当て ----
 
-        private static long Allocated(ControlsKeyTestScope t, DS4State input)
+        private static long Allocated(ControlsKeyTestScope t, ControllerState input)
         {
             long before = GC.GetAllocatedBytesForCurrentThread();
             for (int i = 0; i < 1000; i++) t.Run(input);
@@ -208,7 +208,7 @@ namespace DS4WindowsTests
                     t.Publish();
                     foreach (bool cross in crossFrames)
                     {
-                        DS4State input = ControlsKeyTestScope.Neutral();
+                        ControllerState input = ControlsKeyTestScope.Neutral();
                         input.Cross = cross;
                         t.Run(input);
                     }

@@ -25,7 +25,7 @@ namespace DS4WindowsTests
             device.Connect();
             Assert.Equal(1, target.ConnectCount);
 
-            var state = new DS4State { Cross = true, Square = true, DpadUp = true, L1 = true, Share = true, PS = true, L2 = 200, R2 = 7, LX = 0x80, LY = 0xFF, RX = 0, RY = 0x80 };
+            var state = new ControllerState { Cross = true, Square = true, DpadUp = true, L1 = true, Share = true, PS = true, L2 = 200, R2 = 7, LX = 0x80, LY = 0xFF, RX = 0, RY = 0x80 };
             device.ConvertandSendReport(state, 0);
 
             ushort expected = (ushort)(Xbox360Buttons.A | Xbox360Buttons.X | Xbox360Buttons.Up | Xbox360Buttons.LeftShoulder | Xbox360Buttons.Back | Xbox360Buttons.Guide);
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
         public void AllocateController_Ds4_ChoosesTheDeviceKindByTheDriverVersion()
         {
             // 1.19 以降: 出力バッファを待つ拡張（生のレポートを送る）。1.17.333 以降: 拡張（生のレポート）。それ未満: 基本（ボタンと軸を個別に設定）
-            var state = new DS4State { Cross = true };
+            var state = new ControllerState { Cross = true };
 
             var extBackend = new FakeVirtualPadBackend();
             extBackend.Start();
@@ -115,7 +115,7 @@ namespace DS4WindowsTests
             FakeDs4Target target = backend.Ds4Targets[0];
             device.Connect();
 
-            var state = new DS4State { Cross = true, Share = true, L2Btn = true, PS = true, OutputTouchButton = true, DpadUp = true, DpadRight = true, L2 = 9, R2 = 8, LX = 1, LY = 2, RX = 3, RY = 4 };
+            var state = new ControllerState { Cross = true, Share = true, L2Btn = true, PS = true, OutputTouchButton = true, DpadUp = true, DpadRight = true, L2 = 9, R2 = 8, LX = 1, LY = 2, RX = 3, RY = 4 };
             device.ConvertandSendReport(state, 0);
 
             Assert.Equal((ushort)(Ds4Buttons.Cross | Ds4Buttons.Share | Ds4Buttons.TriggerLeft), target.Buttons);

@@ -505,7 +505,7 @@ namespace DS4Windows.Output
             }
         }
 
-        private bool ReportToBuffer(DS4State hidReport, byte[] outputData, ref int outIdx)
+        private bool ReportToBuffer(ControllerState hidReport, byte[] outputData, ref int outIdx)
         {
             unchecked
             {
@@ -622,7 +622,7 @@ namespace DS4Windows.Output
             return true;
         }
 
-        private bool ReportToBufferDataRsp(DS4State hidReport, ref PadDataRspPacket currentRsp)
+        private bool ReportToBufferDataRsp(ControllerState hidReport, ref PadDataRspPacket currentRsp)
         {
             unchecked
             {
@@ -737,7 +737,7 @@ namespace DS4Windows.Output
             return true;
         }
 
-        public unsafe void NewReportIncoming(ref DualShockPadMeta padMeta, DS4State hidReport, byte[] outputData)
+        public unsafe void NewReportIncoming(ref DualShockPadMeta padMeta, ControllerState hidReport, byte[] outputData)
         {
             if (!running)
                 return;

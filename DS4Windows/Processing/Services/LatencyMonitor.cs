@@ -36,7 +36,7 @@ namespace DS4Windows.Processing.Services
             }
         }
 
-        public void OnReport(DS4Device device, int ind)
+        public void OnReport(InputDeviceCore device, int ind)
         {
             string devError = _tempStrings[ind] = device.error;
             if (!string.IsNullOrEmpty(devError))
@@ -73,7 +73,7 @@ namespace DS4Windows.Processing.Services
             _inWarnMonitor[ind] = false;
         }
 
-        private void LagFlashWarning(DS4Device device, int ind, bool on)
+        private void LagFlashWarning(InputDeviceCore device, int ind, bool on)
         {
             if (on)
             {

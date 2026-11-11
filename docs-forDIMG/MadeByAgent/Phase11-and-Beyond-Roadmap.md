@@ -194,3 +194,16 @@ Phase16 の追補（16-12・16-13）で見送った次の項目を、Phase17 で
 - 常時のルール（案）: 各 Phase の完了報告書の条件に「モデル図への反映」を加える（規約には「構造に関わる変更はモデル図に反映する」とあるが、Phase の完了条件には入っていない）。
 - Phase13 の前に 1 回（案）: モデル図の現状合わせ。内容は、(1) Phase11・12 の反映（`IWindowFocuser`、`IWindowSystem`、`IMouseInputHook`、`WindowTargetMatcher`、`MacroPointerRecorder`、`FocusWindow`、`Debouncer` の廃止、電池の `UpdateBattery`）、(2) Phase8 の `ITriggerDispatchEngine`／`IActionRegistry`／`IActionBindingBuilder` を「未実装（点線）」から実線へ、(3) 行数の更新（`DS4Device.cs` 約 2,068、`ProfileSettingsViewModel.cs` 約 3,469 ほか）。コードの変更はなく、文書だけ。
 - 各 Phase での更新: Phase13（`ControlService`、`Func<T>`、`ServiceProviderHolder`）、Phase14（名前空間・フォルダ。`DI/` の位置づけ）、Phase16（`IHidTransport` など）で、該当の図を更新する。
+
+- 2026-11-10 Phase17 の見送り: 既存機種（DS4Device 系）の `ProtocolDevice` への移行は Phase18 候補（前提: 共通部品の切り出しと差分テスト）。`MainWindow` 20・`MainWindowFactory` 20・`Mapping` 17 は 15 以下にしていない（理由は `Phase17-Plan.md`）。
+- 2026-11-10 Phase18 完了（ブランチ Phase17 の中）: 4 機種（DS4・DualSense・Switch Pro・`ProtocolDevice`）が `InputLoopDevice` の骨組みに載り、基底は抽象の `InputDeviceCore`（旧 `DS4Device`）になった（`Phase18-Plan.md`）。同日、到達できなかった 2 台結合の仕組み（Joint／`PrimaryDevice`）を削除した。
+- 2026-11-10 Phase の並び（引数 6 以上を避ける根本対策の計画を受けて改定）: Phase19＝工場の廃止（`Phase19-Plan.md`）→ Phase20＝責務の分割（窓、続いて引数 10 以上の型。`Phase20-Plan.md`）→ Phase21＝同じ契約の依存を列で受ける（`Phase21-Plan.md`）→ **Phase22＝USB の Xbox 360 コントローラーを入力機種として足す（最後。旧 Phase19。`Phase22-Plan.md`。調査は `Xbox-Input-Research.md`）**。コードは未着手。
+- 2026-11-10 構造の宿題（引数 15 以下）: `Mapping` を 17 → 15 にした（ログだけに使っていた `IManagedActionManager` と、個数の取得だけに使っていた `ISpecialActionRepository` を外した。ログの文言は `DefaultActionManager` へ移した。個数は `IProfileActionProvider.ActionDefinitionCount` から得る）。`MainWindow` と `MainWindowFactory` は 20 → 18（CLI の問い合わせの結果の書き込み `IIpcResultWriter` を `IpcCommandProcessor` が持ち、画面からのプロファイルの適用を `IProfileSlotApplier.ApplyFromUi` に集約した。`IIpcResultWriter` は `Processing/Abstractions` へ移した）。`ConstructorArityBaseline` の残りは `MainWindow` 18 と `MainWindowFactory` 18。15 以下にするには、画面の責務（トレイ・テーマ、通知、更新の確認、起動引数）を別の部品へ分ける必要があり、UI の実機確認を伴う。
+- 2026-11-10 Phase19 完了（コード）: `MainWindowFactory` を `Composition` へ移し、`ActivatorUtilities` で窓をつくる形にして 18 → 1 にした。ほかの工場は基準内の多品目・実行時引数つきのため見送り（`Phase19-Plan.md` §6）。`ConstructorArityBaseline` の残りは `MainWindow` 18 のみ（Phase20）。実機の確認（起動、`-m` 起動、複製の名前入力欄）は未了。
+- 2026-11-10 Phase20 の 20-0〜20-3 完了（コード）: `MainWindow` を 18 → 15 にし、`ConstructorArityBaseline` は空になった（`TrayAppearanceController`／`ProfileSelectionCoordinator`）。20-5 以降（窓以外の引数 10 以上の型）は未着手。実機確認は台帳へ登録済み。
+- 2026-11-10 Phase20 完了: 窓の分割（18→15）、`InputReportProcessor` 15→13、しきい値を 12 へ。基準値の一覧に 6 型が凍結。次: Phase21（列で受ける。調査から）→ Phase22（Xbox）。
+- 2026-11-10 Phase21 完了（調査のみ。列で受ける候補は 0 件、コード変更なし）。次: Phase22（Xbox 360 USB 入力）。
+- 2026-11-10 構造の見直し: 引数の数の基準ではなく「単純で美しいか」で構造を評価し、変えるべき箇所 A〜G（設定のオブジェクト化、画面の ViewModel 化、`App` の分解、`Processing` 直下の整理、実行時の管理の整理、DS4 名の一般化、工場の整理）を `Structure-Review-2026-11.md` にまとめた。Xbox 対応（Phase22）は、これらの後の最後に回す。着手順の案は同文書 §3。
+- 2026-11-10 Phase24（C: `App.xaml.cs` の分解）完了。詳細は Structure-Review-2026-11.md の更新履歴。次は Phase25（A: 設定のオブジェクト化）。
+
+- 2026-11-11 Phase の並びの追記: 入力側の画像・ボタン名の機種別対応（KI-7）は、一番最後の Phase で行う（ユーザーの指示）。

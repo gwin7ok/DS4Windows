@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Touchpad;
 using System;
 using Xunit;
 using DS4Windows.Processing;
@@ -17,7 +18,7 @@ namespace DS4WindowsTests
         public void TouchMoveCursor_AllocatesZeroBytes()
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            store.touchSensitivity[Slot] = 100;
+            store.touchpadSlots[Slot].TouchSensitivity = 100;
             var settings = TestRepositoryFactory.CreateProfileSettingsService(store);
             var kbm = new RecordingVirtualKbm { Recording = false };
             var cursor = new MouseCursor(Slot, null, settings, kbm);

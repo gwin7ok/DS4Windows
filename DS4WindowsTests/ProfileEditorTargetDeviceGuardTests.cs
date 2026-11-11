@@ -126,9 +126,10 @@ namespace DS4WindowsTests
             string saved = SourceText.Method(text, "private void Editor_ProfileSaved(");
             Assert.Contains("SyncProfileListAndControllers(oldProfile: profile, newProfile: null)", saved);
 
-            string sync = SourceText.Method(text, "private void SyncProfileListAndControllers(");
+            string coordinator = SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
+            string sync = SourceText.Method(coordinator, "public void SyncProfileListAndControllers(");
             Assert.Contains("string.Equals(activeProfiles[i], targetProfile, StringComparison.CurrentCultureIgnoreCase)", sync);
-            Assert.Contains("profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual)", sync);
+            Assert.Contains("_profileSlotApplier.ApplyToSlot(i, activeProfiles[i], ProfileChangeSource.Manual)", sync);
         }
 
         [Fact]
@@ -212,8 +213,9 @@ namespace DS4WindowsTests
             }
 
             // Phase7-Step5 W5: ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
-            Assert.Contains("editorWindowFactory.CreateProfileEditor(targetDevice)", text);
-            string factory = SourceText.ReadCode("DS4Windows/UI/Services/EditorWindowFactory.cs");
+            Assert.Contains("profileSelection.CreateEditor(targetDevice)", text);
+            Assert.Contains("_editorWindowFactory.CreateProfileEditor(targetDevice)", SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs"));
+            string factory = SourceText.ReadCode("DS4Windows/UI/Services/ProfileEditorFactory.cs");
             if (factory != null)
                 Assert.Contains("new ProfileEditor(targetDevice,", factory);
             Assert.Contains("editor.Reload(entity)", text);
@@ -225,7 +227,7 @@ namespace DS4WindowsTests
             var checks = new (string File, string Call)[]
             {
                 ("DS4Windows/UI/BindingWindow.xaml.cs", "CreateRecordBox("),
-                ("DS4Windows/UI/Services/EditorWindowFactory.cs", "CreateBindingWindowViewModel("),
+                ("DS4Windows/UI/Services/AssignmentWindowFactory.cs", "CreateBindingWindowViewModel("),
                 ("DS4Windows/UI/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/UI/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
                 ("DS4Windows/UI/AssignmentEditor.xaml.cs", "CreateRecordBoxWindow("),

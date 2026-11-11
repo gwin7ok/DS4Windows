@@ -559,12 +559,6 @@
                 </TabItem>
 
             </TabControl>
-            <StackPanel Orientation="Horizontal"
-                        Margin="0, 8, 0, 8">
-                <CheckBox Content="{lex:Loc UseDs3PitchRollSim}"
-                          IsChecked="{Binding UseDs3PitchRollSim}"
-                          ToolTip="{lex:Loc UseDs3PitchRollSimTooltip}"/>
-            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 

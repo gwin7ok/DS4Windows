@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             provider.GetRequiredService<IStartupArguments>().SetParser(parser);
 
             IOutputKbmInitializer initializer = provider.GetRequiredService<IOutputKbmInitializer>();
-            Assert.NotNull(provider.GetRequiredService<ControlService>());
+            Assert.NotNull(provider.GetRequiredService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>());
 
             Assert.Same(parser, GetCmdParser(initializer));
             Assert.Equal("sendinput", GetCmdParser(initializer).VirtualkbmHandler);
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
             services.RegisterServices();
 
             ServiceProvider provider = services.BuildServiceProvider();
-            Assert.NotNull(provider.GetRequiredService<ControlService>());
+            Assert.NotNull(provider.GetRequiredService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>());
 
             ArgumentParser cmdParser = GetCmdParser(provider.GetRequiredService<IOutputKbmInitializer>());
             Assert.NotNull(cmdParser);

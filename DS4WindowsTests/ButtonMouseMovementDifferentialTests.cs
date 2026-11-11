@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Gyro;
 using System;
 using Xunit;
 using DS4Windows.Core.Model;
@@ -24,8 +25,8 @@ namespace DS4WindowsTests
             private int mouseaccel = 0;
             private int prevmouseaccel = 0;
 
-            public double GetMouseMapping(int device, DS4Controls control, DS4State cState,
-                DS4StateFieldMapping fieldMapping, int mnum, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
+            public double GetMouseMapping(int device, DS4Controls control, ControllerState cState,
+                ControllerStateFieldMapping fieldMapping, int mnum, ButtonMouseInfo buttonMouseInfo, int lsDeadZone, int rsDeadZone,
                 DeltaSettingsProcessorGroup deltaAccelProcessorGroup, double timeElapsed)
             {
                 int deadzoneL = 0;
@@ -41,8 +42,8 @@ namespace DS4WindowsTests
                 const double divide = 10000d;
 
                 int controlNum = (int)control;
-                DS4StateFieldMapping.ControlType controlType = DS4StateFieldMapping.mappedType[controlNum];
-                //long timeElapsed = ctrl.DS4Controllers[device].getLastTimeElapsed();
+                ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
+                //long timeElapsed = ctrl.Controllers[device].getLastTimeElapsed();
                 //double mouseOffset = 0.025;
                 double tempMouseOffsetX = 0.0, tempMouseOffsetY = 0.0;
                 double mouseVerticalScale = 1.0;
@@ -54,13 +55,13 @@ namespace DS4WindowsTests
                     mouseVerticalScale = buttonMouseInfo.buttonVerticalScale;
                 }
 
-                if (controlType == DS4StateFieldMapping.ControlType.Button)
+                if (controlType == ControllerStateFieldMapping.ControlType.Button)
                 {
                     bool active = fieldMapping.buttons[controlNum];
                     value = (active ? Math.Pow(root + speed / divide, 100) - 1 : 0);
                     if (verticalDir) value *= mouseVerticalScale;
                 }
-                else if (controlType == DS4StateFieldMapping.ControlType.AxisDir)
+                else if (controlType == ControllerStateFieldMapping.ControlType.AxisDir)
                 {
                     double timeDelta = timeElapsed * 0.001;
                     int mouseVelocity = speed * Mapping.MOUSESPEEDFACTOR;
@@ -269,13 +270,13 @@ namespace DS4WindowsTests
                         default: break;
                     }
                 }
-                else if (controlType == DS4StateFieldMapping.ControlType.Trigger)
+                else if (controlType == ControllerStateFieldMapping.ControlType.Trigger)
                 {
                     byte trigger = fieldMapping.triggers[controlNum];
                     value = Math.Pow(root + speed / divide, trigger / 2d) - 1;
                     if (verticalDir) value *= mouseVerticalScale;
                 }
-                else if (controlType == DS4StateFieldMapping.ControlType.GyroDir)
+                else if (controlType == ControllerStateFieldMapping.ControlType.GyroDir)
                 {
                     //double SXD = getSXDeadzone(device);
                     //double SZD = getSZDeadzone(device);
@@ -350,7 +351,7 @@ namespace DS4WindowsTests
         };
 
         /// <summary>1 フレーム分の入力（疑似乱数。128・0・255 の境界の値を混ぜる）。</summary>
-        private static void FillFrame(Random rnd, DS4State state, DS4StateFieldMapping fields, DeltaSettingsProcessorGroup accel, bool useDeltaAccel)
+        private static void FillFrame(Random rnd, ControllerState state, ControllerStateFieldMapping fields, DeltaSettingsProcessorGroup accel, bool useDeltaAccel)
         {
             byte Axis()
             {
@@ -391,8 +392,8 @@ namespace DS4WindowsTests
             {
                 var info = new ButtonMouseInfo { mouseAccel = mouseAccel, activeButtonSensitivity = sens, buttonVerticalScale = vertScale };
                 var accel = new DeltaSettingsProcessorGroup();
-                var state = new DS4State();
-                var fields = new DS4StateFieldMapping();
+                var state = new ControllerState();
+                var fields = new ControllerStateFieldMapping();
                 var rnd = new Random(seed++);
                 var oldImpl = new OldButtonMouseMapping();
                 var newImpl = new ButtonMouseMovementCalculator();
@@ -421,9 +422,9 @@ namespace DS4WindowsTests
             // デバイス 0 は押し続け（値が出る）、デバイス 1 は押していない（値が 0）。交互に呼んでも、各デバイスの結果は、そのデバイスだけを呼んだ旧実装と一致する
             var info = new ButtonMouseInfo { mouseAccel = true, activeButtonSensitivity = 25 };
             var accel = new DeltaSettingsProcessorGroup();
-            var state = new DS4State();
-            var active = new DS4StateFieldMapping();
-            var idle = new DS4StateFieldMapping();
+            var state = new ControllerState();
+            var active = new ControllerStateFieldMapping();
+            var idle = new ControllerStateFieldMapping();
             active.buttons[(int)DS4Controls.Cross] = true;
             var newImpl = new ButtonMouseMovementCalculator();
             var old0 = new OldButtonMouseMapping();
@@ -443,8 +444,8 @@ namespace DS4WindowsTests
         {
             // 押し続けると、加速（1 + mouseaccel / 10000）で値が増える。加速なしの値より大きくなる
             var accel = new DeltaSettingsProcessorGroup();
-            var state = new DS4State();
-            var fields = new DS4StateFieldMapping();
+            var state = new ControllerState();
+            var fields = new ControllerStateFieldMapping();
             fields.buttons[(int)DS4Controls.Cross] = true;
             var withAccel = new ButtonMouseInfo { mouseAccel = true, activeButtonSensitivity = 25 };
             var withoutAccel = new ButtonMouseInfo { mouseAccel = false, activeButtonSensitivity = 25 };

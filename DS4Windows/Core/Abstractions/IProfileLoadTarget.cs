@@ -10,7 +10,7 @@ namespace DS4Windows.Core.Abstractions
     /// </summary>
     public interface IProfileLoadTarget
     {
-        /// <summary>スロットのコントローラー（旧: <c>control.DS4Controllers[ind]</c> と同じ。範囲外は元と同じく例外。鎖の呼び出しの一部は範囲の検査をしないため、挙動を変えない）。</summary>
+        /// <summary>スロットのコントローラー（旧: <c>control.Controllers[ind]</c> と同じ。範囲外は元と同じく例外。鎖の呼び出しの一部は範囲の検査をしないため、挙動を変えない）。</summary>
         IConfigurableDevice GetController(int ind);
 
         /// <summary>スロットのタッチパッドのマウス（旧: <c>control.touchPad[ind]</c>。範囲外は元と同じく例外）。Phase14b-Step7: <c>Mouse</c> ではなく、プロファイルの読込が使う操作だけの <see cref="ITouchPadGyroToggles"/> を返す（同じインスタンス）。</summary>

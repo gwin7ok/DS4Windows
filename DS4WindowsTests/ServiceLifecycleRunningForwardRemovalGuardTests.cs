@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         public void ControlService_NoLongerExposesTheForward(string name)
         {
             const BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-            Assert.DoesNotContain(typeof(ControlService).GetMembers(all), m => m.Name == name);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetMembers(all), m => m.Name == name);
         }
 
         [Fact]

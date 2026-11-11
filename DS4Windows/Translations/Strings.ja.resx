@@ -629,17 +629,14 @@
   <data name="FirstLaunch.SwitchProEnableText" xml:space="preserve">
     <value>Switch Pro（Nintendo Switch）コントローラーのサポート</value>
   </data>
-  <data name="FirstLaunch.JoyConEnableCkbLabel" xml:space="preserve">
-    <value>JoyCon Device Support</value>
+  <data name="FirstLaunch.XboxEnableCkbLabel" xml:space="preserve">
+    <value>Xbox デバイスのサポート</value>
   </data>
-  <data name="FirstLaunch.JoyConEnableText" xml:space="preserve">
-    <value>JoyCon（Nintendo Switch）コントローラーのサポート</value>
+  <data name="FirstLaunch.XboxEnableText" xml:space="preserve">
+    <value>Xbox 360／Xbox One コントローラーのサポート（XInput で読み取ります）</value>
   </data>
-  <data name="FirstLaunch.DS3EnableCkbLabel" xml:space="preserve">
-    <value>DS3 Device Support</value>
-  </data>
-  <data name="FirstLaunch.DS3EnableText" xml:space="preserve">
-    <value>DualShock 3（PS3）コントローラーのサポート。ViGEmプロジェクト（nefarius）のDsHidMiniドライバーの使用が必要です。</value>
+  <data name="ControllerSupportXbox" xml:space="preserve">
+    <value>Xbox コントローラーのサポート</value>
   </data>
   <data name="Welcome.WinTitle" xml:space="preserve">
     <value>DS4Windowsへようこそ</value>
@@ -770,6 +767,48 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="Log_HidHide_Found" xml:space="preserve">
     <value>HidHide の制御デバイスが見つかりました</value>
+  </data>
+  <data name="Log_HidHide_XboxHidden" xml:space="preserve">
+    <value>Xbox コントローラー（USB の親）を HidHide で他のアプリから隠しました</value>
+  </data>
+  <data name="Log_HidHide_XboxAlreadyHidden" xml:space="preserve">
+    <value>Xbox コントローラーは、すでに HidHide で隠されています</value>
+  </data>
+  <data name="Log_HidHide_XboxRestored" xml:space="preserve">
+    <value>Xbox コントローラーの HidHide での非表示を解除しました</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NotInstalled" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide が導入されていません</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NoAccess" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide の制御デバイスを開けません（管理者として実行してみてください）</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_Inverse" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide のアプリケーションの許可リストが反転しています。DS4Windows は変更しません</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_CloakOff" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide のデバイスを隠す機能が無効です。DS4Windows は切り替えません</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide のデバイス一覧への書き込みに失敗しました</value>
+  </data>
+  <data name="Log_Disconnect_NotSupported" xml:space="preserve">
+    <value>{0} は、Bluetooth LE 接続のため、DS4Windows からは切断できません（Windows が切断の手段を提供していません）。コントローラー本体のボタンの長押しで電源を切ってください</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NotUsb" xml:space="preserve">
+    <value>Bluetooth 接続の Xbox コントローラーは、DS4Windows では隠しません（この設定は USB 接続のみ）。必要なら HidHide で隠してください</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_DeviceNotFound" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: 機器を特定できませんでした（接続し直して試してください）</value>
+  </data>
+  <data name="HideXboxController" xml:space="preserve">
+    <value>Xbox コントローラーを隠す（USB 接続）</value>
+  </data>
+  <data name="HideXboxHidHideMissing" xml:space="preserve">
+    <value>HidHide がインストールされていません。元の Xbox コントローラーを他のプログラムから隠すには、HidHide をインストールしてください。</value>
+  </data>
+  <data name="HideXboxControllerTip" xml:space="preserve">
+    <value>USB（有線）で接続した Xbox コントローラーの元の入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。XInput は隠れますが、Windows.Gaming.Input 経由のアプリ（例: Chrome）には、HidHide では隠せないため、元のコントローラーが見えることがあります。二重入力が続くときは、仮想コントローラーを DS4 にしてください。Bluetooth 接続の Xbox コントローラーはこの設定の対象外です。DS4 コントローラーと同じく、HidHide で直接隠してください。変更すると、DS4Windows のサービスを再起動します。</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} が HidHide の許可リストにありません。リストに追加します</value>
@@ -936,6 +975,24 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_Bezier_Invalid" xml:space="preserve">
     <value>{4} 軸のカスタムベジェ曲線 "{0}, {1}, {2}, {3}" が無効です。x1 と x2 は 0〜1 の範囲にしてください。直線の曲線を使います</value>
   </data>
+  <data name="Log_Driver_HidHideInstalled" xml:space="preserve">
+    <value>HidHide: インストール済み（製品 {0} / ドライバー {1}）</value>
+  </data>
+  <data name="Log_Driver_HidHideNotInstalled" xml:space="preserve">
+    <value>HidHide: 未インストール</value>
+  </data>
+  <data name="Log_Driver_ViGEmBusInstalled" xml:space="preserve">
+    <value>ViGEmBus ドライバー: インストール済み（バージョン {0}）</value>
+  </data>
+  <data name="Log_Driver_ViGEmBusNotInstalled" xml:space="preserve">
+    <value>ViGEmBus ドライバー: 未インストール</value>
+  </data>
+  <data name="Log_Driver_FakerInputInstalled" xml:space="preserve">
+    <value>FakerInput ドライバー: インストール済み（バージョン {0}）</value>
+  </data>
+  <data name="Log_Driver_FakerInputNotInstalled" xml:space="preserve">
+    <value>FakerInput ドライバー: 未インストール</value>
+  </data>
   <data name="Log_App_RunningAsAdmin" xml:space="preserve">
     <value>管理者として実行中です</value>
   </data>
@@ -969,5 +1026,44 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="WakeupFromSuspend" xml:space="preserve">
     <value>スリープから復帰しました</value>
+  </data>
+  <data name="LightbarEmpty" xml:space="preserve">
+    <value>空の色</value>
+  </data>
+  <data name="LightbarFlashAt" xml:space="preserve">
+    <value>点滅（この残量以下）</value>
+  </data>
+  <data name="LightbarPulseAt" xml:space="preserve">
+    <value>明滅（この残量以下）</value>
+  </data>
+  <data name="LightbarWhileCharging" xml:space="preserve">
+    <value>充電中の表示</value>
+  </data>
+  <data name="LightbarChargingNormal" xml:space="preserve">
+    <value>通常のまま</value>
+  </data>
+  <data name="LightbarChargingPulse" xml:space="preserve">
+    <value>明滅</value>
+  </data>
+  <data name="LightbarChargingRainbow" xml:space="preserve">
+    <value>虹色</value>
+  </data>
+  <data name="LightbarChargingColor" xml:space="preserve">
+    <value>色を指定</value>
+  </data>
+  <data name="LightbarSecsPerCycle" xml:space="preserve">
+    <value>秒で一周</value>
+  </data>
+  <data name="LightbarMaxLight" xml:space="preserve">
+    <value>最大の明るさ {0:N2}%</value>
+  </data>
+  <data name="LightbarSectionBattery" xml:space="preserve">
+    <value>バッテリー残量</value>
+  </data>
+  <data name="LightbarSectionCharging" xml:space="preserve">
+    <value>充電</value>
+  </data>
+  <data name="LightbarSectionRainbow" xml:space="preserve">
+    <value>虹色</value>
   </data>
 </root>

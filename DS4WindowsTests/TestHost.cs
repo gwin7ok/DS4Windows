@@ -17,6 +17,16 @@ namespace DS4WindowsTests
             return AppHost.Host ?? AppHost.CreateHost();
         }
 
+        /// <summary>
+        /// 本番の起動と同じ取り付け（<c>IRuntimeBootstrapper.Initialize</c>）を行う。何度呼んでも、ホストごとに 1 回だけ行われる。
+        /// 取り付けを必要とするテスト（適用プロファイルの記憶、トリガーの 2 段階のリセットなど）だけが呼ぶ。
+        /// </summary>
+        public static void InitializeRuntime()
+        {
+            Ensure();
+            AppHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>().Initialize();
+        }
+
         public static T GetService<T>() where T : class
         {
             Ensure();

@@ -72,7 +72,7 @@ namespace DS4Windows.Input
             return changed;
         }
 
-        public void handleTouchpad(byte[] data, DS4State sensors, int touchDataOffset, int touchPacketOffset = 0)
+        public void handleTouchpad(byte[] data, ControllerState sensors, int touchDataOffset, int touchPacketOffset = 0)
         {
             PreTouchProcess?.Invoke(this, EventArgs.Empty);
 

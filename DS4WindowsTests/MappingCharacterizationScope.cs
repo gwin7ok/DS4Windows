@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Touchpad;
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -32,7 +34,6 @@ namespace DS4WindowsTests
 
         public RecordingVirtualKbmBase Recorder { get; } = new RecordingVirtualKbmBase();
         public IProfileSettingsService Settings { get; }
-        public ControlService Control { get; }
         /// <summary>コンテナの <c>IMapping</c>（Singleton）。Phase7-Step8 W2 で static から instance になった。</summary>
         public IMapping Mapper { get; }
         /// <summary>コンテナの合成キーの送出（Mapper が使うものと同じ instance）。</summary>
@@ -46,7 +47,7 @@ namespace DS4WindowsTests
         {
             DS4Windows.Composition.AppHost.CreateHost();
             Settings = TestHost.GetService<IProfileSettingsService>();
-            Control = TestHost.GetService<ControlService>();
+            TestHost.InitializeRuntime();
             Mapper = TestHost.GetService<IMapping>();
             Dispatcher = TestHost.GetService<ISyntheticDispatcher>();
             _handlerOwner = TestHost.GetService<DS4Windows.Output.Services.OutputKBMHandlerAdapter>();
@@ -81,18 +82,18 @@ namespace DS4WindowsTests
             TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>().Replace(Device, TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>().Build(Device));
         }
 
-        public static DS4State NeutralState()
+        public static ControllerState NeutralState()
         {
-            return new DS4State { LX = 128, LY = 128, RX = 128, RY = 128, L2 = 0, R2 = 0 };
+            return new ControllerState { LX = 128, LY = 128, RX = 128, RY = 128, L2 = 0, R2 = 0 };
         }
 
         /// <summary>実機のレポート処理と同様に <c>MapCustom</c> を 1 回実行し、出力の状態を返す。</summary>
-        public DS4State RunMapCustom(DS4State input)
+        public ControllerState RunMapCustom(ControllerState input)
         {
-            var device = (DS4Device)RuntimeHelpers.GetUninitializedObject(typeof(DS4Device));
-            var mouse = new Mouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
-            var exposed = new DS4StateExposed(input);
-            var mapped = new DS4State();
+            var device = (InputDeviceCore)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
+            var mouse = new TouchpadMouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
+            var exposed = new ControllerStateExposed(input);
+            var mapped = new ControllerState();
 
             Mapper.MapCustom(Device, input, mapped, exposed, mouse);
             return mapped;

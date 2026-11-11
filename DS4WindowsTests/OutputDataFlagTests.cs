@@ -52,11 +52,11 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLightsOffWrite_SkipsPadsThatCannotWrite_NonDs4Types_AndNeverThrows()
         {
-            string code = Source("DS4Windows/Input/DS4Device.cs");
+            string code = Source("DS4Windows/Input/InputDeviceCore.cs");
             if (code == null) return;
 
             int start = code.IndexOf("public void WriteOutputOffOnce()", StringComparison.Ordinal);
-            int end = code.IndexOf("private const byte DEFAULT_BT_REPORT_TYPE", StringComparison.Ordinal);
+            int end = code.IndexOf("public int Battery => battery;", StringComparison.Ordinal);
             Assert.True(start >= 0 && end > start);
             string body = code.Substring(start, end - start);
 
@@ -64,18 +64,6 @@ namespace DS4WindowsTests
             Assert.Contains("(featureSet & VidPidFeatureSet.NoOutputData) != 0", body);
             Assert.Contains("sendOutputReport(true, true, false);", body);   // 書けなくても切断しない
             Assert.Contains("catch (Exception", body);
-        }
-
-        [Fact]
-        public void TheEditor_NoLongerForcesTheEmulatedControllerToDs4_WhenOutputDataIsOn()
-        {
-            string vm = Source("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
-            if (vm == null) return;
-
-            int start = vm.IndexOf("public Ds4OutputCorrectionReason CorrectOutputTypeToDs4()", StringComparison.Ordinal);
-            Assert.True(start >= 0);
-            string body = vm.Substring(start, 700);
-            Assert.DoesNotContain("EnableOutputDataToDS4", body);
         }
 
         [Fact]

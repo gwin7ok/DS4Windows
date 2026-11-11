@@ -1,3 +1,5 @@
+using DS4Windows.Processing.Macro;
+using DS4Windows.Processing.Synthetic;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
@@ -6,9 +8,11 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Devices;
+using DS4Windows.Input.Xbox;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Actions.OutputBuilders;
 using DS4Windows.Processing.Services;
 
 namespace DS4Windows.Composition
@@ -38,7 +42,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<ISpecialActionRuntimeReset, SpecialActionRuntimeReset>();
 
             // プロファイルのアクション取得（ControlService が使用）。Phase6-Step10-4-2d: アクション連鎖サービスは廃止
-            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(sp.GetRequiredService<BackingStore>()));
+            services.AddSingleton<IProfileActionProvider>(sp => new ProfileActionProvider(sp.GetRequiredService<BackingStore>(), sp.GetRequiredService<ISpecialActionRepository>()));
 
             // Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: Mapping の静的フィールド）
             services.AddSingleton<IKeyButtonControllerRegistry, KeyButtonControllerRegistry>();
@@ -85,6 +89,17 @@ namespace DS4Windows.Composition
             services.AddSingleton<ITriggerDispatchEngine, TriggerDispatchEngine>();
             // Phase8-Step5 W2（Q3＝A）: 束縛のビルダー。ProfileApplicationService は Func で遅延解決する（ビルダー → IProfileSwitcher → IProfileApplicationService の循環を避ける）
             // Phase10-Step4 W2: 種別ごとの出力アクション・方針の作り方（SA タブの ActionBindingBuilder と、Controls タブの束縛を作る側［W3 以降］が共有する）
+            // 種別 1 つにつき 1 つの出力の組み立て部品（同じ種別を 2 つ登録しない）
+            services.AddSingleton<ISpecialActionOutputBuilder, ButtonOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, KeyOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, MacroOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, ProgramOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, FocusWindowOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, ProfileOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, GyroCalibrateOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, DisconnectBtOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, BatteryCheckOutputBuilder>();
+            services.AddSingleton<ISpecialActionOutputBuilder, MultiActionOutputBuilder>();
             services.AddSingleton<ISpecialActionOutputFactory, SpecialActionOutputFactory>();
             services.AddSingleton<IActionBindingBuilder, ActionBindingBuilder>();
             services.AddSingleton<Func<IActionBindingBuilder>>(sp => () => sp.GetRequiredService<IActionBindingBuilder>());
@@ -109,23 +124,27 @@ namespace DS4Windows.Composition
             services.AddSingleton<IIpcCommandProcessor, IpcCommandProcessor>();   // Phase13-Step11 11-b: IPC コマンドの実行（UI に頼む操作は IIpcCommandHost）
             services.AddSingleton<IRuntimeFeatureSwitch, RuntimeFeatureSwitch>();   // Phase13-Step10 10-c: 画面が使う OSC／UDP／HidHide／タッチパッドの切り替えの窓口
             services.AddSingleton<IConnectionProfileSelector, ConnectionProfileSelector>();   // Phase9 9-E E-6a: 接続時のプロファイルの選択と適用
-            // Phase9 9-E E-6c: デバイスの種類ごとの部品（カートリッジ）。新しい種類は、IInputDeviceModule を実装してここへ足すだけ
-            services.AddSingleton<IInputDeviceModule, Ds4DeviceModule>();
-            services.AddSingleton<IInputDeviceModule, DualSenseDeviceModule>();
-            services.AddSingleton<IInputDeviceModule, SwitchProDeviceModule>();
-            services.AddSingleton<IInputDeviceModule, JoyConDeviceModule>();
-            services.AddSingleton<IInputDeviceModule, Ds3DeviceModule>();
+            // 入力機種（系統）の登録は 1 行ずつ（第 1 層のカートリッジ＋第 2 層の接続フック）。機種を足すときは、ここへ 1 行足す。並びは解決の順になる
+            services.AddInputDevice<Ds4DeviceCartridge, Ds4DeviceModule>();
+            services.AddInputDevice<DualSenseDeviceCartridge, DualSenseDeviceModule>();
+            services.AddInputDevice<SwitchProDeviceCartridge, SwitchProDeviceModule>();
+            services.AddInputDevice<XboxDeviceCartridge, XboxDeviceModule>();
+            // HID を持たない Xbox 系コントローラーは、HID の列挙ではなく XInput の供給元が見つける
+            services.AddSingleton<IXInputApi, XInputNativeApi>();
+            services.AddSingleton<IXusbInterfaceSource, XusbInterfaceSource>();
+            services.AddSingleton<IGattBatteryFetcher, GattBatteryFetcher>();
+            services.AddSingleton<IBluetoothBatteryReader, BluetoothBatteryReader>();
+            services.AddSingleton<IInputTransportSource, XInputTransportSource>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド
             // Phase13-Step3: ブースト・反転つきの振動（IDeviceRumbleService）と KBM 出力の初期化（IOutputKbmInitializer）の登録は ServiceRegistration.Output.cs
             services.AddSingleton<ILightbarService, LightbarService>();   // ライトバーの色の計算（スロットごとの経過を持つ。時間は TimeProvider）
-            services.AddSingleton<IMouseFactory, MouseFactory>();   // スロットごとのタッチパッドの Mouse（TimeProvider を渡す）
+            services.AddSingleton<ITouchpadMouseFactory, TouchpadMouseFactory>();   // スロットごとのタッチパッドの Mouse（TimeProvider を渡す）
             services.AddSingleton<IConnectedDeviceOutputs, ConnectedDeviceOutputs>();   // 接続時の出力側の準備（OSC の通知、仮想パッドの割り当て、UDP の準備）
             services.AddSingleton<IOutputServicesLifecycle, OutputServicesLifecycle>();   // 出力側のサービス（仮想パッド、KBM、HidHide、OSC、UDP）の開始・停止の手順
             services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // Phase9 9-E E-6f2: 開始・停止・ホットプラグと、その状態・イベント
             services.AddSingleton<IDeviceConnector, DeviceConnector>();   // Phase9 9-E E-6f1: 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // Phase9 9-E E-6e: 切断・同期・シリアル変更の処理
-            services.AddSingleton<IJoyConLinker, JoyConLinker>();   // Phase9 9-E E-6d: Joy-Con の結合の手順（実機なしでも偽物のデバイスでテストできる）
             services.AddSingleton<IProfileLoadTarget, ProfileLoadTarget>();   // Phase13-Step6 6-d: プロファイル読込の鎖が control 引数から使う 8 メンバーの窓口（6-e で control の型を置き換える）
             services.AddSingleton<IDeviceConnectionSetup, DeviceConnectionSetup>();   // Phase9 9-E E-6b: 接続時の設定の反映とイベントの配線
             services.AddSingleton<IActiveInputProbe, ActiveInputProbe>();   // Phase9 9-E E-5: 押されている入力の探索（状態なし）
@@ -143,57 +162,31 @@ namespace DS4Windows.Composition
 
             // Phase7-Step10d W3（Q4＝A）: 第 1 層が読む設定値の窓口
             services.AddSingleton<IDeviceLayerSettings, DeviceLayerSettings>();
-            // 入力デバイスの種類ごとのカートリッジ（対応する VID／PID の表と、デバイスの生成）。機種を足すときは、ここへ 1 行足す
-            services.AddInputDeviceCartridge<Ds4DeviceCartridge>();
-            services.AddInputDeviceCartridge<DualSenseDeviceCartridge>();
-            services.AddInputDeviceCartridge<SwitchProDeviceCartridge>();
-            services.AddInputDeviceCartridge<JoyConDeviceCartridge>();
-            services.AddInputDeviceCartridge<Ds3DeviceCartridge>();
-            services.AddSingleton<DS4Devices>(sp => new DS4Devices(sp.GetRequiredService<IDeviceLayerSettings>(),
-                sp.GetServices<IInputDeviceCartridge>()));   // 接続中のコントローラーの登録簿（状態を持つ）
-            services.AddSingleton<IDs4DeviceRegistry, Ds4DeviceRegistryAdapter>();
+            services.AddSingleton<InputDeviceRegistry>(sp => new InputDeviceRegistry(sp.GetRequiredService<IDeviceLayerSettings>(),
+                sp.GetServices<IInputDeviceCartridge>(), sp.GetServices<IInputTransportSource>()));   // 接続中のコントローラーの登録簿（状態を持つ）
+            services.AddSingleton<IInputDeviceRegistry, InputDeviceRegistryAdapter>();
             services.AddSingleton<IDeviceRegistryHooks, DeviceRegistryHooks>();   // 登録簿が列挙・初期化の途中で呼び返すフック（対応する種類の確認、初期化の直後の処理、昇格の要求）
             services.AddSingleton<IAppliedProfileRecorder, AppliedProfileRecorder>();   // 適用のたびに、コントローラーごとにプロファイルを記憶する（再接続で使う）
             services.AddSingleton<IBackendFailureHandler, BackendFailureHandler>();   // 仮想パッドのバックエンドの失敗でサービスを止める
-            services.AddSingleton<ControlService>(sp =>
-            {
-                // Phase7-Step5 W2（Q2＝A）: 旧 Program.rootHub ?? の分岐を削除した。シングルトンの生成は、このファクトリーだけが行う
-                return new ControlService(
-                    // Phase13-Step3: 起動引数（-virtualkbm）は OutputKbmInitializer が Initialize() の時点で IStartupArguments から読む（旧: ここで渡していた）
-                    sp.GetRequiredService<IProfileSettingsService>(),
-                    sp.GetRequiredService<IOutputSlotService>(),   // Phase13-Step7 7-d: 旧: 遅延取得デリゲート（逆依存は Phase9 E-4 で解消済み）
-                    sp.GetRequiredService<IProfileRepository>(),
-                    // Phase7-Step8 W1: 保持クラスをコンストラクターで受ける（旧: ControlService／Mouse が Shared を参照）
-                    sp.GetRequiredService<StickMotionState>(),
-                    sp.GetRequiredService<IMapping>(),
-                    sp.GetRequiredService<IVirtualPadService>(),   // Phase9 9-E E-4
-                    sp.GetRequiredService<IEventThreadDispatcher>(),   // Phase13-Step3
-                    sp.GetRequiredService<IDeviceSlotState>(),   // Phase13-Step5
-                    sp.GetRequiredService<IInputReportProcessor>(),   // Phase13-Step5b
-                    sp.GetRequiredService<IDeviceRegistryHooks>(),
-                    sp.GetRequiredService<IAppliedProfileRecorder>(),
-                    sp.GetRequiredService<IBackendFailureHandler>()
-                );
-            });
+            services.AddSingleton<IRuntimeBootstrapper, RuntimeBootstrapper>();   // 起動時の取り付け（Initialize）と終了時の後始末（Shutdown）
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
             services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
             services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
             services.AddSingleton<IConfigurableDeviceLookup>(sp => (IConfigurableDeviceLookup)sp.GetRequiredService<IDeviceSlotState>());   // Core の設定値・プロファイル読込が使う狭い窓口（同じインスタンス）
-            // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は DS4Device と ControlService を持たない）
+            // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は InputDeviceCore と ControlService を持たない）
             services.AddSingleton<IControllerSlotQuery, ControllerSlotQuery>();
             services.AddSingleton<IControllerSlotCommands, ControllerSlotCommands>();
             services.AddSingleton<IControllerReadingsSource, ControllerReadingsSource>();
             services.AddSingleton<IMacroRecordingState, MacroRecordingState>();
             // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
+            services.AddSingleton<FirstReportActionLogger>();
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
                 sp.GetRequiredService<ILightbarService>(),
                 sp.GetRequiredService<IDeviceSlotState>(),
                 sp.GetRequiredService<ILatencyMonitor>(),
-                sp.GetRequiredService<IPathService>(),
-                sp.GetRequiredService<IProfileRepository>(),
+                sp.GetRequiredService<FirstReportActionLogger>(),
                 sp.GetRequiredService<IAppearanceSettingsService>(),
                 sp.GetRequiredService<IProfileSettingsService>(),
-                sp.GetRequiredService<IVirtualKBM>(),
                 sp.GetRequiredService<IMapping>(),
                 sp.GetRequiredService<ITouchpadToggleService>(),
                 sp.GetRequiredService<IProfileActionProvider>(),
