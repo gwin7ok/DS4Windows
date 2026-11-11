@@ -144,3 +144,4 @@
   - **22-4 の仕様追加（2026-11-11、ユーザーの指示）**: 「Xbox コントローラーを隠す」の既定はオン（`XboxDeviceOptions.HideUsbParent = true`）。オンで HidHide が未導入のとき、設定タブのチェックの下に赤文字で導入を促す（`SettingsViewModel.ShowHidHideMissingNotice`、資源 `HideXboxHidHideMissing`）。HidHide の導入の確認は、起動時に `RefreshHidHideInfo()` で行い、保存した `HidHideInstalled` を参照する（ドライバー導入後の更新でも、赤文字の表示を更新）。
   - **起動時のドライバー状態のログ（2026-11-11、ユーザーの指示）**: `App.RefreshAndLogDriverStatus` が、起動時に HidHide・ViGEmBus・FakerInput の導入状態を確認して `EnvironmentService` の保存値へ入れ、Info でログ（ファイルと画面）へ出す（資源 `Log_Driver_*`）。
   - **起動時のドライバーのログにバージョン（2026-11-11）**: HidHide のバージョンを足した（`IEnvironmentService.HidHideVersion`。`RefreshHidHideInfo` で、`root\HidHide` のドライバーのバージョンを保存）。FakerInput と ViGEmBus は、すでにバージョン付き。
+  - **22-4 実機確認の完了（2026-11-11）**: 起動時のドライバー 3 行のログ（バージョン付き）、解除のログ、終了時の解除（HidHide のチェックが外れ、XInput が戻る）、強制終了後の復旧（チェックが残り、再起動＋オフで外れる。オンのままなら残る）を確認。未確認: HidHide 未導入のときの赤文字（未導入の環境が要る）、既定オンの新規環境。
