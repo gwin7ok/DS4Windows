@@ -13,6 +13,42 @@ namespace DS4WindowsTests
     /// </summary>
     public class XusbConnectionClassifierTests
     {
+        /// <summary>XInput の状態を一度読むまで、番号が割り当たらない機器（Bluetooth の Xbox）の台本。</summary>
+        private sealed class LazyIndexInterfaces : IXusbInterfaceSource
+        {
+            private readonly FakeXInputApi api;
+            private readonly int indexAfterPoll;
+
+            public LazyIndexInterfaces(FakeXInputApi api, int indexAfterPoll)
+            {
+                this.api = api;
+                this.indexAfterPoll = indexAfterPoll;
+            }
+
+            public System.Collections.Generic.IReadOnlyList<XusbInterfaceInfo> Enumerate() =>
+                new[] { new XusbInterfaceInfo(XboxBle, @"HID\X", 0x045E, 0x0B22, -1) };
+
+            public int ReadPlayerIndex(string devicePath) => api.StateReads > 0 ? indexAfterPoll : -1;
+        }
+
+        [Fact]
+        public void TheSource_WakesXInput_WhenTheIndexIsNotAssignedYet_AndUsesTheAssignedIndex()
+        {
+            var api = new FakeXInputApi();
+
+            InputTransportCandidate candidate = new XInputTransportSource(api, new LazyIndexInterfaces(api, 1)).Enumerate().Single();
+
+            Assert.Equal(1, ((XInputTransport)candidate.Transport).PlayerIndex);
+        }
+
+        [Fact]
+        public void TheSource_SkipsTheDevice_WhenTheIndexIsStillNotAssignedAfterWaking()
+        {
+            var api = new FakeXInputApi();
+
+            Assert.Empty(new XInputTransportSource(api, new LazyIndexInterfaces(api, -1)).Enumerate());
+        }
+
         private const string Xbox360Usb = @"\\?\usb#vid_045e&pid_028e#a02014100201#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
         private const string XboxOneUsb = @"\\?\hid#vid_045e&pid_02ff&ig_00#9&2a1b3c&0&0000#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
         private const string XboxBle = @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}&dev&vid_045e&pid_0b22&rev_0521&3cfa0617287c&col01&ig_00#d&14fe1d93&0&0000#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";

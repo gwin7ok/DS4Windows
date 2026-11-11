@@ -21,9 +21,16 @@ namespace DS4WindowsTests
             lock (sync) states.Remove(index);
         }
 
+        /// <summary>状態を読んだ回数（番号を問わない）。</summary>
+        public int StateReads { get; private set; }
+
         public bool TryGetState(int index, out XInputSnapshot state)
         {
-            lock (sync) return states.TryGetValue(index, out state);
+            lock (sync)
+            {
+                StateReads++;
+                return states.TryGetValue(index, out state);
+            }
         }
 
         public bool TrySetVibration(int index, ushort leftMotor, ushort rightMotor)
