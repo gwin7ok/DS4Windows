@@ -385,6 +385,12 @@ namespace DS4Windows.Core.Platform
         static internal extern uint CM_Locate_DevNodeW(out uint pdnDevInst, string pDeviceID, uint ulFlags);
 
         [DllImport("cfgmgr32.dll")]
+        static internal extern uint CM_Disable_DevNode(uint dnDevInst, uint ulFlags);
+
+        [DllImport("cfgmgr32.dll")]
+        static internal extern uint CM_Enable_DevNode(uint dnDevInst, uint ulFlags);
+
+        [DllImport("cfgmgr32.dll")]
         static internal extern uint CM_Get_Parent(out uint pdnDevInst, uint dnDevInst, uint ulFlags);
 
         [DllImport("cfgmgr32.dll")]

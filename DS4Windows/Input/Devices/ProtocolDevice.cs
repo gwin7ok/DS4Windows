@@ -38,8 +38,32 @@ namespace DS4Windows.Input.Devices
         }
 
         // Bluetooth のアドレスを持つ機種（Bluetooth 接続）だけ、共通の切断（基底）を使う。擬似のシリアルの機種は、切断できない
-        public override bool DisconnectBT(bool callRemoval = false) =>
-            conType == ConnectionType.BT && HasBluetoothAddress && base.DisconnectBT(callRemoval);
+        public override bool DisconnectBT(bool callRemoval = false)
+        {
+            if (conType != ConnectionType.BT)
+            {
+                return false;
+            }
+
+            // 機種固有の手順（Bluetooth LE など）があれば、それを使う。なければ共通の手順（従来の Bluetooth 向け）
+            bool? custom = protocol.TryDisconnectBluetooth(hDevice);
+            if (custom.HasValue)
+            {
+                if (custom.Value)
+                {
+                    StopOutputUpdate();
+                    IsDisconnecting = true;
+                    if (callRemoval)
+                    {
+                        RaiseRemoval();
+                    }
+                }
+
+                return custom.Value;
+            }
+
+            return HasBluetoothAddress && base.DisconnectBT(callRemoval);
+        }
 
         public override bool DisconnectDongle(bool remove = false) => false;
 

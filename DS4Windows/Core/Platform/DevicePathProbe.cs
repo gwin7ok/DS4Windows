@@ -117,6 +117,28 @@ namespace DS4Windows.Core.Platform
             instanceId.IndexOf("&IG_", StringComparison.OrdinalIgnoreCase) >= 0 ||
             instanceId.IndexOf("&MI_", StringComparison.OrdinalIgnoreCase) >= 0;
 
+        /// <summary>
+        /// 機器から親へたどり、Bluetooth LE の機器そのもののノード（<c>BTHLE\DEV_…</c>）を返す。見つからなければ空。
+        /// 無効化と有効化で接続を切るのは、このノード（HID やサービスの子ではなく、機器の親）。
+        /// </summary>
+        public static string FindBluetoothLeDeviceNode(string instanceId, Func<string, string> parentOf)
+        {
+            string node = instanceId;
+            for (int i = 0; i < 8 && !string.IsNullOrEmpty(node); i++)
+            {
+                if (node.StartsWith(@"BTHLE\DEV_", StringComparison.OrdinalIgnoreCase))
+                {
+                    return node;
+                }
+
+                node = parentOf(node);
+            }
+
+            return string.Empty;
+        }
+
+        public static string FindBluetoothLeDeviceNode(string instanceId) => FindBluetoothLeDeviceNode(instanceId, GetParentInstanceId);
+
         private static string GetParentInstanceId(string instanceId)
         {
             if (NativeMethods.CM_Locate_DevNodeW(out uint node, instanceId, 0) != 0 ||

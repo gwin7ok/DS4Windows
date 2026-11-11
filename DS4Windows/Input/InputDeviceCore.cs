@@ -124,6 +124,9 @@ namespace DS4Windows.Input
         //public event EventHandler<EventArgs> Report = null;
         public abstract event ReportHandler<EventArgs> Report;
         public virtual event EventHandler<EventArgs> Removal = null;
+
+        /// <summary>派生のデバイスが、切断の手順のあとに、削除の通知（<c>Removal</c>）を出す。</summary>
+        protected void RaiseRemoval() => Removal?.Invoke(this, EventArgs.Empty);
         public event EventHandler<EventArgs> SyncChange = null;
         public event EventHandler<EventArgs> SerialChange = null;
         //public EventHandler<EventArgs> MotionEvent = null;
