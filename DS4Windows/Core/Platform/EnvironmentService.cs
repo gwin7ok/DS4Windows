@@ -62,6 +62,9 @@ namespace DS4Windows.Core.Platform
 
         // HidHide／FakerInput は、旧 Global では静的初期化の時点で調べていた。ここでは静的初期化の循環（下記）を避けるため、
         // 最初に読まれたときに調べる（値は同じ。以降は Refresh…Info で更新される）。
+        private const string HidHideHardwareId = @"root\HidHide";
+        private const string BlankDriverVersion = "0.0.0.0";
+        private static string s_hidHideVersion = BlankDriverVersion;
         private static bool? s_hidHideInstalled;
         private static bool? s_fakerInputInstalled;
         private static string s_fakerInputVersion;
@@ -90,7 +93,11 @@ namespace DS4Windows.Core.Platform
         /// <summary>導入済みの ViGEmBus のバージョン（未導入のときは 0.0.0.0）。</summary>
         public static Version ViGEmBusVersionState => s_vigemBusVersionInfo;
 
-        public void RefreshHidHideInfo() => HidHideInstalledState = IsHidHideInstalled();
+        public void RefreshHidHideInfo()
+        {
+            HidHideInstalledState = IsHidHideInstalled();
+            s_hidHideVersion = HidHideInstalledState ? (QuerySysDeviceDriverVersion(HidHideHardwareId) ?? BlankDriverVersion) : BlankDriverVersion;
+        }
 
         public void RefreshFakerInputInfo()
         {
@@ -100,6 +107,8 @@ namespace DS4Windows.Core.Platform
 
         // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消 ----
         public bool HidHideInstalled => HidHideInstalledState;
+
+        public string HidHideVersion => s_hidHideVersion;
 
         public string GetInstanceIdFromDevicePath(string devicePath) =>
             DevicePathProbe.GetInstanceIdFromDevicePath(devicePath);
@@ -340,6 +349,49 @@ namespace DS4Windows.Core.Platform
                     string hardwareId = dataBuffer.ToUTF16String();
                     if (hardwareId.Equals(searchHardwareId))
                         result = true;
+                }
+            }
+
+            if (deviceInfoSet.ToInt64() != NativeMethods.INVALID_HANDLE_VALUE)
+            {
+                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
+            }
+
+            return result;
+        }
+
+        // 指定のハードウェア ID のシステム デバイス（例: root\HidHide）のドライバーのバージョンを返す。見つからないときは null
+        private static string QuerySysDeviceDriverVersion(string searchHardwareId)
+        {
+            string result = null;
+            Guid sysGuid = Guid.Parse("{4d36e97d-e325-11ce-bfc1-08002be10318}");
+            NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
+            deviceInfoData.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
+            var dataBuffer = new byte[4096];
+            ulong propertyType = 0;
+            var requiredSize = 0;
+            IntPtr deviceInfoSet = NativeMethods.SetupDiGetClassDevs(ref sysGuid, null, 0, 0);
+            for (int i = 0; result == null && NativeMethods.SetupDiEnumDeviceInfo(deviceInfoSet, i, ref deviceInfoData); i++)
+            {
+                NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
+                    ref NativeMethods.DEVPKEY_Device_HardwareIds, ref propertyType, null, 0, ref requiredSize, 0);
+                if (requiredSize <= 0)
+                {
+                    continue;
+                }
+
+                NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
+                    ref NativeMethods.DEVPKEY_Device_HardwareIds, ref propertyType, dataBuffer, dataBuffer.Length, ref requiredSize, 0);
+                if (!dataBuffer.ToUTF16String().Equals(searchHardwareId))
+                {
+                    continue;
+                }
+
+                if (NativeMethods.SetupDiGetDeviceProperty(deviceInfoSet, ref deviceInfoData,
+                    ref NativeMethods.DEVPKEY_Device_DriverVersion, ref propertyType, dataBuffer, dataBuffer.Length, ref requiredSize, 0))
+                {
+                    string version = dataBuffer.ToUTF16String();
+                    result = string.IsNullOrEmpty(version) ? BlankDriverVersion : version;
                 }
             }
 

@@ -34,6 +34,8 @@
         // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>HidHide が導入済みかどうか（RefreshHidHideInfo で更新される現在値）。</summary>
         bool HidHideInstalled { get; }
+        /// <summary>導入済みの HidHide ドライバーのバージョン（RefreshHidHideInfo で更新される現在値。未導入や不明のときは 0.0.0.0）。</summary>
+        string HidHideVersion { get; }
         string GetInstanceIdFromDevicePath(string devicePath);
         bool CheckHidHideAffectedStatus(string deviceInstanceId,
             System.Collections.Generic.HashSet<string> affectedDevs,

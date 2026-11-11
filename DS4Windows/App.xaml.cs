@@ -624,7 +624,7 @@ namespace DS4Windows
 
             if (_environmentService.HidHideInstalled)
             {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideInstalled");
+                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideInstalled", _environmentService.HidHideVersion);
             }
             else
             {

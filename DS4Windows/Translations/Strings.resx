@@ -1839,7 +1839,7 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
     <value>Invalid custom bezier curve "{0}, {1}, {2}, {3}" in {4} axis. x1 and x2 should be in 0..1 range. Using linear curve.</value>
   </data>
   <data name="Log_Driver_HidHideInstalled" xml:space="preserve">
-    <value>HidHide driver: installed</value>
+    <value>HidHide driver: installed (version {0})</value>
   </data>
   <data name="Log_Driver_HidHideNotInstalled" xml:space="preserve">
     <value>HidHide driver: not installed</value>

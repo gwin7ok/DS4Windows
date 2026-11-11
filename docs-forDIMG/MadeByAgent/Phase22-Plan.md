@@ -143,3 +143,4 @@
   - **22-4 実機確認（2026-11-11）**: 親と HID の子を隠す修正で、ON のとき USB を差し直さなくても、ブラウザーのテスターから XInput が消え（仮想パッドだけ）、隠している間も DS4Windows に入力が届き、OFF で XInput が戻ることを確認。HidHide の画面は、開いたままだと表示が更新されない（HidHide 側の仕様。開き直すと反映）。OFF のとき「解除」のログが出なかったため、サービス停止の解除でログを出すよう直した（`RestoreAll` が bool を返す）。
   - **22-4 の仕様追加（2026-11-11、ユーザーの指示）**: 「Xbox コントローラーを隠す」の既定はオン（`XboxDeviceOptions.HideUsbParent = true`）。オンで HidHide が未導入のとき、設定タブのチェックの下に赤文字で導入を促す（`SettingsViewModel.ShowHidHideMissingNotice`、資源 `HideXboxHidHideMissing`）。HidHide の導入の確認は、起動時に `RefreshHidHideInfo()` で行い、保存した `HidHideInstalled` を参照する（ドライバー導入後の更新でも、赤文字の表示を更新）。
   - **起動時のドライバー状態のログ（2026-11-11、ユーザーの指示）**: `App.RefreshAndLogDriverStatus` が、起動時に HidHide・ViGEmBus・FakerInput の導入状態を確認して `EnvironmentService` の保存値へ入れ、Info でログ（ファイルと画面）へ出す（資源 `Log_Driver_*`）。
+  - **起動時のドライバーのログにバージョン（2026-11-11）**: HidHide のバージョンを足した（`IEnvironmentService.HidHideVersion`。`RefreshHidHideInfo` で、`root\HidHide` のドライバーのバージョンを保存）。FakerInput と ViGEmBus は、すでにバージョン付き。
