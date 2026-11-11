@@ -1179,6 +1179,7 @@ Phase28 のあと、ブランチ `master` の全体のコードレビューを�
 2. 実機で未確認の項目（`Known-Issues-Ledger.md` §3。Phase16〜28 の分）は、任意のタイミングで確認する。DualSense・Switch Pro は、実機が得られたときに確認する。
 3. Phase26 の残り（`BindingWindow`・`RecordBox`・`AssignmentEditor`、`MainWindow`・`ProfileEditor` の code-behind）は、Phase29〜34 と独立に進められる。順序はユーザーが決める。
 4. 入力側の画像とボタン名の機種別対応（KI-7）は、実施するかどうかが未定（`PhaseX-Input-Device-Visuals-Plan.md`）。実施する場合は、一番最後の Phase とする。
+   同じく時期が未定の下書きとして、「カスタム実行ファイル名」機能の立て直し（`PhaseX2-Custom-Exe-Name-Plan.md`。2026-11-12 追加。更新プログラム DS4Updater との連動が切れている件。方式は実装の前に再検討する）がある。
 5. 各 Phase の完了時に、本書の §6.14・§6.15 の表、`Code-Review-2026-11/00-Summary.md` の該当行、モデル図を更新する。
 
 （以下は 2026-10-18 時点の記述。履歴として残す。）
