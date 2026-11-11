@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Input.Xbox
@@ -11,6 +13,31 @@ namespace DS4Windows.Input.Xbox
     public static class XusbConnectionClassifier
     {
         private const string BleHidService = "{00001812-0000-1000-8000-00805f9b34fb}";
+
+        // Bluetooth の Xbox は、パスに機器の Bluetooth アドレス（12 桁の 16 進）を含む
+        // 例: …&dev&vid_045e&pid_0b22&rev_0521&3cfa0617287c&col01&ig_00#…
+        private static readonly Regex AddressInPath = new Regex(@"&pid_[0-9a-f]{4}(?:&rev_[0-9a-f]{4})?&([0-9a-f]{12})&", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        /// <summary>
+        /// Bluetooth 接続のパスから、機器の Bluetooth アドレス（<c>AA:BB:CC:DD:EE:FF</c>）を取り出す。USB、または取り出せないときは null。
+        /// 登録簿の識別（シリアル）とデバイスの識別（Mac）が、必ず同じ値になるよう、両方がこれを使う（食い違うと、切断のあとの再接続が拒まれる）。
+        /// </summary>
+        public static string TryGetBluetoothAddress(string devicePath)
+        {
+            if (Classify(devicePath) != ConnectionType.BT)
+            {
+                return null;
+            }
+
+            Match match = AddressInPath.Match(devicePath);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            string hex = match.Groups[1].Value.ToUpperInvariant();
+            return string.Join(":", Enumerable.Range(0, 6).Select(i => hex.Substring(i * 2, 2)));
+        }
 
         public static ConnectionType Classify(string devicePath)
         {

@@ -56,6 +56,42 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ABluetoothDevice_CanBeFoundAgain_AfterItWasRemoved()
+        {
+            // 登録簿は、追加のときにシリアル、削除のときに Mac をキーにする。2 つが食い違うと、切断のあとの再接続が「すでにある」として拒まれる
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(BlePath, 0x045E, 0x0B22, 0);
+            var registry = new InputDeviceRegistry(null, new IInputDeviceCartridge[] { new XboxDeviceCartridge() },
+                new IInputTransportSource[] { new XInputTransportSource(new FakeXInputApi(), interfaces) });
+            registry.PreparePendingDevice = (device, info) => true;
+
+            registry.findControllers();
+            InputDeviceCore first = Assert.Single(registry.GetControllers());
+            registry.RemoveDevice(first);
+            Assert.Empty(registry.GetControllers());
+
+            registry.findControllers();
+
+            Assert.Single(registry.GetControllers());
+            registry.stopControllers();
+        }
+
+        [Fact]
+        public void TheTransportSerial_EqualsTheDeviceIdentity_ForBluetoothAndUsb()
+        {
+            foreach ((string path, int pid) in new[] { (BlePath, 0x0B22), (UsbPath, 0x028E) })
+            {
+                var interfaces = new FakeXusbInterfaceSource();
+                interfaces.Add(path, 0x045E, pid, 0);
+                InputTransportCandidate candidate = new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single();
+                InputDeviceCore device = new XboxDeviceCartridge().Create(InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
+                device.PostInit();
+
+                Assert.Equal(candidate.Transport.ReadSerial(), device.getMacAddress());
+            }
+        }
+
+        [Fact]
         public void AUsbDevice_CannotBeDisconnected_AsBefore()
         {
             InputDeviceCore device = NewDevice(UsbPath, 0x028E);

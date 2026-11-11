@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using DS4Windows.Core.Logging;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
 
@@ -30,6 +31,7 @@ namespace DS4Windows.Input.Xbox
         private readonly ManualResetEventSlim cancelled = new ManualResetEventSlim(false);
         private long nextPollTicks;
         private long nextBatteryTicks;
+        private bool batteryLogged;
         private XInputBattery battery = new XInputBattery(XInputBattery.TypeUnknown, 0);
         private int playerIndex;
         private bool disposed;
@@ -133,7 +135,15 @@ namespace DS4Windows.Input.Xbox
             }
 
             nextBatteryTicks = now + Stopwatch.Frequency * BatteryIntervalMs / 1000;
-            battery = api.TryGetBattery(playerIndex, out XInputBattery read) ? read : new XInputBattery(XInputBattery.TypeUnknown, 0);
+            bool ok = api.TryGetBattery(playerIndex, out XInputBattery read);
+            XInputBattery next = ok ? read : new XInputBattery(XInputBattery.TypeUnknown, 0);
+            if (!batteryLogged || next.Type != battery.Type || next.Level != battery.Level)
+            {
+                batteryLogged = true;
+                AppLogger.LogDebug($"[XInput] battery (slot {playerIndex}): read={ok} type={next.Type} level={next.Level}");
+            }
+
+            battery = next;
         }
 
         private void WaitForNextPoll()
@@ -196,6 +206,13 @@ namespace DS4Windows.Input.Xbox
         /// </summary>
         public string GenerateFakeHwSerial()
         {
+            // Bluetooth 接続は、機器の Bluetooth アドレスをそのまま使う（デバイスの識別と同じ値。登録簿が、追加と削除で同じキーを使えるように）
+            string address = XusbConnectionClassifier.TryGetBluetoothAddress(DevicePath);
+            if (address != null)
+            {
+                return address;
+            }
+
             string source = string.IsNullOrEmpty(Info.InstanceId) ? DevicePath : Info.InstanceId;
             byte[] hash;
             using (SHA1 sha = SHA1.Create())
