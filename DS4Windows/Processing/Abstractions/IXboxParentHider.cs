@@ -14,7 +14,8 @@ namespace DS4Windows.Processing.Abstractions
         XboxParentHideResult Apply(string devicePath, bool hide);
 
         /// <summary>自分が足した分を、すべて戻す（サービスの停止のとき）。</summary>
-        void RestoreAll();
+        /// <returns>戻した分があったか（なければ false）</returns>
+        bool RestoreAll();
 
         /// <summary>前回の異常終了などで、足したまま残った分があれば戻す（サービスの開始のとき）。</summary>
         void RecoverStale();

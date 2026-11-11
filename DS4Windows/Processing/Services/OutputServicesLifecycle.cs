@@ -163,7 +163,10 @@ namespace DS4Windows.Processing.Services
             _virtualKBM.Disconnect();
 
             // 停止のとき、自分が隠した Xbox の USB の親を戻す
-            _xboxParentHider.RestoreAll();
+            if (_xboxParentHider.RestoreAll())
+            {
+                AppLogger.LogUser(AppLogLevel.Info, "Log_HidHide_XboxRestored");
+            }
         }
     }
 }

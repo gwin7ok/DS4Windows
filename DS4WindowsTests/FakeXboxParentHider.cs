@@ -17,7 +17,13 @@ namespace DS4WindowsTests
             return Result;
         }
 
-        public void RestoreAll() => RestoreAllCalls++;
+        public bool RestoreAllResult { get; set; }
+
+        public bool RestoreAll()
+        {
+            RestoreAllCalls++;
+            return RestoreAllResult;
+        }
 
         public void RecoverStale() => RecoverStaleCalls++;
     }

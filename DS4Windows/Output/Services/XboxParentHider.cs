@@ -129,13 +129,13 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public void RestoreAll()
+        public bool RestoreAll()
         {
             lock (_sync)
             {
                 if (_added.Count == 0)
                 {
-                    return;
+                    return false;
                 }
 
                 using (IHidHideApi api = _apiFactory.Open())
@@ -143,14 +143,17 @@ namespace DS4Windows.Output.Services
                     // 開けないときは、記録ファイルを残し、次の開始で戻す
                     if (!api.IsOpen())
                     {
-                        return;
+                        return false;
                     }
 
                     if (RemoveFromList(api, _added.ToArray()))
                     {
                         _added.Clear();
                         DeleteRecord();
+                        return true;
                     }
+
+                    return false;
                 }
             }
         }
