@@ -1671,7 +1671,7 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
     <value>HidHide is not installed. Install HidHide to hide the original Xbox controller from other programs.</value>
   </data>
   <data name="HideXboxControllerTip" xml:space="preserve">
-    <value>Hides the original XInput input of every Xbox controller detected by DS4Windows from other programs (requires HidHide). Check if you are getting double input in games. DS4Windows restarts its service when this is changed.</value>
+    <value>Hides the original XInput input of every Xbox controller detected by DS4Windows from other programs (requires HidHide). Check if you are getting double input in games. DS4Windows restarts its service when this is changed. Note: apps that read controllers through Windows.Gaming.Input (for example Chrome) may still see the original Xbox One controller, because HidHide cannot hide it from them.</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} not found in HidHide whitelist. Adding to list</value>

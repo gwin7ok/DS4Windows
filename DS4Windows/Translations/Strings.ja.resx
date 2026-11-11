@@ -802,7 +802,7 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>HidHide がインストールされていません。元の Xbox コントローラーを他のプログラムから隠すには、HidHide をインストールしてください。</value>
   </data>
   <data name="HideXboxControllerTip" xml:space="preserve">
-    <value>DS4Windows が検出したすべての Xbox コントローラーの元の XInput 入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。変更すると、DS4Windows のサービスを再起動します。</value>
+    <value>DS4Windows が検出したすべての Xbox コントローラーの元の XInput 入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。変更すると、DS4Windows のサービスを再起動します。 注意: Windows.Gaming.Input 経由でコントローラーを読むアプリ（例: Chrome）には、HidHide では隠せないため、元の Xbox One コントローラーが見えることがあります。</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} が HidHide の許可リストにありません。リストに追加します</value>
