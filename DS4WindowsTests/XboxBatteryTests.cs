@@ -11,6 +11,24 @@ namespace DS4WindowsTests
     /// </summary>
     public class XboxBatteryTests
     {
+        [Fact]
+        public void ThePrimedBattery_IsAvailableBeforeTheInputLoopStarts()
+        {
+            // 接続時のログが「バッテリー: 0%」と出ていた（読み取りのスレッドの前は 0 のまま）。DS4 と同じく、最初のレポートから取り込む
+            var api = new FakeXInputApi();
+            api.Set(0, new XInputSnapshot(1, 0, 0, 0, 0, 0, 0, 0));
+            api.Batteries[0] = new XInputBattery(XInputBattery.TypeNiMh, 2);
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(@"\\?\usb#vid_045e&pid_028e#a02014100201#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}", 0x045E, 0x028E, 0);
+            InputTransportCandidate candidate = System.Linq.Enumerable.Single(new XInputTransportSource(api, interfaces).Enumerate());
+            DS4Windows.Input.InputDeviceCore device = new XboxDeviceCartridge().Create(DS4Windows.Core.Model.InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
+            device.PostInit();
+
+            device.PrimeBatteryReading();
+
+            Assert.Equal(66, device.getBattery());
+        }
+
         private const string Path = @"\\?\usb#vid_045e&pid_028e#battery1#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
 
         private static byte[] Report(byte type, byte level)

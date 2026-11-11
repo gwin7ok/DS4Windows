@@ -18,6 +18,7 @@ namespace DS4Windows.Input.Xbox
             public int? Percent;
             public long NextRefreshTicks;
             public int Refreshing;
+            public volatile Task Pending;
         }
 
         private readonly IGattBatteryFetcher fetcher;
@@ -35,12 +36,26 @@ namespace DS4Windows.Input.Xbox
             intervalTicks = (long)(interval.TotalSeconds * Stopwatch.Frequency);
         }
 
-        public bool TryGetPercent(ulong bluetoothAddress, out int percent)
+        public bool TryGetPercent(ulong bluetoothAddress, out int percent) => TryGetPercent(bluetoothAddress, TimeSpan.Zero, out percent);
+
+        public bool TryGetPercent(ulong bluetoothAddress, TimeSpan maxWait, out int percent)
         {
             Entry entry = entries.GetOrAdd(bluetoothAddress, _ => new Entry());
             if (Stopwatch.GetTimestamp() >= entry.NextRefreshTicks && System.Threading.Interlocked.CompareExchange(ref entry.Refreshing, 1, 0) == 0)
             {
-                _ = RefreshAsync(bluetoothAddress, entry);
+                entry.Pending = RefreshAsync(bluetoothAddress, entry);
+            }
+
+            if (maxWait > TimeSpan.Zero && !entry.Percent.HasValue)
+            {
+                try
+                {
+                    entry.Pending?.Wait(maxWait);
+                }
+                catch (AggregateException)
+                {
+                    // 読み取りの失敗は RefreshAsync の中で記録済み
+                }
             }
 
             int? value = entry.Percent;

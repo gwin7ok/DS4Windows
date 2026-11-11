@@ -134,6 +134,9 @@ namespace DS4Windows.Input.Xbox
             return HidReadStatus.Success;
         }
 
+        // 最初の 1 回だけ、GATT の値を待つ（接続時の電池の表示が、0% や XInput の粗い値になるのを避ける）
+        private static readonly TimeSpan FirstBatteryWait = TimeSpan.FromSeconds(3);
+
         private void RefreshBattery()
         {
             long now = Stopwatch.GetTimestamp();
@@ -148,7 +151,7 @@ namespace DS4Windows.Input.Xbox
             bool ok;
             XInputBattery read = default;
             if (bluetoothBattery != null && XusbConnectionClassifier.TryGetBluetoothAddressValue(DevicePath, out ulong address) &&
-                bluetoothBattery.TryGetPercent(address, out int percent))
+                bluetoothBattery.TryGetPercent(address, batteryLogged ? TimeSpan.Zero : FirstBatteryWait, out int percent))
             {
                 ok = true;
                 read = new XInputBattery(XInputBattery.TypePercent, (byte)Math.Max(0, Math.Min(percent, 100)));

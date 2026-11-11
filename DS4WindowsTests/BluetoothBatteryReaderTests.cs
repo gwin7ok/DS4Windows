@@ -71,8 +71,19 @@ namespace DS4WindowsTests
             Assert.False(reader.TryGetPercent(Address, out _));
         }
 
+        [Fact]
+        public void TheReader_CanWaitForTheFirstValue_WhenAskedTo()
+        {
+            var reader = new BluetoothBatteryReader(new FakeFetcher { Next = 77 });
+
+            Assert.True(reader.TryGetPercent(Address, TimeSpan.FromSeconds(2), out int percent));
+            Assert.Equal(77, percent);
+        }
+
         private sealed class FixedReader : IBluetoothBatteryReader
         {
+            public bool TryGetPercent(ulong bluetoothAddress, TimeSpan maxWait, out int percent) => TryGetPercent(bluetoothAddress, out percent);
+
             public bool TryGetPercent(ulong bluetoothAddress, out int percent)
             {
                 percent = bluetoothAddress == Address ? 42 : 0;

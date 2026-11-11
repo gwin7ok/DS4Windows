@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
@@ -70,6 +71,29 @@ namespace DS4Windows.Input.Devices
         public override bool DisconnectWireless(bool callRemoval = false) => DisconnectBT(callRemoval);
 
         private bool HasBluetoothAddress => protocol.TryGetBluetoothAddress(hDevice) != null;
+
+        // 接続時のログ・画面が 0% を出さないよう、読み取りのスレッドの前に最初のレポートから電池だけを取り込む（DS4 の PrimeBatteryReading と同じ考え方）
+        protected override void PrimeBatteryForOtherDevice()
+        {
+            if (ds4Input != null || isDisconnecting || inputReport == null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (hDevice.ReadFile(inputReport) != HidReadStatus.Success)
+                {
+                    return;
+                }
+
+                battery = protocol.TryReadBattery(inputReport, out int percent, out _) ? percent : 99;
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogWarn($"[DI] PrimeBatteryReading failed: {ex.Message}");
+            }
+        }
 
         public override bool IsAlive() => synced;
 

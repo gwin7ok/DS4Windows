@@ -542,7 +542,13 @@ namespace DS4Windows.Input
         /// </summary>
         public void PrimeBatteryReading()
         {
-            if (deviceType != DS4Windows.Core.Model.InputDeviceType.DS4 || !postInitDone || ds4Input != null || isDisconnecting)
+            if (deviceType != DS4Windows.Core.Model.InputDeviceType.DS4)
+            {
+                PrimeBatteryForOtherDevice();
+                return;
+            }
+
+            if (!postInitDone || ds4Input != null || isDisconnecting)
                 return;
 
             if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
@@ -577,6 +583,11 @@ namespace DS4Windows.Input
             {
                 AppLogger.LogWarn($"[DI] PrimeBatteryReading failed: {ex.Message}");
             }
+        }
+
+        /// <summary>DS4 以外の機種が、接続直後の電池の取り込みを足す差し込み口（既定は何もしない）。</summary>
+        protected virtual void PrimeBatteryForOtherDevice()
+        {
         }
 
         public virtual void StartUpdate()
