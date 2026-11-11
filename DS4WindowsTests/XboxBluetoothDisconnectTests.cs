@@ -118,6 +118,23 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ABleDevice_IsPoweredOffThroughXInputFirst_BeforeTheDeviceNodeProcedure()
+        {
+            var api = new FakeXInputApi { PowerOffResult = true };
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(BlePath, 0x045E, 0x0B22, 2);
+            InputTransportCandidate candidate = new XInputTransportSource(api, interfaces).Enumerate().Single();
+            bool nodeProcedureUsed = false;
+            var device = new DS4Windows.Input.Devices.ProtocolDevice(new XboxProtocol(p => { nodeProcedureUsed = true; return false; }), candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
+            device.PostInit();
+
+            Assert.True(device.DisconnectBT(callRemoval: true));
+
+            Assert.Equal(new[] { 2 }, api.PowerOffs);
+            Assert.False(nodeProcedureUsed);
+        }
+
+        [Fact]
         public void ABleDevice_StaysConnected_WhenTheDeviceNodeProcedureFails()
         {
             InputDeviceCore device = NewDeviceWith(BlePath, 0x0B22, p => false);

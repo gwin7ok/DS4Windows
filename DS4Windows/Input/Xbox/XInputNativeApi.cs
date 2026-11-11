@@ -98,6 +98,24 @@ namespace DS4Windows.Input.Xbox
             return true;
         }
 
+        // 文書化されていない XInputPowerOffController（序数 103）。ワイヤレスのコントローラーの電源を切る
+        [DllImport("xinput1_4.dll", EntryPoint = "#103")]
+        private static extern uint XInputPowerOffController(uint userIndex);
+
+        public bool TryPowerOff(int index)
+        {
+            try
+            {
+                uint result = XInputPowerOffController((uint)index);
+                DS4Windows.Core.Logging.AppLogger.LogDebug($"[XInput] power off (slot {index}): result={result}");
+                return result == ErrorSuccess;
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return false;
+            }
+        }
+
         public bool TrySetVibration(int index, ushort leftMotor, ushort rightMotor)
         {
             var vibration = new Vibration { Left = leftMotor, Right = rightMotor };
