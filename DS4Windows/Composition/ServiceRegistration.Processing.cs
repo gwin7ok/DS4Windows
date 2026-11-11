@@ -132,6 +132,8 @@ namespace DS4Windows.Composition
             // HID を持たない Xbox 系コントローラーは、HID の列挙ではなく XInput の供給元が見つける
             services.AddSingleton<IXInputApi, XInputNativeApi>();
             services.AddSingleton<IXusbInterfaceSource, XusbInterfaceSource>();
+            services.AddSingleton<IGattBatteryFetcher, GattBatteryFetcher>();
+            services.AddSingleton<IBluetoothBatteryReader, BluetoothBatteryReader>();
             services.AddSingleton<IInputTransportSource, XInputTransportSource>();
             services.AddSingleton<IInputDeviceModuleRegistry, InputDeviceModuleRegistry>();
             services.AddSingleton<IEventThreadDispatcher, EventThreadDispatcher>();   // Phase13-Step3: 専用のイベントスレッド

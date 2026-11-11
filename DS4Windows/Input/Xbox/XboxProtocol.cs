@@ -35,7 +35,13 @@ namespace DS4Windows.Input.Xbox
             }
 
             byte type = report[XInputReportLayout.BatteryTypeOffset];
-            if (type != XInputBattery.TypeAlkaline && type != XInputBattery.TypeNiMh)
+            if (type == XInputBattery.TypePercent)
+            {
+                percent = Math.Min((int)report[XInputReportLayout.BatteryLevelOffset], 100);
+                return true;
+            }
+
+            if (type !=XInputBattery.TypeAlkaline && type != XInputBattery.TypeNiMh)
             {
                 return false;
             }

@@ -30,6 +30,7 @@ namespace DS4Windows.Input.Xbox
         private readonly IXusbInterfaceSource interfaces;
         private readonly ManualResetEventSlim cancelled = new ManualResetEventSlim(false);
         private long nextPollTicks;
+        private readonly IBluetoothBatteryReader bluetoothBattery;
         private long nextBatteryTicks;
         private bool batteryLogged;
         private XInputBattery battery = new XInputBattery(XInputBattery.TypeUnknown, 0);
@@ -37,7 +38,14 @@ namespace DS4Windows.Input.Xbox
         private bool disposed;
 
         public XInputTransport(IXInputApi api, IXusbInterfaceSource interfaces, XusbInterfaceInfo info)
+            : this(api, interfaces, info, null)
         {
+        }
+
+        /// <param name="bluetoothBattery">Bluetooth の機器の電池を、GATT のバッテリーサービスから読む窓口（なければ XInput の API だけ）。</param>
+        public XInputTransport(IXInputApi api, IXusbInterfaceSource interfaces, XusbInterfaceInfo info, IBluetoothBatteryReader bluetoothBattery)
+        {
+            this.bluetoothBattery = bluetoothBattery;
             this.api = api ?? throw new ArgumentNullException(nameof(api));
             this.interfaces = interfaces ?? throw new ArgumentNullException(nameof(interfaces));
             if (info == null)
@@ -135,7 +143,21 @@ namespace DS4Windows.Input.Xbox
             }
 
             nextBatteryTicks = now + Stopwatch.Frequency * BatteryIntervalMs / 1000;
-            bool ok = api.TryGetBattery(playerIndex, out XInputBattery read);
+            // Bluetooth の Xbox は、XInput の電池の API が動かないことがある。GATT のバッテリーサービスの値（正確な %）を先に使う。
+            // まだ読めていない間は、XInput の API にもどる
+            bool ok;
+            XInputBattery read = default;
+            if (bluetoothBattery != null && XusbConnectionClassifier.TryGetBluetoothAddressValue(DevicePath, out ulong address) &&
+                bluetoothBattery.TryGetPercent(address, out int percent))
+            {
+                ok = true;
+                read = new XInputBattery(XInputBattery.TypePercent, (byte)Math.Max(0, Math.Min(percent, 100)));
+            }
+            else
+            {
+                ok = api.TryGetBattery(playerIndex, out read);
+            }
+
             XInputBattery next = ok ? read : new XInputBattery(XInputBattery.TypeUnknown, 0);
             if (!batteryLogged || next.Type != battery.Type || next.Level != battery.Level)
             {

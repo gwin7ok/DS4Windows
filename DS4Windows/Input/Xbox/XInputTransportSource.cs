@@ -15,8 +15,16 @@ namespace DS4Windows.Input.Xbox
         private readonly IXInputApi api;
         private readonly IXusbInterfaceSource interfaces;
 
+        private readonly IBluetoothBatteryReader bluetoothBattery;
+
         public XInputTransportSource(IXInputApi api, IXusbInterfaceSource interfaces)
+            : this(api, interfaces, null)
         {
+        }
+
+        public XInputTransportSource(IXInputApi api, IXusbInterfaceSource interfaces, IBluetoothBatteryReader bluetoothBattery)
+        {
+            this.bluetoothBattery = bluetoothBattery;
             this.api = api ?? throw new ArgumentNullException(nameof(api));
             this.interfaces = interfaces ?? throw new ArgumentNullException(nameof(interfaces));
         }
@@ -48,7 +56,7 @@ namespace DS4Windows.Input.Xbox
 
                 var vidPid = new VidPidInfo(info.VendorId, info.ProductId, "Xbox", InputDeviceType.Xbox,
                     VidPidFeatureSet.DefaultDS4, checkConnection: transport => XusbConnectionClassifier.Classify(transport.DevicePath));
-                result.Add(new InputTransportCandidate(new XInputTransport(api, interfaces, info), vidPid));
+                result.Add(new InputTransportCandidate(new XInputTransport(api, interfaces, info, bluetoothBattery), vidPid));
             }
 
             return result;

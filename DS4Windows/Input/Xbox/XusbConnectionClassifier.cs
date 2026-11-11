@@ -39,6 +39,14 @@ namespace DS4Windows.Input.Xbox
             return string.Join(":", Enumerable.Range(0, 6).Select(i => hex.Substring(i * 2, 2)));
         }
 
+        /// <summary>Bluetooth のアドレスを、数値（Windows の Bluetooth の API が使う 48 ビットの値）で返す。</summary>
+        public static bool TryGetBluetoothAddressValue(string devicePath, out ulong address)
+        {
+            string text = TryGetBluetoothAddress(devicePath);
+            address = 0;
+            return text != null && ulong.TryParse(text.Replace(":", string.Empty), System.Globalization.NumberStyles.HexNumber, null, out address);
+        }
+
         public static ConnectionType Classify(string devicePath)
         {
             if (string.IsNullOrEmpty(devicePath))
