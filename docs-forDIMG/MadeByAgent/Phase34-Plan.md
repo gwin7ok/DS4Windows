@@ -26,7 +26,7 @@
 | 34-A2 | UDP の型 6 つを `Core/Model` へ移す（`git mv` と、名前空間の書き換えを別コミットに） | `Phase14NamespaceFolderGuardTests`、`LayerDependencyRuleTests` | 未着手 |
 | 34-A3 | `Processing/Services` を機能ごとのフォルダーへ分ける（案: `Connection`［接続・切断・開始と停止］、`Conditioning`［補正の段］、`Devices`［機種のモジュール］、`Slots`［UI 向けの窓口］。残りは `Services`）。移動と名前空間の書き換えを別コミットに | 同上。`ModelDiagramGuardTests` | 未着手 |
 | 34-A4 | UI の、使っていない `using DS4Windows.Input…;` を消す | ビルド | 未着手 |
-| 34-A5 | 文書の更新: モデル図 3 文書（フォルダーの表、引数の基準 12、手順書の冒頭）と、規則 3.4 R1（34-A2・A3 の結果） | `ModelDiagramGuardTests` | 未着手 |
+| 34-A5 | 文書の更新: モデル図 3 文書（フォルダーの表、引数の基準 12、手順書の冒頭）と、規則 3.4 R1（34-A2・A3 の結果）。あわせて、規約・モデル図・`Code-Review-2026-11`・Phase29〜34 の計画書に残る、テストの旧名（`Phase14NamespaceFolderGuardTests` → `NamespaceFolderGuardTests`、`Phase13FuncRatchetGuardTests` → `FuncRatchetGuardTests` など。Phase15-0 で改名済み。対応表は `Phase15-0-Test-Rename-Map.md`）を新名へ直す（2026-11-12 追加） | `ModelDiagramGuardTests` | 未着手 |
 | 34-A6 | （追加）`UI/IntToBoolConverter.cs` を `UI/Converters` へ移す（`git mv` と、名前空間・XAML の参照の書き換えを別コミットに）。コメントだけのファイル `Core/Updater/UpdaterInstallTrace.cs`（型なし、7 行）は、規則 2.4 の手順（`git log` で経緯を確かめる）のあと、ユーザーの承認を得て削除する。`UI/Themes/_.cs`（名前空間の宣言だけ。IDE のための置き石）は残す | `Phase14NamespaceFolderGuardTests`。画面の起動（XAML の参照） | 未着手 |
 
 ### 決めること
