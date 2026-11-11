@@ -65,6 +65,7 @@ namespace DS4Windows.Core.Platform
         private const string HidHideHardwareId = @"root\HidHide";
         private const string BlankDriverVersion = "0.0.0.0";
         private static string s_hidHideVersion = BlankDriverVersion;
+        private static string s_hidHideProductVersion = BlankDriverVersion;
         private static bool? s_hidHideInstalled;
         private static bool? s_fakerInputInstalled;
         private static string s_fakerInputVersion;
@@ -97,6 +98,7 @@ namespace DS4Windows.Core.Platform
         {
             HidHideInstalledState = IsHidHideInstalled();
             s_hidHideVersion = HidHideInstalledState ? (QuerySysDeviceDriverVersion(HidHideHardwareId) ?? BlankDriverVersion) : BlankDriverVersion;
+            s_hidHideProductVersion = HidHideInstalledState ? QueryHidHideProductVersion() : BlankDriverVersion;
         }
 
         public void RefreshFakerInputInfo()
@@ -109,6 +111,8 @@ namespace DS4Windows.Core.Platform
         public bool HidHideInstalled => HidHideInstalledState;
 
         public string HidHideVersion => s_hidHideVersion;
+
+        public string HidHideProductVersion => s_hidHideProductVersion;
 
         public string GetInstanceIdFromDevicePath(string devicePath) =>
             DevicePathProbe.GetInstanceIdFromDevicePath(devicePath);
@@ -358,6 +362,28 @@ namespace DS4Windows.Core.Platform
             }
 
             return result;
+        }
+
+        // HidHide 製品のバージョン: 設定画面アプリ（HidHideClient.exe）のファイルバージョン（プログラムと機能の表示と同じ。ドライバーとは別）
+        private static string QueryHidHideProductVersion()
+        {
+            try
+            {
+                string path = Util.GetHidHideClientPath();
+                if (!string.IsNullOrEmpty(path) && System.IO.File.Exists(path))
+                {
+                    string version = System.Diagnostics.FileVersionInfo.GetVersionInfo(path).FileVersion;
+                    if (!string.IsNullOrEmpty(version))
+                    {
+                        return version;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return BlankDriverVersion;
         }
 
         // 指定のハードウェア ID のシステム デバイス（例: root\HidHide）のドライバーのバージョンを返す。見つからないときは null

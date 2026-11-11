@@ -970,10 +970,10 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>{4} 軸のカスタムベジェ曲線 "{0}, {1}, {2}, {3}" が無効です。x1 と x2 は 0〜1 の範囲にしてください。直線の曲線を使います</value>
   </data>
   <data name="Log_Driver_HidHideInstalled" xml:space="preserve">
-    <value>HidHide ドライバー: インストール済み（バージョン {0}）</value>
+    <value>HidHide: インストール済み（製品 {0} / ドライバー {1}）</value>
   </data>
   <data name="Log_Driver_HidHideNotInstalled" xml:space="preserve">
-    <value>HidHide ドライバー: 未インストール</value>
+    <value>HidHide: 未インストール</value>
   </data>
   <data name="Log_Driver_ViGEmBusInstalled" xml:space="preserve">
     <value>ViGEmBus ドライバー: インストール済み（バージョン {0}）</value>

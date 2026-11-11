@@ -36,6 +36,8 @@
         bool HidHideInstalled { get; }
         /// <summary>導入済みの HidHide ドライバーのバージョン（RefreshHidHideInfo で更新される現在値。未導入や不明のときは 0.0.0.0）。</summary>
         string HidHideVersion { get; }
+        /// <summary>導入済みの HidHide 製品（設定画面アプリ <c>HidHideClient.exe</c>）のバージョン。「プログラムと機能」の表示と同じ（RefreshHidHideInfo で更新される現在値。見つからないときは 0.0.0.0）。</summary>
+        string HidHideProductVersion { get; }
         string GetInstanceIdFromDevicePath(string devicePath);
         bool CheckHidHideAffectedStatus(string deviceInstanceId,
             System.Collections.Generic.HashSet<string> affectedDevs,

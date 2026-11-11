@@ -145,3 +145,4 @@
   - **起動時のドライバー状態のログ（2026-11-11、ユーザーの指示）**: `App.RefreshAndLogDriverStatus` が、起動時に HidHide・ViGEmBus・FakerInput の導入状態を確認して `EnvironmentService` の保存値へ入れ、Info でログ（ファイルと画面）へ出す（資源 `Log_Driver_*`）。
   - **起動時のドライバーのログにバージョン（2026-11-11）**: HidHide のバージョンを足した（`IEnvironmentService.HidHideVersion`。`RefreshHidHideInfo` で、`root\HidHide` のドライバーのバージョンを保存）。FakerInput と ViGEmBus は、すでにバージョン付き。
   - **22-4 実機確認の完了（2026-11-11）**: 起動時のドライバー 3 行のログ（バージョン付き）、解除のログ、終了時の解除（HidHide のチェックが外れ、XInput が戻る）、強制終了後の復旧（チェックが残り、再起動＋オフで外れる。オンのままなら残る）を確認。未確認: HidHide 未導入のときの赤文字（未導入の環境が要る）、既定オンの新規環境。
+  - **HidHide のログに製品のバージョンを併記（2026-11-11）**: 「プログラムと機能」の表示（製品 1.5.230）と、ドライバー（1.4.181.0）が違って見えるため、`HidHideProductVersion`（HidHideClient.exe のファイルバージョン）を足し、「HidHide: インストール済み（製品 … / ドライバー …）」と出す。
