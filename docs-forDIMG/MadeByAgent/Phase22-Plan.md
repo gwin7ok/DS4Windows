@@ -58,6 +58,26 @@
 - 同時に使えるのは XInput の 4 台まで。Razer の仮想（実機と同じ扱い）も 1 台として数える。
 - テスト: `XInputReportParserTests`（純粋関数）、`XInputTransportTests`（偽の `IXInputApi`: 周期、切断、番号の引き直し）、`ProtocolDevice` と偽の通信路での一通りの流れ、`InputDeviceRegistry` と偽の窓口（組の持ち回り、無効時は拾わない）。層の検査（`LayerDependencyRuleTests`）と、既存の HID の機種のテストが不変。
 
+### 3.2 22-4 の設計（2026-11-11 提案。承認待ち）
+
+決定 3・4・5a に従う。**隠す対象の機器は、導出しなくてよい**: 22-2 の `XusbInterfaceInfo.InstanceId`（例: `USB\VID_045E&PID_028E\A02014100201`）が、XUSB のデバイス インターフェースの持ち主の機器そのもので、これが HidHide に足すべき「USB の親」である（22-1b で確認）。XUSB のインターフェースを持つ機器に限られるため、複合機器の他の機能を巻き込まない（決定 4 の `XnaComposite` の限定は、この性質で満たされる）。
+
+| 部品 | 役割 |
+|---|---|
+| `IHidHideApi.SetBlacklist`（追加） | `HidHideAPIDevice` に既にある `SetBlacklist` を窓口へ出す（`HidHideApiAdapter` と偽物 `FakeHidHideApi` も） |
+| `IHidHideService.SetXboxParentHidden(instanceId, hide)`（追加）／`RestoreHidden()` | 隠す・戻すの本体。**足した分だけ**を記録し、戻すのも足した分だけ（利用者が入れた登録は触らない）。結果は、隠した／すでに隠れていた／隠せない（未導入、制御デバイスが開けない、反転許可リスト、cloak 無効）の別で返し、ログに出す（決定 5a。cloak は切り替えない） |
+| 記録ファイル（`AppDataPath` の `HidHideAdded.txt`） | 足した ID を書く。異常終了のあと、次のサービスの開始時（`UpdateHidHide`）に、記録の ID を外して消す（足したまま残る事故を防ぐ） |
+| 呼び出し | `DeviceConnector.BeginPrepare`: 機種が Xbox で、設定がオンなら隠す（オフなら、足してあれば戻す）。`OutputServicesLifecycle` のサービスの停止: `RestoreHidden()` |
+| 設定 | `XboxDeviceOptions.HideUsbParent`（既定オフ。保存は系統の節の `ControllerSetting`［`Bool`］。DTO は増やさない。保存の黄金テストは、節の項目が 1 つ増えるだけ） |
+| 画面 | Other タブの「デバイス オプション」（`ControllerRegisterOptionsWindow`）に、「USB の親を隠す」のチェックボックスと説明を足す（`ControllerRegDeviceOptsViewModel` の 1 プロパティ。文言は `Strings.resx`／`.ja.resx`） |
+| ログ | `Log_HidHide_XboxHidden`／`…NotHidden*`（`AppLogger.LogUser`。理由別: 未導入、権限、反転許可リスト、cloak 無効） |
+
+- 反映のタイミング: 接続のたびに（サービスの有効中に）隠す。ブラックリストに足したままなら、抜き差ししても、HidHide が自動で隠す。**接続中に足したときに、すぐ効くかは実機で確かめる**（効かなければ、利用者への案内は「USB を差し直す」。22-2 の切り替えと同じ運用）。
+- 設定をオフにしたとき: 次の接続（差し直し）で戻す。サービスの停止でも戻す。
+- 権限: HidHide の制御デバイスを開けない場合（通常の権限の CLI は拒否された）は、隠さずにログで知らせる。DS4Windows が足せるかは、実機で確かめる。
+- Other タブへの状態の表示は、今回は行わない（ログだけ）。必要なら後で足す。
+- テスト: 偽の `IHidHideApi` で、足す／戻すが足した分だけ、既存の登録を保つ、隠せない 4 条件では何もしない、記録ファイルでの復旧。既存の `HidHideService` のテストが不変。
+
 ## 4. 追加の調査（実施時に行う）
 
 - 22-0: 全ボタンのデコード、Xbox 360 以外の同系統（Razer の Xbox 360 など、VID が違う機器）の扱い。
