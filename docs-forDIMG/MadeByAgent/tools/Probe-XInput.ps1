@@ -54,6 +54,25 @@ public static class XProbe
     [DllImport("cfgmgr32.dll")] static extern int CM_Get_Parent(out int parent, int dev, int flags);
     [DllImport("cfgmgr32.dll", CharSet = CharSet.Auto)] static extern int CM_Get_Device_ID(int dev, System.Text.StringBuilder buf, int len, int flags);
 
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)] static extern Microsoft.Win32.SafeHandles.SafeFileHandle CreateFile(string n, uint a, uint s, IntPtr sec, uint d, uint f, IntPtr t);
+    [DllImport("kernel32.dll", SetLastError = true)] static extern bool DeviceIoControl(Microsoft.Win32.SafeHandles.SafeFileHandle h, uint code, byte[] i, int il, byte[] o, int ol, out int ret, IntPtr ov);
+
+    // 読み取り専用の IOCTL: GET_INFORMATION（0x80006000。末尾 4 バイトが VID/PID）と GET_LED_STATE（0x8000E008。入力 00-00-00。3 バイト目が LED の模様。6〜9 が番号 0〜3）
+    static string Ioctl(string path)
+    {
+        var h = CreateFile(path, 0xC0000000u, 3, IntPtr.Zero, 3, 0, IntPtr.Zero);
+        if (h.IsInvalid) return "open失敗 " + Marshal.GetLastWin32Error();
+        string r = "";
+        int n; var o = new byte[64];
+        if (DeviceIoControl(h, 0x80006000u, new byte[3], 3, o, 64, out n, IntPtr.Zero) && n >= 12)
+            r += string.Format("VID={0:X4} PID={1:X4}", o[8] | (o[9] << 8), o[10] | (o[11] << 8));
+        o = new byte[64];
+        if (DeviceIoControl(h, 0x8000E008u, new byte[3], 3, o, 64, out n, IntPtr.Zero) && n >= 3)
+            r += string.Format("  LED={0} → XInput 番号 {1}", o[2], o[2] - 6);
+        h.Dispose();
+        return r;
+    }
+
     public static List<string> Xusb()
     {
         var list = new List<string>();
@@ -81,7 +100,7 @@ public static class XProbe
                 chain += "  <-  " + pb;
                 dev = parent;
             }
-            list.Add(path + "\n      " + chain);
+            list.Add(path + "\n      IOCTL: " + Ioctl(path) + "\n      " + chain);
         }
         SetupDiDestroyDeviceInfoList(set);
         return list;
