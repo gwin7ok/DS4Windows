@@ -792,6 +792,9 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
     <value>Xbox コントローラーを隠せません: HidHide のデバイス一覧への書き込みに失敗しました</value>
   </data>
+  <data name="Log_Disconnect_NotSupported" xml:space="preserve">
+    <value>{0} は、Bluetooth LE 接続のため、DS4Windows からは切断できません（Windows が切断の手段を提供していません）。コントローラー本体のボタンの長押しで電源を切ってください</value>
+  </data>
   <data name="Log_HidHide_XboxNotHidden_NotUsb" xml:space="preserve">
     <value>Bluetooth 接続の Xbox コントローラーは、DS4Windows では隠しません（この設定は USB 接続のみ）。必要なら HidHide で隠してください</value>
   </data>

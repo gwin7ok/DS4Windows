@@ -39,8 +39,29 @@ namespace DS4Windows.Input.Devices
         }
 
         // Bluetooth のアドレスを持つ機種（Bluetooth 接続）だけ、共通の切断（基底）を使う。擬似のシリアルの機種は、切断できない
-        public override bool DisconnectBT(bool callRemoval = false) =>
-            conType == ConnectionType.BT && HasBluetoothAddress && base.DisconnectBT(callRemoval);
+        public override bool DisconnectBT(bool callRemoval = false)
+        {
+            if (conType != ConnectionType.BT || !HasBluetoothAddress)
+            {
+                return false;
+            }
+
+            if (!protocol.SupportsBluetoothDisconnect(hDevice))
+            {
+                // 特別アクションは押している間、繰り返し呼ぶため、知らせるのは 1 回だけ
+                if (!disconnectUnsupportedLogged)
+                {
+                    disconnectUnsupportedLogged = true;
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Disconnect_NotSupported", DisplayName);
+                }
+
+                return false;
+            }
+
+            return base.DisconnectBT(callRemoval);
+        }
+
+        private bool disconnectUnsupportedLogged;
 
         public override bool DisconnectDongle(bool remove = false) => false;
 

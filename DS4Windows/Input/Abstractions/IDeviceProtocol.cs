@@ -24,6 +24,12 @@ namespace DS4Windows.Input.Abstractions
         /// </summary>
         string TryGetBluetoothAddress(IHidTransport hidDevice) => null;
 
+        /// <summary>
+        /// Bluetooth の切断（共通の <c>DisconnectBT</c>）が、この機器で実際に効くか。既定は true。
+        /// 効かない機種（Windows が切断の手段を出していない Bluetooth LE の Xbox など）は false を返し、切断の操作は何もせずに失敗する。
+        /// </summary>
+        bool SupportsBluetoothDisconnect(IHidTransport hidDevice) => true;
+
         /// <summary>入力レポートの解析（状態を持たない）。</summary>
         IInputReportParser Parser { get; }
 

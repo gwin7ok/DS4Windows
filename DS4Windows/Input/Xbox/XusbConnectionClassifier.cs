@@ -47,6 +47,10 @@ namespace DS4Windows.Input.Xbox
             return text != null && ulong.TryParse(text.Replace(":", string.Empty), System.Globalization.NumberStyles.HexNumber, null, out address);
         }
 
+        /// <summary>Bluetooth LE（BLE の HID）の接続か。Windows が切断の手段を出していない。</summary>
+        public static bool IsBluetoothLowEnergy(string devicePath) =>
+            !string.IsNullOrEmpty(devicePath) && devicePath.IndexOf(BleHidService, StringComparison.OrdinalIgnoreCase) >= 0;
+
         public static ConnectionType Classify(string devicePath)
         {
             if (string.IsNullOrEmpty(devicePath))

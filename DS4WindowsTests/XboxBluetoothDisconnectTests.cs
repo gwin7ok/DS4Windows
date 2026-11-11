@@ -92,6 +92,29 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ABleDevice_CannotBeDisconnected_AndReportsFailureWithoutRemoval()
+        {
+            // Windows は BLE の Xbox の切断の手段を出していない。成功と偽らず、何も起こさない
+            InputDeviceCore device = NewDevice(BlePath, 0x0B22);
+            int removals = 0;
+            device.Removal += (s, e) => removals++;
+
+            Assert.False(device.DisconnectBT(callRemoval: true));
+            Assert.False(device.DisconnectWireless(callRemoval: true));
+
+            Assert.Equal(0, removals);
+            Assert.False(device.IsDisconnecting);
+            Assert.False(new XboxProtocol().SupportsBluetoothDisconnect(NewBleTransport()));
+        }
+
+        private static IHidTransport NewBleTransport()
+        {
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(BlePath, 0x045E, 0x0B22, 0);
+            return new XInputTransportSource(new FakeXInputApi(), interfaces).Enumerate().Single().Transport;
+        }
+
+        [Fact]
         public void AUsbDevice_CannotBeDisconnected_AsBefore()
         {
             InputDeviceCore device = NewDevice(UsbPath, 0x028E);

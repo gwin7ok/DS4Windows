@@ -1661,6 +1661,9 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
     <value>Cannot hide the Xbox controller: writing the HidHide device list failed</value>
   </data>
+  <data name="Log_Disconnect_NotSupported" xml:space="preserve">
+    <value>{0} is connected by Bluetooth LE and cannot be disconnected from DS4Windows (Windows provides no way to do so); hold the button on the controller to turn it off</value>
+  </data>
   <data name="Log_HidHide_XboxNotHidden_NotUsb" xml:space="preserve">
     <value>Xbox controller connected by Bluetooth is not hidden by DS4Windows (the setting applies to USB only); hide it with HidHide if needed</value>
   </data>

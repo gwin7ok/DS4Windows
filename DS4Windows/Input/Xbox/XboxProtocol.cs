@@ -22,6 +22,9 @@ namespace DS4Windows.Input.Xbox
         // Bluetooth のアドレスは、パスから（登録簿のシリアルと同じ値。XusbConnectionClassifier が 1 か所で決める）
         public string TryGetBluetoothAddress(IHidTransport hidDevice) => XusbConnectionClassifier.TryGetBluetoothAddress(hidDevice?.DevicePath);
 
+        // Bluetooth LE の Xbox は、Windows が切断の手段を出していない（従来の切断の API は無視され、機器のノードの無効化・XInput の電源オフも拒否される）
+        public bool SupportsBluetoothDisconnect(IHidTransport hidDevice) => !XusbConnectionClassifier.IsBluetoothLowEnergy(hidDevice?.DevicePath);
+
         public IInputReportParser Parser => parser;
 
         // 電池式（アルカリ・ニッケル水素）のときだけ値を返す。有線・不明・読めないときは false（99% 固定。低電池の警告が出ない）
