@@ -13,7 +13,7 @@
 ## A 部: 機械的な整理
 
 ### 現状（調査）
-- ファイル名と型名の不一致（2-3）: `Input/DS4Devices.cs`（中身は `InputDeviceRegistry`）、`Processing/Services/Ds4DeviceRegistryAdapter.cs`（`InputDeviceRegistryAdapter`）、`Processing/Abstractions/IDs4DeviceRegistry.cs`（中身は要確認）。要確認: `Core/Updater/UpdaterInstallTrace.cs`、`UI/Themes/_.cs`。
+- ファイル名と型名の不一致（2-3）: `Input/DS4Devices.cs`（中身は `InputDeviceRegistry`）、`Processing/Services/Ds4DeviceRegistryAdapter.cs`（`InputDeviceRegistryAdapter`）、`Processing/Abstractions/IDs4DeviceRegistry.cs`（`IInputDeviceRegistry`）。`Core/Updater/UpdaterInstallTrace.cs`（コメントだけ）と `UI/Themes/_.cs`（名前空間の宣言だけ）は、型を持たないファイルで、不一致ではない。
 - UDP の型が `Input/` にある（2-4）: `DualShockPadMeta.cs`、`PadDataRspPacket.cs`、`DsState.cs`、`DsBattery.cs`、`DsConnection.cs`、`DsModel.cs`。
 - `Processing/Services` に約 70 ファイル、`Input/` の直下に 31 ファイル（2-5）。
 - 文書が古い（5-4、3-1）: `02-Extension-Guide.md:3`・`:9`、`01-Structure.md:57`〜`62`・`:134`、`02-Extension-Guide.md:48`、`03-Lifecycle-and-DI.md:38`。
@@ -22,11 +22,12 @@
 ### Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 34-A1 | ファイル名を型名に合わせる（`git mv` のみ。R7）。要確認の 2 件は、中身を読んでから決める | ファイル名＝型名の検査を、型の検査として足す（全 `.cs`。例外は `GlobalSuppressions.cs`、`AssemblyInfo.cs`、`*.xaml.cs`、`partial` の分割ファイル） | 未着手 |
+| 34-A1 | ファイル名を型名に合わせる（`git mv` のみ。R7）。対象は 3 件: `Input/DS4Devices.cs` → `InputDeviceRegistry.cs`、`Processing/Services/Ds4DeviceRegistryAdapter.cs` → `InputDeviceRegistryAdapter.cs`、`Processing/Abstractions/IDs4DeviceRegistry.cs` → `IInputDeviceRegistry.cs`（追加調査で、3 件目の中身を確認した） | ファイル名＝型名の検査を、型の検査として足す（全 `.cs`。例外は `GlobalSuppressions.cs`、`AssemblyInfo.cs`、`*.xaml.cs`、`partial` の分割ファイル） | 未着手 |
 | 34-A2 | UDP の型 6 つを `Core/Model` へ移す（`git mv` と、名前空間の書き換えを別コミットに） | `Phase14NamespaceFolderGuardTests`、`LayerDependencyRuleTests` | 未着手 |
 | 34-A3 | `Processing/Services` を機能ごとのフォルダーへ分ける（案: `Connection`［接続・切断・開始と停止］、`Conditioning`［補正の段］、`Devices`［機種のモジュール］、`Slots`［UI 向けの窓口］。残りは `Services`）。移動と名前空間の書き換えを別コミットに | 同上。`ModelDiagramGuardTests` | 未着手 |
 | 34-A4 | UI の、使っていない `using DS4Windows.Input…;` を消す | ビルド | 未着手 |
 | 34-A5 | 文書の更新: モデル図 3 文書（フォルダーの表、引数の基準 12、手順書の冒頭）と、規則 3.4 R1（34-A2・A3 の結果） | `ModelDiagramGuardTests` | 未着手 |
+| 34-A6 | （追加）`UI/IntToBoolConverter.cs` を `UI/Converters` へ移す（`git mv` と、名前空間・XAML の参照の書き換えを別コミットに）。コメントだけのファイル `Core/Updater/UpdaterInstallTrace.cs`（型なし、7 行）は、規則 2.4 の手順（`git log` で経緯を確かめる）のあと、ユーザーの承認を得て削除する。`UI/Themes/_.cs`（名前空間の宣言だけ。IDE のための置き石）は残す | `Phase14NamespaceFolderGuardTests`。画面の起動（XAML の参照） | 未着手 |
 
 ### 決めること
 | # | 決めること | 選択肢（先頭が推奨） |
@@ -48,10 +49,10 @@
 | ID | 項目（出典） | 調べること | 判断 |
 |---|---|---|---|
 | 34-C1 | 第 3 層が第 1 層の `InputDeviceCore` を直接使う（2-2） | 第 3 層が `InputDeviceCore` の何を使っているか（メンバーの一覧）。最小の契約にすると何メンバーか | 未決（(A) `Core/Abstractions` に最小の契約を置く／(B) 図と規則を実態に合わせる） |
-| 34-C2 | 機器の誤りが続く間の、毎フレームのログ（6-3。`Processing/Services/LatencyMonitor.cs:41`） | 誤りが何フレームも続く場面があるか（どこが `frameError` を立てるか）。実機のログに、同じ行の連続があるか | 未決。直す場合は、利用者に見えるログの変更として、一覧で承認を得る（規則 2.3） |
-| 34-C3 | 20 ms のタイマーと、別スレッドでの UI のコレクションの列挙（6-4。`UI/MainWindow.xaml.cs:243`、`593`） | タイマーを始める・止める場所。設定を画面で切り替えたときに、始め直せるか。列挙と変更が重なる経路があるか | 未決 |
+| 34-C2 | 機器の誤りが続く間の、毎フレームのログ（6-3。`Processing/Services/LatencyMonitor.cs:41`） | 追加調査で確認済み: `frameError` を立てるのは、タッチパッドの取り込みの `catch`（`DualShock4Device.cs:739`、`DualSenseDevice.cs:673`）だけ。続くのは、毎フレーム例外が出る異常なときに限る | **直さない案を推奨**（通常は起きず、異常のときは気づける方がよい。ログの文言・出力を変えない）。ユーザーの確認で確定する |
+| 34-C3 | 20 ms のタイマーが、スワイプ切替が無効でも回り続ける（6-4 の残り。`UI/MainWindow.xaml.cs:243`、`593`） | タイマーを始める・止める場所（同 `583`〜`589`）。設定を画面で切り替えたときに、始め直せるか | 未決。なお、列挙の競合と、例外で止まる問題（6-12）は、Phase29 の 29-10 へ移した |
 | 34-C4 | Bluetooth の Xbox の、接続直後の最大 3 秒の待ち（6-5。`Input/Xbox/XInputTransport.cs:188`） | 待ちを、読み取りスレッドの開始前（`PrimeBatteryForOtherDevice`）へ移せるか。実機で、接続直後の入力の止まりが体感できるか | 未決 |
-| 34-C5 | 30 秒ごとの第 0 世代の GC の強制（6-6。`App.xaml.cs:901`） | 経緯（`git log -S "GarbageTask"`）。Phase29 のあとの、1 秒あたりの割り当ての量（計測） | 未決。Phase29 のあとに判断する |
+| 34-C5 | 30 秒ごとの第 0 世代の GC の強制（6-6。`App.xaml.cs:901`） | 経緯（`git log -S "GarbageTask"`）。Phase29 のあとの、1 秒あたりの割り当ての量（計測）。追加調査で、毎フレームの割り当ての主な元（6-1、6-2、6-10、6-11）が分かった。これらを直したあとなら、不要になる見込み | 未決。Phase29（29-9 を含む）のあとに、計測して判断する |
 | 34-C6 | ロガーの静的イベントと、静的なキーボードの設定（1-6。`Core/Logging/AppLogger.cs:27`・`29`、`Core/Platform/KeyboardSettings.cs:11`） | 購読者・利用者の一覧。`Phase7-Residual-Ledger.md` §17.3 の目録での扱い | 未決 |
 | 34-C7 | 使われていない契約の候補（4-6） | 規則 2.4 の手順（経緯の調査 → 使うべきかの判断）を、1 つずつ行う | 未決 |
 | 34-C8 | コンストラクターの null 検査の手書き（3-2）、読み込みと保存の節が対でない（5-5） | — | **計画に入れない**（3-2 は害がなく、5-5 は設定のオブジェクト化の続きで揃える。記録だけ残す） |
@@ -67,3 +68,4 @@
 
 ## 履歴
 - 2026-11-11: 計画書を作成。コードは未着手。
+- 2026-11-11: 追加調査の結果を反映。34-A1 の対象を 3 件に確定し、34-A6（`IntToBoolConverter` の移動、コメントだけのファイルの扱い）を足した。34-C2 は調査済み（直さない案を推奨）、34-C3 は範囲を縮めた（競合と停止は Phase29 の 29-10 へ）、34-C5 に割り当ての元を書き足した。

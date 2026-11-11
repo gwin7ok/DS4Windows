@@ -2,7 +2,8 @@
 
 作成日: 2026-11-11（対象のコミットと読み方は `00-Summary.md`）
 読んだ経路: 入力ループ（`InputLoopDevice`、`XInputTransport`）→ 1 フレームの処理（`InputReportProcessor`、`LatencyMonitor`、`Mapping` の入口と特殊アクション、`StickInputConditioner`、`SyntheticInputCommitter`）→ 出力（`VirtualPadService`、`Xbox360OutDevice`）→ 画面の定期更新（トレイ、`ControllerReadingsControl`、`MainWindow` のタイマー）。
-読めていないもの: `TouchpadMouse`、`TriggerDispatchEngine` の内部、各機種の `ProcessFrame`、解析器、`OscService`、`UdpMotionService`。計測はしていない（コードの読み取りだけ）。
+追加調査（2026-11-11）で読んだもの: `TouchpadMouse` のジャイロの処理、`TriggerDispatchEngine`、動き・タッチの取り込み（`DS4SixAxis`、`DS4Touchpad`）、解析器。
+読めていないもの: `TouchpadMouse` のタッチの各出力（マウス、スティック、トラックボール）の計算の中身、`MouseCursor`、`OscService`、`UdpMotionService`。計測はしていない（コードの読み取りだけ）。
 
 ## 1. 良い点（維持すべき設計）
 
@@ -13,6 +14,7 @@
 - 入力表示（Controller Readings）は 15 fps で、画面が見えないときはタイマーを止める（`DS4Windows/UI/ControllerReadingsControl.xaml.cs:260`、`286`）。
 - トレイの電池アイコンは、値が同じなら通知しない（`DS4Windows/UI/ViewModels/TrayIconViewModel.cs:76`）。アイコンの名前は定数の連結で、割り当てがない。
 - `AppHost`、`TriggerDispatchEngine` の一部などは、Trace のログを `IsTraceEnabled` で囲んでいる。
+- `TriggerDispatchEngine`（2026-11-11 追加調査）: ロックは機器ごと（`Processing/Actions/TriggerDispatchEngine.cs:129`）で、全機器の共通の排他ではない。束縛の一覧は、差し替えのたびに不変の配列を作り（`ActionBindingRegistry.Replace`）、毎フレームは参照の比較だけで済ませる（同 `346`）。割り当ては差し替えの瞬間だけ。6-1 の修正の手本になる。
 
 ## 2. 問題点
 
@@ -30,7 +32,7 @@
 ### 6-3（低。要確認）機器の誤りが続く間、毎フレーム利用者向けのログを出す
 - 場所: `DS4Windows/Processing/Services/LatencyMonitor.cs:41`〜`45`
 - 事実: `device.error` が空でなければ、そのフレームで `AppLogger.Log(Info, …, UserFacing)` を呼ぶ。`error` は、フレームの誤り（`frameError`）が空になるまで残る（`InputLoopDevice.cs:169`〜`172`）。
-- 要確認: 誤りが何フレームも続く場面があるか（タッチパッドの読み取りの失敗など）。
+- 追加調査（2026-11-11）: `frameError` を立てるのは、タッチパッドの取り込みで例外が出たときだけ（`DS4Windows/Input/Devices/DualShock4Device.cs:739` と `DualSenseDevice.cs:673` の `catch`。ほかに立てる場所はない）。つまり、ログが続くのは、毎フレーム例外が出ている異常なときに限る。通常の使用では起きない。優先度は低いまま。
 - 制約: ログの文言と出力は維持の対象。変えるなら、利用者に見えるログの変更として承認が要る（規則 2.3）。
 - 修正の方向: 同じ文言が続く間は、最初の 1 回と、一定の間隔ごとにだけ出す。
 
@@ -68,6 +70,24 @@
 - 場所: `DS4Windows/Processing/Services/SyntheticDispatcherService.cs:57`、`58`、`107`、`108`、`SyntheticInputCommitter.cs`（34 か所）、`Processing/Actions/KeyButtonActionController.cs`（9 か所）、`Processing/Touchpad/TouchpadMouse.cs:1114`〜`1167`（4 か所）
 - 事実: 押し離し・クリック・タッチの始まりと終わりのたびで、毎フレームではない。キーのリピート中は、1 秒に約 30 回（`KeyboardSettings.RepeatCharsPerSec`）になる。
 - 修正の方向: `if (AppLogger.IsTraceEnabled)`／`IsDebugEnabled` で囲む。文言は変えない。
+
+### 6-10（中）ジャイロのトリガーの判定が、毎フレーム文字列を分割する（2026-11-11 追加調査）
+- 場所: `DS4Windows/Processing/Touchpad/TouchpadMouse.cs:284`〜`340`（`IsGyroTriggerActive`）。呼び出しは同 `233`〜`281`（`sixaxisMoved`）、購読は `DS4Windows/Processing/Services/DeviceConnectionSetup.cs:199`
+- 事実: 動きのフレームのたびに、トリガーの設定（例: `"-1"`、`"4,5"`）を `Split(',')` で配列にし、要素を `int.TryParse` で数にする。ジャイロの出力が Controls・Mouse・MouseJoystick のどれでも通る。既定は Controls（`Core/Settings/BackingStore.cs:121`）なので、ジャイロを持つ機種では、既定の設定で毎フレーム配列を割り当てる。
+- 修正の方向: 設定の入れ物（`GyroControlsInfo.triggers` の setter、`Gyro.MouseTriggers`、`Gyro.MouseStickTriggers`）が、値を入れたときに数の配列へ直して持つ。毎フレームは配列を読むだけにする。保存する文字列は変えない。
+
+### 6-11（中）動き・タッチのイベント引数を、毎フレーム割り当てる（2026-11-11 追加調査）
+- 場所: `DS4Windows/Input/DS4SixAxis.cs:198`（`new SixAxisEventArgs`）、`DS4Windows/Input/Devices/SwitchProDevice.cs:525`（同）、`DS4Windows/Input/DS4Touchpad.cs:105`〜`240`（`new TouchpadEventArgs` が 14 か所）、`DS4Windows/Input/TouchpadEventArgs.cs:42`・`48`（`new Touch[2]`／`new Touch[1]`）
+- 事実: 加速度が 0 でないフレーム（重力があるので、実質は毎フレーム）で、購読者がいれば（タッチパッドの処理が必ず購読する）、引数のオブジェクトを 1 つ作る。指が触れている間は、タッチの引数と配列も毎フレーム作る。どちらもクラス。
+- なぜ問題か: 6-1・6-2・6-10 と合わせて、機器 1 台あたり毎フレーム 2〜5 個の小さな割り当てになる。30 秒ごとの GC の強制（6-6）は、この対策と見られる。上流（元の DS4Windows）から続く形。
+- 修正の方向: 機器ごとに引数のオブジェクトを 1 つ持ち、中身を書き換えて使い回す。購読者が引数を保持しないことを先に確かめる（`TouchpadMouse` は `firstTouch = arg.Touches[0]` のように、タッチのオブジェクトを保持する箇所がある）。保持する側は、値を写して持つ形に直す。
+
+### 6-12（中）自分で始め直すタイマーが、例外 1 つで止まったままになる（2026-11-11 追加調査。6-4 の続き）
+- 場所: `DS4Windows/UI/MainWindow.xaml.cs:593`〜`615`（`HotkeysTimer_Elapsed`）、同 `754`〜`764`（`AutoProfilesTimer_Elapsed`）。タイマーは `System.Timers.Timer`（同 `35`）で、`AutoReset = false`
+- 事実: どちらも、冒頭で `Stop()`、末尾で `Start()` を呼ぶ。間が `try`／`finally` で囲まれていない。`System.Timers.Timer` は、`Elapsed` の中の例外を握りつぶす（ランタイムの挙動。要確認）。したがって、間で例外が 1 回出ると、`Start()` に届かず、タイマーは止まったままになる。ログも出ない。
+- 例外が出る経路: `HotkeysTimer_Elapsed` は、`conLvViewModel.ControllerCol` を、ロックを取らずに列挙する（同 `599`）。このコレクションは、ほかのスレッドが書き込みロック（`UI/ViewModels/ControllerListViewModel.cs:41` の `_colListLocker`）の下で変える（同 `130`〜`146`、`220`〜`226`）。着脱と列挙が重なると、列挙が例外になる。`AutoProfilesTimer_Elapsed` は、`CheckProfiles()` が例外を投げた場合。
+- 結果: スワイプでのプロファイルの切替、または自動プロファイルが、アプリを再起動するまで黙って動かなくなる。
+- 修正の方向: `try`／`finally` で囲み、`finally` で始め直す。例外は Error のログに出す（新しいログ。規則 2.3 に沿って書く）。列挙は、読み取りロックの下で取ったスナップショットに対して行う。
 
 ## 3. UI スレッドを塞ぐ処理
 

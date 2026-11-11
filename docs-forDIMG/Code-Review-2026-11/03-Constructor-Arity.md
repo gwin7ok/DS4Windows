@@ -7,7 +7,7 @@
 
 - 12 を超える型は 4 つだけで、すべて `ConstructorArityBaseline` に凍結されている。
 - Phase28 で工場（`SpecialActionOutputFactory` 14 → 1、`ShellViewModelFactory` 14 → 12）を、束ねではなく分割で減らした。
-- 依存を隠すための束ね型（何でも箱）は見つからなかった。`ProfileSlotSettings`（8 引数）は、領域の窓口（スティック・トリガー・ジャイロなど）の束で、依存を隠す箱ではない。ただし、束ね型の全数確認まではしていない。
+- 依存を隠すための束ね型（何でも箱）は見つからなかった。`ProfileSlotSettings`（8 引数）は、領域の窓口（スティック・トリガー・ジャイロなど）の束で、依存を隠す箱ではない。2026-11-11 の追加調査で、名前（`*Context`、`*Dependencies`、`*Services`、`*Bundle` など）による全体の検索も行い、該当なしを確かめた（`04-Duplication-and-Abstraction.md` の 4-8）。
 
 ## 2. 引数が多い型の一覧（10 以上）
 

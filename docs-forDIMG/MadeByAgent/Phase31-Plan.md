@@ -14,7 +14,10 @@
 ### A. プログラム起動
 - `DeviceConnectionSetup.CheckLauchProfileOption`（`Processing/Services/DeviceConnectionSetup.cs:78`〜）: `startUp` が偽のとき、プロセスを列挙し、なければ 5 秒後に起動する。
 - `ProfileMiscLoadSection`（`Core/Persistence/ProfileSections/ProfileMiscLoadSection.cs:59`〜`110`）: `context.LaunchProgram` が真のとき、同じことをする。こちらだけ、先に `IProcessInspector` を試す。
-- 要確認: 2 つが同じ場面で両方動くか（二重起動の有無）。
+- 追加調査（2026-11-11）: 2 つは場面で分かれており、たどった範囲では二重に起動しない。
+  - 接続のとき: 読み込みは「起動しない」で行い（`ProfileSlotApplier.cs:38` の引数仕様）、そのあと `DeviceConnector.cs:106` が `ApplyProfileOptions`（`startUp` は偽）を呼んで、第 2 層の側が起動する。
+  - 切替のとき（特殊アクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`BackingStore.cs:1171`）で、第 2 層の側は起動しない。
+  - 画面からの手動の切替、自動プロファイルの既定への復帰（`AutoProfileService.cs:279` は「起動しない」）は、どちらも起動しない見込み（31-A0 で表にして確かめる）。
 
 ### B. 出力の種類の分岐（カートリッジと `OutContTypeInfo` の外）
 `Output/OutputSlotManager.cs:158`、`Output/Services/OutputSlotView.cs:50`・`55`、`Output/Services/VirtualPadService.cs:135`〜`154`、`Processing/Services/InputReportProcessor.cs:170`、`Processing/Services/IpcCommandProcessor.cs:207`・`209`、`Processing/Macro/MacroParser.cs:101`、`Core/Model/X360ControlTables.cs:170`・`174`、`UI/ViewModels/BindingWindowViewModel.cs:84`（`use360Mode`）、`UI/ViewModels/SlotDeviceEntry.cs:128`、`UI/ViewModels/OutputSettingsViewModel.cs:35`・`56`。
@@ -29,7 +32,7 @@
 | # | 決めること | 選択肢（先頭が推奨） |
 |---|---|---|
 | D1 | A と B を同じ Phase で進めるか | (A) 同じ Phase。A を先に／(B) B を Phase31、A を別の Phase に分ける |
-| D2 | A で二重起動が見つかった場合 | (A) 1 回に直す（不具合の修正として記録し、CHANGELOG に書く）／(B) 今の動作を固定する |
+| D2 | A で、場面ごとの起動する・しないの違いをどう扱うか（追加調査で、二重起動はない見込みと分かった。違いは「接続時」「切替時」で別の実装が動くこと） | (A) 今の場面ごとの動作を、表のとおりに固定して 1 つの部品へ移す（動作は不変）／(B) 場面ごとの違いを見直す（機能の変更。別に承認を得る） |
 | D3 | B の `use360Mode`（二択の bool） | (A) 種類（`OutContType`）を持つ形に変え、画面の表示は種類から引く／(B) 触らない（3 つ目を足すときに直す） |
 | D4 | B で、`InputReportProcessor` のトリガーの後処理をどこへ置くか | (A) DS4 の出力デバイス（`ConvertandSendReport` の中）／(B) カートリッジの「送出の直前の後処理」 |
 
@@ -62,3 +65,4 @@
 
 ## 履歴
 - 2026-11-11: 計画書を作成。コードは未着手。
+- 2026-11-11: 追加調査の結果を反映。プログラム起動の 2 つの経路は場面で分かれ、二重起動はない見込みと分かった（現状の A と、決めること D2 を書き直した）。31-A0 は、その表を確定する作業として残す。

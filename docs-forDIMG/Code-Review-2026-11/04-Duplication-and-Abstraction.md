@@ -1,7 +1,7 @@
 # コードレビュー（2026-11）観点 4: 共通部品化が必要十分な範囲か
 
 作成日: 2026-11-11（対象のコミットと読み方は `00-Summary.md`）
-範囲の注意: 機種間は、デバイス本体（`Input/Devices`）の読み取り・スレッドの起動までを読み比べた。解析器どうし、各機種の `ProcessFrame`、ViewModel の工場どうし、Converter は未調査。
+範囲の注意: 機種間は、デバイス本体（`Input/Devices`）の読み取り・スレッドの起動と、解析器・`ProcessFrame`（DS4 と DualSense）を読み比べた。工場・Converter・束ね型は 2026-11-11 の追加調査で確かめた（4-7、4-8）。Switch Pro の `ProcessFrame` と、トリガー（L2／R2）の ViewModel は未調査。
 
 ## 1. 良い点（維持すべき設計）
 
@@ -15,7 +15,10 @@
 - 場所: `DS4Windows/Processing/Services/DeviceConnectionSetup.cs:78`〜（`CheckLauchProfileOption`）と、`DS4Windows/Core/Persistence/ProfileSections/ProfileMiscLoadSection.cs:59`〜`110`
 - 事実: どちらも、プロセスを列挙して実行ファイルのパスを比べ、見つからなければ `Task` の中で `Thread.Sleep(5000)` のあとに起動する。永続化の側だけが、先に `IProcessInspector` を試す。
 - なぜ問題か: 片方だけ直すと動きがずれる。永続化の層に副作用がある（`02-Layers-and-Placement.md` の 2-1）。
-- 要確認: 同じ場面（接続時のプロファイルの読み込み）で、両方が動いて二重に起動しないか。`DeviceConnectionSetup` は `startUp` が偽のときだけ、永続化の側は `context.LaunchProgram` が真のときだけ動く。
+- 追加調査（2026-11-11）: 2 つは場面で分かれており、たどった範囲では二重に起動しない。
+  - 接続のとき: 読み込みは「起動しない」で行い（`Processing/Services/ProfileSlotApplier.cs:38` のコメントの引数仕様）、そのあと `DeviceConnector.cs:106` が `ApplyProfileOptions`（`startUp` は既定の偽）を呼んで、第 2 層の側が起動する。
+  - 切替のとき（特殊アクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`Core/Settings/BackingStore.cs:1171`）なので、第 2 層の側は起動しない。
+  - つまり、同じ処理を、場面ごとに別の実装が受け持っている。二重起動の不具合ではないが、片方だけ直すとずれる点は変わらない。
 - 修正の方向: 起動の判断と実行を、第 2 層の 1 つの部品へまとめる（`IProcessInspector` と `IProcessLauncher` を使う）。
 
 ### 4-2（中）DS4 と DualSense の、読み取り・CRC の検証・停止の手順が重複し、細部がずれている
@@ -39,6 +42,17 @@
 - なぜ問題か: スティックの設定を 1 つ足すと、ViewModel 2 か所と XAML 2 か所を書く。左右で片方だけ直す事故が起きる。
 - 修正の方向: 片側ぶんの ViewModel を 1 つ作り、左右で 2 つ生成する。XAML は片側ぶんの部品（UserControl）を 2 回置く。保存する名前・設定の窓口（`StickSlotSettings`）には触れない。
 - 参考: 同じ形は、トリガー（`TriggerSettingsViewModel` の L2／R2）にもあると見られる（未調査）。
+
+### 4-7（低）DS4 と DualSense の解析器・タッチの取り込みが、位置だけ違う同じ形（2026-11-11 追加調査）
+- 場所: `DS4Windows/Input/Parsers/Ds4ReportParser.cs`（78 行）と `DualSenseReportParser.cs`（95 行）。方向キーの 9 通りの `switch`、ボタンのビットの取り出し、タッチパッドの生値（2 本分、各 5 行）が、バイトの位置（`reportOffset` と固定の差）だけ違う。各機種の `ProcessFrame` のタッチの取り込み（`DualShock4Device.cs:715`〜`739`、`DualSenseDevice.cs:673` の周辺）も同じ形。
+- 事実: `ProcessFrame` 全体では、DS4 の 110 行と DualSense の 93 行のうち、空白を除いて違う行が 85 行あり、時刻・電池・同期の扱いは機種ごとに違う。共通なのは、上のビットの取り出しの部分。
+- なぜ問題か: 害は小さい。解析器は小さく、旧実装との差分テストで守られている。3 つ目の Sony 系の機種を足すときに、同じ形をもう 1 回書くことになる。
+- 修正の方向: 急がない。足すなら、「方向キーの 4 ビット → 4 つの bool」と「タッチ 1 本の 4 バイト → 生値」の 2 つの静的な補助だけを共有する（解析器の全体を 1 つにまとめない。機種ごとの読みやすさを優先する）。
+
+### 4-8（調査の結果、問題なし）工場・Converter・束ね型（2026-11-11 追加調査）
+- ViewModel と窓の工場（`UI/Services/*Factory*.cs` の 9 つ）は、どれも 40〜102 行で、作る物が違う。重複として直す所は見つからなかった。
+- Converter は 4 つだけ（`UI/Converters` の 3 つと、`UI/IntToBoolConverter.cs`）。重複はない。`IntToBoolConverter` だけ `UI/` の直下にあり、置き場所が規則 R1（`UI/Converters`）と合わない（低。`Phase34-Plan.md` の A 部へ）。
+- 依存を束ねただけの型（何でも箱）は、名前（`*Context`、`*Dependencies`、`*Services`、`*Bundle` など）で全体を検索しても見つからなかった。`ProfileLoadContext`／`ProfileSaveContext` は、読み込み・保存 1 回ぶんの値の入れ物で、DI の依存を隠す箱ではない（ただし `BackingStore` の全体を節へ渡している。`Structure-Review-2026-11.md` の A の範囲）。
 
 ## 3. 問題点（過剰な抽象）
 

@@ -26,9 +26,11 @@
 - 場所と中身:
   - `DS4Windows/Input/DS4Devices.cs:41` → `InputDeviceRegistry`
   - `DS4Windows/Processing/Services/Ds4DeviceRegistryAdapter.cs:11` → `InputDeviceRegistryAdapter`
-  - `DS4Windows/Processing/Abstractions/IDs4DeviceRegistry.cs` → 中身は未確認。型名だけを `IInputDeviceRegistry` へ変えた残りと見られる
+  - `DS4Windows/Processing/Abstractions/IDs4DeviceRegistry.cs:7` → `IInputDeviceRegistry`（2026-11-11 追加調査で確認）
 - 事実: `Structure-Review-2026-11.md` の F（名前の一般化）で、型名だけを変え、ファイル名を変えなかった。既存のテストは拾っていない。
-- 要確認: `Core/Updater/UpdaterInstallTrace.cs`、`UI/Themes/_.cs`（照合の取りこぼしの可能性あり）。
+- 追加調査（2026-11-11）: 照合に引っかかった残りの 2 件は、型を持たないファイルだった。
+  - `DS4Windows/Core/Updater/UpdaterInstallTrace.cs`: コメントだけの 7 行（「以前の補助を、同じものを作り直さないために置き場所として残す」という説明）。型がなく、ビルドに何も足さない。削除してよい候補（規則 2.4 の手順で判断する）。
+  - `DS4Windows/UI/Themes/_.cs`: 名前空間の宣言だけ（IDE が名前空間を解決できるようにするための置き石、とコメントにある）。そのままでよい。
 - 修正の方向: `git mv` で改名し（R7）、ファイル名と型名の照合を型の検査へ足す。
 
 ### 2-4（低）UDP（Cemuhook）の型が `Input/` にある
