@@ -310,25 +310,31 @@ namespace DS4Windows.UI
 
         private void ChangeRsDriftControls(object sender, EventArgs e)
         {
-            rsDriftEllipse.Width = rsDeadX * CANVAS_WIDTH;
-            rsDriftEllipse.Height = rsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(rsDriftEllipse, (1 + (RsDriftX / 127.0) - rsDeadX) * CANVAS_MIDPOINT);
-            Canvas.SetTop(rsDriftEllipse, (1 + (RsDriftY / 127.0) - rsDeadY) * CANVAS_MIDPOINT);
+            Shape shape = rsDeadAxial ? rsDriftRect : (Shape)rsDriftEllipse;
+            rsDriftEllipse.Visibility = rsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            rsDriftRect.Visibility = rsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = rsDeadX * CANVAS_WIDTH;
+            shape.Height = rsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, (1 + (RsDriftX / 127.0) - rsDeadX) * CANVAS_MIDPOINT);
+            Canvas.SetTop(shape, (1 + (RsDriftY / 127.0) - rsDeadY) * CANVAS_MIDPOINT);
         }
 
         private void ChangeLsDriftControls(object sender, EventArgs e)
         {
-            lsDriftEllipse.Width = lsDeadX * CANVAS_WIDTH;
-            lsDriftEllipse.Height = lsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(lsDriftEllipse, (1 + (LsDriftX / 127.0) - lsDeadX) * CANVAS_MIDPOINT);
-            Canvas.SetTop(lsDriftEllipse, (1 + (LsDriftY / 127.0) - lsDeadY) * CANVAS_MIDPOINT);
+            Shape shape = lsDeadAxial ? lsDriftRect : (Shape)lsDriftEllipse;
+            lsDriftEllipse.Visibility = lsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            lsDriftRect.Visibility = lsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = lsDeadX * CANVAS_WIDTH;
+            shape.Height = lsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, (1 + (LsDriftX / 127.0) - lsDeadX) * CANVAS_MIDPOINT);
+            Canvas.SetTop(shape, (1 + (LsDriftY / 127.0) - lsDeadY) * CANVAS_MIDPOINT);
         }
 
         /// <summary>左スティックのデッドゾーンが「軸ごと」のとき true（長方形で描く。円形は楕円）。</summary>
         public bool LsDeadAxial
         {
             get => lsDeadAxial;
-            set { lsDeadAxial = value; ChangeLsDeadControls(this, EventArgs.Empty); }
+            set { lsDeadAxial = value; ChangeLsDeadControls(this, EventArgs.Empty); ChangeLsDriftControls(this, EventArgs.Empty); }
         }
         private bool lsDeadAxial;
 
@@ -336,7 +342,7 @@ namespace DS4Windows.UI
         public bool RsDeadAxial
         {
             get => rsDeadAxial;
-            set { rsDeadAxial = value; ChangeRsDeadControls(this, EventArgs.Empty); }
+            set { rsDeadAxial = value; ChangeRsDeadControls(this, EventArgs.Empty); ChangeRsDriftControls(this, EventArgs.Empty); }
         }
         private bool rsDeadAxial;
 

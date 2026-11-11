@@ -90,6 +90,7 @@
                              Height="{Binding Path=Height, ElementName=lsCanvas}"
                              Fill="{DynamicResource Readings.DeadZoneFill}">
                     </Ellipse>
+                    <Rectangle x:Name="lsDriftRect" Visibility="Collapsed" Fill="{DynamicResource Readings.AlertFill}" />
                     <Ellipse x:Name="lsDriftEllipse"
                              Width="{Binding Path=Width, ElementName=lsCanvas}"
                              Height="{Binding Path=Height, ElementName=lsCanvas}"
@@ -175,6 +176,7 @@
                              Height="{Binding Path=Height, ElementName=rsCanvas}"
                              Fill="{DynamicResource Readings.DeadZoneFill}">
                     </Ellipse>
+                    <Rectangle x:Name="rsDriftRect" Visibility="Collapsed" Fill="{DynamicResource Readings.AlertFill}" />
                     <Ellipse x:Name="rsDriftEllipse"
                              Width="{Binding Path=Width, ElementName=rsCanvas}"
                              Height="{Binding Path=Height, ElementName=rsCanvas}"
