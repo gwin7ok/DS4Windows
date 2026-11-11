@@ -18,6 +18,12 @@ namespace DS4Windows.Input.Abstractions
         /// <summary>接続方式（USB／Bluetooth）の判定。</summary>
         ConnectionType DetermineConnectionType(IHidTransport hidDevice);
 
+        /// <summary>
+        /// Bluetooth 接続のとき、機器の Bluetooth アドレス（<c>AA:BB:CC:DD:EE:FF</c>）を返す。取れない機種は null（既定。擬似のシリアルを使い、Bluetooth の切断は使えない）。
+        /// 切断の手順そのものは、DS4 などと共通の <c>InputDeviceCore.DisconnectBT</c> で、アドレスだけをここで教える。
+        /// </summary>
+        string TryGetBluetoothAddress(IHidTransport hidDevice) => null;
+
         /// <summary>入力レポートの解析（状態を持たない）。</summary>
         IInputReportParser Parser { get; }
 

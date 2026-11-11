@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
@@ -18,6 +20,27 @@ namespace DS4Windows.Input.Xbox
 
         // XInput は接続方式を教えない。XUSB のインターフェースのパスから決める
         public ConnectionType DetermineConnectionType(IHidTransport hidDevice) => XusbConnectionClassifier.Classify(hidDevice?.DevicePath);
+
+        // Bluetooth の Xbox は、XUSB のインターフェースのパスに、機器の Bluetooth アドレス（12 桁の 16 進）を含む
+        // 例: …&dev&vid_045e&pid_0b22&rev_0521&3cfa0617287c&col01&ig_00#…
+        public string TryGetBluetoothAddress(IHidTransport hidDevice)
+        {
+            if (XusbConnectionClassifier.Classify(hidDevice?.DevicePath) != ConnectionType.BT)
+            {
+                return null;
+            }
+
+            Match match = AddressInPath.Match(hidDevice.DevicePath);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            string hex = match.Groups[1].Value.ToUpperInvariant();
+            return string.Join(":", Enumerable.Range(0, 6).Select(i => hex.Substring(i * 2, 2)));
+        }
+
+        private static readonly Regex AddressInPath = new Regex(@"&pid_[0-9a-f]{4}(?:&rev_[0-9a-f]{4})?&([0-9a-f]{12})&", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public IInputReportParser Parser => parser;
 

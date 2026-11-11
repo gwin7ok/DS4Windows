@@ -28,7 +28,8 @@ namespace DS4Windows.Input.Devices
         public override void PostInit()
         {
             conType = protocol.DetermineConnectionType(hDevice);
-            Mac = hDevice.GenerateFakeHwSerial();
+            // Bluetooth のアドレスが取れる機種は、それを識別に使う（Bluetooth の切断に必要）。取れなければ、擬似のシリアル
+            Mac = (conType == ConnectionType.BT ? protocol.TryGetBluetoothAddress(hDevice) : null) ?? hDevice.GenerateFakeHwSerial();
             deviceType = protocol.DeviceType;
             gyroMouseSensSettings = new GyroMouseSens();
             inputReport = new byte[hDevice.Capabilities.InputReportByteLength];
@@ -36,12 +37,15 @@ namespace DS4Windows.Input.Devices
             warnInterval = WARN_INTERVAL_USB;
         }
 
-        // 偽のシリアルを使う機種のため、OS 側の切断の手順は持たない
-        public override bool DisconnectBT(bool callRemoval = false) => false;
+        // Bluetooth のアドレスを持つ機種（Bluetooth 接続）だけ、共通の切断（基底）を使う。擬似のシリアルの機種は、切断できない
+        public override bool DisconnectBT(bool callRemoval = false) =>
+            conType == ConnectionType.BT && HasBluetoothAddress && base.DisconnectBT(callRemoval);
 
         public override bool DisconnectDongle(bool remove = false) => false;
 
-        public override bool DisconnectWireless(bool callRemoval = false) => false;
+        public override bool DisconnectWireless(bool callRemoval = false) => DisconnectBT(callRemoval);
+
+        private bool HasBluetoothAddress => protocol.TryGetBluetoothAddress(hDevice) != null;
 
         public override bool IsAlive() => synced;
 
