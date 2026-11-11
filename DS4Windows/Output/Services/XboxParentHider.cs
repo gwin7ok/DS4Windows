@@ -60,6 +60,12 @@ namespace DS4Windows.Output.Services
                 return hide ? XboxParentHideResult.DeviceNotFound : XboxParentHideResult.NothingToRestore;
             }
 
+            // 隠す対象の根が USB の機器でなければ（Bluetooth など）、この設定の対象外。Bluetooth は、DS4 と同じく HidHide で利用者が隠す
+            if (!targets[0].StartsWith(@"USB\", StringComparison.OrdinalIgnoreCase))
+            {
+                return XboxParentHideResult.NotUsb;
+            }
+
             lock (_sync)
             {
                 if (!_hidHideInstalled())

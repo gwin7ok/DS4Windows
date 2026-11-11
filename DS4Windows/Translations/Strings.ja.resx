@@ -792,17 +792,20 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
     <value>Xbox コントローラーを隠せません: HidHide のデバイス一覧への書き込みに失敗しました</value>
   </data>
+  <data name="Log_HidHide_XboxNotHidden_NotUsb" xml:space="preserve">
+    <value>Bluetooth 接続の Xbox コントローラーは、DS4Windows では隠しません（この設定は USB 接続のみ）。必要なら HidHide で隠してください</value>
+  </data>
   <data name="Log_HidHide_XboxNotHidden_DeviceNotFound" xml:space="preserve">
     <value>Xbox コントローラーを隠せません: 機器を特定できませんでした（接続し直して試してください）</value>
   </data>
   <data name="HideXboxController" xml:space="preserve">
-    <value>Xbox コントローラーを隠す</value>
+    <value>Xbox コントローラーを隠す（USB 接続）</value>
   </data>
   <data name="HideXboxHidHideMissing" xml:space="preserve">
     <value>HidHide がインストールされていません。元の Xbox コントローラーを他のプログラムから隠すには、HidHide をインストールしてください。</value>
   </data>
   <data name="HideXboxControllerTip" xml:space="preserve">
-    <value>DS4Windows が検出したすべての Xbox コントローラーの元の入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。Bluetooth 接続: XInput も Windows.Gaming.Input も隠れます。USB（有線）接続: XInput は隠れますが、Windows.Gaming.Input 経由のアプリ（例: Chrome）には、HidHide では隠せないため、元のコントローラーが見えることがあります。USB で二重入力が続くときは、仮想コントローラーを DS4 にしてください。変更すると、DS4Windows のサービスを再起動します。</value>
+    <value>USB（有線）で接続した Xbox コントローラーの元の入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。XInput は隠れますが、Windows.Gaming.Input 経由のアプリ（例: Chrome）には、HidHide では隠せないため、元のコントローラーが見えることがあります。二重入力が続くときは、仮想コントローラーを DS4 にしてください。Bluetooth 接続の Xbox コントローラーはこの設定の対象外です。DS4 コントローラーと同じく、HidHide で直接隠してください。変更すると、DS4Windows のサービスを再起動します。</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} が HidHide の許可リストにありません。リストに追加します</value>

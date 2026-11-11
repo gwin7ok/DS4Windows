@@ -76,6 +76,19 @@ namespace DS4WindowsTests
             Assert.Empty(api.SetBlacklistCalls);
         }
 
+        [Fact]
+        public void Hide_IsNotAppliedToBluetoothConnections_AndChangesNothing()
+        {
+            const string bluetoothPath = @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}&dev&vid_045e&pid_0b22#a&b";
+            const string bluetoothId = @"HID\{00001812-0000-1000-8000-00805f9b34fb}&Dev&VID_045e&PID_0b22&Col01&IG_00\d&1&0&0000";
+            XboxParentHider hider = new XboxParentHider(() => installed, path => new[] { bluetoothId }, new TempPathService(tempDir), api, hidHideService);
+
+            Assert.Equal(XboxParentHideResult.NotUsb, hider.Apply(bluetoothPath, hide: true));
+            Assert.Equal(XboxParentHideResult.NotUsb, hider.Apply(bluetoothPath, hide: false));
+            Assert.Empty(api.SetBlacklistCalls);
+            Assert.Equal(0, hidHideService.CheckPresenceCalls);
+        }
+
         private string RecordPath => System.IO.Path.Combine(tempDir, XboxParentHider.RecordFileName);
 
         [Fact]

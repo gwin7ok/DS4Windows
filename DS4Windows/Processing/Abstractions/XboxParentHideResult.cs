@@ -32,5 +32,8 @@ namespace DS4Windows.Processing.Abstractions
 
         /// <summary>隠す機器のインスタンス ID を、機器のパスから得られなかった（OS への問い合わせの失敗。接続の直後に起こりうる）。</summary>
         DeviceNotFound,
+
+        /// <summary>USB 接続ではない（Bluetooth など）。この設定は USB 接続だけが対象で、HidHide の登録は何も変えない。</summary>
+        NotUsb,
     }
 }

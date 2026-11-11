@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services
 {
     /// <summary>
-    /// Xbox 系コントローラーの部品。設定の有効／無効のほか、接続のとき、設定「USB の親を隠す」に従って、HidHide で元の XInput の機器を隠す（二重入力を防ぐ）。
+    /// Xbox 系コントローラーの部品。設定の有効／無効のほか、接続のとき、設定「USB の親を隠す」に従って、USB 接続の機器だけ、HidHide で元の XInput の機器を隠す（二重入力を防ぐ）。Bluetooth 接続は対象外（DS4 と同じく、利用者が HidHide で隠す）。
     /// 設定がオフのときは、前に足した分があれば戻す。HidHide を使えないときは、何も変えず、理由をログに出す。
     /// </summary>
     public sealed class XboxDeviceModule : InputDeviceModuleBase
@@ -56,6 +56,9 @@ namespace DS4Windows.Processing.Services
                     break;
                 case XboxParentHideResult.WriteFailed:
                     AppLogger.LogUser(AppLogLevel.Warn, "Log_HidHide_XboxNotHidden_WriteFailed");
+                    break;
+                case XboxParentHideResult.NotUsb when hide:
+                    AppLogger.LogUser(AppLogLevel.Info, "Log_HidHide_XboxNotHidden_NotUsb");
                     break;
                 case XboxParentHideResult.DeviceNotFound when hide:
                     AppLogger.LogUser(AppLogLevel.Warn, "Log_HidHide_XboxNotHidden_DeviceNotFound");
