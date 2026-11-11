@@ -65,7 +65,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    HID["HID 通信 IHidTransport"] --> Dev["デバイス InputDeviceCore 系"]
+    HID["通信 IHidTransport（HID／XInput）"] --> Dev["デバイス InputDeviceCore 系"]
     Dev --> Par["解析 IInputReportParser"]
     Par --> State["ControllerState"]
     State --> Map["Mapping（割り当て・補正・アクション）"]
@@ -102,6 +102,12 @@ flowchart LR
 | `Ds4DeviceCartridge` | 1 | DS4 の VID/PID の表と生成 |
 | `Ds4ReportParser` | 1 | DS4 のレポートの解析 |
 | `HidDevice` | 1 | HID 通信の実装 |
+| `ProtocolDevice` | 1 | `IDeviceProtocol` で動く、単純な機種の共通のデバイス（Xbox が使う） |
+| `XboxDeviceCartridge` | 1 | Xbox（XInput）の生成 |
+| `XboxProtocol` | 1 | Xbox のプロトコル（接続方式・電池・振動・Bluetooth のアドレス） |
+| `XInputTransport` | 1 | XInput を HID の通信路に見せる通信路（4 ms の周期で状態を読み、合成レポートにする） |
+| `XInputTransportSource` | 1 | 接続中の Xbox（XUSB のインターフェース）を通信路として見つける供給元 |
+| `XboxDeviceModule` | 2 | Xbox の接続フック（有効判定・HidHide で元の XInput を隠す） |
 | `OutputSlotManager` | 3 | 仮想パッドのスロット管理 |
 | `Ds4OutputCartridge` | 3 | DS4 型の仮想パッド |
 | `Xbox360OutputCartridge` | 3 | Xbox 360 型の仮想パッド |

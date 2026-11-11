@@ -13,7 +13,7 @@
 | KI-3（旧 Phase13b-1） | コマンドラインの `-command ChangeLedColor.<n>.<r>.<g>.<b>` で、ライトバーの色が見た目には変わらない（`LoadProfile` は正常） | v4.3.0 でも同じ（Phase13 の前後でコードは同じ）＝回帰ではない。コマンドは、プロファイルのカスタム色を書き換えるだけで、ライトバーのモードがカスタム色でないと見た目に効かない。4.3.1 の CHANGELOG の Known issues に記載済み | 仕様（カスタム色だけを変える）のままにするか、一時的な強制色として見た目に反映するかを決めるとき | `Phase9-Deferred-Ledger.md`（Phase13b-1）、`Phase13b-Completion-Report.md` §4 |
 | KI-5（K7b-1 の残り） | ダンプ 57596: 入力スレッドの `DS4Device.performDs4Input`（Phase18 で `DualShock4Device` の読み取りのループへ移り、関数は存在しない）で NullReferenceException（2026-10-21） | K7b-1 のほかのダンプは原因が分かり是正済みで、K7b-1 は 2026-11-05 に解消とした。このダンプだけは、フレームが例外の再スローで巻き戻されていて、どの変数が null だったか特定できていない。是正の後に再発していない | 同じ場所で再発したとき。`K7b1-Investigation.md` §7 の解析の手順で調べる | `K7b1-Investigation.md` §7・§8 |
 | KI-6（2026-11-11。Phase22 追補） | Bluetooth LE 接続の Xbox は、DS4Windows から切断できない（割り当て編集画面・トレイ・一覧の右クリックのどれでも）。警告ログが 1 回出る | Windows が BLE の切断の手段を出していない。従来の切断 API は無視され、機器ノードの無効化（`CR_NOT_DISABLEABLE`）、HID サービスのノードの無効化、`XInputPowerOffController`（1167）も拒否される。非対応として扱うと決定した | Windows が BLE の切断の手段を出したとき、または、ペアリング解除での切断を許すと決めたとき（再ペアリングが要る） | `Phase22-Xbox-Parity-Plan.md` §8 |
-| KI-7（2026-11-11。Phase22 追補） | 割り当て編集画面の入力側の画像とボタン名が、全入力機種（DS4・DualSense・Switch Pro・Xbox）で DS4 のものになる | 配置表が `DualShock4Editor`、名前の表が `DS4ControlNames` に固定されている | 機種ごとの画像・ボタン名を足す Phase を決めるとき | `Phase22-Xbox-Parity-Plan.md` §7 |
+| KI-7（2026-11-11。Phase22 追補） | 割り当て編集画面の入力側の画像とボタン名が、全入力機種（DS4・DualSense・Switch Pro・Xbox）で DS4 のものになる | 配置表が `DualShock4Editor`、名前の表が `DS4ControlNames` に固定されている | **一番最後の Phase** で行う（2026-11-11 ユーザーの指示で先送り）。機種ごとの画像・ボタン名を足す | `Phase22-Xbox-Parity-Plan.md` §7 |
 
 ## 2. 解消済み
 
