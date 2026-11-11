@@ -71,6 +71,27 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ReadFile_ReportsADisconnect_WhenTheOwnInterfaceIsGone_EvenIfAnotherPadReadsOnTheSameSlot()
+        {
+            // 機器が切れたあと、DS4Windows 自身の仮想の Xbox 360 パッドなどが同じ番号に入ると、状態は読めてしまう。
+            // 自分の XUSB のインターフェースが読めなくなったことで、切断と判断する（一度の失敗では切断としない）
+            var (transport, api, interfaces) = Create();
+            api.Set(0, new XInputSnapshot(1, 0, 0, 0, 0, 0, 0, 0));
+            var buffer = new byte[XInputReportLayout.ReportLength];
+            Assert.Equal(HidReadStatus.Success, transport.ReadFile(buffer));
+
+            interfaces.MoveTo(Path, -1);   // 自分のインターフェースが消えた（番号 0 は、別のパッドが使っている）
+            HidReadStatus status = HidReadStatus.Success;
+            for (int i = 0; i < 20 && status == HidReadStatus.Success; i++)
+            {
+                System.Threading.Thread.Sleep(60);
+                status = transport.ReadFile(buffer);
+            }
+
+            Assert.Equal(HidReadStatus.NotConnected, status);
+        }
+
+        [Fact]
         public void ReadFile_ReportsADisconnect_AfterCancelIO_AndForATooSmallBuffer()
         {
             var (transport, api, _) = Create();

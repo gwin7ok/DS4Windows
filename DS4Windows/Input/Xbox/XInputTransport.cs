@@ -127,11 +127,45 @@ namespace DS4Windows.Input.Xbox
                 playerIndex = moved;
             }
 
+            if (!StillOwnsItsSlot())
+            {
+                return HidReadStatus.NotConnected;
+            }
+
             RefreshBattery();
             Compose(state, inputBuffer);
             inputBuffer[XInputReportLayout.BatteryTypeOffset] = battery.Type;
             inputBuffer[XInputReportLayout.BatteryLevelOffset] = battery.Level;
             return HidReadStatus.Success;
+        }
+
+        // 番号（スロット）の状態が読めても、それが自分の機器とは限らない。機器が切れたあとに、別の XInput の機器
+        // （DS4Windows 自身の仮想の Xbox 360 パッドなど）が同じ番号に入ると、読み取りが成功し続けて、切断に気づけない。
+        // そこで、自分の XUSB のインターフェースが今も読めて、同じ番号を持つかを、一定の間隔で確かめる
+        private const int OwnerCheckIntervalMs = 250;
+        private const int OwnerMissesBeforeDisconnect = 2;
+        private long nextOwnerCheckTicks;
+        private int ownerMisses;
+
+        private bool StillOwnsItsSlot()
+        {
+            long now = Stopwatch.GetTimestamp();
+            if (now < nextOwnerCheckTicks)
+            {
+                return true;
+            }
+
+            nextOwnerCheckTicks = now + Stopwatch.Frequency * OwnerCheckIntervalMs / 1000;
+            int owned = interfaces.ReadPlayerIndex(DevicePath);
+            if (owned < 0)
+            {
+                // 一度の失敗では切断としない（番号の割り当ての途中などで、一時的に読めないことがある）
+                return ++ownerMisses < OwnerMissesBeforeDisconnect;
+            }
+
+            ownerMisses = 0;
+            playerIndex = owned;
+            return true;
         }
 
         // 最初の 1 回だけ、GATT の値を待つ（接続時の電池の表示が、0% や XInput の粗い値になるのを避ける）
