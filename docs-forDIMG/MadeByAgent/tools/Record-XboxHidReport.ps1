@@ -110,7 +110,7 @@ $ops = @(
     'A と B と X と Y を同時'
 )
 # Guide は通常の一覧に含めない（長押しでタスクビューが開く）。-Only Guide を指定したときだけ、短押しを記録する
-if ($Only) { $ops = @($ops + 'Guide（Xbox ボタン）を短く押す（長押し禁止）') | Where-Object { $_ -like "*$Only*" } }
+if ($Only) { $ops = @($ops + 'Guide（Xbox ボタン）を短く押す' + 'Guide（Xbox ボタン）を長押し（3 秒間押し続ける）') | Where-Object { $_ -like "*$Only*" } }
 $out = New-Object System.Collections.Generic.List[string]
 $out.Add("# Xbox HID report record  $(Get-Date -Format s)  $($paths[$idx])  len=$($reader.ReportLength)")
 $baseline = $null
