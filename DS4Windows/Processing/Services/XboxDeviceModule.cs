@@ -57,6 +57,9 @@ namespace DS4Windows.Processing.Services
                 case XboxParentHideResult.WriteFailed:
                     AppLogger.LogUser(AppLogLevel.Warn, "Log_HidHide_XboxNotHidden_WriteFailed");
                     break;
+                case XboxParentHideResult.DeviceNotFound when hide:
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_HidHide_XboxNotHidden_DeviceNotFound");
+                    break;
             }
         }
     }

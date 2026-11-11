@@ -381,6 +381,18 @@ namespace DS4Windows.Core.Platform
         [DllImport("cfgmgr32.dll", CharSet = CharSet.Unicode)]
         static internal extern uint CM_Get_Device_Interface_Property(string pszDeviceInterface, ref DEVPROPKEY PropertyKey, out DEVPROPTYPE PropertyType, byte[] PropertyBuffer, ref uint PropertyBufferSize, uint ulFlags);
 
+        [DllImport("cfgmgr32.dll", CharSet = CharSet.Unicode)]
+        static internal extern uint CM_Locate_DevNodeW(out uint pdnDevInst, string pDeviceID, uint ulFlags);
+
+        [DllImport("cfgmgr32.dll")]
+        static internal extern uint CM_Get_Child(out uint pdnDevInst, uint dnDevInst, uint ulFlags);
+
+        [DllImport("cfgmgr32.dll")]
+        static internal extern uint CM_Get_Sibling(out uint pdnDevInst, uint dnDevInst, uint ulFlags);
+
+        [DllImport("cfgmgr32.dll", CharSet = CharSet.Unicode)]
+        static internal extern uint CM_Get_Device_IDW(uint dnDevInst, System.Text.StringBuilder buffer, int bufferLen, uint ulFlags);
+
         [DllImport("user32.dll")]
         static internal extern bool UnregisterDeviceNotification(IntPtr handle);
 

@@ -1,8 +1,8 @@
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Xbox 系コントローラーの USB の親（XUSB のデバイス インターフェースを持つ機器）を、HidHide で隠す・戻す。
-    /// 隠すのは XInput の経路で、HID の子（DirectInput）は、利用者が HidHide の画面で隠す。足した分だけを記録し、戻すのも足した分だけ。
+    /// Xbox 系コントローラーの USB の親（XUSB のデバイス インターフェースを持つ機器）と、その下の HID の子を、HidHide で隠す・戻す。
+    /// XInput を隠すには、親と HID の子の両方が要る（実機の調査: Xbox-Input-Research.md §6）。足した分だけを記録し、戻すのも足した分だけ。
     /// 実装は <c>XboxParentHider</c>（DI の Singleton）。
     /// </summary>
     public interface IXboxParentHider

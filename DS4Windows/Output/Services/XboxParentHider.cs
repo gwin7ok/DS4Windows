@@ -18,7 +18,7 @@ namespace DS4Windows.Output.Services
         public const string RecordFileName = "HidHideAdded.txt";
 
         private readonly Func<bool> _hidHideInstalled;
-        private readonly Func<string, string> _instanceIdOf;
+        private readonly Func<string, IReadOnlyList<string>> _targetsOf;
         private readonly IPathService _pathService;
         private readonly IHidHideApiFactory _apiFactory;
         private readonly IHidHideService _hidHideService;
@@ -26,7 +26,7 @@ namespace DS4Windows.Output.Services
         private readonly HashSet<string> _added = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         public XboxParentHider(IEnvironmentService environmentService, IPathService pathService, IHidHideApiFactory apiFactory, IHidHideService hidHideService)
-            : this(() => environmentService.HidHideInstalled, environmentService.GetInstanceIdFromDevicePath, pathService, apiFactory, hidHideService)
+            : this(() => environmentService.HidHideInstalled, path => TargetsOf(environmentService, path), pathService, apiFactory, hidHideService)
         {
             if (environmentService == null)
             {
@@ -34,22 +34,34 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        /// <summary>導入済みかの確認と、パスからインスタンス ID への変換（OS に問い合わせる）を、差し替えられる形。テストで、OS に触れずに使う。</summary>
-        public XboxParentHider(Func<bool> hidHideInstalled, Func<string, string> instanceIdOf, IPathService pathService, IHidHideApiFactory apiFactory, IHidHideService hidHideService)
+        /// <summary>導入済みかの確認と、パスから隠す対象のインスタンス ID の一覧への変換（OS に問い合わせる）を、差し替えられる形。テストで、OS に触れずに使う。</summary>
+        public XboxParentHider(Func<bool> hidHideInstalled, Func<string, IReadOnlyList<string>> targetsOf, IPathService pathService, IHidHideApiFactory apiFactory, IHidHideService hidHideService)
         {
             _hidHideInstalled = hidHideInstalled ?? throw new ArgumentNullException(nameof(hidHideInstalled));
-            _instanceIdOf = instanceIdOf ?? throw new ArgumentNullException(nameof(instanceIdOf));
+            _targetsOf = targetsOf ?? throw new ArgumentNullException(nameof(targetsOf));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             _apiFactory = apiFactory ?? throw new ArgumentNullException(nameof(apiFactory));
             _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
         }
 
+        // XInput を隠すには、USB の親（XUSB の持ち主）と、その下の HID の子の両方が要る（親だけでは、XInput が他のアプリに見える）
+        private static IReadOnlyList<string> TargetsOf(IEnvironmentService environmentService, string devicePath)
+        {
+            string parent = environmentService.GetInstanceIdFromDevicePath(devicePath);
+            if (string.IsNullOrEmpty(parent))
+            {
+                return Array.Empty<string>();
+            }
+
+            return new[] { parent }.Concat(DS4Windows.Core.Platform.DevicePathProbe.GetHidDescendantInstanceIds(parent)).ToList();
+        }
+
         public XboxParentHideResult Apply(string devicePath, bool hide)
         {
-            string instanceId = string.IsNullOrEmpty(devicePath) ? null : _instanceIdOf(devicePath);
-            if (string.IsNullOrEmpty(instanceId))
+            IReadOnlyList<string> targets = string.IsNullOrEmpty(devicePath) ? Array.Empty<string>() : _targetsOf(devicePath);
+            if (targets.Count == 0)
             {
-                return XboxParentHideResult.NothingToRestore;
+                return hide ? XboxParentHideResult.DeviceNotFound : XboxParentHideResult.NothingToRestore;
             }
 
             lock (_sync)
@@ -85,28 +97,34 @@ namespace DS4Windows.Output.Services
                         }
 
                         List<string> list = ReadList(api);
-                        if (list.Contains(instanceId, StringComparer.OrdinalIgnoreCase))
+                        string[] missing = targets.Where(t => !list.Contains(t, StringComparer.OrdinalIgnoreCase)).ToArray();
+                        if (missing.Length == 0)
                         {
                             return XboxParentHideResult.AlreadyHidden;
                         }
 
-                        list.Add(instanceId);
+                        list.AddRange(missing);
                         if (!api.SetBlacklist(list))
                         {
                             return XboxParentHideResult.WriteFailed;
                         }
 
-                        _added.Add(instanceId);
+                        foreach (string id in missing)
+                        {
+                            _added.Add(id);
+                        }
+
                         SaveRecord();
                         return XboxParentHideResult.Hidden;
                     }
 
-                    if (!_added.Contains(instanceId))
+                    string[] mine = targets.Where(t => _added.Contains(t)).ToArray();
+                    if (mine.Length == 0)
                     {
                         return XboxParentHideResult.NothingToRestore;
                     }
 
-                    return RemoveFromList(api, new[] { instanceId }) ? Forget(instanceId) : XboxParentHideResult.WriteFailed;
+                    return RemoveFromList(api, mine) ? Forget(mine) : XboxParentHideResult.WriteFailed;
                 }
             }
         }
@@ -162,9 +180,13 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        private XboxParentHideResult Forget(string instanceId)
+        private XboxParentHideResult Forget(IEnumerable<string> instanceIds)
         {
-            _added.Remove(instanceId);
+            foreach (string id in instanceIds)
+            {
+                _added.Remove(id);
+            }
+
             if (_added.Count == 0)
             {
                 DeleteRecord();

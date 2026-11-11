@@ -41,14 +41,40 @@ namespace DS4WindowsTests
             try { Directory.Delete(tempDir, true); } catch { }
         }
 
-        private static readonly Dictionary<string, string> InstanceIds = new Dictionary<string, string>
+        private const string Path3 = @"\?\usb#vid_045e&pid_028e#c0000000003#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
+        private const string Id3 = @"USB\VID_045E&PID_028E\C0000000003";
+        private const string Hid3 = @"HID\VID_045E&PID_028E&IG_00\9&1234&0&0000";
+
+        // パスから、隠す対象（USB の親と、その下の HID の子）の一覧へ。Path1・Path2 は親だけ、Path3 は親と HID の子
+        private static readonly Dictionary<string, string[]> Targets = new Dictionary<string, string[]>
         {
-            [Path1] = Id1,
-            [Path2] = @"USB\VID_045E&PID_02FF\B0000000001",
+            [Path1] = new[] { Id1 },
+            [Path2] = new[] { @"USB\VID_045E&PID_02FF\B0000000001" },
+            [Path3] = new[] { Id3, Hid3 },
         };
 
         private XboxParentHider NewHider() =>
-            new XboxParentHider(() => installed, path => InstanceIds.TryGetValue(path, out string id) ? id : string.Empty, new TempPathService(tempDir), api, hidHideService);
+            new XboxParentHider(() => installed, path => Targets.TryGetValue(path, out string[] ids) ? ids : Array.Empty<string>(), new TempPathService(tempDir), api, hidHideService);
+
+        [Fact]
+        public void Hide_AddsTheUsbParentAndItsHidChild_AndRestoreRemovesBoth()
+        {
+            api.Blacklist = new List<string> { UserEntry };
+            XboxParentHider hider = NewHider();
+
+            Assert.Equal(XboxParentHideResult.Hidden, hider.Apply(Path3, hide: true));
+            Assert.Equal(new[] { UserEntry, Id3, Hid3 }, api.Blacklist);
+
+            Assert.Equal(XboxParentHideResult.Restored, hider.Apply(Path3, hide: false));
+            Assert.Equal(new[] { UserEntry }, api.Blacklist);
+        }
+
+        [Fact]
+        public void Hide_ReportsDeviceNotFound_WhenTheInstanceCannotBeResolved()
+        {
+            Assert.Equal(XboxParentHideResult.DeviceNotFound, NewHider().Apply(@"\?\unknown", hide: true));
+            Assert.Empty(api.SetBlacklistCalls);
+        }
 
         private string RecordPath => System.IO.Path.Combine(tempDir, XboxParentHider.RecordFileName);
 

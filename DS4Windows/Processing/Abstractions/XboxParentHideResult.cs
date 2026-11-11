@@ -29,5 +29,8 @@ namespace DS4Windows.Processing.Abstractions
 
         /// <summary>HidHide への書き込みに失敗した。</summary>
         WriteFailed,
+
+        /// <summary>隠す機器のインスタンス ID を、機器のパスから得られなかった（OS への問い合わせの失敗。接続の直後に起こりうる）。</summary>
+        DeviceNotFound,
     }
 }

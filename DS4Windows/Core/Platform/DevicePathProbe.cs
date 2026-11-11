@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DS4Windows.Core.Utilities;
@@ -59,6 +60,49 @@ namespace DS4Windows.Core.Platform
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 機器のインスタンス ID の下（子孫）にある、HID の機器のインスタンス ID（<c>HID\…</c>）を返す。
+        /// Xbox 360 の USB の親の下には、USB の子（IG_00）、その下に HID の子がある。XInput を隠すには、親と HID の子の両方が要る。
+        /// </summary>
+        public static IReadOnlyList<string> GetHidDescendantInstanceIds(string parentInstanceId)
+        {
+            var result = new List<string>();
+            if (string.IsNullOrEmpty(parentInstanceId) ||
+                NativeMethods.CM_Locate_DevNodeW(out uint parent, parentInstanceId, 0) != 0)
+            {
+                return result;
+            }
+
+            CollectHidDescendants(parent, result, 0);
+            return result;
+        }
+
+        private static void CollectHidDescendants(uint node, List<string> result, int depth)
+        {
+            if (depth > 8 || NativeMethods.CM_Get_Child(out uint child, node, 0) != 0)
+            {
+                return;
+            }
+
+            while (true)
+            {
+                var id = new StringBuilder(512);
+                if (NativeMethods.CM_Get_Device_IDW(child, id, id.Capacity, 0) == 0 &&
+                    id.ToString().StartsWith(@"HID\", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Add(id.ToString());
+                }
+
+                CollectHidDescendants(child, result, depth + 1);
+                if (NativeMethods.CM_Get_Sibling(out uint next, child, 0) != 0)
+                {
+                    break;
+                }
+
+                child = next;
+            }
         }
 
         internal static string[] GetStringArrayDeviceProperty(string deviceInstanceId,
