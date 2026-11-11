@@ -62,6 +62,11 @@
 - 2026-11-10: 計画書を作成。コードは未着手。
 - 2026-11-11: 隠し方の決定（3・4・5・5a）を確定した。HID の子は利用者が GUI で隠す／USB の親は Other タブのチェックボックスで切り替える。対象は DS4Windows が認識した Xbox 系すべて（他社製の互換機を含む）。補足: 標準の Xbox コントローラーは親（XInput）だけを出力する。実機テストに使った機器は、子（DirectInput）も出力する特殊な機器なので、「子も GUI で隠す」案内は、チェックボックスの説明に書かない。
 - 2026-11-11: **経路の改定**。標準の Xbox（USB）は HID の子を持たないため、HID の直接の読み取り（旧決定 2）では標準の純正品が読めないと判明した。利用者の承認で、XInput を主経路にし（決定 2、Guide は決定 8）、実機の検証（22-1b）を足した。22-2 以降は、22-1b の結果を受けて設計する。22-1 の `XboxReportParser` は未使用になった（TODO 付きで温存）。
+- 2026-11-11: 22-1b の第 1 回の観察（`tools/Probe-XInput.ps1`。読み取り専用。無操作の状態）。
+  - XInput は番号 0 と 1 が接続中。`XInputGetStateEx`（序数 100）と `XInputGetCapabilitiesEx`（序数 108）は、ともに呼べた。
+  - **番号 0＝VID_046D／PID_0000**（Razer が作る仮想の Xbox 360。HID の子 `VID_046D&PID_0000&IG_00` と一致）。**番号 1＝VID_045E／PID_028E**（今回の実機）。仮想パッドが、実機とは別の VID/PID で XInput に見えている。
+  - XUSB のデバイス インターフェースは 2 件: (1) `USB\VID_045E&PID_028E&REV_0110\01`（親は Razer の Tartarus Pro `MI_01`。Razer の仮想）、(2) `USB\VID_045E&PID_028E\A02014100201`（親は USB ハブ。実機）。**番号とインターフェースの対応は、まだ結べていない**（番号 0 の VID/PID は 046D だが、対応するインターフェース (1) の VID は 045E で一致しない）。
+  - 仮想パッドの識別の手がかり: 実機のインスタンス ID は、シリアルを持ち、親が USB ハブ。Razer の仮想は、`REV_0110\01` の形で、親が USB 機器の `MI_01`。ViGEm の仮想は、まだ記録がない（DS4Windows を動かして仮想パッドを作った状態の記録が要る）。
 - 2026-11-11: 22-0 の途中。
   - **仮想パッドの区別（決定 6）の既存の判定**: `DevicePathProbe.CheckIfVirtualDevice(devicePath)`（`Core/Platform`）。HID のパスから、親を `HTREE\ROOT\0` の直前までたどり、(a) ハードウェア ID が `ROOT\HIDGAMEMAP`（reWASD）／`ROOT\VHUSB3HC`（VirtualHere）、または (b) 根の直下が `ROOT\SYSTEM*`／`ROOT\USB*` なら仮想とみなす。VID/PID ではなく親の系統で見る。ViGEm の仮想パッドは根の直下の機器なので、同じ判定で除外できる見込み（Xbox では実機で確認する）。`DS4Devices.IsRealDS4` が呼んでいる。`CheckVirtualInfo`／`CheckVirtualDelegate` は、判定の結果を運ぶ型（現状は判定本体の経路に使われていない）。
   - **デコード**: 公開資料（FreeBSD `xb360gp.c`、Linux `xpad.c`、xboxdevwiki の XID）は、有線の生のレポート（20 バイト）の形で、Windows の `xinputhid` が見せる 15 バイトの HID レポートとは別物。そのため、実機の記録から決める。記録用のスクリプト: `docs-forDIMG/MadeByAgent/tools/Record-XboxHidReport.ps1`（操作ごとに 1.5 秒のレポートを集め、無操作との差分バイトを出す）。実機の記録待ち。
