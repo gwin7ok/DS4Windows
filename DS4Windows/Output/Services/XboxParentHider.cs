@@ -44,16 +44,12 @@ namespace DS4Windows.Output.Services
             _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
         }
 
-        // XInput を隠すには、USB の親（XUSB の持ち主）と、その下の HID の子の両方が要る（親だけでは、XInput が他のアプリに見える）
+        // XInput を隠すには、XUSB の入り口の持ち主だけでは足りず、USB の複合機器と、その下の機器（インターフェース、HID）の全部が要る。
+        // 入り口は、Xbox 360 では USB の親に、Xbox One 世代では HID の子にある
         private static IReadOnlyList<string> TargetsOf(IEnvironmentService environmentService, string devicePath)
         {
-            string parent = environmentService.GetInstanceIdFromDevicePath(devicePath);
-            if (string.IsNullOrEmpty(parent))
-            {
-                return Array.Empty<string>();
-            }
-
-            return new[] { parent }.Concat(DS4Windows.Core.Platform.DevicePathProbe.GetHidDescendantInstanceIds(parent)).ToList();
+            string owner = environmentService.GetInstanceIdFromDevicePath(devicePath);
+            return string.IsNullOrEmpty(owner) ? Array.Empty<string>() : DS4Windows.Core.Platform.DevicePathProbe.GetUsbDeviceTreeInstanceIds(owner);
         }
 
         public XboxParentHideResult Apply(string devicePath, bool hide)
