@@ -2,7 +2,7 @@
 
 作成日: 2026-11-11
 前提: `Phase22-Plan.md`（22-2 の XInput 経路、22-4 の HidHide）、`Model-Diagram/02-Extension-Guide.md`、`.github/copilot-instructions.md`（1 ファイル 1 型、層の依存、ログは `LogUser`＋リソース、テストは機能名）。
-状態: 2026-11-11 承認。22-7a〜22-7d 実装済み（実機の確認は 7a・7d のみ。7b・7c は未）。7d は、再検出の繰り返しの代わりに「XInput を一度読んで番号の割り当てを促す」で解決（D6 の結果）。
+状態: 2026-11-11 完了。22-7a〜22-7d と振動（22-5）を実装し、実機で確認済み。BLE の Xbox の BT 切断（項目 3・4）は、Windows が手段を出していないため非対応と決定（§8）。7d は、再検出の繰り返しの代わりに「XInput を一度読んで番号の割り当てを促す」で解決（D6 の結果）。
 
 ## 1. 背景（実機で見つかった違い）
 
@@ -73,3 +73,15 @@
 ## 7. 範囲外（別の Phase 候補）: 入力側の画像・ボタン名（項目 6）
 
 全入力機種（DS4・DualSense・Switch Pro・Xbox）が、入力側の画像（`DualShock4Editor`）と名前（`DS4ControlNames`）に DS4 のものを使っている。機種ごとに画像と名前を変えるには、**入力の機種ごとの配置表と名前の表**を、カートリッジの側に持たせる設計が要る（出力ピッカーが仮想パッドの種類ごとに図を出し分けているのと同じ考え方）。影響が広い（割り当て編集画面、保存する名前［互換］、マクロ記録の表示）ので、別の Phase の計画書で決める。当面は、Xbox の A・B・X・Y が Cross・Circle・Square・Triangle の名前で出ることが、割り当て画面での見え方になる。
+
+## 8. 結果（2026-11-11）
+
+| 項目 | 結果 |
+|---|---|
+| 1 接続種別 | `XusbConnectionClassifier` で BT を判定。実機 OK |
+| 2 電池 | USB は `XInputGetBatteryInformation`。BT は GATT のバッテリーサービス（`BluetoothBatteryReader`）の % を使う（XInput の API は BT で役に立たない）。接続直後の取り込みは、DS4 の `PrimeBatteryReading` を差し込み口（`PrimeBatteryForOtherDevice`）にして Xbox でも行い、GATT の最初の値を最長 3 秒待つ。実機 OK（最初の接続だけ、コントローラー自身が 50% 相当を報告する） |
+| 3・4 BT 切断 | **BLE の Xbox は非対応**。従来の切断 API は効かず、機器ノードの無効化（`CR_NOT_DISABLEABLE`）、HID サービスのノードの無効化（サポートされていません）、`XInputPowerOffController`（1167）はいずれも Windows が拒否。`IDeviceProtocol.SupportsBluetoothDisconnect` が false のとき、切断は失敗を返し、`Log_Disconnect_NotSupported` を 1 回だけ出す |
+| 5 BT の検出 | `WakeXInput`（XInput を一度読んで番号の割り当てを促す）で解決。実機 OK |
+| 追加 二重接続 | Xbox の `IsAlive` が最初から true で、接続時のプロファイルの適用が仮想パッドの付け直しを予約していた。最初の入力を受けるまで false にして解消（DS4 と同じ）。実機 OK |
+| 追加 BT の再接続 | 登録簿のキー（シリアルと Mac）の食い違いを、BT のアドレスにそろえて解消 |
+| 22-5 振動 | `XboxProtocol.TryBuildOutputReport` が左右の強さを組み立て、通信路が `XInputSetState` へ変える。実機 OK |
