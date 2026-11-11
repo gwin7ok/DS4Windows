@@ -668,8 +668,7 @@ namespace DS4Windows.Input.Devices
                     UpdateCharging(tempCharging);
 
                     int maxBatteryValue = charging ? BATTERY_MAX_USB : BATTERY_MAX;
-                    int tempBattery = (tempByte & 0x0f) * 100 / maxBatteryValue;
-                    tempBattery = Math.Min(tempBattery, 100);
+                    int tempBattery = BatteryScale.ToPercent(tempByte & 0x0f, maxBatteryValue);
                     UpdateBattery(tempBattery);
 
                     cState.Battery = (byte)battery;

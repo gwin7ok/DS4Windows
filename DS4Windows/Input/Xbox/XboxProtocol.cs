@@ -60,20 +60,9 @@ namespace DS4Windows.Input.Xbox
                 return false;
             }
 
-            percent = PercentOf(report[XInputReportLayout.BatteryLevelOffset]);
+            // XInput の残量は 4 段階（空・低・中・満＝0〜3）。共通の計算で 0／33／66／100% になる
+            percent = BatteryScale.ToPercent(report[XInputReportLayout.BatteryLevelOffset], XInputBattery.MaxLevel);
             return true;
-        }
-
-        // XInput の残量は 4 段階（空・低・中・満）。0／33／66／100% にする
-        private static int PercentOf(byte level)
-        {
-            switch (level)
-            {
-                case 0: return 0;
-                case 1: return 33;
-                case 2: return 66;
-                default: return 100;
-            }
         }
 
         public bool TryBuildOutputReport(DS4HapticState state, int batteryPercent, byte[] report) => false;

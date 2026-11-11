@@ -11,6 +11,9 @@ namespace DS4Windows.Input.Abstractions
         public const byte TypeNiMh = 3;
         public const byte TypeUnknown = 0xFF;
 
+        /// <summary>残量の最大の段階（満）。</summary>
+        public const int MaxLevel = 3;
+
         public XInputBattery(byte type, byte level)
         {
             Type = type;

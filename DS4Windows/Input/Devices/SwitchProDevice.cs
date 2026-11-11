@@ -430,8 +430,7 @@ namespace DS4Windows.Input.Devices
                 {
                     byte tempByte = inputReportBuffer[2];
                     // Strip out LSB from high nibble. Used as Charging flag and will be checked later
-                    int tempBattery = ((tempByte & 0xE0) >> 4) * 100 / 8;
-                    tempBattery = Math.Min(tempBattery, 100);
+                    int tempBattery = BatteryScale.ToPercent((tempByte & 0xE0) >> 4, 8);
                     UpdateBattery(tempBattery);
 
                     cState.Battery = (byte)tempBattery;

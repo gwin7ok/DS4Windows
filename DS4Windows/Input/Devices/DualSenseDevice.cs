@@ -622,8 +622,7 @@ namespace DS4Windows.Input.Devices
                     else
                     {
                         // Partial charge
-                        tempBattery = (tempByte & 0x0F) * 100 / BATTERY_MAX;
-                        tempBattery = Math.Min(tempBattery, 100);
+                        tempBattery = BatteryScale.ToPercent(tempByte & 0x0F, BATTERY_MAX);
                     }
 
                     UpdateBattery(tempBattery);

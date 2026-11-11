@@ -527,8 +527,7 @@ namespace DS4Windows.Input
         {
             charging = (powerByte & 0x10) != 0;
             int maxBatteryValue = charging ? BATTERY_MAX_USB : BATTERY_MAX;
-            int percent = (powerByte & 0x0f) * 100 / maxBatteryValue;
-            return Math.Min(percent, 100);
+            return BatteryScale.ToPercent(powerByte & 0x0f, maxBatteryValue);
         }
 
         /// <summary>
