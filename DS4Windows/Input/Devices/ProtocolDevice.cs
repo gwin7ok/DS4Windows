@@ -95,7 +95,11 @@ namespace DS4Windows.Input.Devices
             }
         }
 
-        public override bool IsAlive() => synced;
+        // DS4 と同じく、最初の入力を受けるまでは「生きている」とみなさない。接続時のプロファイルの適用が、生きている機器に対して
+        // 仮想パッドの付け直し（取り外し→接続）を予約するため、すぐ true だと、接続のたびに仮想パッドが二重に接続される
+        private volatile bool receivedFrame;
+
+        public override bool IsAlive() => synced && receivedFrame;
 
         public override void StartUpdate()
         {
@@ -122,6 +126,7 @@ namespace DS4Windows.Input.Devices
 
         protected override void ProcessFrame()
         {
+            receivedFrame = true;
             protocol.Parser.Parse(inputReport, cState);
 
             if (protocol.TryReadBattery(inputReport, out int percent, out bool isCharging))

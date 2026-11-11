@@ -29,7 +29,23 @@ namespace DS4WindowsTests
             Assert.Equal(66, device.getBattery());
         }
 
-        private const string Path = @"\\?\usb#vid_045e&pid_028e#battery1#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
+        [Fact]
+        public void ANewDevice_IsNotAliveUntilItReceivesTheFirstFrame()
+        {
+            // 接続時のプロファイルの適用は、生きている機器に仮想パッドの付け直しを予約する。すぐ true だと、接続のたびに二重に接続される
+            var api = new FakeXInputApi();
+            api.Set(0, new XInputSnapshot(1, 0, 0, 0, 0, 0, 0, 0));
+            var interfaces = new FakeXusbInterfaceSource();
+            interfaces.Add(@"\\?\usb#vid_045e&pid_028e#a02014100201#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}", 0x045E, 0x028E, 0);
+            InputTransportCandidate candidate = System.Linq.Enumerable.Single(new XInputTransportSource(api, interfaces).Enumerate());
+            DS4Windows.Input.InputDeviceCore device = new XboxDeviceCartridge().Create(DS4Windows.Core.Model.InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
+            device.PostInit();
+            device.PrimeBatteryReading();   // 電池の取り込みは、入力として数えない
+
+            Assert.False(device.IsAlive());
+        }
+
+        private const string Path =@"\\?\usb#vid_045e&pid_028e#battery1#{ec87f1e3-c13b-4100-b5f7-8b84d54260cb}";
 
         private static byte[] Report(byte type, byte level)
         {
