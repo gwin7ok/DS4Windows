@@ -324,20 +324,42 @@ namespace DS4Windows.UI
             Canvas.SetTop(lsDriftEllipse, (1 + (LsDriftY / 127.0) - lsDeadY) * CANVAS_MIDPOINT);
         }
 
+        /// <summary>左スティックのデッドゾーンが「軸ごと」のとき true（長方形で描く。円形は楕円）。</summary>
+        public bool LsDeadAxial
+        {
+            get => lsDeadAxial;
+            set { lsDeadAxial = value; ChangeLsDeadControls(this, EventArgs.Empty); }
+        }
+        private bool lsDeadAxial;
+
+        /// <summary>右スティックのデッドゾーンが「軸ごと」のとき true。</summary>
+        public bool RsDeadAxial
+        {
+            get => rsDeadAxial;
+            set { rsDeadAxial = value; ChangeRsDeadControls(this, EventArgs.Empty); }
+        }
+        private bool rsDeadAxial;
+
         private void ChangeRsDeadControls(object sender, EventArgs e)
         {
-            rsDeadEllipse.Width = rsDeadX * CANVAS_WIDTH;
-            rsDeadEllipse.Height = rsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(rsDeadEllipse, CANVAS_MIDPOINT - (rsDeadX * CANVAS_WIDTH / 2.0));
-            Canvas.SetTop(rsDeadEllipse, CANVAS_MIDPOINT - (rsDeadX * CANVAS_WIDTH / 2.0));
+            Shape shape = rsDeadAxial ? rsDeadRect : (Shape)rsDeadEllipse;
+            rsDeadEllipse.Visibility = rsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            rsDeadRect.Visibility = rsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = rsDeadX * CANVAS_WIDTH;
+            shape.Height = rsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, CANVAS_MIDPOINT - (rsDeadX * CANVAS_WIDTH / 2.0));
+            Canvas.SetTop(shape, CANVAS_MIDPOINT - (rsDeadY * CANVAS_WIDTH / 2.0));
         }
 
         private void ChangeLsDeadControls(object sender, EventArgs e)
         {
-            lsDeadEllipse.Width = lsDeadX * CANVAS_WIDTH;
-            lsDeadEllipse.Height = lsDeadY * CANVAS_WIDTH;
-            Canvas.SetLeft(lsDeadEllipse, CANVAS_MIDPOINT - (lsDeadX * CANVAS_WIDTH / 2.0));
-            Canvas.SetTop(lsDeadEllipse, CANVAS_MIDPOINT - (lsDeadX * CANVAS_WIDTH / 2.0));
+            Shape shape = lsDeadAxial ? lsDeadRect : (Shape)lsDeadEllipse;
+            lsDeadEllipse.Visibility = lsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
+            lsDeadRect.Visibility = lsDeadAxial ? Visibility.Visible : Visibility.Collapsed;
+            shape.Width = lsDeadX * CANVAS_WIDTH;
+            shape.Height = lsDeadY * CANVAS_WIDTH;
+            Canvas.SetLeft(shape, CANVAS_MIDPOINT - (lsDeadX * CANVAS_WIDTH / 2.0));
+            Canvas.SetTop(shape, CANVAS_MIDPOINT - (lsDeadY * CANVAS_WIDTH / 2.0));
         }
 
         public void UseDevice(int index, int profileDevIdx)

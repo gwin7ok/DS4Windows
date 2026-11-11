@@ -54,6 +54,16 @@
         </DockPanel>
 
         <ContentControl x:Name="deviceSettingsHost" DockPanel.Dock="Right" Margin="40,4,4,4">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <!-- 内容が null のとき、テンプレートの固定の文字だけが出るのを避ける -->
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
             <ContentControl.ContentTemplate>
                 <DataTemplate>
                     <StackPanel Visibility="{Binding Visible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="4">

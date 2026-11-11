@@ -407,11 +407,32 @@ namespace DS4Windows.UI
             }
         }
 
+        /// <summary>デッドゾーンの種類（円形／軸ごと）に合わせて、入力の表示の値と形（楕円／長方形）を更新する。</summary>
+        private void ApplyReadingsDeadZoneShape()
+        {
+            var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
+            if (dead.LsDeadX.HasValue)
+            {
+                conReadingsUserCon.LsDeadX = dead.LsDeadX.Value;
+                conReadingsUserCon.LsDeadY = dead.LsDeadY.Value;
+            }
+            if (dead.RsDeadX.HasValue)
+            {
+                conReadingsUserCon.RsDeadX = dead.RsDeadX.Value;
+                conReadingsUserCon.RsDeadY = dead.RsDeadY.Value;
+            }
+            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.LSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.RSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+        }
+
         private void SticksVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // デッドゾーンを変えたら、コントローラーの読み取り値の表示（試験表示）へ反映する
             switch (e.PropertyName)
             {
+                case nameof(StickSettingsViewModel.LSDeadTypeIndex):
+                case nameof(StickSettingsViewModel.RSDeadTypeIndex):
+                    ApplyReadingsDeadZoneShape(); break;
                 case nameof(StickSettingsViewModel.LSDeadZone): UpdateReadingsLsDeadZone(sender, EventArgs.Empty); break;
                 case nameof(StickSettingsViewModel.RSDeadZone): UpdateReadingsRsDeadZone(sender, EventArgs.Empty); break;
                 case nameof(StickSettingsViewModel.LeftStickDriftXAxis):
@@ -770,6 +791,8 @@ namespace DS4Windows.UI
             var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
             if (dead.LsDeadX.HasValue) { conReadingsUserCon.LsDeadX = dead.LsDeadX.Value; conReadingsUserCon.LsDeadY = dead.LsDeadY.Value; }
             if (dead.RsDeadX.HasValue) { conReadingsUserCon.RsDeadX = dead.RsDeadX.Value; conReadingsUserCon.RsDeadY = dead.RsDeadY.Value; }
+            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.LSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.RSMod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
             conReadingsUserCon.L2Dead = dead.L2Dead;
             conReadingsUserCon.R2Dead = dead.R2Dead;
             conReadingsUserCon.SixAxisXDead = dead.SixAxisXDead;

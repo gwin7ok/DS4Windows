@@ -139,6 +139,7 @@ namespace DS4Windows.UI.ViewModels
                 StickDeadZoneInfo.DeadZoneType current = sticks.LSMod.deadzoneType;
                 if (temp == current) return;
                 sticks.LSMod.deadzoneType = temp;
+                OnPropertyChanged(nameof(LSDeadTypeIndex));
             }
         }
 
@@ -173,6 +174,7 @@ namespace DS4Windows.UI.ViewModels
                 StickDeadZoneInfo.DeadZoneType current = sticks.RSMod.deadzoneType;
                 if (temp == current) return;
                 sticks.RSMod.deadzoneType = temp;
+                OnPropertyChanged(nameof(RSDeadTypeIndex));
             }
         }
 

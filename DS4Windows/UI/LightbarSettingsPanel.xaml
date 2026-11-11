@@ -176,15 +176,11 @@
                               Margin="0,10,0,0">
                         <StackPanel Orientation="Horizontal"
                                     Height="60">
-                            <Button x:Name="rainbowBtn"
-                                    Height="20"
-                                    Width="20"
-                                    ToolTip="{lex:Loc Resources:AlwaysRainbow}"
-                                    Click="RainbowBtn_Click">
-                                <Button.Content>
-                                    <Image Source="{Binding Source={StaticResource resourcesPaths}, Path=DS4LightbarPNG}"/>
-                                </Button.Content>
-                            </Button>
+                            <CheckBox x:Name="rainbowBtn"
+                                      VerticalAlignment="Center"
+                                      Content="{lex:Loc Resources:AlwaysRainbow}"
+                                      IsChecked="{Binding RainbowExists,Mode=OneWay}"
+                                      Click="RainbowBtn_Click"/>
                             <xctk:IntegerUpDown MinWidth="30"
                                                 Height="30"
                                                 Minimum="0"
