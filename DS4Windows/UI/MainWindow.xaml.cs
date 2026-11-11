@@ -1247,6 +1247,24 @@ namespace DS4Windows.UI
             StartStopBtn.IsEnabled = true;
         }
 
+        // Xbox の USB の親を隠す設定は、接続のときに適用されるため、サービスを再起動して、検出済みの Xbox すべてへ反映する
+        private async void HideXboxContCk_Click(object sender, RoutedEventArgs e)
+        {
+            StartStopBtn.IsEnabled = false;
+            hideXboxContCk.IsEnabled = false;
+            Task serviceTask = Task.Run(() =>
+            {
+                lifecycle.Stop();
+                lifecycle.Start();
+            });
+
+            Util.LogAssistBackgroundTask(serviceTask);
+            await serviceTask;
+
+            hideXboxContCk.IsEnabled = true;
+            StartStopBtn.IsEnabled = true;
+        }
+
         private void UseOscServerCk_Click(object sender, RoutedEventArgs e)
         {
             bool status = useOscServerCk.IsChecked == true;

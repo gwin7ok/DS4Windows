@@ -792,11 +792,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
     <value>Xbox コントローラーを隠せません: HidHide のデバイス一覧への書き込みに失敗しました</value>
   </data>
-  <data name="XboxHideUsbParent" xml:space="preserve">
-    <value>Xbox コントローラーの USB の親を HidHide で隠す</value>
+  <data name="HideXboxController" xml:space="preserve">
+    <value>Xbox コントローラーを隠す</value>
   </data>
-  <data name="XboxHideUsbParentTip" xml:space="preserve">
-    <value>DS4Windows の実行中、元の XInput の機器を他のアプリから隠し、二重入力を防ぎます。HidHide が必要です。HID の部分（DirectInput）は、HidHide の画面で隠してください。コントローラーを差し直したときに反映されます。</value>
+  <data name="HideXboxControllerTip" xml:space="preserve">
+    <value>DS4Windows が検出したすべての Xbox コントローラーの元の XInput 入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。HID の部分（DirectInput）は、HidHide の画面で隠してください。変更すると、DS4Windows のサービスを再起動します。</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} が HidHide の許可リストにありません。リストに追加します</value>

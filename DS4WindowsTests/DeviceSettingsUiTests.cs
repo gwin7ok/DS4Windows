@@ -25,7 +25,8 @@ namespace DS4WindowsTests
                 new SwitchProControllerOptions(InputDeviceType.SwitchPro),
             };
             IEnumerable<ControllerSetting> all = stores.SelectMany(s => s.Settings)
-                .Concat(options.Families.SelectMany(f => options[f].Settings.Skip(1)));
+                .Concat(options.Families.SelectMany(f => options[f].Settings.Skip(1)))
+                .Where(s => s.XmlName != "HideUsbParent");   // 設定タブの専用のチェックボックスで見せる（機種ごとの設定パネルには出さない）
             foreach (ControllerSetting s in all)
             {
                 Assert.NotNull(s.Ui);

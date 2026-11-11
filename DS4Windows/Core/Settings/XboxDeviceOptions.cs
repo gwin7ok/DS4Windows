@@ -21,8 +21,7 @@ namespace DS4Windows.Core.Settings
 
         protected override IReadOnlyList<ControllerSetting> ExtraSettings => extraSettings ?? (extraSettings = new[]
         {
-            ControllerSetting.Bool("HideUsbParent", this, o => o.HideUsbParent, (o, v) => o.HideUsbParent = v)
-                .WithUi("XboxHideUsbParent", "XboxHideUsbParentTip", appliesOnNewConnection: true),
+            ControllerSetting.Bool("HideUsbParent", this, o => o.HideUsbParent, (o, v) => o.HideUsbParent = v),   // 画面は、設定タブの「Xbox コントローラーを隠す」（機種ごとの設定パネルには出さない）
         });
     }
 }

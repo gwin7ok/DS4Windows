@@ -1661,11 +1661,11 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
     <value>Cannot hide the Xbox controller: writing the HidHide device list failed</value>
   </data>
-  <data name="XboxHideUsbParent" xml:space="preserve">
-    <value>Hide the Xbox controller USB parent with HidHide</value>
+  <data name="HideXboxController" xml:space="preserve">
+    <value>Hide Xbox Controller</value>
   </data>
-  <data name="XboxHideUsbParentTip" xml:space="preserve">
-    <value>Hides the original XInput device from other apps while DS4Windows is running, to avoid double input. Requires HidHide. The HID part (DirectInput) must be hidden in the HidHide settings. Applies when the controller is reconnected.</value>
+  <data name="HideXboxControllerTip" xml:space="preserve">
+    <value>Hides the original XInput input of every Xbox controller detected by DS4Windows from other programs (requires HidHide). Check if you are getting double input in games. The HID part (DirectInput) must be hidden in the HidHide settings. DS4Windows restarts its service when this is changed.</value>
   </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} not found in HidHide whitelist. Adding to list</value>

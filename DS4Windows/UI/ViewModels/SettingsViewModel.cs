@@ -49,6 +49,13 @@ namespace DS4Windows.UI.ViewModels
             set => _appSettings.UseExclusiveMode = value;
         }
 
+        /// <summary>検出した Xbox コントローラーすべての、元の XInput を HidHide で隠すか（Xbox の系統の設定。変更するとサービスを再起動する）。</summary>
+        public bool HideXboxController
+        {
+            get => _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent;
+            set => _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent = value;
+        }
+
         public bool SwipeTouchSwitchProfile
         {
             get => _appSettings.SwipeProfiles;

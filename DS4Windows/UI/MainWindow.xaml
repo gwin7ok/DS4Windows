@@ -275,6 +275,8 @@
                         <CheckBox x:Name="hideDS4ContCk" Content="{lex:Loc HideDS4Controller}" x:Uid="hideDS4Checkbox"
                               Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" >
                         </CheckBox>
+                        <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}" ToolTip="{lex:Loc HideXboxControllerTip}"
+                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click" />
                         <CheckBox x:Name="swipeTouchCk" Content="{lex:Loc SwipeTouchpadToSwitchProfiles}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding SwipeTouchSwitchProfile}"
                               ToolTip="{lex:Loc Resources:TwoFingerSwipe}" Click="SwipeTouchCk_Click" />
