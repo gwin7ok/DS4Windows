@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         {
             return new InputDeviceModuleRegistry(new IInputDeviceModule[]
             {
-                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new XboxDeviceModule(),
+                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new XboxDeviceModule(new FakeXboxParentHider()),
             });
         }
 
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
             // どの種類も、扱う部品がちょうど 1 つ
             var modules = new IInputDeviceModule[]
             {
-                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new XboxDeviceModule(),
+                new Ds4DeviceModule(), new DualSenseDeviceModule(), new SwitchProDeviceModule(), new XboxDeviceModule(new FakeXboxParentHider()),
             };
             foreach (InputDeviceType type in AllTypes)
             {

@@ -20,6 +20,8 @@ namespace DS4Windows.Output.Services
 
         public bool SetWhitelist(List<string> instances) => _device.SetWhitelist(instances);
 
+        public bool SetBlacklist(List<string> instances) => _device.SetBlacklist(instances);
+
         public void Dispose() => _device.Dispose();
     }
 }

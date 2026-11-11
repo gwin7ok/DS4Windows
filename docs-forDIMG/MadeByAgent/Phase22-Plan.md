@@ -58,7 +58,7 @@
 - 同時に使えるのは XInput の 4 台まで。Razer の仮想（実機と同じ扱い）も 1 台として数える。
 - テスト: `XInputReportParserTests`（純粋関数）、`XInputTransportTests`（偽の `IXInputApi`: 周期、切断、番号の引き直し）、`ProtocolDevice` と偽の通信路での一通りの流れ、`InputDeviceRegistry` と偽の窓口（組の持ち回り、無効時は拾わない）。層の検査（`LayerDependencyRuleTests`）と、既存の HID の機種のテストが不変。
 
-### 3.2 22-4 の設計（2026-11-11 提案。承認待ち）
+### 3.2 22-4 の設計（2026-11-11 承認。実装済み）
 
 決定 3・4・5a に従う。**隠す対象の機器は、導出しなくてよい**: 22-2 の `XusbInterfaceInfo.InstanceId`（例: `USB\VID_045E&PID_028E\A02014100201`）が、XUSB のデバイス インターフェースの持ち主の機器そのもので、これが HidHide に足すべき「USB の親」である（22-1b で確認）。XUSB のインターフェースを持つ機器に限られるため、複合機器の他の機能を巻き込まない（決定 4 の `XnaComposite` の限定は、この性質で満たされる）。
 
@@ -109,6 +109,7 @@
   - 削除: 22-1 の HID 用 `XboxReportParser` とそのテスト（`XInputReportParser` に置き換えた）。
   - テスト: `XInputTransportTests`（合成レポート、番号の引き直し、切断、振動、シリアル、供給元）、`XboxDeviceFlowTests`（共通のループ、登録簿での発見・無効時・二重生成なし）。既存の 7 件を更新。全件 3,331 件合格、警告 0・エラー 0。
   - 残り: 実機での Other タブの切り替えと接続・切断・ホットプラグの確認、22-5（振動）、22-4（HidHide の親の指定）。
+- 2026-11-11: **22-4 の実装（コード）が完了**（実機の確認は未）。`IXboxParentHider`／`XboxParentHider`（Output/Services）が、HidHide の非表示の一覧へ、XUSB のインターフェースの持ち主（インスタンス ID）を足す・外す。足した分だけをメモリと `HidHideAdded.txt`（`AppDataPath`）に記録し、戻すのも足した分だけ。隠す前に `CheckPresence` で DS4Windows を許可リストへ入れる。HidHide が未導入／制御デバイスが開けない／許可リストの反転／cloak 無効／書き込み失敗のときは、何も変えず、`Log_HidHide_XboxNotHidden_*` で知らせる（cloak は触らない）。呼び出しは `XboxDeviceModule.OnDeviceInit`（接続のとき、設定 `HideUsbParent` に従って隠す／戻す）、`OutputServicesLifecycle`（開始で `RecoverStale`、停止で `RestoreAll`）。設定 `XboxDeviceOptions.HideUsbParent`（既定オフ）は `ControllerSetting` の `WithUi`（差し直しで反映）で、**画面は専用の XAML を足さず、「デバイス オプション」の画面で Xbox コントローラーを選んだときの設定パネルに自動で出る**（設計の「専用のチェックボックス」から変更。接続中のコントローラーを選ぶ必要がある）。テスト: `XboxParentHiderTests`（足す・戻す・利用者の登録を保つ・使えない 4 条件・書き込み失敗・記録からの復旧・モジュールの呼び出し）。全件 3,344 件合格、警告 0・エラー 0。残り: 実機での確認（接続中にすぐ効くか、DS4Windows の権限で足せるか）。
 - 2026-11-11: **22-2 の実機確認（USB 接続の Xbox 系 1 台）**。初期状態はオフで一覧に出ない／オンで認識される（仮想パッドは出ない）／ボタン・スティック・十字キー・トリガーは期待どおり／Guide が PS として反応／抜くと消え、差すと自動で戻って入力も届く、を確認。**チェックの切り替えだけでは一覧は変わらず、USB の差し直しで反映される**（利用者が、既存の機種と同じ仕様として許容）。再起動後の保存は未確認。二重出力（元の XInput が隠れていない）は、22-4（HidHide の親の指定）の対象で想定どおり。標準の Xbox 360（HID の子なし）の実機は未確認。
 - 2026-11-11: **経路の改定**。標準の Xbox（USB）は HID の子を持たないため、HID の直接の読み取り（旧決定 2）では標準の純正品が読めないと判明した。利用者の承認で、XInput を主経路にし（決定 2、Guide は決定 8）、実機の検証（22-1b）を足した。22-2 以降は、22-1b の結果を受けて設計する。22-1 の `XboxReportParser` は未使用になった（TODO 付きで温存）。
 - 2026-11-11: **22-1b の第 2 回（操作あり）と、番号と機器の対応づけの成立**（決定 7 の (a) が成立）。

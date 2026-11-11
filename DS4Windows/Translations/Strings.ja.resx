@@ -768,6 +768,36 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_HidHide_Found" xml:space="preserve">
     <value>HidHide の制御デバイスが見つかりました</value>
   </data>
+  <data name="Log_HidHide_XboxHidden" xml:space="preserve">
+    <value>Xbox コントローラー（USB の親）を HidHide で他のアプリから隠しました</value>
+  </data>
+  <data name="Log_HidHide_XboxAlreadyHidden" xml:space="preserve">
+    <value>Xbox コントローラー（USB の親）は、すでに HidHide で隠されています</value>
+  </data>
+  <data name="Log_HidHide_XboxRestored" xml:space="preserve">
+    <value>Xbox コントローラー（USB の親）の HidHide での非表示を解除しました</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NotInstalled" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide が導入されていません</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_NoAccess" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide の制御デバイスを開けません（管理者として実行してみてください）</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_Inverse" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide のアプリケーションの許可リストが反転しています。DS4Windows は変更しません</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_CloakOff" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide のデバイスを隠す機能が無効です。DS4Windows は切り替えません</value>
+  </data>
+  <data name="Log_HidHide_XboxNotHidden_WriteFailed" xml:space="preserve">
+    <value>Xbox コントローラーを隠せません: HidHide のデバイス一覧への書き込みに失敗しました</value>
+  </data>
+  <data name="XboxHideUsbParent" xml:space="preserve">
+    <value>Xbox コントローラーの USB の親を HidHide で隠す</value>
+  </data>
+  <data name="XboxHideUsbParentTip" xml:space="preserve">
+    <value>DS4Windows の実行中、元の XInput の機器を他のアプリから隠し、二重入力を防ぎます。HidHide が必要です。HID の部分（DirectInput）は、HidHide の画面で隠してください。コントローラーを差し直したときに反映されます。</value>
+  </data>
   <data name="Log_HidHide_AddWhitelist" xml:space="preserve">
     <value>{0} が HidHide の許可リストにありません。リストに追加します</value>
   </data>
