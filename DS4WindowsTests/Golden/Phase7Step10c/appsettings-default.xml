@@ -73,7 +73,7 @@
     </SwitchProSupportSettings>
     <XboxSupportSettings>
       <Enabled>False</Enabled>
-      <HideUsbParent>False</HideUsbParent>
+      <HideUsbParent>True</HideUsbParent>
     </XboxSupportSettings>
   </DeviceOptions>
   <CustomLed1>False:0,0,255</CustomLed1>

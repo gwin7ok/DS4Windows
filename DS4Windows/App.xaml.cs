@@ -597,6 +597,8 @@ namespace DS4Windows
             bool runningAsAdmin = _environmentService.IsAdministrator();
             AppLogger.LogUser(AppLogLevel.Info, runningAsAdmin ? "Log_App_RunningAsAdmin" : "Log_App_RunningAsUser");
 
+            // 起動時に HidHide の導入を確認し、値を保存する（設定タブの「Xbox コントローラーを隠す」の赤文字の判断に使う）
+            _environmentService.RefreshHidHideInfo();
             if (_environmentService.HidHideInstalled)
             {
                 _runtimeFeatures.CheckHidHidePresence();

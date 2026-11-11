@@ -277,6 +277,8 @@
                         </CheckBox>
                         <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}" ToolTip="{lex:Loc HideXboxControllerTip}"
                               Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click" />
+                        <TextBlock x:Name="hideXboxHidHideMissingText" Text="{lex:Loc HideXboxHidHideMissing}" Foreground="Red" TextWrapping="Wrap" MaxWidth="420"
+                              Margin="{StaticResource spaceMargin}" Visibility="{Binding ShowHidHideMissingNotice, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
                         <CheckBox x:Name="swipeTouchCk" Content="{lex:Loc SwipeTouchpadToSwitchProfiles}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding SwipeTouchSwitchProfile}"
                               ToolTip="{lex:Loc Resources:TwoFingerSwipe}" Click="SwipeTouchCk_Click" />

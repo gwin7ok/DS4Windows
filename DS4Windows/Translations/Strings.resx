@@ -1667,6 +1667,9 @@ Please click OK to confirm that you have read the message. Press Cancel to be re
   <data name="HideXboxController" xml:space="preserve">
     <value>Hide Xbox Controller</value>
   </data>
+  <data name="HideXboxHidHideMissing" xml:space="preserve">
+    <value>HidHide is not installed. Install HidHide to hide the original Xbox controller from other programs.</value>
+  </data>
   <data name="HideXboxControllerTip" xml:space="preserve">
     <value>Hides the original XInput input of every Xbox controller detected by DS4Windows from other programs (requires HidHide). Check if you are getting double input in games. DS4Windows restarts its service when this is changed.</value>
   </data>

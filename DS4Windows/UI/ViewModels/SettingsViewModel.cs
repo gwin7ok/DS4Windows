@@ -53,8 +53,19 @@ namespace DS4Windows.UI.ViewModels
         public bool HideXboxController
         {
             get => _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent;
-            set => _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent = value;
+            set
+            {
+                _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent = value;
+                OnPropertyChanged(nameof(HideXboxController));
+                OnPropertyChanged(nameof(ShowHidHideMissingNotice));
+            }
         }
+
+        /// <summary>
+        /// 「Xbox コントローラーを隠す」がオンで、HidHide が導入されていないとき、導入を促す赤文字を出すか。
+        /// 導入の有無は、起動時の確認（<see cref="IEnvironmentService.RefreshHidHideInfo"/>）で保存した値（<see cref="IEnvironmentService.HidHideInstalled"/>）を参照する。
+        /// </summary>
+        public bool ShowHidHideMissingNotice => HideXboxController && !_environmentService.HidHideInstalled;
 
         public bool SwipeTouchSwitchProfile
         {
@@ -672,6 +683,7 @@ namespace DS4Windows.UI.ViewModels
         public void DriverCheckRefresh()
         {
             OnPropertyChanged(nameof(HidHideClientFound));
+            OnPropertyChanged(nameof(ShowHidHideMissingNotice));
         }
 
         public int LogMaxArchiveFiles

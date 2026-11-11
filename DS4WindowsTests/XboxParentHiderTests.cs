@@ -233,7 +233,7 @@ namespace DS4WindowsTests
         {
             var options = new XboxDeviceOptions();
 
-            Assert.False(options.HideUsbParent);
+            Assert.True(options.HideUsbParent);   // 既定はオン
             Assert.Equal(new[] { "Enabled", "HideUsbParent" }, options.Settings.Select(s => s.XmlName));
         }
     }

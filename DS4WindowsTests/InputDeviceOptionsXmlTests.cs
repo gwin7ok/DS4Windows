@@ -40,7 +40,7 @@ namespace DS4WindowsTests
             Assert.Contains("<DeviceOptions><DS4SupportSettings><Enabled>True</Enabled></DS4SupportSettings>"
                 + "<DualSenseSupportSettings><Enabled>False</Enabled></DualSenseSupportSettings>"
                 + "<SwitchProSupportSettings><Enabled>False</Enabled></SwitchProSupportSettings>"
-                + "<XboxSupportSettings><Enabled>False</Enabled><HideUsbParent>False</HideUsbParent></XboxSupportSettings></DeviceOptions>", compact);
+                + "<XboxSupportSettings><Enabled>False</Enabled><HideUsbParent>True</HideUsbParent></XboxSupportSettings></DeviceOptions>", compact);
         }
 
         [Fact]

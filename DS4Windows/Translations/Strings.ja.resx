@@ -798,6 +798,9 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="HideXboxController" xml:space="preserve">
     <value>Xbox コントローラーを隠す</value>
   </data>
+  <data name="HideXboxHidHideMissing" xml:space="preserve">
+    <value>HidHide がインストールされていません。元の Xbox コントローラーを他のプログラムから隠すには、HidHide をインストールしてください。</value>
+  </data>
   <data name="HideXboxControllerTip" xml:space="preserve">
     <value>DS4Windows が検出したすべての Xbox コントローラーの元の XInput 入力を、他のプログラムから隠します（HidHide が必要）。ゲームで入力が二重になるときにオンにします。変更すると、DS4Windows のサービスを再起動します。</value>
   </data>
