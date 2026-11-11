@@ -68,7 +68,8 @@
     - `IOCTL_XUSB_GET_LED_STATE`＝0x8000E008（入力 `00-00-00`、出力 3 バイト）→ `03-01-<LED>`。LED の値が **Razer の仮想＝6、実機＝7**。Xbox 360 の LED の模様（6＝1 番目が点灯、7＝2 番目、8＝3 番目、9＝4 番目）から、**XInput の番号＝LED − 6**。これが、**XInput の番号と、XUSB のインターフェース（＝機器のパス、親の連鎖、シリアル）を結ぶ手段**になる。
     - `IOCTL_XUSB_GET_INFORMATION`＝0x80006000（出力 12 バイト）→ 末尾 4 バイトが VID／PID（リトルエンディアン）。実機＝`5E-04 8E-02`（045E／028E）、Razer の仮想＝`6D-04 00-00`（046D／0000）で、`XInputGetCapabilitiesEx` の値と一致。
   - **(c) ViGEm の仮想パッドの識別（成立。記録 `tools/xinput-probe-vigem.txt`）**: DS4Windows の仮想パッドは、XUSB のインターフェース `USB\VID_045E&PID_028E\01` で、親の連鎖が **`ROOT\SYSTEM\0002` ← `HTREE\ROOT\0`**（XInput の番号 2、LED＝8）。実機（親が USB ハブ、シリアルあり）とは明確に違う。**既存の `DevicePathProbe.CheckIfVirtualDevice`（根の直下が `ROOT\SYSTEM*`）が、そのまま使える**。補助の手がかり: XInput の能力のバージョンが、実機（0x0110）と異なる（ViGEm は 0x0114、flags=0x000C）。
-  - 残る検証: (d) USB の親を HidHide で隠したときに、許可リストのアプリが XInput で読めるか（反映のタイミング、管理者権限の要否）、(e) 振動、(f) 標準の Xbox 360（HID の子を持たない）の実機。
+  - **(d) HidHide との関係（既存の調査で確認済み＋今回の再確認）**: `Xbox-Input-Research.md` §6・§7 で、**CLI で HID の子と USB の親の両方を隠し、許可リストにアプリを登録すると、そのアプリは XInput でも HID でも読める**（未登録は「接続なし」）と確認済み。今回（`tools/xinput-probe-hidden.txt`）、GUI で `Controller (Xbox360 For Windows)` と HID の子 3 件にチェックを入れ、実機を抜き差し（パケット番号が 124601 → 3812 に戻った）したあと、許可リスト未登録の PowerShell でも番号 1 が読めた。**GUI は XInput を隠せない**（既知の制限）ことの再確認で、親のパスを直接足す（CLI か、DS4Windows が `HidHideAPIDevice` で足す）必要がある。決定 3 は、そのまま成立。HidHide の制御用デバイスは、通常の権限の CLI では開けなかった（アクセス拒否）。DS4Windows が足すときの権限の要否は、22-4 で確認する。
+  - 残る検証（旧）: (d) USB の親を HidHide で隠したときに、許可リストのアプリが XInput で読めるか（反映のタイミング、管理者権限の要否）、(e) 振動、(f) 標準の Xbox 360（HID の子を持たない）の実機。
 - 2026-11-11: 22-1b の第 1 回の観察（`tools/Probe-XInput.ps1`。読み取り専用。無操作の状態）。
   - XInput は番号 0 と 1 が接続中。`XInputGetStateEx`（序数 100）と `XInputGetCapabilitiesEx`（序数 108）は、ともに呼べた。
   - **番号 0＝VID_046D／PID_0000**（Razer が作る仮想の Xbox 360。HID の子 `VID_046D&PID_0000&IG_00` と一致）。**番号 1＝VID_045E／PID_028E**（今回の実機）。仮想パッドが、実機とは別の VID/PID で XInput に見えている。
