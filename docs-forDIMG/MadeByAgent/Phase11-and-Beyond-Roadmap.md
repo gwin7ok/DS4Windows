@@ -207,3 +207,4 @@ Phase16 の追補（16-12・16-13）で見送った次の項目を、Phase17 で
 - 2026-11-10 Phase24（C: `App.xaml.cs` の分解）完了。詳細は Structure-Review-2026-11.md の更新履歴。次は Phase25（A: 設定のオブジェクト化）。
 
 - 2026-11-11 Phase の並びの追記: 入力側の画像・ボタン名の機種別対応（KI-7）は、一番最後の Phase で行う（ユーザーの指示）。 実施するかは未定。計画書の下書きは `PhaseX-Input-Device-Visuals-Plan.md`。
+- 2026-11-13 Phase の並びの追記: 日本語表示の完全な日本語化（未訳キー 386 件、XAML の直書き約 240 件）は、実施の時期は未定。計画書の下書きは `PhaseX3-Localization-Plan.md`。
