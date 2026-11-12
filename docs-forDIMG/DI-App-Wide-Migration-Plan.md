@@ -41,7 +41,7 @@ DI化すべきでない、またはDI化する実益がない項目を**カテ�
 **2026-11-12改訂の要旨**: 本書は Phase7 の完了（2026-10-18）のあと、Phase9 の追記（2026-10-23）を除いて更新が止まっていた。次の 3 点を反映した（上記の記述は、当時の状態の記録として残す）。
 1. **Phase7b〜Phase28 は完了**（2026-10-19〜2026-11-11。Phase26 は一部完了）。DI 化（Phase1〜7）のあと、統一トリガーディスパッチ（8）、責務の分割（9）、割り当て編集画面の統合（10）、安定化と機能追加（11・12）、`ControlService` の整理と削除（13・27）、ログの整理（13b・15-0）、層別フォルダと依存の向きの検査（14〜14d）、UI の共通化（15・26）、第 1 層・第 3 層の差し替え口と入力機種の追加（16〜18・22）、引数と工場の整理（19〜21・28）、構造の見直し（23〜25）を行った。Phase ごとの記録は **§6.14**。
 2. **到達した姿**: `Global`・`Program.rootHub`・`ServiceProviderHolder`・`ControlService` の型は存在しない。`AppHost` を使うのは `App` と `Composition` だけ。フォルダは層に対応し（`Input`／`Processing`／`Output`／`UI`／`Composition`／`Core`）、名前空間はフォルダと一致する。依存の向き・引数の数・撤去した API は、型の検査（`LayerDependencyRuleTests`、`ConstructorArityRuleTests`、`RemovedApiRuleTests` など）が守る。入力機種は 4 系統（DS4・DualSense・Switch Pro・Xbox［XInput］）で、追加は登録 1 行。現状の構造の正は `Model-Diagram/01-Structure.md`・`02-Extension-Guide.md`・`03-Lifecycle-and-DI.md`、規約の正は `.github/copilot-instructions.md`。
-3. **Phase29〜34 を新設**（2026-11-11。未着手・承認待ち）。全体のコードレビュー（`Code-Review-2026-11/`）で見つけた、毎フレームの経路の安全弁と割り当て、入力機種の読み取りの重複、出力の種類の分岐、左右スティックの画面の二重、終了の手順、配置と文書の整理を扱う。概要は **§6.15**。
+3. **Phase29〜38 を新設**（2026-11-11〜12。未着手・承認待ち。35〜38 は、外部レビューの照合から 2026-11-12 に足した。§6.15.1）。以下は Phase29〜34 の説明:全体のコードレビュー（`Code-Review-2026-11/`）で見つけた、毎フレームの経路の安全弁と割り当て、入力機種の読み取りの重複、出力の種類の分岐、左右スティックの画面の二重、終了の手順、配置と文書の整理を扱う。概要は **§6.15**。
 
 本書の §1〜§5（当初の現状分析・棚卸し・目標アーキテクチャ）は、2026-08〜09 時点の記録であり、型名・行数・件数は当時のものである（例: `Global`、`ControlService`、`Mapping.cs` 8,827 行、`IDs4DeviceRegistry`）。現在のコードを調べるときは、上の 2 の文書を正とする。
 
@@ -98,6 +98,7 @@ Phase5完了間際の実地調査により**Phase6・Phase7**を追加し（2026
 | 23・24・25 | 構造の見直し（フォルダと名前、`App` の分解、設定を領域ごとのオブジェクトへ） | 完了（2026-11-10〜11-11） |
 | 26・27・28 | 画面のロジックを部品へ、`ControlService` の削除、工場・窓口の整理 | 26 は一部完了、27・28 は完了（2026-11-11） |
 | **29〜34（計画）** | コードレビュー（2026-11）の指摘の是正 | **未着手・承認待ち**（2026-11-11 に計画書を作成） |
+| **35〜38（計画）** | 外部レビュー（行数の多いファイル、MVVM の形骸化）の照合から: 画面の MVVM 化、`TouchpadMouse` の分割、設定の保持と永続化の分割、`UdpServer` の分離 | **未着手・承認待ち**（2026-11-12 に計画書を作成。§6.15.1） |
 | **X・X2（時期未定）** | PhaseX＝入力側のボタン名・画像の機種別対応（KI-7）、PhaseX2＝「カスタム実行ファイル名」機能の立て直し | **下書き**。PhaseX は実施するかどうかが未定、PhaseX2 は時期が未定で方式も未決定（§6.16） |
 
 ---
@@ -1097,6 +1098,35 @@ Phase28 のあと、ブランチ `master` の全体のコードレビューを�
 - この計画に入れていないもの: `MainWindow`・`ProfileEditor` の code-behind の残り（Phase26 の続き）、時期が未定の 2 件（PhaseX＝入力側の画像とボタン名の機種別対応、PhaseX2＝「カスタム実行ファイル名」機能の立て直し。§6.16）、性能の実測（Phase29 のあとに判断する項目は `Phase34-Plan.md` の C 部）。
 - コードレビューで未調査のまま残した範囲（タッチの各出力の計算、`MouseCursor`、`OscService`、`UdpMotionService`、Switch Pro の `ProcessFrame` など）は、`Code-Review-2026-11/00-Summary.md` §6。
 
+#### 6.15.1 フェーズ35〜38（計画。2026-11-12 新設、未着手・承認待ち）
+
+2026-11-12 に、外部のレビュー（行数の多い `.cs` 上位 20 件を 4 つに分類したものと、「MVVM パターンの形骸化」の指摘）を受け取り、指摘を 1 つずつコードで照合した（`Code-Review-2026-11/07-External-Review-2026-11-12.md`）。方向は妥当だが、すでに済んだ分割を前提にしていない箇所と、説明用の実在しないコードの例があった。当たっていた指摘のうち、既存の Phase に入るものは統合し、入らないものを 4 つの Phase にした。
+
+既存の Phase へ統合したもの:
+
+| 統合先 | 足した内容 |
+|---|---|
+| Phase30 | 30-9〜30-11: DualSense の出力レポートの組み立て（313 行）、Switch Pro の校正の読み出し（216 行）と振動の表を、状態を持たない部品へ（行うかどうかは同計画書の D5） |
+| Phase33 | 33-4b: `App.xaml.cs` の引数の処理（`CheckOptions`）ほかの切り出し。外部レビューの「100〜200 行」は目標にせず、目安を 400 行前後とした |
+| Phase34 | 34-A7: 自動生成コードが静的解析から外れているかの確認。34-C9: `Mapping.cs`・`TriggerDispatchEngine.cs` は対応しない（指摘が古い、または分類が違う） |
+| Phase26 | 残り（code-behind の続き）を Phase35 へ引き継ぐ案 |
+
+新しく作った Phase:
+
+| フェーズ | 主題 | 主な内容 | リスク | 計画書 |
+|---|---|---|---|---|
+| 35 | 画面の MVVM 化（Phase26 の続き） | 5 画面（`ProfileEditor`・`MainWindow`・`RecordBox`・`AssignmentEditor`・`BindingWindow`。code-behind は合計 約 6,100 行）の、判断・検査・保存・画面の開閉を ViewModel とサービスへ。土台として、コマンド（アプリに `ICommand` の実装が 1 つもない）と、ダイアログの窓口を先に作る。見た目だけの処理は code-behind に残す | 中〜高（画面ごとの実機確認が要る） | `Phase35-Plan.md` |
+| 36 | `TouchpadMouse` の分割 | 1,810 行の型（200〜300 行のメソッドが 3 つ。タッチパッドとジャイロの両方を受け持つ）を、ジャイロの出力、タッチ → スティック、タップとクリックの判定、タッチボタンに分ける。特性化テストが先 | 中（毎フレームの経路） | `Phase36-Plan.md` |
+| 37 | 設定の保持と永続化の分割 | 特殊アクションの保存・読み込みを種別ごとの部品へ（保存の入口が 2 つあり、種別を数で渡している）、`ResetProfile`（140 行）を領域のオブジェクトへ、読み込みと保存の節を対に。`AppSettingsDTO` は、形を保つ入れ物として残すのを基本とする。**保存するファイルの形は変えない** | 中（利用者のデータに直結） | `Phase37-Plan.md` |
+| 38 | `UdpServer` の通信と書式の分離 | Cemuhook のモーションサーバー（882 行。上流のまま）の、パケットの書式と要求の解釈を、状態を持たない部品へ。まず調査と黄金だけを行い、実害があれば続ける | 中（外部のクライアントとの互換） | `Phase38-Plan.md` |
+
+- 順序の関係:
+  - Phase36 は、Phase29（29-8・29-9 が同じファイルに触れる）のあと。
+  - Phase35 は、Phase29（29-10 が `MainWindow` のタイマーに触れる）と Phase32（スティックのパネルを作り直す）のあと、PhaseX の前。Phase33 と同時には進めない（どちらも `MainWindow`・`App` の起動と終了に近い）。
+  - Phase37 は独立。ただし 37-3・37-4 は、Phase31 の 31-A のあと。
+  - Phase38 は独立。`Phase34-Plan.md` の 34-A2（UDP の型の移動）とは、どちらか一方で行う。
+- 外部レビューの優先順位（1: `TouchpadMouse`、2: code-behind、3: デバイス）は、上の関係を踏まえ、「Phase29 → 36（`TouchpadMouse`）→ 30（デバイス）→ … → 32 → 35（code-behind）」の位置づけにした。全体の並びは §9.3。
+
 ### 6.16 時期が未定の計画（PhaseX・PhaseX2。2026-11-12 追記）
 
 実施するかどうか、または実施の時期が決まっていない計画を、番号を振らずに「PhaseX」の名前で下書きにしている。実施が決まったときに、その時点の次の番号を振り、個別計画書として承認を得る（規約 4 章）。Phase29〜34 とは独立で、順序の制約はない（PhaseX だけは、実施するなら一番最後とする）。
@@ -1196,6 +1226,7 @@ Phase28 のあと、ブランチ `master` の全体のコードレビューを�
 | - | `docs-forDIMG/MadeByAgent/Structure-Review-2026-11.md`、`Phase25-Plan.md`〜`Phase28-Plan.md` | 構造の見直し（A〜G）と、フェーズ23〜28 の計画と履歴（2026-11-12 追記） |
 | - | `docs-forDIMG/Code-Review-2026-11/00-Summary.md`〜`06-Performance.md` | 全体のコードレビュー（2026-11）の調査報告書（2026-11-12 追記） |
 | - | `docs-forDIMG/MadeByAgent/Phase29-Plan.md`〜`Phase34-Plan.md` | コードレビューの指摘の修正計画書（未着手・承認待ち。2026-11-12 追記） |
+| - | `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`、`docs-forDIMG/MadeByAgent/Phase35-Plan.md`〜`Phase38-Plan.md` | 外部レビューの照合の記録と、そこから作った修正計画書（未着手・承認待ち。§6.15.1。2026-11-12 追記） |
 | - | `docs-forDIMG/MadeByAgent/PhaseX-Input-Device-Visuals-Plan.md`、`PhaseX2-Custom-Exe-Name-Plan.md` | 時期が未定の計画の下書き（§6.16。2026-11-12 追記） |
 | - | `docs-forDIMG/MadeByAgent/Known-Issues-Ledger.md`、`Release-Backlog.md` | 未解決の不具合と実機で未確認の項目の台帳、リリースの台帳（2026-11-12 追記） |
 | - | `docs-forDIMG/Model-Diagram/01-Structure.md`、`02-Extension-Guide.md`、`03-Lifecycle-and-DI.md`、`Ideas.md` | 現状の構造、拡張の手順、登録と寿命、未実装の構想（Phase17-0 で作り直した。旧 4 文書は `Archive/`。上の行の「01〜04」は旧い呼び方。2026-11-12 追記） |
@@ -1204,9 +1235,9 @@ Phase28 のあと、ブランチ `master` の全体のコードレビューを�
 
 **（2026-11-12更新）Phase7b〜Phase28 は完了した（Phase26 は一部完了。§6.14）。次は、次の順で進める。**
 
-1. Phase29〜34 の計画書（§6.15）の「決めること」をユーザーが確認し、承認を得た Phase から着手する。最初は Phase29（`Phase29-Plan.md` の D1〜D5）。進める順は 29 → 30 → 31 → 32 → 33。Phase34 の A 部は合間に行える。
+1. Phase29〜38 の計画書（§6.15、§6.15.1）の「決めること」をユーザーが確認し、承認を得た Phase から着手する。最初は Phase29（`Phase29-Plan.md` の D1〜D5）。進める順の案は、**29 → 36 → 30 → 31 → 32 → 35 → 33**（安全弁を先に。`TouchpadMouse` は Phase29 と同じファイルなので続けて行う。画面の MVVM 化は、スティックのパネルの作り直しのあと。終了の手順は、リスクが高いので最後）。Phase34 の A 部、Phase37、Phase38 は独立で、合間に行える。順は、着手のたびに見直してよい。
 2. 実機で未確認の項目（`Known-Issues-Ledger.md` §3。Phase16〜28 の分）は、任意のタイミングで確認する。DualSense・Switch Pro は、実機が得られたときに確認する。
-3. Phase26 の残り（`BindingWindow`・`RecordBox`・`AssignmentEditor`、`MainWindow`・`ProfileEditor` の code-behind）は、Phase29〜34 と独立に進められる。順序はユーザーが決める。
+3. Phase26 の残り（`BindingWindow`・`RecordBox`・`AssignmentEditor`、`MainWindow`・`ProfileEditor` の code-behind）は、Phase35（画面の MVVM 化）へ引き継ぐ案を立てた（`Phase35-Plan.md` の D4。決まるまで、Phase26 は「一部完了」のまま）。
 4. 時期が未定の計画（§6.16）は、実施するかどうか・時期をユーザーが決める。PhaseX（入力側の画像とボタン名の機種別対応。KI-7。`PhaseX-Input-Device-Visuals-Plan.md`）は、実施する場合は一番最後の Phase とする。PhaseX2（「カスタム実行ファイル名」機能の立て直し。`PhaseX2-Custom-Exe-Name-Plan.md`）は、方式を実装の前に再検討する。
 5. 各 Phase の完了時に、本書の §6.14・§6.15 の表、`Code-Review-2026-11/00-Summary.md` の該当行、モデル図を更新する。
 
@@ -1255,3 +1286,10 @@ Phase28 のあと、ブランチ `master` の全体のコードレビューを�
 - 上の Phase9 の追記にある「次の大きな作業は Phase13」「F-4・G-1・9-H の判断は Phase15・16」は、その後の実績で置き換わった（Phase13 は 2026-11-04、Phase15 は 2026-11-10、9-H に当たる第 1 層の分離は Phase16〜18 で完了）。
 - §1〜§5 の型名・行数・件数は、作成当時（2026-08〜09）のものである。現在の構造は `Model-Diagram/01-Structure.md`、規約は `.github/copilot-instructions.md` を正とする。
 - テストの名前について: Phase15-0 で、Phase 名のテストを機能名へ改名した（例: `Phase14NamespaceFolderGuardTests` → `NamespaceFolderGuardTests`、`Phase13FuncRatchetGuardTests` → `FuncRatchetGuardTests`）。規約・モデル図・一部の計画書には旧名が残っている。対応表は `MadeByAgent/Phase15-0-Test-Rename-Map.md`。旧名の書き換えは `Phase34-Plan.md` の 34-A5（文書の更新）で行う。
+
+### 追記（2026-11-12 その 2）: 外部レビューの照合と、Phase35〜38 の新設
+
+- 外部のレビュー（行数の多い `.cs` 上位 20 件の分類と、「MVVM パターンの形骸化」の指摘）を受け取り、指摘を 1 つずつコードで照合した。記録は `Code-Review-2026-11/07-External-Review-2026-11-12.md`。
+- 既存の Phase に入るものは統合した（Phase30 に 30-9〜30-11、Phase33 に 33-4b、Phase34 に 34-A7・34-C9、Phase26 に残りの扱い）。入らないものを、Phase35（画面の MVVM 化）、Phase36（`TouchpadMouse` の分割）、Phase37（設定の保持と永続化の分割）、Phase38（`UdpServer` の分離）として新設した（§6.15.1）。
+- 対応しないと判断したもの: 自動生成コード（`Strings.Designer.cs`、`Resources.Designer.cs`）、`Mapping.cs`（指摘が古い）、`TriggerDispatchEngine.cs`（分類が違い、作りに問題がない）、`App.xaml.cs` を 100〜200 行にすること（目安は 400 行前後とした）。
+- 進める順の案（§9.3）: 29 → 36 → 30 → 31 → 32 → 35 → 33。Phase34 の A 部、Phase37、Phase38 は独立。

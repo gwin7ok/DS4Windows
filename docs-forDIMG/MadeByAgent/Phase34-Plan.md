@@ -29,6 +29,8 @@
 | 34-A5 | 文書の更新: モデル図 3 文書（フォルダーの表、引数の基準 12、手順書の冒頭）と、規則 3.4 R1（34-A2・A3 の結果）。あわせて、規約・モデル図・`Code-Review-2026-11`・Phase29〜34 の計画書に残る、テストの旧名（`Phase14NamespaceFolderGuardTests` → `NamespaceFolderGuardTests`、`Phase13FuncRatchetGuardTests` → `FuncRatchetGuardTests` など。Phase15-0 で改名済み。対応表は `Phase15-0-Test-Rename-Map.md`）を新名へ直す（2026-11-12 追加） | `ModelDiagramGuardTests` | 未着手 |
 | 34-A6 | （追加）`UI/IntToBoolConverter.cs` を `UI/Converters` へ移す（`git mv` と、名前空間・XAML の参照の書き換えを別コミットに）。コメントだけのファイル `Core/Updater/UpdaterInstallTrace.cs`（型なし、7 行）は、規則 2.4 の手順（`git log` で経緯を確かめる）のあと、ユーザーの承認を得て削除する。`UI/Themes/_.cs`（名前空間の宣言だけ。IDE のための置き石）は残す | `Phase14NamespaceFolderGuardTests`。画面の起動（XAML の参照） | 未着手 |
 
+| 34-A7 | （2026-11-12 追加。外部レビューの照合から）自動生成コード（`Translations/Strings.Designer.cs` 4,239 行、`Properties/Resources.Designer.cs` 1,677 行）は、対応しない。ルートの `.editorconfig` で、静的解析の対象から外れているか（`generated_code = true` など）だけを確かめ、外れていなければ設定を足す | ビルドの警告が増えないこと | 未着手 |
+
 ### 決めること
 | # | 決めること | 選択肢（先頭が推奨） |
 |---|---|---|
@@ -55,7 +57,8 @@
 | 34-C5 | 30 秒ごとの第 0 世代の GC の強制（6-6。`App.xaml.cs:901`） | 経緯（`git log -S "GarbageTask"`）。Phase29 のあとの、1 秒あたりの割り当ての量（計測）。追加調査で、毎フレームの割り当ての主な元（6-1、6-2、6-10、6-11）が分かった。これらを直したあとなら、不要になる見込み | 未決。Phase29（29-9 を含む）のあとに、計測して判断する |
 | 34-C6 | ロガーの静的イベントと、静的なキーボードの設定（1-6。`Core/Logging/AppLogger.cs:27`・`29`、`Core/Platform/KeyboardSettings.cs:11`） | 購読者・利用者の一覧。`Phase7-Residual-Ledger.md` §17.3 の目録での扱い | 未決 |
 | 34-C7 | 使われていない契約の候補（4-6） | 規則 2.4 の手順（経緯の調査 → 使うべきかの判断）を、1 つずつ行う | 未決 |
-| 34-C8 | コンストラクターの null 検査の手書き（3-2）、読み込みと保存の節が対でない（5-5） | — | **計画に入れない**（3-2 は害がなく、5-5 は設定のオブジェクト化の続きで揃える。記録だけ残す） |
+| 34-C8 | コンストラクターの null 検査の手書き（3-2）、読み込みと保存の節が対でない（5-5） | — | 3-2 は**計画に入れない**（害がない。記録だけ残す）。5-5 は、2026-11-12 に `Phase37-Plan.md` の 37-4 へ移した |
+| 34-C9 | （2026-11-12 追加。外部レビューの照合から）`Mapping.cs`（869 行）と `TriggerDispatchEngine.cs`（747 行）が大きい、という指摘 | 照合済み: `Mapping.cs` の最長のメソッドは `MapCustom` 124 行で、種別ごとの巨大な分岐は Phase8・9 で部品へ出してある。`TriggerDispatchEngine` は判定と実行のエンジンで、状態保持・シリアライズではなく、作りにも問題は見つからなかった | **対応しない**（`Code-Review-2026-11/07-External-Review-2026-11-12.md` §2）。`Mapping` の引数（15）は `03-Constructor-Arity.md` のとおり |
 
 ## 確認の方法
 - A 部: 各コミットのあと、ビルドと、`Phase14NamespaceFolderGuardTests`・`LayerDependencyRuleTests`・`ModelDiagramGuardTests`。移動のコミットは `git diff -M100%` で、内容の変更がないことを確かめる。Step の終わりに Debug ALL。
@@ -69,3 +72,4 @@
 ## 履歴
 - 2026-11-11: 計画書を作成。コードは未着手。
 - 2026-11-11: 追加調査の結果を反映。34-A1 の対象を 3 件に確定し、34-A6（`IntToBoolConverter` の移動、コメントだけのファイルの扱い）を足した。34-C2 は調査済み（直さない案を推奨）、34-C3 は範囲を縮めた（競合と停止は Phase29 の 29-10 へ）、34-C5 に割り当ての元を書き足した。
+- 2026-11-12: 外部レビューの照合の結果を統合。34-A7（自動生成コードの除外の確認）、34-C9（`Mapping`・`TriggerDispatchEngine` は対応しない）を足し、5-5 を Phase37 へ移した。UDP の型の移動（34-A2）は、`Phase38-Plan.md` の D3 と調整する（どちらか一方で行う）。

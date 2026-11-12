@@ -22,6 +22,10 @@
 | 26-4 | `MainWindow.Check_Version` の判断を `UpdateCheckPolicy` へ出す（`LateChecks` は起動の順序が中心で、Phase27 で扱う） | 完了（2026-11-11） |
 | 26-5 | `BindingWindow`・`RecordBox`・`AssignmentEditor` の同様の整理 | 一部完了（2026-11-11。`BindingWindow.TestRumbleBtn_Click` を `ActionRumbleTestController` へ。ほかは続く） |
 
+## 残りの扱い（2026-11-12 追記）
+- 26-5 の残り（`BindingWindow`・`RecordBox`・`AssignmentEditor`）と、`MainWindow`・`ProfileEditor` の code-behind の続きは、`Phase35-Plan.md`（画面の MVVM 化。コマンド・結びつけ・ダイアログの窓口）へ引き継ぐ案を立てた（同計画書の D4）。本 Phase は「判断を部品へ出す」進め方で 5 つの部品を作った。Phase35 は、その進め方に、コマンドとダイアログの窓口という土台を足す。
+- 引き継ぐかどうかは、Phase35 の承認のときに決める。決まるまで、本 Phase の状態は「一部完了」のままとする。
+
 ## 履歴
 - 2026-11-11: 計画書を作成。26-1 を完了（`TouchpadSwipeProfileRule` と 17 件のテストを追加。全 3,399 テスト合格）。スワイプの文字列 "left"／"right" は文字 t を含むため通知も出る、という元の挙動をテストで固定した。
 - 2026-11-11: 26-2 を完了（`RumbleTestController`・`RumbleTestOutcome` とテスト 5 件。全 3,404 テスト合格）。押したボタンの文字は、反転設定でも常に「押したボタン」が変わる（元の分岐を整理しても結果は同じ）。
@@ -29,3 +33,4 @@
 - 2026-11-11: 26-3 を完了（`ReadingsDeadZoneSnapshot` とテスト 3 件。全テスト合格）。
 - 2026-11-11: 26-4 を完了（`UpdateCheckPolicy`・`UpdateCheckOutcome` とテスト 7 件）。版の記録が読めないときは何も知らせない、という元の挙動を固定した。共有ストアの振動の強さを書き換えるテストが、別のテストを時々落とした（並列実行の競合）ため、同じ xunit コレクションに入れて同時に走らせないようにした。
 - 2026-11-11: 26-5 の 1 件目として、出力ピッカーの振動テストを `ActionRumbleTestController` へ出した（テスト 4 件）。
+- 2026-11-12: 残りの扱い（Phase35 へ引き継ぐ案）を追記。
