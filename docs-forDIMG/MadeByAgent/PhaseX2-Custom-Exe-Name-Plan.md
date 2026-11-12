@@ -2,7 +2,7 @@
 
 作成日: 2026-11-12
 状態: **下書き。実施の時期は未定**。どの方式を採るかは、**実装の前に再検討する**（§5 の比較と §6 の「決めること」を、その時点のコードで確かめ直してから決める）。番号は、実施が決まったときに振る。
-関連: `Known-Issues-Ledger.md`（この件は未登録。実施しない場合の扱いは §6 の D1）、`PhaseX-Input-Device-Visuals-Plan.md`（同じく時期未定の下書き）、別リポジトリの更新プログラム `externals/DS4Updater`（`gwin7ok/DS4Updater`。サブモジュール。調査時は v3.0.0）
+関連: `Known-Issues-Ledger.md`（この件は KI-14 として登録済み（2026-11-13）。実施しない場合の扱いは §6 の D1）、`PhaseX-Input-Device-Visuals-Plan.md`（同じく時期未定の下書き）、別リポジトリの更新プログラム `externals/DS4Updater`（`gwin7ok/DS4Updater`。サブモジュール。調査時は v3.0.0）
 調査の対象: 本体は `master`（コミット `070095f9` の時点のコード）。本文の `ファイル:行` は、その時点の行番号。
 
 ## 1. 目的
