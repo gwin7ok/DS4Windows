@@ -65,6 +65,12 @@ MVVM は、アプリを 3 つの部屋に分けて、互いの知ることを決
 | D7 | ViewModel が知ってよい WPF の型の線引き | (A) `Window`・`Control`・`MessageBox`・`Application`・`Dispatcher`・`Visibility` を禁止。色・ブラシ（`System.Windows.Media`）は、値の型（`Color`）だけ許す。基準値を凍結し、減らす／(B) `System.Windows` 全体を禁止（色は文字列か独自の型。変更が広い）／(C) `Window`・`Control`・`MessageBox`・`Application`・`Dispatcher` だけ禁止（`Visibility` と `Media` は許す） |
 | D8 | 残りの画面のうち、見た目の部品の扱い | (A) 34-0 の仕分けで (C)（見た目だけ）と判定したものは View のまま残し、棚卸しの表に理由を書く／(B) すべてに ViewModel を作る（効果が薄い） |
 
+## 決定の記録（2026-11-13。ユーザーの回答）
+D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → BindingWindow）、D2＝A（自前の `RelayCommand`）、D3＝A（判断・ボタン操作はすべて移し、見た目だけ残す）、D4＝A（Phase26 の残りを統合）、D5＝**B（`MessageBox` の文言を、この機会にリソース化）**、D6＝A（全画面。分割は承認時）、D7＝**B（`System.Windows` 全体を禁止）**、D8＝A（見た目だけの部品は View に残す）。
+- D5＝B により、各画面の Step（34-2〜34-6b）に、`MessageBox`・ダイアログの文言を `Strings.resx`／`Strings.ja.resx` のキーへ移す作業を含める（表示言語で出し分ける。規約 2.3 の利用者向け文言の書き方に合わせる）。範囲が広がるため、文言の一覧（画面・件数）を 34-0 の棚卸しで先に作り、翻訳の確認を求める。既存の文言（英語固定のもの）の日本語訳は、ユーザーの確認を得る。
+- D7＝B の注意: 規則 V1 は `System.Windows` 配下の型の参照を禁止するが、`System.Windows.Input.ICommand`（コマンドの契約。WPF の部品ではなく、`System.ObjectModel` にある）だけは許す。色は WPF の `Color`／`Brush` ではなく、`Core/Model` の色の型（`DS4Color` など）か文字列で持ち、View のコンバーターが WPF の型へ変える。`Visibility` は `bool` にする。34-6a の範囲が、最初の版より広がる。
+- D6＝A の分割（34-A 土台と 5 画面／34-B ViewModel の WPF 非依存化と文言のリソース化／34-C 残りの画面と検査）は、承認のときに決める。
+
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
@@ -91,6 +97,7 @@ MVVM は、アプリを 3 つの部屋に分けて、互いの知ることを決
 - `MainWindow` は、起動・終了・電源・デバイスの通知が集まる。Phase35（終了の手順）と同じファイルに触れるため、同時に進めない。
 
 ## 履歴
+- 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: D6 は (A)（全画面と ViewModel の WPF 非依存化まで）で確定。34-A／34-B／34-C への分割は、承認のときに決める。D7・D8 は未回答。
 - 2026-11-13: D4 は (A) で確定。アプリ全体の MVVM の点検を受けて、「MVVM の到達の定義」、決めること D6〜D8、Step 34-6a（ViewModel の WPF 非依存化）・34-6b（残りの画面）、34-0・34-1・34-7・34-8 の拡張を足した。
 - 2026-11-13: Phase 番号の付け替え（旧 Phase35 → 34）。Phase26 の残りを統合した（D4 の (A)）。
