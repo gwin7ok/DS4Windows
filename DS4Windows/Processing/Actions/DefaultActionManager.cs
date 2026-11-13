@@ -219,6 +219,8 @@ namespace DS4Windows.Processing.Actions
                 st.IsToggledOn = value;
                 try { ToggledOnChanged?.Invoke(action, device, old, value); } catch { }
 
+                // スタックトレースの取得は高価で、切り替えのたびに起きるため、Trace が有効のときだけ行う
+                if (AppLogger.IsTraceEnabled)
                 try
                 {
                     var trace = new StackTrace(1, false);
