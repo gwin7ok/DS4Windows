@@ -74,6 +74,8 @@ namespace DS4Windows.UI
         private bool wasrunning = false;
         private AutoProfileHolder autoProfileHolder;
         private NonFormTimer hotkeysTimer;
+        // タイマーの処理中に止められたとき（終了・サービス停止）、始め直さないための印
+        private volatile bool hotkeysTimerActive;
         // 更新の確認の判断（画面に依存しない）
         private UpdateCheckPolicy updateCheckPolicy;
         // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
@@ -580,11 +582,13 @@ namespace DS4Windows.UI
         {
             if (state)
             {
+                hotkeysTimerActive = true;
                 hotkeysTimer.Elapsed += HotkeysTimer_Elapsed;
                 hotkeysTimer.Start();
             }
             else
             {
+                hotkeysTimerActive = false;
                 hotkeysTimer.Stop();
                 hotkeysTimer.Elapsed -= HotkeysTimer_Elapsed;
             }
@@ -594,24 +598,32 @@ namespace DS4Windows.UI
         {
             hotkeysTimer.Stop();
 
-            if (appSettingsService.SwipeProfiles)
+            // 例外が出ても始め直す（止まったままになると、スワイプでの切替が以後動かなくなる）。
+            // 終了のとき（hotkeysTimerActive が偽）は、始め直さない。
+            GuardedTimerTick.Run(
+                SwipeProfileTick,
+                () => hotkeysTimerActive,
+                () => hotkeysTimer.Start(),
+                ex => DS4Windows.Core.Logging.AppLogger.LogError($"HotkeysTimer tick failed: {ex}"));
+        }
+
+        private void SwipeProfileTick()
+        {
+            if (!appSettingsService.SwipeProfiles) return;
+
+            // 一覧はホットプラグで別のスレッドから変わるため、読み取りロックの下で複製した行を列挙する
+            foreach (CompositeDeviceModel item in conLvViewModel.SnapshotRows())
             {
-                foreach (CompositeDeviceModel item in conLvViewModel.ControllerCol)
-                //for (int i = 0; i < 4; i++)
+                string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
+                // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
+                if (slide == "left" || slide == "right")
                 {
-                    string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
-                    // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
-                    if (slide == "left" || slide == "right")
+                    Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        Dispatcher.BeginInvoke((Action)(() =>
-                        {
-                            item.SelectedIndex = swipeRule.NextIndex(item.SelectedIndex, item.ProfileListCol.Count, slide);
-                        }));
-                    }
+                        item.SelectedIndex = swipeRule.NextIndex(item.SelectedIndex, item.ProfileListCol.Count, slide);
+                    }));
                 }
             }
-
-            hotkeysTimer.Start();
         }
 
         private void PrepareForServiceStop(object sender, EventArgs e)
@@ -755,12 +767,12 @@ namespace DS4Windows.UI
         {
             autoProfilesTimer.Stop();
             //Console.WriteLine("Event triggered");
-            _autoProfileService.CheckProfiles();
-
-            if (_autoProfileService.Running)
-            {
-                autoProfilesTimer.Start();
-            }
+            // 例外が出ても、実行中なら始め直す（止まったままになると、自動プロファイルが以後動かなくなる）
+            GuardedTimerTick.Run(
+                () => _autoProfileService.CheckProfiles(),
+                () => _autoProfileService.Running,
+                () => autoProfilesTimer.Start(),
+                ex => DS4Windows.Core.Logging.AppLogger.LogError($"AutoProfilesTimer tick failed: {ex}"));
         }
 
         private void ControllerCol_CollectionChanged(object sender,
@@ -1035,6 +1047,7 @@ namespace DS4Windows.UI
 
         private void MainDS4Window_Closed(object sender, EventArgs e)
         {
+            hotkeysTimerActive = false;
             hotkeysTimer.Stop();
             autoProfilesTimer.Stop();
             //autoProfileHolder.Save();

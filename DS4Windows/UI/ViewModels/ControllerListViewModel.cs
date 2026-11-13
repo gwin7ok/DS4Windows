@@ -104,6 +104,20 @@ namespace DS4Windows.UI.ViewModels
                 ColLockCallback);
         }
 
+        /// <summary>
+        /// 一覧の行を、読み取りロックの下で複製して返す。タイマーなど、画面のスレッド以外から列挙するときに使う
+        /// （一覧はホットプラグで別のスレッドから変更されるため、ロックなしの列挙は例外になり得る）。
+        /// </summary>
+        public CompositeDeviceModel[] SnapshotRows()
+        {
+            using (ReadLocker locker = new ReadLocker(_colListLocker))
+            {
+                CompositeDeviceModel[] rows = new CompositeDeviceModel[controllerCol.Count];
+                controllerCol.CopyTo(rows, 0);
+                return rows;
+            }
+        }
+
         private void ColLockCallback(IEnumerable collection, object context,
             Action accessMethod, bool writeAccess)
         {
