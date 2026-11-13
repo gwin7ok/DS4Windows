@@ -24,7 +24,7 @@
 
 ## 残りの扱い（2026-11-12 追記）
 - 26-5 の残り（`BindingWindow`・`RecordBox`・`AssignmentEditor`）と、`MainWindow`・`ProfileEditor` の code-behind の続きは、`Phase34-Plan.md`（画面の MVVM 化。コマンド・結びつけ・ダイアログの窓口）へ引き継ぐ案を立てた（同計画書の D4）。本 Phase は「判断を部品へ出す」進め方で 5 つの部品を作った。Phase34 は、その進め方に、コマンドとダイアログの窓口という土台を足す。
-- 2026-11-13: Phase34 の D4 を (A) として扱い、**本 Phase の残りは Phase34 へ統合した**（26-5 の続きと、`MainWindow`・`ProfileEditor` の code-behind の続きは、Phase34 の Step が受け持つ）。本 Phase の状態は「一部完了。残りは Phase34 へ統合」とする。Phase34 の承認のときに、ユーザーが D4 を (B) に変えた場合は、この記述を戻す。
+- 2026-11-13: Phase34 の D4 を (A) として扱い、**本 Phase の残りは Phase34 へ統合した**（26-5 の続きと、`MainWindow`・`ProfileEditor` の code-behind の続きは、Phase34 の Step が受け持つ）。本 Phase の状態は「一部完了。残りは Phase34 へ統合」とする。Phase34 の D4 は、2026-11-13 にユーザーが (A) で確定した。
 
 ## 履歴
 - 2026-11-13: 残りを Phase34 へ統合（Phase 番号の付け替え。MVVM 化は旧 Phase35 から 34 になった）。
