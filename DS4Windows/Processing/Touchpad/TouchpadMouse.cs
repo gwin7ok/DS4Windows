@@ -281,42 +281,81 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
+        /// <summary>
+        /// トリガーの設定の文字列（「4,5」のような、コンマ区切りのボタンの番号）を、数の配列へ直したもの。
+        /// 判定は毎フレーム行われるため、同じ文字列のあいだは直した結果を使い回し、Split と TryParse の割り当てを避ける。
+        /// 数でない要素は、判定では「押されていない」として扱う（Valid が偽）。
+        /// </summary>
+        private sealed class ParsedTriggerList
+        {
+            public readonly string Source;
+            public readonly bool IsEmpty;
+            public readonly int[] Values;
+            public readonly bool[] Valid;
+
+            public ParsedTriggerList(string source)
+            {
+                Source = source;
+                string[] parts = (source ?? string.Empty).Split(',');
+                IsEmpty = string.IsNullOrEmpty(parts[0]);
+                Values = new int[parts.Length];
+                Valid = new bool[parts.Length];
+                for (int k = 0; k < parts.Length; k++)
+                {
+                    Valid[k] = int.TryParse(parts[k], out Values[k]);
+                }
+            }
+        }
+
+        // ジャイロの出力の種類（Controls／Mouse／MouseJoystick）ごとの、直した結果。入力のスレッドだけが読み書きする
+        private readonly ParsedTriggerList[] gyroTriggerCache = new ParsedTriggerList[3];
+
+        private ParsedTriggerList GetParsedTriggers(int cacheIndex, string source)
+        {
+            ParsedTriggerList cached = gyroTriggerCache[cacheIndex];
+            if (cached == null || !string.Equals(cached.Source, source))
+            {
+                cached = new ParsedTriggerList(source);
+                gyroTriggerCache[cacheIndex] = cached;
+            }
+
+            return cached;
+        }
+
         public bool IsGyroTriggerActive(GyroOutMode mode)
         {
-            string[] ss = [];
+            ParsedTriggerList triggers = null;
             var andCond = false;
             useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.TriggerTurns;
             if (mode == GyroOutMode.Controls)
             {
                 GyroControlsInfo controlsMapInfo = _profileSettings.ForSlot(deviceNum).Gyro.Controls;
-                ss = controlsMapInfo.triggers.Split(',');
+                triggers = GetParsedTriggers(0, controlsMapInfo.triggers);
                 andCond = controlsMapInfo.triggerCond;
             }
             else if (mode == GyroOutMode.Mouse)
             {
-                ss = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers.Split(',');
+                triggers = GetParsedTriggers(1, _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers);
                 andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggerCondAnd;
             }
             else if (mode == GyroOutMode.MouseJoystick)
             {
                 useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerTurns;
-                ss = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers.Split(',');
+                triggers = GetParsedTriggers(2, _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers);
                 andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerCondAnd;
             }
-            var i = 0;
             triggeractivated = andCond;
-            if (!string.IsNullOrEmpty(ss[0]))
+            if (triggers != null && !triggers.IsEmpty)
             {
-                var str = string.Empty;
-                for (int index = 0, arlen = ss.Length; index < arlen; index++)
+                for (int index = 0, arlen = triggers.Values.Length; index < arlen; index++)
                 {
-                    str = ss[index];
-                    if (andCond && !(int.TryParse(str, out i) && getDS4ControlsByName(i)))
+                    bool pressed = triggers.Valid[index] && getDS4ControlsByName(triggers.Values[index]);
+                    if (andCond && !pressed)
                     {
                         triggeractivated = false;
                         break;
                     }
-                    else if (!andCond && int.TryParse(str, out i) && getDS4ControlsByName(i))
+                    else if (!andCond && pressed)
                     {
                         triggeractivated = true;
                         break;

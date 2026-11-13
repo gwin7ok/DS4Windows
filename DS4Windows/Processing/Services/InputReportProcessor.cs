@@ -79,12 +79,10 @@ namespace DS4Windows.Processing.Services
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
 
-            // 旧 ControlService のコンストラクターの for ループ（MappedState／CurrentState／ExposedState）を、ここへまとめた。
-            // ExposedState は CurrentStates[i] を参照するため、同じ場所で、CurrentStates[i] を作った後に作る（順序は旧と同じ）
+            // CurrentStates[i] は DeviceSlotState が作る。ExposedState は、それを参照して作る
             for (int i = 0; i < _currentState.Length; i++)
             {
                 _mappedState[i] = new ControllerState();
-                _currentState[i] = new ControllerState();
                 _exposedState[i] = new ControllerStateExposed(_currentState[i]);
             }
         }
