@@ -51,7 +51,7 @@
 
 ### 4-8（調査の結果、問題なし）工場・Converter・束ね型（2026-11-11 追加調査）
 - ViewModel と窓の工場（`UI/Services/*Factory*.cs` の 9 つ）は、どれも 40〜102 行で、作る物が違う。重複として直す所は見つからなかった。
-- Converter は 4 つだけ（`UI/Converters` の 3 つと、`UI/IntToBoolConverter.cs`）。重複はない。`IntToBoolConverter` だけ `UI/` の直下にあり、置き場所が規則 R1（`UI/Converters`）と合わない（低。`Phase34-Plan.md` の A 部へ）。
+- Converter は 4 つだけ（`UI/Converters` の 3 つと、`UI/IntToBoolConverter.cs`）。重複はない。`IntToBoolConverter` だけ `UI/` の直下にあり、置き場所が規則 R1（`UI/Converters`）と合わない（低。`Phase36-Plan.md` の A 部へ）。
 - 依存を束ねただけの型（何でも箱）は、名前（`*Context`、`*Dependencies`、`*Services`、`*Bundle` など）で全体を検索しても見つからなかった。`ProfileLoadContext`／`ProfileSaveContext` は、読み込み・保存 1 回ぶんの値の入れ物で、DI の依存を隠す箱ではない（ただし `BackingStore` の全体を節へ渡している。`Structure-Review-2026-11.md` の A の範囲）。
 
 ## 3. 問題点（過剰な抽象）

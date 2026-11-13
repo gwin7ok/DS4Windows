@@ -3,7 +3,7 @@
 作成日: 2026-11-12
 状態: **未着手。承認待ち**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 4）、`05-Extensibility.md` の 5-5、`Structure-Review-2026-11.md` の A（Phase25 の続き）
-前提: なし（Phase29〜36 と独立に進められる）。ただし、Phase31 の 31-A（プログラム起動の一本化）が `ProfileMiscLoadSection` と `BackingStore.ProcessInspector` に触れるため、37-3・37-4 はそのあとに行う。
+前提: なし（Phase29〜36 と独立に進められる）。ただし、Phase32 の 32-A（プログラム起動の一本化）が `ProfileMiscLoadSection` と `BackingStore.ProcessInspector` に触れるため、37-3・37-4 はそのあとに行う。
 
 ## 目的
 設定の保持（`BackingStore`）と、保存・読み込み（`SpecialActionsXmlSerializer` ほか）にある長い処理を、領域・種別ごとの部品へ分ける。**保存するファイルの形（`Profiles.xml`、プロファイルの XML、`Actions.xml`）は、1 文字も変えない。**

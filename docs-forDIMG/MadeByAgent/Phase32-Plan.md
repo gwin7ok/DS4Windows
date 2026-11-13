@@ -1,54 +1,69 @@
-# Phase32 計画書: 左右スティックの設定画面の一本化（コードレビュー 2026-11 の 4-4）
+# Phase32 計画書: プログラム起動の一本化と、出力の種類の分岐の整理（コードレビュー 2026-11 の 4-1・2-1・5-1）
 
 作成日: 2026-11-11
 状態: **未着手。承認待ち**
-出典: `docs-forDIMG/Code-Review-2026-11/04-Duplication-and-Abstraction.md`
+出典: `docs-forDIMG/Code-Review-2026-11/02-Layers-and-Placement.md`、`04-Duplication-and-Abstraction.md`、`05-Extensibility.md`
 
 ## 目的
-左スティック（LS）と右スティック（RS）で二重に書かれている、設定画面の ViewModel と XAML を、片側ぶんの 1 つにする。スティックの設定の項目を 1 つ足すときの手数を、4 か所（ViewModel 2、XAML 2）から 2 か所にする。
+1. 「プロファイルに結んだプログラムを起動する」処理を 1 か所にし、永続化の層から副作用をなくす。
+2. 仮想パッドの出力の種類（Xbox 360／DS4）による分岐を、カートリッジと `OutContTypeInfo` に集め、3 つ目の種類を、手順書どおりに足せる状態にする。
+
+2 つは別の主題だが、どちらも「第 2 層・第 3 層の境目の整理」で、規模が中くらいなので 1 つの Phase にまとめた。A 部（32-A）と B 部（32-B）は独立に進められる。
 
 ## 現状（調査）
-- `UI/ViewModels/StickSettingsViewModel.cs`（648 行）: `LSDeadZone`／`RSDeadZone` のように、左右で同じ形のプロパティが約 31 組（62 個）。違いは、読み書きの先（`sticks.LSMod`／`sticks.RSMod` など）だけ。
-- `UI/StickSettingsPanel.xaml`（1,283 行）: 左右で同じ形を 2 回書いている。
-- 設定の窓口（`Core/Settings/StickSlotSettings`）と、保存の節は、左右を別の入れ物で持っている（ここは触らない）。
-- 未調査: 左右で形が違う項目があるか（`LSOutputIndex` と `RSOutputIndex` の中身、フリックスティックの項目）。トリガー（`TriggerSettingsViewModel` の L2／R2。220 行）にも同じ形があると見られる。
+### A. プログラム起動
+- `DeviceConnectionSetup.CheckLauchProfileOption`（`Processing/Services/DeviceConnectionSetup.cs:78`〜）: `startUp` が偽のとき、プロセスを列挙し、なければ 5 秒後に起動する。
+- `ProfileMiscLoadSection`（`Core/Persistence/ProfileSections/ProfileMiscLoadSection.cs:59`〜`110`）: `context.LaunchProgram` が真のとき、同じことをする。こちらだけ、先に `IProcessInspector` を試す。
+- 追加調査（2026-11-11）: 2 つは場面で分かれており、たどった範囲では二重に起動しない。
+  - 接続のとき: 読み込みは「起動しない」で行い（`ProfileSlotApplier.cs:38` の引数仕様）、そのあと `DeviceConnector.cs:106` が `ApplyProfileOptions`（`startUp` は偽）を呼んで、第 2 層の側が起動する。
+  - 切替のとき（特殊アクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`BackingStore.cs:1171`）で、第 2 層の側は起動しない。
+  - 画面からの手動の切替、自動プロファイルの既定への復帰（`AutoProfileService.cs:279` は「起動しない」）は、どちらも起動しない見込み（32-A0 で表にして確かめる）。
+
+### B. 出力の種類の分岐（カートリッジと `OutContTypeInfo` の外）
+`Output/OutputSlotManager.cs:158`、`Output/Services/OutputSlotView.cs:50`・`55`、`Output/Services/VirtualPadService.cs:135`〜`154`、`Processing/Services/InputReportProcessor.cs:170`、`Processing/Services/IpcCommandProcessor.cs:207`・`209`、`Processing/Macro/MacroParser.cs:101`、`Core/Model/X360ControlTables.cs:170`・`174`、`UI/ViewModels/BindingWindowViewModel.cs:84`（`use360Mode`）、`UI/ViewModels/SlotDeviceEntry.cs:128`、`UI/ViewModels/OutputSettingsViewModel.cs:35`・`56`。
 
 ## 方針（決定事項の案）
-1. 保存する名前・設定の窓口・読み込みと保存の節には触れない。変えるのは `UI/` の中だけ。
-2. 片側ぶんの ViewModel（仮称 `StickSideViewModel`）を作り、左右の入れ物を受けて 2 つ生成する。XAML は、片側ぶんの部品（UserControl）を 2 回置く。
-3. 左右で形が違う項目は、無理に共通化しない（片側だけの項目として残す）。
-4. 結びつけ（Binding）の名前が変わるため、画面の見た目と動作を実機で確かめる。判断や計算は、WPF なしでテストできる形にする（Phase26 の進め方）。
-5. 他の画面（プレビュー、デッドゾーンの図、`ReadingsDeadZoneSnapshot`）が `LSDeadTypeIndex` などの通知の名前を見ている場合は、その名前を保つ（KI-10 の修正を壊さない）。
+1. A: 読み込みの節は、値（`launchProgram`）を入れるだけにする。起動の判断と実行は、第 2 層の 1 つの部品（仮称 `ProfileProgramLauncher`。`IProcessInspector` と `IProcessLauncher` を受ける）が行う。5 秒の待ちと、起動の条件は変えない（No Feature Drop）。
+2. B: 種類ごとの「値」の違い（保存キー、IPC の名前、ボタン名の表、既定かどうか）は `OutContTypeInfo` の項目に、種類ごとの「処理」の違い（送出の直前の後処理、表示用の番号）は `IOutputDeviceCartridge` の操作にする。
+3. B: 3 つ目の種類は足さない。足せる形にするだけ。保存する値（種類の名前・番号）は変えない。
+4. 毎フレームの経路（`InputReportProcessor.cs:170`）は、カートリッジの呼び出しに変えても、割り当て 0 を保つ（テストで固定）。
 
 ## 決めること（着手前にユーザーへ確認）
 | # | 決めること | 選択肢（先頭が推奨） |
 |---|---|---|
-| D1 | 進め方 | (A) ViewModel を先に一本化し、旧いプロパティ（`LSDeadZone` など）は新しい ViewModel への転送として一時的に残す。XAML を移し終えたら転送を消す／(B) ViewModel と XAML を 1 度に置き換える |
-| D2 | トリガー（L2／R2）も同じ Phase で行うか | (A) スティックのあと、同じ形で行う（32-5）／(B) 別の Phase |
-| D3 | 画面の見た目（並び・文言）を変えてよいか | (A) 変えない（部品化だけ）／(B) 左右を並べる配置などの見直しも行う |
+| D1 | A と B を同じ Phase で進めるか | (A) 同じ Phase。A を先に／(B) B を Phase32、A を別の Phase に分ける |
+| D2 | A で、場面ごとの起動する・しないの違いをどう扱うか（追加調査で、二重起動はない見込みと分かった。違いは「接続時」「切替時」で別の実装が動くこと） | (A) 今の場面ごとの動作を、表のとおりに固定して 1 つの部品へ移す（動作は不変）／(B) 場面ごとの違いを見直す（機能の変更。別に承認を得る） |
+| D3 | B の `use360Mode`（二択の bool） | (A) 種類（`OutContType`）を持つ形に変え、画面の表示は種類から引く／(B) 触らない（3 つ目を足すときに直す） |
+| D4 | B で、`InputReportProcessor` のトリガーの後処理をどこへ置くか | (A) DS4 の出力デバイス（`ConvertandSendReport` の中）／(B) カートリッジの「送出の直前の後処理」 |
 
 ## Step 一覧
+### 32-A プログラム起動
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 32-0 | 調査: 62 個のプロパティを、左右で同じ形のもの・違う形のものに分けた表を作る。XAML の左右の差分、ほかの型が見ている通知の名前（`PropertyChanged`）を洗い出す | — | 未着手 |
-| 32-1 | 片側ぶんの ViewModel を作る（同じ形のプロパティだけ）。値の変換（0〜1 と 0〜100 の換算、丸め）は今の式のまま | 左右それぞれで、読み書きが今の `StickSettingsViewModel` と同じ結果になること（全プロパティを表で回す） | 未着手 |
-| 32-2 | `StickSettingsViewModel` が、片側ぶんの ViewModel を 2 つ持つ。旧いプロパティは転送にする（D1 が A のとき） | 既存の ViewModel のテストが不変 | 未着手 |
-| 32-3 | XAML: 片側ぶんの部品を作り、`StickSettingsPanel.xaml` に 2 回置く。左右で違う項目は、パネルの側に残す | 画面を開くテスト（結びつけの誤りがないこと。出力に Binding のエラーが出ないことを確かめる） | 未着手 |
-| 32-4 | 旧い転送のプロパティを消す（ほかの型から見られていないことを、型の検査で確かめてから） | — | 未着手 |
-| 32-5 | （D2 が A のとき）トリガー（L2／R2）を同じ形にする | 同上 | 未着手 |
-| 32-6 | 文書: `02-Extension-Guide.md` に「プロファイルの設定の項目を足す」の節を足す（`Code-Review-2026-11/05-Extensibility.md` §2.3 の表をもとに）。`00-Summary.md` の該当行を「是正済み」へ | — | 未着手 |
+| 32-A0 | 調査: 2 つの経路が動く条件（`startUp`、`context.LaunchProgram`）を、呼び出し元までたどって表にする。二重起動の有無を確かめる | — | 未着手 |
+| 32-A1 | 起動の部品を第 2 層に作る（プロセスの確認は `IProcessInspector`、起動は `IProcessLauncher`、待ちは `TimeProvider`）。`DeviceConnectionSetup` はそれを呼ぶ | 偽のプロセスの確認・起動で、「動いていれば起動しない」「5 秒後に 1 回だけ起動する」 | 未着手 |
+| 32-A2 | `ProfileMiscLoadSection` から、プロセスの列挙と起動を取り除く。読み込みの呼び出し側（`context.LaunchProgram` を真にしていた場所）が、読み込みのあとに 32-A1 の部品を呼ぶ | 読み込みのテストが、プロセスに触れないこと。保存の黄金テストが不変 | 未着手 |
+| 32-A3 | `BackingStore.ProcessInspector`（プロパティでの後付けの配線）が不要になるかを確かめ、不要なら `ServiceRegistration.Wiring.cs` から外す（一覧のコメントも更新） | 配線のテスト | 未着手 |
+
+### 32-B 出力の種類
+| Step | 内容 | テスト | 状態 |
+|---|---|---|---|
+| 32-B0 | 調査: 上の各場所が、種類の何（値か、処理か）で分岐しているかを表にする。`OutContTypeInfo` の今の項目を確かめる | — | 未着手 |
+| 32-B1 | 値の分岐を `OutContTypeInfo` へ: IPC の名前（`IpcCommandProcessor`）、ボタン名の表（`X360ControlTables`、`MacroParser`）、既定の種類（`OutputSettingsViewModel`、`BackingStore.DEFAULT_OUT_CONT_TYPE`） | 全種類に項目があることの型の検査。IPC・マクロの表示名のテストが不変 | 未着手 |
+| 32-B2 | 処理の分岐をカートリッジへ: 送出の直前の後処理（D4）、表示用の XInput の番号（`OutputSlotView`）、スロットの差し込み（`OutputSlotManager`） | 仮想パッドの送出のテストが不変。割り当て 0 | 未着手 |
+| 32-B3 | （D3 が A のとき）`BindingWindowViewModel.use360Mode`、`SlotDeviceEntry` を、種類から表示を引く形にする | ViewModel のテスト | 未着手 |
+| 32-B4 | 検査: カートリッジ・`OutContTypeInfo`・既定値の定義のほかに、`OutContType.X360`／`.DS4` を名指しする場所がないことを、型の検査（ArchUnitNET）で守る。残す場所（`VirtualPadService` の起動時の一時的な差し込みなど）は、理由つきで許可リストに入れる | 新規 | 未着手 |
+| 32-B5 | 文書: `02-Extension-Guide.md` §2 を、実際の手順に書き直す。規則 3.1 を更新。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ | — | 未着手 |
 
 ## 確認の方法
-- 実機: プロファイル編集画面のスティックのタブで、左右それぞれの全項目（デッドゾーン、種類の切替と図の再描画、感度、出力カーブ、回転、ファズ、アンチスナップバック、外周の割り当て、加速、出力の種類、フリックスティック）を変えて保存し、開き直して値が残ること。左を変えて右が変わらないこと。
+- 実機: (A) 「起動するプログラム」を設定したプロファイルを、接続時・手動の切替・自動プロファイルで適用して、起動が 1 回だけ起きること。すでに動いているときは起動しないこと。(B) 出力の種類の切替（Xbox 360 ⇄ DS4）、DS4 型でのトリガー、CLI の `-command` での差し込み、出力ピッカーの表示、マクロの表示名。
 - 未確認の項目は `Known-Issues-Ledger.md` §3 へ足す。
 
 ## リスク
-- 中。結びつけの名前の誤りは、コンパイルで見つからず、画面で値が出ない・保存されない形で現れる。32-3 のテストと実機確認で守る。
-- 左右の取り違え（左の画面が右の入れ物を書く）は、32-1 のテストで守る。
-
-## ほかの計画との関係（2026-11-12 追加）
-- `Phase35-Plan.md`（画面の MVVM 化）と、PhaseX（入力側の図とボタン名）は、同じ画面の XAML に触れる。本 Phase を先に行うと、スティックのパネルを 2 回作り直さずに済む。
+- A: 中。起動の時機が変わると、利用者に見える（起動しない／2 回起動する）。32-A0 の表を先に固める。
+- B: 中。毎フレームの経路を 1 か所触る。DS4 型のトリガーの動作は実機で確かめる。
 
 ## 履歴
+- 2026-11-13: Phase 番号の付け替え（旧 Phase31 → Phase32。進める順に合わせた）。本文中の Step 番号も付け替えた。
 - 2026-11-11: 計画書を作成。コードは未着手。
-- 2026-11-12: ほかの計画との関係を追加。
+- 2026-11-11: 追加調査の結果を反映。プログラム起動の 2 つの経路は場面で分かれ、二重起動はない見込みと分かった（現状の A と、決めること D2 を書き直した）。32-A0 は、その表を確定する作業として残す。

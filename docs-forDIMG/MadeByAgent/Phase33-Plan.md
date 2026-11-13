@@ -1,65 +1,55 @@
-# Phase33 計画書: 終了の手順の集約と、登録の具象依存の解消（コードレビュー 2026-11 の 1-2・1-3・1-4）
+# Phase33 計画書: 左右スティックの設定画面の一本化（コードレビュー 2026-11 の 4-4）
 
 作成日: 2026-11-11
-状態: **未着手。承認待ち**（リスクが高い。Phase29〜32 のあとに行う）
-出典: `docs-forDIMG/Code-Review-2026-11/01-DI.md`
-関連: `Structure-Review-2026-11.md` の C（Phase24 で `App.xaml.cs` を 1,323 → 約 940 行にした続き）、`Phase27-Plan.md`（`RuntimeBootstrapper`）
+状態: **未着手。承認待ち**
+出典: `docs-forDIMG/Code-Review-2026-11/04-Duplication-and-Abstraction.md`
 
 ## 目的
-1. アプリの終了の手順（破棄の順序）を、`App` の 1 メソッドの行の並びではなく、1 つの型と、順序を確かめるテストで守る。
-2. `App` が個別に解決して持つサービス（約 15 個）を減らす。
-3. DI 登録の中の、具象へのキャスト（3 か所）をなくす。
+左スティック（LS）と右スティック（RS）で二重に書かれている、設定画面の ViewModel と XAML を、片側ぶんの 1 つにする。スティックの設定の項目を 1 つ足すときの手数を、4 か所（ViewModel 2、XAML 2）から 2 か所にする。
 
 ## 現状（調査）
-- `App.CleanShutdown`（`App.xaml.cs:920`〜`975`）の並び: サービスの停止（`_lifecycle.Stop(immediateUnplug: true)`）→ `_runtimeBootstrapper.Shutdown()`（仮想パッドの停止、出力スロットの保存、イベントスレッドの停止）→ 設定の保存（`skipSave` でないとき）→ タイマーの解像度を戻す → 単一起動の停止 → IPC の破棄 → ボタンのコントローラーの破棄（全スロット）→ `AppHost.Dispose()` → ログのフラッシュ。
-- 登録されたサービスの多くは `IDisposable` を実装しておらず、`AppHost.Dispose()` は実質何も破棄しない。
-- `App` のフィールド（`App.xaml.cs:70`〜`88`）と `InitializePostHostServices`（同 `652`〜`672`）: 約 15 個を `AppHost.GetService` で解決する。
-- キャスト: `ServiceRegistration.Processing.cs:175`（`(IConfigurableDeviceLookup)`）、`ServiceRegistration.Wiring.cs:50`（`as ProfileSettingsService`）、`AppHost.cs:129`（`as DefaultActionManager`）。
-- 起動の順序は `StartupOrderGuardTests`、開始・停止の安全弁は `LifecycleGuardTests` が、ソースの並びで固定している。
-
-### 追加（2026-11-12。外部レビューの照合 `Code-Review-2026-11/07-External-Review-2026-11-12.md` から統合）
-- 外部レビューは「`App.xaml.cs` に、起動・単一起動・トレイ・例外処理・サービスの起動が集中している。100〜200 行にできる」と述べる。照合の結果: トレイは `App` にない（`MainWindow` と `TrayAppearanceController`）。単一起動と IPC は Phase24 で部品へ出してある。残るのは、起動の手順、引数の処理、終了、未処理例外。
-- `App.xaml.cs`（978 行、メソッド 29 個）の長いメソッド: `CheckOptions` 73 行、`Application_Startup` 72 行、`CleanShutdown` 61 行、`RotateLogsAndLogStartupDiagnostics` 50 行、`ConfigureLoggingAndDiagnostics` 49 行、`AttemptSave` 45 行、`ShowMainWindowAndFinish`・`RunFirstLaunchSetup` 各 40 行。
-- **100〜200 行は目標にしない**。`App` は WPF の入口として、未処理例外・セッションの終了・起動の順序の指揮を受け持ち、起動の手順は順序への依存が強い（`StartupOrderGuardTests`）。現実的な目安は、判断と手順を部品へ出して **400 行前後**（33-2・33-3・33-4・33-4b をすべて行った場合）。行数は結果であって、目的にはしない。
+- `UI/ViewModels/StickSettingsViewModel.cs`（648 行）: `LSDeadZone`／`RSDeadZone` のように、左右で同じ形のプロパティが約 31 組（62 個）。違いは、読み書きの先（`sticks.LSMod`／`sticks.RSMod` など）だけ。
+- `UI/StickSettingsPanel.xaml`（1,283 行）: 左右で同じ形を 2 回書いている。
+- 設定の窓口（`Core/Settings/StickSlotSettings`）と、保存の節は、左右を別の入れ物で持っている（ここは触らない）。
+- 未調査: 左右で形が違う項目があるか（`LSOutputIndex` と `RSOutputIndex` の中身、フリックスティックの項目）。トリガー（`TriggerSettingsViewModel` の L2／R2。220 行）にも同じ形があると見られる。
 
 ## 方針（決定事項の案）
-1. **順序は 1 行も変えない**。移すだけにする（ドライバーの破棄順序のガードレール。`Phase5-Plan.md` §5）。
-2. 終了の手順は、`Composition/Startup` の部品（仮称 `AppShutdownSequence`）に置き、必要なサービスをコンストラクターで受ける。`App` は、その 1 つを解決して呼ぶ。ホストの構築より前に終了する場合（早期終了）は、今と同じく何もしない分岐を保つ。
-3. 順序の検査は、ソースを文字列で読む形ではなく、偽物が呼ばれた順を記録する形で書く（規則 4 章）。既存のソースの並びのガードは、新しい検査が同じものを守れると確かめてから置き換える。
-4. サービスに `IDisposable` を付けて、コンテナの破棄の順（生成の逆順）に任せる方式は**採らない**。生成の順は解決の順で決まり、破棄の順を保証しにくい。
-5. キャストは、登録の形で解く（具象を 1 つ登録し、2 つの契約がそれを返す。`OutputKBMHandlerAdapter` の前例。`ServiceRegistration.Output.cs:34`〜`36`）。
+1. 保存する名前・設定の窓口・読み込みと保存の節には触れない。変えるのは `UI/` の中だけ。
+2. 片側ぶんの ViewModel（仮称 `StickSideViewModel`）を作り、左右の入れ物を受けて 2 つ生成する。XAML は、片側ぶんの部品（UserControl）を 2 回置く。
+3. 左右で形が違う項目は、無理に共通化しない（片側だけの項目として残す）。
+4. 結びつけ（Binding）の名前が変わるため、画面の見た目と動作を実機で確かめる。判断や計算は、WPF なしでテストできる形にする（Phase26 の進め方）。
+5. 他の画面（プレビュー、デッドゾーンの図、`ReadingsDeadZoneSnapshot`）が `LSDeadTypeIndex` などの通知の名前を見ている場合は、その名前を保つ（KI-10 の修正を壊さない）。
 
 ## 決めること（着手前にユーザーへ確認）
 | # | 決めること | 選択肢（先頭が推奨） |
 |---|---|---|
-| D1 | 範囲 | (A) 終了の手順（33-1〜33-3）とキャスト（33-5）だけ。起動後の処理と引数の処理の移動（33-4・33-4b）は見送る／(B) すべて行う（`App.xaml.cs` は 400 行前後になる見込み） |
-| D2 | 終了の部品の置き場所 | (A) `Composition/Startup`（組み立ての層。全層の具象を知ってよい）／(B) 既存の `RuntimeBootstrapper`（第 2 層）へ足す。IPC・単一起動・ログは第 2 層が知るべきでないため、(A) を勧める |
-| D3 | 未処理例外のときの終了（`CurrentDomain_UnhandledException`）も同じ部品を通すか | (A) 通す（今も `CleanShutdown` を呼んでいる）／(B) 触らない |
+| D1 | 進め方 | (A) ViewModel を先に一本化し、旧いプロパティ（`LSDeadZone` など）は新しい ViewModel への転送として一時的に残す。XAML を移し終えたら転送を消す／(B) ViewModel と XAML を 1 度に置き換える |
+| D2 | トリガー（L2／R2）も同じ Phase で行うか | (A) スティックのあと、同じ形で行う（33-5）／(B) 別の Phase |
+| D3 | 画面の見た目（並び・文言）を変えてよいか | (A) 変えない（部品化だけ）／(B) 左右を並べる配置などの見直しも行う |
 
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 33-0 | 調査: `CleanShutdown` が呼ばれる経路（通常の終了、サインアウト、未処理例外、早期終了、`-driverinstall`）と、そのときのフィールドの状態（`null` かどうか）を表にする。`skipSave`・`runShutdown` の立つ条件を確かめる | — | 未着手 |
-| 33-1 | 順序の検査を先に足す: 偽の `IServiceLifecycle`・`IRuntimeBootstrapper`・`IAppSettingsService`・`IControllerRegistry` などで、呼ばれた順を記録して、今の順序を固定する（`CleanShutdown` の中身を、テストできる静的でないメソッドへ出すところまで） | 新規（終了の順序） | 未着手 |
-| 33-2 | 終了の手順の部品を作り、`CleanShutdown` の中身を移す（順序は同じ）。`App` は部品を呼ぶ | 33-1 が不変 | 未着手 |
-| 33-3 | `App` のフィールドのうち、終了のためだけに持っていたもの（`_controllerRegistry`、`_ipc` など）を消す | `RemovedApiRuleTests` の表へ足す | 未着手 |
-| 33-4 | （D1 が B のとき）起動後の処理（ドライバーの有無のログ、ログの設定の反映、通知サービスの取り付け）を `Composition/Startup` の部品へ出し、`InitializePostHostServices` を短くする | `StartupOrderGuardTests` が不変 | 未着手 |
-| 33-4b | （D1 が B のとき。2026-11-12 追加）引数の処理（`CheckOptions` 73 行。`App.xaml.cs:789`〜）と、設定の保存の試行（`AttemptSave` 45 行）、ログの準備（`RotateLogsAndLogStartupDiagnostics` 50 行、`ConfigureLoggingAndDiagnostics` 49 行）、はじめの起動の設定（`RunFirstLaunchSetup` 40 行）の、判断の部分を `Composition/Startup` の部品へ出す。`Application_Startup` は、手順を順に呼ぶだけの形を保つ（順序は変えない） | 引数ごとの判断（`-driverinstall`、`-command`、`-m` など）の単体テスト。`StartupOrderGuardTests` が不変 | 未着手 |
-| 33-5 | キャスト 3 か所を、登録の形で解く。`DeviceSlotState` を具象で 1 つ登録し、`IDeviceSlotState`・`IDeviceStateAccessor`・`IConfigurableDeviceLookup` がそれを返す。`ProfileSettingsService`・`DefaultActionManager` も同様 | 3 つの契約が同じインスタンスを返すこと。偽物に差し替えたとき、配線が例外で知らせること | 未着手 |
-| 33-6 | 文書: `03-Lifecycle-and-DI.md` §4（終了の順序を、部品の名前つきで書く）、`01-Structure.md` の型の表。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ | `ModelDiagramGuardTests` | 未着手 |
+| 33-0 | 調査: 62 個のプロパティを、左右で同じ形のもの・違う形のものに分けた表を作る。XAML の左右の差分、ほかの型が見ている通知の名前（`PropertyChanged`）を洗い出す | — | 未着手 |
+| 33-1 | 片側ぶんの ViewModel を作る（同じ形のプロパティだけ）。値の変換（0〜1 と 0〜100 の換算、丸め）は今の式のまま | 左右それぞれで、読み書きが今の `StickSettingsViewModel` と同じ結果になること（全プロパティを表で回す） | 未着手 |
+| 33-2 | `StickSettingsViewModel` が、片側ぶんの ViewModel を 2 つ持つ。旧いプロパティは転送にする（D1 が A のとき） | 既存の ViewModel のテストが不変 | 未着手 |
+| 33-3 | XAML: 片側ぶんの部品を作り、`StickSettingsPanel.xaml` に 2 回置く。左右で違う項目は、パネルの側に残す | 画面を開くテスト（結びつけの誤りがないこと。出力に Binding のエラーが出ないことを確かめる） | 未着手 |
+| 33-4 | 旧い転送のプロパティを消す（ほかの型から見られていないことを、型の検査で確かめてから） | — | 未着手 |
+| 33-5 | （D2 が A のとき）トリガー（L2／R2）を同じ形にする | 同上 | 未着手 |
+| 33-6 | 文書: `02-Extension-Guide.md` に「プロファイルの設定の項目を足す」の節を足す（`Code-Review-2026-11/05-Extensibility.md` §2.3 の表をもとに）。`00-Summary.md` の該当行を「是正済み」へ | — | 未着手 |
 
 ## 確認の方法
-- 実機: トレイからの終了、ウィンドウを閉じての終了、サインアウト、コントローラーを接続したままの終了で、(1) 仮想パッドが消える、(2) 出力スロットとアプリの設定が保存される、(3) プロセスが残らない、(4) 次の起動が正常。最小化起動（`-m`）と、2 つ目の起動（単一起動）も確かめる。
-- `Known-Issues-Ledger.md` §3 の Phase27 の項目（終了）と合わせて確認する。
+- 実機: プロファイル編集画面のスティックのタブで、左右それぞれの全項目（デッドゾーン、種類の切替と図の再描画、感度、出力カーブ、回転、ファズ、アンチスナップバック、外周の割り当て、加速、出力の種類、フリックスティック）を変えて保存し、開き直して値が残ること。左を変えて右が変わらないこと。
+- 未確認の項目は `Known-Issues-Ledger.md` §3 へ足す。
 
 ## リスク
-- 高。終了の順序を誤ると、仮想パッドが残る・設定が保存されない・プロセスが残る。33-1（順序の固定）を必ず先に行い、33-2 は移動だけにする。
-- 未処理例外の経路は、テストで再現しにくい。D3 を B にすれば、触らずに済む。
+- 中。結びつけの名前の誤りは、コンパイルで見つからず、画面で値が出ない・保存されない形で現れる。33-3 のテストと実機確認で守る。
+- 左右の取り違え（左の画面が右の入れ物を書く）は、33-1 のテストで守る。
 
 ## ほかの計画との関係（2026-11-12 追加）
-- `Phase35-Plan.md`（画面の MVVM 化）の 35-3 は `MainWindow` に触れ、起動・終了・電源の通知と隣り合う。本 Phase と同時には進めない。
-- `PhaseX2-Custom-Exe-Name-Plan.md` の案 C（起動役の方式）は、起動の入口（`App.xaml.cs:113`〜`128`）に触れる。実施する場合は、本 Phase の 33-4b（引数の処理の切り出し）のあとに行うと、起動役の判断を置く場所が決まる。
+- `Phase34-Plan.md`（画面の MVVM 化）と、PhaseX（入力側の図とボタン名）は、同じ画面の XAML に触れる。本 Phase を先に行うと、スティックのパネルを 2 回作り直さずに済む。
 
 ## 履歴
+- 2026-11-13: Phase 番号の付け替え（旧 Phase32 → Phase33。進める順に合わせた）。本文中の Step 番号も付け替えた。
 - 2026-11-11: 計画書を作成。コードは未着手。
-- 2026-11-12: 外部レビューの照合の結果を統合。`App.xaml.cs` の現状と目安（400 行前後）、33-4b（引数の処理ほかの切り出し）、ほかの計画との関係を足した。
+- 2026-11-12: ほかの計画との関係を追加。

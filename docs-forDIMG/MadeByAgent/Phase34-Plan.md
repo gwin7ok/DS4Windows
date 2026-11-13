@@ -1,75 +1,69 @@
-# Phase34 計画書: 配置・名前・文書の整理と、判断が要る小さな項目（コードレビュー 2026-11 の低の項目）
+# Phase34 計画書: 画面の MVVM 化（コマンド・結びつけ・ダイアログの窓口）— Phase26 の続き
 
-作成日: 2026-11-11
-状態: **未着手。承認待ち**（A 部は機械的で、ほかの Phase と独立に、いつでも行える）
-出典: `docs-forDIMG/Code-Review-2026-11/00-Summary.md` §4 の順 14〜23
+作成日: 2026-11-12
+状態: **未着手。承認待ち**
+出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 2 と「MVVM パターンの形骸化」）、`Structure-Review-2026-11.md` の B、`Phase26-Plan.md`（一部完了。残りを本 Phase が引き継ぐ）
+前提: Phase29（29-10 が `MainWindow` のタイマーに触れる）と Phase33（スティックのパネルを作り直す）のあとに行う。PhaseX（入力側の図とボタン名）より前に行う。
 
 ## 目的
-コードレビューで見つけた、重大度が低い項目をまとめて片づける。3 つに分ける。
-- **A 部（機械的）**: 改名・移動・文書の更新。動作は変わらない。
-- **B 部（小さな是正）**: 静的な差し替え口など、局所の修正。
-- **C 部（判断から）**: 直すかどうかを、調査のあとに決める項目。決めた結果は、この計画書に記録する。
+画面の code-behind（`.xaml.cs`）にある、判断・検査・保存・画面の開閉の指示を、ViewModel とサービスへ移し、WPF なしでテストできるようにする。code-behind には、見た目だけに関わる処理（ホバー、図の描画、フォーカス、ドラッグ）を残す。
 
-## A 部: 機械的な整理
+「code-behind を `InitializeComponent()` だけにする」ことは目標にしない。コントローラーの図のホバーやヒットテストのように、見た目そのものの処理は View に置くのが正しい。
 
-### 現状（調査）
-- ファイル名と型名の不一致（2-3）: `Input/DS4Devices.cs`（中身は `InputDeviceRegistry`）、`Processing/Services/Ds4DeviceRegistryAdapter.cs`（`InputDeviceRegistryAdapter`）、`Processing/Abstractions/IDs4DeviceRegistry.cs`（`IInputDeviceRegistry`）。`Core/Updater/UpdaterInstallTrace.cs`（コメントだけ）と `UI/Themes/_.cs`（名前空間の宣言だけ）は、型を持たないファイルで、不一致ではない。
-- UDP の型が `Input/` にある（2-4）: `DualShockPadMeta.cs`、`PadDataRspPacket.cs`、`DsState.cs`、`DsBattery.cs`、`DsConnection.cs`、`DsModel.cs`。
-- `Processing/Services` に約 70 ファイル、`Input/` の直下に 31 ファイル（2-5）。
-- 文書が古い（5-4、3-1）: `02-Extension-Guide.md:3`・`:9`、`01-Structure.md:57`〜`62`・`:134`、`02-Extension-Guide.md:48`、`03-Lifecycle-and-DI.md:38`。
-- UI に、使っていない `using DS4Windows.Input;` が約 10 ファイル。
+## 現状（調査。2026-11-12 の実測）
+| 画面 | `.xaml.cs` の行数 | XAML のイベント属性 | `Command="{…}"` | code-behind のメソッド（うちイベント処理らしい名前） | 部品への直接の代入 |
+|---|---|---|---|---|---|
+| `ProfileEditor` | 1,735 | 24 | 0 | 90（30） | 56 |
+| `MainWindow` | 1,836 | 41 | 0 | 100（42） | 47 |
+| `BindingWindow` | 950 | 6 | 0 | 20（10） | 23 |
+| `RecordBox` | 900 | 26 | 0 | 48（25） | 32 |
+| `AssignmentEditor` | 702 | 10 | 0 | 17（11） | 22 |
 
-### Step 一覧
-| Step | 内容 | テスト | 状態 |
-|---|---|---|---|
-| 34-A1 | ファイル名を型名に合わせる（`git mv` のみ。R7）。対象は 3 件: `Input/DS4Devices.cs` → `InputDeviceRegistry.cs`、`Processing/Services/Ds4DeviceRegistryAdapter.cs` → `InputDeviceRegistryAdapter.cs`、`Processing/Abstractions/IDs4DeviceRegistry.cs` → `IInputDeviceRegistry.cs`（追加調査で、3 件目の中身を確認した） | ファイル名＝型名の検査を、型の検査として足す（全 `.cs`。例外は `GlobalSuppressions.cs`、`AssemblyInfo.cs`、`*.xaml.cs`、`partial` の分割ファイル） | 未着手 |
-| 34-A2 | UDP の型 6 つを `Core/Model` へ移す（`git mv` と、名前空間の書き換えを別コミットに） | `Phase14NamespaceFolderGuardTests`、`LayerDependencyRuleTests` | 未着手 |
-| 34-A3 | `Processing/Services` を機能ごとのフォルダーへ分ける（案: `Connection`［接続・切断・開始と停止］、`Conditioning`［補正の段］、`Devices`［機種のモジュール］、`Slots`［UI 向けの窓口］。残りは `Services`）。移動と名前空間の書き換えを別コミットに | 同上。`ModelDiagramGuardTests` | 未着手 |
-| 34-A4 | UI の、使っていない `using DS4Windows.Input…;` を消す | ビルド | 未着手 |
-| 34-A5 | 文書の更新: モデル図 3 文書（フォルダーの表、引数の基準 12、手順書の冒頭）と、規則 3.4 R1（34-A2・A3 の結果）。あわせて、規約・モデル図・`Code-Review-2026-11`・Phase29〜34 の計画書に残る、テストの旧名（`Phase14NamespaceFolderGuardTests` → `NamespaceFolderGuardTests`、`Phase13FuncRatchetGuardTests` → `FuncRatchetGuardTests` など。Phase15-0 で改名済み。対応表は `Phase15-0-Test-Rename-Map.md`）を新名へ直す（2026-11-12 追加） | `ModelDiagramGuardTests` | 未着手 |
-| 34-A6 | （追加）`UI/IntToBoolConverter.cs` を `UI/Converters` へ移す（`git mv` と、名前空間・XAML の参照の書き換えを別コミットに）。コメントだけのファイル `Core/Updater/UpdaterInstallTrace.cs`（型なし、7 行）は、規則 2.4 の手順（`git log` で経緯を確かめる）のあと、ユーザーの承認を得て削除する。`UI/Themes/_.cs`（名前空間の宣言だけ。IDE のための置き石）は残す | `Phase14NamespaceFolderGuardTests`。画面の起動（XAML の参照） | 未着手 |
+- **コマンドの仕組みがない**: アプリ全体で、`Command="{…}"` はテーマのスクロールバーの 8 か所だけ。`ICommand` の実装は 1 つもない。
+- **ダイアログの窓口がない**: `MessageBox.Show`（`ProfileEditor` に 5、`AssignmentEditor` に 2、`RecordBox` に 1）、`OpenFileDialog`／`SaveFileDialog`、`ColorPickerWindow` を、code-behind が直接作る。
+- **画面を直接作る箇所**: `MainWindow` が `ChangelogWindow`・`ControllerRegisterOptionsWindow`・`RenameProfileWindow`・`UpdaterWindow` を直接作る。編集の子画面（出力ピッカー、割り当て編集画面、記録の窓、プロファイル編集画面）は、工場（`IEditorWindowFactory`、`AssignmentWindowFactory` など）を通る。
+- **すでに済んでいること**: プロファイル編集画面の 8 つの領域は、パネル（UserControl）とサブ ViewModel に分かれている（Phase15）。判断の部品 5 つ（`TouchpadSwipeProfileRule`、`RumbleTestController`、`ReadingsDeadZoneSnapshot`、`UpdateCheckPolicy`、`ActionRumbleTestController`）がある（Phase26）。`MainWindow` のトレイとプロファイルの選択は、`TrayAppearanceController`・`ProfileSelectionCoordinator` にある（Phase20）。
+- **長いメソッド**: `ProfileEditor` は `SortSpecialActionsList` 105 行、`Reload` 96 行、`EditActionBtn_Click` 91 行、`InputDS4` 73 行。`MainWindow` は `SetupEvents`・`PowerEventArrive` 各 61 行、`LateChecks` 60 行、`OnSourceInitialized` 49 行、`ShowProfileEditor` 45 行。
 
-| 34-A7 | （2026-11-12 追加。外部レビューの照合から）自動生成コード（`Translations/Strings.Designer.cs` 4,239 行、`Properties/Resources.Designer.cs` 1,677 行）は、対応しない。ルートの `.editorconfig` で、静的解析の対象から外れているか（`generated_code = true` など）だけを確かめ、外れていなければ設定を足す | ビルドの警告が増えないこと | 未着手 |
+## 方針（決定事項の案）
+1. **動作・見た目・文言は変えない**。移すだけにする。利用者に見える文言（`MessageBox` の本文など）は、そのまま窓口へ渡す。
+2. **土台を先に作る**: コマンド（`ICommand` の小さな実装）と、ダイアログの窓口（確認・通知、ファイルの選択、色の選択）。窓口の契約は `UI/Abstractions`、実装は `UI/Services` に置く。ViewModel は窓口だけを受ける（Pure DI。規約 3.1）。
+3. **イベント処理を 3 つに仕分けてから移す**（34-0）: (A) 判断・検査・保存を含む → ViewModel のコマンドへ。(B) 部品の表示・有効を切り替えるだけ → ViewModel のプロパティと結びつけへ。(C) 見た目だけ（ホバー、図、フォーカス、ドラッグ、スクロール）→ code-behind に残す。
+4. **画面ごと・機能ごとの小さな Step** にし、各 Step で ViewModel のテストを足す（Phase26 の進め方）。実機確認が要る項目は `Known-Issues-Ledger.md` §3 へ足す。
+5. コンストラクターの引数を増やさない。窓口を足すぶん、直接受けていたサービスを ViewModel の側へ寄せて、差し引きで減らす（`MainWindow` 15、`ProfileEditor` 12 は基準の上限にある）。
+6. 進み具合は、件数のラチェット（XAML のイベント属性の数と、code-behind が直接作る窓の数を、基準値と一致させる検査）で守る。
 
-### 決めること
+## 決めること（着手前にユーザーへ確認）
 | # | 決めること | 選択肢（先頭が推奨） |
 |---|---|---|
-| D-A1 | 34-A3 のフォルダーの分け方 | (A) 上の案／(B) 行わない（平置きのまま。規則 R1 の「`Services`」を保つ）／(C) 別の分け方 |
+| D1 | 画面の順 | (A) `ProfileEditor` → `MainWindow` → `RecordBox` → `AssignmentEditor` → `BindingWindow`（行数とイベントの多い順。`BindingWindow` は名前つきの部品が 146 あり、見た目の処理が中心なので最後）／(B) 利用者の指定の順 |
+| D2 | コマンドの実装 | (A) 自前の小さな `RelayCommand`（1 つの型。依存を足さない）／(B) `CommunityToolkit.Mvvm` を導入（依存が増える。`ObservableObject` は自前のものがすでにある） |
+| D3 | 到達の目安 | (A) 仕分けの (A)(B) をすべて移す（code-behind に残るのは (C) だけ）／(B) 行数の目標（例: 各 500 行以下）を置く。行数は目的にしないほうがよい |
+| D4 | Phase26 の扱い（2026-11-13: (A) を前提に統合済み。ユーザーの承認のときに確認する） | (A) Phase26 を「一部完了で終了」とし、残り（26-5 の続き）を本 Phase が引き継ぐ／(B) Phase26 を続け、本 Phase は土台（34-1）だけにする |
+| D5 | `MessageBox` の文言 | (A) そのまま（英語の固定や、既存のリソース）／(B) この機会にリソース化（範囲が広がる。別の作業にするのを勧める） |
 
-## B 部: 小さな是正
-
-| Step | 内容（出典） | テスト | 状態 |
+## Step 一覧
+| Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 34-B1 | `RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride`（静的な差し替え口。1-5。`Processing/Actions/RepeatHelperToIRepeaterAdapter.cs:21`）を、コンストラクターで受ける工場に替える。使っているテストを、その工場を渡す形に直す | `RemovedApiRuleTests` の表へ足す | 未着手 |
-| 34-B2 | Xbox の `HideUsbParent`（5-3。`UI/ViewModels/SettingsViewModel.cs:55`）: 設定の定義（`WithUi`）で表せるかを確かめ、表せるなら寄せる。表せないなら、理由をコメントに書く | 設定画面の生成のテスト | 未着手 |
-| 34-B3 | 規則への追記（4-5）: 「同じ層の中だけで使う、状態を持たない計算の部品は、インターフェースを作らず、具象のまま注入してよい。層をまたぐポートと、テストで偽物に差し替えるものは、インターフェースにする」（`.github/copilot-instructions.md` §3.1）。既存のインターフェースは撤去しない | — | 未着手 |
-
-## C 部: 判断から始める項目
-
-各項目は、まず調査して、直す／直さない（理由つき）を決め、この表に記録する。直す場合は、追補の Step を足す。
-
-| ID | 項目（出典） | 調べること | 判断 |
-|---|---|---|---|
-| 34-C1 | 第 3 層が第 1 層の `InputDeviceCore` を直接使う（2-2） | 第 3 層が `InputDeviceCore` の何を使っているか（メンバーの一覧）。最小の契約にすると何メンバーか | 未決（(A) `Core/Abstractions` に最小の契約を置く／(B) 図と規則を実態に合わせる） |
-| 34-C2 | 機器の誤りが続く間の、毎フレームのログ（6-3。`Processing/Services/LatencyMonitor.cs:41`） | 追加調査で確認済み: `frameError` を立てるのは、タッチパッドの取り込みの `catch`（`DualShock4Device.cs:739`、`DualSenseDevice.cs:673`）だけ。続くのは、毎フレーム例外が出る異常なときに限る | **直さない案を推奨**（通常は起きず、異常のときは気づける方がよい。ログの文言・出力を変えない）。ユーザーの確認で確定する |
-| 34-C3 | 20 ms のタイマーが、スワイプ切替が無効でも回り続ける（6-4 の残り。`UI/MainWindow.xaml.cs:243`、`593`） | タイマーを始める・止める場所（同 `583`〜`589`）。設定を画面で切り替えたときに、始め直せるか | 未決。なお、列挙の競合と、例外で止まる問題（6-12）は、Phase29 の 29-10 へ移した |
-| 34-C4 | Bluetooth の Xbox の、接続直後の最大 3 秒の待ち（6-5。`Input/Xbox/XInputTransport.cs:188`） | 待ちを、読み取りスレッドの開始前（`PrimeBatteryForOtherDevice`）へ移せるか。実機で、接続直後の入力の止まりが体感できるか | 未決 |
-| 34-C5 | 30 秒ごとの第 0 世代の GC の強制（6-6。`App.xaml.cs:901`） | 経緯（`git log -S "GarbageTask"`）。Phase29 のあとの、1 秒あたりの割り当ての量（計測）。追加調査で、毎フレームの割り当ての主な元（6-1、6-2、6-10、6-11）が分かった。これらを直したあとなら、不要になる見込み | 未決。Phase29（29-9 を含む）のあとに、計測して判断する |
-| 34-C6 | ロガーの静的イベントと、静的なキーボードの設定（1-6。`Core/Logging/AppLogger.cs:27`・`29`、`Core/Platform/KeyboardSettings.cs:11`） | 購読者・利用者の一覧。`Phase7-Residual-Ledger.md` §17.3 の目録での扱い | 未決 |
-| 34-C7 | 使われていない契約の候補（4-6） | 規則 2.4 の手順（経緯の調査 → 使うべきかの判断）を、1 つずつ行う | 未決 |
-| 34-C8 | コンストラクターの null 検査の手書き（3-2）、読み込みと保存の節が対でない（5-5） | — | 3-2 は**計画に入れない**（害がない。記録だけ残す）。5-5 は、2026-11-12 に `Phase37-Plan.md` の 37-4 へ移した |
-| 34-C9 | （2026-11-12 追加。外部レビューの照合から）`Mapping.cs`（869 行）と `TriggerDispatchEngine.cs`（747 行）が大きい、という指摘 | 照合済み: `Mapping.cs` の最長のメソッドは `MapCustom` 124 行で、種別ごとの巨大な分岐は Phase8・9 で部品へ出してある。`TriggerDispatchEngine` は判定と実行のエンジンで、状態保持・シリアライズではなく、作りにも問題は見つからなかった | **対応しない**（`Code-Review-2026-11/07-External-Review-2026-11-12.md` §2）。`Mapping` の引数（15）は `03-Constructor-Arity.md` のとおり |
+| 34-0 | 棚卸し: 5 画面のイベント処理（約 107 個）と、部品への直接の代入（約 180 か所）を、(A)(B)(C) に仕分けた表を作る。画面ごとの Step を確定する | — | 未着手 |
+| 34-1 | 土台: コマンド（D2）、ダイアログの窓口（確認・通知／ファイルの選択／色の選択）、`MainWindow` が直接作る 4 つの窓の生成の窓口。テスト用の偽物を用意する | 窓口の契約ごとの偽物。コマンドの実行可否の通知 | 未着手 |
+| 34-2 | `ProfileEditor`: 保存・キャンセル・適用、特殊アクションの一覧（並べ替え、編集、削除。`SortSpecialActionsList`、`EditActionBtn_Click`）、プリセット、読み込み直し（`Reload` のうち、値の集め方）を ViewModel へ。図のホバーと `InputDS4`（入力による選択）は (C) として残す | 保存の検査、一覧の並べ替え、編集の開始の判断 | 未着手 |
+| 34-3 | `MainWindow`: 設定タブのボタン、プロファイルの操作（新規・編集・複製・削除・書き出し・読み込み）、更新の確認、窓の生成（`ChangelogWindow` ほか）を、ViewModel と窓口へ。電源・デバイスの通知（`PowerEventArrive`、`OnSourceInitialized`）は、OS のメッセージの受け口なので View に残し、判断だけを部品へ | プロファイルの操作の判断、更新の確認、電源の復帰の判断 | 未着手 |
+| 34-4 | `RecordBox`（記録の画面）: 記録の開始・停止、保存・読み込み、手順の編集を `RecordBoxViewModel` のコマンドへ。キーとマウスの生の入力の受け口は View に残す | 記録の状態の移り変わり、保存の検査 | 未着手 |
+| 34-5 | `AssignmentEditor`（割り当て編集画面）: 種別の切り替え、保存の検査を ViewModel へ | 種別ごとの保存の検査 | 未着手 |
+| 34-6 | `BindingWindow`（出力ピッカー）: 選択の確定、Extras の値の集め方を ViewModel へ。図の上のボタン（名前つきの部品 146）の見た目は残す | 選択の確定の判断 | 未着手 |
+| 34-7 | 検査: XAML のイベント属性の数と、code-behind が直接作る窓・ダイアログの数を、画面ごとの基準値と一致させるラチェットを足す（減らしたら、同じコミットで基準も減らす） | 新規 | 未着手 |
+| 34-8 | 文書: `01-Structure.md`（UI の型の表）、規約 3.1（コマンドとダイアログの窓口の使い方を 1 段落）、`Structure-Review-2026-11.md` の B の更新履歴 | `ModelDiagramGuardTests` | 未着手 |
 
 ## 確認の方法
-- A 部: 各コミットのあと、ビルドと、`Phase14NamespaceFolderGuardTests`・`LayerDependencyRuleTests`・`ModelDiagramGuardTests`。移動のコミットは `git diff -M100%` で、内容の変更がないことを確かめる。Step の終わりに Debug ALL。
-- B 部・C 部: 直した項目ごとに、単体テストと、必要なら実機確認（`Known-Issues-Ledger.md` §3 へ足す）。
+- 各 Step: 途中は `--filter "Category!=Slow&Category!=Benchmark"`、Step の終わりに Debug ALL（警告 0・エラー 0）。
+- 実機: 画面ごとに、移したボタンと操作を一通り。特に、(1) プロファイルの保存・キャンセル・未保存での閉じ方、(2) 特殊アクションの追加・編集・削除・並べ替え、(3) マクロの記録と保存、(4) 設定タブの各項目、(5) 更新の確認、(6) スリープからの復帰とコントローラーの抜き差し。
 
 ## リスク
-- A 部: 低。機械的。ただし、ファイルの移動は、ほかの Phase の作業中のブランチと衝突するため、ほかの Phase の合間に行う。
-- B 部: 低。
-- C 部: 項目ごと。34-C2（ログ）と 34-C4（接続時の表示）は、利用者に見える動きが変わり得る。
+- 中〜高。結びつけ・コマンドの名前の誤りは、コンパイルで見つからず、画面で「押しても動かない」形で現れる。34-7 のラチェットと、画面を開くテスト（結びつけのエラーが出ないこと）で守る。
+- 範囲が広い（5 画面、約 6,100 行）。画面ごとに独立して進められるので、途中で止めても害はない。
+- `MainWindow` は、起動・終了・電源・デバイスの通知が集まる。Phase35（終了の手順）と同じファイルに触れるため、同時に進めない。
 
 ## 履歴
-- 2026-11-11: 計画書を作成。コードは未着手。
-- 2026-11-11: 追加調査の結果を反映。34-A1 の対象を 3 件に確定し、34-A6（`IntToBoolConverter` の移動、コメントだけのファイルの扱い）を足した。34-C2 は調査済み（直さない案を推奨）、34-C3 は範囲を縮めた（競合と停止は Phase29 の 29-10 へ）、34-C5 に割り当ての元を書き足した。
-- 2026-11-12: 外部レビューの照合の結果を統合。34-A7（自動生成コードの除外の確認）、34-C9（`Mapping`・`TriggerDispatchEngine` は対応しない）を足し、5-5 を Phase37 へ移した。UDP の型の移動（34-A2）は、`Phase38-Plan.md` の D3 と調整する（どちらか一方で行う）。
+- 2026-11-13: Phase 番号の付け替え（旧 Phase35 → 34）。Phase26 の残りを統合した（D4 の (A)）。
+- 2026-11-12: 計画書を作成（外部レビューの照合の結果）。コードは未着手。

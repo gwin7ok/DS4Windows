@@ -1,59 +1,77 @@
-# Phase36 計画書: `TouchpadMouse` の分割
+# Phase36 計画書: 配置・名前・文書の整理と、判断が要る小さな項目（コードレビュー 2026-11 の低の項目）
 
-作成日: 2026-11-12
-状態: **未着手。承認待ち**
-出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 3、優先 1）、`02-Layers-and-Placement.md` §3、`06-Performance.md` の 6-10
-前提: Phase29 の 29-8（ジャイロのトリガーの判定）と 29-9（動き・タッチのイベント引数）のあとに行う。同じファイルを 2 回触らないため。
+作成日: 2026-11-11
+状態: **未着手。承認待ち**（A 部は機械的で、ほかの Phase と独立に、いつでも行える）
+出典: `docs-forDIMG/Code-Review-2026-11/00-Summary.md` §4 の順 14〜23
 
 ## 目的
-`Processing/Touchpad/TouchpadMouse.cs`（1,810 行）を、受け持つ仕事ごとの型に分け、それぞれを単体でテストできるようにする。動作と、毎フレームの割り当ての量は変えない。
+コードレビューで見つけた、重大度が低い項目をまとめて片づける。3 つに分ける。
+- **A 部（機械的）**: 改名・移動・文書の更新。動作は変わらない。
+- **B 部（小さな是正）**: 静的な差し替え口など、局所の修正。
+- **C 部（判断から）**: 直すかどうかを、調査のあとに決める項目。決めた結果は、この計画書に記録する。
 
-## 現状（調査。2026-11-12 の実測）
-- 1 つの型が、スロットごとに 1 つ作られ（`TouchpadMouseFactory`）、タッチパッドのイベント（`touchesBegan`／`touchesMoved`／`touchesEnded`／`touchUnchanged`、タッチボタン）と、**ジャイロのイベント**（`sixaxisMoved`）の両方を受ける。名前はタッチパッドだが、ジャイロの出力（マウス、マウススティック、Controls のトリガーの判定）も持つ。
-- メソッド 30 個。長い順に、`TouchpadMouseStick` 297 行（タッチ → スティック）、`touchesEnded` 227 行（タップ・ダブルタップ・スワイプの判定）、`SixMouseStick` 209 行（ジャイロ → スティック）、`TouchButtonCheckProcess` 134 行、`touchUnchanged` 122 行、`touchesMoved` 110 行、`StartTapClickHold` 87 行、`ResetToggleGyroModes` 80 行。
-- すでに別の型になっているもの: カーソルの移動（`MouseCursor` 445 行）、ホイール（`MouseWheel`）、トラックボールの慣性（`FakeTrackball`）。
-- 実装するインターフェース: `ITouchpadBehaviour`（実装はこの型だけ）、`ITouchPadGyroToggles`。
-- 設定の読み取りは、領域の窓口（`_profileSettings.ForSlot(deviceNum)`）を毎回たどる（55 か所）。
-- テスト: `TouchpadMouse` に触れるテストのファイルは 14。
-- 毎フレームの経路である（動きのフレームごと、触れている間のフレームごと）。未調査のまま残っている範囲（タッチの各出力の計算の中身）を含む。
+## A 部: 機械的な整理
 
-## 方針（決定事項の案）
-1. **特性化テストを先に足す**（36-0）。入力の列（タッチの始まり・移動・終わり、ジャイロの値、設定）に対して、出力（マウスの移動量、クリック、スティックの値、切り替えの状態）を固定する。
-2. **仕事ごとに型を切り出す**。`TouchpadMouse` は、イベントの受け口と、出力の種類による振り分けだけを残す。切り出す先の案:
-   - ジャイロの出力（`sixaxisMoved` の中身、`IsGyroTriggerActive`、`SixMouseStick`、`SixMouseReset`、切り替えの状態）→ `Processing/Gyro` の型。
-   - タッチ → スティック（`TouchpadMouseStick`）→ `Processing/Touchpad` の型。
-   - タップ・クリック・押し続けの判定（`touchesEnded` の判定の部分、`StartTapClickHold`）→ 同上。
-   - タッチボタン（`TouchButtonCheckProcess`）→ 同上。
-3. **設計の型（State／Strategy）を先に決めない**。まず長いメソッドを、状態を引数と戻り値で受け渡す部品へ出し、形が見えてから、出力の種類ごとの差し替え（`ITouchpadBehaviour` を出力の種類ごとの実装にする）にするかを決める（D2）。
-4. 毎フレームの経路なので、割り当て 0 を保つ（Phase29 のあとの状態を基準にする）。切り出した型は、同じ層の中だけで使う計算の部品なら、インターフェースを作らず具象で持つ（`04-Duplication-and-Abstraction.md` の 4-5）。
-5. 時間は `TimeProvider`（すでに受けている）を使い、テストは実時間で待たない。
+### 現状（調査）
+- ファイル名と型名の不一致（2-3）: `Input/DS4Devices.cs`（中身は `InputDeviceRegistry`）、`Processing/Services/Ds4DeviceRegistryAdapter.cs`（`InputDeviceRegistryAdapter`）、`Processing/Abstractions/IDs4DeviceRegistry.cs`（`IInputDeviceRegistry`）。`Core/Updater/UpdaterInstallTrace.cs`（コメントだけ）と `UI/Themes/_.cs`（名前空間の宣言だけ）は、型を持たないファイルで、不一致ではない。
+- UDP の型が `Input/` にある（2-4）: `DualShockPadMeta.cs`、`PadDataRspPacket.cs`、`DsState.cs`、`DsBattery.cs`、`DsConnection.cs`、`DsModel.cs`。
+- `Processing/Services` に約 70 ファイル、`Input/` の直下に 31 ファイル（2-5）。
+- 文書が古い（5-4、3-1）: `02-Extension-Guide.md:3`・`:9`、`01-Structure.md:57`〜`62`・`:134`、`02-Extension-Guide.md:48`、`03-Lifecycle-and-DI.md:38`。
+- UI に、使っていない `using DS4Windows.Input;` が約 10 ファイル。
 
-## 決めること（着手前にユーザーへ確認）
-| # | 決めること | 選択肢（先頭が推奨） |
-|---|---|---|
-| D1 | 範囲 | (A) ジャイロの出力の切り出し（36-1）と、長いメソッド 3 つ（36-2〜36-4）まで／(B) 全部（36-5 を含む） |
-| D2 | 出力の種類ごとの差し替え（`ITouchpadBehaviour` を、マウス・Controls・スティック・パススルーごとの実装にする） | (A) 36-1〜36-4 のあとに、形を見て決める／(B) 最初から行う／(C) 行わない（その場合、実装が 1 つの `ITouchpadBehaviour` を残すかどうかは、規約 2.4 の手順で判断する） |
-| D3 | ジャイロの出力を切り出したあとの、型の名前 | (A) `TouchpadMouse` のまま（ジャイロは別の型へ出るので、名前が実体に合う）／(B) 改名する |
-
-## Step 一覧
+### Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 36-0 | 特性化テスト: 出力の種類（マウス、Controls、マウススティック、パススルー）と、ジャイロの出力（Controls、マウス、マウススティック）ごとに、入力の列と出力を固定する。未調査だった計算の中身を読み、毎フレームの割り当てがあれば記録する | 新規（仕事ごと） | 未着手 |
-| 36-1 | ジャイロの出力を別の型へ（`sixaxisMoved` の中身、トリガーの判定、`SixMouseStick`、切り替えの状態）。購読（`DeviceConnectionSetup.cs:199`）は、新しい型へ向ける | 36-0 が不変。割り当て 0 | 未着手 |
-| 36-2 | タッチ → スティック（`TouchpadMouseStick` 297 行）を別の型へ。フィルター（`OneEuroFilterPair`）とトラックボールの状態の持ち主を決める | 同上 | 未着手 |
-| 36-3 | タップ・ダブルタップ・押し続けの判定（`touchesEnded`、`StartTapClickHold`）を別の型へ。プロファイルのスワイプ切替の合図（`slideleft`／`slideright`）の出し方は変えない | 同上。タップの時間の境界（感度 × 1.5 ミリ秒）を固定する | 未着手 |
-| 36-4 | タッチボタン（`TouchButtonCheckProcess` 134 行）を別の型へ | 同上 | 未着手 |
-| 36-5 | （D1 が B のとき）`touchesMoved`・`touchUnchanged` の、出力の種類ごとの枝を整理する。D2 の差し替えを行う場合は、ここで行う | 同上 | 未着手 |
-| 36-6 | 設定の読み取りを、フレームの先頭で 1 回、領域の窓口（`TouchpadSlotSettings`、`GyroSlotSettings`）を取ってから使う形にそろえる（`ForSlot(deviceNum)` の 55 か所） | 36-0 が不変 | 未着手 |
-| 36-7 | 文書: `01-Structure.md`（型の表）、`Code-Review-2026-11/00-Summary.md` の未調査の行を更新 | `ModelDiagramGuardTests` | 未着手 |
+| 36-A1 | ファイル名を型名に合わせる（`git mv` のみ。R7）。対象は 3 件: `Input/DS4Devices.cs` → `InputDeviceRegistry.cs`、`Processing/Services/Ds4DeviceRegistryAdapter.cs` → `InputDeviceRegistryAdapter.cs`、`Processing/Abstractions/IDs4DeviceRegistry.cs` → `IInputDeviceRegistry.cs`（追加調査で、3 件目の中身を確認した） | ファイル名＝型名の検査を、型の検査として足す（全 `.cs`。例外は `GlobalSuppressions.cs`、`AssemblyInfo.cs`、`*.xaml.cs`、`partial` の分割ファイル） | 未着手 |
+| 36-A2 | （2026-11-13 統合）UDP の型 6 つの移動は、`Phase38-Plan.md` の 38-0b へ移した。Phase38 を行わない（その D1 が C）と決めたときだけ、ここで `Core/Model` へ移す（`git mv` と、名前空間の書き換えを別コミットに） | `Phase14NamespaceFolderGuardTests`、`LayerDependencyRuleTests` | 未着手 |
+| 36-A3 | （Phase31〜35 のあとに行う。これらが `Processing/Services` へ型を足す・移すため）`Processing/Services` を機能ごとのフォルダーへ分ける（案: `Connection`［接続・切断・開始と停止］、`Conditioning`［補正の段］、`Devices`［機種のモジュール］、`Slots`［UI 向けの窓口］。残りは `Services`）。移動と名前空間の書き換えを別コミットに | 同上。`ModelDiagramGuardTests` | 未着手 |
+| 36-A4 | UI の、使っていない `using DS4Windows.Input…;` を消す | ビルド | 未着手 |
+| 36-A5 | 文書の更新: モデル図 3 文書（フォルダーの表、引数の基準 12、手順書の冒頭）と、規則 3.4 R1（36-A2・A3 の結果）。あわせて、規約・モデル図・`Code-Review-2026-11`・Phase29〜36 の計画書に残る、テストの旧名（`Phase14NamespaceFolderGuardTests` → `NamespaceFolderGuardTests`、`Phase13FuncRatchetGuardTests` → `FuncRatchetGuardTests` など。Phase15-0 で改名済み。対応表は `Phase15-0-Test-Rename-Map.md`）を新名へ直す（2026-11-12 追加） | `ModelDiagramGuardTests` | 未着手 |
+| 36-A6 | （追加）`UI/IntToBoolConverter.cs` を `UI/Converters` へ移す（`git mv` と、名前空間・XAML の参照の書き換えを別コミットに）。コメントだけのファイル `Core/Updater/UpdaterInstallTrace.cs`（型なし、7 行）は、規則 2.4 の手順（`git log` で経緯を確かめる）のあと、ユーザーの承認を得て削除する。`UI/Themes/_.cs`（名前空間の宣言だけ。IDE のための置き石）は残す | `Phase14NamespaceFolderGuardTests`。画面の起動（XAML の参照） | 未着手 |
+
+| 36-A7 | （2026-11-12 追加。外部レビューの照合から）自動生成コード（`Translations/Strings.Designer.cs` 4,239 行、`Properties/Resources.Designer.cs` 1,677 行）は、対応しない。ルートの `.editorconfig` で、静的解析の対象から外れているか（`generated_code = true` など）だけを確かめ、外れていなければ設定を足す | ビルドの警告が増えないこと | 未着手 |
+
+### 決めること
+| # | 決めること | 選択肢（先頭が推奨） |
+|---|---|---|
+| D-A1 | 36-A3 のフォルダーの分け方 | (A) 上の案／(B) 行わない（平置きのまま。規則 R1 の「`Services`」を保つ）／(C) 別の分け方 |
+
+## B 部: 小さな是正
+
+| Step | 内容（出典） | テスト | 状態 |
+|---|---|---|---|
+| 36-B1 | `RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride`（静的な差し替え口。1-5。`Processing/Actions/RepeatHelperToIRepeaterAdapter.cs:21`）を、コンストラクターで受ける工場に替える。使っているテストを、その工場を渡す形に直す | `RemovedApiRuleTests` の表へ足す | 未着手 |
+| 36-B2 | Xbox の `HideUsbParent`（5-3。`UI/ViewModels/SettingsViewModel.cs:55`）: 設定の定義（`WithUi`）で表せるかを確かめ、表せるなら寄せる。表せないなら、理由をコメントに書く | 設定画面の生成のテスト | 未着手 |
+| 36-B3 | 規則への追記（4-5）: 「同じ層の中だけで使う、状態を持たない計算の部品は、インターフェースを作らず、具象のまま注入してよい。層をまたぐポートと、テストで偽物に差し替えるものは、インターフェースにする」（`.github/copilot-instructions.md` §3.1）。既存のインターフェースは撤去しない | — | 未着手 |
+
+## C 部: 判断から始める項目
+
+各項目は、まず調査して、直す／直さない（理由つき）を決め、この表に記録する。直す場合は、追補の Step を足す。
+
+| ID | 項目（出典） | 調べること | 判断 |
+|---|---|---|---|
+| 36-C1 | 第 3 層が第 1 層の `InputDeviceCore` を直接使う（2-2） | 第 3 層が `InputDeviceCore` の何を使っているか（メンバーの一覧）。最小の契約にすると何メンバーか | 未決（(A) `Core/Abstractions` に最小の契約を置く／(B) 図と規則を実態に合わせる） |
+| 36-C2 | 機器の誤りが続く間の、毎フレームのログ（6-3。`Processing/Services/LatencyMonitor.cs:41`） | 追加調査で確認済み: `frameError` を立てるのは、タッチパッドの取り込みの `catch`（`DualShock4Device.cs:739`、`DualSenseDevice.cs:673`）だけ。続くのは、毎フレーム例外が出る異常なときに限る | **直さない案を推奨**（通常は起きず、異常のときは気づける方がよい。ログの文言・出力を変えない）。ユーザーの確認で確定する |
+| 36-C3 | 20 ms のタイマーが、スワイプ切替が無効でも回り続ける（6-4 の残り。`UI/MainWindow.xaml.cs:243`、`593`） | — | **Phase29 の 29-10b へ統合した**（2026-11-13）。同じ 2 つのタイマーを触る 29-10 と、同じメソッドを 2 回触らないため。列挙の競合と、例外で止まる問題（6-12）も 29-10 にある |
+| 36-C4 | Bluetooth の Xbox の、接続直後の最大 3 秒の待ち（6-5。`Input/Xbox/XInputTransport.cs:188`） | 待ちを、読み取りスレッドの開始前（`PrimeBatteryForOtherDevice`）へ移せるか。実機で、接続直後の入力の止まりが体感できるか | 未決 |
+| 36-C5 | 30 秒ごとの第 0 世代の GC の強制（6-6。`App.xaml.cs:901`） | 経緯（`git log -S "GarbageTask"`）。Phase29 のあとの、1 秒あたりの割り当ての量（計測）。追加調査で、毎フレームの割り当ての主な元（6-1、6-2、6-10、6-11）が分かった。これらを直したあとなら、不要になる見込み | 未決。Phase29（29-9 を含む）のあとに、計測して判断する |
+| 36-C6 | ロガーの静的イベントと、静的なキーボードの設定（1-6。`Core/Logging/AppLogger.cs:27`・`29`、`Core/Platform/KeyboardSettings.cs:11`） | 購読者・利用者の一覧。`Phase7-Residual-Ledger.md` §17.3 の目録での扱い | 未決 |
+| 36-C7 | 使われていない契約の候補（4-6） | 規則 2.4 の手順（経緯の調査 → 使うべきかの判断）を、1 つずつ行う | 未決 |
+| 36-C8 | コンストラクターの null 検査の手書き（3-2）、読み込みと保存の節が対でない（5-5） | — | 3-2 は**計画に入れない**（害がない。記録だけ残す）。5-5 は、2026-11-12 に `Phase37-Plan.md` の 37-4 へ移した |
+| 36-C9 | （2026-11-12 追加。外部レビューの照合から）`Mapping.cs`（869 行）と `TriggerDispatchEngine.cs`（747 行）が大きい、という指摘 | 照合済み: `Mapping.cs` の最長のメソッドは `MapCustom` 124 行で、種別ごとの巨大な分岐は Phase8・9 で部品へ出してある。`TriggerDispatchEngine` は判定と実行のエンジンで、状態保持・シリアライズではなく、作りにも問題は見つからなかった | **対応しない**（`Code-Review-2026-11/07-External-Review-2026-11-12.md` §2）。`Mapping` の引数（15）は `03-Constructor-Arity.md` のとおり |
 
 ## 確認の方法
-- 各 Step のあと、特性化テスト（36-0）と割り当て 0 のテスト。性能を比べるときは Benchmark の印のテストを前後で流す。
-- 実機（DS4）: タッチパッドのマウス移動、タップ、ダブルタップ、ドラッグ、スクロール、トラックボール、2 本指のスワイプでのプロファイル切替、タッチボタン（左・右・上・複数）、タッチ → スティック。ジャイロの Controls・マウス・マウススティックと、トリガー（なし・1 つ・複数・切り替え）。
+- A 部: 各コミットのあと、ビルドと、`Phase14NamespaceFolderGuardTests`・`LayerDependencyRuleTests`・`ModelDiagramGuardTests`。移動のコミットは `git diff -M100%` で、内容の変更がないことを確かめる。Step の終わりに Debug ALL。
+- B 部・C 部: 直した項目ごとに、単体テストと、必要なら実機確認（`Known-Issues-Ledger.md` §3 へ足す）。
 
 ## リスク
-- 中。毎フレームの経路で、状態（前のフレームの値、タップの時刻、切り替え）が多い。型を分けるときに、状態の持ち主を取り違えると、タップが効かない・カーソルが飛ぶ形で現れる。特性化テストが前提。
-- DualSense・Switch Pro のジャイロとタッチは、実機で確かめられない。
+- A 部: 低。機械的。ただし、ファイルの移動は、ほかの Phase の作業中のブランチと衝突するため、ほかの Phase の合間に行う。
+- B 部: 低。
+- C 部: 項目ごと。36-C2（ログ）と 36-C4（接続時の表示）は、利用者に見える動きが変わり得る。
 
 ## 履歴
-- 2026-11-12: 計画書を作成（外部レビューの照合の結果）。コードは未着手。
+- 2026-11-13: Phase 番号の付け替え（旧 Phase34 → Phase36。進める順に合わせた）。本文中の Step 番号も付け替えた。
+- 2026-11-11: 計画書を作成。コードは未着手。
+- 2026-11-11: 追加調査の結果を反映。36-A1 の対象を 3 件に確定し、36-A6（`IntToBoolConverter` の移動、コメントだけのファイルの扱い）を足した。36-C2 は調査済み（直さない案を推奨）、36-C3 は範囲を縮めた（競合と停止は Phase29 の 29-10 へ）、36-C5 に割り当ての元を書き足した。
+- 2026-11-12: 外部レビューの照合の結果を統合。36-A7（自動生成コードの除外の確認）、36-C9（`Mapping`・`TriggerDispatchEngine` は対応しない）を足し、5-5 を Phase37 へ移した。UDP の型の移動（36-A2）は、`Phase38-Plan.md` の D3 と調整する（どちらか一方で行う）。
+- 2026-11-13: Phase 番号の付け替えに伴い、36-A2 を Phase38 の 38-0b へ統合した（移動と、分けた部品の置き場所を、1 か所で決めるため）。36-C3 は Phase29 の 29-10b へ統合した。36-A3 は、Phase31〜35 が型を足す・移すあとに行う（下の A3 の注）。
