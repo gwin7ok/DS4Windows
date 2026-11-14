@@ -30,14 +30,14 @@ namespace DS4Windows.Core.Persistence
             _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
         }
 
-        public bool LoadProfileXml(int deviceIndex, bool launchProgram, IProfileLoadTarget control,
+        public bool LoadProfileXml(int deviceIndex, IProfileLoadTarget control,
             string overridePath = "", bool xinputChange = true, bool postLoad = true)
         {
             lock (XmlIoLock)
             {
                 try
                 {
-                    return _legacyProfileXml.LoadProfile(deviceIndex, launchProgram, control,
+                    return _legacyProfileXml.LoadProfile(deviceIndex, control,
                         overridePath, xinputChange, postLoad);
                 }
                 catch (Exception ex)

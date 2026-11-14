@@ -16,6 +16,15 @@ namespace DS4Windows.Processing.Actions
             Launch(filePath, string.Empty, true, false);
         }
 
+        public void LaunchWithWorkingDirectory(string filePath)
+        {
+            using var process = Process.Start(new ProcessStartInfo
+            {
+                FileName = filePath,
+                WorkingDirectory = new FileInfo(filePath).Directory.ToString(),
+            });
+        }
+
         public void Launch(string fileName, string arguments, bool useShellExecute, bool hidden)
         {
             if (string.IsNullOrWhiteSpace(fileName)) return;

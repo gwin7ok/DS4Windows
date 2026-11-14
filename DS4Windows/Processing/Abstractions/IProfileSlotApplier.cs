@@ -9,7 +9,8 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface IProfileSlotApplier
     {
-        bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source);
+        /// <param name="launchProgram">真なら、適用のあとに、プロファイルに結んだプログラムを（動いていなければ）起動する。</param>
+        bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source, bool launchProgram = false);
 
         /// <summary>
         /// 画面の操作（プロファイルの選択）で、指定スロットへプロファイルを適用する。<see cref="ApplyToSlot"/> と違い、適用の前後で入力を止め（Halt）、

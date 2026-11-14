@@ -37,7 +37,6 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             LightbarDS4WinInfo lightInfo = context.LightInfo;
-            bool launchprogram = context.LaunchProgram;
             DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings = context.ProfileSettings;
             IProfileLoadTarget control = context.Control;
             bool missingSetting = context.MissingSetting;
@@ -55,58 +54,6 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 store.launchProgram[device] = Item.InnerText;
             }
             catch { store.launchProgram[device] = string.Empty; missingSetting = true; }
-
-            if (launchprogram == true && store.launchProgram[device] != string.Empty)
-            {
-                string programPath = store.launchProgram[device];
-                bool procFound = false;
-                bool handled = false;
-                try
-                {
-                    var inspector = store.ProcessInspector;
-                    if (inspector != null)
-                    {
-                        procFound = inspector.IsProcessRunning(programPath);
-                        handled = true;
-                    }
-                }
-                catch { }
-
-                if (!handled)
-                {
-                    System.Diagnostics.Process[] localAll = System.Diagnostics.Process.GetProcesses();
-                    for (int procInd = 0, procsLen = localAll.Length; !procFound && procInd < procsLen; procInd++)
-                    {
-                        try
-                        {
-                            string temp = localAll[procInd].MainModule.FileName;
-                            if (temp == programPath)
-                            {
-                                procFound = true;
-                            }
-                        }
-                        // Ignore any process for which this information
-                        // is not exposed
-                        catch { }
-                    }
-                }
-
-                if (!procFound)
-                {
-                    Task processTask = new Task(() =>
-                    {
-                        Thread.Sleep(5000);
-                        System.Diagnostics.Process tempProcess = new System.Diagnostics.Process();
-                        tempProcess.StartInfo.FileName = programPath;
-                        tempProcess.StartInfo.WorkingDirectory = new FileInfo(programPath).Directory.ToString();
-                        //tempProcess.StartInfo.UseShellExecute = false;
-                        try { tempProcess.Start(); }
-                        catch { }
-                    });
-
-                    processTask.Start();
-                }
-            }
 
             try
             {

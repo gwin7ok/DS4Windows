@@ -33,9 +33,6 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         public LightbarSettingInfo LightbarSettings { get; }
         public LightbarDS4WinInfo LightInfo { get; }
 
-        /// <summary>読込の引数 <c>launchprogram</c>（プロファイルの起動プログラムを、読込時に起動するか）。</summary>
-        public bool LaunchProgram { get; set; }
-
         public DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettings { get; set; }
 
 

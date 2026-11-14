@@ -38,6 +38,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
 
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
+            services.AddSingleton<IProfileProgramLauncher, ProfileProgramLauncher>();   // プロファイルに結んだプログラムの起動（唯一の入口）
             // Phase14b-Step14（D14）: 保存・読込の後の実行時状態のリセット（Core の契約、第2層の実装）
             services.AddSingleton<ISpecialActionRuntimeReset, SpecialActionRuntimeReset>();
 

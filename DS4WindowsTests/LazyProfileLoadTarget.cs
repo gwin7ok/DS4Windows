@@ -26,6 +26,8 @@ namespace DS4WindowsTests
         public void UnplugOutDev(int index, IConfigurableDevice device, bool immediate = false, bool force = false)
             => Target.UnplugOutDev(index, device, immediate, force);
 
+        public void LaunchProfileProgram(int ind) => Target.LaunchProfileProgram(ind);
+
         public void CheckProfileOptions(int ind, IConfigurableDevice device, bool startUp = false)
             => Target.CheckProfileOptions(ind, device, startUp);
 

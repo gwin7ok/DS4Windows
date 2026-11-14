@@ -257,18 +257,22 @@ namespace DS4Windows.Processing.Services
             if (isTemp)
             {
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Loading TEMP profile '{profileName}' for device {device}");
-                result = _profileRepo.LoadTempProfile(device, profileName, launchProgram, control);
+                result = _profileRepo.LoadTempProfile(device, profileName, control);
             }
             else
             {
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Loading NORMAL profile '{profileName}' for device {device}");
                 // 通常プロファイルの場合、ProfilePathを更新してからLoadProfile
                 _profileRepo.ProfilePath[device] = profileName;
-                result = LoadNormalProfile(device, launchProgram, control);
+                result = LoadNormalProfile(device, control);
             }
 
             if (result)
+            {
                 CompleteProfileApplication(device, profileName, isTemp, control, source, prolog);
+                // 起動するプログラムは、読み込みではなく、適用の完了のあとにここで起動する（動いていれば起動しない）
+                if (launchProgram) control.LaunchProfileProgram(device);
+            }
             else
             {
                 AppLogger.LogWarn($"ApplyProfile: Profile load FAILED for '{profileName}'");
@@ -279,10 +283,10 @@ namespace DS4Windows.Processing.Services
         }
 
         // 旧 Global.LoadProfile（ProfilePath[device] のプロファイルを読み込み、一時プロファイルの状態を戻す）
-        private bool LoadNormalProfile(int device, bool launchProgram, IProfileLoadTarget control)
+        private bool LoadNormalProfile(int device, IProfileLoadTarget control)
         {
             _config.loggedInvalidActions.Clear();
-            bool result = _profileXmlStore.LoadProfileXml(device, launchProgram, control, "", true, true);
+            bool result = _profileXmlStore.LoadProfileXml(device, control, "", true, true);
             _profileSettings.SetTempProfileName(device, string.Empty);
             _profileSettings.SetUseTempProfile(device, false);
             _profileSettings.SetTempProfileDistance(device, false);

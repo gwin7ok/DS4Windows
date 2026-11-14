@@ -77,7 +77,7 @@ namespace DS4Windows.Core.Persistence
                     // 状態調整ロジック(旧Global.LoadProfile内で行っていたもの)をここに直接内包する。
                     // 挙動はGlobal.LoadProfileと完全に同一に維持する。
                     _config.loggedInvalidActions.Clear();
-                    _profileXmlStore.LoadProfileXml(deviceIndex, false, _loadTarget, "", false, true);
+                    _profileXmlStore.LoadProfileXml(deviceIndex, _loadTarget, "", false, true);
                     _profileSettings?.SetTempProfileName(deviceIndex, string.Empty);
                     _profileSettings?.SetUseTempProfile(deviceIndex, false);
                     _profileSettings?.SetTempProfileDistance(deviceIndex, false);
@@ -278,10 +278,10 @@ namespace DS4Windows.Core.Persistence
 
         // ---- Phase5-Step13-7: 一時プロファイル読込（スワイプ操作等での即時切替用） ----
         // Phase7-Step3c W3: 旧 Global.LoadTempProfile の処理をここへ移した（xinputChange は従来どおり読み込みへ渡さない）。
-        public bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true)
+        public bool LoadTempProfile(int deviceIndex, string profileName, IProfileLoadTarget control, bool xinputChange = true)
         {
             _config.loggedInvalidActions.Clear();
-            bool result = _legacyProfileXml.LoadProfile(deviceIndex, launchProgram, control, Path.Combine(ProfilesPath, $"{profileName}.xml"));
+            bool result = _legacyProfileXml.LoadProfile(deviceIndex, control, Path.Combine(ProfilesPath, $"{profileName}.xml"));
             if (result)
             {
                 _profileSettings.SetTempProfileName(deviceIndex, profileName);

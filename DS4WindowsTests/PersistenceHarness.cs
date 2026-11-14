@@ -38,7 +38,7 @@ namespace DS4WindowsTests
             string path = Path.Combine(ctx.AppData, "Profiles", name + ".xml");
             File.WriteAllText(path, xml);
             BackingStore store = NewStore();
-            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).LoadProfile(Slot, false, ctx.LoadTarget, path, false, false), "プロファイルの読込に失敗した");
+            Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).LoadProfile(Slot, ctx.LoadTarget, path, false, false), "プロファイルの読込に失敗した");
             return store;
         }
 

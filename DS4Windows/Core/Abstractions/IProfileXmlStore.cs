@@ -5,7 +5,7 @@ namespace DS4Windows.Core.Abstractions
 {
     public interface IProfileXmlStore
     {
-        bool LoadProfileXml(int deviceIndex, bool launchProgram, IProfileLoadTarget control,
+        bool LoadProfileXml(int deviceIndex, IProfileLoadTarget control,
             string overridePath = "", bool xinputChange = true, bool postLoad = true);
         bool SaveProfileXml(int deviceIndex, string profileName);
 

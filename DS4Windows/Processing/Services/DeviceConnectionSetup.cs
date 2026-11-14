@@ -1,10 +1,6 @@
 using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
@@ -25,10 +21,12 @@ namespace DS4Windows.Processing.Services
         private readonly IUdpMotionService _udpMotion;
         private readonly StickMotionState _stickMotion;
         private readonly IInputDeviceModuleRegistry _deviceModules;
+        private readonly IProfileProgramLauncher _programLauncher;
 
         public DeviceConnectionSetup(IProfileSettingsService profileSettings, IUdpMotionService udpMotion, StickMotionState stickMotion,
-            IInputDeviceModuleRegistry deviceModules)
+            IInputDeviceModuleRegistry deviceModules, IProfileProgramLauncher programLauncher)
         {
+            _programLauncher = programLauncher ?? throw new ArgumentNullException(nameof(programLauncher));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
@@ -71,47 +69,7 @@ namespace DS4Windows.Processing.Services
 
             if (!startUp)
             {
-                CheckLauchProfileOption(ind, device);
-            }
-        }
-
-        private void CheckLauchProfileOption(int ind, InputDeviceCore device)
-        {
-            string programPath = _profileSettings.LaunchProgram[ind];
-            if (programPath != string.Empty)
-            {
-                Process[] localAll = Process.GetProcesses();
-                bool procFound = false;
-                for (int procInd = 0, procsLen = localAll.Length; !procFound && procInd < procsLen; procInd++)
-                {
-                    try
-                    {
-                        string temp = localAll[procInd].MainModule.FileName;
-                        if (temp == programPath)
-                        {
-                            procFound = true;
-                        }
-                    }
-                    // Ignore any process for which this information
-                    // is not exposed
-                    catch { }
-                }
-
-                if (!procFound)
-                {
-                    Task processTask = new Task(() =>
-                    {
-                        Thread.Sleep(5000);
-                        Process tempProcess = new Process();
-                        tempProcess.StartInfo.FileName = programPath;
-                        tempProcess.StartInfo.WorkingDirectory = new FileInfo(programPath).Directory.ToString();
-                        //tempProcess.StartInfo.UseShellExecute = false;
-                        try { tempProcess.Start(); }
-                        catch { }
-                    });
-
-                    processTask.Start();
-                }
+                _programLauncher.LaunchIfNotRunning(ind);
             }
         }
 

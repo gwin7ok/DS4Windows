@@ -239,7 +239,7 @@ namespace DS4WindowsTests
             Assert.True(complete > 0 && prealloc > complete && publish > prealloc, "束縛の差し替えは、掃除（PreallocateForProfileApply）の後に行う");
 
             string main = File.ReadAllText(window);
-            Assert.Matches(@"if \(_profileRepo\.LoadTempProfile\(tdevice, strData\[2\], true, _loadTarget\)\)\s*_profileApplication\.PublishBindings\(tdevice\);", main);
+            Assert.Matches(@"if \(_profileRepo\.LoadTempProfile\(tdevice, strData\[2\], _loadTarget\)\)\s*\{\s*_profileApplication\.PublishBindings\(tdevice\);\s*_loadTarget\.LaunchProfileProgram\(tdevice\);", main);
         }
     }
 }

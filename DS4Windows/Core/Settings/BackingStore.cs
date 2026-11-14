@@ -416,12 +416,6 @@ namespace DS4Windows.Core.Settings
 
         bool tempBool = false;
 
-        // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IProcessInspector>()。ServiceRegistration の BackingStore の登録が設定する。
-        // 未設定のとき（コンテナを通らないテストなど）は、LoadProfile が従来のフォールバック（プロセス一覧の走査）を使う。
-        // Phase7-Step10d W5: コンストラクター注入にしない理由 → ProcessInspector は、ブートストラップで先に作る BackingStore（起動直後の設定の読み取りに使う）に、
-        // コンテナの構築後に ServiceRegistration の登録が設定する（コンテナより前に BackingStore を作るため、コンストラクターでは渡せない）。
-        public DS4Windows.Core.Abstractions.IProcessInspector ProcessInspector { get; set; }
-
         // Phase7-Step6 W1（Q2＝A）: 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
         // ServiceRegistration の IOutputSlotService の登録が、OutputSlotService の生成時に ActiveOutDevType の配列を設定する。
         // 設定前（コンテナ構築前の起動処理、コンテナを通らないテスト）は、全スロット None の既定の配列を読む（接続前は元々 None）。
