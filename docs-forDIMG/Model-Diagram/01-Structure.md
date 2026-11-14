@@ -74,7 +74,7 @@ flowchart LR
     Out --> Be["IVirtualPadBackend（ViGEm）"]
 ```
 
-- 毎フレームの経路（Mapping）は割り当て 0 を保つ。
+- 毎フレームの経路（Mapping）は割り当て 0 を保つ。検査しているテスト: `StickInputConditionerAllocationTests`（アンチスナップバック）、`MappingProfileActionSnapshotTests`（特殊アクション名の写し）、`DefaultActionManagerToggleAllocationTests`（トグル）、`InputEventArgsReuseTests`（タッチ・6 軸のイベント引数）、`ProcessingLogGuardRuleTests`（Trace／Debug のログのレベル判定）。
 - 切断時の後始末は `IDeviceInputCleanup`、ライトバーの色は `ILightbarService`。
 
 ## 5. 実在する主要な型
