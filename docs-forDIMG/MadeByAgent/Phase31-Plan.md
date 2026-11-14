@@ -1,7 +1,7 @@
 # Phase31 計画書: 入力機種の読み取りの共通化と、機種の名指しの解消（コードレビュー 2026-11 の 4-2・4-3・5-2）
 
 作成日: 2026-11-11
-状態: **実施済み（31-1〜31-11。ただし D1＝B の「ずれを揃える変更」は、ログの文言の承認待ちのため未実施）。2026-11-14**
+状態: **実施済み（31-1〜31-11。D1＝B の揃えは Phase31b で実施）。2026-11-14**
 出典: `docs-forDIMG/Code-Review-2026-11/04-Duplication-and-Abstraction.md`、`05-Extensibility.md`
 前提: Phase29・30 の完了（同じファイルを触らないが、入力の経路の確認をまとめるため）
 
@@ -80,11 +80,11 @@ D1＝**B（DualSense を DS4 に合わせる）**、D2＝A（スレッドの起�
 - **D3 の決定（`IInputDeviceModule` に差し込み口）とは違う場所にした**: 呼び出し側の `ControllerSlotCommands` が持つのは機器（`InputDeviceCore`）であり、モジュールを引く経路がない。機種の振る舞いは、機器の仮想メソッドにするほうが、手順書の「機種だけの処理は override する」の形に合い、変更も小さい。モジュール側（`DualSenseDeviceModule.ApplyProfileOptions`）も、同じ仮想メソッドを呼ぶ。
 - **出力・校正・解析の部品**: `Input/Reports`（`DualSenseOutputReportBuilder`＋`DualSenseOutputState`。USB と BT は、BT が先頭に 1 バイト足すだけで以降の並びが同じため、1 つの組み立てにした。`SwitchProRumbleEncoder`）、`Input/Parsers`（`SonyReportDecoding`、`SwitchProCalibrationDecoder`）。
 - テスト: `InputLoopFailureHandlingTests`（DS4・DualSense の BT の CRC の上限、読み取りの失敗の切断）、`DualSenseOutputReportTests`（出力レポートを、部品へ出す前の実装の記録で固定。BT の CRC は検証の式で）、`SwitchProRumbleDataTests`（同じく記録）、`SwitchProCalibrationDecoderTests`、`SonyReportDecodingTests`。ソースの文字列を見る 2 件（`OutputDataFlagTests`、`BatteryPrimingTests`）は移動先に合わせて直した。
-- **D1＝B（DualSense を DS4 に合わせる）は、ログの文言の承認待ち**: 次の違いが残っている。揃えると文言・レベルが変わるため、承認後に別コミットで行う。(1) CRC の不一致の上限で切断するときのログ: DualSense は旧い文言（`CRC32Fail`: "Data integrity checks failed for wireless device. Closing device."。画面・トレイに出る）、DS4 は `Log_Device_CrcFailedDisconnect`（機器の名前と回数つき）。(2) 読み取りの失敗の診断ログの書式: DualSense は `{Mac} {時刻} > disconnect…`、DS4 は `{Mac} {時刻}> disconnect…`（開発者向け。Debug）。(3) 上限の数: DualSense は直書きの 10、DS4 は定数（同じ 10）。(4) 切断時の終わり方: DualSense は `exitInputThread` を立てて `Skip`、DS4 は `Terminate`（ループの外から見た結果は同じ）。(5) DS4 だけ、切断のときに機器を起こす書き込み（`sendOutputReport`）を行う。
+- **D1＝B（DualSense を DS4 に合わせる）: 2026-11-14 に一覧の承認を得て実施済み（Phase31b。下の (1)〜(5) をすべて揃えた。`CRC32Fail` のリソースは未使用になったが残してある）。実施前の記述**: 次の違いが残っている。揃えると文言・レベルが変わるため、承認後に別コミットで行う。(1) CRC の不一致の上限で切断するときのログ: DualSense は旧い文言（`CRC32Fail`: "Data integrity checks failed for wireless device. Closing device."。画面・トレイに出る）、DS4 は `Log_Device_CrcFailedDisconnect`（機器の名前と回数つき）。(2) 読み取りの失敗の診断ログの書式: DualSense は `{Mac} {時刻} > disconnect…`、DS4 は `{Mac} {時刻}> disconnect…`（開発者向け。Debug）。(3) 上限の数: DualSense は直書きの 10、DS4 は定数（同じ 10）。(4) 切断時の終わり方: DualSense は `exitInputThread` を立てて `Skip`、DS4 は `Terminate`（ループの外から見た結果は同じ）。(5) DS4 だけ、切断のときに機器を起こす書き込み（`sendOutputReport`）を行う。
 - 31-11 の「コメントアウトの塊の整理」は、移した部分（振動の組み立て、校正）の分だけ消え、`SwitchProDevice` の他の箇所は未整理。
 
 ## 履歴
-- 2026-11-14: 31-0〜31-11 を実施した（上の記録）。D1＝B のログの文言の変更は承認待ち。
+- 2026-11-14: 31-0〜31-11 を実施した（上の記録）。D1＝B（DualSense の揃え）を承認のうえ実施（Phase31b）。
 - 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: Phase 番号の付け替え（旧 Phase30 → Phase31。進める順に合わせた）。本文中の Step 番号も付け替えた。
 - 2026-11-11: 計画書を作成。コードは未着手。
