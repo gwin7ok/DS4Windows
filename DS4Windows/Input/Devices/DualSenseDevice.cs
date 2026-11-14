@@ -193,6 +193,31 @@ namespace DS4Windows.Input.Devices
         protected bool useAccurateRumble = true; 
         public bool UseAccurateRumble { get => useAccurateRumble; set => useAccurateRumble = value; }
 
+        public override bool UsesGenericRumbleRescaleSetting => true;
+
+        public override bool ApplyRumbleEmulation(RumbleEmulationMode mode, byte hapticPowerLevel)
+        {
+            switch (mode)
+            {
+                case RumbleEmulationMode.Disabled:
+                    UseRumble = false;
+                    UseAccurateRumble = false;
+                    break;
+                case RumbleEmulationMode.Legacy:
+                    UseRumble = true;
+                    UseAccurateRumble = false;
+                    break;
+                case RumbleEmulationMode.Accurate:
+                default:
+                    UseRumble = true;
+                    UseAccurateRumble = true;
+                    break;
+            }
+
+            HapticPowerLevel = hapticPowerLevel;
+            return true;
+        }
+
         private TriggerEffectData l2EffectData;
         private TriggerEffectData r2EffectData;
 

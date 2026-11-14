@@ -524,6 +524,17 @@ namespace DS4Windows.Input
         {
         }
 
+        /// <summary>
+        /// 振動のエミュレーションの方式と触覚の強さを、この機種へ反映する差し込み口。反映できたら true。
+        /// 既定は false（振動のエミュレーションの方式を持たない機種）。
+        /// </summary>
+        public virtual bool ApplyRumbleEmulation(RumbleEmulationMode mode, byte hapticPowerLevel)
+        {
+            return false;
+        }
+
+        public virtual bool UsesGenericRumbleRescaleSetting => false;
+
         public virtual void StartUpdate()
         {
         }

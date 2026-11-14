@@ -41,27 +41,7 @@ namespace DS4Windows.Processing.Services
 
         public override void ApplyProfileOptions(InputDeviceCore device, int ind, IProfileSettingsService settings)
         {
-            // DualSense specific profile settings
-            if (device is DS4Windows.Input.Devices.DualSenseDevice dualsense)
-            {
-                switch (settings.DualSenseRumbleEmulationMode[ind])
-                {
-                    case DS4Windows.Core.Model.RumbleEmulationMode.Disabled:
-                        dualsense.UseRumble = false;
-                        dualsense.UseAccurateRumble = false;
-                        break;
-                    case DS4Windows.Core.Model.RumbleEmulationMode.Legacy:
-                        dualsense.UseRumble = true;
-                        dualsense.UseAccurateRumble = false;
-                        break;
-                    case DS4Windows.Core.Model.RumbleEmulationMode.Accurate:
-                    default:
-                        dualsense.UseRumble = true;
-                        dualsense.UseAccurateRumble = true;
-                        break;
-                }
-                dualsense.HapticPowerLevel = settings.DualSenseHapticPowerLevel[ind];
-            }
+            device.ApplyRumbleEmulation(settings.DualSenseRumbleEmulationMode[ind], settings.DualSenseHapticPowerLevel[ind]);
         }
     }
 }

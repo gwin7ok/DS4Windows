@@ -49,27 +49,8 @@ namespace DS4Windows.Processing.Services
 
         public bool ApplyDualSenseRumbleOptions(int slot, int rumbleEmulationMode, byte hapticPowerLevel)
         {
-            if (!(DeviceAt(slot) is DualSenseDevice dualsense)) return false;
-
-            switch ((RumbleEmulationMode)rumbleEmulationMode)
-            {
-                case RumbleEmulationMode.Disabled:
-                    dualsense.UseRumble = false;
-                    dualsense.UseAccurateRumble = false;
-                    break;
-                case RumbleEmulationMode.Legacy:
-                    dualsense.UseRumble = true;
-                    dualsense.UseAccurateRumble = false;
-                    break;
-                case RumbleEmulationMode.Accurate:
-                default:
-                    dualsense.UseRumble = true;
-                    dualsense.UseAccurateRumble = true;
-                    break;
-            }
-
-            dualsense.HapticPowerLevel = hapticPowerLevel;
-            return true;
+            InputDeviceCore device = DeviceAt(slot);
+            return device != null && device.ApplyRumbleEmulation((RumbleEmulationMode)rumbleEmulationMode, hapticPowerLevel);
         }
 
         public bool ResetGyroCalibration(int slot)
