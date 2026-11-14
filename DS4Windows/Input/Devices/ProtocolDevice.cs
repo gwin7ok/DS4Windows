@@ -106,13 +106,7 @@ namespace DS4Windows.Input.Devices
                 return;
             }
 
-            ds4Input = new Thread(ReadInput)
-            {
-                Priority = ThreadPriority.AboveNormal,
-                Name = protocol.DeviceType + " input thread: " + Mac,
-                IsBackground = true,
-            };
-            ds4Input.Start();
+            ds4Input = StartBackgroundThread(ReadInput, ThreadPriority.AboveNormal, protocol.DeviceType + " input thread: " + Mac);
         }
 
         protected override void OnLoopStarting()

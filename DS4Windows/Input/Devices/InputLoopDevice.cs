@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
 
@@ -95,6 +96,105 @@ namespace DS4Windows.Input.Devices
 
         /// <summary>出力（振動・ライトバーなど）を、必要なら書き込む。<c>Report</c> のあとに呼ばれる。</summary>
         protected abstract void WriteOutputFrame();
+
+        /// <summary>Bluetooth の入力レポートの CRC の検証の結果。</summary>
+        protected enum BtCrcResult
+        {
+            /// <summary>一致した。連続の失敗の数は 0 に戻る。</summary>
+            Valid,
+
+            /// <summary>不一致。このフレームは捨てて、次の読み取りへ（連続の失敗の数を 1 つ増やした）。</summary>
+            Skipped,
+
+            /// <summary>不一致が上限を超えて続いた。切断の手順は機種が行う。</summary>
+            LimitReached,
+        }
+
+        /// <summary>レポートの <paramref name="pos"/> から、リトルエンディアンの 32 ビットの CRC を読む。</summary>
+        protected static uint ReadCrc32(byte[] report, int pos)
+        {
+            return report[pos] |
+                (uint)(report[pos + 1] << 8) |
+                (uint)(report[pos + 2] << 16) |
+                (uint)(report[pos + 3] << 24);
+        }
+
+        /// <summary>
+        /// Bluetooth の入力レポート（末尾 4 バイトが CRC32）を検証する。不一致のときは、欠落に気づけるようにパケット番号を進め、
+        /// 連続の失敗が <paramref name="maxConsecutiveFailures"/> に達していなければ数を増やして <see cref="BtCrcResult.Skipped"/> を返す
+        /// （待機中の印も戻す）。上限に達していれば <see cref="BtCrcResult.LimitReached"/>（ログと切断の手順は機種が行う）。
+        /// </summary>
+        protected BtCrcResult VerifyBtInputCrc(byte[] report, int maxConsecutiveFailures)
+        {
+            uint recvCrc32 = ReadCrc32(report, BT_INPUT_REPORT_CRC32_POS);
+            int start = 0;
+            int size = BT_INPUT_REPORT_CRC32_POS;
+            uint calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref HamSeed, ref report, ref start, ref size);
+            if (recvCrc32 == calcCrc32)
+            {
+                inputReportErrorCount = 0;
+                return BtCrcResult.Valid;
+            }
+
+            cState.PacketCounter = pState.PacketCounter + 1; // 欠落に気づけるよう、不一致でも進める
+            if (inputReportErrorCount >= maxConsecutiveFailures)
+            {
+                return BtCrcResult.LimitReached;
+            }
+
+            inputReportErrorCount++;
+            readWaitEv.Reset();
+            return BtCrcResult.Skipped;
+        }
+
+        /// <summary>読み取りのループを終えるときの共通の後始末: 出力を止め、切断中の印を立て、切断（<c>Removal</c>）を通知し、監視スレッドを止める。</summary>
+        protected void StopAndRemove()
+        {
+            StopOutputUpdate();
+            isDisconnecting = true;
+            RunRemoval();
+
+            timeoutExecuted = true;
+        }
+
+        /// <summary>切断に気づけないとき（Windows が機器の消失を検出しないとき）に、機器へ 1 回の操作を起こして気づかせる。既定は何もしない。</summary>
+        protected virtual void KickWindowsToNoticeDisconnect()
+        {
+        }
+
+        /// <summary>
+        /// Bluetooth の監視スレッドの本体。<see cref="InputDeviceCore.READ_STREAM_TIMEOUT"/> の間に 1 度も読み取れなかったら、
+        /// <see cref="KickWindowsToNoticeDisconnect"/> を呼んで終わる。読み取りのたびに <c>timeoutEvent</c> を下ろす。
+        /// </summary>
+        protected void TimeoutTestThread()
+        {
+            while (!timeoutExecuted)
+            {
+                if (timeoutEvent)
+                {
+                    timeoutExecuted = true;
+                    KickWindowsToNoticeDisconnect();
+                }
+                else
+                {
+                    timeoutEvent = true;
+                    Thread.Sleep(READ_STREAM_TIMEOUT);
+                }
+            }
+        }
+
+        /// <summary>背景スレッドを作って始める。優先度と名前は機種が決める。</summary>
+        protected static Thread StartBackgroundThread(ThreadStart body, ThreadPriority priority, string name)
+        {
+            var thread = new Thread(body)
+            {
+                Priority = priority,
+                Name = name,
+                IsBackground = true,
+            };
+            thread.Start();
+            return thread;
+        }
 
         protected override void RunInputLoop() => ReadInput();
 

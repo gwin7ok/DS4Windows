@@ -466,11 +466,7 @@ namespace DS4Windows.Input.Devices
                     //ds4Output.IsBackground = true;
                     //ds4Output.Start();
 
-                    timeoutCheckThread = new Thread(TimeoutTestThread);
-                    timeoutCheckThread.Priority = ThreadPriority.BelowNormal;
-                    timeoutCheckThread.Name = "DualSense Timeout thread: " + Mac;
-                    timeoutCheckThread.IsBackground = true;
-                    timeoutCheckThread.Start();
+                    timeoutCheckThread = StartBackgroundThread(TimeoutTestThread, ThreadPriority.BelowNormal, "DualSense Timeout thread: " + Mac);
                 }
                 //else
                 //{
@@ -481,42 +477,23 @@ namespace DS4Windows.Input.Devices
                 //    ds4Output.Start();
                 //}
 
-                ds4Input = new Thread(ReadInput);
-                ds4Input.Priority = ThreadPriority.AboveNormal;
-                ds4Input.Name = "DualSense Input thread: " + Mac;
-                ds4Input.IsBackground = true;
-                ds4Input.Start();
+                ds4Input = StartBackgroundThread(ReadInput, ThreadPriority.AboveNormal, "DualSense Input thread: " + Mac);
             }
             else
                 AppLogger.LogDebug("Thread already running for DS4: " + Mac);
         }
 
-        private void TimeoutTestThread()
+        protected override void KickWindowsToNoticeDisconnect()
         {
-            while (!timeoutExecuted)
-            {
-                if (timeoutEvent)
-                {
-                    timeoutExecuted = true;
-
-                    // Request serial feature report data. Causes Windows to notice the dead
-                    // device.
-                    byte[] tmpFeatureData = new byte[64];
-                    tmpFeatureData[0] = SERIAL_FEATURE_ID;
-                    hDevice.readFeatureData(tmpFeatureData); // Kick Windows into noticing the disconnection.
-                }
-                else
-                {
-                    timeoutEvent = true;
-                    Thread.Sleep(READ_STREAM_TIMEOUT);
-                }
-            }
+            // Request serial feature report data. Causes Windows to notice the dead
+            // device.
+            byte[] tmpFeatureData = new byte[64];
+            tmpFeatureData[0] = SERIAL_FEATURE_ID;
+            hDevice.readFeatureData(tmpFeatureData);
         }
 
         private int reportOffset;
         private IInputReportParser reportParser;
-        private int crcPos = BT_INPUT_REPORT_CRC32_POS;
-        private int crcOffset = 0;
 
         protected override void OnLoopStarting()
         {
@@ -538,35 +515,18 @@ namespace DS4Windows.Input.Devices
                 HidReadStatus res = hDevice.ReadFile(inputReport);
                 if (res == HidReadStatus.Success)
                 {
-                    uint recvCrc32 = inputReport[BT_INPUT_REPORT_CRC32_POS] |
-                        (uint)(inputReport[BT_INPUT_REPORT_CRC32_POS + 1] << 8) |
-                        (uint)(inputReport[BT_INPUT_REPORT_CRC32_POS + 2] << 16) |
-                        (uint)(inputReport[BT_INPUT_REPORT_CRC32_POS + 3] << 24);
-
-                    uint calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref HamSeed, ref inputReport, ref crcOffset, ref crcPos);
-                    if (recvCrc32 != calcCrc32)
+                    switch (VerifyBtInputCrc(inputReport, 10))
                     {
-                        cState.PacketCounter = pState.PacketCounter + 1; //still increase so we know there were lost packets
-                        if (this.inputReportErrorCount >= 10)
-                        {
+                        case BtCrcResult.Skipped:
+                            return FrameResult.Skip;
+                        case BtCrcResult.LimitReached:
                             exitInputThread = true;
 
                             AppLogger.Log(AppLogLevel.Warn, DS4Windows.Translations.Strings.CRC32Fail, LogOptions.UserFacing);
                             readWaitEv.Reset();
-                            StopOutputUpdate();
-                            isDisconnecting = true;
-                            RunRemoval();
-
-                            timeoutExecuted = true;
+                            StopAndRemove();
                             return FrameResult.Skip;
-                        }
-
-                        this.inputReportErrorCount++;
-                        readWaitEv.Reset();
-                        return FrameResult.Skip;
                     }
-
-                    this.inputReportErrorCount = 0;
                 }
                 else
                 {
@@ -614,11 +574,7 @@ namespace DS4Windows.Input.Devices
         {
             exitInputThread = true;
             readWaitEv.Reset();
-            StopOutputUpdate();
-            isDisconnecting = true;
-            RunRemoval();
-
-            timeoutExecuted = true;
+            StopAndRemove();
         }
 
         // BT は 0x31 のレポートだけを扱う
