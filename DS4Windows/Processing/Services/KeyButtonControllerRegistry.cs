@@ -62,11 +62,11 @@ namespace DS4Windows.Processing.Services
 
                         inst = temp ?? new KeyButtonActionController(device, mode, _manager, _dispatcher, _time, actionName ?? "<mapping>");
                         _controllers[dictKey] = inst;
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
+                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
                     }
                     else
                     {
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
+                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
                     }
                     return inst;
                 }
@@ -93,18 +93,18 @@ namespace DS4Windows.Processing.Services
 
                         inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, _time, name);
                         _controllers[dictKey] = inst;
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
+                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
                     }
                     else
                     {
-                        try { AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
+                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
                     }
                     // additional check: if existing assignedAction differs from requested, log warning
                     try
                     {
                         if (inst != null && !string.Equals(inst.AssignedActionName, name, StringComparison.OrdinalIgnoreCase))
                         {
-                            AppLogger.LogDebug($"KBC DIAGNOSTIC: assignedAction mismatch for dictKey={dictKey} existing={(inst.AssignedActionName ?? "(null)")} requested={name} device={device}");
+                            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"KBC DIAGNOSTIC: assignedAction mismatch for dictKey={dictKey} existing={(inst.AssignedActionName ?? "(null)")} requested={name} device={device}");
                         }
                     }
                     catch { }

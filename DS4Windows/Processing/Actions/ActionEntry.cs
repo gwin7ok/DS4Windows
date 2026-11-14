@@ -21,7 +21,7 @@ namespace DS4Windows.Processing.Actions
             for (int i = 0; i < States.Length; ++i) States[i] = new ActionInstanceState();
             try
             {
-                AppLogger.LogTrace($"ActionEntry created: action={(action?.name ?? "(null)")} - initialized ActionInstanceState (IsToggledOn cleared)");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionEntry created: action={(action?.name ?? "(null)")} - initialized ActionInstanceState (IsToggledOn cleared)");
             }
             catch { }
         }

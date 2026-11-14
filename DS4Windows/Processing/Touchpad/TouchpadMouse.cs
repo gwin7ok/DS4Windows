@@ -1150,7 +1150,7 @@ namespace DS4Windows.Processing.Touchpad
             previousUnchangedTouchJoyFrame = false;
             pastTime = arg.TimeStamp;
             // 調査用 Trace（動作は変えない）: タッチ開始の検出
-            AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
             firstTouch.populate(arg.Touches[0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID,
                 arg.Touches[0].PreviousTouch);
 
@@ -1184,7 +1184,7 @@ namespace DS4Windows.Processing.Touchpad
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
             byte tapSensitivity = _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity;
-            AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode} sens={tapSensitivity}");
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode} sens={tapSensitivity}");
             if (tapSensitivity != 0 && _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode == TouchpadOutMode.Mouse)
             {
                 if (secondtouchbegin)
@@ -1195,7 +1195,7 @@ namespace DS4Windows.Processing.Touchpad
 
                 DateTime test = arg.TimeStamp;
                 // 調査用 Trace（動作は変えない）: タップ判定の入力値と成否
-                AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap} " +
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap} " +
                     $"elapsedMs={(test - pastTime).TotalMilliseconds:F0} limitMs={tapSensitivity * 2} buttonPressed={arg.TouchButtonPressed} tappedOnce={tappedOnce} " +
                     $"dx={Math.Abs(firstTouch.HwX - arg.Touches[0].HwX)} dy={Math.Abs(firstTouch.HwY - arg.Touches[0].HwY)}");
                 if (test <= (pastTime + TimeSpan.FromMilliseconds((double)tapSensitivity * 2)) && !arg.TouchButtonPressed && !tappedOnce)
@@ -1203,7 +1203,7 @@ namespace DS4Windows.Processing.Touchpad
                     // Phase6 変更（ユーザー承認 2026-10-15）: 上流の許容 10 は実機で厳しすぎ、タップが成立しなかったため 100 に拡大
                     if (Math.Abs(firstTouch.HwX - arg.Touches[0].HwX) < TapMaxMoveHw && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < TapMaxMoveHw)
                     {
-                        AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap})");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap})");
                         if (_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap)
                         {
                             tappedOnce = true;

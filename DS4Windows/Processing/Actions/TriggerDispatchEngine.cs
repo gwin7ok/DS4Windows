@@ -628,9 +628,9 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled)
                 {
-                    AppLogger.LogTrace($"Trigger detected for SA '{source.name}' on device {device}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger detected for SA '{source.name}' on device {device}");
                     AppLogger.LogTrace($"SA '{source.name}' maps to Type:{source.type} Details:{source.details}");
-                    AppLogger.LogTrace($"Trigger keys for SA '{source.name}': <none>");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{source.name}': <none>");
                 }
 
                 if (AppLogger.IsDebugEnabled)

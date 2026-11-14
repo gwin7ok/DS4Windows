@@ -74,9 +74,9 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 var state = manager.GetStateFor(action, device);
-                try { AppLogger.LogTrace($"KeyAction.OnTrigger ENTER: name={action?.name} device={device} logical={logicalValue} native={nativeValue} useScan={useScan} isToggledOn={(state?.IsToggledOn ?? false)}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger ENTER: name={action?.name} device={device} logical={logicalValue} native={nativeValue} useScan={useScan} isToggledOn={(state?.IsToggledOn ?? false)}"); } catch { }
                 var ctrl = GetController(device);
-                try { AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}"); } catch { }
 
                 var trigger = new DS4Windows.Processing.Actions.TriggerContextImpl
                 {
@@ -92,7 +92,7 @@ namespace DS4Windows.Processing.Actions
 
                 // Forward the trigger (established) to the controller and let it decide semantics (press vs toggle)
                 try { ctrl?.Handle(binding, trigger); } catch { }
-                AppLogger.LogTrace($"KeyAction: trigger(established) forwarded to controller name={action?.name} device={device} key={logicalValue}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction: trigger(established) forwarded to controller name={action?.name} device={device} key={logicalValue}");
             }
             catch (Exception ex)
             {

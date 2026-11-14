@@ -57,32 +57,32 @@ namespace DS4Windows.Processing.Services
 
                 if (_syntheticInput.GlobalState.currentClicks.toggleCount != 0 && _syntheticInput.GlobalState.previousClicks.toggleCount == 0 && _syntheticInput.GlobalState.currentClicks.toggle)
                 {
-                    AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
                     // Phase7-Step8 W2（Q8＝A）: 旧 MouseOutputAction の検索（未登録のため常に null で、下の出力が実際の経路だった）を削除した。
                     _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
 
                     if (_syntheticInput.GlobalState.currentClicks.rightCount != 0 && _syntheticInput.GlobalState.previousClicks.rightCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightDown");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseRightDown");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTDOWN);
                     }
                     if (_syntheticInput.GlobalState.currentClicks.middleCount != 0 && _syntheticInput.GlobalState.previousClicks.middleCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleDown");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseMiddleDown");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEDOWN);
                     }
                     if (_syntheticInput.GlobalState.currentClicks.fourthCount != 0 && _syntheticInput.GlobalState.previousClicks.fourthCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=1");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=1");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=1");
                         _virtualKbm.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 1);
                     }
                     if (_syntheticInput.GlobalState.currentClicks.fifthCount != 0 && _syntheticInput.GlobalState.previousClicks.fifthCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=2");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=2");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=2");
                         _virtualKbm.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 2);
                     }
@@ -105,73 +105,73 @@ namespace DS4Windows.Processing.Services
                 {
                     if (_syntheticInput.GlobalState.currentClicks.leftCount != 0 && _syntheticInput.GlobalState.previousClicks.leftCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
                         // Phase7-Step8 W2（Q8＝A）: 旧 MouseOutputAction の検索（未登録のため常に null で、下の出力が実際の経路だった）を削除した。
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
                     }
                     else if (_syntheticInput.GlobalState.currentClicks.leftCount == 0 && _syntheticInput.GlobalState.previousClicks.leftCount != 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftUp");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftUp");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftUp");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTUP);
                     }
 
                     if (_syntheticInput.GlobalState.currentClicks.middleCount != 0 && _syntheticInput.GlobalState.previousClicks.middleCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleDown");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseMiddleDown");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEDOWN);
                     }
                     else if (_syntheticInput.GlobalState.currentClicks.middleCount == 0 && _syntheticInput.GlobalState.previousClicks.middleCount != 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleUp");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseMiddleUp");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseMiddleUp");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_MIDDLEUP);
                     }
 
                     if (_syntheticInput.GlobalState.currentClicks.rightCount != 0 && _syntheticInput.GlobalState.previousClicks.rightCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightDown");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseRightDown");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTDOWN);
                     }
                     else if (_syntheticInput.GlobalState.currentClicks.rightCount == 0 && _syntheticInput.GlobalState.previousClicks.rightCount != 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightUp");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseRightUp");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseRightUp");
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_RIGHTUP);
                     }
 
                     if (_syntheticInput.GlobalState.currentClicks.fourthCount != 0 && _syntheticInput.GlobalState.previousClicks.fourthCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=1");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=1");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=1");
                         _virtualKbm.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 1);
                     }
                     else if (_syntheticInput.GlobalState.currentClicks.fourthCount == 0 && _syntheticInput.GlobalState.previousClicks.fourthCount != 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonUp btn=1");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonUp btn=1");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonUp btn=1");
                         _virtualKbm.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 1);
                     }
 
                     if (_syntheticInput.GlobalState.currentClicks.fifthCount != 0 && _syntheticInput.GlobalState.previousClicks.fifthCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=2");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonDown btn=2");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonDown btn=2");
                         _virtualKbm.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONDOWN, 2);
                     }
                     else if (_syntheticInput.GlobalState.currentClicks.fifthCount == 0 && _syntheticInput.GlobalState.previousClicks.fifthCount != 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonUp btn=2");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseXButtonUp btn=2");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseXButtonUp btn=2");
                         _virtualKbm.PerformMouseButtonEventAlt(settings.OutputKBMMapping.MOUSEEVENTF_XBUTTONUP, 2);
                     }
 
                     if (_syntheticInput.GlobalState.currentClicks.wUpCount != 0 && _syntheticInput.GlobalState.previousClicks.wUpCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseWheelUp");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseWheelUp");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseWheelUp");
                         _virtualKbm.PerformMouseWheelEvent(settings.OutputKBMMapping.WHEEL_TICK_UP, 0);
                         _oldnow = _utcNow();
@@ -182,7 +182,7 @@ namespace DS4Windows.Processing.Services
 
                     if (_syntheticInput.GlobalState.currentClicks.wDownCount != 0 && _syntheticInput.GlobalState.previousClicks.wDownCount == 0)
                     {
-                        AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseWheelDown");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseWheelDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseWheelDown");
                         _virtualKbm.PerformMouseWheelEvent(settings.OutputKBMMapping.WHEEL_TICK_DOWN, 0);
                         _oldnow = _utcNow();

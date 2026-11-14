@@ -92,12 +92,12 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 int device = ctx.Device;
-                AppLogger.LogDebug($"SpecialAction KEY entry: name={_sa.name}, device={device}, uTriggerCount=0, untriggerindex=-1, beingTriggered=False");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KEY entry: name={_sa.name}, device={device}, uTriggerCount=0, untriggerindex=-1, beingTriggered=False");
 
                 if (AppLogger.IsTraceEnabled) LogTraceRising(ctx);
 
                 AppLogger.LogDebug($"SpecialAction KeyTriggered: device={device}, name={_sa.name}, index={_index}, ActionEntries={ActionEntryCount}");
-                AppLogger.LogDebug($"SpecialAction KeyTriggered: device={device}, name={_sa.name}, trigger={TriggerCombo}, index={_index}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KeyTriggered: device={device}, name={_sa.name}, trigger={TriggerCombo}, index={_index}");
                 AppLogger.LogDebug($"SpecialAction KEY triggered: name={_sa.name}, device={device}, key={_logicalKey}");
             }
             catch { }
@@ -108,15 +108,15 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {ctx.Device}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {ctx.Device}");
                 AppLogger.LogTrace($"SA '{_sa.name}' maps to Type:{_sa.type} Details:{_sa.details}");
-                AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
                 try
                 {
                     var parts = new List<string>();
                     (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
-                    AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
                 }
                 catch { }
             }
@@ -131,7 +131,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 int device = ctx.Device;
-                AppLogger.LogDebug($"SpecialAction KeyReleased: device={device}, name={_sa.name}, index={_index}, ActionEntries={ActionEntryCount}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KeyReleased: device={device}, name={_sa.name}, index={_index}, ActionEntries={ActionEntryCount}");
 
                 string released = "(unknown)";
                 ITriggerInput input = (ctx as IOutputContextInput)?.Input;
@@ -154,7 +154,7 @@ namespace DS4Windows.Processing.Actions
                     }
                 }
 
-                AppLogger.LogDebug($"SpecialAction KeyReleased: device={device}, name={_sa.name}, trigger={TriggerCombo}, released={released}, index={_index}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KeyReleased: device={device}, name={_sa.name}, trigger={TriggerCombo}, released={released}, index={_index}");
             }
             catch { }
         }

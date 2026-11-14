@@ -63,7 +63,7 @@ namespace DS4Windows.Processing.Actions
             _skippedNoTarget = !profileSwitcher.CanSwitch(sa);
             if (_skippedNoTarget)
             {
-                AppLogger.LogDebug($"SpecialAction PROFILE: skipped (target profile is empty or deleted), device={dev}, action={sa.name}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction PROFILE: skipped (target profile is empty or deleted), device={dev}, action={sa.name}");
                 return;
             }
             if (_engineMode && ctx != null)
@@ -103,22 +103,22 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled)
                 {
-                    AppLogger.LogTrace($"Trigger detected for SA '{sa.name}' on device {dev}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger detected for SA '{sa.name}' on device {dev}");
                     AppLogger.LogTrace($"SA '{sa.name}' maps to Type:{sa.type} Details:{sa.details}");
                     // 旧経路は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため例外（握りつぶし）となり、常に "<none>" を記録している（既存の挙動）
-                    AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
                     var parts = new List<string>();
                     (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
-                    AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
                 }
 
                 bool useTemp = _settings.GetUseTempProfile(dev);
-                AppLogger.LogDebug($"SpecialAction PROFILE: Triggered for device {dev}, action={sa.name}, target={sa.details}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction PROFILE: Triggered for device {dev}, action={sa.name}, target={sa.details}");
                 AppLogger.LogDebug($"SpecialAction PROFILE: beingTriggered={false}, useTempProfile={useTemp}");   // 旧経路は、立ち上がりのとき、常に False
                 int count = 0;
                 try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
-                AppLogger.LogDebug($"SpecialAction Profile: device={dev}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction Profile: device={dev}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
             catch { }
         }
