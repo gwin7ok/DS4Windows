@@ -522,8 +522,7 @@ namespace DS4Windows.Input.Devices
                 tempMotion.angVelPitch = -gyroPitch * GYRO_IN_DEG_SEC_FACTOR;
                 tempMotion.angVelRoll = gyroRoll * GYRO_IN_DEG_SEC_FACTOR;
 
-                SixAxisEventArgs args = new SixAxisEventArgs(cState.ReportTimeStamp, cState.Motion);
-                sixAxis.FireSixAxisEvent(args);
+                sixAxis.FireSixAxisEvent(cState.ReportTimeStamp, cState.Motion);
             }
         }
 
