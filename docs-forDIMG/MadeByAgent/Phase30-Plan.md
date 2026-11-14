@@ -1,7 +1,7 @@
 # Phase30 計画書: `TouchpadMouse` の分割
 
 作成日: 2026-11-12
-状態: **未着手。承認待ち**
+状態: **一部完了（30-1・30-2）。30-3〜30-7 は Phase30b へ繰り越し**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 3、優先 1）、`02-Layers-and-Placement.md` §3、`06-Performance.md` の 6-10
 前提: Phase29 の 29-8（ジャイロのトリガーの判定）と 29-9（動き・タッチのイベント引数）のあとに行う。同じファイルを 2 回触らないため。
 
@@ -43,14 +43,14 @@ D1＝**B（全部。36-5 を含む）**、D2＝**B（出力の種類ごとの実
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 30-0 | 特性化テスト: 出力の種類（マウス、Controls、マウススティック、パススルー）と、ジャイロの出力（Controls、マウス、マウススティック）ごとに、入力の列と出力を固定する。未調査だった計算の中身を読み、毎フレームの割り当てがあれば記録する | 新規（仕事ごと） | 未着手 |
-| 30-1 | ジャイロの出力を別の型へ（`sixaxisMoved` の中身、トリガーの判定、`SixMouseStick`、切り替えの状態）。購読（`DeviceConnectionSetup.cs:199`）は、新しい型へ向ける | 30-0 が不変。割り当て 0 | 未着手 |
-| 30-2 | タッチ → スティック（`TouchpadMouseStick` 297 行）を別の型へ。フィルター（`OneEuroFilterPair`）とトラックボールの状態の持ち主を決める | 同上 | 未着手 |
-| 30-3 | タップ・ダブルタップ・押し続けの判定（`touchesEnded`、`StartTapClickHold`）を別の型へ。プロファイルのスワイプ切替の合図（`slideleft`／`slideright`）の出し方は変えない | 同上。タップの時間の境界（感度 × 1.5 ミリ秒）を固定する | 未着手 |
-| 30-4 | タッチボタン（`TouchButtonCheckProcess` 134 行）を別の型へ | 同上 | 未着手 |
-| 30-5 | （D1 が B のとき）`touchesMoved`・`touchUnchanged` の、出力の種類ごとの枝を整理する。D2 の差し替えを行う場合は、ここで行う | 同上 | 未着手 |
-| 30-6 | 設定の読み取りを、フレームの先頭で 1 回、領域の窓口（`TouchpadSlotSettings`、`GyroSlotSettings`）を取ってから使う形にそろえる（`ForSlot(deviceNum)` の 55 か所） | 30-0 が不変 | 未着手 |
-| 30-7 | 文書: `01-Structure.md`（型の表）、`Code-Review-2026-11/00-Summary.md` の未調査の行を更新 | `ModelDiagramGuardTests` | 未着手 |
+| 30-0 | 特性化テスト: 出力の種類（マウス、Controls、マウススティック、パススルー）と、ジャイロの出力（Controls、マウス、マウススティック）ごとに、入力の列と出力を固定する。未調査だった計算の中身を読み、毎フレームの割り当てがあれば記録する | 新規（仕事ごと） | 一部完了（ジャイロ・タッチ → スティックの特性化テストのみ） |
+| 30-1 | ジャイロの出力を別の型へ（`sixaxisMoved` の中身、トリガーの判定、`SixMouseStick`、切り替えの状態）。購読（`DeviceConnectionSetup.cs:199`）は、新しい型へ向ける | 30-0 が不変。割り当て 0 | 完了（`GyroOutputProcessor`、`TriggerButtonReader`） |
+| 30-2 | タッチ → スティック（`TouchpadMouseStick` 297 行）を別の型へ。フィルター（`OneEuroFilterPair`）とトラックボールの状態の持ち主を決める | 同上 | 完了（`TouchStickOutput`） |
+| 30-3 | タップ・ダブルタップ・押し続けの判定（`touchesEnded`、`StartTapClickHold`）を別の型へ。プロファイルのスワイプ切替の合図（`slideleft`／`slideright`）の出し方は変えない | 同上。タップの時間の境界（感度 × 1.5 ミリ秒）を固定する | 未着手（Phase30b へ繰り越し） |
+| 30-4 | タッチボタン（`TouchButtonCheckProcess` 134 行）を別の型へ | 同上 | 未着手（Phase30b へ繰り越し） |
+| 30-5 | （D1 が B のとき）`touchesMoved`・`touchUnchanged` の、出力の種類ごとの枝を整理する。D2 の差し替えを行う場合は、ここで行う | 同上 | 未着手（Phase30b へ繰り越し） |
+| 30-6 | 設定の読み取りを、フレームの先頭で 1 回、領域の窓口（`TouchpadSlotSettings`、`GyroSlotSettings`）を取ってから使う形にそろえる（`ForSlot(deviceNum)` の 55 か所） | 30-0 が不変 | 未着手（Phase30b へ繰り越し） |
+| 30-7 | 文書: `01-Structure.md`（型の表）、`Code-Review-2026-11/00-Summary.md` の未調査の行を更新 | `ModelDiagramGuardTests` | 未着手（Phase30b へ繰り越し） |
 
 ## 確認の方法
 - 各 Step のあと、特性化テスト（30-0）と割り当て 0 のテスト。性能を比べるときは Benchmark の印のテストを前後で流す。
@@ -60,7 +60,14 @@ D1＝**B（全部。36-5 を含む）**、D2＝**B（出力の種類ごとの実
 - 中。毎フレームの経路で、状態（前のフレームの値、タップの時刻、切り替え）が多い。型を分けるときに、状態の持ち主を取り違えると、タップが効かない・カーソルが飛ぶ形で現れる。特性化テストが前提。
 - DualSense・Switch Pro のジャイロとタッチは、実機で確かめられない。
 
+## 実施の記録（2026-11-14）
+- `TouchpadMouse` は 1,848 行から 1,091 行になった。ジャイロの出力は `Processing/Gyro/GyroOutputProcessor`（動きのイベントの処理、トリガーの判定、トグルの状態、マウススティックのフィルター）へ、タッチ → スティックは `Processing/Touchpad/TouchStickOutput` へ移した。ボタンの番号の読み取りは `Processing/Gyro/TriggerButtonReader`（静的）に出した。`TouchpadMouse` の公開の窓口（`sixaxisMoved`、`IsGyroTriggerActive`、`ToggleGyro*` など）は、転送で残した。
+- 毎フレームの割り当ては増えていない（移動のみ。ジャイロのトリガーの判定の割り当て 0 のテストが不変）。
+- **繰り越し（Phase30b）**: 30-3（タップ判定）、30-4（タッチボタン）、30-5（出力の種類ごとの実装。D2＝B）、30-6（設定の読み取り）。これらは、`s`（現在の状態）、`pushed`／`clicked`、`swipe*`／`slide*`、`leftDown` などの公開のフィールド、トラックボールの状態を、タッチの各ハンドラーが共有して読み書きしているため、状態の持ち主を先に決める設計（種類ごとの実装の境界の決め方）が要る。特性化テスト（30-0）を、タップ・タッチボタン・スワイプについて厚くしてから行う。
+- テスト: `GyroOutputProcessorTests`、`TouchStickOutputTests`（新規）。`TouchpadMouseGyroTriggerTests`、`SmallFixesGuardTests` は、移動先に合わせて直した。
+
 ## 履歴
+- 2026-11-14: 30-1・30-2 を実施し、30-3〜30-7 を Phase30b へ繰り越した。
 - 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: Phase 番号の付け替え（旧 Phase36 → Phase30。進める順に合わせた）。本文中の Step 番号も付け替えた。
 - 2026-11-12: 計画書を作成（外部レビューの照合の結果）。コードは未着手。
