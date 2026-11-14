@@ -32,7 +32,6 @@ namespace DS4Windows.Processing.Touchpad
 {
     public class TouchpadMouse : ITouchpadBehaviour, ITouchPadGyroToggles
     {
-        protected DateTime pastTime, firstTap, TimeofEnd;
         protected Touch firstTouch, secondTouch;
         private ControllerState s = new ControllerState();
         protected int deviceNum;
@@ -46,19 +45,7 @@ namespace DS4Windows.Processing.Touchpad
         // Phase7-Step8 W1: 旧 StickMotionState.Shared／Mapping.MapClick（静的な窓口）。コンストラクターで受ける。
         private readonly StickMotionState _stickMotion;
         private readonly SyntheticInputState _syntheticInput;
-        private bool tappedOnce = false, secondtouchbegin = false;
-        // タップ判定で許容する始点と終点のずれ（タッチパッド座標。上流は 10）
-        private const int TapMaxMoveHw = 100;
-        // タップによる左クリックを押したままにする時間（ms）。
-        // 上流は 1 フレームだけの瞬間的なクリックで、フォーカスの切り替えが効かない環境があったため保持する（Phase6 変更、ユーザー承認 2026-10-15）
-        private const double TapClickHoldMs = 50.0;
-        private DateTime tapClickHoldUntil = DateTime.MinValue;
-        private readonly TimeProvider _time;
-
-        private void StartTapClickHold()
-        {
-            tapClickHoldUntil = _time.GetUtcNow().UtcDateTime + TimeSpan.FromMilliseconds(TapClickHoldMs);
-        }
+        private readonly TapClickDetector _tap;
         public bool swipeLeft, swipeRight, swipeUp, swipeDown;
         public bool priorSwipeLeft, priorSwipeRight, priorSwipeUp, priorSwipeDown;
         public byte swipeLeftB, swipeRightB, swipeUpB, swipeDownB, swipedB;
@@ -95,7 +82,7 @@ namespace DS4Windows.Processing.Touchpad
         public TouchpadMouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
+            _tap = new TapClickDetector(deviceID, timeProvider);
             _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
@@ -345,18 +332,14 @@ namespace DS4Windows.Processing.Touchpad
 
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
-            pastTime = arg.TimeStamp;
             // 調査用 Trace（動作は変えない）: タッチ開始の検出
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
             firstTouch.populate(arg.Touches[0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID,
                 arg.Touches[0].PreviousTouch);
 
-            if (mouseMode && _profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap)
-            {
-                DateTime test = arg.TimeStamp;
-                if (test <= (firstTap + TimeSpan.FromMilliseconds((double)_profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity * 1.5)) && !arg.TouchButtonPressed)
-                    secondtouchbegin = true;
-            }
+            _tap.TouchBegan(arg.TimeStamp, arg.TouchButtonPressed,
+                mouseMode && _profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap,
+                _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity);
 
             _buttons.ResetForNewTouch();
 
@@ -380,33 +363,7 @@ namespace DS4Windows.Processing.Touchpad
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode} sens={tapSensitivity}");
             if (tapSensitivity != 0 && _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode == TouchpadOutMode.Mouse)
             {
-                if (secondtouchbegin)
-                {
-                    tappedOnce = false;
-                    secondtouchbegin = false;
-                }
-
-                DateTime test = arg.TimeStamp;
-                // 調査用 Trace（動作は変えない）: タップ判定の入力値と成否
-                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap} " +
-                    $"elapsedMs={(test - pastTime).TotalMilliseconds:F0} limitMs={tapSensitivity * 2} buttonPressed={arg.TouchButtonPressed} tappedOnce={tappedOnce} " +
-                    $"dx={Math.Abs(firstTouch.HwX - arg.Touches[0].HwX)} dy={Math.Abs(firstTouch.HwY - arg.Touches[0].HwY)}");
-                if (test <= (pastTime + TimeSpan.FromMilliseconds((double)tapSensitivity * 2)) && !arg.TouchButtonPressed && !tappedOnce)
-                {
-                    // Phase6 変更（ユーザー承認 2026-10-15）: 上流の許容 10 は実機で厳しすぎ、タップが成立しなかったため 100 に拡大
-                    if (Math.Abs(firstTouch.HwX - arg.Touches[0].HwX) < TapMaxMoveHw && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < TapMaxMoveHw)
-                    {
-                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap})");
-                        if (_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap)
-                        {
-                            tappedOnce = true;
-                            firstTap = arg.TimeStamp;
-                            TimeofEnd = DateTime.Now; //since arg can't be used in synthesizeMouseButtons
-                        }
-                        else
-                            StartTapClickHold(); //this way no delay if disabled (クリックは synthesizeMouseButtons が保持時間の間出し続ける)
-                    }
-                }
+                _tap.TouchEnded(arg, firstTouch, tapSensitivity, _profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap);
             }
             else
             {
@@ -613,11 +570,11 @@ namespace DS4Windows.Processing.Touchpad
                 }
             }
 
-            // tappedOnce（Double Tap の保留クリック）と tapClickHoldUntil（タップクリックの保持中）は、
+            // Double Tap の保留クリックと、タップクリックの保持中は、
             // 指を離した後も処理が必要（Phase6 変更、ユーザー承認 2026-10-15）
             if (s.Touch1Finger || s.TouchButton ||
                 _buttons.ReleaseButtonActive || releaseButtonChanged ||
-                tappedOnce || _time.GetUtcNow().UtcDateTime < tapClickHoldUntil)
+                _tap.IsPendingOrHolding)
             {
                 synthesizeMouseButtons();
             }
@@ -674,24 +631,9 @@ namespace DS4Windows.Processing.Touchpad
 
             if (_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode == TouchpadOutMode.Mouse)
             {
-                if (tappedOnce)
-                {
-                    DateTime tester = DateTime.Now;
-                    if (tester > (TimeofEnd + TimeSpan.FromMilliseconds((double)(_profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity) * 1.5)))
-                    {
-                        StartTapClickHold();
-                        tappedOnce = false;
-                    }
-                    //if it fails the method resets, and tries again with a new tester value (gives tap a delay so tap and hold can work)
-                }
+                _tap.CountPendingClicks(_syntheticInput, _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity);
 
-                // タップのクリックを保持時間の間、押したままにする（毎フレーム MapClick。state は毎フレーム消去されるため）
-                if (_time.GetUtcNow().UtcDateTime < tapClickHoldUntil)
-                {
-                    _syntheticInput.CountClick(deviceNum, Click.Left);
-                }
-
-                if (secondtouchbegin) //if tap and hold (also works as double tap)
+                if (_tap.SecondTouchBegan) //if tap and hold (also works as double tap)
                 {
                     _syntheticInput.CountClick(deviceNum, Click.Left);
                     dragging = true;

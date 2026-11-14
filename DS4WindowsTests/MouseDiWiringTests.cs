@@ -47,8 +47,9 @@ namespace DS4WindowsTests
             var time = new ManualTimeProvider();
             var mouse = new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), time);
 
-            typeof(TouchpadMouse).GetMethod("StartTapClickHold", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(mouse, null);
-            DateTime until = (DateTime)GetField(mouse, "tapClickHoldUntil");
+            object tap = GetField(mouse, "_tap");
+            typeof(TapClickDetector).GetMethod("StartTapClickHold", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(tap, null);
+            DateTime until = (DateTime)typeof(TapClickDetector).GetField("tapClickHoldUntil", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(tap);
 
             Assert.Equal(time.GetUtcNow().UtcDateTime + TimeSpan.FromMilliseconds(50), until);
             time.Advance(TimeSpan.FromMilliseconds(49));
