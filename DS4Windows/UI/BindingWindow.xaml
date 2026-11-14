@@ -10,6 +10,7 @@
         lex:ResxLocalizationProvider.DefaultDictionary="Strings"
         xmlns:local="clr-namespace:DS4Windows.UI"
         xmlns:controls="clr-namespace:DS4Windows.UI.Controls"
+        xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
         mc:Ignorable="d"
         Title="Select action"
         Height="540"
@@ -19,7 +20,7 @@
         FontSize="10">
     <Window.Resources>
         <local:BindingWinResourcePaths x:Key="resourcePaths"/>
-        <local:IntToBoolConverter x:Key="IntToBoolConverter"/>
+        <localConverters:IntToBoolConverter x:Key="IntToBoolConverter"/>
         <!-- Exceptions: input controls should remain at readable size -->
         <Style TargetType="TextBox"
                BasedOn="{StaticResource {x:Type TextBox}}">
