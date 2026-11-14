@@ -1,4 +1,5 @@
 using System;
+using DS4Windows.Processing.Gyro;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using DS4Windows.Core.Abstractions;
@@ -54,6 +55,10 @@ namespace DS4WindowsTests
             return result;
         }
 
+        // 判定が読むボタンの状態は、ジャイロの出力の部品（TouchpadMouse の private フィールド）が持つ
+        private static GyroOutputProcessor GyroState(TouchpadMouse mouse) =>
+            (GyroOutputProcessor)typeof(TouchpadMouse).GetField("_gyro", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(mouse);
+
         private static (TouchpadMouse mouse, IProfileSettingsService settings) Create()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(
@@ -66,7 +71,7 @@ namespace DS4WindowsTests
             mouse.ToggleGyroControls = false;
 
             var state = new ControllerState { Cross = true, L1 = true, DpadUp = true };
-            typeof(TouchpadMouse).GetField("s", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(mouse, state);
+            GyroState(mouse).State = state;
             return (mouse, settings);
         }
 
