@@ -1,3 +1,4 @@
+using DS4Windows.Output.Udp;
 using System;
 
 namespace DS4Windows.Processing.Abstractions

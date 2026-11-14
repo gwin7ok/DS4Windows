@@ -26,18 +26,15 @@ using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
-
-    public enum DsModel : byte
+    public enum DsState : byte
     {
-        [Description("None")]
-        None = 0,
-        [Description("DualShock 3")]
-        DS3 = 1,
-        [Description("DualShock 4")]
-        DS4 = 2,
-        [Description("Generic Gamepad")]
-        Generic = 3
-    }
+        [Description("Disconnected")]
+        Disconnected = 0x00,
+        [Description("Reserved")]
+        Reserved = 0x01,
+        [Description("Connected")]
+        Connected = 0x02
+    };
 }

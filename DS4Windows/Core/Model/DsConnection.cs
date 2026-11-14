@@ -26,18 +26,16 @@ using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
 
-    public enum DsBattery : byte
+    public enum DsConnection : byte
     {
+        [Description("None")]
         None = 0x00,
-        Dying = 0x01,
-        Low = 0x02,
-        Medium = 0x03,
-        High = 0x04,
-        Full = 0x05,
-        Charging = 0xEE,
-        Charged = 0xEF
+        [Description("Usb")]
+        Usb = 0x01,
+        [Description("Bluetooth")]
+        Bluetooth = 0x02
     };
 }

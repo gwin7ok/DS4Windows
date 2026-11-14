@@ -1,7 +1,7 @@
 # Phase38 計画書: `UdpServer`（Cemuhook のモーションサーバー）の、通信と書式の分離
 
 作成日: 2026-11-12
-状態: **未着手。承認待ち**（実施するかどうかから決める。D1）
+状態: **38-0b（型の移動）と 38-0 の調査まで完了（2026-11-15）。38-1 以降は、パケットの黄金を作ってから行うため未着手**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 3）、`02-Layers-and-Placement.md` の 2-4、`00-Summary.md` §6（`UdpMotionService` の毎フレームの経路は未調査）
 前提: UDP の型 6 つを `Input/` から移す作業（旧 `Phase36-Plan.md` の 36-A2）を、本 Phase の 38-0b として引き取った（2026-11-13 統合）。同じ型に触れる作業を 1 か所で決めるため。
 
@@ -56,3 +56,9 @@ D1＝A（まず 38-0 だけ。実害が見つかれば続き）、D2＝A（`Outp
 - 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: Phase 番号の付け替えに伴い、旧 Phase36 の 36-A2（UDP の型の移動）を 38-0b として引き取った。
 - 2026-11-12: 計画書を作成（外部レビューの照合の結果）。コードは未着手。
+
+## 実施の記録
+### 2026-11-15
+- 38-0b（完了）: `git mv` のコミットと、名前空間の書き換えのコミットを分けて行った（R7）。`UdpServer` は `Output/Udp/`（名前空間 `DS4Windows.Output.Udp`）へ。UDP の型 6 つ（`DualShockPadMeta`、`PadDataRspPacket`、`DsState`、`DsBattery`、`DsConnection`、`DsModel`）は、`Output/Udp/` ではなく **`Core/Model`** へ移した。理由: `Processing/Abstractions`（`IUdpMotionServer`、`UdpPadDetailProvider`）の契約が `DualShockPadMeta` を使うため、第 2 層が第 3 層の型を直接参照する形（依存の向きに反する）を避け、規則 R2「層をまたいで共有する値の型は `Core` に置く」に従った（決定 D3 の「分けた部品と一緒に置き場所を決める」の結論）。`LayerDependencyRuleTests` の基準値は不変。規則 R1 に `Output/Udp` を追記した。
+- 38-0（調査。毎フレームの経路）: `NewReportIncoming`（入力 1 フレームごと）は、(1) クライアントの一覧用の `new List<IPEndPoint>`、(2) 期限切れ判定用の `new List<IPEndPoint>`、(3) `PadMacAddress.GetAddressBytes()`（配列の割り当て）、(4) **クライアントごとに `new SocketAsyncEventArgs`**（`args.Completed +=` のデリゲートも）を作る。`SendPacket`（要求への応答。毎フレームではない）も、`new byte[]` と `new SocketAsyncEventArgs` を作る。バッファー本体は使い回し（`dataBuffers`）だが、`SocketAsyncEventArgs` は使い回していない。クライアントがいる間は、1 フレームあたりクライアント数ぶんの `SocketAsyncEventArgs`（大きめのオブジェクト）が作られるため、実害はある（UDP サーバーが有効でクライアントがいるときだけ）。直す場合は 38-4（`SocketAsyncEventArgs` のプール化、一覧の再利用、`GetAddressBytes` の回避）。送信するバイト列は変えない。
+- 次の作業: (1) パケットの黄金（要求と応答、パッドの情報、モーションのデータ、CRC）を先に作る。(2) 38-1（書式の部品化）・38-2（要求の解釈）・38-3（クライアント管理）・38-4（割り当ての削減）。外部のクライアントとの互換が前提のため、黄金が先。

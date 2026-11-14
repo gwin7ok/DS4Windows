@@ -27,7 +27,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using DS4Windows.Core.Model;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
 
     public struct DualShockPadMeta

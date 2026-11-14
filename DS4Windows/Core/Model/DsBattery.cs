@@ -26,15 +26,18 @@ using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
-    public enum DsState : byte
+
+    public enum DsBattery : byte
     {
-        [Description("Disconnected")]
-        Disconnected = 0x00,
-        [Description("Reserved")]
-        Reserved = 0x01,
-        [Description("Connected")]
-        Connected = 0x02
+        None = 0x00,
+        Dying = 0x01,
+        Low = 0x02,
+        Medium = 0x03,
+        High = 0x04,
+        Full = 0x05,
+        Charging = 0xEE,
+        Charged = 0xEF
     };
 }

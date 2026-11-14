@@ -26,16 +26,18 @@ using System.ComponentModel;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
 
-    public enum DsConnection : byte
+    public enum DsModel : byte
     {
         [Description("None")]
-        None = 0x00,
-        [Description("Usb")]
-        Usb = 0x01,
-        [Description("Bluetooth")]
-        Bluetooth = 0x02
-    };
+        None = 0,
+        [Description("DualShock 3")]
+        DS3 = 1,
+        [Description("DualShock 4")]
+        DS4 = 2,
+        [Description("Generic Gamepad")]
+        Generic = 3
+    }
 }

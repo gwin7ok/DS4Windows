@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 using DS4Windows.Input;
 using DS4Windows.Core.Model;
 
-namespace DS4Windows.Output
+namespace DS4Windows.Output.Udp
 {
 
     class UdpServer
