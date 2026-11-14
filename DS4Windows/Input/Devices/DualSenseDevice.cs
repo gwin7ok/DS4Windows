@@ -28,6 +28,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
+using DS4Windows.Input.Reports;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Parsers;
@@ -192,6 +193,31 @@ namespace DS4Windows.Input.Devices
         // Accurate rumble emulation mode requires 2.24 firmware or newer. On official hardware it takes priority over normal/legacy rumble
         protected bool useAccurateRumble = true; 
         public bool UseAccurateRumble { get => useAccurateRumble; set => useAccurateRumble = value; }
+
+        public override bool UsesGenericRumbleRescaleSetting => true;
+
+        public override bool ApplyRumbleEmulation(RumbleEmulationMode mode, byte hapticPowerLevel)
+        {
+            switch (mode)
+            {
+                case RumbleEmulationMode.Disabled:
+                    UseRumble = false;
+                    UseAccurateRumble = false;
+                    break;
+                case RumbleEmulationMode.Legacy:
+                    UseRumble = true;
+                    UseAccurateRumble = false;
+                    break;
+                case RumbleEmulationMode.Accurate:
+                default:
+                    UseRumble = true;
+                    UseAccurateRumble = true;
+                    break;
+            }
+
+            HapticPowerLevel = hapticPowerLevel;
+            return true;
+        }
 
         private TriggerEffectData l2EffectData;
         private TriggerEffectData r2EffectData;
@@ -441,11 +467,7 @@ namespace DS4Windows.Input.Devices
                     //ds4Output.IsBackground = true;
                     //ds4Output.Start();
 
-                    timeoutCheckThread = new Thread(TimeoutTestThread);
-                    timeoutCheckThread.Priority = ThreadPriority.BelowNormal;
-                    timeoutCheckThread.Name = "DualSense Timeout thread: " + Mac;
-                    timeoutCheckThread.IsBackground = true;
-                    timeoutCheckThread.Start();
+                    timeoutCheckThread = StartBackgroundThread(TimeoutTestThread, ThreadPriority.BelowNormal, "DualSense Timeout thread: " + Mac);
                 }
                 //else
                 //{
@@ -456,42 +478,23 @@ namespace DS4Windows.Input.Devices
                 //    ds4Output.Start();
                 //}
 
-                ds4Input = new Thread(ReadInput);
-                ds4Input.Priority = ThreadPriority.AboveNormal;
-                ds4Input.Name = "DualSense Input thread: " + Mac;
-                ds4Input.IsBackground = true;
-                ds4Input.Start();
+                ds4Input = StartBackgroundThread(ReadInput, ThreadPriority.AboveNormal, "DualSense Input thread: " + Mac);
             }
             else
                 AppLogger.LogDebug("Thread already running for DS4: " + Mac);
         }
 
-        private void TimeoutTestThread()
+        protected override void KickWindowsToNoticeDisconnect()
         {
-            while (!timeoutExecuted)
-            {
-                if (timeoutEvent)
-                {
-                    timeoutExecuted = true;
-
-                    // Request serial feature report data. Causes Windows to notice the dead
-                    // device.
-                    byte[] tmpFeatureData = new byte[64];
-                    tmpFeatureData[0] = SERIAL_FEATURE_ID;
-                    hDevice.readFeatureData(tmpFeatureData); // Kick Windows into noticing the disconnection.
-                }
-                else
-                {
-                    timeoutEvent = true;
-                    Thread.Sleep(READ_STREAM_TIMEOUT);
-                }
-            }
+            // Request serial feature report data. Causes Windows to notice the dead
+            // device.
+            byte[] tmpFeatureData = new byte[64];
+            tmpFeatureData[0] = SERIAL_FEATURE_ID;
+            hDevice.readFeatureData(tmpFeatureData);
         }
 
         private int reportOffset;
         private IInputReportParser reportParser;
-        private int crcPos = BT_INPUT_REPORT_CRC32_POS;
-        private int crcOffset = 0;
 
         protected override void OnLoopStarting()
         {
@@ -513,35 +516,18 @@ namespace DS4Windows.Input.Devices
                 HidReadStatus res = hDevice.ReadFile(inputReport);
                 if (res == HidReadStatus.Success)
                 {
-                    uint recvCrc32 = inputReport[BT_INPUT_REPORT_CRC32_POS] |
-                        (uint)(inputReport[BT_INPUT_REPORT_CRC32_POS + 1] << 8) |
-                        (uint)(inputReport[BT_INPUT_REPORT_CRC32_POS + 2] << 16) |
-                        (uint)(inputReport[BT_INPUT_REPORT_CRC32_POS + 3] << 24);
-
-                    uint calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref HamSeed, ref inputReport, ref crcOffset, ref crcPos);
-                    if (recvCrc32 != calcCrc32)
+                    switch (VerifyBtInputCrc(inputReport, 10))
                     {
-                        cState.PacketCounter = pState.PacketCounter + 1; //still increase so we know there were lost packets
-                        if (this.inputReportErrorCount >= 10)
-                        {
+                        case BtCrcResult.Skipped:
+                            return FrameResult.Skip;
+                        case BtCrcResult.LimitReached:
                             exitInputThread = true;
 
                             AppLogger.Log(AppLogLevel.Warn, DS4Windows.Translations.Strings.CRC32Fail, LogOptions.UserFacing);
                             readWaitEv.Reset();
-                            StopOutputUpdate();
-                            isDisconnecting = true;
-                            RunRemoval();
-
-                            timeoutExecuted = true;
+                            StopAndRemove();
                             return FrameResult.Skip;
-                        }
-
-                        this.inputReportErrorCount++;
-                        readWaitEv.Reset();
-                        return FrameResult.Skip;
                     }
-
-                    this.inputReportErrorCount = 0;
                 }
                 else
                 {
@@ -589,11 +575,7 @@ namespace DS4Windows.Input.Devices
         {
             exitInputThread = true;
             readWaitEv.Reset();
-            StopOutputUpdate();
-            isDisconnecting = true;
-            RunRemoval();
-
-            timeoutExecuted = true;
+            StopAndRemove();
         }
 
         // BT は 0x31 のレポートだけを扱う
@@ -783,105 +765,23 @@ namespace DS4Windows.Input.Devices
             bool change = false;
             bool rumbleSet = currentHap.IsRumbleSet();
 
+            var outputState = new DualSenseOutputState
+            {
+                UseRumble = useRumble,
+                UseAccurateRumble = useAccurateRumble,
+                RumbleRightLightFast = currentHap.rumbleState.RumbleMotorStrengthRightLightFast,
+                RumbleLeftHeavySlow = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow,
+                LightbarColor = currentHap.lightbarState.LightBarColor,
+                HapticPowerLevel = hapticPowerLevel,
+                MuteLedByte = muteLEDByte,
+                PlayerLedMask = activePlayerLEDMask,
+                R2Effect = r2EffectData,
+                L2Effect = l2EffectData,
+            };
+
             if (conType == ConnectionType.USB)
             {
-                outputReport[0] = OUTPUT_REPORT_ID_USB; // Report ID
-                // 0x01 Set the main motors (also requires flag 0x02)
-                // 0x02 Set the main motors (also requires flag 0x01)
-                // 0x04 Set the right trigger motor
-                // 0x08 Set the left trigger motor
-                // 0x10 Enable modification of audio volume
-                // 0x20 Enable internal speaker (even while headset is connected)
-                // 0x40 Enable modification of microphone volume
-                // 0x80 Enable internal mic (even while headset is connected)
-                outputReport[1] = useRumble ? (byte)0x0F : (byte)0x0C; // 0x02 | 0x01 | 0x04 | 0x08;
-
-                // 0x01 Toggling microphone LED, 0x02 Toggling Audio/Mic Mute
-                // 0x04 Toggling LED strips on the sides of the Touchpad, 0x08 Turn off all LED lights
-                // 0x10 Toggle player LED lights below Touchpad, 0x20 ???
-                // 0x40 Adjust overall motor/effect power, 0x80 ???
-                outputReport[2] = 0x55; // 0x04 | 0x01 | 0x10 | 0x40
-
-                if (useRumble || useAccurateRumble)
-                {
-                    // Right? High Freq Motor
-                    outputReport[3] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast;
-                    // Left? Low Freq Motor
-                    outputReport[4] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
-                }
-
-                /*
-                // Headphone volume
-                outputReport[5] = 0x00;
-                outputReport[5] = Convert.ToByte(audio.getVolume()); // Left and Right
-                // Internal speaker volume
-                outputReport[6] = 0x00;
-                // Internal microphone volume
-                outputReport[7] = 0x00;
-                outputReport[7] = Convert.ToByte(micAudio.getVolume());
-                // 0x01 Enable internal microphone, 0x10 Disable attached headphones (must set 0x20 as well)
-                // 0x20 Enable internal speaker
-                outputReport[8] = 0x00;
-                //*/
-
-                // Mute button LED. 0x01 = Solid. 0x02 = Pulsating
-                outputReport[9] = muteLEDByte;
-
-                // audio settings requiring mute toggling flags
-                //outputReport[10] = 0x00; // 0x10 microphone mute, 0x40 audio mute
-
-                /* TRIGGER MOTORS  */
-                // R2 Effects
-                outputReport[11] = r2EffectData.triggerMotorMode; // right trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
-                outputReport[12] = r2EffectData.triggerStartResistance; // right trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
-                outputReport[13] = r2EffectData.triggerEffectForce; // right trigger
-                                         // (mode1) amount of force exerted; 0-255
-                                         // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
-                                         // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
-                outputReport[14] = r2EffectData.triggerRangeForce; // right trigger force exerted in range (mode2), 0-255
-                outputReport[15] = r2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
-                outputReport[16] = r2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
-                outputReport[17] = r2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
-                outputReport[20] = r2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
-
-
-                // L2 Effects
-                outputReport[22] = l2EffectData.triggerMotorMode; // left trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
-                outputReport[23] = l2EffectData.triggerStartResistance; // left trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
-                outputReport[24] = l2EffectData.triggerEffectForce; // left trigger
-                                         // (mode1) amount of force exerted; 0-255
-                                         // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
-                                         // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
-                outputReport[25] = l2EffectData.triggerRangeForce; // left trigger: (mode2) amount of force exerted within range; 0-255
-                outputReport[26] = l2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
-                outputReport[27] = l2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
-                outputReport[28] = l2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
-                outputReport[31] = l2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
-
-                // (lower nibble: main motor; upper nibble trigger effects) 0x00 to 0x07 - reduce overall power of the respective motors/effects by 12.5% per increment (this does not affect the regular trigger motor settings, just the automatically repeating trigger effects)
-                outputReport[37] = hapticPowerLevel;
-                // Volume of internal speaker (0-7; ties in with index 6. The PS5 default appears to be set a 4)
-                //outputReport[38] = 0x00;
-
-                /* Player LED section (and improved rumble flag) */
-                // 0x01 Enabled LED brightness (value in index 43)
-                // 0x02 Uninterruptable blue LED pulse (action in index 42)
-                // 0x04 Enable improved rumble emulation (Requires 2.24 firmware or newer)
-                outputReport[39] = useAccurateRumble ? (byte)0x06 : (byte)0x02;
-
-                // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
-                // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
-                outputReport[42] = 0x02;
-                // 0x00 High Brightness, 0x01 Medium Brightness, 0x02 Low Brightness
-                outputReport[43] = 0x02;
-                // 5 player LED lights below Touchpad.
-                // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
-                outputReport[44] = activePlayerLEDMask;
-
-                /* Lightbar colors */
-                outputReport[45] = currentHap.lightbarState.LightBarColor.red;
-                outputReport[46] = currentHap.lightbarState.LightBarColor.green;
-                outputReport[47] = currentHap.lightbarState.LightBarColor.blue;
+                DualSenseOutputReportBuilder.Fill(outputReport, false, in outputState);
 
                 if (currentHap.dirty || !previousHapticState.Equals(currentHap))
                 {
@@ -920,105 +820,7 @@ namespace DS4Windows.Input.Devices
             else
             {
                 //outReportBuffer[0] = OUTPUT_REPORT_ID_BT; // Report ID
-                outputReport[0] = OUTPUT_REPORT_ID_BT; // Report ID
-                outputReport[1] = OUTPUT_REPORT_ID_DATA;
-
-                // 0x01 Set the main motors (also requires flag 0x02)
-                // 0x02 Set the main motors (also requires flag 0x01)
-                // 0x04 Set the right trigger motor
-                // 0x08 Set the left trigger motor
-                // 0x10 Enable modification of audio volume
-                // 0x20 Enable internal speaker (even while headset is connected)
-                // 0x40 Enable modification of microphone volume
-                // 0x80 Enable internal mic (even while headset is connected)
-                outputReport[2] = useRumble ? (byte)0x0F : (byte)0x0C; // 0x02 | 0x01 | 0x04 | 0x08;
-
-                // 0x01 Toggling microphone LED, 0x02 Toggling Audio/Mic Mute
-                // 0x04 Toggling LED strips on the sides of the Touchpad, 0x08 Turn off all LED lights
-                // 0x10 Toggle player LED lights below Touchpad, 0x20 ???
-                // 0x40 Adjust overall motor/effect power, 0x80 ???
-                outputReport[3] = 0x55; // 0x04 | 0x01 | 0x10 | 0x40
-
-                if (useRumble || useAccurateRumble)
-                {
-                    // Right? High Freq Motor
-                    outputReport[4] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast;
-                    // Left? Low Freq Motor
-                    outputReport[5] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
-                }
-
-                /*
-                // Headphone volume
-                outputReport[6] = 0x00;
-                outputReport[6] = Convert.ToByte(audio.getVolume()); // Left and Right
-                // Internal speaker volume
-                outputReport[7] = 0x00;
-                // Internal microphone volume
-                outputReport[8] = 0x00;
-                outputReport[8] = Convert.ToByte(micAudio.getVolume());
-                // 0x01 Enable internal microphone, 0x10 Disable attached headphones (must set 0x20 as well)
-                // 0x20 Enable internal speaker
-                outputReport[9] = 0x00;
-                //*/
-
-                // Mute button LED. 0x01 = Solid. 0x02 = Pulsating
-                outputReport[10] = muteLEDByte;
-
-                // audio settings requiring mute toggling flags
-                //outputReport[11] = 0x00; // 0x10 microphone mute, 0x40 audio mute
-
-                /* TRIGGER MOTORS  */
-                // R2 Effects
-                outputReport[12] = r2EffectData.triggerMotorMode; // right trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
-                outputReport[13] = r2EffectData.triggerStartResistance; // right trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
-                outputReport[14] = r2EffectData.triggerEffectForce; // right trigger
-                                                                    // (mode1) amount of force exerted; 0-255
-                                                                    // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
-                                                                    // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
-                outputReport[15] = r2EffectData.triggerRangeForce; // right trigger force exerted in range (mode2), 0-255
-                outputReport[16] = r2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
-                outputReport[17] = r2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
-                outputReport[18] = r2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
-                outputReport[21] = r2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
-
-
-                // L2 Effects
-                outputReport[23] = l2EffectData.triggerMotorMode; // left trigger motor mode (0 = no resistance, 1 = continuous resistance, 2 = section resistance, 0x20 and 0x04 enable additional effects together with 1 and 2 (configuration yet unknown), 252 = likely a calibration program* / PS Remote Play defaults this to 5; bit 4 only disables the motor?)
-                outputReport[24] = l2EffectData.triggerStartResistance; // left trigger start of resistance section 0-255 (0 = released state; 0xb0 roughly matches trigger value 0xff); in mode 26 this field has something to do with motor re-extension after a press-release-cycle (0 = no re-extension)
-                outputReport[25] = l2EffectData.triggerEffectForce; // left trigger
-                                                                    // (mode1) amount of force exerted; 0-255
-                                                                    // (mode2) end of resistance section (>= begin of resistance section is enforced); 0xff makes it behave like mode1
-                                                                    // (supplemental mode 4+20) flag(s?) 0x02 = do not pause effect when fully pressed
-                outputReport[26] = l2EffectData.triggerRangeForce; // left trigger: (mode2) amount of force exerted within range; 0-255
-                outputReport[27] = l2EffectData.triggerNearReleaseStrength; // strength of effect near release state (requires supplement modes 4 and 20)
-                outputReport[28] = l2EffectData.triggerNearMiddleStrength; // strength of effect near middle (requires supplement modes 4 and 20)
-                outputReport[29] = l2EffectData.triggerPressedStrength; // strength of effect at pressed state (requires supplement modes 4 and 20)
-                outputReport[32] = l2EffectData.triggerActuationFrequency; // effect actuation frequency in Hz (requires supplement modes 4 and 20)
-
-                // (lower nibble: main motor; upper nibble trigger effects) 0x00 to 0x07 - reduce overall power of the respective motors/effects by 12.5% per increment (this does not affect the regular trigger motor settings, just the automatically repeating trigger effects)
-                outputReport[38] = hapticPowerLevel;
-                // Volume of internal speaker (0-7; ties in with index 6. The PS5 default appears to be set a 4)
-                //outputReport[39] = 0x00;
-
-                /* Player LED section (and improved rumble  flag) */
-                // 0x01 Enabled LED brightness (value in index 43)
-                // 0x02 Uninterruptable blue LED pulse (action in index 42)
-                // 0x04 Enable improved rumble emulation (Requires 2.24 firmware or newer)
-                outputReport[40] = useAccurateRumble ? (byte)0x06 : (byte)0x02; 
-
-                // 0x01 Slowly (2s?) fade to blue (scheduled to when the regular LED settings are active)
-                // 0x02 Slowly (2s?) fade out (scheduled after fade-in completion) with eventual switch back to configured LED color; only a fade-out can cancel the pulse (neither index 2, 0x08, nor turning this off will cancel it!)
-                outputReport[43] = 0x02;
-                // 0x00 High Brightness, 0x01 Medium Brightness, 0x02 Low Brightness
-                outputReport[44] = 0x02;
-                // 5 player LED lights below Touchpad.
-                // Bitmask 0x00-0x1F from left to right with 0x04 being the center LED. Bit 0x20 sets the brightness immediately with no fade in
-                outputReport[45] = activePlayerLEDMask;
-
-                /* Lightbar colors */
-                outputReport[46] = currentHap.lightbarState.LightBarColor.red;
-                outputReport[47] = currentHap.lightbarState.LightBarColor.green;
-                outputReport[48] = currentHap.lightbarState.LightBarColor.blue;
+                DualSenseOutputReportBuilder.Fill(outputReport, true, in outputState);
 
                 change = currentHap.dirty || !previousHapticState.Equals(currentHap);
 

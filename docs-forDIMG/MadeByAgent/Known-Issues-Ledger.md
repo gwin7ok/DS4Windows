@@ -48,4 +48,6 @@
 
 - （2026-11-14。Phase30b）タップ判定を `TapClickDetector`、タッチボタンを `TouchButtonDetector`、マウスの慣性を `TouchMouseTrackball` へ切り出した。実機で未確認の項目: (1) タップ（1 回、ダブルタップ、タップ＆ホールドのドラッグ）で左クリックが出ること。(2) タッチボタンの方式（Click／Touch／Release）ごとに、左・右・上部・複数の指のボタンが効くこと。(3) マウスのトラックボール（慣性）が、指を離したあとも減速して止まること。(4) タッチ → スティックと Controls（スワイプ）の動作。
 
+- （2026-11-14。Phase31）入力機種の読み取りの共通部品（BT の CRC の検証・停止の後始末・監視スレッド・スレッドの起動）と、機種の名指しの解消（`WriteOutputOffOnce`／`PrimeBatteryReading`／`ApplyRumbleEmulation`／`UsesGenericRumbleRescaleSetting`）、出力・校正の部品（`DualSenseOutputReportBuilder`、`SwitchProCalibrationDecoder`、`SwitchProRumbleEncoder`、`SonyReportDecoding`）を足した（動作は不変のはず）。実機で未確認の項目: (1) DS4（USB・Bluetooth）と Xbox の接続・切断（Bluetooth の電波切れでの切断を含む）、接続時の電池の表示（0% でなく実際の値）、振動、ライトバー。(2) 「物理コントローラーへ出力データを送る」を OFF にしたときの消灯・振動ゼロ（DS4）。(3) **DualSense と Switch Pro は実機がなく、未確認**: DualSense の出力レポート（ライトバー、プレイヤー LED、トリガーの効果、振動、触覚の強さ。USB・Bluetooth）と、振動エミュレーションの方式の切替、Switch Pro のスティック・加速度・ジャイロの校正と振動。出力レポートと振動データのバイト列、校正値の解釈は、単体テストで記録と一致することを確認済み。
+
 - 2026-11-11 実機確認の結果（Phase17 ブランチ）: 起動・終了、接続と復元、トレイ、プロファイル操作、各画面、特殊アクション、振動テスト（Other タブ）、更新の確認、2 段トリガー、DS4 の設定の保存、出力の種類の切替、DS4 の BT 切断は OK。不具合・要望は KI-8〜KI-12 に記録（スワイプ切替、出力ピッカーの振動テスト、デッドゾーン表示、赤文字「* -」、虹色のチェックボックス）。

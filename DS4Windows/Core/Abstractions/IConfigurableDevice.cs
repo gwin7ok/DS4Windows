@@ -16,6 +16,12 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>デバイスの種類（設定の保存先の属性、DualSense かの判定）。</summary>
         InputDeviceType DeviceType { get; }
 
+        /// <summary>
+        /// 振動の強さの補正を、「汎用の振動の強さの補正」の設定に従って切り替える機種か（DualSense）。
+        /// true の機種は、その設定が OFF のとき、振動の強さの係数を 100 に固定する。
+        /// </summary>
+        bool UsesGenericRumbleRescaleSetting { get; }
+
         /// <summary>機種固有の設定の入れ物（なければ null）。</summary>
         ControllerOptionsStore OptionsStore { get; }
 

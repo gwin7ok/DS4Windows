@@ -1,6 +1,6 @@
 ﻿# 拡張の手順書（機種・出力の種類を足す）
 
-最終更新: 2026-11-10（Phase17-0。現状の手順を書いた。Phase17-1〜17-5 で手順が短くなるたびに、この文書を更新する。最終形は Phase17-4 で確定する）。
+最終更新: 2026-11-14（Phase31: 共通の差し込み口の一覧を追記）。2026-11-10（Phase17-0。現状の手順を書いた。Phase17-1〜17-5 で手順が短くなるたびに、この文書を更新する。最終形は Phase17-4 で確定する）。
 
 ---
 
@@ -28,6 +28,11 @@
 - 17-1（済）: 種類と系統の対応は `InputDeviceType` の値に付ける `[InputDeviceFamily]` 属性だけ（`InputDeviceTypeInfo` の表は不要）。カートリッジは `Family` を持ち、登録はカートリッジとモジュールを 1 行（`AddInputDevice<TCartridge, TModule>()`）で行う。
 - 17-2（済）: 保存と画面が、設定の定義から作られる（DTO・Wrapper・XAML が不要）。
 - 17-3〜17-5（一部済）: 読み取りの 1 フレームの流れは `InputLoopDevice`（骨組み）に集まった。機種は差し込み口（`ReceiveFrame`／`IsExpectedReport`／`ProcessFrame`／`ProcessIdle`／`WriteOutputFrame`）だけを書く。`ProtocolDevice`・`DualSenseDevice`・`SwitchProDevice`・`DualShock4Device` が載っている。`InputDeviceCore` は全機種の共通の基底（抽象クラス）で、自前のループは持たない（Phase18。`DeviceLoopStructureTests` が検査する）。
+
+### 共通の差し込み口（Phase31）
+- **読み取りの骨組み**（`InputLoopDevice`）が持つ共通の部品: Bluetooth の入力レポートの CRC の検証（`VerifyBtInputCrc`。上限は機種が渡す。上限に達したときのログと切断は機種が書く）、停止の後始末（`StopAndRemove`）、Bluetooth の監視スレッド（`TimeoutTestThread`。機器を起こす処理は `KickWindowsToNoticeDisconnect` を override する）、スレッドの起動（`StartBackgroundThread`）。
+- **機種だけの処理は、基底の仮想メソッドを override する**（基底・第 2 層・`Core` に機種の判定を書かない）: `WriteOutputOffOnce`（出力を OFF にする直前の消灯・振動ゼロ。既定は何もしない）、`PrimeBatteryReading`（接続直後の電池の取り込み。既定は何もしない）、`ApplyRumbleEmulation`（振動のエミュレーションの方式と触覚の強さ。既定は false）、`UsesGenericRumbleRescaleSetting`（振動の強さの補正を設定で切り替える機種か）。
+- **バイト列の組み立て・解釈は、状態を持たない部品に出す**: 入力の解析は `Input/Parsers`（DS4・DualSense が共有する方向キーとタッチは `SonyReportDecoding`、Switch Pro の校正の解釈は `SwitchProCalibrationDecoder`）、出力の組み立ては `Input/Reports`（`DualSenseOutputReportBuilder`、`SwitchProRumbleEncoder`）。実機がない機種は、組み立てたバイト列を記録として固定するテスト（`DualSenseOutputReportTests`、`SwitchProRumbleDataTests`）で守る。
 
 ## 2. 仮想パッドの出力の種類を足す
 

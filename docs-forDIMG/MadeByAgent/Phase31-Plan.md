@@ -1,7 +1,7 @@
 # Phase31 計画書: 入力機種の読み取りの共通化と、機種の名指しの解消（コードレビュー 2026-11 の 4-2・4-3・5-2）
 
 作成日: 2026-11-11
-状態: **未着手。承認待ち**
+状態: **実施済み（31-1〜31-11。ただし D1＝B の「ずれを揃える変更」は、ログの文言の承認待ちのため未実施）。2026-11-14**
 出典: `docs-forDIMG/Code-Review-2026-11/04-Duplication-and-Abstraction.md`、`05-Extensibility.md`
 前提: Phase29・30 の完了（同じファイルを触らないが、入力の経路の確認をまとめるため）
 
@@ -42,24 +42,24 @@ D1＝**B（DualSense を DS4 に合わせる）**、D2＝A（スレッドの起�
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 31-0 | 差分テストの準備: DS4（BT・USB）と DualSense（BT・USB）の `ReceiveFrame` の台本（成功、CRC の失敗が上限まで、タイムアウト、読み取りの失敗）を作り、今の結果（状態、`Removal` の回数、ログのキー、スレッドの終わり方）を固定する | 新規（機種ごと） | 未着手 |
-| 31-1 | `InputLoopDevice` に、Bluetooth の CRC の検証（受信値の組み立てと比較、失敗の数え上げ）の保護メソッドを足し、2 機種から呼ぶ。上限の数と、上限に達したときの処理は、機種が渡す | 31-0 が不変 | 未着手 |
-| 31-2 | 「読み取りの失敗 → ログ → 停止」の手順を保護メソッドへ出す。機器を起こす処理（DS4 の出力レポートの送信）と、ループの終え方は、機種が渡す | 31-0 が不変 | 未着手 |
-| 31-3 | （D2 が A のとき）読み取りスレッドの起動と、Bluetooth の監視スレッドを基底へ出す。差し込み口は「スレッドの名前」と「機器を起こす処理」 | スレッドの名前・優先度・起動の順序を固定するテスト | 未着手 |
-| 31-4 | `InputDeviceCore.WriteOutputOffOnce`／`PrimeBatteryReading` の DS4 の分岐を、仮想メソッドにする（基底は何もしない／既定の読み方。DS4 が中身を持つ） | 既存の電池・出力停止のテストが不変 | 未着手 |
-| 31-5 | DualSense の振動の設定（`ApplyDualSenseRumbleOptions`）を、D3 の場所へ移し、第 2 層の `is DualSenseDevice` をなくす。UI の窓口（`IControllerSlotCommands`）の名前は変えない | 偽の機種で、設定が機種へ届くこと | 未着手 |
-| 31-6 | `ProfileSettingsService.GetRumbleBoost` の DualSense の特例を、機種が返す値（振動の強さの調整を受けるか）で判定する | 既存の振動のテストが不変 | 未着手 |
-| 31-7 | 文書: `02-Extension-Guide.md` §1（差し込み口の一覧）、`01-Structure.md`、規則 3.1 を更新する。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ | — | 未着手 |
-| 31-8 | （追加。4-7。D4 が A のときだけ）DS4 と DualSense の解析器・タッチの取り込みで、位置だけ違う同じ形の 2 つ（方向キーの 4 ビット → 4 つの bool、タッチ 1 本の 4 バイト → 生値）を、`Input/Parsers` の静的な補助へ出す。解析器の全体は 1 つにまとめない | 旧実装との差分テスト（既存）が不変。割り当て 0 | 未着手 |
+| 31-0 | 差分テストの準備: DS4（BT・USB）と DualSense（BT・USB）の `ReceiveFrame` の台本（成功、CRC の失敗が上限まで、タイムアウト、読み取りの失敗）を作り、今の結果（状態、`Removal` の回数、ログのキー、スレッドの終わり方）を固定する | 新規（機種ごと） | 完了  |
+| 31-1 | `InputLoopDevice` に、Bluetooth の CRC の検証（受信値の組み立てと比較、失敗の数え上げ）の保護メソッドを足し、2 機種から呼ぶ。上限の数と、上限に達したときの処理は、機種が渡す | 31-0 が不変 | 完了  |
+| 31-2 | 「読み取りの失敗 → ログ → 停止」の手順を保護メソッドへ出す。機器を起こす処理（DS4 の出力レポートの送信）と、ループの終え方は、機種が渡す | 31-0 が不変 | 完了（停止の後始末 `StopAndRemove` のみ共通化。ログとループの終え方は機種に残した）  |
+| 31-3 | （D2 が A のとき）読み取りスレッドの起動と、Bluetooth の監視スレッドを基底へ出す。差し込み口は「スレッドの名前」と「機器を起こす処理」 | スレッドの名前・優先度・起動の順序を固定するテスト | 完了  |
+| 31-4 | `InputDeviceCore.WriteOutputOffOnce`／`PrimeBatteryReading` の DS4 の分岐を、仮想メソッドにする（基底は何もしない／既定の読み方。DS4 が中身を持つ） | 既存の電池・出力停止のテストが不変 | 完了  |
+| 31-5 | DualSense の振動の設定（`ApplyDualSenseRumbleOptions`）を、D3 の場所へ移し、第 2 層の `is DualSenseDevice` をなくす。UI の窓口（`IControllerSlotCommands`）の名前は変えない | 偽の機種で、設定が機種へ届くこと | 完了（D3 とは違う場所。下の記録）  |
+| 31-6 | `ProfileSettingsService.GetRumbleBoost` の DualSense の特例を、機種が返す値（振動の強さの調整を受けるか）で判定する | 既存の振動のテストが不変 | 完了  |
+| 31-7 | 文書: `02-Extension-Guide.md` §1（差し込み口の一覧）、`01-Structure.md`、規則 3.1 を更新する。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ | — | 完了  |
+| 31-8 | （追加。4-7。D4 が A のときだけ）DS4 と DualSense の解析器・タッチの取り込みで、位置だけ違う同じ形の 2 つ（方向キーの 4 ビット → 4 つの bool、タッチ 1 本の 4 バイト → 生値）を、`Input/Parsers` の静的な補助へ出す。解析器の全体は 1 つにまとめない | 旧実装との差分テスト（既存）が不変。割り当て 0 | 完了  |
 
 ### 追加（2026-11-12。外部レビューの照合 `Code-Review-2026-11/07-External-Review-2026-11-12.md` から統合）: 出力レポートの組み立てと、校正の読み出しの切り出し
 解析（`Input/Parsers`）と読み取りの流れ（`InputLoopDevice`）は、すでにデバイスの型の外にある。デバイスの型に残る大きな塊は、次の 3 つである。差分テストの準備（31-0）を共有できるため、本 Phase に統合する。行うかどうかは D5 で決める。
 
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 31-9 | `DualSenseDevice.PrepareOutReport`（313 行。`Input/Devices/DualSenseDevice.cs:779`〜）の、出力レポートの組み立て（振動、ライトバー、プレイヤー LED、ミュート LED、トリガーの効果、USB と BT の書式の違い）を、状態を持たない部品へ出す。入力は「いまの出力の状態」と「前回送った内容」、出力はバイト列と「変化があったか」。書き込みと CRC の付与は、デバイスに残す | 31-0 に、出力レポートの台本（各設定の組み合わせ → バイト列）を足し、変更の前後で不変。割り当て 0 | 未着手 |
-| 31-10 | `SwitchProDevice.CalibrationData`（216 行。`Input/Devices/SwitchProDevice.cs:826`〜）の、校正の値の解釈（SPI から読んだバイト列 → スティックと 6 軸の校正値）を、状態を持たない部品へ出す。読み出しのやりとり（`Subcommand`）は、デバイスに残す | 校正のバイト列 → 校正値の対応を固定する | 未着手 |
-| 31-11 | `SwitchProDevice` の振動の表と組み立て（`PrepareRumbleData`、`fixedRumbleTable`／`compiledRumbleTable`）を、状態を持たない部品へ出す。あわせて、同ファイルに残るコメントアウトの塊（`Thread.Sleep` の行など）を、設計の意図と TODO を残して整理する（規約 3.3 原則 5。範囲はこの Step に限る） | 振動の強さ → バイト列の対応を固定する | 未着手 |
+| 31-9 | `DualSenseDevice.PrepareOutReport`（313 行。`Input/Devices/DualSenseDevice.cs:779`〜）の、出力レポートの組み立て（振動、ライトバー、プレイヤー LED、ミュート LED、トリガーの効果、USB と BT の書式の違い）を、状態を持たない部品へ出す。入力は「いまの出力の状態」と「前回送った内容」、出力はバイト列と「変化があったか」。書き込みと CRC の付与は、デバイスに残す | 31-0 に、出力レポートの台本（各設定の組み合わせ → バイト列）を足し、変更の前後で不変。割り当て 0 | 完了  |
+| 31-10 | `SwitchProDevice.CalibrationData`（216 行。`Input/Devices/SwitchProDevice.cs:826`〜）の、校正の値の解釈（SPI から読んだバイト列 → スティックと 6 軸の校正値）を、状態を持たない部品へ出す。読み出しのやりとり（`Subcommand`）は、デバイスに残す | 校正のバイト列 → 校正値の対応を固定する | 完了  |
+| 31-11 | `SwitchProDevice` の振動の表と組み立て（`PrepareRumbleData`、`fixedRumbleTable`／`compiledRumbleTable`）を、状態を持たない部品へ出す。あわせて、同ファイルに残るコメントアウトの塊（`Thread.Sleep` の行など）を、設計の意図と TODO を残して整理する（規約 3.3 原則 5。範囲はこの Step に限る） | 振動の強さ → バイト列の対応を固定する | 一部完了（振動の表と組み立てを部品へ。コメントアウトの塊の整理は未実施）  |
 
 - 置き場所の案: `Input/Parsers` の隣に、出力レポートの組み立ての置き場（例: `Input/Reports`）を作る。規則 R1 と `02-Extension-Guide.md` を更新する。
 - 外部レビューの「新しいコントローラー（Vader 4 Pro など）の追加が楽になる」について: Flydigi Vader 4 Pro のデバイスサポートは、承認のうえ廃止済みである。単純な機種は、すでに `IDeviceProtocol`＋`ProtocolDevice` で足せる。この追加の効果は、機種の追加よりも、DualSense・Switch Pro の出力をテストできるようにすることにある。
@@ -74,7 +74,17 @@ D1＝**B（DualSense を DS4 に合わせる）**、D2＝A（スレッドの起�
 - 31-3: 中。スレッドの起動の時機が変わると、初期化の競合が出る（DS4 は `postInitDone` を待つ処理がある）。
 - 31-5・31-6: 低〜中。DualSense は実機で確かめられない。
 
+## 実施の記録（2026-11-14）
+- **共通部品**（`InputLoopDevice`）: `VerifyBtInputCrc`（BT の CRC の検証と、連続の失敗の数え上げ。上限は機種が渡す）、`StopAndRemove`（出力の停止、切断中の印、`Removal`、監視スレッドの停止）、`TimeoutTestThread`（監視スレッドの本体。起こす処理は `KickWindowsToNoticeDisconnect` を override）、`StartBackgroundThread`。DS4・DualSense・Switch Pro・`ProtocolDevice` のスレッドの起動をこれに載せた。
+- **名指しの解消**: `WriteOutputOffOnce`／`PrimeBatteryReading` は、基底の仮想メソッド（既定は何もしない）にし、DS4 の中身を `DualShock4Device` の override へ移した（`ProtocolDevice` の電池の取り込みも同じ名前の override にした）。振動のエミュレーションの反映は `InputDeviceCore.ApplyRumbleEmulation`（DualSense が override）にし、`ControllerSlotCommands` と `DualSenseDeviceModule` に重複していた `switch` を 1 つにした。振動の強さの補正の判定は `IConfigurableDevice.UsesGenericRumbleRescaleSetting`（DualSense が true）にした。
+- **D3 の決定（`IInputDeviceModule` に差し込み口）とは違う場所にした**: 呼び出し側の `ControllerSlotCommands` が持つのは機器（`InputDeviceCore`）であり、モジュールを引く経路がない。機種の振る舞いは、機器の仮想メソッドにするほうが、手順書の「機種だけの処理は override する」の形に合い、変更も小さい。モジュール側（`DualSenseDeviceModule.ApplyProfileOptions`）も、同じ仮想メソッドを呼ぶ。
+- **出力・校正・解析の部品**: `Input/Reports`（`DualSenseOutputReportBuilder`＋`DualSenseOutputState`。USB と BT は、BT が先頭に 1 バイト足すだけで以降の並びが同じため、1 つの組み立てにした。`SwitchProRumbleEncoder`）、`Input/Parsers`（`SonyReportDecoding`、`SwitchProCalibrationDecoder`）。
+- テスト: `InputLoopFailureHandlingTests`（DS4・DualSense の BT の CRC の上限、読み取りの失敗の切断）、`DualSenseOutputReportTests`（出力レポートを、部品へ出す前の実装の記録で固定。BT の CRC は検証の式で）、`SwitchProRumbleDataTests`（同じく記録）、`SwitchProCalibrationDecoderTests`、`SonyReportDecodingTests`。ソースの文字列を見る 2 件（`OutputDataFlagTests`、`BatteryPrimingTests`）は移動先に合わせて直した。
+- **D1＝B（DualSense を DS4 に合わせる）は、ログの文言の承認待ち**: 次の違いが残っている。揃えると文言・レベルが変わるため、承認後に別コミットで行う。(1) CRC の不一致の上限で切断するときのログ: DualSense は旧い文言（`CRC32Fail`: "Data integrity checks failed for wireless device. Closing device."。画面・トレイに出る）、DS4 は `Log_Device_CrcFailedDisconnect`（機器の名前と回数つき）。(2) 読み取りの失敗の診断ログの書式: DualSense は `{Mac} {時刻} > disconnect…`、DS4 は `{Mac} {時刻}> disconnect…`（開発者向け。Debug）。(3) 上限の数: DualSense は直書きの 10、DS4 は定数（同じ 10）。(4) 切断時の終わり方: DualSense は `exitInputThread` を立てて `Skip`、DS4 は `Terminate`（ループの外から見た結果は同じ）。(5) DS4 だけ、切断のときに機器を起こす書き込み（`sendOutputReport`）を行う。
+- 31-11 の「コメントアウトの塊の整理」は、移した部分（振動の組み立て、校正）の分だけ消え、`SwitchProDevice` の他の箇所は未整理。
+
 ## 履歴
+- 2026-11-14: 31-0〜31-11 を実施した（上の記録）。D1＝B のログの文言の変更は承認待ち。
 - 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: Phase 番号の付け替え（旧 Phase30 → Phase31。進める順に合わせた）。本文中の Step 番号も付け替えた。
 - 2026-11-11: 計画書を作成。コードは未着手。

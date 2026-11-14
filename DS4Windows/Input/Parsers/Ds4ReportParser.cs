@@ -30,19 +30,7 @@ namespace DS4Windows.Input.Parsers
             // 下位 4 ビットは方向キー。時計の表現で、8 が中立、0 が上
             byte dpad_state = (byte)(tempByte & 0x0F);
 
-            switch (dpad_state)
-            {
-                case 0: cState.DpadUp = true; cState.DpadDown = false; cState.DpadLeft = false; cState.DpadRight = false; break;
-                case 1: cState.DpadUp = true; cState.DpadDown = false; cState.DpadLeft = false; cState.DpadRight = true; break;
-                case 2: cState.DpadUp = false; cState.DpadDown = false; cState.DpadLeft = false; cState.DpadRight = true; break;
-                case 3: cState.DpadUp = false; cState.DpadDown = true; cState.DpadLeft = false; cState.DpadRight = true; break;
-                case 4: cState.DpadUp = false; cState.DpadDown = true; cState.DpadLeft = false; cState.DpadRight = false; break;
-                case 5: cState.DpadUp = false; cState.DpadDown = true; cState.DpadLeft = true; cState.DpadRight = false; break;
-                case 6: cState.DpadUp = false; cState.DpadDown = false; cState.DpadLeft = true; cState.DpadRight = false; break;
-                case 7: cState.DpadUp = true; cState.DpadDown = false; cState.DpadLeft = true; cState.DpadRight = false; break;
-                case 8:
-                default: cState.DpadUp = false; cState.DpadDown = false; cState.DpadLeft = false; cState.DpadRight = false; break;
-            }
+            SonyReportDecoding.ApplyDpad(cState, dpad_state);
 
             tempByte = inputReport[6];
             cState.R3 = (tempByte & (1 << 7)) != 0;
@@ -62,17 +50,8 @@ namespace DS4Windows.Input.Parsers
             cState.FrameCounter = (byte)(tempByte >> 2);
 
             // タッチパッドの生値（2 本分）
-            cState.TrackPadTouch0.RawTrackingNum = inputReport[35];
-            cState.TrackPadTouch0.Id = (byte)(inputReport[35] & 0x7f);
-            cState.TrackPadTouch0.IsActive = (inputReport[35] & 0x80) == 0;
-            cState.TrackPadTouch0.X = (short)(((ushort)(inputReport[37] & 0x0f) << 8) | (ushort)(inputReport[36]));
-            cState.TrackPadTouch0.Y = (short)(((ushort)(inputReport[38]) << 4) | ((ushort)(inputReport[37] & 0xf0) >> 4));
-
-            cState.TrackPadTouch1.RawTrackingNum = inputReport[39];
-            cState.TrackPadTouch1.Id = (byte)(inputReport[39] & 0x7f);
-            cState.TrackPadTouch1.IsActive = (inputReport[39] & 0x80) == 0;
-            cState.TrackPadTouch1.X = (short)(((ushort)(inputReport[41] & 0x0f) << 8) | (ushort)(inputReport[40]));
-            cState.TrackPadTouch1.Y = (short)(((ushort)(inputReport[42]) << 4) | ((ushort)(inputReport[41] & 0xf0) >> 4));
+            SonyReportDecoding.ReadTouch(inputReport, 35, ref cState.TrackPadTouch0);
+            SonyReportDecoding.ReadTouch(inputReport, 39, ref cState.TrackPadTouch1);
         }
     }
 }

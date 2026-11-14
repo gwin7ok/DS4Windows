@@ -52,15 +52,19 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLightsOffWrite_SkipsPadsThatCannotWrite_NonDs4Types_AndNeverThrows()
         {
-            string code = Source("DS4Windows/Input/InputDeviceCore.cs");
+            // 基底は何もしない差し込み口。書くのは DS4 だけ
+            string core = Source("DS4Windows/Input/InputDeviceCore.cs");
+            if (core == null) return;
+            Assert.Contains("public virtual void WriteOutputOffOnce() { }", core);
+
+            string code = Source("DS4Windows/Input/Devices/DualShock4Device.cs");
             if (code == null) return;
 
-            int start = code.IndexOf("public void WriteOutputOffOnce()", StringComparison.Ordinal);
-            int end = code.IndexOf("public int Battery => battery;", StringComparison.Ordinal);
+            int start = code.IndexOf("public override void WriteOutputOffOnce()", StringComparison.Ordinal);
+            int end = code.IndexOf("public override void PrimeBatteryReading()", StringComparison.Ordinal);
             Assert.True(start >= 0 && end > start);
             string body = code.Substring(start, end - start);
 
-            Assert.Contains("deviceType != DS4Windows.Core.Model.InputDeviceType.DS4", body);
             Assert.Contains("(featureSet & VidPidFeatureSet.NoOutputData) != 0", body);
             Assert.Contains("sendOutputReport(true, true, false);", body);   // 書けなくても切断しない
             Assert.Contains("catch (Exception", body);

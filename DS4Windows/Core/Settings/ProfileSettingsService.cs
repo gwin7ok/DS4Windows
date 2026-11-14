@@ -253,7 +253,7 @@ namespace DS4Windows.Core.Settings
 
         public byte GetRumbleBoost(int deviceIndex)
         {
-            if (_deviceState.GetConfigurableDevice(deviceIndex)?.DeviceType == InputDeviceType.DualSense &&
+            if (_deviceState.GetConfigurableDevice(deviceIndex)?.UsesGenericRumbleRescaleSetting == true &&
                 UseGenericRumbleStrRescaleForDualSenses != null &&
                 !UseGenericRumbleStrRescaleForDualSenses[deviceIndex])
                 return 100;

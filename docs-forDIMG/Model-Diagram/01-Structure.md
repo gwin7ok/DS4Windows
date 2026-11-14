@@ -54,7 +54,7 @@ flowchart TB
 
 | フォルダ | 層 | 中身 |
 |---|---|---|
-| `Input/` | 第1層 | `Abstractions`（契約）、`Devices`（機種ごとのデバイスとカートリッジ）、`Parsers`（バイト列の解析）、`Hid`（HID 通信） |
+| `Input/` | 第1層 | `Abstractions`（契約）、`Devices`（機種ごとのデバイスとカートリッジ）、`Parsers`（バイト列の解析・校正の解釈）、`Reports`（出力レポートの組み立て）、`Hid`（HID 通信） |
 | `Processing/` | 第2層 | `Abstractions`（契約）、`Actions`（アクションの仕組み）、`Services`（処理の実装）、ルート直下（`Mapping` など） |
 | `Output/` | 第3層 | `Abstractions`、`Backend`（ViGEm）、`Devices`（仮想パッドの種類）、`Kbm`（キーボード・マウス出力）、`Services` |
 | `UI/` | 4-a | `Abstractions`、`ViewModels`、`Controls`、`Converters`、`Themes`、`Services`（ViewModel／ウィンドウの工場） |

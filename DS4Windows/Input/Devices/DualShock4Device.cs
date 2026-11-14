@@ -38,8 +38,6 @@ namespace DS4Windows.Input.Devices
 
         private long rawReceivedTime;
         private bool forceWrite;
-        private int crcOffset;
-        private int crcPos = BT_INPUT_REPORT_CRC32_POS;
 
         public DualShock4Device(IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
             : base(hidDevice, displayName, featureSet)
@@ -166,21 +164,9 @@ namespace DS4Windows.Input.Devices
             }
         }
 
-        private void TimeoutTestThread()
+        protected override void KickWindowsToNoticeDisconnect()
         {
-            while (!timeoutExecuted)
-            {
-                if (timeoutEvent)
-                {
-                    timeoutExecuted = true;
-                    this.sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
-                }
-                else
-                {
-                    timeoutEvent = true;
-                    Thread.Sleep(READ_STREAM_TIMEOUT);
-                }
-            }
+            this.sendOutputReport(true, true);
         }
 
         public override void RefreshCalibration()
@@ -226,6 +212,63 @@ namespace DS4Windows.Input.Devices
             }
         }
 
+        public override void WriteOutputOffOnce()
+        {
+            if ((featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
+                return;
+
+            try
+            {
+                currentHap.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
+                setRumble(0, 0);
+                sendOutputReport(true, true, false);
+                AppLogger.LogDebug("[DI] WriteOutputOffOnce: wrote lightbar off / rumble zero once before disabling output data");
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogWarn($"[DI] WriteOutputOffOnce failed: {ex.Message}");
+            }
+        }
+
+        public override void PrimeBatteryReading()
+        {
+            if (!postInitDone || ds4Input != null || isDisconnecting)
+                return;
+
+            if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
+            {
+                // 読み取りのスレッドと同じ、固定値（電池の値を送らないゲームパッド）
+                battery = 99;
+                return;
+            }
+
+            try
+            {
+                bool btReport = conType == ConnectionType.BT && (featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0;
+                // BT で、最初の数個が 0x11 でない（読み取りのスレッドは読み飛ばす）ことがあるため、数回まで読む。読めなければ、すぐにやめる
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    if (btReport)
+                    {
+                        if (hDevice.ReadFile(btInputReport) != HidReadStatus.Success) return;
+                        if (btInputReport[0] != 0x11) continue;
+                        battery = DecodeBatteryPercent(btInputReport[2 + 30], out _);   // inputReport[30] は btInputReport[2 + 30]
+                    }
+                    else
+                    {
+                        if (hDevice.ReadFile(inputReport) != HidReadStatus.Success) return;
+                        battery = DecodeBatteryPercent(inputReport[30], out _);
+                    }
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogWarn($"[DI] PrimeBatteryReading failed: {ex.Message}");
+            }
+        }
+
         public override void StartUpdate()
         {
             this.inputReportErrorCount = 0;
@@ -243,11 +286,7 @@ namespace DS4Windows.Input.Devices
             {
                 if (conType == ConnectionType.BT)
                 {
-                    timeoutCheckThread = new Thread(TimeoutTestThread);
-                    timeoutCheckThread.Priority = ThreadPriority.BelowNormal;
-                    timeoutCheckThread.Name = "DS4 Timeout thread: " + Mac;
-                    timeoutCheckThread.IsBackground = true;
-                    timeoutCheckThread.Start();
+                    timeoutCheckThread = StartBackgroundThread(TimeoutTestThread, ThreadPriority.BelowNormal, "DS4 Timeout thread: " + Mac);
                 }
                 else
                 {
@@ -258,11 +297,7 @@ namespace DS4Windows.Input.Devices
                     ds4Output.Start();
                 }
 
-                ds4Input = new Thread(RunInputLoop);
-                ds4Input.Priority = ThreadPriority.AboveNormal;
-                ds4Input.Name = "DS4 Input thread: " + Mac;
-                ds4Input.IsBackground = true;
-                ds4Input.Start();
+                ds4Input = StartBackgroundThread(RunInputLoop, ThreadPriority.AboveNormal, "DS4 Input thread: " + Mac);
             }
             else
             {
@@ -527,8 +562,6 @@ namespace DS4Windows.Input.Devices
         {
             timeoutEvent = false;
             forceWrite = false;
-            crcOffset = 0;
-            crcPos = BT_INPUT_REPORT_CRC32_POS;
 
             // Run continuous calibration on Gyro when starting input loop
             sixAxis.ResetContinuousCalibration();
@@ -555,37 +588,19 @@ namespace DS4Windows.Input.Devices
                         }
                     }
 
-                    uint recvCrc32 = btInputReport[BT_INPUT_REPORT_CRC32_POS] |
-                        (uint)(btInputReport[BT_INPUT_REPORT_CRC32_POS + 1] << 8) |
-                        (uint)(btInputReport[BT_INPUT_REPORT_CRC32_POS + 2] << 16) |
-                        (uint)(btInputReport[BT_INPUT_REPORT_CRC32_POS + 3] << 24);
-
-                    uint calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref HamSeed, ref btInputReport, ref crcOffset, ref crcPos);
-                    if (recvCrc32 != calcCrc32)
+                    switch (VerifyBtInputCrc(btInputReport, CRC32_NUM_ATTEMPTS))
                     {
-                        cState.PacketCounter = pState.PacketCounter + 1; //still increase so we know there were lost packets
-
-                        // If the incoming data packet does not have the native DS4 type or CRC-32 checks keep failing. Fail out and disconnect controller.
-                        if (this.inputReportErrorCount >= CRC32_NUM_ATTEMPTS)
-                        {
+                        case BtCrcResult.Skipped:
+                            return FrameResult.Skip;
+                        case BtCrcResult.LimitReached:
+                            // The incoming data packet does not have the native DS4 type or CRC-32 checks keep failing. Fail out and disconnect controller.
                             AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_CrcFailedDisconnect", Mac.ToString(), CRC32_NUM_ATTEMPTS);
 
                             readWaitEv.Reset();
                             sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
-                            StopOutputUpdate();
-                            isDisconnecting = true;
-                            RunRemoval();
-
-                            timeoutExecuted = true;
+                            StopAndRemove();
                             return FrameResult.Terminate;
-                        }
-
-                        this.inputReportErrorCount++;
-                        readWaitEv.Reset();
-                        return FrameResult.Skip;
                     }
-
-                    this.inputReportErrorCount = 0;
                 }
                 else
                 {
@@ -602,11 +617,7 @@ namespace DS4Windows.Input.Devices
 
                     readWaitEv.Reset();
                     sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
-                    StopOutputUpdate();
-                    isDisconnecting = true;
-                    RunRemoval();
-
-                    timeoutExecuted = true;
+                    StopAndRemove();
                     return FrameResult.Terminate;
                 }
             }
@@ -626,11 +637,7 @@ namespace DS4Windows.Input.Devices
                     }
 
                     readWaitEv.Reset();
-                    StopOutputUpdate();
-                    isDisconnecting = true;
-                    RunRemoval();
-
-                    timeoutExecuted = true;
+                    StopAndRemove();
                     return FrameResult.Terminate;
                 }
 
