@@ -172,10 +172,11 @@ namespace DS4Windows.Processing.Touchpad
 
         public void PostSetup()
         {
-            TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
+            TouchpadOutMode tempMode = touchpad.OutputMode;
             if (tempMode == TouchpadOutMode.MouseJoystick)
             {
-                TouchMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Touchpad.MouseStick;
+                TouchMouseStickInfo msinfo = touchpad.MouseStick;
                 msinfo.RemoveRefreshEvents();
                 msinfo.SetRefreshEvents(_touchStick.Filter.axis1Filter);
                 msinfo.SetRefreshEvents(_touchStick.Filter.axis2Filter);
@@ -230,11 +231,12 @@ namespace DS4Windows.Processing.Touchpad
         // 出力の種類ごとの、動いたときの処理（タッチ → マウス／Controls のスワイプ／スティック）
         private void MouseModeMoved(TouchpadEventArgs arg)
         {
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
                 if (_profileSettings.GetTouchpadActive(deviceNum))
                 {
                     tempBool = AreDisInvertTriggersHeld();
 
-                    if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
+                    if (touchpad.Trackball)
                     {
                         _trackball.AddSample(arg.Touches[0].DeltaX, arg.Touches[0].DeltaY);
                     }
@@ -244,7 +246,7 @@ namespace DS4Windows.Processing.Touchpad
                 }
                 else
                 {
-                    if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
+                    if (touchpad.Trackball)
                     {
                         _trackball.AddEmptySample();
                     }
@@ -307,10 +309,11 @@ namespace DS4Windows.Processing.Touchpad
 
         public virtual void touchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
         {
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             s = dev.getCurrentStateRef();
 
             //Trace.WriteLine("TOUCHES_MOVED");
-            TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
+            TouchpadOutMode tempMode = touchpad.OutputMode;
             if (tempMode == TouchpadOutMode.Mouse)
                 MouseModeMoved(arg);
             else if (tempMode == TouchpadOutMode.Controls)
@@ -327,13 +330,14 @@ namespace DS4Windows.Processing.Touchpad
                     slideleft = true;
             }
 
-            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
+            _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 
         public virtual void touchesBegan(DS4Touchpad sender, TouchpadEventArgs arg)
         {
-            TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
+            TouchpadOutMode tempMode = touchpad.OutputMode;
             bool mouseMode = tempMode == TouchpadOutMode.Mouse;
             if (mouseMode)
             {
@@ -356,18 +360,19 @@ namespace DS4Windows.Processing.Touchpad
                 arg.Touches[0].PreviousTouch);
 
             _tap.TouchBegan(arg.TimeStamp, arg.TouchButtonPressed,
-                mouseMode && _profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap,
-                _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity);
+                mouseMode && touchpad.DoubleTap,
+                touchpad.TapSensitivity);
 
             _buttons.ResetForNewTouch();
 
             s = dev.getCurrentStateRef();
-            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
+            _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 
         public virtual void touchesEnded(DS4Touchpad sender, TouchpadEventArgs arg)
         {
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             //Trace.WriteLine("TOUCHES ENDED");
 
             s = dev.getCurrentStateRef();
@@ -377,20 +382,20 @@ namespace DS4Windows.Processing.Touchpad
             swipeUpB = swipeDownB = swipeLeftB = swipeRightB = 0;
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
-            byte tapSensitivity = _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity;
-            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode} sens={tapSensitivity}");
-            if (tapSensitivity != 0 && _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode == TouchpadOutMode.Mouse)
+            byte tapSensitivity = touchpad.TapSensitivity;
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={touchpad.OutputMode} sens={tapSensitivity}");
+            if (tapSensitivity != 0 && touchpad.OutputMode == TouchpadOutMode.Mouse)
             {
-                _tap.TouchEnded(arg, firstTouch, tapSensitivity, _profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap);
+                _tap.TouchEnded(arg, firstTouch, tapSensitivity, touchpad.DoubleTap);
             }
             else
             {
-                TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
+                TouchpadOutMode tempMode = touchpad.OutputMode;
                 if (tempMode == TouchpadOutMode.Mouse)
                 {
                     tempBool = AreDisInvertTriggersHeld();
 
-                    if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
+                    if (touchpad.Trackball)
                     {
                         _trackball.BeginCoast();
                         if (_trackball.Step(s.elapsedTime, out int dx, out int dy))
@@ -401,7 +406,7 @@ namespace DS4Windows.Processing.Touchpad
                 }
                 else if (tempMode == TouchpadOutMode.MouseJoystick)
                 {
-                    TouchMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Touchpad.MouseStick;
+                    TouchMouseStickInfo msinfo = touchpad.MouseStick;
                     //if (Global.getTrackballMode(deviceNum))
                     //if (true)
                     if (msinfo.trackballMode)
@@ -493,7 +498,7 @@ namespace DS4Windows.Processing.Touchpad
                 }
             }
 
-            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
+            _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
         public void TouchStartedOrEnded(DS4Touchpad sender, TouchpadEventArgs arg)
@@ -590,10 +595,11 @@ namespace DS4Windows.Processing.Touchpad
 
         private void synthesizeMouseButtons()
         {
-            TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
+            TouchpadOutMode tempMode = touchpad.OutputMode;
             if (tempMode != TouchpadOutMode.Passthru)
             {
-                bool touchClickPass = _profileSettings.ForSlot(deviceNum).Touchpad.ClickPassthru;
+                bool touchClickPass = touchpad.ClickPassthru;
                 if (!touchClickPass)
                 {
                     // Reset output Touchpad click button
@@ -635,9 +641,9 @@ namespace DS4Windows.Processing.Touchpad
                 _syntheticInput.CountClick(deviceNum, Click.Right);
             }
 
-            if (_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode == TouchpadOutMode.Mouse)
+            if (touchpad.OutputMode == TouchpadOutMode.Mouse)
             {
-                _tap.CountPendingClicks(_syntheticInput, _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity);
+                _tap.CountPendingClicks(_syntheticInput, touchpad.TapSensitivity);
 
                 if (_tap.SecondTouchBegan) //if tap and hold (also works as double tap)
                 {
@@ -653,25 +659,27 @@ namespace DS4Windows.Processing.Touchpad
 
         public virtual void touchButtonUp(DS4Touchpad sender, TouchpadEventArgs arg)
         {
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             pushed = DS4Controls.None;
             _buttons.ClearDownFlagsKeepCandidate();
             _buttons.WasTouchButtonClicked = true;
 
             s = dev.getCurrentStateRef();
-            TouchButtonActivationMode touchButtonMode = _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode;
+            TouchButtonActivationMode touchButtonMode = touchpad.ButtonMode;
             if (s.Touch1 || s.Touch2 ||
                 touchButtonMode == TouchButtonActivationMode.Release)
             {
-                _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
+                _buttons.Check(arg, touchpad.ButtonMode);
                 synthesizeMouseButtons();
             }
         }
 
         public virtual void touchButtonDown(DS4Touchpad sender, TouchpadEventArgs arg)
         {
+            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             if (arg.Touches != null &&
                 arg.Touches.Length == 1 &&
-                (_profileSettings.ForSlot(deviceNum).Touchpad.LowerRightAsRightClick && arg.Touches[0].HwX > (1920 * 3) / 4 && arg.Touches[0].HwY > (960 * 3) / 4))
+                (touchpad.LowerRightAsRightClick && arg.Touches[0].HwX > (1920 * 3) / 4 && arg.Touches[0].HwY > (960 * 3) / 4))
             {
                 _syntheticInput.CountClick(deviceNum, Click.Right);
             }
@@ -682,7 +690,7 @@ namespace DS4Windows.Processing.Touchpad
 
             _buttons.WasTouchButtonClicked = false;
             s = dev.getCurrentStateRef();
-            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
+            _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 
