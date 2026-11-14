@@ -82,7 +82,8 @@ namespace DS4Windows.Composition
             // KeyButtonActionController の登録と終了時の破棄が行われない。
             // AppHost.PreallocateActionEntries は、登録された DefaultActionManager を前提にしている。
             // 旧 系統A の静的な ActionRegistry は、本番で未初期化のため Phase14c-Step5（決定 E3）で削除した（IActionRegistry は統一トリガーディスパッチの ActionBindingRegistry）。
-            services.AddSingleton<IManagedActionManager, DefaultActionManager>();
+            services.AddSingleton<DefaultActionManager>();   // 具象を登録し、契約はそれを返す（AppHost が、起動時に項目を先に確保するため具象を使う）
+            services.AddSingleton<IManagedActionManager>(sp => sp.GetRequiredService<DefaultActionManager>());
             services.AddSingleton<IControllerRegistry, DefaultControllerRegistry>();
 
             // Phase8-Step4 W1: 統一トリガーディスパッチの束縛の置き場。Phase8-Step8 8d: 種別ごとの移行のスイッチ（BindingMigrationOptions）は削除した（ロールバックは git のみ）。
@@ -171,9 +172,10 @@ namespace DS4Windows.Composition
             services.AddSingleton<IBackendFailureHandler, BackendFailureHandler>();   // 仮想パッドのバックエンドの失敗でサービスを止める
             services.AddSingleton<IRuntimeBootstrapper, RuntimeBootstrapper>();   // 起動時の取り付け（Initialize）と終了時の後始末（Shutdown）
             // Phase13-Step5: スロット状態の持ち主。IDeviceStateAccessor（GetController）も同じインスタンスを返す
-            services.AddSingleton<IDeviceSlotState, DeviceSlotState>();
-            services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<IDeviceSlotState>());
-            services.AddSingleton<IConfigurableDeviceLookup>(sp => (IConfigurableDeviceLookup)sp.GetRequiredService<IDeviceSlotState>());   // Core の設定値・プロファイル読込が使う狭い窓口（同じインスタンス）
+            services.AddSingleton<DeviceSlotState>();   // 具象を 1 つだけ登録し、下の 3 つの契約が同じインスタンスを返す（キャストを使わない）
+            services.AddSingleton<IDeviceSlotState>(sp => sp.GetRequiredService<DeviceSlotState>());
+            services.AddSingleton<IDeviceStateAccessor>(sp => sp.GetRequiredService<DeviceSlotState>());
+            services.AddSingleton<IConfigurableDeviceLookup>(sp => sp.GetRequiredService<DeviceSlotState>());   // Core の設定値・プロファイル読込が使う狭い窓口（同じインスタンス）
             // UI 向けの、接続中のコントローラーの読み取りの窓口（UI は InputDeviceCore と ControlService を持たない）
             services.AddSingleton<IControllerSlotQuery, ControllerSlotQuery>();
             services.AddSingleton<IControllerSlotCommands, ControllerSlotCommands>();

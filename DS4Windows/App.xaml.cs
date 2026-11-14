@@ -916,64 +916,22 @@ namespace DS4Windows
             CleanShutdown();
         }
 
+        /// <summary>
+        /// 終了の手順を行う。手順そのものは <see cref="AppShutdownSequence"/>（順序は同クラスのテストが固定）。
+        /// ホスト構築前の早期終了では、まだ解決していない協力者は <c>null</c> のまま渡す（その手順は何もしない）。
+        /// </summary>
         private void CleanShutdown()
         {
-            if (runShutdown)
-            {
-                if (_runtimeBootstrapper != null)
-                {
-                    Task.Run(() =>
-                    {
-                        if (_lifecycle != null && _lifecycle.Running)
-                        {
-                            _lifecycle.Stop(immediateUnplug: true);
-                            _runtimeBootstrapper.Shutdown();
-                        }
-                    }).Wait();
-                }
+            if (!runShutdown) return;
 
-                if (!skipSave)
-                {
-                    // skipSave が false になるのは Application_Startup の Post-Host（InitializePostHostServices の後）だけなので、
-                    // ここでは _appSettingsService は必ず解決済み。CleanShutdown はホスト構築前の早期終了・例外でも呼ばれるため、
-                    // 念のため null 条件演算子で保護する（その場合は skipSave が true のままで、ここへは来ない）。
-                    _appSettingsService?.Save();
-                }
-
-                // Reset timer
-                DS4Windows.Core.Utilities.Util.timeEndPeriod(1);
-
-                _singleInstance.Stop();
-
-                if (_ipc != null) _ipc.Dispose();
-
-                // Dispose controllers registered in IControllerRegistry (if present)
-                // Phase7-Step5 W4: ServiceProviderHolder.Provider の直接呼び出しをやめ、InitializePostHostServices で解決した
-                // レジストリを使う（ホスト構築前の早期終了では null のため、何もしない）。
-                try
-                {
-                    if (_controllerRegistry != null)
-                    {
-                        for (int d = 0; d < ControllerLimits.MaxControllerCount; d++)
-                        {
-                            try { _controllerRegistry.ClearControllersForDevice(d); } catch { }
-                        }
-                    }
-                }
-                catch { }
-
-                // Phase7-Step4 W2: ホストを破棄する。ドライバー破棄の順序（防壁 5）を守るため、コントローラーの停止
-                // （rootHub.Stop／ShutDown）と、レジストリの破棄の後に行う。Dispose の後は、GetService が暗黙にホストを
-                // 作り直さない。例外は握る（AppHost.Dispose も握る）。ログのフラッシュより前に行い、破棄中のログも出力する。
-                try
-                {
-                    AppHost.Dispose();
-                }
-                catch { }
-
-                LogManager.Flush();
-                LogManager.Shutdown();
-            }
+            new AppShutdownSequence(
+                _runtimeBootstrapper, _lifecycle,
+                skipSave ? (Action)null : () => _appSettingsService?.Save(),
+                _ipc, _controllerRegistry, ControllerLimits.MaxControllerCount,
+                resetTimerResolution: () => DS4Windows.Core.Utilities.Util.timeEndPeriod(1),
+                stopSingleInstance: _singleInstance.Stop,
+                disposeHost: AppHost.Dispose,
+                flushLogs: () => { LogManager.Flush(); LogManager.Shutdown(); }).Run();
         }
     }
 }

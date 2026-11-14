@@ -1,7 +1,7 @@
 # Phase35 計画書: 終了の手順の集約と、登録の具象依存の解消（コードレビュー 2026-11 の 1-2・1-3・1-4）
 
 作成日: 2026-11-11
-状態: **未着手。承認待ち**（リスクが高い。Phase29〜34 のあとに行う）
+状態: **一部完了（2026-11-15）。35-1・35-2・35-5 は完了。35-3・35-4・35-4b は、終了の実機確認のあとに行うため未着手**
 出典: `docs-forDIMG/Code-Review-2026-11/01-DI.md`
 関連: `Structure-Review-2026-11.md` の C（Phase24 で `App.xaml.cs` を 1,323 → 約 940 行にした続き）、`Phase27-Plan.md`（`RuntimeBootstrapper`）
 
@@ -69,3 +69,9 @@ D1＝**B（すべて。`App.xaml.cs` を 400 行前後へ。35-4・35-4b を含�
 - 2026-11-13: Phase 番号の付け替え（旧 Phase33 → Phase35。進める順に合わせた）。本文中の Step 番号も付け替えた。
 - 2026-11-11: 計画書を作成。コードは未着手。
 - 2026-11-12: 外部レビューの照合の結果を統合。`App.xaml.cs` の現状と目安（400 行前後）、35-4b（引数の処理ほかの切り出し）、ほかの計画との関係を足した。
+
+## 実施の記録
+### 2026-11-15
+- 35-1・35-2（完了）: `Composition/Startup/AppShutdownSequence` を新設し、`App.CleanShutdown` の中身を移した（順序は同じ。ホスト構築前は協力者が `null` で、その手順は何もしない）。順序は、偽物が呼ばれた順を記録する `AppShutdownSequenceTests`（6 件）で固定した。旧ソース走査の検査（`AppHostStartupShutdownGuardTests.CleanShutdown_DisposesTheHost…`）は、同じことをより確かに守るこの検査に置き換えた。未処理例外・サインアウト・通常の終了は、従来どおり同じ `CleanShutdown`（D3＝A）を通る。
+- 35-5（完了）: キャスト 3 か所を、具象を 1 つ登録して契約がそれを返す形にした（`DeviceSlotState`［3 契約］、`ProfileSettingsService`、`DefaultActionManager`）。`SingleInstanceRegistrationTests` が、契約ごとに同じインスタンスを返すことを検査する。
+- 見送り: 35-3（終了のためだけに持つフィールドを消す。`_controllerRegistry` など）、35-4・35-4b（起動後の処理・引数の処理の移動）。計画書の決定の記録のとおり、終了の手順（35-2）が実機で確認できたあとに行う。実機確認は先送りのため、台帳 §3 に項目を足した。
