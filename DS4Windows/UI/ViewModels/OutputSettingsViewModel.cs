@@ -4,7 +4,6 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Input.Devices;
 using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels

@@ -68,6 +68,8 @@ namespace DS4WindowsTests
         /// <summary>撤去・移動したメンバー（型の単純名 → メンバー名）。型は本体に 1 つだけあること。</summary>
         private static readonly (string Type, string[] Members)[] RemovedMembers =
         {
+            // Phase36-B1: 静的な差し替え口は、コンストラクターで受ける工場に替えた
+            ("RepeatHelperToIRepeaterAdapter", new[] { "RepeaterFactoryOverride" }),
             // Phase7-Step1 W1: 呼び出し元 0 件のメソッド
             ("BackingStore", new[] { "SaveOld", "UsedSavedProfileString", "RebuildProfileActionDicts", "GetDS4Action", "GetDS4Extra", "GetDS4KeyType", "GetDS4STrigger", "GetGyroOutModeString", "GetGyroOutModeType", "UpdateDS4CLightbarMacro" }),
             // Phase7-Step2: 本体の呼び出しが 0 件だった契約のメンバー

@@ -32,7 +32,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 using NonFormTimer = System.Timers.Timer;
 

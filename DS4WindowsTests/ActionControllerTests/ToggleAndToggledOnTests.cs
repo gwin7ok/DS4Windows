@@ -19,11 +19,11 @@ namespace DS4Windows.Actions.Tests
             public readonly DefaultActionManager Manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
             public readonly DS4Windows.Processing.Services.KeyButtonControllerRegistry Registry;
 
-            public Parts()
+            public Parts(System.Func<System.Func<DS4Windows.Processing.RepeatHelper>, IRepeater> repeaterFactory = null)
             {
                 var controllerRegistry = new DefaultControllerRegistry();
                 Registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(
-                    new DefaultKeyButtonActionControllerFactory(controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System), controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System);
+                    new DefaultKeyButtonActionControllerFactory(controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System, repeaterFactory), controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System);
             }
         }
 
@@ -124,14 +124,11 @@ namespace DS4Windows.Actions.Tests
         [Fact]
         public void DeterministicRepeater_TriggerViaFake()
         {
-            var p = new Parts();
+            // 繰り返しの部品を FakeDeterministicRepeater へ差し替えた工場で、コントローラーを作らせる
+            var p = new Parts(origFactory => new FakeDeterministicRepeater());
             var dam = p.Manager;
             var registry = p.Registry;
 
-            // Install override to create FakeDeterministicRepeater for any adapter constructions
-            DS4Windows.Processing.Actions.RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride = (origFactory) => new FakeDeterministicRepeater();
-
-            try
             {
                 // Create a SpecialAction configured as Toggle to drive controller path
                 var sa = new DS4Windows.Core.Settings.SpecialAction("repeattest", "0", "Key", "0");
@@ -172,10 +169,6 @@ namespace DS4Windows.Actions.Tests
                         }
                     }
                 }
-            }
-            finally
-            {
-                DS4Windows.Processing.Actions.RepeatHelperToIRepeaterAdapter.RepeaterFactoryOverride = null;
             }
         }
 

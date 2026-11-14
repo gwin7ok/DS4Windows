@@ -23,7 +23,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using DS4Windows.Input;
 
 using DS4Windows.Processing.Abstractions;
 

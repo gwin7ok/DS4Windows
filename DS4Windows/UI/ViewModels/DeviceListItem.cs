@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DS4Windows.Input;
 using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
 using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
 

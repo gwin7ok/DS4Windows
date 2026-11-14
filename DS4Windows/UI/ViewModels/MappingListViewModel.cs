@@ -22,7 +22,6 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 
 namespace DS4Windows.UI.ViewModels
 {

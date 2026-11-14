@@ -65,6 +65,7 @@
   - **後付けの配線**（生成のときに、別のオブジェクトへ自分や自分の持ち物を結ぶ処理。例: `BackingStore.AttachProfileIdentity`）は、`ServiceRegistration.Wiring.cs` の `AddWiredServices` だけに置き、冒頭の一覧を更新する。新しい依存は、まずコンストラクター注入で表せないかを考える（後付けの配線は、ブートストラップの `BackingStore` や循環など、コンストラクターで渡せない理由があるときだけ）。
 - **設定の領域の窓口**（2026-11-09 追記。Phase15-6Z）: プロファイル編集画面の ViewModel は、`IProfileSettingsService` のスロット番号の配列を直接触らず、`ForSlot(slot)` が返す領域の窓口（`Core/Settings` の `GyroSlotSettings` など）だけを受け取る。新しい設定の項目は、まず該当する窓口へ足す。`SettingsSlotWindowUsageTests` が検査する。
 - インターフェースには `I` プレフィックスを付ける。
+- **インターフェースを作る基準**（2026-11-15 追記。Phase36-B3）: 同じ層の中だけで使う、状態を持たない計算の部品は、インターフェースを作らず、具象のまま注入してよい。層をまたぐポートと、テストで偽物に差し替えるものは、インターフェースにする。既存のインターフェースは、この基準だけを理由に撤去しない。
 - **Pure DI（純粋コンストラクタ注入）の堅持**: ViewModel やサービスに `AppHost.Services`（Service Locator）を持ち込ませず、コンストラクタで明示的に依存を受け取る。
 - **暗黙のホスト構築の禁止**（2026-10-18 追記）: `AppHost.GetService` は、ホストが未構築（または Dispose 済み）のとき `null` を返し、暗黙にホストを作らない。ホストは `App` の起動（`CreateHost(config, parser)`）だけが作る。テストは `TestHost` 経由で共有のホストを使う。
 - **ラチェットの一致検査**（2026-10-18 追記）: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`Program.rootHub`）と `Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）の基準値は、「超えない」だけでなく「実数と一致する」ことを `Phase7Step10eW5RatchetEqualityGuardTests` が検査する。件数を減らしたら、基準値も同時に更新すること。

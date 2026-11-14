@@ -40,8 +40,6 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
-using DS4Windows.Input.Hid;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Translations;

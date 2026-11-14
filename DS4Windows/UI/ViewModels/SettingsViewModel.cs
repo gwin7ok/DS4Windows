@@ -50,6 +50,8 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>検出した Xbox コントローラーすべての、元の XInput を HidHide で隠すか（Xbox の系統の設定。変更するとサービスを再起動する）。</summary>
+        // 機種ごとの設定の定義（XboxDeviceOptions の ControllerSetting）には入っているが、画面は設定タブの 1 項目で、
+        // HidHide が未導入のときの案内（ShowHidHideMissingNotice）と連動するため、定義の WithUi では表さず、この ViewModel が定義の値を読み書きする。
         public bool HideXboxController
         {
             get => _appSettings.DeviceOptions.Get<DS4Windows.Core.Settings.XboxDeviceOptions>(DS4Windows.Core.Model.InputDeviceFamily.Xbox).HideUsbParent;

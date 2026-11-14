@@ -16,18 +16,19 @@ namespace DS4Windows.Processing.Actions
         private IRepeater helperIRepeater;
         private readonly Func<RepeatHelper> helperFactory;
 
-        // Test hook: if non-null, invoked to create an IRepeater in place of the underlying RepeatHelper.
-        // Signature: (originalHelperFactory) => IRepeater
-        public static Func<Func<RepeatHelper>, IRepeater> RepeaterFactoryOverride = null;
+        // 差し替え用の工場（主にテスト）。null でなければ、元の RepeatHelper の代わりにこれが IRepeater を作る。
+        // 引数は、元の RepeatHelper を作る工場。
+        private readonly Func<Func<RepeatHelper>, IRepeater> repeaterFactoryOverride;
 
         public RepeatHelperToIRepeaterAdapter(RepeatHelper existing)
         {
             helper = existing ?? throw new ArgumentNullException(nameof(existing));
         }
 
-        public RepeatHelperToIRepeaterAdapter(Func<RepeatHelper> factory)
+        public RepeatHelperToIRepeaterAdapter(Func<RepeatHelper> factory, Func<Func<RepeatHelper>, IRepeater> repeaterFactoryOverride = null)
         {
             helperFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+            this.repeaterFactoryOverride = repeaterFactoryOverride;
         }
 
         public void Start(TimeSpan initialDelay, TimeSpan interval, System.Action tickAction)
@@ -39,12 +40,12 @@ namespace DS4Windows.Processing.Actions
                     try { DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior"); } catch { }
                 }
 
-                // If tests provided an override factory, prefer creating an IRepeater wrapper
-                if (RepeaterFactoryOverride != null)
+                // 差し替えの工場が渡されていれば、IRepeater の包みを優先して作る
+                if (repeaterFactoryOverride != null)
                 {
                     try
                     {
-                        helperIRepeater ??= RepeaterFactoryOverride(helperFactory);
+                        helperIRepeater ??= repeaterFactoryOverride(helperFactory);
                         helperIRepeater?.Start(initialDelay, interval, tickAction);
                         return;
                     }
