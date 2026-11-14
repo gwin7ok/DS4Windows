@@ -18,7 +18,6 @@ namespace DS4Windows.Input.Devices
     public class DualShock4Device : InputLoopDevice
     {
         private static readonly IInputReportParser ReportParser = new Ds4ReportParser();
-        private const int CRC32_NUM_ATTEMPTS = 10;
 
         private readonly TimestampClock timestampClock = new TimestampClock(ushort.MaxValue, 16u);
         private DS4ControllerOptions nativeOptionsStore;
@@ -588,13 +587,13 @@ namespace DS4Windows.Input.Devices
                         }
                     }
 
-                    switch (VerifyBtInputCrc(btInputReport, CRC32_NUM_ATTEMPTS))
+                    switch (VerifyBtInputCrc(btInputReport, CrcMaxConsecutiveFailures))
                     {
                         case BtCrcResult.Skipped:
                             return FrameResult.Skip;
                         case BtCrcResult.LimitReached:
                             // The incoming data packet does not have the native DS4 type or CRC-32 checks keep failing. Fail out and disconnect controller.
-                            AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_CrcFailedDisconnect", Mac.ToString(), CRC32_NUM_ATTEMPTS);
+                            AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_CrcFailedDisconnect", Mac.ToString(), CrcMaxConsecutiveFailures);
 
                             readWaitEv.Reset();
                             sendOutputReport(true, true); // Kick Windows into noticing the disconnection.

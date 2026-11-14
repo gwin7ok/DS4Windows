@@ -97,6 +97,9 @@ namespace DS4Windows.Input.Devices
         /// <summary>出力（振動・ライトバーなど）を、必要なら書き込む。<c>Report</c> のあとに呼ばれる。</summary>
         protected abstract void WriteOutputFrame();
 
+        /// <summary>Bluetooth の入力レポートの CRC の不一致を、連続でいくつまで許すか（次の不一致で切断する）。</summary>
+        protected const int CrcMaxConsecutiveFailures = 10;
+
         /// <summary>Bluetooth の入力レポートの CRC の検証の結果。</summary>
         protected enum BtCrcResult
         {

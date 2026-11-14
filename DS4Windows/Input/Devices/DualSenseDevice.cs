@@ -516,17 +516,18 @@ namespace DS4Windows.Input.Devices
                 HidReadStatus res = hDevice.ReadFile(inputReport);
                 if (res == HidReadStatus.Success)
                 {
-                    switch (VerifyBtInputCrc(inputReport, 10))
+                    switch (VerifyBtInputCrc(inputReport, CrcMaxConsecutiveFailures))
                     {
                         case BtCrcResult.Skipped:
                             return FrameResult.Skip;
                         case BtCrcResult.LimitReached:
-                            exitInputThread = true;
+                            AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_CrcFailedDisconnect", Mac.ToString(), CrcMaxConsecutiveFailures);
 
-                            AppLogger.Log(AppLogLevel.Warn, DS4Windows.Translations.Strings.CRC32Fail, LogOptions.UserFacing);
+                            exitInputThread = true;
                             readWaitEv.Reset();
+                            KickWindowsToNoticeDisconnect();
                             StopAndRemove();
-                            return FrameResult.Skip;
+                            return FrameResult.Terminate;
                     }
                 }
                 else
@@ -538,12 +539,12 @@ namespace DS4Windows.Input.Devices
                     else
                     {
                         int winError = Marshal.GetLastWin32Error();
-                        AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
+                        AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
                         AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_DisconnectedReadFailure", Mac.ToString(), winError);
                     }
 
-                    StopAfterReadFailure();
-                    return FrameResult.Skip;
+                    StopAfterReadFailure(kickWindows: true);
+                    return FrameResult.Terminate;
                 }
             }
             else
@@ -558,11 +559,11 @@ namespace DS4Windows.Input.Devices
                     else
                     {
                         int winError = Marshal.GetLastWin32Error();
-                        AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")} > disconnect due to read failure: {winError.ToString("x8")}");
+                        AppLogger.LogDebug($"{Mac} {DateTime.UtcNow.ToString("o")}> disconnect due to read failure: {winError.ToString("x8")}");
                     }
 
-                    StopAfterReadFailure();
-                    return FrameResult.Skip;
+                    StopAfterReadFailure(kickWindows: false);
+                    return FrameResult.Terminate;
                 }
             }
 
@@ -571,10 +572,11 @@ namespace DS4Windows.Input.Devices
             return FrameResult.Accept;
         }
 
-        private void StopAfterReadFailure()
+        private void StopAfterReadFailure(bool kickWindows)
         {
             exitInputThread = true;
             readWaitEv.Reset();
+            if (kickWindows) KickWindowsToNoticeDisconnect();
             StopAndRemove();
         }
 
