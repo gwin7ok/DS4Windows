@@ -30,7 +30,7 @@ namespace DS4Windows.Core.Model
 {
 
     [StructLayout(LayoutKind.Explicit, Size = 100)]
-    unsafe struct PadDataRspPacket
+    public unsafe struct PadDataRspPacket
     {
         // Header section
         [FieldOffset(0)]

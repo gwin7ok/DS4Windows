@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -38,11 +39,14 @@ namespace DS4Windows.Output.Udp
         private uint serverId;
         private bool running;
         private byte[] recvBuffer = new byte[1024];
-        private byte[][] dataBuffers;
-        private int listInd = 0;
-        private ReaderWriterLockSlim poolLock = new ReaderWriterLockSlim();
-        private SemaphoreSlim _pool;
+        // 送信用の SocketAsyncEventArgs（それぞれ 100 バイトの自前のバッファーを持つ）を使い回す。
+        // 同時に送信中にできる数は ARG_BUFFER_LEN まで（_pool の数）。
+        private readonly ConcurrentBag<SocketAsyncEventArgs> _argsPool = new ConcurrentBag<SocketAsyncEventArgs>();
+        private readonly SemaphoreSlim _pool;
         private const int ARG_BUFFER_LEN = 80;
+
+        [ThreadStatic]
+        private static List<IPEndPoint> _clientsListCache;
 
         public delegate void GetPadDetail(int padIdx, ref DualShockPadMeta meta);
 
@@ -52,25 +56,39 @@ namespace DS4Windows.Output.Udp
         {
             portInfoGet = getPadDetailDel;
             _pool = new SemaphoreSlim(ARG_BUFFER_LEN);
-            dataBuffers = new byte[ARG_BUFFER_LEN][];
             for (int num = 0; num < ARG_BUFFER_LEN; num++)
             {
                 SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.SetBuffer(new byte[DsuPacketFormatter.DataRspPacketLength], 0, DsuPacketFormatter.DataRspPacketLength);
                 args.Completed += SocketEvent_AsyncCompleted;
-                dataBuffers[num] = new byte[100];
+                _argsPool.Add(args);
             }
         }
 
         private void SocketEvent_AsyncCompleted(object sender, SocketAsyncEventArgs e)
         {
-            _pool.Release();
-            e.Dispose();
+            ReturnArgs(e);
         }
 
         private void CompletedSynchronousSocketEvent(SocketAsyncEventArgs args)
         {
+            ReturnArgs(args);
+        }
+
+        private void ReturnArgs(SocketAsyncEventArgs args)
+        {
+            args.RemoteEndPoint = null;
+            _argsPool.Add(args);
             _pool.Release();
-            args.Dispose();
+        }
+
+        // 送信用の枠を 1 つ借りる（空くまで待つ）。_pool の数と _argsPool の数は一致しているため、必ず取れる。
+        private SocketAsyncEventArgs RentArgs(IPEndPoint clientEP)
+        {
+            _pool.Wait();
+            _argsPool.TryTake(out SocketAsyncEventArgs args);
+            args.RemoteEndPoint = clientEP;
+            return args;
         }
 
         enum MessageType
@@ -128,87 +146,15 @@ namespace DS4Windows.Output.Udp
 
         private Dictionary<IPEndPoint, ClientRequestTimes> clients = new Dictionary<IPEndPoint, ClientRequestTimes>();
 
-        private int BeginPacket(byte[] packetBuf, ushort reqProtocolVersion = MaxProtocolVersion)
-        {
-            int currIdx = 0;
-            packetBuf[currIdx++] = (byte)'D';
-            packetBuf[currIdx++] = (byte)'S';
-            packetBuf[currIdx++] = (byte)'U';
-            packetBuf[currIdx++] = (byte)'S';
-
-            Array.Copy(BitConverter.GetBytes((ushort)reqProtocolVersion), 0, packetBuf, currIdx, 2);
-            currIdx += 2;
-
-            Array.Copy(BitConverter.GetBytes((ushort)packetBuf.Length - 16), 0, packetBuf, currIdx, 2);
-            currIdx += 2;
-
-            Array.Clear(packetBuf, currIdx, 4); //place for crc
-            currIdx += 4;
-
-            Array.Copy(BitConverter.GetBytes((uint)serverId), 0, packetBuf, currIdx, 4);
-            currIdx += 4;
-
-            return currIdx;
-        }
-
-        private unsafe void BeginDataRspPacket(ref PadDataRspPacket currentRsp, ushort reqProtocolVersion = MaxProtocolVersion)
-        {
-            const int outputPacketLen = 100;
-
-            currentRsp.initCode[0] = (byte)'D';
-            currentRsp.initCode[1] = (byte)'S';
-            currentRsp.initCode[2] = (byte)'U';
-            currentRsp.initCode[3] = (byte)'S';
-
-            currentRsp.protocolVersion = reqProtocolVersion;
-            currentRsp.messageLen = (ushort)outputPacketLen - 16;
-
-            currentRsp.crc = 0;
-            currentRsp.serverId = serverId;
-        }
-
-        private void FinishPacket(byte[] packetBuf)
-        {
-            Array.Clear(packetBuf, 8, 4);
-
-            //uint crcCalc = Crc32Algorithm.Compute(packetBuf);
-            uint seed = Crc32Algorithm.DefaultSeed;
-            uint crcCalc = ~Crc32Algorithm.CalculateBasicHash(ref seed, ref packetBuf, 0, packetBuf.Length);
-            Array.Copy(BitConverter.GetBytes((uint)crcCalc), 0, packetBuf, 8, 4);
-        }
-
-        private unsafe void FinishDataRspPacket(ref PadDataRspPacket currentRsp, byte[] packetBuf)
-        {
-            currentRsp.crc = 0;
-            CopyBytes(ref currentRsp, packetBuf, DATA_RSP_PACKET_LEN);
-
-            //uint crcCalc = Crc32Algorithm.Compute(packetBuf);
-            uint seed = Crc32Algorithm.DefaultSeed;
-            uint crcCalc = ~Crc32Algorithm.CalculateBasicHash(ref seed, ref packetBuf, 0, packetBuf.Length);
-            Array.Copy(BitConverter.GetBytes((uint)crcCalc), 0, packetBuf, 8, 4);
-        }
-
         private void SendPacket(IPEndPoint clientEP, byte[] usefulData, ushort reqProtocolVersion = MaxProtocolVersion)
         {
             byte[] packetData = new byte[usefulData.Length + 16];
-            int currIdx = BeginPacket(packetData, reqProtocolVersion);
+            int currIdx = DsuPacketFormatter.BeginPacket(packetData, serverId, reqProtocolVersion);
             Array.Copy(usefulData, 0, packetData, currIdx, usefulData.Length);
-            FinishPacket(packetData);
+            DsuPacketFormatter.FinishPacket(packetData);
 
             //try { udpSock.SendTo(packetData, clientEP); }
-            int temp = 0;
-            poolLock.EnterWriteLock();
-            temp = listInd;
-            listInd = ++listInd % ARG_BUFFER_LEN;
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs()
-            {
-                RemoteEndPoint = clientEP,
-            };
-            args.SetBuffer(dataBuffers[temp], 0, 100);
-            args.Completed += SocketEvent_AsyncCompleted;
-            poolLock.ExitWriteLock();
-
-            _pool.Wait();
+            SocketAsyncEventArgs args = RentArgs(clientEP);
             Array.Copy(packetData, args.Buffer, packetData.Length);
             //args.SetBuffer(packetData, 0, packetData.Length);
             bool sentAsync = false;
@@ -505,248 +451,18 @@ namespace DS4Windows.Output.Udp
             }
         }
 
-        private bool ReportToBuffer(ControllerState hidReport, byte[] outputData, ref int outIdx)
-        {
-            unchecked
-            {
-                outputData[outIdx] = 0;
-
-                if (hidReport.DpadLeft) outputData[outIdx] |= 0x80;
-                if (hidReport.DpadDown) outputData[outIdx] |= 0x40;
-                if (hidReport.DpadRight) outputData[outIdx] |= 0x20;
-                if (hidReport.DpadUp) outputData[outIdx] |= 0x10;
-
-                if (hidReport.Options) outputData[outIdx] |= 0x08;
-                if (hidReport.R3) outputData[outIdx] |= 0x04;
-                if (hidReport.L3) outputData[outIdx] |= 0x02;
-                if (hidReport.Share) outputData[outIdx] |= 0x01;
-
-                outputData[++outIdx] = 0;
-
-                if (hidReport.Square) outputData[outIdx] |= 0x80;
-                if (hidReport.Cross) outputData[outIdx] |= 0x40;
-                if (hidReport.Circle) outputData[outIdx] |= 0x20;
-                if (hidReport.Triangle) outputData[outIdx] |= 0x10;
-
-                if (hidReport.R1) outputData[outIdx] |= 0x08;
-                if (hidReport.L1) outputData[outIdx] |= 0x04;
-                if (hidReport.R2Btn) outputData[outIdx] |= 0x02;
-                if (hidReport.L2Btn) outputData[outIdx] |= 0x01;
-
-                outputData[++outIdx] = (hidReport.PS) ? (byte)1 : (byte)0;
-                outputData[++outIdx] = (hidReport.TouchButton) ? (byte)1 : (byte)0;
-
-                //Left stick
-                outputData[++outIdx] = hidReport.LX;
-                outputData[++outIdx] = hidReport.LY;
-                outputData[outIdx] = (byte)(255 - outputData[outIdx]); //invert Y by convention
-
-                //Right stick
-                outputData[++outIdx] = hidReport.RX;
-                outputData[++outIdx] = hidReport.RY;
-                outputData[outIdx] = (byte)(255 - outputData[outIdx]); //invert Y by convention
-
-                //we don't have analog buttons on DS4 :(
-                outputData[++outIdx] = hidReport.DpadLeft ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.DpadDown ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.DpadRight ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.DpadUp ? (byte)0xFF : (byte)0x00;
-
-                outputData[++outIdx] = hidReport.Square ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.Cross ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.Circle ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.Triangle ? (byte)0xFF : (byte)0x00;
-
-                outputData[++outIdx] = hidReport.R1 ? (byte)0xFF : (byte)0x00;
-                outputData[++outIdx] = hidReport.L1 ? (byte)0xFF : (byte)0x00;
-
-                outputData[++outIdx] = hidReport.R2;
-                outputData[++outIdx] = hidReport.L2;
-
-                outIdx++;
-
-                //DS4 only: touchpad points
-                for (int i = 0; i < 2; i++)
-                {
-                    var tpad = (i == 0) ? hidReport.TrackPadTouch0 : hidReport.TrackPadTouch1;
-
-                    outputData[outIdx++] = tpad.IsActive ? (byte)1 : (byte)0;
-                    outputData[outIdx++] = (byte)tpad.Id;
-                    Array.Copy(BitConverter.GetBytes((ushort)tpad.X), 0, outputData, outIdx, 2);
-                    outIdx += 2;
-                    Array.Copy(BitConverter.GetBytes((ushort)tpad.Y), 0, outputData, outIdx, 2);
-                    outIdx += 2;
-                }
-
-                //motion timestamp
-                if (hidReport.Motion != null)
-                    Array.Copy(BitConverter.GetBytes((ulong)hidReport.totalMicroSec), 0, outputData, outIdx, 8);
-                else
-                    Array.Clear(outputData, outIdx, 8);
-
-                outIdx += 8;
-
-                //accelerometer
-                if (hidReport.Motion != null)
-                {
-                    Array.Copy(BitConverter.GetBytes((float)hidReport.Motion.accelXG), 0, outputData, outIdx, 4);
-                    outIdx += 4;
-                    Array.Copy(BitConverter.GetBytes((float)hidReport.Motion.accelYG), 0, outputData, outIdx, 4);
-                    outIdx += 4;
-                    Array.Copy(BitConverter.GetBytes((float)-hidReport.Motion.accelZG), 0, outputData, outIdx, 4);
-                    outIdx += 4;
-                }
-                else
-                {
-                    Array.Clear(outputData, outIdx, 12);
-                    outIdx += 12;
-                }
-
-                //gyroscope
-                if (hidReport.Motion != null)
-                {
-                    Array.Copy(BitConverter.GetBytes((float)hidReport.Motion.angVelPitch), 0, outputData, outIdx, 4);
-                    outIdx += 4;
-                    Array.Copy(BitConverter.GetBytes((float)hidReport.Motion.angVelYaw), 0, outputData, outIdx, 4);
-                    outIdx += 4;
-                    Array.Copy(BitConverter.GetBytes((float)hidReport.Motion.angVelRoll), 0, outputData, outIdx, 4);
-                    outIdx += 4;
-                }
-                else
-                {
-                    Array.Clear(outputData, outIdx, 12);
-                    outIdx += 12;
-                }
-            }
-
-            return true;
-        }
-
-        private bool ReportToBufferDataRsp(ControllerState hidReport, ref PadDataRspPacket currentRsp)
-        {
-            unchecked
-            {
-                currentRsp.buttons1 = 0;
-                if (hidReport.DpadLeft) currentRsp.buttons1 |= 0x80;
-                if (hidReport.DpadDown) currentRsp.buttons1 |= 0x40;
-                if (hidReport.DpadRight) currentRsp.buttons1 |= 0x20;
-                if (hidReport.DpadUp) currentRsp.buttons1 |= 0x10;
-
-                if (hidReport.Options) currentRsp.buttons1 |= 0x08;
-                if (hidReport.R3) currentRsp.buttons1 |= 0x04;
-                if (hidReport.L3) currentRsp.buttons1 |= 0x02;
-                if (hidReport.Share) currentRsp.buttons1 |= 0x01;
-
-                currentRsp.buttons2 = 0;
-
-                if (hidReport.Square) currentRsp.buttons2 |= 0x80;
-                if (hidReport.Cross) currentRsp.buttons2 |= 0x40;
-                if (hidReport.Circle) currentRsp.buttons2  |= 0x20;
-                if (hidReport.Triangle) currentRsp.buttons2 |= 0x10;
-
-                if (hidReport.R1) currentRsp.buttons2 |= 0x08;
-                if (hidReport.L1) currentRsp.buttons2 |= 0x04;
-                if (hidReport.R2Btn) currentRsp.buttons2 |= 0x02;
-                if (hidReport.L2Btn) currentRsp.buttons2 |= 0x01;
-
-                currentRsp.psButton = (hidReport.PS) ? (byte)1 : (byte)0;
-                currentRsp.touchButton = (hidReport.TouchButton) ? (byte)1 : (byte)0;
-
-                //Left stick
-                currentRsp.lx = hidReport.LX;
-                currentRsp.ly = hidReport.LY;
-                currentRsp.ly = (byte)(255 - currentRsp.ly); //invert Y by convention
-
-                //Right stick
-                currentRsp.rx = hidReport.RX;
-                currentRsp.ry = hidReport.RY;
-                currentRsp.ry = (byte)(255 - currentRsp.ry); //invert Y by convention
-
-                //we don't have analog buttons on DS4 :(
-                currentRsp.dpadLeft = hidReport.DpadLeft ? (byte)0xFF : (byte)0x00;
-                currentRsp.dpadDown = hidReport.DpadDown ? (byte)0xFF : (byte)0x00;
-                currentRsp.dpadRight = hidReport.DpadRight ? (byte)0xFF : (byte)0x00;
-                currentRsp.dpadUp = hidReport.DpadUp ? (byte)0xFF : (byte)0x00;
-
-                currentRsp.square = hidReport.Square ? (byte)0xFF : (byte)0x00;
-                currentRsp.cross = hidReport.Cross ? (byte)0xFF : (byte)0x00;
-                currentRsp.circle = hidReport.Circle ? (byte)0xFF : (byte)0x00;
-                currentRsp.triangle = hidReport.Triangle ? (byte)0xFF : (byte)0x00;
-
-                currentRsp.r1 = hidReport.R1 ? (byte)0xFF : (byte)0x00;
-                currentRsp.l1 = hidReport.L1 ? (byte)0xFF : (byte)0x00;
-
-                currentRsp.r2 = hidReport.R2;
-                currentRsp.l2 = hidReport.L2;
-
-                //DS4 only: touchpad points
-                for (int i = 0; i < 2; i++)
-                {
-                    var tpad = (i == 0) ? hidReport.TrackPadTouch0 : hidReport.TrackPadTouch1;
-                    if (i == 0)
-                    {
-                        currentRsp.touch1Active = tpad.IsActive ? (byte)1 : (byte)0;
-                        currentRsp.touch1PacketId = (byte)tpad.Id;
-                        currentRsp.touch1X = (ushort)tpad.X;
-                        currentRsp.touch1Y = (ushort)tpad.Y;
-                    }
-                    else if (i == 1)
-                    {
-                        currentRsp.touch2Active = tpad.IsActive ? (byte)1 : (byte)0;
-                        currentRsp.touch2PacketId = (byte)tpad.Id;
-                        currentRsp.touch2X = (ushort)tpad.X;
-                        currentRsp.touch2Y = (ushort)tpad.Y;
-                    }
-                }
-
-                //motion timestamp
-                if (hidReport.Motion != null)
-                    currentRsp.totalMicroSec = hidReport.totalMicroSec;
-                else
-                    currentRsp.totalMicroSec = 0;
-
-                //accelerometer
-                if (hidReport.Motion != null)
-                {
-                    currentRsp.accelXG = (float)hidReport.Motion.accelXG;
-                    currentRsp.accelYG = (float)hidReport.Motion.accelYG;
-                    currentRsp.accelZG = (float)-hidReport.Motion.accelZG;
-                }
-                else
-                {
-                    currentRsp.accelXG = 0;
-                    currentRsp.accelYG = 0;
-                    currentRsp.accelZG = 0;
-                }
-
-                //gyroscope
-                if (hidReport.Motion != null)
-                {
-                    currentRsp.angVelPitch = (float)hidReport.Motion.angVelPitch;
-                    currentRsp.angVelYaw = (float)hidReport.Motion.angVelYaw;
-                    currentRsp.angVelRoll = (float)hidReport.Motion.angVelRoll;
-                }
-                else
-                {
-                    currentRsp.angVelPitch = 0;
-                    currentRsp.angVelYaw = 0;
-                    currentRsp.angVelRoll = 0;
-                }
-            }
-
-            return true;
-        }
-
         public unsafe void NewReportIncoming(ref DualShockPadMeta padMeta, ControllerState hidReport, byte[] outputData)
         {
             if (!running)
                 return;
 
-            var clientsList = new List<IPEndPoint>();
+            // 入力のスレッドごとに一覧を使い回し、毎フレームの割り当てを避ける
+            var clientsList = _clientsListCache ??= new List<IPEndPoint>();
+            clientsList.Clear();
             var now = DateTime.UtcNow;
             lock (clients)
             {
-                var clientsToDelete = new List<IPEndPoint>();
+                List<IPEndPoint> clientsToDelete = null;
 
                 foreach (var cl in clients)
                 {
@@ -785,17 +501,18 @@ namespace DS4Windows.Output.Udp
                             }
 
                             if (!clientOk)
-                                clientsToDelete.Add(cl.Key);
+                                (clientsToDelete ??= new List<IPEndPoint>()).Add(cl.Key);
                         }
                     }
                 }
 
-                foreach (var delCl in clientsToDelete)
+                if (clientsToDelete != null)
                 {
-                    clients.Remove(delCl);
+                    foreach (var delCl in clientsToDelete)
+                    {
+                        clients.Remove(delCl);
+                    }
                 }
-                clientsToDelete.Clear();
-                clientsToDelete = null;
             }
 
             if (clientsList.Count <= 0)
@@ -803,34 +520,12 @@ namespace DS4Windows.Output.Udp
 
             unchecked
             {
-                //byte[] outputData = new byte[100];
-                //int outIdx = BeginPacket(outputData, 1001);
                 PadDataRspPacket currentRsp = new PadDataRspPacket();
-                BeginDataRspPacket(ref currentRsp, 1001);
+                DsuPacketFormatter.BeginDataRspPacket(ref currentRsp, serverId, 1001);
                 currentRsp.messageType = (uint)MessageType.DSUS_PadDataRsp;
-
-                currentRsp.padId = (byte)padMeta.PadId;
-                currentRsp.padState = (byte)padMeta.PadState;
-                currentRsp.model = (byte)padMeta.Model;
-                currentRsp.connectionType = (byte)padMeta.ConnectionType;
-                {
-                    byte[] padMac = padMeta.PadMacAddress.GetAddressBytes();
-                    currentRsp.address[0] = padMac[0];
-                    currentRsp.address[1] = padMac[1];
-                    currentRsp.address[2] = padMac[2];
-                    currentRsp.address[3] = padMac[3];
-                    currentRsp.address[4] = padMac[4];
-                    currentRsp.address[5] = padMac[5];
-                }
-                currentRsp.batteryStatus = (byte)padMeta.BatteryStatus;
-                currentRsp.isActive = padMeta.IsActive ? (byte)1 : (byte)0;
-
-                currentRsp.packetCounter = hidReport.PacketCounter;
-
-                if (!ReportToBufferDataRsp(hidReport, ref currentRsp))
-                    return;
-                else
-                    FinishDataRspPacket(ref currentRsp, outputData);
+                DsuPacketFormatter.FillPadInfo(ref currentRsp, padMeta, hidReport.PacketCounter);
+                DsuPacketFormatter.FillPadData(hidReport, ref currentRsp);
+                DsuPacketFormatter.FinishDataRspPacket(ref currentRsp, outputData);
 
                 foreach (var cl in clientsList)
                 {
@@ -842,19 +537,7 @@ namespace DS4Windows.Output.Udp
                     // {
                     // }
 
-                    int temp = 0;
-                    poolLock.EnterWriteLock();
-                    temp = listInd;
-                    listInd = ++listInd % ARG_BUFFER_LEN;
-                    SocketAsyncEventArgs args = new SocketAsyncEventArgs()
-                    {
-                        RemoteEndPoint = cl,
-                    };
-                    args.SetBuffer(dataBuffers[temp], 0, 100);
-                    args.Completed += SocketEvent_AsyncCompleted;
-                    poolLock.ExitWriteLock();
-
-                    _pool.Wait();
+                    SocketAsyncEventArgs args = RentArgs(cl);
                     Array.Copy(outputData, args.Buffer, outputData.Length);
                     bool sentAsync = false;
                     try {
@@ -869,14 +552,6 @@ namespace DS4Windows.Output.Udp
             }
 
             clientsList.Clear();
-            clientsList = null;
-        }
-    
-        private void CopyBytes(ref PadDataRspPacket outReport, byte[] outBuffer, int bufferLen)
-        {
-            GCHandle h = GCHandle.Alloc(outReport, GCHandleType.Pinned);
-            Marshal.Copy(h.AddrOfPinnedObject(), outBuffer, 0, bufferLen);
-            h.Free();
         }
     }
 }
