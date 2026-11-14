@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--C-->
+
+<Actions>
+  <Action Name="Prod_Macro">
+    <Trigger>Cross</Trigger>
+    <Type>Macro</Type>
+    <Details>65/66/67</Details>
+    <MacroExecuteMode>Held</MacroExecuteMode>
+  </Action>
+  <Action Name="Prod_Program">
+    <Trigger>Circle</Trigger>
+    <Type>Program</Type>
+    <Details>C:/golden/a.exe</Details>
+    <Arguements>-arg</Arguements>
+    <Delay>3</Delay>
+  </Action>
+  <Action Name="Prod_Profile">
+    <Trigger>Square</Trigger>
+    <Type>Profile</Type>
+    <Details>Golden_ProfileName</Details>
+    <UnloadTrigger>Triangle</UnloadTrigger>
+  </Action>
+  <Action Name="Prod_Key">
+    <Trigger>L1</Trigger>
+    <Type>Key</Type>
+    <Details>65</Details>
+    <UnloadTrigger>R1</UnloadTrigger>
+    <SwitchMode>Toggle</SwitchMode>
+    <OutputExtras>Turbo</OutputExtras>
+  </Action>
+  <Action Name="Prod_Disconnect">
+    <Trigger>L2</Trigger>
+    <Type>DisconnectBT</Type>
+    <Details>5</Details>
+  </Action>
+  <Action Name="Prod_Battery">
+    <Trigger>R2</Trigger>
+    <Type>BatteryCheck</Type>
+    <Details>50</Details>
+  </Action>
+  <Action Name="Prod_Multi">
+    <Trigger>Cross/Circle</Trigger>
+    <Type>MultiAction</Type>
+    <Details>Prod_Macro/Prod_Program</Details>
+  </Action>
+  <Action Name="Prod_Gyro">
+    <Trigger>Triangle</Trigger>
+    <Type>GyroCalibration</Type>
+  </Action>
+  <Action Name="Prod_Button">
+    <Trigger>R1</Trigger>
+    <Type>Button</Type>
+    <Details>Cross</Details>
+    <Strength>55</Strength>
+  </Action>
+  <Action Name="Prod_Focus">
+    <Trigger>L3</Trigger>
+    <Type>FocusWindow</Type>
+    <Details>C:/golden/game.exe</Details>
+    <Delay>0.5</Delay>
+    <WindowTitle>Game Window</WindowTitle>
+    <CenterCursor>true</CenterCursor>
+  </Action>
+</Actions>
