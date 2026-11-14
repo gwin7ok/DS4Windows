@@ -67,7 +67,7 @@ D1＝**B（全部。36-5 を含む）**、D2＝**B（出力の種類ごとの実
 - テスト: `GyroOutputProcessorTests`、`TouchStickOutputTests`（新規）。`TouchpadMouseGyroTriggerTests`、`SmallFixesGuardTests` は、移動先に合わせて直した。
 
 ## 実施の記録（2026-11-14。Phase30b）
-- `TouchpadMouse` は 1,091 行から約 690 行になった（Phase30 の開始時は 1,848 行）。切り出した型: `TapClickDetector`（タップ・ダブルタップ・タップ＆ホールド）、`TouchButtonDetector`（タッチボタンの左・右・上部・複数の判定と押下の状態）、`TouchMouseTrackball`（マウスの慣性。`touchesEnded` と `touchUnchanged` に重複していた計算を 1 か所にした）。
+- `TouchpadMouse` は 1,091 行から714 行になった（Phase30 の開始時は 1,848 行）。切り出した型: `TapClickDetector`（タップ・ダブルタップ・タップ＆ホールド）、`TouchButtonDetector`（タッチボタンの左・右・上部・複数の判定と押下の状態）、`TouchMouseTrackball`（マウスの慣性。`touchesEnded` と `touchUnchanged` に重複していた計算を 1 か所にした）。
 - `touchesMoved` の出力の種類ごとの枝は、`MouseModeMoved`／`ControlsModeMoved`／`StickModeMoved` のメソッドにした。反転無効のトリガーの判定（3 か所の同じループ）は `AreDisInvertTriggersHeld` にした。タッチパッドの設定の窓口は、ハンドラーの先頭で 1 回取る形にそろえた（30-6）。
 - **D2＝B（種類ごとの実装を別の型に）は、ここまでにした。** 触れ始め・移動・終わり・変化なしの 4 つのハンドラーが、`s`、`swipe*`／`slide*`、`previousTouch*`、スティックのトラックボールの状態を共有しており、別の型に分けると、その状態の持ち主を決め直す大きな変更になる。実機で確かめられる範囲（DS4 のタッチパッド）の動作確認を先に取ってから、別の Phase で行うほうが安全と判断した。
 - 既存のテストのうち、ソースの文字列やプライベートのフィールド名を見る 4 件（`MouseTapClickHoldTests`、`MouseTapToleranceTests`、`MouseReleaseButtonHoldTests`、`MouseDiWiringTests`）は、移動先の型に合わせて直した。新規: `TapClickDetectorTests`、`TouchButtonDetectorTests`、`TouchMouseTrackballTests`。
