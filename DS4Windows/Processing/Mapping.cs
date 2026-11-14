@@ -681,6 +681,27 @@ namespace DS4Windows.Processing
         // Phase8-Step8 8b: SA の種別ごとの旧枝（トリガーの判定、Key／Macro／Button／Program／Profile／DisconnectBT／BatteryCheck／ステアリング較正／
         // GyroCalibrate／MultiAction の実行、押し続けの解除、uTrigger の復帰）を削除した。移行済みの束縛をエンジンが処理する。束縛を持たない SA は、何もしない
         // （Phase8-Step8-Plan.md Q2）。以前は async void だったが、初期化待ちは完了済みの Task で、実際の await はタップ判定の遅延だけだったため、同期の void にした。
+        // デバイスごとのアクション名の写し。そのデバイスの入力のスレッドだけが読み書きする
+        private readonly string[][] _profileActionBuffers = new string[ControllerLimits.MaxControllerCount][];
+
+        /// <summary>アクション名を <paramref name="buffer"/> へ写し（足りなければ広げ）、名前の数を返す。一覧が null なら 0。</summary>
+        private static int CopyProfileActionNames(IReadOnlyList<string> names, ref string[] buffer)
+        {
+            if (names == null) return 0;
+            int count = names.Count;
+            if (buffer == null || buffer.Length < count) buffer = new string[Math.Max(count, 8)];
+            // UI スレッドがプロファイルの読込で一覧を Clear→Add していると、数えたあとで要素が減ることがある。その場合は読めた分だけを使う。
+            int copied = 0;
+            try
+            {
+                for (; copied < count; copied++) buffer[copied] = names[copied];
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+            }
+            return copied;
+        }
+
         private void MapCustomAction(int device)
         {
             try
@@ -688,8 +709,11 @@ namespace DS4Windows.Processing
                 // 例外（プロファイルの編集との競合など）はここで記録して、フレームを続ける。
                 int totalActionCount = _profileActionProvider.ActionDefinitionCount;
 
-                // プロファイルのアクション名のスナップショット（UI スレッドが一覧を変更しても、列挙中に壊れないように）
-                string[] profileActions = _profileActionProvider.GetProfileActionsRaw(device)?.ToArray() ?? Array.Empty<string>();
+                // プロファイルのアクション名のスナップショット（UI スレッドが一覧を変更しても、列挙中に壊れないように）。
+                // 毎フレームの割り当てを避けるため、デバイスごとの使い回しのバッファーへ写す。
+                string[] actionNames = _profileActionBuffers[device];
+                int profileListLen = CopyProfileActionNames(_profileActionProvider.GetProfileActionsRaw(device), ref actionNames);
+                _profileActionBuffers[device] = actionNames;
 
                 // Issue8-1(3)是正: 抑制中のボタンのうち、実際に離されたものを解除する（デバイスにつき 1 回）。
                 // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.3
@@ -699,10 +723,9 @@ namespace DS4Windows.Processing
                 }
                 catch { }
 
-                for (int actionIndex = 0, profileListLen = profileActions.Length;
-                     actionIndex < profileListLen; actionIndex++)
+                for (int actionIndex = 0; actionIndex < profileListLen; actionIndex++)
                 {
-                    string actionname = profileActions[actionIndex];
+                    string actionname = actionNames[actionIndex];
                     SpecialAction action = _profileActionProvider.GetProfileAction(device, actionname);
                     int index = _profileActionProvider.GetProfileActionIndexOf(device, actionname);
 
