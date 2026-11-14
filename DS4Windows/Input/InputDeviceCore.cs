@@ -252,27 +252,12 @@ namespace DS4Windows.Input
         }
 
         /// <summary>
-        /// Phase11 W6c（K-W6-12。D2＝案 B）: 「物理コントローラーへ出力データを送る」を ON → OFF にする直前に、<b>1 度だけ</b>、ライトバー消灯・振動ゼロを書く
-        /// （フラグを立てたあとは何も書かれず、パッドが最後の色を保持するため）。書けなかったときは例外にせず、続行する。
-        /// すでに書かない状態［NoOutputData］のパッド（書き込みを受け付けない互換パッドなど）と、DS4 以外の種類は、何もしない。
-        /// 呼び出し側［<c>DeviceConnectionSetup.ApplyProfileOptions</c>］は、<see cref="ModifyFeatureSetFlag"/> で NoOutputData を立てる<b>前</b>に呼ぶ。
+        /// 「物理コントローラーへ出力データを送る」を ON → OFF にする直前に、1 度だけ、ライトバー消灯・振動ゼロを書く差し込み口
+        /// （フラグを立てたあとは何も書かれず、パッドが最後の色を保持するため）。既定は何もしない（出力を書く機種だけが override する）。
+        /// 呼び出し側［<c>DeviceConnectionSetup.ApplyProfileOptions</c>］は、<see cref="ModifyFeatureSetFlag"/> で NoOutputData を立てる前に呼ぶ。
         /// </summary>
-        public void WriteOutputOffOnce()
+        public virtual void WriteOutputOffOnce()
         {
-            if (deviceType != DS4Windows.Core.Model.InputDeviceType.DS4 || (featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
-                return;
-
-            try
-            {
-                currentHap.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
-                setRumble(0, 0);
-                sendOutputReport(true, true, false);
-                AppLogger.LogDebug("[DI] WriteOutputOffOnce: wrote lightbar off / rumble zero once before disabling output data");
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogWarn($"[DI] WriteOutputOffOnce failed: {ex.Message}");
-            }
         }
 
         public int Battery => battery;
@@ -531,59 +516,11 @@ namespace DS4Windows.Input
         }
 
         /// <summary>
-        /// Phase11 W6 K-W6-3: 読み取りのスレッドを始める前（<see cref="StartUpdate"/> の前）に、最初の入力レポートを同期で読み、電池残量だけを取り込む。
-        /// 以前は、接続時のプロファイルの適用（ログ・通知に電池残量を使う）が、最初の入力レポートの読み取りより前に行われるため、
-        /// 「Battery: 0%」と出ていた。DS4 だけが対象（DualSense・Switch Pro・Joy-Con・DS3 は、従来どおり読み取りのスレッドが更新する）。
-        /// 充電の状態［<c>charging</c>］とイベント［<c>BatteryChanged</c>・<c>ChargingChanged</c>］には触れない
-        /// （最初のレポートで、読み取りのスレッドが従来どおり通知する）。読めなかったときは、何もしない（従来どおり 0 のまま、あとで更新される）。
+        /// 読み取りのスレッドを始める前（<see cref="StartUpdate"/> の前）に、最初の入力レポートを同期で読み、電池残量だけを取り込む差し込み口。
+        /// 接続時のプロファイルの適用（ログ・通知に電池残量を使う）が最初のレポートの読み取りより前に行われ、「Battery: 0%」と出るのを防ぐ。
+        /// 既定は何もしない。充電の状態とイベントには触れない（最初のレポートで読み取りのスレッドが通知する）。
         /// </summary>
-        public void PrimeBatteryReading()
-        {
-            if (deviceType != DS4Windows.Core.Model.InputDeviceType.DS4)
-            {
-                PrimeBatteryForOtherDevice();
-                return;
-            }
-
-            if (!postInitDone || ds4Input != null || isDisconnecting)
-                return;
-
-            if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
-            {
-                // 読み取りのスレッドと同じ、固定値（電池の値を送らないゲームパッド）
-                battery = 99;
-                return;
-            }
-
-            try
-            {
-                bool btReport = conType == ConnectionType.BT && (featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0;
-                // BT で、最初の数個が 0x11 でない（読み取りのスレッドは読み飛ばす）ことがあるため、数回まで読む。読めなければ、すぐにやめる
-                for (int attempt = 0; attempt < 3; attempt++)
-                {
-                    if (btReport)
-                    {
-                        if (hDevice.ReadFile(btInputReport) != HidReadStatus.Success) return;
-                        if (btInputReport[0] != 0x11) continue;
-                        battery = DecodeBatteryPercent(btInputReport[2 + 30], out _);   // inputReport[30] は btInputReport[2 + 30]
-                    }
-                    else
-                    {
-                        if (hDevice.ReadFile(inputReport) != HidReadStatus.Success) return;
-                        battery = DecodeBatteryPercent(inputReport[30], out _);
-                    }
-
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                AppLogger.LogWarn($"[DI] PrimeBatteryReading failed: {ex.Message}");
-            }
-        }
-
-        /// <summary>DS4 以外の機種が、接続直後の電池の取り込みを足す差し込み口（既定は何もしない）。</summary>
-        protected virtual void PrimeBatteryForOtherDevice()
+        public virtual void PrimeBatteryReading()
         {
         }
 

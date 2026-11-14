@@ -70,7 +70,7 @@ namespace DS4Windows.Input.Devices
         private bool HasBluetoothAddress => protocol.TryGetBluetoothAddress(hDevice) != null;
 
         // 接続時のログ・画面が 0% を出さないよう、読み取りのスレッドの前に最初のレポートから電池だけを取り込む（DS4 の PrimeBatteryReading と同じ考え方）
-        protected override void PrimeBatteryForOtherDevice()
+        public override void PrimeBatteryReading()
         {
             if (ds4Input != null || isDisconnecting || inputReport == null)
             {

@@ -53,11 +53,11 @@ namespace DS4WindowsTests
         [Fact]
         public void PrimeBatteryReading_DoesNotTouchTheChargingState_OrRaiseEvents()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/Input/InputDeviceCore.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Input/Devices/DualShock4Device.cs");
             if (code == null) return;
 
-            int start = code.IndexOf("public void PrimeBatteryReading()", StringComparison.Ordinal);
-            int end = code.IndexOf("public virtual void StartUpdate()", StringComparison.Ordinal);
+            int start = code.IndexOf("public override void PrimeBatteryReading()", StringComparison.Ordinal);
+            int end = code.IndexOf("public override void StartUpdate()", StringComparison.Ordinal);
             Assert.True(start >= 0 && end > start);
             string body = code.Substring(start, end - start);
 

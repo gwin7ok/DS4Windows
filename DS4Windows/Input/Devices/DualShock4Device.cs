@@ -226,6 +226,63 @@ namespace DS4Windows.Input.Devices
             }
         }
 
+        public override void WriteOutputOffOnce()
+        {
+            if ((featureSet & VidPidFeatureSet.NoOutputData) != 0 || !postInitDone || isDisconnecting)
+                return;
+
+            try
+            {
+                currentHap.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
+                setRumble(0, 0);
+                sendOutputReport(true, true, false);
+                AppLogger.LogDebug("[DI] WriteOutputOffOnce: wrote lightbar off / rumble zero once before disabling output data");
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogWarn($"[DI] WriteOutputOffOnce failed: {ex.Message}");
+            }
+        }
+
+        public override void PrimeBatteryReading()
+        {
+            if (!postInitDone || ds4Input != null || isDisconnecting)
+                return;
+
+            if ((featureSet & VidPidFeatureSet.NoBatteryReading) != 0)
+            {
+                // 読み取りのスレッドと同じ、固定値（電池の値を送らないゲームパッド）
+                battery = 99;
+                return;
+            }
+
+            try
+            {
+                bool btReport = conType == ConnectionType.BT && (featureSet & VidPidFeatureSet.OnlyInputData0x01) == 0;
+                // BT で、最初の数個が 0x11 でない（読み取りのスレッドは読み飛ばす）ことがあるため、数回まで読む。読めなければ、すぐにやめる
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    if (btReport)
+                    {
+                        if (hDevice.ReadFile(btInputReport) != HidReadStatus.Success) return;
+                        if (btInputReport[0] != 0x11) continue;
+                        battery = DecodeBatteryPercent(btInputReport[2 + 30], out _);   // inputReport[30] は btInputReport[2 + 30]
+                    }
+                    else
+                    {
+                        if (hDevice.ReadFile(inputReport) != HidReadStatus.Success) return;
+                        battery = DecodeBatteryPercent(inputReport[30], out _);
+                    }
+
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                AppLogger.LogWarn($"[DI] PrimeBatteryReading failed: {ex.Message}");
+            }
+        }
+
         public override void StartUpdate()
         {
             this.inputReportErrorCount = 0;
