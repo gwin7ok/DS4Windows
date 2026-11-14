@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using DS4Windows.Core.Logging;
-using DS4Windows.Input;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI

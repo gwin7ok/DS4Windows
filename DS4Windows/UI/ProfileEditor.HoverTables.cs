@@ -20,7 +20,6 @@ using NonFormTimer = System.Timers.Timer;
 using System.ComponentModel;
 using System.Windows.Forms;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
 using MessageBox = System.Windows.MessageBox;

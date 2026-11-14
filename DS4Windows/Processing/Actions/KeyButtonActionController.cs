@@ -28,6 +28,7 @@ namespace DS4Windows.Processing.Actions
         private readonly ISyntheticDispatcher _dispatcher;
         // 長押しのリピートの開始待ち・間隔の時計。テストが仮想の時計を渡す
         private readonly TimeProvider _time;
+        private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;   // 繰り返しの部品の差し替え（null なら RepeatHelper。主にテスト）
 
         // Expose assigned action name for diagnostics
         public string AssignedActionName => assignedActionName;
@@ -35,8 +36,10 @@ namespace DS4Windows.Processing.Actions
         // Expose whether this controller was created in Toggle mode (used by adapters)
         public bool IsToggleMode { get { return this.mode == Mode.Toggle; } }
 
-        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string actionName = "<unknown>")
+        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string actionName = "<unknown>",
+            Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
         {
+            _repeaterFactory = repeaterFactory;
             _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
             _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -53,9 +56,9 @@ namespace DS4Windows.Processing.Actions
             // Create concrete implementation based on mode. These implementations are lightweight wrappers
             // around the existing static controllers for now; this allows per-device instance semantics later.
             if (mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time, _repeaterFactory);
             else
-                impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time);
+                impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
 
             // Subscribe to toggled-on changes so controllers react to Action-level state changes.
             toggledOnHandler = (sa, dev, oldv, newv) =>
@@ -74,8 +77,10 @@ namespace DS4Windows.Processing.Actions
         }
 
         // New constructor: determine mode from SpecialAction info (KeyButtonSwitchMode or keyType flags)
-        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string actionName = "<unknown>")
+        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string actionName = "<unknown>",
+            Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
         {
+            _repeaterFactory = repeaterFactory;
             _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
             _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -98,9 +103,9 @@ namespace DS4Windows.Processing.Actions
             catch { }
 
             if (this.mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time, _repeaterFactory);
             else
-                impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time);
+                impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
 
             // Subscribe to toggled-on changes so controllers react to Action-level state changes.
             toggledOnHandler = (sa, dev, oldv, newv) =>
@@ -149,8 +154,12 @@ namespace DS4Windows.Processing.Actions
 
             private readonly Dictionary<ushort, Entry> entries = new Dictionary<ushort, Entry>();
 
-            public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider time)
+            private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;
+
+            public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider time,
+                Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
             {
+                _repeaterFactory = repeaterFactory;
                 _time = time;
                 _dispatcher = dispatcher;
                 this.device = device;
@@ -185,7 +194,7 @@ namespace DS4Windows.Processing.Actions
                                 if (e.repeater == null)
                                 {
                                     if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
-                                    e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
+                                    e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
                                     try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}"); } catch { }
                                     try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
                                 }
@@ -299,7 +308,8 @@ namespace DS4Windows.Processing.Actions
 
             private readonly ISyntheticDispatcher _dispatcher;   // Phase14c-Step3（R-06）
             private readonly TimeProvider _time;
-            public PressImpl(int device, int controllerId, ISyntheticDispatcher dispatcher, TimeProvider time) { _time = time; this.device = device; this.controllerId = controllerId; _dispatcher = dispatcher; }
+            private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;
+            public PressImpl(int device, int controllerId, ISyntheticDispatcher dispatcher, TimeProvider time, Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null) { _repeaterFactory = repeaterFactory; _time = time; this.device = device; this.controllerId = controllerId; _dispatcher = dispatcher; }
 
             public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction)
             {
@@ -337,7 +347,7 @@ namespace DS4Windows.Processing.Actions
                                     {
                                         if (localEntry.repeater == null)
                                         {
-                                            localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
+                                            localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
                                             try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
                                         }
                                         else
