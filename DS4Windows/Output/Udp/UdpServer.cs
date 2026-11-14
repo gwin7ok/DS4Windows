@@ -52,9 +52,10 @@ namespace DS4Windows.Output.Udp
 
         private GetPadDetail portInfoGet;
 
-        public UdpServer(GetPadDetail getPadDetailDel)
+        public UdpServer(GetPadDetail getPadDetailDel, TimeProvider time = null)
         {
             portInfoGet = getPadDetailDel;
+            _clients = new DsuClientRegistry(time);
             _pool = new SemaphoreSlim(ARG_BUFFER_LEN);
             for (int num = 0; num < ARG_BUFFER_LEN; num++)
             {
@@ -104,47 +105,7 @@ namespace DS4Windows.Output.Udp
         private const ushort MaxProtocolVersion = 1001;
         public const int DATA_RSP_PACKET_LEN = 100;
 
-        class ClientRequestTimes
-        {
-            DateTime allPads;
-            DateTime[] padIds;
-            Dictionary<PhysicalAddress, DateTime> padMacs;
-
-            public DateTime AllPadsTime { get { return allPads; } }
-            public DateTime[] PadIdsTime { get { return padIds; } }
-            public Dictionary<PhysicalAddress, DateTime> PadMacsTime { get { return padMacs; } }
-
-            public ClientRequestTimes()
-            {
-                allPads = DateTime.MinValue;
-                padIds = new DateTime[4];
-
-                for (int i = 0; i < padIds.Length; i++)
-                    padIds[i] = DateTime.MinValue;
-
-                padMacs = new Dictionary<PhysicalAddress, DateTime>();
-            }
-
-            public void RequestPadInfo(byte regFlags, byte idToReg, PhysicalAddress macToReg)
-            {
-                if (regFlags == 0)
-                    allPads = DateTime.UtcNow;
-                else
-                {
-                    if ((regFlags & 0x01) != 0) //id valid
-                    {
-                        if (idToReg < padIds.Length)
-                            padIds[idToReg] = DateTime.UtcNow;
-                    }
-                    if ((regFlags & 0x02) != 0) //mac valid
-                    {
-                        padMacs[macToReg] = DateTime.UtcNow;
-                    }
-                }
-            }
-        }
-
-        private Dictionary<IPEndPoint, ClientRequestTimes> clients = new Dictionary<IPEndPoint, ClientRequestTimes>();
+        private readonly DsuClientRegistry _clients;
 
         private void SendPacket(IPEndPoint clientEP, byte[] usefulData, ushort reqProtocolVersion = MaxProtocolVersion)
         {
@@ -303,17 +264,7 @@ namespace DS4Windows.Output.Udp
                         macToReg = new PhysicalAddress(macBytes);
                     }
 
-                    lock (clients)
-                    {
-                        if (clients.ContainsKey(clientEP))
-                            clients[clientEP].RequestPadInfo(regFlags, idToReg, macToReg);
-                        else
-                        {
-                            var clientTimes = new ClientRequestTimes();
-                            clientTimes.RequestPadInfo(regFlags, idToReg, macToReg);
-                            clients[clientEP] = clientTimes;
-                        }
-                    }
+                    _clients.RegisterRequest(clientEP, regFlags, idToReg, macToReg);
                 }
             }
             catch (Exception /*e*/) { }
@@ -458,62 +409,7 @@ namespace DS4Windows.Output.Udp
 
             // 入力のスレッドごとに一覧を使い回し、毎フレームの割り当てを避ける
             var clientsList = _clientsListCache ??= new List<IPEndPoint>();
-            clientsList.Clear();
-            var now = DateTime.UtcNow;
-            lock (clients)
-            {
-                List<IPEndPoint> clientsToDelete = null;
-
-                foreach (var cl in clients)
-                {
-                    const double TimeoutLimit = 5;
-
-                    if ((now - cl.Value.AllPadsTime).TotalSeconds < TimeoutLimit)
-                        clientsList.Add(cl.Key);
-                    else if ((padMeta.PadId < cl.Value.PadIdsTime.Length) &&
-                             (now - cl.Value.PadIdsTime[(byte)padMeta.PadId]).TotalSeconds < TimeoutLimit)
-                        clientsList.Add(cl.Key);
-                    else if (cl.Value.PadMacsTime.ContainsKey(padMeta.PadMacAddress) &&
-                             (now - cl.Value.PadMacsTime[padMeta.PadMacAddress]).TotalSeconds < TimeoutLimit)
-                        clientsList.Add(cl.Key);
-                    else //check if this client is totally dead, and remove it if so
-                    {
-                        bool clientOk = false;
-                        for (int i = 0; i < cl.Value.PadIdsTime.Length; i++)
-                        {
-                            var dur = (now - cl.Value.PadIdsTime[i]).TotalSeconds;
-                            if (dur < TimeoutLimit)
-                            {
-                                clientOk = true;
-                                break;
-                            }
-                        }
-                        if (!clientOk)
-                        {
-                            foreach (var dict in cl.Value.PadMacsTime)
-                            {
-                                var dur = (now - dict.Value).TotalSeconds;
-                                if (dur < TimeoutLimit)
-                                {
-                                    clientOk = true;
-                                    break;
-                                }
-                            }
-
-                            if (!clientOk)
-                                (clientsToDelete ??= new List<IPEndPoint>()).Add(cl.Key);
-                        }
-                    }
-                }
-
-                if (clientsToDelete != null)
-                {
-                    foreach (var delCl in clientsToDelete)
-                    {
-                        clients.Remove(delCl);
-                    }
-                }
-            }
+            _clients.CollectRecipients(padMeta.PadId, padMeta.PadMacAddress, clientsList);
 
             if (clientsList.Count <= 0)
                 return;
