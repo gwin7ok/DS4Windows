@@ -12,7 +12,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TapTolerance_Is100_AndUsedByTapJudgement()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Touchpad/TapClickDetector.cs");
             if (path == null) return;
             string text = File.ReadAllText(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
