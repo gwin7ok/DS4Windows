@@ -3,7 +3,9 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -27,7 +29,7 @@ namespace DS4WindowsTests
         public void ControlService_DelegatesTheSelection_BeforeThePluginStep()
         {
             // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (text == null) return;
 
             int select = text.IndexOf("_connectionProfileSelector.ApplyOnConnect(");
@@ -41,7 +43,7 @@ namespace DS4WindowsTests
             Assert.IsType<ConnectionProfileSelector>(TestHost.GetService<IConnectionProfileSelector>());
             Assert.Same(TestHost.GetService<IConnectionProfileSelector>(), TestHost.GetService<IConnectionProfileSelector>());
 
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "ConnectionProfileSelector が ControlService を参照している");
@@ -53,7 +55,7 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceConnectionSetup>(TestHost.GetService<IDeviceConnectionSetup>());
             Assert.Same(TestHost.GetService<IDeviceConnectionSetup>(), TestHost.GetService<IDeviceConnectionSetup>());
 
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnectionSetup.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnectionSetup.cs");
             if (text == null) return;
 
             // 旧 TouchPadOn と同じく、発火のたびに配列からマウスを引き直す
@@ -65,14 +67,14 @@ namespace DS4WindowsTests
         public void ControlService_DelegatesToTheDeviceModules()
         {
             // 登録簿へ結ぶフックは DeviceRegistryHooks が持つ（ControlService は Attach を呼ぶだけ）
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceRegistryHooks.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Devices/DeviceRegistryHooks.cs");
             if (text == null) return;
 
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, _deviceOptions);", text);
             Assert.Contains("_deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(_deviceOptions);", text);
 
             // 接続の組み立て（E-6f1 で DeviceConnector へ移った）が呼ぶもの
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (connector == null) return;
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).HookSettings(device, () => _slots.ActiveControllers);", connector);
             Assert.Contains("_deviceModules.Resolve(device.DeviceType).GetKnownExtraButtons(device)", connector);
@@ -102,7 +104,7 @@ namespace DS4WindowsTests
             // Phase13-Step10 10-b: 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
 
             // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (connector == null) return;
             int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");
             int hooks = connector.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");

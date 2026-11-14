@@ -3,6 +3,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -22,7 +24,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDisconnectHandler_ClearsTheTempProfileState_OfTheDisconnectedSlot()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (code == null) return;
 
             int release = code.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
@@ -36,7 +38,7 @@ namespace DS4WindowsTests
         public void TheRememberedProfileOfAReconnect_IgnoresTemporaryProfiles()
         {
             // S9-5（実機）: 自動プロファイルの verifyG が「直前のプロファイル」として記憶され、再接続で最初から適用されていた
-            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/AppliedProfileRecorder.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/Slots/AppliedProfileRecorder.cs");
             if (code == null) return;
 
             int method = code.IndexOf("private void RememberAppliedProfile(", StringComparison.Ordinal);
@@ -50,8 +52,8 @@ namespace DS4WindowsTests
         public void AfterTheClear_ReconnectUsesTheNormalRule_ThenTheRecheckAppliesTheAutoProfile()
         {
             // 再接続の通常適用は useAutoProfile=false の経路（GetUseTempProfile が false）、再照合は !useTemp && tempname != currentProfile で適用する
-            string selector = SourceText.ReadNormalized("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
-            string auto = SourceText.ReadNormalized("DS4Windows/Processing/Services/AutoProfileService.cs");
+            string selector = SourceText.ReadNormalized("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
+            string auto = SourceText.ReadNormalized("DS4Windows/Processing/Services/Slots/AutoProfileService.cs");
             if (selector == null || auto == null) return;
 
             Assert.Contains("if (!useAutoProfile) {", selector);

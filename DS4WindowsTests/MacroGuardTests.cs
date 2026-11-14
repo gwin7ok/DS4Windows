@@ -6,7 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         public void MacroStepExecutor_ExecuteIsAtMostTwoHundredLines_AfterTheFolding()
         {
             // Phase9 完了条件: 巨大メソッドは 200 行以下。畳み込み（Q4）の前は約 160 行で、既に満たしている
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/MacroStepExecutor.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Conditioning/MacroStepExecutor.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

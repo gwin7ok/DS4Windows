@@ -12,6 +12,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -32,9 +33,9 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStaticShims_AreGone()
         {
-            Assert.Null(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            Assert.Null(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
             // Phase7-Step10e W2: CURRENT_DS4_CONTROLLER_LIMIT も削除した
-            Assert.Null(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
+            Assert.Null(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
         }
 
         [Fact]

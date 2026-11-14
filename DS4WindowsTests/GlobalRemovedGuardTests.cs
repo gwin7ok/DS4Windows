@@ -11,6 +11,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -47,8 +48,8 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var store = new BackingStore(env);
 
-            var first = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
-            var second = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
+            var first = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.Devices.DeviceSlotState());
+            var second = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.Devices.DeviceSlotState());
             Assert.Same(first, store.ProfileSettings);
 
             store.ProfileSettings = second;
@@ -68,7 +69,7 @@ namespace DS4WindowsTests
         {
             var env = new EnvironmentService();
             var store = new BackingStore(env);
-            var service = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
+            var service = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.Devices.DeviceSlotState());
 
             var setting = new DS4ControlSettings(DS4Controls.Cross);
             setting.action.actionAlias = 99;
@@ -82,7 +83,7 @@ namespace DS4WindowsTests
         {
             var env = new EnvironmentService();
             var store = new BackingStore(env);
-            var service = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.DeviceSlotState());
+            var service = new ProfileSettingsService(store, env, new DS4Windows.Processing.Services.Devices.DeviceSlotState());
             Assert.Same(store.distanceProfiles, service.DistanceProfiles);
         }
 
@@ -140,7 +141,7 @@ namespace DS4WindowsTests
         public void LightbarService_TakesTheProfileSettingsAndTheOverridesAsConstructorArguments()
         {
             // 設定と強制表示の状態は、静的な窓口ではなくコンストラクターで受ける。呼び出し側は、デバイスとスロット番号だけを渡す
-            var ctor = typeof(DS4Windows.Processing.Services.LightbarService).GetConstructors().Single();
+            var ctor = typeof(DS4Windows.Processing.Services.Devices.LightbarService).GetConstructors().Single();
             Assert.Equal(new[] { "profileSettings", "overrides", "time" }, ctor.GetParameters().Select(p => p.Name).ToArray());
             var method = typeof(DS4Windows.Processing.Abstractions.ILightbarService).GetMethod("Update");
             Assert.Equal(new[] { "device", "deviceNum" }, method.GetParameters().Select(p => p.Name).ToArray());

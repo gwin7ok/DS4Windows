@@ -1,4 +1,6 @@
-﻿namespace DS4WindowsTests
+﻿using DS4Windows.Processing.Services.Connection;
+
+namespace DS4WindowsTests
 {
     /// <summary>
     /// コンストラクターの引数が 12 を超える型の許可リスト（"型の完全名|引数の数"。序数順）。
@@ -11,7 +13,7 @@
         public static readonly string[] Entries =
         {
             "DS4Windows.Processing.Mapping|15",
-            "DS4Windows.Processing.Services.DeviceConnector|13",
+            "DS4Windows.Processing.Services.Connection.DeviceConnector|13",
             "DS4Windows.UI.MainWindow|15",
         };
     }

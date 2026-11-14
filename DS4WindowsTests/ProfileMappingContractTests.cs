@@ -8,6 +8,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

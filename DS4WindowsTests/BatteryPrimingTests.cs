@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Input;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -41,7 +42,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheConnector_PrimesTheBattery_BeforeApplyingTheProfile_AndBeforeStartUpdate()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (code == null) return;
 
             int prime = code.IndexOf("device.PrimeBatteryReading();", StringComparison.Ordinal);

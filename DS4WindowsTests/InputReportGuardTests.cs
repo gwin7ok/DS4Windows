@@ -3,7 +3,9 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -27,7 +29,7 @@ namespace DS4WindowsTests
         public void OnReport_KeepsTheOriginalOrder_OfTheCallsToTheNewParts()
         {
             // Phase13-Step5b: On_Report は InputReportProcessor へ移した（順序の検査は新しいファイルに対して維持する）
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/InputReportProcessor.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs");
             if (text == null) return;
 
             int monitor = text.IndexOf("_latencyMonitor.OnReport(device, ind);");
@@ -48,9 +50,9 @@ namespace DS4WindowsTests
         }
 
         [Theory]
-        [InlineData("DS4Windows.Processing.Services.LatencyMonitor")]
-        [InlineData("DS4Windows.Processing.Services.TouchpadToggleService")]
-        [InlineData("DS4Windows.Processing.Services.ActiveInputProbe")]
+        [InlineData("DS4Windows.Processing.Services.Connection.LatencyMonitor")]
+        [InlineData("DS4Windows.Processing.Services.Conditioning.TouchpadToggleService")]
+        [InlineData("DS4Windows.Processing.Services.Slots.ActiveInputProbe")]
         public void NewComponents_DoNotReferenceStaticEntryPoints_OrControlService(string typeName)
         {
             // Phase14d-Step3: ソースの文字列ではなく、型の参照（メソッド本体を含む）で確かめる。
@@ -64,14 +66,14 @@ namespace DS4WindowsTests
         {
 
             // Phase13-Step10 10-d: GetActiveInputControl の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
-            string rfs = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            string rfs = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
             if (rfs != null) Assert.Contains("_activeInputProbe.GetActive(", rfs);
             // Phase13-Step10 10-b: 利用者が 0 件だった StartTPOff／CheckForTouchToggle の転送は削除した（ITouchpadToggleService／IProfileLoadTarget が持つ）
             // Phase13-Step10 10-c: TouchpadSlide の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
             if (sw != null) Assert.Contains("_touchpadToggle.Slide(", sw);
             // Phase13-Step5b: _latencyMonitor.OnReport は On_Report と一緒に InputReportProcessor へ移した
-            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/InputReportProcessor.cs");
+            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs");
             Assert.Contains("_latencyMonitor.OnReport(device, ind);", processor);
         }
     }

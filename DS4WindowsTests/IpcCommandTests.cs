@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Xunit;
 using DS4Windows.UI;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -55,7 +56,7 @@ namespace DS4WindowsTests
         public void TheCommands_AreDispatchedInTheOriginalOrder_WithTheOriginalConditions()
         {
             // Phase13-Step11 11-b: コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序と条件は同じ）
-            string ipc = SourceText.Read("DS4Windows/Processing/Services/IpcCommandProcessor.cs");
+            string ipc = SourceText.Read("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");
             if (ipc == null) return;
 
             string[] order =

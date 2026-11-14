@@ -13,8 +13,11 @@ using DS4Windows.Output.Services;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services;
 using DS4Windows.UI.Services;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -127,7 +130,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain(typeof(ProfileRepository), closure);
             Assert.DoesNotContain(typeof(ProfileApplicationService), closure);
-            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), closure);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper), closure);
         }
 
         /// <summary>6-b: <c>IDeviceBatteryText</c>（依存: <c>IDeviceStateAccessor</c> のみ）と、<c>ProfileSettingsService</c> が受ける <c>IDeviceStateAccessor</c> は依存なし。</summary>
@@ -149,10 +152,10 @@ namespace DS4WindowsTests
             IServiceCollection services = Registrations();
             HashSet<Type> pad = Closure(services, typeof(VirtualPadService));
             Assert.DoesNotContain(typeof(OutputSlotService), pad);
-            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), pad);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper), pad);
 
             HashSet<Type> slot = Closure(services, typeof(OutputSlotService));
-            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), slot);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper), slot);
         }
 
         /// <summary>6-c: 3 つの UI ファクトリーを、ホスト構築より前に解決する経路がない（ファクトリーは ControlService の依存グラフの外）。</summary>

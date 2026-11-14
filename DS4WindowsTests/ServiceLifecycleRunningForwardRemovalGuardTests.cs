@@ -2,6 +2,8 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -17,7 +19,7 @@ namespace DS4WindowsTests
         public void ControlService_NoLongerExposesTheForward(string name)
         {
             const BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper).GetMembers(all), m => m.Name == name);
+            Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper).GetMembers(all), m => m.Name == name);
         }
 
         [Fact]

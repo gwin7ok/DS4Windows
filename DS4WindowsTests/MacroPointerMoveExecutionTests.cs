@@ -5,7 +5,8 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -17,7 +18,7 @@ namespace DS4WindowsTests
     {
         private static MacroStepExecutor NewExecutor(RecordingWindowSystem windowSystem)
             => new MacroStepExecutor(TestLightbar.State, TestHost.GetService<IVirtualKBM>(), TestHost.GetService<IProfileSettingsService>(),
-                new MacroRuntimeState(), new DS4Windows.Processing.Services.DeviceSlotState(), windowSystem);
+                new MacroRuntimeState(), new DS4Windows.Processing.Services.Devices.DeviceSlotState(), windowSystem);
 
         private static int Value(MacroPointerMoveMode mode, int x, int y) => new MacroPointerMove(mode, x, y).ToMacroValue();
 

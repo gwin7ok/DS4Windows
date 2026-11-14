@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using DS4Windows.Input;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {
@@ -36,7 +37,7 @@ namespace DS4WindowsTests
         {
             Thread.Sleep(12);
             // 旧経路のホイールの繰り返しの基準時刻を最古に戻し、間隔を満たした状態にする（Phase9 MapCustom の分割 M1: 基準時刻は SyntheticInputCommitter が持つ）
-            ((DS4Windows.Processing.Services.SyntheticInputCommitter)typeof(Mapping)
+            ((DS4Windows.Processing.Services.Conditioning.SyntheticInputCommitter)typeof(Mapping)
                 .GetField("_syntheticCommitter", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                 .GetValue(T.Mapping)).SetWheelRepeatBase(DateTime.MinValue);
             return T.Run(input);

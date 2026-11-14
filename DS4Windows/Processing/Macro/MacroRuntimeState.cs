@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4Windows.Processing.Macro
 {

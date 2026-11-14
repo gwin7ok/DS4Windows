@@ -14,7 +14,8 @@ using DS4Windows.Output.Services;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -65,7 +66,7 @@ namespace DS4WindowsTests
         {
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             var env = new EnvironmentService();
-            IConfigurableDeviceLookup control = new DS4Windows.Processing.Services.DeviceSlotState();
+            IConfigurableDeviceLookup control = new DS4Windows.Processing.Services.Devices.DeviceSlotState();
 
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(null, env, control));
             Assert.Throws<ArgumentNullException>(() => new ProfileSettingsService(store, null, control));
@@ -75,7 +76,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettingsService_GetRumbleBoost_UsesInjectedControlProvider()
         {
-            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, new DS4Windows.Processing.Services.DeviceSlotState());
+            var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, new DS4Windows.Processing.Services.Devices.DeviceSlotState());
             // コントローラーが無い場合も、注入された関数だけを参照して例外なく値を返す（Program.rootHub を参照しない）
             var ex = Record.Exception(() => settings.GetRumbleBoost(0));
             Assert.Null(ex);
@@ -94,7 +95,7 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var appSettings = TestRepositoryFactory.CreateAppSettingsService();
             IServiceLifecycle lifecycle = TestHost.GetService<IServiceLifecycle>();
-            IDeviceStateAccessor deviceState = new DS4Windows.Processing.Services.DeviceSlotState();
+            IDeviceStateAccessor deviceState = new DS4Windows.Processing.Services.Devices.DeviceSlotState();
             IProcessInspector inspector = new NullProcessInspector();
 
             Assert.Throws<ArgumentNullException>(() => new AutoProfileService(null, app, settings, inspector, env, appSettings, repo, lifecycle, deviceState, TestGlobals.Store));

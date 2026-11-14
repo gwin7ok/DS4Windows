@@ -11,7 +11,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Input;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -29,11 +29,11 @@ namespace DS4WindowsTests
         {
             public readonly IAppSettingsService Settings = TestHost.GetService<IAppSettingsService>();
             public readonly FakeUdpMotionServerFactory Factory = new FakeUdpMotionServerFactory();
-            public readonly DS4Windows.Processing.Services.DeviceSlotState Host = NewSlots();
+            public readonly DS4Windows.Processing.Services.Devices.DeviceSlotState Host = NewSlots();
 
-            private static DS4Windows.Processing.Services.DeviceSlotState NewSlots()
+            private static DS4Windows.Processing.Services.Devices.DeviceSlotState NewSlots()
             {
-                var slots = new DS4Windows.Processing.Services.DeviceSlotState();
+                var slots = new DS4Windows.Processing.Services.Devices.DeviceSlotState();
                 for (int i = 0; i < slots.CurrentStates.Length; i++)
                 {
                     slots.CurrentStates[i] = new ControllerState();
@@ -292,7 +292,7 @@ namespace DS4WindowsTests
             IAppSettingsService settings = TestHost.GetService<IAppSettingsService>();
             IInputDeviceRegistry registry = TestHost.GetService<IInputDeviceRegistry>();
             var factory = new FakeUdpMotionServerFactory();
-            IDeviceSlotState host = new DS4Windows.Processing.Services.DeviceSlotState();
+            IDeviceSlotState host = new DS4Windows.Processing.Services.Devices.DeviceSlotState();
             IEventThreadDispatcher events = new FakeEventThreadDispatcher();
             Assert.Throws<ArgumentNullException>(() => new UdpMotionService(null, registry, factory, host, events));
             Assert.Throws<ArgumentNullException>(() => new UdpMotionService(settings, null, factory, host, events));

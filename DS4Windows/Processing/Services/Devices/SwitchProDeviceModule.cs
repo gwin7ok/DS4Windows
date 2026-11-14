@@ -1,0 +1,20 @@
+using System.Collections.Generic;
+using DS4Windows.Core.Model;
+using DS4Windows.Core.Settings;
+using DS4Windows.Input;
+
+namespace DS4Windows.Processing.Services.Devices
+{
+    /// <summary>Phase9 9-E E-6c: Switch Pro の部品。設定の有効／無効と、追加ボタン（Capture）。</summary>
+    public sealed class SwitchProDeviceModule : InputDeviceModuleBase
+    {
+        protected override InputDeviceFamily? Family => InputDeviceFamily.SwitchPro;
+
+        public override List<DS4Controls> GetKnownExtraButtons(InputDeviceCore device)
+        {
+            List<DS4Controls> result = new List<DS4Controls>();
+            result.AddRange(new DS4Controls[] { DS4Controls.Capture });
+            return result;
+        }
+    }
+}

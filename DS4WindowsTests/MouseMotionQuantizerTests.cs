@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {

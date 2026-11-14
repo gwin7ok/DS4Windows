@@ -44,6 +44,9 @@ using DS4Windows.Core.Utilities;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 using ThreadState = System.Threading.ThreadState;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing
 {

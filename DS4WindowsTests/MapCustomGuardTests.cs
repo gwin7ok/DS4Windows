@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             Assert.IsType<SyntheticInputCommitter>(TestHost.GetService<ISyntheticInputCommitter>());
             Assert.Same(TestHost.GetService<ISyntheticInputCommitter>(), TestHost.GetService<ISyntheticInputCommitter>());
 
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/SyntheticInputCommitter.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/SyntheticInputCommitter.cs");
             if (text == null) return;
 
             // 集計 → 出力 → 全体の保存 → ロックの解放 → デバイスの保存 → Sync（ガード: ロックの範囲と、Sync が最後）

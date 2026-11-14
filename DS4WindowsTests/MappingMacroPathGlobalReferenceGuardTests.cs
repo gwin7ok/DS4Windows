@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {
@@ -55,7 +56,7 @@ namespace DS4WindowsTests
         public void MacroPathMethods_ReadOutputKbmMappingFromStaticProfileSettings()
         {
             // Phase9 9-C: 検査の対象は MacroStepExecutor.cs（設定は注入された _profileSettings から読む）
-            string text = ReadSourceWithoutComments("DS4Windows/Processing/Services/MacroStepExecutor.cs");
+            string text = ReadSourceWithoutComments("DS4Windows/Processing/Services/Conditioning/MacroStepExecutor.cs");
             if (text == null) return;
 
             foreach (string marker in MethodMarkers)

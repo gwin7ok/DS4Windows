@@ -1,10 +1,12 @@
 
+using DS4Windows.Processing.Services.Conditioning;
+
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// Phase7-Step8 W3（Q6＝A）: 合成キーの送出（押下・解放・タイミングのリセット）の窓口。
     /// 旧: 静的クラス <c>SyntheticDispatcher</c>（<c>SyntheticInputState.Shared</c>／<c>Global.outputKBMHandler</c>／<c>Global.outputKBMMapping</c> を参照）。
-    /// 実装は <c>DS4Windows.Processing.Services.SyntheticDispatcherService</c>（DI の Singleton）。<c>Mapping</c> がコンストラクターで受ける。
+    /// 実装は <c>DS4Windows.Processing.Services.Conditioning.SyntheticDispatcherService</c>（DI の Singleton）。<c>Mapping</c> がコンストラクターで受ける。
     /// </summary>
     public interface ISyntheticDispatcher
     {

@@ -12,7 +12,9 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -228,8 +230,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheSource_PublishesAfterTheCleanup_AndThePipePathPublishesAfterALoadSuccess()
         {
-            string service = SourceFileLocator.Find("DS4Windows/Processing/Services/ProfileApplicationService.cs");
-            string window = SourceFileLocator.Find("DS4Windows/Processing/Services/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
+            string service = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs");
+            string window = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
             if (service == null || window == null) return;
 
             string text = File.ReadAllText(service);

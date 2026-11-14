@@ -4,7 +4,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {

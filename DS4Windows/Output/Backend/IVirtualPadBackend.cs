@@ -1,4 +1,5 @@
 ﻿using System;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4Windows.Output.Backend
 {

@@ -36,6 +36,7 @@ using Ookii.Dialogs.Wpf;
 using Microsoft.Win32;
 using DS4Windows.Core.Profiles;
 using DS4Windows.UI.ViewModels;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.UI
 {

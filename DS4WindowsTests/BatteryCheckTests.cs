@@ -13,6 +13,7 @@ using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -313,7 +314,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDefaultPort_DoesNothingWhenThereIsNoController()
         {
-            var port = new DefaultBatteryCheckPort(TestLightbar.State, new NoControllerAccessor(), new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor()));
+            var port = new DefaultBatteryCheckPort(TestLightbar.State, new NoControllerAccessor(), new DS4Windows.Processing.Services.Devices.DeviceBatteryText(new NoControllerAccessor()));
 
             Assert.False(port.HasController(0));
             port.NotifyBattery(0);   // ControlService がなくても、例外にしない
@@ -323,13 +324,13 @@ namespace DS4WindowsTests
             port.SetForcedColor(99, new DS4Color(1, 2, 3));   // 範囲外は何もしない
 
             // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
-            Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(TestLightbar.State, null, new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor())));
+            Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(TestLightbar.State, null, new DS4Windows.Processing.Services.Devices.DeviceBatteryText(new NoControllerAccessor())));
         }
 
         [Fact]
         public void TheDefaultPort_WritesTheLightBarStatics_ForTheGivenDevice()
         {
-            var port = new DefaultBatteryCheckPort(TestLightbar.State, new NoControllerAccessor(), new DS4Windows.Processing.Services.DeviceBatteryText(new NoControllerAccessor()));
+            var port = new DefaultBatteryCheckPort(TestLightbar.State, new NoControllerAccessor(), new DS4Windows.Processing.Services.Devices.DeviceBatteryText(new NoControllerAccessor()));
             int device = 6;
             bool savedLight = TestLightbar.State.forcelight[device];
             DS4Color savedColor = TestLightbar.State.forcedColor[device];

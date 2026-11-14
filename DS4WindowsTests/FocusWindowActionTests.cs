@@ -8,6 +8,7 @@ using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -209,7 +210,7 @@ namespace DS4WindowsTests
                 special = new ControlSpecialItem { Type = SpecialAction.ActionTypeId.FocusWindow, WindowPath = path, WindowTitle = title },
             };
 
-            Assert.Equal(expected, DS4Windows.Processing.Services.ControlBindingBuilder.TryInterpretSpecial(dcs, out _));
+            Assert.Equal(expected, DS4Windows.Processing.Services.Slots.ControlBindingBuilder.TryInterpretSpecial(dcs, out _));
         }
     }
 }

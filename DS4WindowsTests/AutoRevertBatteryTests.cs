@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -13,7 +14,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRevertNotice_UsesTheDeviceBattery_NotAFixedNA()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/AutoProfileService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/AutoProfileService.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

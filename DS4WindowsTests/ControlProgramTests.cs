@@ -8,9 +8,9 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services;
 using DS4Windows.UI.ViewModels;
 using DS4Windows.UI.ViewModels.SpecialActions;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

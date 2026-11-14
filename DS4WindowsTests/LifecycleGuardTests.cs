@@ -5,7 +5,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Start_KeepsTheSafetyOrder()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (text == null) return;
 
             int start = text.IndexOf("public bool Start(");
@@ -71,7 +71,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Stop_KeepsTheSafetyOrder_IncludingTheDriverDestructionOrder()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (text == null) return;
 
             int stop = text.IndexOf("public bool Stop(");
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutputServicesLifecycle_KeepsTheDriverStartAndDestructionOrder()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/OutputServicesLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/OutputServicesLifecycle.cs");
             if (text == null) return;
 
             int start = text.IndexOf("public bool StartVirtualOutputs(");
@@ -164,7 +164,7 @@ namespace DS4WindowsTests
         public void TheProcessPriorityList_IsDefinedOnlyInProcessPriorityOptions_AndKeepsTheSavedOrder()
         {
             string ui = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
-            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             string options = SourceText.ReadCode("DS4Windows/Core/Platform/ProcessPriorityOptions.cs");
             if (ui == null || lifecycle == null || options == null) return;
 
@@ -198,7 +198,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, fresh.ActiveControllers);
             Assert.False(fresh.Suspending);
 
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "ServiceLifecycle が ControlService を参照している");
@@ -235,7 +235,7 @@ namespace DS4WindowsTests
 
             // 利用者（画面・App・テスト）は IServiceLifecycle を直接使う。開始・停止・ホットプラグと 5 つのイベントの転送は、利用者が 0 件になったため削除した
             // 仮想パッドの失敗での停止は BackendFailureHandler が _lifecycle を直接使う
-            string handler = SourceText.ReadCode("DS4Windows/Processing/Services/BackendFailureHandler.cs");
+            string handler = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/BackendFailureHandler.cs");
             if (handler == null) return;
             Assert.Contains("_lifecycle.LoopControllers = false;", handler);
             Assert.Contains("while (_lifecycle.InServiceTask)", handler);

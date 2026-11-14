@@ -8,6 +8,7 @@ using DS4Windows.Input;
 using DS4Windows.Input.Devices;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

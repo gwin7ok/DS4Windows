@@ -30,6 +30,7 @@ using System.Windows.Media.Imaging;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels.Util;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
@@ -139,14 +140,14 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public static void SplitArguments(string text, out string arguments, out bool hideWindow)
         {
             text = text ?? string.Empty;
-            int pos = text.IndexOf(DS4Windows.Processing.Services.ControlBindingBuilder.HiddenKeyword, StringComparison.OrdinalIgnoreCase);
+            int pos = text.IndexOf(DS4Windows.Processing.Services.Slots.ControlBindingBuilder.HiddenKeyword, StringComparison.OrdinalIgnoreCase);
             hideWindow = pos >= 0;
-            arguments = hideWindow ? text.Remove(pos, DS4Windows.Processing.Services.ControlBindingBuilder.HiddenKeyword.Length) : text;
+            arguments = hideWindow ? text.Remove(pos, DS4Windows.Processing.Services.Slots.ControlBindingBuilder.HiddenKeyword.Length) : text;
         }
 
         /// <summary>引数の欄に表示する文字列。ウィンドウを隠すときは、先頭に語を付ける（起動時の引数は同じ。語の位置は先頭に移る）。</summary>
         public static string ComposeArguments(string arguments, bool hideWindow)
-            => (hideWindow ? DS4Windows.Processing.Services.ControlBindingBuilder.HiddenKeyword : string.Empty) + (arguments ?? string.Empty);
+            => (hideWindow ? DS4Windows.Processing.Services.Slots.ControlBindingBuilder.HiddenKeyword : string.Empty) + (arguments ?? string.Empty);
 
         // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;

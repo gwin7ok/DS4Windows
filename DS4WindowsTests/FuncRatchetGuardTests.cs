@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

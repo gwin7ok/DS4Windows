@@ -1,6 +1,7 @@
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing.Actions
 {
@@ -33,6 +34,6 @@ namespace DS4Windows.Processing.Actions
 
         // Phase10-Step6 I5b: SA に付けた Extras（Controls と同じ書式）。付けていない・読めないときは null
         private static ExtrasBindingValues? ReadExtras(SpecialAction sa)
-            => DS4Windows.Processing.Services.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
+            => DS4Windows.Processing.Services.Slots.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
     }
 }

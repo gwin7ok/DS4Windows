@@ -4,6 +4,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions.OutputBuilders;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing.Actions
 {

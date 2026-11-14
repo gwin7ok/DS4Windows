@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
