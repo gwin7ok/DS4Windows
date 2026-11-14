@@ -66,7 +66,10 @@ namespace DS4Windows.Processing.Touchpad
         public bool slideleft, slideright;
         public bool priorSlideLeft, priorSlideright;
         // touch area stuff
-        public bool leftDown, rightDown, upperDown, multiDown;
+        public bool leftDown => _buttons.LeftDown;
+        public bool rightDown => _buttons.RightDown;
+        public bool upperDown => _buttons.UpperDown;
+        public bool multiDown => _buttons.MultiDown;
         public bool priorLeftDown, priorRightDown, priorUpperDown, priorMultiDown;
         private bool touchStarted = false;
         private bool touchEnded = false;
@@ -83,21 +86,8 @@ namespace DS4Windows.Processing.Touchpad
         // Phase14b-Step2（R-04）: 旧ネスト型 Mouse.TouchButtonActivationMode は、プロファイルの設定値の型として
         // Core/Settings/TouchButtonActivationMode.cs（トップレベル）へ移した（値と基底型は同じ）
 
-        private enum TouchButtonModeCandidate : ushort
-        {
-            None,
-            Left,
-            Right,
-            Multi,
-            Upper,
-        }
 
-        private TouchButtonModeCandidate touchButtonCurrentCandidate;
-
-        private bool wasTouched; // Needed to know when to check for Release activation
-        private bool wasTouchButtonClicked = false; // Needed for Upper Touch on Release
-        private bool releaseButtonActive; // Flag to now if Release button mode is active
-        private DateTime onReleaseTime; // Time Release button mode was first activated
+        private readonly TouchButtonDetector _buttons = new TouchButtonDetector();
 
         private readonly TouchStickOutput _touchStick;
         private FakeTrackball touchStickTrackball;
@@ -332,7 +322,7 @@ namespace DS4Windows.Processing.Touchpad
                     slideleft = true;
             }
 
-            TouchButtonCheckProcess(arg);
+            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 
@@ -368,14 +358,10 @@ namespace DS4Windows.Processing.Touchpad
                     secondtouchbegin = true;
             }
 
-            wasTouched = false;
-            wasTouchButtonClicked = false;
-            releaseButtonActive = false;
-            touchButtonCurrentCandidate = TouchButtonModeCandidate.None;
-            TouchButtonUpFlags();
+            _buttons.ResetForNewTouch();
 
             s = dev.getCurrentStateRef();
-            TouchButtonCheckProcess(arg);
+            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 
@@ -384,7 +370,7 @@ namespace DS4Windows.Processing.Touchpad
             //Trace.WriteLine("TOUCHES ENDED");
 
             s = dev.getCurrentStateRef();
-            wasTouched = true;
+            _buttons.WasTouched = true;
             slideright = slideleft = false;
             swipeUp = swipeDown = swipeLeft = swipeRight = false;
             swipeUpB = swipeDownB = swipeLeftB = swipeRightB = 0;
@@ -538,7 +524,7 @@ namespace DS4Windows.Processing.Touchpad
                 }
             }
 
-            TouchButtonCheckProcess(arg);
+            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
         public void TouchStartedOrEnded(DS4Touchpad sender, TouchpadEventArgs arg)
@@ -557,16 +543,6 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
-        private bool isLeft(Touch t)
-        {
-            return t.HwX < 1920 * 2 / 5;
-        }
-
-        private bool isRight(Touch t)
-        {
-            return t.HwX >= 1920 * 2 / 5;
-        }
-
         public virtual void touchUnchanged(DS4Touchpad sender, EventArgs unused)
         {
             //Trace.WriteLine("TOUCHES UNCHANGED");
@@ -574,7 +550,7 @@ namespace DS4Windows.Processing.Touchpad
             s = dev.getCurrentStateRef();
             if (s.Touch1Finger)
             {
-                wasTouched = false;
+                _buttons.WasTouched = false;
             }
 
             TouchpadOutMode touchMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
@@ -623,171 +599,31 @@ namespace DS4Windows.Processing.Touchpad
             }
 
             bool releaseButtonChanged = false;
-            if (releaseButtonActive)
+            if (_buttons.ReleaseButtonActive)
             {
                 DateTime current = DateTime.UtcNow;
                 // Set keydown time to 100 ms for now
                 // Phase6 fix: 上流の比較が逆（'<'）で、離した直後のフレームでフラグが下りて Mapping に届かなかった。
                 // 100ms 経過後にフラグを下ろす（'>='）。
-                if (current >= (onReleaseTime + TimeSpan.FromMilliseconds(100.0)))
+                if (current >= (_buttons.OnReleaseTime + TimeSpan.FromMilliseconds(100.0)))
                 {
-                    releaseButtonActive = false;
+                    _buttons.ReleaseButtonActive = false;
                     releaseButtonChanged = true;
-                    TouchButtonUpFlags();
+                    _buttons.ClearDownFlags();
                 }
             }
 
             // tappedOnce（Double Tap の保留クリック）と tapClickHoldUntil（タップクリックの保持中）は、
             // 指を離した後も処理が必要（Phase6 変更、ユーザー承認 2026-10-15）
             if (s.Touch1Finger || s.TouchButton ||
-                releaseButtonActive || releaseButtonChanged ||
+                _buttons.ReleaseButtonActive || releaseButtonChanged ||
                 tappedOnce || _time.GetUtcNow().UtcDateTime < tapClickHoldUntil)
             {
                 synthesizeMouseButtons();
             }
         }
 
-        private void TouchButtonUpFlags()
-        {
-            upperDown = leftDown = rightDown = multiDown = false;
-            touchButtonCurrentCandidate = TouchButtonModeCandidate.None;
-        }
-
         public bool dragging, dragging2;
-
-        private void TouchButtonCheckProcess(TouchpadEventArgs arg)
-        {
-            bool activateTouchButton = false;
-            TouchButtonActivationMode touchButtonMode = _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode;
-            //TouchButtonActivationMode touchButtonMode = TouchButtonActivationMode.Release;
-            if (touchButtonMode == TouchButtonActivationMode.Click &&
-                arg.TouchButtonPressed)
-            {
-                if (arg.Touches == null)
-                {
-                    touchButtonCurrentCandidate = TouchButtonModeCandidate.Upper;
-                }
-                else if (arg.Touches.Length > 1)
-                {
-                    touchButtonCurrentCandidate = TouchButtonModeCandidate.Multi;
-                }
-                else
-                {
-                    if (isLeft(arg.Touches[0]))
-                    {
-                        touchButtonCurrentCandidate = TouchButtonModeCandidate.Left;
-                    }
-                    else if (isRight(arg.Touches[0]))
-                    {
-                        touchButtonCurrentCandidate = TouchButtonModeCandidate.Right;
-                    }
-                }
-
-                activateTouchButton = true;
-            }
-            else if (touchButtonMode == TouchButtonActivationMode.Touch)
-            {
-                if (arg.TouchActive || arg.TouchButtonPressed)
-                {
-                    if (arg.Touches == null)
-                    {
-                        touchButtonCurrentCandidate = TouchButtonModeCandidate.Upper;
-                    }
-                    else if (arg.Touches.Length > 1)
-                    {
-                        touchButtonCurrentCandidate = TouchButtonModeCandidate.Multi;
-                    }
-                    else
-                    {
-                        if (isLeft(arg.Touches[0]))
-                        {
-                            touchButtonCurrentCandidate = TouchButtonModeCandidate.Left;
-                        }
-                        else if (isRight(arg.Touches[0]))
-                        {
-                            touchButtonCurrentCandidate = TouchButtonModeCandidate.Right;
-                        }
-                    }
-
-                    activateTouchButton = true;
-                }
-                else
-                {
-                    upperDown = leftDown = rightDown = multiDown = false;
-                }
-            }
-            else if (touchButtonMode == TouchButtonActivationMode.Release)
-            {
-                if (touchButtonCurrentCandidate == TouchButtonModeCandidate.None)
-                {
-                    // Top region of Touchpad was clicked. Out of range of Touchpad sensors
-                    if (!arg.TouchActive && !arg.TouchButtonPressed && wasTouchButtonClicked)
-                    {
-                        touchButtonCurrentCandidate = TouchButtonModeCandidate.Upper;
-                    }
-                    else if (arg.TouchActive)
-                    {
-                        if (arg.Touches.Length > 1)
-                        {
-                            touchButtonCurrentCandidate = TouchButtonModeCandidate.Multi;
-                        }
-                    }
-                    else if (!arg.TouchActive && arg.Touches != null)
-                    {
-                        if (isLeft(arg.Touches[0]))
-                        {
-                            touchButtonCurrentCandidate = TouchButtonModeCandidate.Left;
-                        }
-                        else if (isRight(arg.Touches[0]))
-                        {
-                            touchButtonCurrentCandidate = TouchButtonModeCandidate.Right;
-                        }
-                    }
-                }
-
-                if (touchButtonCurrentCandidate != TouchButtonModeCandidate.None)
-                {
-                    if (touchButtonCurrentCandidate == TouchButtonModeCandidate.Multi)
-                    {
-                        // Check that no finger is touching Touchpad
-                        if (wasTouched && !arg.TouchActive)
-                        {
-                            activateTouchButton = true;
-                            releaseButtonActive = true;
-                            onReleaseTime = DateTime.UtcNow;
-                        }
-                    }
-                    else if ((wasTouched && !arg.TouchActive) ||
-                        (wasTouchButtonClicked && !arg.TouchButtonPressed && !arg.TouchActive))
-                    {
-                        activateTouchButton = true;
-                        releaseButtonActive = true;
-                        onReleaseTime = DateTime.UtcNow;
-                    }
-                }
-            }
-
-            if (activateTouchButton)
-            {
-                switch (touchButtonCurrentCandidate)
-                {
-                    case TouchButtonModeCandidate.Left:
-                        leftDown = true;
-                        break;
-                    case TouchButtonModeCandidate.Right:
-                        rightDown = true;
-                        break;
-                    case TouchButtonModeCandidate.Multi:
-                        multiDown = true;
-                        break;
-                    case TouchButtonModeCandidate.Upper:
-                        upperDown = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
 
         private void synthesizeMouseButtons()
         {
@@ -870,15 +706,15 @@ namespace DS4Windows.Processing.Touchpad
         public virtual void touchButtonUp(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             pushed = DS4Controls.None;
-            upperDown = leftDown = rightDown = multiDown = false;
-            wasTouchButtonClicked = true;
+            _buttons.ClearDownFlagsKeepCandidate();
+            _buttons.WasTouchButtonClicked = true;
 
             s = dev.getCurrentStateRef();
             TouchButtonActivationMode touchButtonMode = _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode;
             if (s.Touch1 || s.Touch2 ||
                 touchButtonMode == TouchButtonActivationMode.Release)
             {
-                TouchButtonCheckProcess(arg);
+                _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
                 synthesizeMouseButtons();
             }
         }
@@ -893,15 +729,12 @@ namespace DS4Windows.Processing.Touchpad
             }
             else if (arg.Touches == null)
             {
-                if (touchButtonCurrentCandidate != TouchButtonModeCandidate.None)
-                {
-                    touchButtonCurrentCandidate = TouchButtonModeCandidate.None;
-                }
+                _buttons.ClearCandidate();
             }
 
-            wasTouchButtonClicked = false;
+            _buttons.WasTouchButtonClicked = false;
             s = dev.getCurrentStateRef();
-            TouchButtonCheckProcess(arg);
+            _buttons.Check(arg, _profileSettings.ForSlot(deviceNum).Touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 

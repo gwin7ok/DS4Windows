@@ -19,8 +19,8 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
 
-            Assert.Matches(@"current\s*>=\s*\(onReleaseTime\s*\+\s*TimeSpan\.FromMilliseconds\(100\.0\)\)", text);
-            Assert.DoesNotMatch(@"current\s*<\s*\(onReleaseTime", text);
+            Assert.Matches(@"current\s*>=\s*\(_buttons\.OnReleaseTime\s*\+\s*TimeSpan\.FromMilliseconds\(100\.0\)\)", text);
+            Assert.DoesNotMatch(@"current\s*<\s*\(_buttons\.OnReleaseTime", text);
         }
     }
 }
