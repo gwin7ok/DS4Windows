@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// ホストは全テストが共有する static のため、実際に破棄はせず、ソースの構造で確かめる。
     /// - <c>CreateHost(string[])</c> と、未使用だった引数は削除済みで、再び宣言されない。
     /// - <c>-driverinstall</c> 分岐は、設定の読込の前に <c>CreateHost(config, parser)</c> を明示的に呼ぶ（<c>Global.Load</c> は削除済み）。
-    /// - <c>CleanShutdown</c> は、コントローラーの停止の後・ログのフラッシュの前に <c>AppHost.Dispose()</c> を呼ぶ。
+    /// - （終了の手順の順序は、<c>AppShutdownSequenceTests</c> が呼ばれた順で固定する）
     /// - <c>Dispose</c> の後は、<c>GetService</c> が暗黙にホストを作り直さない。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
     /// </summary>
@@ -64,24 +64,6 @@ namespace DS4WindowsTests
             int load = body.IndexOf(".Load()", System.StringComparison.Ordinal);
             Assert.True(create >= 0, "-driverinstall 分岐に AppHost.CreateHost の明示的な呼び出しがない。");
             Assert.True(load > create, "設定の読込が、ホストの明示的な構築より前にある。");
-        }
-
-        [Fact]
-        public void CleanShutdown_DisposesTheHostAfterStoppingControllersAndBeforeFlushingLogs()
-        {
-            string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
-            if (text == null) return;
-
-            string body = SourceText.BodyByPattern(text, @"void\s+CleanShutdown\s*\(");
-            int stop = body.IndexOf("_runtimeBootstrapper.Shutdown()", System.StringComparison.Ordinal);
-            int clearRegistry = body.IndexOf("ClearControllersForDevice", System.StringComparison.Ordinal);
-            int dispose = body.IndexOf("AppHost.Dispose()", System.StringComparison.Ordinal);
-            int flush = body.IndexOf("LogManager.Flush()", System.StringComparison.Ordinal);
-
-            Assert.True(stop >= 0 && clearRegistry >= 0 && dispose >= 0 && flush >= 0, "CleanShutdown の構造が想定と違う。");
-            Assert.True(dispose > stop, "AppHost.Dispose が、コントローラーの停止より前にある（防壁 5 に反する）。");
-            Assert.True(dispose > clearRegistry, "AppHost.Dispose が、レジストリの破棄より前にある。");
-            Assert.True(dispose < flush, "AppHost.Dispose が、ログのフラッシュより後にある。");
         }
     }
 }
