@@ -108,7 +108,7 @@ namespace DS4Windows.Core.Settings
         public const double DEFAULT_SX_TILT_MAXZONE = 1.0;
         public const string DEFAULT_SA_TRIGGERS = "-1";
         public const string DEFAULT_GYRO_MSTICK_TRIGGERS = "-1";
-        public const OutContType DEFAULT_OUT_CONT_TYPE = OutContType.X360;
+        public const OutContType DEFAULT_OUT_CONT_TYPE = OutContTypeInfo.DefaultType;
         public const bool DEFAULT_OUTPUT_TO_DS4 = true;
         public const bool DEFAULT_TOUCH_TOGGLE = true;
         public const bool DEFAULT_TOUCHPAD_JITTER_COMP = true;

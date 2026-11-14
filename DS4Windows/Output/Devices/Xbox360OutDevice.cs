@@ -64,6 +64,15 @@ namespace DS4Windows.Output.Devices
         private X360Features _features;
         public X360Features Features => _features;
 
+        public override bool SupportsXInputSlotNumber => _features.HasFlag(X360Features.XInputSlotNum);
+
+        public override int XInputSlotNumber => XinputSlotNum;
+
+        public override void LogPlugged(int slot, OutContType contType)
+        {
+            DS4Windows.Core.Logging.AppLogger.LogUser(DS4Windows.Core.Logging.AppLogLevel.Info, "Log_Out_PluginX360", (XinputSlotNum < 0 ? "?" : (XinputSlotNum + 1).ToString()), slot + 1);
+        }
+
         public Xbox360OutDevice(IVirtualPadBackend backend)
         {
             cont = backend.CreateXbox360Target();

@@ -46,13 +46,9 @@ namespace DS4Windows.Output.Services
             set => _slot.PermanentType = value;
         }
 
-        public bool SupportsXInputSlotNumber =>
-            _slot.CurrentType == OutContType.X360
-            && _slot.OutputDevice is Xbox360OutDevice x360
-            && x360.Features.HasFlag(Xbox360OutDevice.X360Features.XInputSlotNum);
+        public bool SupportsXInputSlotNumber => _slot.OutputDevice?.SupportsXInputSlotNumber ?? false;
 
-        public int XInputSlotNumber =>
-            _slot.CurrentType == OutContType.X360 && _slot.OutputDevice is Xbox360OutDevice x360 ? x360.XinputSlotNum : -1;
+        public int XInputSlotNumber => _slot.OutputDevice?.XInputSlotNumber ?? -1;
 
         public int InputIndex => _slot.InputIndex;
 

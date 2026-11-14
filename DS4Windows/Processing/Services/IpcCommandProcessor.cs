@@ -206,10 +206,8 @@ namespace DS4Windows.Processing.Services
                 // Phase6-Step10-5: 抜き差しの正式な入口（IOutputSlotService）経由。事前条件の確認と UI スレッドへの切り替えは、サービスが行う
                 if (strData[2] == "unplug")
                     _outputSlotService.UnplugSlot(tdevice);
-                else if (strData[2] == "plugds4")
-                    _outputSlotService.PluginSlot(tdevice, OutContType.DS4);
-                else if (strData[2] == "plugx360")
-                    _outputSlotService.PluginSlot(tdevice, OutContType.X360);
+                else if (OutContTypeInfo.TryFromIpcPlugName(strData[2], out OutContType plugType))
+                    _outputSlotService.PluginSlot(tdevice, plugType);
             }
         }
 

@@ -167,15 +167,7 @@ namespace DS4Windows.Core.Model
         public static string getX360ControlString(X360Controls key, OutContType conType)
         {
             string result = string.Empty;
-            if (conType == DS4Windows.Core.Model.OutContType.X360)
-            {
-                xboxDefaultNames.TryGetValue(key, out result);
-            }
-            else if (conType == DS4Windows.Core.Model.OutContType.DS4)
-            {
-                ds4DefaultNames.TryGetValue(key, out result);
-            }
-
+            OutContTypeInfo.ButtonNames(conType)?.TryGetValue(key, out result);
             return result;
         }
 

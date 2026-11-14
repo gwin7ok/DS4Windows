@@ -12,7 +12,7 @@ namespace DS4Windows.Output.Services
     /// </summary>
     public sealed class OutputDeviceTypeState : IOutputDeviceTypeState
     {
-        public OutContType[] OutDevTypeTemp { get; } = CreateFilled(OutContType.X360);
+        public OutContType[] OutDevTypeTemp { get; } = CreateFilled(OutContTypeInfo.DefaultType);
 
         public OutContType[] ActiveOutDevType { get; } = CreateFilled(OutContType.None);
 

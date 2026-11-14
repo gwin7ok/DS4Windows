@@ -48,7 +48,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool xinputStatus = false;
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/OutputContDevice"); store.outputDevType[device] = OutContTypeInfo.FromSaveKey(Item.InnerText); }
-            catch { store.outputDevType[device] = OutContType.X360; missingSetting = true; }
+            catch { store.outputDevType[device] = OutContTypeInfo.DefaultType; missingSetting = true; }
 
             // Only change xinput devices under certain conditions. Avoid
             // performing this upon program startup before loading devices.

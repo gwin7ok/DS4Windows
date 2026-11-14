@@ -69,7 +69,7 @@ namespace DS4Windows.Processing.Macro
         };
 
         // K-W6（S9 の追加修正）: コントローラーのボタン系のマクロ値と、出力（X360Controls）の対応。
-        // Emulated Controller が DS4 のときの表記（Cross、L1 ほか）を、X360ControlTables.ds4DefaultNames から引くために使う。
+        // Emulated Controller の種類ごとの表記（DS4 なら Cross、L1 ほか）を、OutContTypeInfo.ButtonNames から引くために使う。
         // スティックの軸（278〜285）、マウス（256〜260）、Touch Started／Ended（287・288）は、出力タイプによらず従来の名前のまま
         private static readonly Dictionary<int, X360Controls> macroValueOutputs = new Dictionary<int, X360Controls>()
         {
@@ -94,14 +94,14 @@ namespace DS4Windows.Processing.Macro
         };
 
         /// <summary>
-        /// マクロ値（256〜288）のボタン名。Emulated Controller が DS4 のときは DS4 の表記、それ以外（Xbox 360、省略）は従来の Xbox の表記。
+        /// マクロ値（256〜288）のボタン名。Emulated Controller の種類の表記（Xbox 360 なら Xbox の表記、DS4 なら DS4 の表記）。種類がない（None）ときは、従来の表（macroInputNames）。
         /// </summary>
-        public static string InputName(int value, OutContType outType = OutContType.X360)
+        public static string InputName(int value, OutContType outType = OutContTypeInfo.DefaultType)
         {
-            if (outType == OutContType.DS4 && macroValueOutputs.TryGetValue(value, out X360Controls output) &&
-                X360ControlTables.ds4DefaultNames.TryGetValue(output, out string ds4Name))
+            if (macroValueOutputs.TryGetValue(value, out X360Controls output) &&
+                OutContTypeInfo.ButtonNames(outType) is { } names && names.TryGetValue(output, out string typedName))
             {
-                return ds4Name;
+                return typedName;
             }
 
             macroInputNames.TryGetValue(value, out string name);
@@ -112,7 +112,7 @@ namespace DS4Windows.Processing.Macro
 
         public List<MacroStep> MacroSteps { get => macroSteps; }
 
-        public MacroParser(int[] macro, OutContType outType = OutContType.X360)
+        public MacroParser(int[] macro, OutContType outType = OutContTypeInfo.DefaultType)
         {
             macroSteps = new List<MacroStep>();
             inputMacro = macro;

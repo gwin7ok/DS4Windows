@@ -36,10 +36,15 @@
 
 ## 2. 仮想パッドの出力の種類を足す
 
+種類ごとの違いは、**値**と**処理**に分けて、それぞれ決まった場所へ置く。`OutContType.X360`／`.DS4` を名指しできるのは許可リストのファイルだけで、`OutputTypeNamingGuardTests` が守る（ここ以外へ書かない）。
+
 | 足すもの | 場所 |
 |---|---|
-| カートリッジ（`IOutputDeviceCartridge` の実装） | `Output/Devices/XxxOutputCartridge.cs`（例: `Ds4OutputCartridge`、`Xbox360OutputCartridge`） |
-| 保存キー・選択肢の番号 | `Core/Model/OutContTypeInfo`（種類ごとの `if`／`switch` を増やさない） |
+| 種類の値（`OutContType` の項目） | `Core/Model/OutContType` |
+| 値の違い: 保存キー、プロファイルの選択肢の並び、IPC の接続の名前（`plug<名前>`）、ボタン名の表 | `Core/Model/OutContTypeInfo` の表（`ProfileChoices`／`ProfileKeys`／`IpcPlugNames`／`ButtonNameTables` の同じ位置へ足す）。既定の種類は `DefaultType` |
+| 処理の違い（生成、型の絞り込み、振動・ライトバーの戻りの接続） | カートリッジ（`IOutputDeviceCartridge` の実装）`Output/Devices/XxxOutputCartridge.cs`（例: `Ds4OutputCartridge`、`Xbox360OutputCartridge`） |
+| 処理の違い（送出の直前の後処理、XInput のスロット番号、差し込みのログ） | 出力デバイス（`OutputDevice` の仮想メンバー: `ConvertandSendReport`、`SupportsXInputSlotNumber`／`XInputSlotNumber`、`LogPlugged`）。DS4 のトリガーのモードは `DS4OutDevice.ApplyTriggerOutputMode` |
+| 出力ピッカーの図 | `UI/Controls/ControllerLayouts.ForOutputType`（種類 → 配置表と背景の画像） |
 | DI 登録 | `ServiceRegistration.Output.cs` |
 | バックエンドの型 | ViGEm の型は `Output/Backend` の中だけ（L9） |
 

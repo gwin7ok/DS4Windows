@@ -35,14 +35,15 @@ namespace DS4Windows.UI.ViewModels
     public class BindingWindowViewModel
     {
         private int deviceNum;
-        private bool use360Mode;
+        private OutContType outputType;
         private DS4ControlSettings settings;
         private OutBinding currentOutBind;
         private bool rumbleActive;
 
-        public bool Using360Mode
+        /// <summary>出力ピッカーで編集している割り当ての、出力の種類（図とボタン名の表記を決める）。</summary>
+        public OutContType OutputType
         {
-            get => use360Mode;
+            get => outputType;
         }
         public int DeviceNum { get => deviceNum; }
         public OutBinding CurrentOutBind { get => currentOutBind; }
@@ -81,7 +82,7 @@ namespace DS4Windows.UI.ViewModels
             if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
             this.deviceNum = deviceNum;
             this.targetDevice = targetDevice;
-            use360Mode = outputSlotService.OutDevTypeTemp[deviceNum] == OutContType.X360;
+            outputType = outputSlotService.OutDevTypeTemp[deviceNum];
             this.settings = settings;
             currentOutBind = new OutBinding();
             PopulateCurrentBinds();

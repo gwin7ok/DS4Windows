@@ -48,7 +48,7 @@ namespace DS4WindowsTests
             string service = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
             if (state == null || service == null) return;
 
-            Assert.Matches(@"OutContType\[\]\s+OutDevTypeTemp\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContType\.X360\)", state);
+            Assert.Matches(@"OutContType\[\]\s+OutDevTypeTemp\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContTypeInfo\.DefaultType\)", state);
             Assert.Matches(@"OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContType\.None\)", state);
             Assert.DoesNotContain("CreateFilled", service);
             Assert.Contains("OutContType[] OutDevTypeTemp => _types.OutDevTypeTemp;", service);

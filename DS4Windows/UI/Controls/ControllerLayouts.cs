@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.Controls
 {
@@ -9,6 +10,19 @@ namespace DS4Windows.UI.Controls
     /// </summary>
     public static class ControllerLayouts
     {
+        /// <summary>
+        /// 出力ピッカー（BindingWindow）の、出力の種類ごとの図。XAML の既定の図は Xbox 360（<see cref="Xbox360"/>）で、
+        /// ほかの種類は、その種類の配置表と背景の画像（リソースのキー）へ差し替える。種類がない（None）ときは、既定の種類の図を使う。
+        /// </summary>
+        public static (ControllerLayout Layout, string BackgroundImageKey) ForOutputType(OutContType type)
+        {
+            switch (type)
+            {
+                case OutContType.DS4: return (DualShock4, "DS4ConfigImg");
+                default: return (Xbox360, null);
+            }
+        }
+
         /// <summary>出力ピッカー（BindingWindow）の Xbox 360 の図。</summary>
         public static ControllerLayout Xbox360 { get; } = new ControllerLayout("Xbox360", 630, 247, new List<HitboxRegion>
         {

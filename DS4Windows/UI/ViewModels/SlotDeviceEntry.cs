@@ -125,10 +125,7 @@ namespace DS4Windows.UI.ViewModels
             get
             {
                 var xinputSlot = "?";
-                if (slot.CurrentType == OutContType.X360)
-                {
-                    if (slot.XInputSlotNumber >= 0) xinputSlot = $"{slot.XInputSlotNumber + 1}";
-                }
+                if (slot.XInputSlotNumber >= 0) xinputSlot = $"{slot.XInputSlotNumber + 1}";
                 return xinputSlot;
             }
 

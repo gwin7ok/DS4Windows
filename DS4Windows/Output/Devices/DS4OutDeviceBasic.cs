@@ -37,6 +37,8 @@ namespace DS4Windows.Output.Devices
         {
             if (!connected) return;
 
+            ApplyTriggerOutputMode(state, device);
+
             //cont.ResetReport();
             ushort tempButtons = 0;
             Ds4DPadDirection tempDPad = Ds4DPadDirection.None;
