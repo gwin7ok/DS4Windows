@@ -214,23 +214,25 @@ namespace DS4Windows.Processing.Touchpad
         private bool getDS4ControlsByName(int key) => TriggerButtonReader.IsPressed(s, key);
 
         private bool tempBool = false;
-        public virtual void touchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
-        {
-            s = dev.getCurrentStateRef();
 
-            //Trace.WriteLine("TOUCHES_MOVED");
-            TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
-            if (tempMode == TouchpadOutMode.Mouse)
+        // 設定の「反転を無効にするトリガー」が、すべて押されているか（空なら真）
+        private bool AreDisInvertTriggersHeld()
+        {
+            int[] disArray = _profileSettings.ForSlot(deviceNum).Touchpad.DisInvertTriggers;
+            for (int i = 0, arlen = disArray.Length; i < arlen; i++)
             {
+                if (getDS4ControlsByName(disArray[i]) == false)
+                    return false;
+            }
+
+            return true;
+        }
+        // 出力の種類ごとの、動いたときの処理（タッチ → マウス／Controls のスワイプ／スティック）
+        private void MouseModeMoved(TouchpadEventArgs arg)
+        {
                 if (_profileSettings.GetTouchpadActive(deviceNum))
                 {
-                    int[] disArray = _profileSettings.ForSlot(deviceNum).Touchpad.DisInvertTriggers;
-                    tempBool = true;
-                    for (int i = 0, arlen = disArray.Length; tempBool && i < arlen; i++)
-                    {
-                        if (getDS4ControlsByName(disArray[i]) == false)
-                            tempBool = false;
-                    }
+                    tempBool = AreDisInvertTriggersHeld();
 
                     if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
                     {
@@ -247,9 +249,10 @@ namespace DS4Windows.Processing.Touchpad
                         _trackball.AddEmptySample();
                     }
                 }
-            }
-            else if (tempMode == TouchpadOutMode.Controls)
-            {
+        }
+
+        private void ControlsModeMoved(TouchpadEventArgs arg)
+        {
                 if (!(swipeUp || swipeDown || swipeLeft || swipeRight) && arg.Touches.Length == 1)
                 {
                     if (arg.Touches[0].HwX - firstTouch.HwX > 300) swipeRight = true;
@@ -262,9 +265,10 @@ namespace DS4Windows.Processing.Touchpad
                 swipeDownB = (byte)Math.Min(255, Math.Max(0, (arg.Touches[0].HwY - firstTouch.HwY) * 1.5f));
                 swipeLeftB = (byte)Math.Min(255, Math.Max(0, firstTouch.HwX - arg.Touches[0].HwX));
                 swipeRightB = (byte)Math.Min(255, Math.Max(0, arg.Touches[0].HwX - firstTouch.HwX));
-            }
-            else if (tempMode == TouchpadOutMode.MouseJoystick)
-            {
+        }
+
+        private void StickModeMoved(TouchpadEventArgs arg)
+        {
                 previousUnchangedTouchJoyFrame = false;
 
                 TouchMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Touchpad.MouseStick;
@@ -298,7 +302,21 @@ namespace DS4Windows.Processing.Touchpad
                         //AddEmptyTrackballEntry();
                     }
                 }
-            }
+            
+        }
+
+        public virtual void touchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
+        {
+            s = dev.getCurrentStateRef();
+
+            //Trace.WriteLine("TOUCHES_MOVED");
+            TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
+            if (tempMode == TouchpadOutMode.Mouse)
+                MouseModeMoved(arg);
+            else if (tempMode == TouchpadOutMode.Controls)
+                ControlsModeMoved(arg);
+            else if (tempMode == TouchpadOutMode.MouseJoystick)
+                StickModeMoved(arg);
 
             // Slide flags needed for possible profile switching from Touchpad swipes
             if (Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < 50 && arg.Touches.Length == 2)
@@ -370,13 +388,7 @@ namespace DS4Windows.Processing.Touchpad
                 TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
                 if (tempMode == TouchpadOutMode.Mouse)
                 {
-                    int[] disArray = _profileSettings.ForSlot(deviceNum).Touchpad.DisInvertTriggers;
-                    tempBool = true;
-                    for (int i = 0, arlen = disArray.Length; tempBool && i < arlen; i++)
-                    {
-                        if (getDS4ControlsByName(disArray[i]) == false)
-                            tempBool = false;
-                    }
+                    tempBool = AreDisInvertTriggersHeld();
 
                     if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
                     {
@@ -519,13 +531,7 @@ namespace DS4Windows.Processing.Touchpad
                     //    touchMode == TouchpadOutMode.MouseJoystick)
                     if (touchMode == TouchpadOutMode.Mouse)
                     {
-                        int[] disArray = _profileSettings.ForSlot(deviceNum).Touchpad.DisInvertTriggers;
-                        tempBool = true;
-                        for (int i = 0, arlen = disArray.Length; tempBool && i < arlen; i++)
-                        {
-                            if (getDS4ControlsByName(disArray[i]) == false)
-                                tempBool = false;
-                        }
+                        tempBool = AreDisInvertTriggersHeld();
 
                         if (_trackball.Step(s.elapsedTime, out int dx, out int dy))
                         {
