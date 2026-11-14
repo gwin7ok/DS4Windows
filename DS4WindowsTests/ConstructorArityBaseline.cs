@@ -12,7 +12,6 @@
         {
             "DS4Windows.Processing.Mapping|15",
             "DS4Windows.Processing.Services.DeviceConnector|13",
-            "DS4Windows.Processing.Services.InputReportProcessor|13",
             "DS4Windows.UI.MainWindow|15",
         };
     }

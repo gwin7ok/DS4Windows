@@ -62,7 +62,7 @@ namespace DS4Windows.UI.Services
                 AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Applying profile '{prof}' for device {idx}");
 
                 // ★共通適用窓口 ApplyProfileToSlot を呼び出す（すべての切り替え手段を統一）
-                _profileSlotApplier.ApplyToSlot(idx, prof, ProfileChangeSource.Manual);
+                _profileSlotApplier.ApplyToSlot(idx, prof, ProfileChangeSource.Manual, launchProgram: true);
                 return true;
             }
             return false;

@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             public readonly List<string> Calls = new List<string>();
             public bool Result = true;
 
-            public bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source)
+            public bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source, bool launchProgram = false)
             {
                 Calls.Add($"apply:{slotIndex}:{profileName}:{source}");
                 return Result;

@@ -27,7 +27,7 @@ namespace DS4Windows.Processing.Services
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
-        public bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source)
+        public bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source, bool launchProgram = false)
         {
             if (slotIndex < 0 || slotIndex >= _environment.ControllerSlotLimit)
                 return false;
@@ -35,8 +35,7 @@ namespace DS4Windows.Processing.Services
             if (string.IsNullOrWhiteSpace(profileName))
                 return false;
 
-            // 引数仕様: (deviceIndex, profileName, isTemp: false, launchProgram: false, source, prolog: null)
-            return _profileApplication.ApplyProfileWithoutHalt(slotIndex, profileName, false, false, source, null);
+            return _profileApplication.ApplyProfileWithoutHalt(slotIndex, profileName, false, launchProgram, source, null);
         }
 
         public bool ApplyFromUi(int slotIndex, string profileName, ProfileChangeSource source, string prolog)

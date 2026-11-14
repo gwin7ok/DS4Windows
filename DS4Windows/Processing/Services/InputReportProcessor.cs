@@ -36,10 +36,6 @@ namespace DS4Windows.Processing.Services
         private readonly IOscService _oscService;
         private readonly IVirtualPadService _virtualPad;
 
-        // Phase13-Step7 7-c: 旧: 遅延取得デリゲート（遅延取得）。配列の参照は再代入されないため、コンストラクターで保持する（ホットパスは読み取りだけ）
-        private readonly OutContType[] _activeOutDevType;
-        private OutContType[] ActiveOutDevType => _activeOutDevType;
-
         public bool RecordingMacro { get; set; }
         public bool IsMeasuringProcessingDelay { get; set; }
         public double[] ProcessingDelayMs => _processingDelayMs;
@@ -59,8 +55,7 @@ namespace DS4Windows.Processing.Services
             IProfileActionProvider profileActionProvider,
             IAppSettingsService appSettings,
             IOscService oscService,
-            IVirtualPadService virtualPad,
-            IOutputDeviceTypeState outputDeviceTypes)
+            IVirtualPadService virtualPad)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             if (slots == null) throw new ArgumentNullException(nameof(slots));
@@ -77,7 +72,6 @@ namespace DS4Windows.Processing.Services
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
 
             // CurrentStates[i] は DeviceSlotState が作る。ExposedState は、それを参照して作る
             for (int i = 0; i < _currentState.Length; i++)
@@ -164,25 +158,6 @@ namespace DS4Windows.Processing.Services
 
                 if (!_profileSettings.UseDInputOnlyArray[ind])
                 {
-                    // Perform this virtual trigger button check in post
-                    if (ActiveOutDevType[ind] == OutContType.DS4)
-                    {
-                        DS4TriggerOutputMode trigMode = _profileSettings.OutputDS4TriggerMode[ind];
-                        if (trigMode == DS4TriggerOutputMode.Default)
-                        {
-                            cState.L2Btn = cState.L2 > 0;
-                            cState.R2Btn = cState.R2 > 0;
-                        }
-                        else if (trigMode == DS4TriggerOutputMode.Buttons)
-                        {
-                            cState.L2Btn = cState.L2 > 0;
-                            cState.R2Btn = cState.R2 > 0;
-                            // Disable analog output
-                            cState.L2 = 0;
-                            cState.R2 = 0;
-                        }
-                    }
-
                     _virtualPad.SendReport(ind, cState);
 
                     // 仮想コントローラー出力完了時の処理遅延を計測

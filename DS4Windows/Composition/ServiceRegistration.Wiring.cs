@@ -14,7 +14,7 @@ namespace DS4Windows.Composition
         /// Phase14c-Step6（R-13）: 生成のときに、別のオブジェクトへ自分（または自分の持ち物）を結ぶ登録。後付けの配線は、すべてこのメソッドに置く。
         /// 配線は、そのサービスが最初に解決されたときに行う（遅延。生成の時点は Phase14c より前と同じ）。
         /// <list type="number">
-        /// <item><c>BackingStore</c>: <c>ProcessInspector</c>（プロパティ）と、<c>ActionsLoaded</c> の購読者（<c>ActionsLoadedRuntimeReset</c>）。
+        /// <item><c>BackingStore</c>: <c>ActionsLoaded</c> の購読者（<c>ActionsLoadedRuntimeReset</c>）。
         /// ブートストラップの <c>BackingStore</c> はコンテナより前に作られるため、コンストラクターでは渡せない。</item>
         /// <item><c>IProfileIdentityService</c>: 登録簿を、<c>BackingStore</c>（スロットの名前の保管）と <c>ProfileSettingsService</c>（一時プロファイルの名前）へ結ぶ。
         /// <c>BackingStore</c> の登録から登録簿を解決すると <c>IPathService</c> → <c>BackingStore</c> と循環するため、登録簿の側から結ぶ。
@@ -27,12 +27,9 @@ namespace DS4Windows.Composition
         {
             // Phase7-Step3 W1: BackingStore（設定の唯一の実体）を登録する。
             // Phase7-Step10d W5: 旧 Global.store（静的）をやめた。ブートストラップの BackingStore があればそれを、なければコンテナが作る。
-            // IProcessInspector はプロパティで設定する（プロファイル読込の「起動するプログラム」の稼働確認で使う。BackingStore を
-            // コンテナより前に作る場合があるため、コンストラクターでは渡せない）。
             services.AddSingleton<BackingStore>(sp =>
             {
                 var store = existingStore ?? new BackingStore(sp.GetRequiredService<IEnvironmentService>());
-                store.ProcessInspector = sp.GetRequiredService<IProcessInspector>();
                 // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み後の実行時状態のリセット。ブートストラップの BackingStore はコンテナより長く生きるため、
                 // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を外してから登録する（Phase7-Step8 W3: instance の購読者）
                 // Phase14c-Step6（R-13）: 前回の購読者は BackingStore 自身が覚える（旧: このクラスの静的フィールド _subscribedReset）

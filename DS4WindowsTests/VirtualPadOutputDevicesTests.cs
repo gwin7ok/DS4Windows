@@ -118,7 +118,8 @@ namespace DS4WindowsTests
             var state = new ControllerState { Cross = true, Share = true, L2Btn = true, PS = true, OutputTouchButton = true, DpadUp = true, DpadRight = true, L2 = 9, R2 = 8, LX = 1, LY = 2, RX = 3, RY = 4 };
             device.ConvertandSendReport(state, 0);
 
-            Assert.Equal((ushort)(Ds4Buttons.Cross | Ds4Buttons.Share | Ds4Buttons.TriggerLeft), target.Buttons);
+            // トリガーの既定のモードは、アナログ値（L2 = 9、R2 = 8）からトリガーのボタンも作る（R2Btn は入力で偽でも、R2 > 0 のため押された扱い）
+            Assert.Equal((ushort)(Ds4Buttons.Cross | Ds4Buttons.Share | Ds4Buttons.TriggerLeft | Ds4Buttons.TriggerRight), target.Buttons);
             Assert.Equal((byte)(Ds4SpecialButtons.Ps | Ds4SpecialButtons.Touchpad), target.SpecialButtons);
             Assert.Equal(Ds4DPadDirection.Northeast, target.DPad);
             Assert.Equal(9, target.LeftTriggerValue);

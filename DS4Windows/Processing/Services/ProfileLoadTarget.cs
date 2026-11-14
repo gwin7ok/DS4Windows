@@ -21,14 +21,17 @@ namespace DS4Windows.Processing.Services
         private readonly IDeviceConnectionSetup _connectionSetup;
         private readonly ITouchpadToggleService _touchpadToggle;
         private readonly StickMotionState _stickMotion;
+        private readonly IProfileProgramLauncher _programLauncher;
 
         public ProfileLoadTarget(
             IDeviceSlotState slots,
             IVirtualPadService virtualPad,
             IDeviceConnectionSetup connectionSetup,
             ITouchpadToggleService touchpadToggle,
-            StickMotionState stickMotion)
+            StickMotionState stickMotion,
+            IProfileProgramLauncher programLauncher)
         {
+            _programLauncher = programLauncher ?? throw new ArgumentNullException(nameof(programLauncher));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _connectionSetup = connectionSetup ?? throw new ArgumentNullException(nameof(connectionSetup));
@@ -51,6 +54,8 @@ namespace DS4Windows.Processing.Services
 
         public void CheckProfileOptions(int ind, IConfigurableDevice device, bool startUp = false)
             => _connectionSetup.ApplyProfileOptions(ind, (InputDeviceCore)device, _slots.TouchPads[ind], startUp);
+
+        public void LaunchProfileProgram(int ind) => _programLauncher.LaunchIfNotRunning(ind);
 
         public void StartTPOff(int deviceID) => _touchpadToggle.StartTouchpadOff(deviceID);
 

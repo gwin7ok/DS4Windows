@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         {
             public int SaveCallCount { get; private set; }
 
-            public bool LoadProfileXml(int deviceIndex, bool launchProgram, DS4Windows.Core.Abstractions.IProfileLoadTarget control,
+            public bool LoadProfileXml(int deviceIndex, DS4Windows.Core.Abstractions.IProfileLoadTarget control,
                 string overridePath = "", bool xinputChange = true, bool postLoad = true) => true;
             public bool SaveProfileXml(int deviceIndex, string profileName) => true;
             public bool LoadControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;

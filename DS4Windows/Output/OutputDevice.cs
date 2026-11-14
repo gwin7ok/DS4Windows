@@ -37,5 +37,17 @@ namespace DS4Windows.Output
         public abstract void RemoveFeedbacks();
 
         public abstract void RemoveFeedback(int inIdx);
+
+        /// <summary>XInput のスロット番号を取れる種類・環境か。取れない種類は false。</summary>
+        public virtual bool SupportsXInputSlotNumber => false;
+
+        /// <summary>XInput のスロット番号（0 始まり）。取れない・まだ分からないときは -1。</summary>
+        public virtual int XInputSlotNumber => -1;
+
+        /// <summary>仮想パッドを出力スロットへ差し込んだことを、利用者向けのログに出す（種類ごとに文言が違う）。</summary>
+        public virtual void LogPlugged(int slot, OutContType contType)
+        {
+            DS4Windows.Core.Logging.AppLogger.LogUser(DS4Windows.Core.Logging.AppLogLevel.Info, "Log_Out_PluginVirtual", contType, slot + 1);
+        }
     }
 }

@@ -58,7 +58,7 @@ namespace DS4WindowsTests
 
             var exception = Record.Exception(() =>
             {
-                store.LoadProfileXml(0, false, control, @"NonExistent_Phase5Step2_Path.xml", false, true);
+                store.LoadProfileXml(0, control, @"NonExistent_Phase5Step2_Path.xml", false, true);
             });
 
             Assert.Null(exception);

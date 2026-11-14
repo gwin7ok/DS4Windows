@@ -83,6 +83,36 @@ namespace DS4Windows.Output
             }
         }
 
+        /// <summary>
+        /// スロットごとの、仮想 DS4 のトリガーの出力のモードを引く関数。作った側（カートリッジ）が設定する。null のときは、トリガーの後処理をしない。
+        /// </summary>
+        public System.Func<int, DS4Windows.Core.Settings.DS4TriggerOutputMode> TriggerModeProvider { get; set; }
+
+        /// <summary>
+        /// 送出の直前に、トリガーの出力のモードを状態へ反映する。仮想 DS4 は L2／R2 のボタンも持つため、アナログ値からボタンを作る
+        /// （Buttons ではアナログ値を 0 にして、ボタンだけにする）。状態は呼び出し元と共有のため、書き換えは呼び出し元へも見える（旧・入力レポートの処理と同じ）。
+        /// 毎フレーム呼ぶ。割り当てはしない。
+        /// </summary>
+        protected void ApplyTriggerOutputMode(ControllerState state, int device)
+        {
+            if (TriggerModeProvider == null) return;
+
+            DS4Windows.Core.Settings.DS4TriggerOutputMode trigMode = TriggerModeProvider(device);
+            if (trigMode == DS4Windows.Core.Settings.DS4TriggerOutputMode.Default)
+            {
+                state.L2Btn = state.L2 > 0;
+                state.R2Btn = state.R2 > 0;
+            }
+            else if (trigMode == DS4Windows.Core.Settings.DS4TriggerOutputMode.Buttons)
+            {
+                state.L2Btn = state.L2 > 0;
+                state.R2Btn = state.R2 > 0;
+                // Disable analog output
+                state.L2 = 0;
+                state.R2 = 0;
+            }
+        }
+
         /// <summary>入力の状態から、仮想 DS4 のボタン・十字キー・特殊ボタンの値を求める（Basic と Ext で共通）。</summary>
         protected static void MapButtons(ControllerState state, out ushort tempButtons,
             out Ds4DPadDirection tempDPad, out ushort tempSpecial)

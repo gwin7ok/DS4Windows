@@ -110,11 +110,14 @@ namespace DS4WindowsTests
             var toggle = TestHost.GetService<ITouchpadToggleService>();
             var stick = TestHost.GetService<StickMotionState>();
 
-            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(null, pad, setup, toggle, stick));
-            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, null, setup, toggle, stick));
-            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, null, toggle, stick));
-            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, setup, null, stick));
-            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, setup, toggle, null));
+            var launcher = TestHost.GetService<IProfileProgramLauncher>();
+
+            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(null, pad, setup, toggle, stick, launcher));
+            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, null, setup, toggle, stick, launcher));
+            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, null, toggle, stick, launcher));
+            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, setup, null, stick, launcher));
+            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, setup, toggle, null, launcher));
+            Assert.Throws<ArgumentNullException>(() => new ProfileLoadTarget(slots, pad, setup, toggle, stick, null));
         }
     }
 }

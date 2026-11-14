@@ -58,7 +58,7 @@ namespace DS4Windows.Core.Abstractions
         void CacheProfileCustomsFlags(int deviceIndex);
 
         // ---- Phase5-Step13-7: 一時プロファイル読込（スワイプ操作等での即時切替用） ----
-        bool LoadTempProfile(int deviceIndex, string profileName, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true);
+        bool LoadTempProfile(int deviceIndex, string profileName, IProfileLoadTarget control, bool xinputChange = true);
 
         // ---- Phase5-Step13-7 Tier4: プロファイル未定義アクションの警告ログ出力 ----
         void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string overrideProfileName = null);

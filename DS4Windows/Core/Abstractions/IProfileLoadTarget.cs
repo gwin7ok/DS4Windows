@@ -28,6 +28,12 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>プロファイルの設定をデバイスへ反映する（<c>IDeviceConnectionSetup.ApplyProfileOptions</c>。タッチパッドはこの窓口が渡す）。</summary>
         void CheckProfileOptions(int ind, IConfigurableDevice device, bool startUp = false);
 
+        /// <summary>
+        /// プロファイルに結んだ「起動するプログラム」を、動いていなければ起動する（<c>IProfileProgramLauncher.LaunchIfNotRunning</c> への転送）。
+        /// プロファイルの読み込みは起動しない。起動したい呼び出し側（適用の完了のあと）が、この窓口を呼ぶ。
+        /// </summary>
+        void LaunchProfileProgram(int ind);
+
         /// <summary>タッチパッドの OFF 状態を開始する（<c>ITouchpadToggleService.StartTouchpadOff</c> への転送）。</summary>
         void StartTPOff(int deviceID);
 

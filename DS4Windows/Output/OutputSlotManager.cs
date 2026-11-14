@@ -155,15 +155,7 @@ namespace DS4Windows.Output
                         return;
                     }
 
-                    if (contType == OutContType.X360)
-                    {
-                        var tempXbox = outputDevice as Xbox360OutDevice;
-                        AppLogger.LogUser(AppLogLevel.Info, "Log_Out_PluginX360", (tempXbox.XinputSlotNum < 0 ? "?" : (tempXbox.XinputSlotNum + 1).ToString()), slot + 1);
-                    }
-                    else
-                    {
-                        AppLogger.LogUser(AppLogLevel.Info, "Log_Out_PluginVirtual", contType, slot + 1);
-                    }
+                    outputDevice.LogPlugged(slot, contType);
 
                     outputDevices[slot] = outputDevice;
                     deviceDict.Add(slot, outputDevice);

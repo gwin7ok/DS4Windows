@@ -38,6 +38,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IDeviceStateService, DeviceStateService>();
 
             services.AddSingleton<IProfileSlotApplier, ProfileSlotApplier>();
+            services.AddSingleton<IProfileProgramLauncher, ProfileProgramLauncher>();   // プロファイルに結んだプログラムの起動（唯一の入口）
             // Phase14b-Step14（D14）: 保存・読込の後の実行時状態のリセット（Core の契約、第2層の実装）
             services.AddSingleton<ISpecialActionRuntimeReset, SpecialActionRuntimeReset>();
 
@@ -178,7 +179,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IControllerSlotCommands, ControllerSlotCommands>();
             services.AddSingleton<IControllerReadingsSource, ControllerReadingsSource>();
             services.AddSingleton<IMacroRecordingState, MacroRecordingState>();
-            // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主。出力種別の配列は IOutputDeviceTypeState から直接受ける
+            // Phase13-Step5b: 入力レポートの処理（旧 ControlService.On_Report）と、その作業用の状態の持ち主
             services.AddSingleton<FirstReportActionLogger>();
             services.AddSingleton<IInputReportProcessor>(sp => new InputReportProcessor(
                 sp.GetRequiredService<ILightbarService>(),
@@ -192,8 +193,7 @@ namespace DS4Windows.Composition
                 sp.GetRequiredService<IProfileActionProvider>(),
                 sp.GetRequiredService<IAppSettingsService>(),
                 sp.GetRequiredService<IOscService>(),
-                sp.GetRequiredService<IVirtualPadService>(),
-                sp.GetRequiredService<IOutputDeviceTypeState>()));   // Phase13-Step7 7-c: 旧: 遅延取得デリゲート
+                sp.GetRequiredService<IVirtualPadService>()));
         }
     }
 }

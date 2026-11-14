@@ -18,5 +18,11 @@ namespace DS4Windows.Processing.Actions
         /// hidden=true の場合、呼び出し側が .bat/.cmd 判定・COMSPEC ラップ・Arguments を確定済みの状態で渡す。
         /// </summary>
         void Launch(string fileName, string arguments, bool useShellExecute, bool hidden);
+
+        /// <summary>
+        /// 実行ファイルのあるフォルダーを作業フォルダーにして起動する（プロファイルの「起動するプログラム」用）。失敗は例外のまま返す。
+        /// 既定の実装は <see cref="Launch(string)"/>。作業フォルダーを持てる実装だけが上書きする（既存の差し替え部品を壊さないため）。
+        /// </summary>
+        void LaunchWithWorkingDirectory(string filePath) => Launch(filePath);
     }
 }

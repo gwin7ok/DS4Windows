@@ -32,7 +32,7 @@ namespace DS4Windows.UI.ViewModels
             this.slot = slot;
             RefreshFromSettings();
             // 編集の開始時は、一時の種類を Xbox 360 にしておく（画面の選択が変わったときに、実際の種類で更新される）
-            this.outputSlotService.OutDevTypeTemp[slot] = OutContType.X360;
+            this.outputSlotService.OutDevTypeTemp[slot] = OutContTypeInfo.DefaultType;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>キャンセル時に、編集中に変えた一時の出力の種類を Xbox 360 へ戻す。</summary>
         public void ResetOutDevTypeTemp()
         {
-            outputSlotService.OutDevTypeTemp[slot] = OutContType.X360;
+            outputSlotService.OutDevTypeTemp[slot] = OutContTypeInfo.DefaultType;
         }
 
         /// <summary>保存されている出力の種類（Xbox 360／DS4）。マッピング一覧のボタン名の表記を決める。</summary>

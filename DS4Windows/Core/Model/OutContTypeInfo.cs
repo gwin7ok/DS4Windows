@@ -7,9 +7,35 @@
     /// </summary>
     public static class OutContTypeInfo
     {
-        // プロファイルで選べる種類の並び（選択肢の番号の順）。種類を足すときはここへ足す
+        /// <summary>
+        /// 既定の種類（プロファイルの出力の種類の既定、読めない保存値の読み替え先、編集画面の一時の種類の初期値）。
+        /// 種類ごとの違いのうち、値（保存キー、IPC の名前、ボタン名の表）は、この型の表だけが持つ。処理の違いは、出力のカートリッジと出力デバイスが持つ。
+        /// </summary>
+        public const OutContType DefaultType = OutContType.X360;
+
+        // プロファイルで選べる種類の並び（選択肢の番号の順）。種類を足すときは、ここと下の 3 つの並び（同じ順）へ足す
         private static readonly OutContType[] ProfileChoices = { OutContType.X360, OutContType.DS4 };
         private static readonly string[] ProfileKeys = { "X360", "DS4" };
+        // IPC（-command の OutputSlot.<スロット>.<名前>）で、その種類を接続する名前（小文字）
+        private static readonly string[] IpcPlugNames = { "plugx360", "plugds4" };
+        // 種類ごとのボタン名の表（マッピング一覧・マクロ・出力ピッカーの表示名）
+        private static readonly System.Collections.Generic.Dictionary<X360Controls, string>[] ButtonNameTables =
+            { X360ControlTables.xboxDefaultNames, X360ControlTables.ds4DefaultNames };
+
+        /// <summary>種類のボタン名の表。None（および未知の種類）は null。</summary>
+        public static System.Collections.Generic.Dictionary<X360Controls, string> ButtonNames(OutContType type)
+        {
+            int i = System.Array.IndexOf(ProfileChoices, type);
+            return i < 0 ? null : ButtonNameTables[i];
+        }
+
+        /// <summary>IPC の接続の名前（小文字。例: plugds4）から種類を求める。知らない名前は false。</summary>
+        public static bool TryFromIpcPlugName(string name, out OutContType type)
+        {
+            int i = System.Array.IndexOf(IpcPlugNames, name);
+            type = i < 0 ? OutContType.None : ProfileChoices[i];
+            return i >= 0;
+        }
 
         /// <summary>プロファイルに保存するキー。None は X360 として保存する（旧と同じ）。</summary>
         public static string SaveKey(OutContType type)
@@ -22,7 +48,7 @@
         public static OutContType FromSaveKey(string key)
         {
             int i = System.Array.IndexOf(ProfileKeys, key);
-            return i < 0 ? OutContType.X360 : ProfileChoices[i];
+            return i < 0 ? DefaultType : ProfileChoices[i];
         }
 
         /// <summary>プロファイルの出力の種類の選択肢の番号（X360 = 0、DS4 = 1。それ以外は 0）。</summary>
@@ -35,7 +61,7 @@
         /// <summary>選択肢の番号から種類を求める。範囲外は X360（旧の「1 なら DS4、それ以外は X360」と同じ）。</summary>
         public static OutContType FromProfileChoiceIndex(int index)
         {
-            return TryFromProfileChoiceIndex(index, out OutContType type) ? type : OutContType.X360;
+            return TryFromProfileChoiceIndex(index, out OutContType type) ? type : DefaultType;
         }
 
         /// <summary>選択肢の番号が有効なときだけ種類を返す（無効なら false）。</summary>

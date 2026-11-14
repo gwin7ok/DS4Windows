@@ -108,7 +108,7 @@ namespace DS4Windows.Core.Settings
         public const double DEFAULT_SX_TILT_MAXZONE = 1.0;
         public const string DEFAULT_SA_TRIGGERS = "-1";
         public const string DEFAULT_GYRO_MSTICK_TRIGGERS = "-1";
-        public const OutContType DEFAULT_OUT_CONT_TYPE = OutContType.X360;
+        public const OutContType DEFAULT_OUT_CONT_TYPE = OutContTypeInfo.DefaultType;
         public const bool DEFAULT_OUTPUT_TO_DS4 = true;
         public const bool DEFAULT_TOUCH_TOGGLE = true;
         public const bool DEFAULT_TOUCHPAD_JITTER_COMP = true;
@@ -415,12 +415,6 @@ namespace DS4Windows.Core.Settings
             AutoProfileDisplayProfileSwitchChoices.None;
 
         bool tempBool = false;
-
-        // Phase7-Step5 W4（Q6＝A）: 旧 AppHost.GetService<IProcessInspector>()。ServiceRegistration の BackingStore の登録が設定する。
-        // 未設定のとき（コンテナを通らないテストなど）は、LoadProfile が従来のフォールバック（プロセス一覧の走査）を使う。
-        // Phase7-Step10d W5: コンストラクター注入にしない理由 → ProcessInspector は、ブートストラップで先に作る BackingStore（起動直後の設定の読み取りに使う）に、
-        // コンテナの構築後に ServiceRegistration の登録が設定する（コンテナより前に BackingStore を作るため、コンストラクターでは渡せない）。
-        public DS4Windows.Core.Abstractions.IProcessInspector ProcessInspector { get; set; }
 
         // Phase7-Step6 W1（Q2＝A）: 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
         // ServiceRegistration の IOutputSlotService の登録が、OutputSlotService の生成時に ActiveOutDevType の配列を設定する。

@@ -201,7 +201,7 @@ namespace DS4WindowsTests
         {
             _repo.SelectedProfile[Slot] = "SelectedSentinel";
 
-            bool result = _repo.LoadTempProfile(Slot, Temp, false, _control);
+            bool result = _repo.LoadTempProfile(Slot, Temp, _control);
 
             Assert.True(result);
             Assert.True(_settings.GetUseTempProfile(Slot));

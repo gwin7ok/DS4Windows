@@ -92,7 +92,7 @@ namespace DS4Windows.Core.Persistence
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
         }
 
-        public bool LoadProfile(int device, bool launchprogram, IProfileLoadTarget control,
+        public bool LoadProfile(int device, IProfileLoadTarget control,
                 string propath = "", bool xinputChange = true, bool postLoad = true)
         {
             bool Loaded = true;
@@ -140,7 +140,6 @@ namespace DS4Windows.Core.Persistence
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileLoadContext(store, m_Xdoc, rootname, device, control, lightbarSettings, lightInfo)
                 {
-                    LaunchProgram = launchprogram,
                     ProfileSettings = _profileSettings,
                     Environment = _environment,
                     XinputChange = xinputChange,

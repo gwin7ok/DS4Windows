@@ -174,8 +174,11 @@ namespace DS4Windows.Processing.Services
                             tempDevice.HaltReportingRunAction(() =>
                             {
                                 // Phase8-Step5 W2（Q6＝A）: この経路は適用の後始末を通らないため、読込の成功後に束縛を差し替える
-                                if (_profileRepo.LoadTempProfile(tdevice, strData[2], true, _loadTarget))
+                                if (_profileRepo.LoadTempProfile(tdevice, strData[2], _loadTarget))
+                                {
                                     _profileApplication.PublishBindings(tdevice);
+                                    _loadTarget.LaunchProfileProgram(tdevice);
+                                }
                             });
                         }
                     }).Wait();
@@ -203,10 +206,8 @@ namespace DS4Windows.Processing.Services
                 // Phase6-Step10-5: 抜き差しの正式な入口（IOutputSlotService）経由。事前条件の確認と UI スレッドへの切り替えは、サービスが行う
                 if (strData[2] == "unplug")
                     _outputSlotService.UnplugSlot(tdevice);
-                else if (strData[2] == "plugds4")
-                    _outputSlotService.PluginSlot(tdevice, OutContType.DS4);
-                else if (strData[2] == "plugx360")
-                    _outputSlotService.PluginSlot(tdevice, OutContType.X360);
+                else if (OutContTypeInfo.TryFromIpcPlugName(strData[2], out OutContType plugType))
+                    _outputSlotService.PluginSlot(tdevice, plugType);
             }
         }
 

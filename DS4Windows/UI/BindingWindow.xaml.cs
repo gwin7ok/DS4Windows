@@ -120,10 +120,7 @@ namespace DS4Windows.UI
             InitKeyBindings();
             InitInfoMaps();
 
-            if (!bindingVM.Using360Mode)
-            {
-                InitDS4Canvas();
-            }
+            InitPickerFace(bindingVM.OutputType);
 
             bindingVM.ActionBinding = bindingVM.CurrentOutBind;
             if (expose == ExposeMode.Control)
@@ -170,19 +167,10 @@ namespace DS4Windows.UI
 
         private string GetControlString(Button button)
         {
-            string result;
-            if (bindingVM.Using360Mode)
-            {
-                DS4Windows.Core.Model.X360Controls xboxcontrol = associatedBindings[button].control;
-                result = DS4Windows.Core.Model.X360ControlTables.xboxDefaultNames[xboxcontrol];
-            }
-            else
-            {
-                DS4Windows.Core.Model.X360Controls xboxcontrol = associatedBindings[button].control;
-                result = DS4Windows.Core.Model.X360ControlTables.ds4DefaultNames[xboxcontrol];
-            }
-
-            return result;
+            // 種類がない（None）ときは、既定の種類の表記
+            var names = DS4Windows.Core.Model.OutContTypeInfo.ButtonNames(bindingVM.OutputType)
+                ?? DS4Windows.Core.Model.OutContTypeInfo.ButtonNames(DS4Windows.Core.Model.OutContTypeInfo.DefaultType);
+            return names[associatedBindings[button].control];
         }
 
         private void OutConBtn_MouseLeave(object sender, MouseEventArgs e)
@@ -804,15 +792,19 @@ namespace DS4Windows.UI
             numEnterBtn.Click += OutputKeyBtn_Click;
         }
 
-        private void InitDS4Canvas()
+        private void InitPickerFace(DS4Windows.Core.Model.OutContType type)
         {
+            var face = ControllerLayouts.ForOutputType(type);
+            // 背景の画像のキーがないのは、XAML の既定の図（Xbox 360）のとき。差し替えない
+            if (face.BackgroundImageKey == null) return;
+
             ImageSourceConverter sourceConverter = new ImageSourceConverter();
             ImageSource temp = sourceConverter.
-                ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/{App.Current.FindResource("DS4ConfigImg")}") as ImageSource;
+                ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/{App.Current.FindResource(face.BackgroundImageKey)}") as ImageSource;
             conImageBrush.ImageSource = temp;
 
-            // ボタンの位置・大きさ・タッチパッド クリックの表示は、配置表（ControllerLayouts.DualShock4）が持つ
-            conVisualizer.Layout = ControllerLayouts.DualShock4;
+            // ボタンの位置・大きさ・タッチパッド クリックの表示は、配置表が持つ
+            conVisualizer.Layout = face.Layout;
         }
 
         /// <summary>配置表から生成されたボタンを元の名前のフィールドに持ち、ホバーの処理を結び付ける</summary>
