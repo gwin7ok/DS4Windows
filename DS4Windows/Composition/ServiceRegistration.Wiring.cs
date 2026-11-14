@@ -44,7 +44,7 @@ namespace DS4Windows.Composition
             {
                 var service = new ProfileIdentityService(sp.GetRequiredService<IPathService>());
                 sp.GetRequiredService<BackingStore>().AttachProfileIdentity(service);
-                (sp.GetRequiredService<IProfileSettingsService>() as ProfileSettingsService)?.AttachProfileIdentity(service);   // W5c: 一時プロファイルの名前
+                sp.GetRequiredService<ProfileSettingsService>().AttachProfileIdentity(service);   // W5c: 一時プロファイルの名前
                 return service;
             });
 

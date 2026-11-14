@@ -40,7 +40,8 @@
 ## 4. ライフサイクル（起動と終了）
 
 - 起動: `App` が `AppHost.CreateHost(config, parser)` でホストを作る → `IServiceLifecycle`（`ServiceLifecycle`）が各サービスを初期化 → デバイスの探索を開始。
-- 終了: 出力サービス（`IOutputServicesLifecycle`）→ デバイスの切断 → 仮想パッドの破棄の順（ドライバーの破棄順序のガードレール。`Phase5-Plan.md` §5）。
+- 終了の手順は `Composition/Startup/AppShutdownSequence`（`App.CleanShutdown` が呼ぶ。順序は `AppShutdownSequenceTests` が呼ばれた順で固定）: サービスの停止 → 設定の保存 → タイマーの解像度を戻す → 単一起動の停止 → IPC の破棄 → コントローラーのレジストリの破棄 → ホストの破棄 → ログのフラッシュ。
+- 終了（中身）: 出力サービス（`IOutputServicesLifecycle`）→ デバイスの切断 → 仮想パッドの破棄の順（ドライバーの破棄順序のガードレール。`Phase5-Plan.md` §5）。
 - 切断時: `IDeviceDisconnectHandler` → `IDeviceInputCleanup` → 出力スロットの解放。
 
 ## 5. 調べ方

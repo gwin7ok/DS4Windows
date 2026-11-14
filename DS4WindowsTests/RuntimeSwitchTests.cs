@@ -87,7 +87,7 @@ namespace DS4WindowsTests
             string source = RegistrationSource.ReadAll();   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの
             if (source == null) return;
 
-            Assert.Contains("ProfileSettingsService)?.AttachProfileIdentity(service)", source);
+            Assert.Contains("GetRequiredService<ProfileSettingsService>().AttachProfileIdentity(service)", source);
         }
 
         // ---- (2) Load Profile の実行時の解決 ----

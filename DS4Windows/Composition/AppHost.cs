@@ -126,8 +126,7 @@ namespace DS4Windows.Composition
         {
             try
             {
-                var manager = _host?.Services.GetService<DS4Windows.Processing.Actions.IManagedActionManager>()
-                    as DS4Windows.Processing.Actions.DefaultActionManager;
+                var manager = _host?.Services.GetService<DS4Windows.Processing.Actions.DefaultActionManager>();
                 manager?.PreallocateEntries();
             }
             catch { }
