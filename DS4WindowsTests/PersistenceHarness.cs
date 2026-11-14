@@ -64,21 +64,93 @@ namespace DS4WindowsTests
 
         // ---- スペシャルアクション（Actions.xml）----
 
+        /// <summary>
+        /// 旧い書き方（Extras を持つ Macro、Arguements、UnloadTrigger、ID なし）の Actions.xml。
+        /// 古いファイルの読み込みを守る固定の入力（旧い保存の入口を撤去したため、固定の文字列で持つ）。
+        /// </summary>
+        private const string LegacyActionsXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<!-- Special Actions Configuration Data. -->
+
+<Actions>
+  <Action Name=""Golden_Macro"">
+    <Trigger>Cross</Trigger>
+    <Type>Macro</Type>
+    <Details>65/66/67</Details>
+    <Extras>Hold</Extras>
+  </Action>
+  <Action Name=""Golden_Program"">
+    <Trigger>Circle</Trigger>
+    <Type>Program</Type>
+    <Details>C:/golden/a.exe</Details>
+    <Arguements>-arg</Arguements>
+    <Delay>3</Delay>
+  </Action>
+  <Action Name=""Golden_Profile"">
+    <Trigger>Square</Trigger>
+    <Type>Profile</Type>
+    <Details>Golden_ProfileName</Details>
+    <UnloadTrigger>Triangle</UnloadTrigger>
+  </Action>
+  <Action Name=""Golden_Key"">
+    <Trigger>L1</Trigger>
+    <Type>Key</Type>
+    <Details>65</Details>
+    <UnloadTrigger>R1</UnloadTrigger>
+    <SwitchMode>Toggle</SwitchMode>
+  </Action>
+  <Action Name=""Golden_Disconnect"">
+    <Trigger>L2</Trigger>
+    <Type>DisconnectBT</Type>
+    <Details>5</Details>
+  </Action>
+  <Action Name=""Golden_Battery"">
+    <Trigger>R2</Trigger>
+    <Type>BatteryCheck</Type>
+    <Details>50</Details>
+  </Action>
+  <Action Name=""Golden_Multi"">
+    <Trigger>Cross/Circle</Trigger>
+    <Type>MultiAction</Type>
+    <Details>Golden_Macro/Golden_Program</Details>
+  </Action>
+  <Action Name=""Golden_Edit"">
+    <Trigger>Square</Trigger>
+    <Type>Program</Type>
+    <Details>C:/golden/c.exe</Details>
+    <Delay>1</Delay>
+  </Action>
+</Actions>
+";
+
         public static string SaveActions(PersistenceGoldenContext ctx, BackingStore store)
         {
             string path = Path.Combine(ctx.AppData, "Actions.xml");
             store.m_Actions = path;
+            File.WriteAllText(path, LegacyActionsXml);
+            return LegacyActionsXml;
+        }
+
+        /// <summary>
+        /// 本番の保存の経路（<c>SaveActionNew</c> → <c>SaveActions</c>）で、全種別（1〜7、9、10、11）を書く。
+        /// ID は固定（実行ごとに変わらないように）。
+        /// </summary>
+        public static string SaveActionsProduction(PersistenceGoldenContext ctx, BackingStore store)
+        {
+            string path = Path.Combine(ctx.AppData, "Actions.xml");
+            store.m_Actions = path;
             var xml = new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store, TestActions.RuntimeReset);
-            // モード: 1＝マクロ、2＝プログラム、3＝プロファイル、4＝キー、5＝切断、6＝バッテリー確認、7＝複数アクション、9＝ジャイロ較正、10＝ボタン（8＝ホイール較正は Phase9 Steering 削除 W1 で廃止）
-            xml.SaveAction("Golden_Macro", "Cross", 1, "65/66/67", false, "Hold");
-            xml.SaveAction("Golden_Program", "Circle", 2, "C:/golden/a.exe?3", false, "-arg");
-            xml.SaveAction("Golden_Profile", "Square", 3, "Golden_ProfileName", false, "Triangle");
-            xml.SaveAction("Golden_Key", "L1", 4, "65", false, "Toggle\nR1");
-            xml.SaveAction("Golden_Disconnect", "L2", 5, "5", false);
-            xml.SaveAction("Golden_Battery", "R2", 6, "50", false);
-            xml.SaveAction("Golden_Multi", "Cross/Circle", 7, "Golden_Macro/Golden_Program", false);
-            xml.SaveAction("Golden_Edit", "Triangle", 2, "C:/golden/b.exe?0", false);
-            xml.SaveAction("Golden_Edit", "Square", 2, "C:/golden/c.exe?1", true);
+            xml.SaveActionNew("Prod_Macro", "Cross", 1, "65/66/67", false, extras: "", actionId: "00000000000000000000000000000001", macroExecuteMode: DS4Windows.Core.Settings.MacroExecuteMode.Held);
+            xml.SaveActionNew("Prod_Program", "Circle", 2, "C:/golden/a.exe?3", false, delayTime: 3.0, extras: "-arg", actionId: "00000000000000000000000000000002");
+            xml.SaveActionNew("Prod_Profile", "Square", 3, "Golden_ProfileName", false, extras: "Triangle", actionId: "00000000000000000000000000000003");
+            xml.SaveActionNew("Prod_Key", "L1", 4, "65", false, extras: "Toggle\nR1", actionId: "00000000000000000000000000000004");
+            xml.SaveActionNew("Prod_Disconnect", "L2", 5, "5", false, delayTime: 1.5, actionId: "00000000000000000000000000000005");
+            xml.SaveActionNew("Prod_Battery", "R2", 6, "50", false, delayTime: 2.0, actionId: "00000000000000000000000000000006");
+            xml.SaveActionNew("Prod_Multi", "Cross/Circle", 7, "Prod_Macro/Prod_Program", false, actionId: "00000000000000000000000000000007");
+            xml.SaveActionNew("Prod_Gyro", "Triangle", 9, "", false, delayTime: 4.0, actionId: "00000000000000000000000000000009");
+            xml.SaveActionNew("Prod_Button", "R1", 10, "Cross", false, extras: "", actionId: "00000000000000000000000000000010");
+            xml.SetActionAnalogStrength("Prod_Button", 55);
+            xml.SaveActionNew("Prod_Focus", "L3", 11, "C:/golden/game.exe", false, delayTime: 0.5, extras: "Game Window", actionId: "00000000000000000000000000000011", centerCursor: true);
+            xml.SetActionExtras("Prod_Key", "Turbo");
             return File.ReadAllText(path);
         }
 

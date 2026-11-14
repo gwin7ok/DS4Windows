@@ -1,7 +1,7 @@
 # Phase37 計画書: 設定の保持と永続化の、大きい型の分割
 
 作成日: 2026-11-12
-状態: **37-0（調査）のみ完了（2026-11-15）。37-1 以降は未着手（保存の形に触れる大きな作業のため、実機のデータでの確認を前提に、次の機会に行う）**
+状態: **37-0（調査）・37-1（黄金と旧い入口の撤去）まで完了（2026-11-15）。37-3 以降は未着手（保存の形に触れる大きな作業のため、実機のデータでの確認を前提に、次の機会に行う）**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 4）、`05-Extensibility.md` の 5-5、`Structure-Review-2026-11.md` の A（Phase25 の続き）
 前提: なし（Phase29〜36 と独立に進められる）。ただし、Phase32 の 32-A（プログラム起動の一本化）が `ProfileMiscLoadSection` と `BackingStore.ProcessInspector` に触れるため、37-3・37-4 はそのあとに行う。
 
@@ -68,3 +68,9 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - **種別の数（`mode`）**: 1＝Macro、2＝Program、3＝Profile、4＝Key、5＝DisconnectBT、6＝BatteryCheck、7＝MultiAction、9＝GyroCalibration、10＝Button、11＝FocusWindow（8 は欠番）。`SaveActionNew` は `SpecialAction` を作って `store.actions` へ入れ、`SaveActions` で全体を書く。`SaveAction` は、XML 要素を直接作る（9・11 の枝を持たない。つまり旧い入口は、新しい種別を保存できない）。呼び出し側（編集用 ViewModel）は、数を直接渡している（1、2、3、4、6、7、10、11、`SpecialActionViewModel` は変数）。
 - **黄金**: `PersistenceHarness` が旧い入口で 1〜7 の種別を作る。9・10・11 の種別は、黄金に入っていない（別のテストが個別に守る: `FocusWindowPersistenceTests`、`SaAnalogStrengthStorageTests`、`SaExtrasStorageTests`）。37-1 の前に、全種別を `SaveActionNew` で書いた黄金を足す。
 - 次の作業の順: (1) 黄金に 9・10・11 を足す、(2) 旧い入口の削除の可否（上記）、(3) `LoadActions`（178 行）の種別ごとの部品化、(4) 保存の部品化と `ActionTypeId` での受け渡し、(5) `ResetProfile`、(6) 節の対、(7) `AppSettingsDTO` の `partial`。
+
+### 2026-11-15（37-1）
+- 黄金: 本番の保存の経路（`SaveActionNew` → `SaveActions`）で、全種別（1〜7、9、10、11。Strength、OutputExtras、CenterCursor、Hold を含む）を書いた `actions-production.xml`／`.state.txt` を足した（`ActionsProduction_*` のテスト）。ID は固定。
+- 旧い保存の入口 `SpecialActionsXmlSerializer.SaveAction`（本番の呼び出し 0 件。新しい種別を書けない）を、規則 2.4 に従って撤去した（正規の経路と重複するだけの並行実装）。連動して、呼び出しがなくなった `CreateAction`・`PrepareActionsXml`・`m_Xdoc` と、コメントだけの旧い本体（約 110 行）も削除した。旧い形式の `Actions.xml` の読み込みの黄金（`actions.xml`）は、固定の文字列（`PersistenceHarness.LegacyActionsXml`）で守る。旧い入口の書き出しの黄金テスト（`Actions_SavedXml_MatchesGolden`）は撤去。保存される XML の形は不変（本番の黄金で確認）。
+- 調査の訂正: 計画書の「`LoadActions` の 178 行」は古い記述。読み込み・書き出しはすでに `ActionsDTO` に集まっており、種別ごとの部品化（37-3・37-4）の余地は DTO の側にある。37-3 以降（`ResetProfile` の分割、節の対、`AppSettingsDTO` の `partial`）は、保存の形に触れる大きな作業のため、実機のデータでの確認とあわせて次の機会に行う。
+- 既知の不安定: `Ds4DeviceBehaviorTests.DongleScript_ReportsTheFrames_AndRemovesOnTheEndOfTheScript` が、単独で実行すると失敗することがある（全件では合格。今回の変更とは無関係の、実行の順への依存）。

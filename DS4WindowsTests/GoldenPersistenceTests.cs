@@ -119,16 +119,6 @@ namespace DS4WindowsTests
         // ---- スペシャルアクション ----
 
         [Fact]
-        public void Actions_SavedXml_MatchesGolden()
-        {
-            using (var ctx = new PersistenceGoldenContext())
-            {
-                string xml = PersistenceHarness.SaveActions(ctx, PersistenceHarness.NewStore());
-                GoldenFile.AssertMatches("actions.xml", ctx.Normalize(xml), _output);
-            }
-        }
-
-        [Fact]
         public void Actions_LoadedState_MatchesGolden()
         {
             using (var ctx = new PersistenceGoldenContext())
@@ -136,6 +126,27 @@ namespace DS4WindowsTests
                 string xml = GoldenFile.ReadOrNull("actions.xml") ?? PersistenceHarness.SaveActions(ctx, PersistenceHarness.NewStore());
                 BackingStore loaded = PersistenceHarness.LoadActions(ctx, xml);
                 GoldenFile.AssertMatches("actions.state.txt", ctx.Normalize(BackingStoreStateDumper.Dump(loaded.actions)), _output);
+            }
+        }
+
+        [Fact]
+        public void ActionsProduction_SavedXml_MatchesGolden()
+        {
+            using (var ctx = new PersistenceGoldenContext())
+            {
+                string xml = PersistenceHarness.SaveActionsProduction(ctx, PersistenceHarness.NewStore());
+                GoldenFile.AssertMatches("actions-production.xml", ctx.Normalize(xml), _output);
+            }
+        }
+
+        [Fact]
+        public void ActionsProduction_LoadedState_MatchesGolden()
+        {
+            using (var ctx = new PersistenceGoldenContext())
+            {
+                string xml = GoldenFile.ReadOrNull("actions-production.xml") ?? PersistenceHarness.SaveActionsProduction(ctx, PersistenceHarness.NewStore());
+                BackingStore loaded = PersistenceHarness.LoadActions(ctx, xml);
+                GoldenFile.AssertMatches("actions-production.state.txt", ctx.Normalize(BackingStoreStateDumper.Dump(loaded.actions)), _output);
             }
         }
 
