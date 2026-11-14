@@ -1,7 +1,7 @@
 # Phase34 計画書: 画面の MVVM 化（コマンド・結びつけ・ダイアログの窓口）— Phase26 の続き
 
 作成日: 2026-11-12
-状態: **未着手。承認待ち**（D4 は (A) で確定。2026-11-13。2026-11-13 に、アプリ全体で MVVM が成り立つかの点検を受けて、範囲を 5 画面から全画面へ広げた。下の「MVVM の到達の定義」）
+状態: **着手済み（2026-11-15）。34-0（棚卸しの概数）と 34-1（土台）まで完了、34-2 以降は未着手**（D4 は (A) で確定。2026-11-13。2026-11-13 に、アプリ全体で MVVM が成り立つかの点検を受けて、範囲を 5 画面から全画面へ広げた。下の「MVVM の到達の定義」）
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 2 と「MVVM パターンの形骸化」）、`Structure-Review-2026-11.md` の B、`Phase26-Plan.md`（一部完了。残りを本 Phase が引き継ぐ）
 前提: Phase29（29-10 が `MainWindow` のタイマーに触れる）と Phase33（スティックのパネルを作り直す）のあとに行う。PhaseX（入力側の図とボタン名）より前に行う。
 
@@ -75,7 +75,7 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
 | 34-0 | 棚卸し: **全 37 の `.xaml.cs`**（2026-11-13 に拡張）のイベント処理と、部品への直接の代入を、(A)(B)(C) に仕分けた表を作る。あわせて、(1) ViewModel の WPF 依存（`Visibility`、`Media`、`Controls`、`Application`／`Dispatcher`）を、ファイルごと・理由ごとに一覧にする、(2) View のサービス参照を一覧にする。画面ごとの Step と、D6 の分け方を確定する | — | 未着手 |
-| 34-1 | 土台: コマンド（D2）、ダイアログの窓口（確認・通知／ファイルの選択／色の選択）、`MainWindow` が直接作る 4 つの窓の生成の窓口、**UI スレッドの窓口**（`IUiDispatcher`。`UI/Abstractions`。ViewModel が `Application.Current.Dispatcher` を直接使わないため。偽物は、その場で実行する形）。テスト用の偽物を用意する | 窓口の契約ごとの偽物。コマンドの実行可否の通知。UI スレッドの窓口の偽物 | 未着手 |
+| 34-1 | （完了 2026-11-15）土台: コマンド（D2）、ダイアログの窓口（確認・通知／ファイルの選択／色の選択）、`MainWindow` が直接作る 4 つの窓の生成の窓口、**UI スレッドの窓口**（`IUiDispatcher`。`UI/Abstractions`。ViewModel が `Application.Current.Dispatcher` を直接使わないため。偽物は、その場で実行する形）。テスト用の偽物を用意する | 窓口の契約ごとの偽物。コマンドの実行可否の通知。UI スレッドの窓口の偽物 | 未着手 |
 | 34-2 | `ProfileEditor`: 保存・キャンセル・適用、特殊アクションの一覧（並べ替え、編集、削除。`SortSpecialActionsList`、`EditActionBtn_Click`）、プリセット、読み込み直し（`Reload` のうち、値の集め方）を ViewModel へ。図のホバーと `InputDS4`（入力による選択）は (C) として残す | 保存の検査、一覧の並べ替え、編集の開始の判断 | 未着手 |
 | 34-3 | `MainWindow`: 設定タブのボタン、プロファイルの操作（新規・編集・複製・削除・書き出し・読み込み）、更新の確認、窓の生成（`ChangelogWindow` ほか）を、ViewModel と窓口へ。電源・デバイスの通知（`PowerEventArrive`、`OnSourceInitialized`）は、OS のメッセージの受け口なので View に残し、判断だけを部品へ | プロファイルの操作の判断、更新の確認、電源の復帰の判断 | 未着手 |
 | 34-4 | `RecordBox`（記録の画面）: 記録の開始・停止、保存・読み込み、手順の編集を `RecordBoxViewModel` のコマンドへ。キーとマウスの生の入力の受け口は View に残す | 記録の状態の移り変わり、保存の検査 | 未着手 |
@@ -102,3 +102,10 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 - 2026-11-13: D4 は (A) で確定。アプリ全体の MVVM の点検を受けて、「MVVM の到達の定義」、決めること D6〜D8、Step 34-6a（ViewModel の WPF 非依存化）・34-6b（残りの画面）、34-0・34-1・34-7・34-8 の拡張を足した。
 - 2026-11-13: Phase 番号の付け替え（旧 Phase35 → 34）。Phase26 の残りを統合した（D4 の (A)）。
 - 2026-11-12: 計画書を作成（外部レビューの照合の結果）。コードは未着手。
+
+## 実施の記録
+### 2026-11-15
+- 分割（D6）: ユーザーの「次へ進んで」を承認とみなし、34-A（土台と 5 画面）・34-B（ViewModel の WPF 非依存化と文言のリソース化）・34-C（残りの画面と検査）の順に進める。本ブランチ `Phase34` は 34-A の土台まで。
+- 34-0（棚卸しの概数。`.xaml.cs` の行数／XAML のイベント属性／`MessageBox`・ファイル選択の直接の呼び出し／サービスらしい参照の概数）: `MainWindow` 1,849／37／13／124、`ProfileEditor` 1,736／21／8／44、`BindingWindow` 942／6／0／8、`RecordBox` 900／22／3／6、`AssignmentEditor` 702／10／3／16、`WelcomeDialog` 516／6／0／13、`AutoProfiles` 425／11／1／23、`UpdaterWindow` 364／4／4／8。ViewModel のうち、`Application.Current`／`Dispatcher` を使うのは `ControllerListViewModel`（`ContextIdle` の優先度つきの呼び出しがあるため、`IUiDispatcher` に優先度の指定が要る）、`OutBinding`（`FindResource`）、`TrayIconViewModel`（`Dispatcher` を引数で受ける。`IUiDispatcher` へ置き換える）。`System.Windows` を参照する ViewModel は 35 ファイル。`MessageBox`・ファイル選択を直接作る箇所は、`UI` の View に約 47 か所（最多は `MainWindow` の 13、`ProfileEditor` の 8）。
+- 34-1（完了）: `RelayCommand`（`UI/ViewModels/Util`。`CommandManager` に依存せず、`RaiseCanExecuteChanged` で通知）、`IUiDispatcher`＋`WpfUiDispatcher`、`IDialogService`（`ShowMessage`／`Confirm`／`PickOpenFile`／`PickSaveFile`）＋`WpfDialogService`＋`DialogIcon`＋`FileDialogOptions` を新設し、DI に登録した（`ServiceRegistration.Ui`）。テストの偽物は `FakeDialogService`・`ImmediateUiDispatcher`。色の選択の窓口は、使う側（34-6b の `ColorPickerWindow` は View に残す方針）が決まるまで作らない。
+- 次: 34-2 以降（画面ごとに、判断を ViewModel のコマンドへ移し、`IDialogService`・`IUiDispatcher` を使う）。`MainWindow` が最大で、Phase35（終了の手順）と同じファイルに触れるため、先に Phase35 を済ませてから 34-3 に入るほうがよい。
