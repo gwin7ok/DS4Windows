@@ -75,23 +75,7 @@ namespace DS4Windows.Processing.Touchpad
         public int CursorGyroDead { get => cursor.GyroCursorDeadZone; set => cursor.GyroCursorDeadZone = value; }
 
 
-        internal const int TRACKBALL_INIT_FICTION = 10;
-        internal const int TRACKBALL_MASS = 45;
-        internal const double TRACKBALL_RADIUS = 0.0245;
-
-        private double TRACKBALL_INERTIA = 2.0 * (TRACKBALL_MASS * TRACKBALL_RADIUS * TRACKBALL_RADIUS) / 5.0;
-        private double TRACKBALL_SCALE = 0.004;
-        private const int TRACKBALL_BUFFER_LEN = 8;
-        private double[] trackballXBuffer = new double[TRACKBALL_BUFFER_LEN];
-        private double[] trackballYBuffer = new double[TRACKBALL_BUFFER_LEN];
-        private int trackballBufferTail = 0;
-        private int trackballBufferHead = 0;
-        private double trackballAccel = 0.0;
-        private double trackballXVel = 0.0;
-        private double trackballYVel = 0.0;
-        private bool trackballActive = false;
-        private double trackballDXRemain = 0.0;
-        private double trackballDYRemain = 0.0;
+        private readonly TouchMouseTrackball _trackball = new TouchMouseTrackball();
 
         private bool trackballTouchStickActive = false;
 
@@ -130,7 +114,6 @@ namespace DS4Windows.Processing.Touchpad
             dev = d;
             cursor = new MouseCursor(deviceNum, d.GyroMouseSensSettings, _profileSettings, _virtualKBM);
             wheel = new MouseWheel(deviceNum, _profileSettings, _virtualKBM);
-            trackballAccel = TRACKBALL_RADIUS * TRACKBALL_INIT_FICTION / TRACKBALL_INERTIA;
             firstTouch = new Touch(0, 0, 0, null);
 
             _gyro = new GyroOutputProcessor(deviceNum, d, cursor, _profileSettings, _stickMotion);
@@ -143,7 +126,7 @@ namespace DS4Windows.Processing.Touchpad
 
         public void ResetTrackAccel(double friction)
         {
-            trackballAccel = TRACKBALL_RADIUS * friction / TRACKBALL_INERTIA;
+            _trackball.ResetAccel(friction);
         }
 
         public void ResetTouchStickAccel(double friction)
@@ -233,7 +216,7 @@ namespace DS4Windows.Processing.Touchpad
             TouchpadOutMode tempMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
             if (tempMode == TouchpadOutMode.Mouse)
             {
-                ClearTouchMouseTrackballData();
+                _trackball.Reset();
             }
             else if (tempMode == TouchpadOutMode.MouseJoystick)
             {
@@ -274,13 +257,7 @@ namespace DS4Windows.Processing.Touchpad
 
                     if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
                     {
-                        int iIndex = trackballBufferTail;
-                        // Establish 4 ms as the base
-                        trackballXBuffer[iIndex] = (arg.Touches[0].DeltaX * TRACKBALL_SCALE) / 0.004; // dev.getCurrentStateRef().elapsedTime;
-                        trackballYBuffer[iIndex] = (arg.Touches[0].DeltaY * TRACKBALL_SCALE) / 0.004; // dev.getCurrentStateRef().elapsedTime;
-                        trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
-                        if (trackballBufferHead == trackballBufferTail)
-                            trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+                        _trackball.AddSample(arg.Touches[0].DeltaX, arg.Touches[0].DeltaY);
                     }
 
                     cursor.touchesMoved(arg, dragging || dragging2, tempBool);
@@ -290,12 +267,7 @@ namespace DS4Windows.Processing.Touchpad
                 {
                     if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
                     {
-                        int iIndex = trackballBufferTail;
-                        trackballXBuffer[iIndex] = 0;
-                        trackballYBuffer[iIndex] = 0;
-                        trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
-                        if (trackballBufferHead == trackballBufferTail)
-                            trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
+                        _trackball.AddEmptySample();
                     }
                 }
             }
@@ -370,15 +342,7 @@ namespace DS4Windows.Processing.Touchpad
             bool mouseMode = tempMode == TouchpadOutMode.Mouse;
             if (mouseMode)
             {
-                Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
-                Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
-                trackballXVel = 0.0;
-                trackballYVel = 0.0;
-                trackballActive = false;
-                trackballBufferTail = 0;
-                trackballBufferHead = 0;
-                trackballDXRemain = 0.0;
-                trackballDYRemain = 0.0;
+                _trackball.Reset();
 
                 cursor.touchesBegan(arg);
                 wheel.touchesBegan(arg);
@@ -473,73 +437,8 @@ namespace DS4Windows.Processing.Touchpad
 
                     if (_profileSettings.ForSlot(deviceNum).Touchpad.Trackball)
                     {
-                        if (!trackballActive)
-                        {
-                            double currentWeight = 1.0;
-                            double finalWeight = 0.0;
-                            double x_out = 0.0, y_out = 0.0;
-                            int idx = -1;
-                            for (int i = 0; i < TRACKBALL_BUFFER_LEN && idx != trackballBufferHead; i++)
-                            {
-                                idx = (trackballBufferTail - i - 1 + TRACKBALL_BUFFER_LEN) % TRACKBALL_BUFFER_LEN;
-                                x_out += trackballXBuffer[idx] * currentWeight;
-                                y_out += trackballYBuffer[idx] * currentWeight;
-                                finalWeight += currentWeight;
-                                currentWeight *= 1.0;
-                            }
-
-                            x_out /= finalWeight;
-                            trackballXVel = x_out;
-                            y_out /= finalWeight;
-                            trackballYVel = y_out;
-
-                            trackballActive = true;
-                        }
-
-                        double tempAngle = Math.Atan2(-trackballYVel, trackballXVel);
-                        double normX = Math.Abs(Math.Cos(tempAngle));
-                        double normY = Math.Abs(Math.Sin(tempAngle));
-                        int signX = Math.Sign(trackballXVel);
-                        int signY = Math.Sign(trackballYVel);
-
-                        double trackXvDecay = Math.Min(Math.Abs(trackballXVel), trackballAccel * s.elapsedTime * normX);
-                        double trackYvDecay = Math.Min(Math.Abs(trackballYVel), trackballAccel * s.elapsedTime * normY);
-                        double xVNew = trackballXVel - (trackXvDecay * signX);
-                        double yVNew = trackballYVel - (trackYvDecay * signY);
-                        double xMotion = (xVNew * s.elapsedTime) / TRACKBALL_SCALE;
-                        double yMotion = (yVNew * s.elapsedTime) / TRACKBALL_SCALE;
-                        if (xMotion != 0.0)
-                        {
-                            xMotion += trackballDXRemain;
-                        }
-                        else
-                        {
-                            trackballDXRemain = 0.0;
-                        }
-
-                        int dx = (int)xMotion;
-                        trackballDXRemain = xMotion - dx;
-
-                        if (yMotion != 0.0)
-                        {
-                            yMotion += trackballDYRemain;
-                        }
-                        else
-                        {
-                            trackballDYRemain = 0.0;
-                        }
-
-                        int dy = (int)yMotion;
-                        trackballDYRemain = yMotion - dy;
-
-                        trackballXVel = xVNew;
-                        trackballYVel = yVNew;
-
-                        if (dx == 0 && dy == 0)
-                        {
-                            trackballActive = false;
-                        }
-                        else
+                        _trackball.BeginCoast();
+                        if (_trackball.Step(s.elapsedTime, out int dx, out int dy))
                         {
                             cursor.TouchMoveCursor(dx, dy, tempBool);
                         }
@@ -668,29 +567,6 @@ namespace DS4Windows.Processing.Touchpad
             return t.HwX >= 1920 * 2 / 5;
         }
 
-        private void AddEmptyTrackballEntry()
-        {
-            int iIndex = trackballBufferTail;
-            trackballXBuffer[iIndex] = 0;
-            trackballYBuffer[iIndex] = 0;
-            trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
-            if (trackballBufferHead == trackballBufferTail)
-                trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
-        }
-
-        private void ClearTouchMouseTrackballData()
-        {
-            Array.Clear(trackballXBuffer, 0, TRACKBALL_BUFFER_LEN);
-            Array.Clear(trackballYBuffer, 0, TRACKBALL_BUFFER_LEN);
-            trackballXVel = 0.0;
-            trackballYVel = 0.0;
-            trackballActive = false;
-            trackballBufferTail = 0;
-            trackballBufferHead = 0;
-            trackballDXRemain = 0.0;
-            trackballDYRemain = 0.0;
-        }
-
         public virtual void touchUnchanged(DS4Touchpad sender, EventArgs unused)
         {
             //Trace.WriteLine("TOUCHES UNCHANGED");
@@ -704,7 +580,7 @@ namespace DS4Windows.Processing.Touchpad
             TouchpadOutMode touchMode = _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode;
             if (touchMode == TouchpadOutMode.Mouse)
             {
-                if (trackballActive)
+                if (_trackball.Active)
                 {
                     //if (touchMode == TouchpadOutMode.Mouse ||
                     //    touchMode == TouchpadOutMode.MouseJoystick)
@@ -718,49 +594,7 @@ namespace DS4Windows.Processing.Touchpad
                                 tempBool = false;
                         }
 
-                        double tempAngle = Math.Atan2(-trackballYVel, trackballXVel);
-                        double normX = Math.Abs(Math.Cos(tempAngle));
-                        double normY = Math.Abs(Math.Sin(tempAngle));
-                        int signX = Math.Sign(trackballXVel);
-                        int signY = Math.Sign(trackballYVel);
-                        double trackXvDecay = Math.Min(Math.Abs(trackballXVel), trackballAccel * s.elapsedTime * normX);
-                        double trackYvDecay = Math.Min(Math.Abs(trackballYVel), trackballAccel * s.elapsedTime * normY);
-                        double xVNew = trackballXVel - (trackXvDecay * signX);
-                        double yVNew = trackballYVel - (trackYvDecay * signY);
-                        double xMotion = (xVNew * s.elapsedTime) / TRACKBALL_SCALE;
-                        double yMotion = (yVNew * s.elapsedTime) / TRACKBALL_SCALE;
-                        if (xMotion != 0.0)
-                        {
-                            xMotion += trackballDXRemain;
-                        }
-                        else
-                        {
-                            trackballDXRemain = 0.0;
-                        }
-
-                        int dx = (int)xMotion;
-                        trackballDXRemain = xMotion - dx;
-
-                        if (yMotion != 0.0)
-                        {
-                            yMotion += trackballDYRemain;
-                        }
-                        else
-                        {
-                            trackballDYRemain = 0.0;
-                        }
-
-                        int dy = (int)yMotion;
-                        trackballDYRemain = yMotion - dy;
-
-                        trackballXVel = xVNew;
-                        trackballYVel = yVNew;
-
-                        if (dx == 0 && dy == 0)
-                        {
-                            trackballActive = false;
-                        }
-                        else
+                        if (_trackball.Step(s.elapsedTime, out int dx, out int dy))
                         {
                             cursor.TouchMoveCursor(dx, dy, tempBool);
                         }
