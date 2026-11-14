@@ -31,10 +31,10 @@ namespace DS4Windows.UI.Services
         {
             var snap = new ReadingsDeadZoneSnapshot();
 
-            switch (settings.Sticks.LSMod.deadzoneType)
+            switch (settings.Sticks.Left.Mod.deadzoneType)
             {
                 case StickDeadZoneInfo.DeadZoneType.Radial:
-                    snap.LsDeadX = snap.LsDeadY = settings.Sticks.LSDeadZone;
+                    snap.LsDeadX = snap.LsDeadY = settings.Sticks.Left.DeadZone;
                     break;
                 case StickDeadZoneInfo.DeadZoneType.Axial:
                     snap.LsDeadX = axialLeft.DeadZoneX;
@@ -42,10 +42,10 @@ namespace DS4Windows.UI.Services
                     break;
             }
 
-            switch (settings.Sticks.RSMod.deadzoneType)
+            switch (settings.Sticks.Right.Mod.deadzoneType)
             {
                 case StickDeadZoneInfo.DeadZoneType.Radial:
-                    snap.RsDeadX = snap.RsDeadY = settings.Sticks.RSDeadZone;
+                    snap.RsDeadX = snap.RsDeadY = settings.Sticks.Right.DeadZone;
                     break;
                 case StickDeadZoneInfo.DeadZoneType.Axial:
                     snap.RsDeadX = axialRight.DeadZoneX;
@@ -57,10 +57,10 @@ namespace DS4Windows.UI.Services
             snap.R2Dead = settings.Triggers.R2DeadZone;
             snap.SixAxisXDead = settings.SixAxis.SXDeadZone;
             snap.SixAxisZDead = settings.SixAxis.SZDeadZone;
-            snap.LsDriftX = settings.Sticks.LeftStickDriftXAxis;
-            snap.LsDriftY = settings.Sticks.LeftStickDriftYAxis;
-            snap.RsDriftX = settings.Sticks.RightStickDriftXAxis;
-            snap.RsDriftY = settings.Sticks.RightStickDriftYAxis;
+            snap.LsDriftX = settings.Sticks.Left.DriftXAxis;
+            snap.LsDriftY = settings.Sticks.Left.DriftYAxis;
+            snap.RsDriftX = settings.Sticks.Right.DriftXAxis;
+            snap.RsDriftY = settings.Sticks.Right.DriftYAxis;
             return snap;
         }
     }

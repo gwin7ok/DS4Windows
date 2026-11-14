@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Controls;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.ViewModels;
 
@@ -8,13 +6,18 @@ namespace DS4Windows.UI
 {
     /// <summary>
     /// プロファイル編集画面の「LS」「RS」（スティック）の部分。DataContext は <see cref="StickSettingsViewModel"/>。
+    /// 左右とも同じ部品（<see cref="StickSideSettingsView"/>）を使う。
     /// 曲線の編集画面・スティックの校正は、編集画面の全体（実機・ダイアログ）に関わるため、イベントで編集画面へ知らせる。
     /// </summary>
-    public partial class StickSettingsPanel : UserControl
+    public partial class StickSettingsPanel : System.Windows.Controls.UserControl
     {
         public StickSettingsPanel()
         {
             InitializeComponent();
+            leftView.CustomCurveEditorRequested += (s, e) => CustomCurveEditorRequested?.Invoke(this, "LS");
+            rightView.CustomCurveEditorRequested += (s, e) => CustomCurveEditorRequested?.Invoke(this, "RS");
+            leftView.CalibrationRequested += (s, e) => CalibrationRequested?.Invoke(this, 0);
+            rightView.CalibrationRequested += (s, e) => CalibrationRequested?.Invoke(this, 1);
         }
 
         /// <summary>カスタム曲線の編集が求められた。引数は対象（"LS" か "RS"）。</summary>
@@ -24,24 +27,14 @@ namespace DS4Windows.UI
         public event EventHandler<int> CalibrationRequested;
 
         // 軸別デッドゾーンの部品。編集画面が、機器との結び付け・試験表示への反映に使う
-        public AxialStickUserControl AxialLeft => axialLSStickControl;
-        public AxialStickUserControl AxialRight => axialRSStickControl;
+        public AxialStickUserControl AxialLeft => leftView.AxialStick;
+        public AxialStickUserControl AxialRight => rightView.AxialStick;
 
         /// <summary>LS・RS の Outer Bind の割り当ての表示を、割り当ての一覧の各コントロールへ結ぶ。</summary>
         public void AssignOuterBindAssociation(MappingListViewModel mappingList)
         {
-            lsOuterBindLb.DataContext = mappingList.ControlMap[DS4Controls.LSOuter];
-            rsOuterBindLb.DataContext = mappingList.ControlMap[DS4Controls.RSOuter];
-        }
-
-        private void CustomEditorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            CustomCurveEditorRequested?.Invoke(this, (sender as Button)?.Tag as string);
-        }
-
-        private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)
-        {
-            CalibrationRequested?.Invoke(this, Convert.ToInt32((sender as Button)?.Tag));
+            leftView.AssignOuterBindAssociation(mappingList, DS4Controls.LSOuter);
+            rightView.AssignOuterBindAssociation(mappingList, DS4Controls.RSOuter);
         }
     }
 }

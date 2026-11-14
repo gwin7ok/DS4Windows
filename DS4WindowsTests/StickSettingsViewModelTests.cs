@@ -24,10 +24,10 @@ namespace DS4WindowsTests
         [Fact]
         public void EveryBindingInThePanel_NamesAPublicPropertyOfTheViewModel()
         {
-            var xaml = XamlTestHelper.Load("DS4Windows/UI/StickSettingsPanel.xaml");
+            var xaml = XamlTestHelper.Load("DS4Windows/UI/StickSideSettingsView.xaml");
             if (xaml == null) return;
 
-            HashSet<string> properties = typeof(StickSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            HashSet<string> properties = typeof(StickSideViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Select(p => p.Name).ToHashSet();
             // MappingName は、割り当ての表示用のラベル（*OuterBindLb）が持つ DataContext（MappedControl）の項目
             properties.Add("MappingName");
@@ -49,10 +49,13 @@ namespace DS4WindowsTests
         [Fact]
         public void EveryPublicPropertyOfTheViewModel_CanBeReadForARealSlot()
         {
-            var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
-            foreach (PropertyInfo property in typeof(StickSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            var sticks = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
+            foreach (StickSideViewModel vm in new[] { sticks.Left, sticks.Right })
             {
-                Assert.Null(Record.Exception(() => property.GetValue(vm)));
+                foreach (PropertyInfo property in typeof(StickSideViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    Assert.Null(Record.Exception(() => property.GetValue(vm)));
+                }
             }
         }
 
@@ -60,33 +63,35 @@ namespace DS4WindowsTests
         public void TheValues_AreReadFromAndWrittenToTheSettingsService()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
+            var sticks = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
             double sens = service.ForSlot(0).Sticks.LSSens;
             double rotation = service.ForSlot(0).Sticks.RSRotation;
             int mode = service.ForSlot(0).Sticks.LSCurveMode;
+            var vmL = sticks.Left;
+            var vmR = sticks.Right;
             var deadType = service.ForSlot(0).Sticks.RSMod.deadzoneType;
             try
             {
-                vm.LSSens = sens + 0.25;
+                vmL.Sens = sens + 0.25;
                 Assert.Equal(sens + 0.25, service.ForSlot(0).Sticks.LSSens);
 
                 // 回転は、画面では度、保存ではラジアン
-                vm.RSRotation = 90.0;
+                vmR.Rotation = 90.0;
                 Assert.Equal(Math.PI / 2, service.ForSlot(0).Sticks.RSRotation, 6);
-                Assert.Equal(90.0, vm.RSRotation, 6);
+                Assert.Equal(90.0, vmR.Rotation, 6);
 
                 // 曲線の選択を 6（カスタム）にすると、カスタム曲線の入力が有効になる通知が出る
                 var names = new List<string>();
-                vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
-                vm.LSOutputCurveIndex = 6;
+                vmL.PropertyChanged += (s, e) => names.Add(e.PropertyName);
+                vmL.OutputCurveIndex = 6;
                 Assert.Equal(6, service.ForSlot(0).Sticks.LSCurveMode);
-                Assert.True(vm.LSCustomCurveSelected);
-                Assert.Contains(nameof(StickSettingsViewModel.LSCustomCurveSelected), names);
+                Assert.True(vmL.CustomCurveSelected);
+                Assert.Contains(nameof(StickSideViewModel.CustomCurveSelected), names);
 
                 // デッドゾーンの種類（0＝Radial、1＝Axial）
-                vm.RSDeadTypeIndex = 1;
+                vmR.DeadTypeIndex = 1;
                 Assert.Equal(StickDeadZoneInfo.DeadZoneType.Axial, service.ForSlot(0).Sticks.RSMod.deadzoneType);
-                Assert.Equal(1, vm.RSDeadTypeIndex);
+                Assert.Equal(1, vmR.DeadTypeIndex);
             }
             finally
             {
@@ -101,16 +106,16 @@ namespace DS4WindowsTests
         public void TheOutputIndex_MapsBothWays_AndRaisesTheNotification()
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
-            var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks;
+            var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks.Right;
             StickMode original = service.ForSlot(0).Sticks.RSOutput.mode;
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
-                vm.RSOutputIndex = 2;
+                vm.OutputIndex = 2;
                 Assert.Equal(StickMode.FlickStick, service.ForSlot(0).Sticks.RSOutput.mode);
-                Assert.Equal(2, vm.RSOutputIndex);
-                Assert.Contains(nameof(StickSettingsViewModel.RSOutputIndex), names);
+                Assert.Equal(2, vm.OutputIndex);
+                Assert.Contains(nameof(StickSideViewModel.OutputIndex), names);
             }
             finally
             {
@@ -126,8 +131,8 @@ namespace DS4WindowsTests
             Assert.Same(service.ForSlot(3).Sticks.RsBezier, service.ForSlot(3).Sticks.RsBezier);
 
             // スティックの項目は、ProfileSettingsViewModel から Sticks（サブ ViewModel）へ移った
-            string[] moved = typeof(StickSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Select(p => p.Name).ToArray();
+            string[] moved = typeof(StickSideViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(p => p.Name).Concat(new[] { "LSDeadZone", "RSDeadZone", "LSMod", "RSMod" }).ToArray();
             string[] left = typeof(ProfileSettingsViewModel).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Select(p => p.Name).Where(n => moved.Contains(n)).ToArray();
             Assert.True(left.Length == 0, "ProfileSettingsViewModel に残っている: " + string.Join(", ", left));

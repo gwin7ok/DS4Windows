@@ -184,13 +184,10 @@ namespace DS4WindowsTests
             Assert.DoesNotContain(values, v => v.Contains("TriggerFullPullBtn_Click"));
 
             // 割り当て名の表示ラベルは、読み取り専用の表示として残す
-            // LS・RS の部分は StickSettingsPanel（Axis Config のタブの中身の一部）にある
-            XDocument stickXaml = LoadXaml("DS4Windows/UI/StickSettingsPanel.xaml");
+            // LS・RS の部分は StickSettingsPanel（Axis Config のタブの中身の一部）にあり、左右とも同じ部品（StickSideSettingsView）を使う
+            XDocument stickXaml = LoadXaml("DS4Windows/UI/StickSideSettingsView.xaml");
             if (stickXaml == null) return;
-            foreach (string label in new[] { "lsOuterBindLb", "rsOuterBindLb" })
-            {
-                Assert.True(XamlTestHelper.HasName(stickXaml.Root, label), label + " が StickSettingsPanel にない");
-            }
+            Assert.True(XamlTestHelper.HasName(stickXaml.Root, "outerBindLb"), "outerBindLb が StickSideSettingsView にない");
             // L2・R2 の部分は TriggerSettingsPanel（Axis Config のタブの中身の一部）にある
             XDocument triggerXaml = LoadXaml("DS4Windows/UI/TriggerSettingsPanel.xaml");
             if (triggerXaml == null) return;
@@ -217,8 +214,11 @@ namespace DS4WindowsTests
             Assert.Contains("sticksPanel.AssignOuterBindAssociation(mappingListVM);", code);
             string stickCode = Read("DS4Windows/UI/StickSettingsPanel.xaml.cs");
             if (stickCode == null) return;
-            Assert.Contains("lsOuterBindLb.DataContext = mappingList.ControlMap[DS4Controls.LSOuter];", stickCode);
-            Assert.Contains("rsOuterBindLb.DataContext = mappingList.ControlMap[DS4Controls.RSOuter];", stickCode);
+            Assert.Contains("leftView.AssignOuterBindAssociation(mappingList, DS4Controls.LSOuter);", stickCode);
+            Assert.Contains("rightView.AssignOuterBindAssociation(mappingList, DS4Controls.RSOuter);", stickCode);
+            string sideCode = Read("DS4Windows/UI/StickSideSettingsView.xaml.cs");
+            if (sideCode == null) return;
+            Assert.Contains("outerBindLb.DataContext = mappingList.ControlMap[outerControl];", sideCode);
         }
 
         [Fact]

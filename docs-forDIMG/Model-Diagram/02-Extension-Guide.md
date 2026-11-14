@@ -58,3 +58,20 @@
 2. `LayerDependencyRuleTests`（依存の向き）、`ConstructorArityRuleTests`（引数 15 以下）、`Phase14NamespaceFolderGuardTests`（名前空間＝フォルダ）。
 3. 保存形式を触ったら、保存の黄金テストが不変であること。
 4. 実機がない機種は、差分テスト（`FakeHidTransport` に台本を与え、出力レポート・状態・切断の順序を確かめる）で守り、「実機未確認」を台帳に残す。
+
+## 5. プロファイルの設定の項目を足す（Phase33）
+
+スティックの項目（左右で同じ形）の例。値の入れ物から画面まで、次の順に触る。
+
+| # | 触る場所 | ファイル |
+|---|---|---|
+| 1 | 値の入れ物 | `Core/Settings`（例: `StickAntiSnapbackInfo`、`StickSlotSettings`） |
+| 2 | 読み込みの節 | `Core/Persistence/ProfileSections/` の読み込みの節 |
+| 3 | 保存の節 | `Core/Persistence/ProfileSections/` の保存の節（読み込みと別の名前の節にある場合がある） |
+| 4 | ViewModel | `UI/ViewModels/StickSideViewModel.cs` に 1 つ。左右の振り分けは型の中にあるので、左右で書き分けない |
+| 5 | 画面 | `UI/StickSideSettingsView.xaml` に 1 か所。左右とも同じ部品を使う（`StickSettingsPanel` は部品を 2 つ置くだけ） |
+
+- 保存する名前（XML の要素名）は変えない。項目を足したら、`StickSideViewModelTests` が公開プロパティを全部たどって、左右の一致と片側の変更の独立を検査する（検査の書き足しは要らない）。
+- 左右で挙動が違う項目は作らない。違いが要るときは、`StickSideViewModel` へ引数を足さず、先にユーザーへ相談する。
+- 既定値・リセット・プリセットに入れる場合は、`BackingStore` のリセットと `ProfilePresets` も触る。
+- L2・R2（`TriggerSettingsViewModel`／`TriggerSettingsPanel.xaml`）は、左右を横に並べた 1 枚の表のため、まだ左右で別の項目として持つ（`Phase33-Plan.md` の 33-5）。
