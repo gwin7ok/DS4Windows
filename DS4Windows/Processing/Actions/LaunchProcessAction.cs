@@ -44,19 +44,19 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled)
                 {
-                    AppLogger.LogTrace($"Trigger detected for SA '{sa.name}' on device {ctx.Device}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger detected for SA '{sa.name}' on device {ctx.Device}");
                     AppLogger.LogTrace($"SA '{sa.name}' maps to Type:{sa.type} Details:{sa.details}");
                     // 旧経路は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため例外（握りつぶし）となり、常に "<none>" を記録している（既存の挙動）
-                    AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
                     var parts = new List<string>();
                     (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
-                    AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
                 }
 
                 int count = 0;
                 try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
-                AppLogger.LogDebug($"SpecialAction Program: device={ctx.Device}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction Program: device={ctx.Device}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
             catch { }
         }
@@ -99,7 +99,7 @@ namespace DS4Windows.Processing.Actions
                 }
 
                 _launcher.Launch(targetPath, arguments, true, hidden);
-                try { AppLogger.LogTrace($"LaunchProcessAction.Execute: id={Id} target={targetPath} hidden={hidden}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"LaunchProcessAction.Execute: id={Id} target={targetPath} hidden={hidden}"); } catch { }
             }
             catch (Exception ex)
             {

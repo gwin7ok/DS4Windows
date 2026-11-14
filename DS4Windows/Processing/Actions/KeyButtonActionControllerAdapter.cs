@@ -29,7 +29,7 @@ namespace DS4Windows.Processing.Actions
                 }
             }
             catch { isToggle = false; }
-            try { AppLogger.LogTrace($"KBC Adapter ctor(device={device}) created adapter ControllerId={ControllerId} assigned={(sa?.name??"(null)")} isToggle={isToggle}"); } catch { }
+            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter ctor(device={device}) created adapter ControllerId={ControllerId} assigned={(sa?.name??"(null)")} isToggle={isToggle}"); } catch { }
         }
 
         // Wrap an existing KeyButtonActionController instance (used by Mapping to avoid duplicate instances)
@@ -38,7 +38,7 @@ namespace DS4Windows.Processing.Actions
             inner = existing ?? throw new ArgumentNullException(nameof(existing));
             // Query inner controller for its configured mode to avoid mismatches with registry timing
             try { isToggle = inner.IsToggleMode; } catch { isToggle = false; }
-            try { AppLogger.LogTrace($"KBC Adapter wrap ctor created adapter ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle}"); } catch { }
+            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter wrap ctor created adapter ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle}"); } catch { }
         }
 
         public void Start(IActionBinding binding, ITriggerContext trigger)
@@ -46,7 +46,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 if (inner == null || trigger == null) return;
-                try { AppLogger.LogTrace($"KBC Adapter Start: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Start: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}"); } catch { }
                 // Delegate to existing controller entry point
                 inner.OnSATriggerEstablished(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler, true);
             }
@@ -58,7 +58,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 if (inner == null || trigger == null) return;
-                try { AppLogger.LogTrace($"KBC Adapter Handle: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} isEstablished={trigger.IsEdgeEstablished} triggerVal={trigger.LogicalValue}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Handle: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} isEstablished={trigger.IsEdgeEstablished} triggerVal={trigger.LogicalValue}"); } catch { }
                 if (trigger.IsEdgeEstablished)
                 {
                     inner.OnSATriggerEstablished(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler, true);
@@ -77,7 +77,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 if (inner == null || trigger == null) return;
-                try { AppLogger.LogTrace($"KBC Adapter Stop: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Stop: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}"); } catch { }
                 // Preserve Stop for backward compatibility: treat as explicit toggle-off for toggle-mode
                 if (isToggle)
                 {

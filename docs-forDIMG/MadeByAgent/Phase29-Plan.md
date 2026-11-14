@@ -45,21 +45,27 @@ D1＝A（まず `try`／`finally` だけ。範囲の見直しは 29-1b）、D2�
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 29-1 | `SyntheticInputCommitter.Commit` の、ロックの取得から解放までを `try`／`finally` で囲む（中の処理は 1 行も変えない） | 偽の `IVirtualKBM` が例外を投げたあと、別の機器の `Commit` が戻ること（時間切れつき。Slow の印は付けない長さにする） | 未着手 |
-| 29-1b | （D1 が A のとき）ロックの範囲の調査。`GlobalState` を読む・書く場所を洗い出し、送出を排他の外へ出せるかを判断して、追補の Step を決める | — | 未着手 |
-| 29-2 | `DefaultActionManager.SetToggledOn` の、スタックトレースの取得からログまでを `if (AppLogger.IsTraceEnabled)` で囲む | Trace が無効のとき、`SetToggledOn` の切り替えで割り当てが一定以下であること | 未着手 |
-| 29-3 | `StickInputConditioner.AntiSnapback` の `queue.Any(…)` を `foreach` に書き直す（計算式は同じ） | 既存のアンチスナップバックのテストが不変。新たに割り当て 0 のテスト | 未着手 |
-| 29-4a | 調査: `profileActions` を書き換える場所と、そのスレッドの洗い出し。D2 の方式を確定する | — | 未着手 |
-| 29-4 | `Mapping.MapCustomAction` の `ToArray()` をやめる（D2 の方式） | 特殊アクションつきのプロファイルで `MapCustom` を回し、割り当て 0。UI スレッド相当の変更と並行に回しても例外が出ないこと | 未着手 |
-| 29-5 | `DeviceSlotState` が、`CurrentStates` の中身を自分のコンストラクターで作る。`InputReportProcessor` は作らない（`ControllerStateExposed` の作成は、参照先ができたあとに行う順序を保つ） | `DeviceSlotState` だけを作っても、`CurrentStates[i]` が `null` でないこと | 未着手 |
-| 29-6 | Trace／Debug のログの文字列の組み立てを、レベルの判定で囲む（D3 の範囲） | ログの文言の黄金テスト（あれば）が不変。なければ、代表の 1 か所に割り当てのテスト | 未着手 |
-| 29-7 | 文書: `01-Structure.md` §4 の「割り当て 0」の記述に、検査しているテストの名前を足す。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ（29-8〜29-10 のあとに行う） | — | 未着手 |
-| 29-8 | （追加。6-10）ジャイロのトリガーの判定（`TouchpadMouse.IsGyroTriggerActive`）の、毎フレームの `Split`／`TryParse` をやめる。設定の入れ物（`GyroControlsInfo.triggers`、`Gyro.MouseTriggers`、`Gyro.MouseStickTriggers`）が、値を入れたときに数の配列へ直して持ち、判定は配列を読む。保存する文字列・判定の結果は変えない（空文字・数でない要素の扱いも今のまま） | 文字列の全パターン（`"-1"`、`"4"`、`"4,5"`、空、数でない要素）で、変更の前後の判定が同じ。割り当て 0 | 未着手 |
-| 29-9a | （追加。6-11）調査: 動き・タッチのイベント（`SixAccelMoved`、`TouchesBegan`／`TouchesMoved`／`TouchesEnded`、`TouchButtonDown`／`Up` など）の購読者をすべて挙げ、引数や `Touch` を、ハンドラーの外まで保持している箇所を洗い出す（例: `TouchpadMouse` の `firstTouch`）。D4 の方式を確定する | — | 未着手 |
-| 29-9 | （追加。6-11）動き・タッチのイベント引数を、機器ごとに 1 つ持って使い回す（`DS4SixAxis.cs:198`、`SwitchProDevice.cs:525`、`DS4Touchpad.cs:105`〜`240`、`TouchpadEventArgs.cs:42`・`48`）。保持していた側は、値を写して持つ形に直す | タッチ・ジャイロの既存のテストが不変。動きのフレームと、触れている間のフレームで割り当て 0 | 未着手 |
-| 29-10 | （追加。6-12）`MainWindow` の 2 つのタイマー（`HotkeysTimer_Elapsed`、`AutoProfilesTimer_Elapsed`）を `try`／`finally` で囲み、例外のあとも始め直す。例外は Error のログに出す（新しいログ。開発者向けの診断文として英語で書く）。`HotkeysTimer_Elapsed` の `ControllerCol` の列挙は、読み取りロックの下で取ったスナップショット（スロット番号と行の組）に対して行う。判断の部分は、WPF なしでテストできる部品へ出す（Phase26 の進め方） | 偽の処理が例外を投げたあとも、次の回が呼ばれること。列挙と行の追加・削除を並行に回しても例外が出ないこと | 未着手 |
+| 29-1 | `SyntheticInputCommitter.Commit` の、ロックの取得から解放までを `try`／`finally` で囲む（中の処理は 1 行も変えない） | 偽の `IVirtualKBM` が例外を投げたあと、別の機器の `Commit` が戻ること（時間切れつき。Slow の印は付けない長さにする） | 完了 |
+| 29-1b | （D1 が A のとき）ロックの範囲の調査。`GlobalState` を読む・書く場所を洗い出し、送出を排他の外へ出せるかを判断して、追補の Step を決める | — | 未着手（範囲の見直しは別 Step。D1=A） |
+| 29-2 | `DefaultActionManager.SetToggledOn` の、スタックトレースの取得からログまでを `if (AppLogger.IsTraceEnabled)` で囲む | Trace が無効のとき、`SetToggledOn` の切り替えで割り当てが一定以下であること | 完了 |
+| 29-3 | `StickInputConditioner.AntiSnapback` の `queue.Any(…)` を `foreach` に書き直す（計算式は同じ） | 既存のアンチスナップバックのテストが不変。新たに割り当て 0 のテスト | 完了 |
+| 29-4a | 調査: `profileActions` を書き換える場所と、そのスレッドの洗い出し。D2 の方式を確定する | — | 完了 |
+| 29-4 | `Mapping.MapCustomAction` の `ToArray()` をやめる（D2 の方式） | 特殊アクションつきのプロファイルで `MapCustom` を回し、割り当て 0。UI スレッド相当の変更と並行に回しても例外が出ないこと | 完了 |
+| 29-5 | `DeviceSlotState` が、`CurrentStates` の中身を自分のコンストラクターで作る。`InputReportProcessor` は作らない（`ControllerStateExposed` の作成は、参照先ができたあとに行う順序を保つ） | `DeviceSlotState` だけを作っても、`CurrentStates[i]` が `null` でないこと | 完了 |
+| 29-6 | Trace／Debug のログの文字列の組み立てを、レベルの判定で囲む（D3 の範囲） | ログの文言の黄金テスト（あれば）が不変。なければ、代表の 1 か所に割り当てのテスト | 完了 |
+| 29-7 | 文書: `01-Structure.md` §4 の「割り当て 0」の記述に、検査しているテストの名前を足す。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ（29-8〜29-10 のあとに行う） | — | 完了 |
+| 29-8 | （追加。6-10）ジャイロのトリガーの判定（`TouchpadMouse.IsGyroTriggerActive`）の、毎フレームの `Split`／`TryParse` をやめる。設定の入れ物（`GyroControlsInfo.triggers`、`Gyro.MouseTriggers`、`Gyro.MouseStickTriggers`）が、値を入れたときに数の配列へ直して持ち、判定は配列を読む。保存する文字列・判定の結果は変えない（空文字・数でない要素の扱いも今のまま） | 文字列の全パターン（`"-1"`、`"4"`、`"4,5"`、空、数でない要素）で、変更の前後の判定が同じ。割り当て 0 | 完了 |
+| 29-9a | （追加。6-11）調査: 動き・タッチのイベント（`SixAccelMoved`、`TouchesBegan`／`TouchesMoved`／`TouchesEnded`、`TouchButtonDown`／`Up` など）の購読者をすべて挙げ、引数や `Touch` を、ハンドラーの外まで保持している箇所を洗い出す（例: `TouchpadMouse` の `firstTouch`）。D4 の方式を確定する | — | 完了 |
+| 29-9 | （追加。6-11）動き・タッチのイベント引数を、機器ごとに 1 つ持って使い回す（`DS4SixAxis.cs:198`、`SwitchProDevice.cs:525`、`DS4Touchpad.cs:105`〜`240`、`TouchpadEventArgs.cs:42`・`48`）。保持していた側は、値を写して持つ形に直す | タッチ・ジャイロの既存のテストが不変。動きのフレームと、触れている間のフレームで割り当て 0 | 完了 |
+| 29-10 | （追加。6-12）`MainWindow` の 2 つのタイマー（`HotkeysTimer_Elapsed`、`AutoProfilesTimer_Elapsed`）を `try`／`finally` で囲み、例外のあとも始め直す。例外は Error のログに出す（新しいログ。開発者向けの診断文として英語で書く）。`HotkeysTimer_Elapsed` の `ControllerCol` の列挙は、読み取りロックの下で取ったスナップショット（スロット番号と行の組）に対して行う。判断の部分は、WPF なしでテストできる部品へ出す（Phase26 の進め方） | 偽の処理が例外を投げたあとも、次の回が呼ばれること。列挙と行の追加・削除を並行に回しても例外が出ないこと | 完了 |
 
-| 29-10b | （2026-11-13 統合。旧 Phase36-C3＝6-4 の残り）20 ms のタイマーが、スワイプ切替が無効でも回り続ける件の判断。タイマーを始める・止める場所（`UI/MainWindow.xaml.cs:583`〜`589`）を読み、設定を画面で切り替えたときに始め直せるかを調べる。始め直せるなら、無効のときは回さない形にする（29-10 の部品の中で）。始め直せない、または利益が小さいなら、「直さない」を理由つきでここへ記録する | 設定の切り替え（有効 ⇄ 無効）のあとで、タイマーの動作が従来どおりであること（29-10 の部品のテストに足す） | 未着手 |
+| 29-10b | （2026-11-13 統合。旧 Phase36-C3＝6-4 の残り）20 ms のタイマーが、スワイプ切替が無効でも回り続ける件の判断。タイマーを始める・止める場所（`UI/MainWindow.xaml.cs:583`〜`589`）を読み、設定を画面で切り替えたときに始め直せるかを調べる。始め直せるなら、無効のときは回さない形にする（29-10 の部品の中で）。始め直せない、または利益が小さいなら、「直さない」を理由つきでここへ記録する | 設定の切り替え（有効 ⇄ 無効）のあとで、タイマーの動作が従来どおりであること（29-10 の部品のテストに足す） | 完了（直さない判断。下の決定の記録） |
+
+## 実施の記録（2026-11-14）
+- **29-4 は D2＝A と違う方式にした（ユーザーへ報告）**: 29-4a で、`List<string>[] profileActions` をその場で書き換える箇所が約 31 か所（ProfilePresets、各読み込みの節、BackingStore、ProfileEditor、SpecialActionsListViewModel、ProfileApplicationService）あると分かった。(A)（不変の配列への置き換え）は影響が大きいため、(B) の変形（デバイスごとの使い回しのバッファーへ毎フレーム写す。`Mapping.CopyProfileActionNames`）にした。割り当ては 0。写している途中で一覧が縮んでも、読めた分だけで続ける（`MapCustomAction` の例外処理は従来どおり）。不変の配列への置き換えは、`profileActions` の持ち主を整理する Phase（Phase34 の MVVM の整理）で再検討する。
+- **29-10b は「直さない」**: 20 ms のタイマーは、スワイプ切替が無効のとき bool の読みだけで戻る。設定の切り替えで始め直す配線の費用に見合わない。
+- **29-9**: 購読者は `TouchpadMouse` だけで、引数・`Touch` の参照を呼び出しの外へ持たない（`firstTouch` は値を写す）。`TouchpadEventArgs`・`SixAxisEventArgs` を機器ごとに 1 つ使い回す形にした（`Set`）。
+- **29-6**: `Processing` の定数でない Trace／Debug の呼び出し（約 130 か所）を、レベルの判定で囲んだ。文言・レベルは不変。`ProcessingLogGuardRuleTests` が新しい未ガードを防ぐ。
 
 ## 確認の方法
 - 各 Step: `dotnet test … -c Debug /p:platform=x64 --filter "Category!=Slow&Category!=Benchmark"`。Step の終わりに Debug ALL（警告 0・エラー 0）。
@@ -80,6 +86,7 @@ D1＝A（まず `try`／`finally` だけ。範囲の見直しは 29-1b）、D2�
 - コントローラーを抜き差ししながら、スワイプ切替と自動プロファイルが動き続けること。
 
 ## 履歴
+- 2026-11-14: Step 29-1〜29-10b を実施した（上の「実施の記録」）。実機の確認は、まとめて `Known-Issues-Ledger.md` §3 に足した。
 - 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: Phase 番号の付け替え（進める順に合わせた）に伴い、旧 Phase36 の 36-C3（20 ms のタイマー）を 29-10b として統合した。
 - 2026-11-11: 計画書を作成。コードは未着手。

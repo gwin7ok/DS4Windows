@@ -69,7 +69,8 @@ namespace DS4WindowsTests
         {
             var s = new DeviceSlotState();
             Assert.Null(s.GetController(0));
-            Assert.Null(s.CurrentStates[0]);
+            // 現在の状態は、持ち主（DeviceSlotState）が自分で作る（InputReportProcessor に作らせない）
+            Assert.NotNull(s.CurrentStates[0]);
         }
     }
 }

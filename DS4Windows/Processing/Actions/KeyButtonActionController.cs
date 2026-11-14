@@ -46,7 +46,7 @@ namespace DS4Windows.Processing.Actions
             this.assignedActionDef = null;
             try
             {
-                AppLogger.LogTrace($"KeyButtonActionController created: id={this.GetHashCode()} device={device} mode={mode} assignedAction={this.assignedActionName}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController created: id={this.GetHashCode()} device={device} mode={mode} assignedAction={this.assignedActionName}");
             }
             catch { }
 
@@ -93,7 +93,7 @@ namespace DS4Windows.Processing.Actions
                     try { isToggle = sa != null && sa.keyType.HasFlag(DS4KeyType.Toggle); } catch { }
                     this.mode = isToggle ? Mode.Toggle : Mode.Press;
                 }
-                AppLogger.LogTrace($"KeyButtonActionController created: id={this.GetHashCode()} device={device} mode={this.mode} assignedAction={this.assignedActionName}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController created: id={this.GetHashCode()} device={device} mode={this.mode} assignedAction={this.assignedActionName}");
             }
             catch { }
 
@@ -186,7 +186,7 @@ namespace DS4Windows.Processing.Actions
                                 {
                                     if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                                     e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId));
-                                    try { AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}"); } catch { }
+                                    try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}"); } catch { }
                                     try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
                                 }
                                 else
@@ -220,7 +220,7 @@ namespace DS4Windows.Processing.Actions
                     try
                     {
                         try { e.repeater.Stop(); } catch { }
-                        try { AppLogger.LogTrace($"ToggleImpl.OnToggleOff: controllerId={controllerId} kvpKey={kvpKey} device={device} repeater stopped"); } catch { }
+                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnToggleOff: controllerId={controllerId} kvpKey={kvpKey} device={device} repeater stopped"); } catch { }
                         try
                         {
                             // Ensure toggled-on flag is cleared by the same component that set it true.
@@ -314,7 +314,7 @@ namespace DS4Windows.Processing.Actions
                     e.isPressed = true;
                     try
                     {
-                        AppLogger.LogTrace($"PressImpl.OnDown: controllerId={controllerId} device={device} kvpKey={kvpKey} native={e.nativeKey} useScan={e.useScanCode}");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PressImpl.OnDown: controllerId={controllerId} device={device} kvpKey={kvpKey} native={e.nativeKey} useScan={e.useScanCode}");
                         // Primary behavior: send one immediate press (hold). Release will be sent on OnUp.
                         _dispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                     }
@@ -426,7 +426,7 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                AppLogger.LogTrace($"KBC OnSATriggerEstablished: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey} isSpecialAction={isSpecialAction}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC OnSATriggerEstablished: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey} isSpecialAction={isSpecialAction}");
             }
             catch { }
             impl.OnDown(kvpKey, nativeKey, useScanCode, handler, isSpecialAction);
@@ -436,7 +436,7 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                AppLogger.LogTrace($"KBC OnSATriggerReleased: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC OnSATriggerReleased: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey}");
             }
             catch { }
             // For Toggle-mode, ignore input-level release here; actual toggle-off should be handled explicitly.
@@ -448,7 +448,7 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                AppLogger.LogTrace($"KBC OnSATriggerToggleOff: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC OnSATriggerToggleOff: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey}");
             }
             catch { }
             impl.OnToggleOff(kvpKey, nativeKey, useScanCode, handler);
@@ -474,7 +474,7 @@ namespace DS4Windows.Processing.Actions
             catch { }
             // Phase13-Step4: 静的イベントでは購読が残り続けていた。破棄後は反応しないよう、注入された管理役の購読を解除する
             try { _manager.ToggledOnChanged -= toggledOnHandler; } catch { }
-            try { AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}"); } catch { }
+            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}"); } catch { }
         }
 
         public void Destroy()

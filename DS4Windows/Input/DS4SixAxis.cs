@@ -29,6 +29,8 @@ namespace DS4Windows.Input
     {
         //public event EventHandler<SixAxisEventArgs> SixAccelMoved = null;
         public event SixAxisHandler<SixAxisEventArgs> SixAccelMoved = null;
+        // 毎フレーム生成しないための使い回しの引数
+        private readonly SixAxisEventArgs sharedArgs = new SixAxisEventArgs();
         private SixAxis sPrev = null, now = null;
 
         private CalibData[] calibrationData = new CalibData[6] { new CalibData(), new CalibData(),
@@ -195,7 +197,8 @@ namespace DS4Windows.Input
                         now.populate(yaw, pitch, roll,
                             accelX, accelY, accelZ, elapsedDelta, sPrev);
 
-                        args = new SixAxisEventArgs(state.ReportTimeStamp, now);
+                        args = sharedArgs;
+                        args.Set(state.ReportTimeStamp, now);
                         state.Motion = now;
                         SixAccelMoved(this, args);
                     }
@@ -261,6 +264,13 @@ namespace DS4Windows.Input
                 result = true; // Fixed inverted axis
             }
             return result;
+        }
+
+        /// <summary>使い回しの引数に値を入れて通知する（毎フレームの割り当てを避ける）。</summary>
+        public void FireSixAxisEvent(DateTime utcTimestamp, SixAxis motion)
+        {
+            sharedArgs.Set(utcTimestamp, motion);
+            SixAccelMoved?.Invoke(this, sharedArgs);
         }
 
         public void FireSixAxisEvent(SixAxisEventArgs args)

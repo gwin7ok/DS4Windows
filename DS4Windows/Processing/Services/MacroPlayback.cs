@@ -75,7 +75,7 @@ namespace DS4Windows.Processing.Services
             {
                 bool actionRunning = st != null && st.IsMacroRunning;
                 string decision = actionRunning ? "NORUN" : "RUN";
-                AppLogger.LogTrace($"PlayMacro START GUARD: action={action?.name} device={device} IsMacroRunning={actionRunning} DECISION={decision}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacro START GUARD: action={action?.name} device={device} IsMacroRunning={actionRunning} DECISION={decision}");
                 if (actionRunning) return;
             }
             catch { }
@@ -119,7 +119,7 @@ namespace DS4Windows.Processing.Services
             bool latch = action != null && keyType.HasFlag(DS4KeyType.RepeatLatchMacro);
             if (latch && !IsToggledOnNow(action, device))
             {
-                try { AppLogger.LogTrace($"PlayMacroTask SKIP: action={action?.name} device={device} (toggle is OFF)"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask SKIP: action={action?.name} device={device} (toggle is OFF)"); } catch { }
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace DS4Windows.Processing.Services
 
             try
             {
-                try { AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)} keyType={keyType}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)} keyType={keyType}"); } catch { }
 
                 // Phase8-Step7-3a（機能廃止。ユーザー承認済み）: Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
                 // この並びのマクロも、他のマクロと同じく、手順どおりに再生する（Phase8-Step7-3a-AltTab-Removal-Plan.md）。
@@ -163,7 +163,7 @@ namespace DS4Windows.Processing.Services
                         try
                         {
                             string decision = keepRunning ? "RERUN" : "NORUN";
-                            AppLogger.LogTrace($"PlayMacroTask ITERATION CHECK: action={action?.name} device={device} IsMacroRunning={actionDoneState?.IsMacroRunning ?? false} IsBeingTriggered={curBeing} mode={(latch ? "LATCH" : "HELD")} DECISION={decision}");
+                            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask ITERATION CHECK: action={action?.name} device={device} IsMacroRunning={actionDoneState?.IsMacroRunning ?? false} IsBeingTriggered={curBeing} mode={(latch ? "LATCH" : "HELD")} DECISION={decision}");
                         }
                         catch { }
 
@@ -188,7 +188,7 @@ namespace DS4Windows.Processing.Services
                     try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
                 }
             }
-            try { AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
+            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
         }
 
         /// <summary>R-2: そのアクション・デバイスの、トグルの状態（<c>IsToggledOn</c>）。状態が取れないときは偽（＝繰り返しを止める）。</summary>
@@ -247,7 +247,7 @@ namespace DS4Windows.Processing.Services
             {
                 try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
             }
-            try { AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
+            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
         }
     }
 }

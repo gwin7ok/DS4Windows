@@ -54,7 +54,7 @@ namespace DS4Windows.Processing.Services
             try
             {
                 _engine.OnDeviceDisconnected(slotIndex);
-                AppLogger.LogDebug($"[DI] ProfileSlotApplier.ReleaseSlot: released the dispatch state of slot {slotIndex}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[DI] ProfileSlotApplier.ReleaseSlot: released the dispatch state of slot {slotIndex}");
             }
             catch (Exception ex)
             {

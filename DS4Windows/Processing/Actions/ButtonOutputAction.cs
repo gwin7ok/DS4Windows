@@ -91,23 +91,23 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {ctx.Device}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {ctx.Device}");
 
                 string mapping = _hasControl
                     ? $"X360Controls {_control.ToString()} ({(int)_control})"
                     : $"Type:{_sa.type} Details:{_sa.details}";
-                AppLogger.LogTrace($"SA '{_sa.name}' maps to {mapping}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' maps to {mapping}");
 
                 // 現行の LogSpecialActionTrace は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため、例外（握りつぶし）となり、常に "<none>" を記録している
                 // （旧経路の既存の挙動。ログの文言を変えない方針［Q6＝A］により、同じ出力にする。成立しているトリガーの一覧を出す改善は、別途ユーザーの承認が要る）
-                AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
 
                 try
                 {
                     var parts = new List<string>();
                     (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
-                    AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
                 }
                 catch { }
             }
@@ -121,7 +121,7 @@ namespace DS4Windows.Processing.Actions
                 var parts = new List<string>();
                 (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                 string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
-                AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
             }
             catch (Exception ex)
             {

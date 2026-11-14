@@ -84,7 +84,7 @@ namespace DS4Windows.Processing.Services
                     catch { }
                 }
 
-                try { AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}"); } catch { }
             }
             catch { }
         }
@@ -224,7 +224,7 @@ namespace DS4Windows.Processing.Services
                     applyAction();
                 }
 
-                AppLogger.LogTrace($"[DI] ProfileApplicationService.ApplyProfile: Slot {deviceIndex}, Profile '{profileName}', isTemp={isTemp}, success={success}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[DI] ProfileApplicationService.ApplyProfile: Slot {deviceIndex}, Profile '{profileName}', isTemp={isTemp}, success={success}");
                 if (!success)
                 {
                     AppLogger.LogWarn($"[DI] ProfileApplicationService.ApplyProfile Result: FAILED for Slot {deviceIndex}, Profile '{profileName}', isTemp={isTemp}, source={source}");
@@ -248,7 +248,7 @@ namespace DS4Windows.Processing.Services
         {
             // Debug: ApplyProfile呼び出しログ
             string stackTrace = new System.Diagnostics.StackTrace(1, true).ToString();
-            AppLogger.LogDebug($"ApplyProfile CALLED: device={device}, profile={profileName}, isTemp={isTemp}, source={source}");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile CALLED: device={device}, profile={profileName}, isTemp={isTemp}, source={source}");
             AppLogger.LogTrace($"ApplyProfile CallStack:\n{stackTrace}");
 
             bool result;
@@ -256,12 +256,12 @@ namespace DS4Windows.Processing.Services
             // プロファイル読み込み
             if (isTemp)
             {
-                AppLogger.LogDebug($"ApplyProfile: Loading TEMP profile '{profileName}' for device {device}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Loading TEMP profile '{profileName}' for device {device}");
                 result = _profileRepo.LoadTempProfile(device, profileName, launchProgram, control);
             }
             else
             {
-                AppLogger.LogDebug($"ApplyProfile: Loading NORMAL profile '{profileName}' for device {device}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Loading NORMAL profile '{profileName}' for device {device}");
                 // 通常プロファイルの場合、ProfilePathを更新してからLoadProfile
                 _profileRepo.ProfilePath[device] = profileName;
                 result = LoadNormalProfile(device, launchProgram, control);
@@ -274,7 +274,7 @@ namespace DS4Windows.Processing.Services
                 AppLogger.LogWarn($"ApplyProfile: Profile load FAILED for '{profileName}'");
             }
 
-            AppLogger.LogDebug($"ApplyProfile COMPLETED: device={device}, profile={profileName}, result={result}");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile COMPLETED: device={device}, profile={profileName}, result={result}");
             return result;
         }
 
@@ -293,17 +293,17 @@ namespace DS4Windows.Processing.Services
         private void CompleteProfileApplication(int device, string profileName, bool isTemp,
             IProfileLoadTarget control, ProfileChangeSource source, string prolog)
         {
-            AppLogger.LogDebug($"ApplyProfile: Profile loaded successfully. Updating state...");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Profile loaded successfully. Updating state...");
             _profileRepo.SelectedProfile[device] = profileName;
 
             if (!isTemp)
             {
                 _profileRepo.OlderProfilePath[device] = profileName;
-                AppLogger.LogDebug($"ApplyProfile: OlderProfilePath updated to '{profileName}'");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: OlderProfilePath updated to '{profileName}'");
             }
             else
             {
-                AppLogger.LogDebug($"ApplyProfile: OlderProfilePath NOT updated (isTemp=true). Current value: '{_profileRepo.OlderProfilePath[device]}'");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: OlderProfilePath NOT updated (isTemp=true). Current value: '{_profileRepo.OlderProfilePath[device]}'");
             }
 
             if (prolog == null)
@@ -317,7 +317,7 @@ namespace DS4Windows.Processing.Services
             {
                 AppLogger.Log(AppLogLevel.Info, prolog, LogOptions.UserFacing);
             }
-            AppLogger.LogDebug($"ApplyProfile: Calling LogProfileChanged...");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Calling LogProfileChanged...");
             try
             {
                 AppLogger.LogProfileChanged(device, profileName, isTemp, source, prolog, DateTime.UtcNow);
@@ -327,13 +327,13 @@ namespace DS4Windows.Processing.Services
                 AppLogger.LogError($"[Profile] Failed to log profile change: {ex.Message}");
             }
 
-            AppLogger.LogDebug($"ApplyProfile: Raising SelectedProfileChanged event");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Raising SelectedProfileChanged event");
             _profileRepo.RaiseSelectedProfileChanged(device, profileName);
 
             try
             {
                 try { _actionManager.ClearAllEntries(); } catch { }
-                AppLogger.LogDebug($"ApplyProfile: Cleared ActionManager global entries to force re-creation of Action instances for new profile");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Cleared ActionManager global entries to force re-creation of Action instances for new profile");
             }
             catch (Exception ex)
             {
@@ -344,7 +344,7 @@ namespace DS4Windows.Processing.Services
             {
                 _keyButtonControllers.ClearForDevice(device);
                 try { _actionManager.ClearDeviceState(device); } catch { }
-                AppLogger.LogDebug($"ApplyProfile: Cleared per-device SpecialAction controllers and ActionManager state for device {device}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Cleared per-device SpecialAction controllers and ActionManager state for device {device}");
             }
             catch (Exception ex)
             {
@@ -406,7 +406,7 @@ namespace DS4Windows.Processing.Services
             try
             {
                 _actionRegistry.Replace(deviceIndex, _bindingBuilderProvider().Build(deviceIndex));
-                AppLogger.LogDebug($"[DI] ProfileApplicationService.PublishBindings: replaced the bindings of device {deviceIndex}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[DI] ProfileApplicationService.PublishBindings: replaced the bindings of device {deviceIndex}");
             }
             catch (Exception ex)
             {

@@ -48,7 +48,7 @@ namespace DS4Windows.Processing
             // repeating without disposing the instance so it can be reused.
             timer = (timeProvider ?? throw new ArgumentNullException(nameof(timeProvider))).CreateTimer(TimerCallback, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             isRunning = false;
-            try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper created: id={this.GetHashCode()} device={device} kvpKey={kvpKey} nativeKey={nativeKey} interval={IntervalMs} sendFirstImmediate={SendFirstImmediate} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+            try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper created: id={this.GetHashCode()} device={device} kvpKey={kvpKey} nativeKey={nativeKey} interval={IntervalMs} sendFirstImmediate={SendFirstImmediate} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
             if (sendFirstImmediate)
             {
                 Start();
@@ -79,7 +79,7 @@ namespace DS4Windows.Processing
 
             try
             {
-                try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 if (SendFirstImmediate)
                 {
                     try { _dispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler); } catch { }
@@ -100,7 +100,7 @@ namespace DS4Windows.Processing
 
             try
             {
-                try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Stop: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Stop: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 isRunning = false;
             }
@@ -112,7 +112,7 @@ namespace DS4Windows.Processing
             if (Interlocked.Exchange(ref disposed, 1) == 1) return;
             try
             {
-                try { DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Dispose: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Dispose: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
                 try { timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan); } catch { }
                 try { timer.Dispose(); } catch { }
             }

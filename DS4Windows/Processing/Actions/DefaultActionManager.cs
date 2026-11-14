@@ -30,13 +30,13 @@ namespace DS4Windows.Processing.Actions
             // Phase13-Step4: 旧 静的 ActionManager の静的コンストラクターが購読していたログ（文言は同じ）。静的イベントの廃止に伴い、本クラスが持つ
             ToggledOnChanged += (sa, dev, oldv, newv) =>
             {
-                try { AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
             };
 
             // 旧 Mapping のコンストラクターが購読していたトレースログ（文言は同じ。動作の確認用）
             ToggledOnChanged += (sa, dev, oldv, newv) =>
             {
-                try { AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
             };
         }
 
@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Actions
                     int devices = ControllerLimits.MaxControllerCount;
                     int controls = (int)DS4ControlSettings.LAST_DS4_ACTION + 1;
                     buttonStates = new bool[devices, controls];
-                    AppLogger.LogTrace($"DefaultActionManager.PreallocateEntries: allocated buttonStates {devices}x{controls} and {actions.Count} action entries");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.PreallocateEntries: allocated buttonStates {devices}x{controls} and {actions.Count} action entries");
                 }
                 catch { }
             }
@@ -170,7 +170,7 @@ namespace DS4Windows.Processing.Actions
                                 {
                                     bool old = ent.States[device]?.IsToggledOn ?? false;
                                     ent.States[device] = new ActionInstanceState();
-                                    try { AppLogger.LogTrace($"DefaultActionManager.ClearDeviceState: reset ActionInstanceState for action={(ent?.ActionDef?.name ?? "(null)")} device={device} (IsToggledOn cleared)"); } catch { }
+                                    try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.ClearDeviceState: reset ActionInstanceState for action={(ent?.ActionDef?.name ?? "(null)")} device={device} (IsToggledOn cleared)"); } catch { }
                                     if (old != false)
                                     {
                                         try { ToggledOnChanged?.Invoke(ent.ActionDef, device, old, false); } catch { }
@@ -219,6 +219,8 @@ namespace DS4Windows.Processing.Actions
                 st.IsToggledOn = value;
                 try { ToggledOnChanged?.Invoke(action, device, old, value); } catch { }
 
+                // スタックトレースの取得は高価で、切り替えのたびに起きるため、Trace が有効のときだけ行う
+                if (AppLogger.IsTraceEnabled)
                 try
                 {
                     var trace = new StackTrace(1, false);
@@ -239,7 +241,7 @@ namespace DS4Windows.Processing.Actions
                     }
                     catch { }
                     string stackSnippet = trace.ToString();
-                    AppLogger.LogTrace($"DefaultActionManager.SetToggledOn: action={(action?.name ?? "(null)")} device={device} old={old} new={value} caller={callerInfo} stack={stackSnippet}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.SetToggledOn: action={(action?.name ?? "(null)")} device={device} old={old} new={value} caller={callerInfo} stack={stackSnippet}");
                 }
                 catch { }
             }

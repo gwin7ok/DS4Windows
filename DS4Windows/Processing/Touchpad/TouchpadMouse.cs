@@ -281,42 +281,81 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
+        /// <summary>
+        /// トリガーの設定の文字列（「4,5」のような、コンマ区切りのボタンの番号）を、数の配列へ直したもの。
+        /// 判定は毎フレーム行われるため、同じ文字列のあいだは直した結果を使い回し、Split と TryParse の割り当てを避ける。
+        /// 数でない要素は、判定では「押されていない」として扱う（Valid が偽）。
+        /// </summary>
+        private sealed class ParsedTriggerList
+        {
+            public readonly string Source;
+            public readonly bool IsEmpty;
+            public readonly int[] Values;
+            public readonly bool[] Valid;
+
+            public ParsedTriggerList(string source)
+            {
+                Source = source;
+                string[] parts = (source ?? string.Empty).Split(',');
+                IsEmpty = string.IsNullOrEmpty(parts[0]);
+                Values = new int[parts.Length];
+                Valid = new bool[parts.Length];
+                for (int k = 0; k < parts.Length; k++)
+                {
+                    Valid[k] = int.TryParse(parts[k], out Values[k]);
+                }
+            }
+        }
+
+        // ジャイロの出力の種類（Controls／Mouse／MouseJoystick）ごとの、直した結果。入力のスレッドだけが読み書きする
+        private readonly ParsedTriggerList[] gyroTriggerCache = new ParsedTriggerList[3];
+
+        private ParsedTriggerList GetParsedTriggers(int cacheIndex, string source)
+        {
+            ParsedTriggerList cached = gyroTriggerCache[cacheIndex];
+            if (cached == null || !string.Equals(cached.Source, source))
+            {
+                cached = new ParsedTriggerList(source);
+                gyroTriggerCache[cacheIndex] = cached;
+            }
+
+            return cached;
+        }
+
         public bool IsGyroTriggerActive(GyroOutMode mode)
         {
-            string[] ss = [];
+            ParsedTriggerList triggers = null;
             var andCond = false;
             useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.TriggerTurns;
             if (mode == GyroOutMode.Controls)
             {
                 GyroControlsInfo controlsMapInfo = _profileSettings.ForSlot(deviceNum).Gyro.Controls;
-                ss = controlsMapInfo.triggers.Split(',');
+                triggers = GetParsedTriggers(0, controlsMapInfo.triggers);
                 andCond = controlsMapInfo.triggerCond;
             }
             else if (mode == GyroOutMode.Mouse)
             {
-                ss = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers.Split(',');
+                triggers = GetParsedTriggers(1, _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers);
                 andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggerCondAnd;
             }
             else if (mode == GyroOutMode.MouseJoystick)
             {
                 useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerTurns;
-                ss = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers.Split(',');
+                triggers = GetParsedTriggers(2, _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers);
                 andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerCondAnd;
             }
-            var i = 0;
             triggeractivated = andCond;
-            if (!string.IsNullOrEmpty(ss[0]))
+            if (triggers != null && !triggers.IsEmpty)
             {
-                var str = string.Empty;
-                for (int index = 0, arlen = ss.Length; index < arlen; index++)
+                for (int index = 0, arlen = triggers.Values.Length; index < arlen; index++)
                 {
-                    str = ss[index];
-                    if (andCond && !(int.TryParse(str, out i) && getDS4ControlsByName(i)))
+                    bool pressed = triggers.Valid[index] && getDS4ControlsByName(triggers.Values[index]);
+                    if (andCond && !pressed)
                     {
                         triggeractivated = false;
                         break;
                     }
-                    else if (!andCond && int.TryParse(str, out i) && getDS4ControlsByName(i))
+                    else if (!andCond && pressed)
                     {
                         triggeractivated = true;
                         break;
@@ -1111,7 +1150,7 @@ namespace DS4Windows.Processing.Touchpad
             previousUnchangedTouchJoyFrame = false;
             pastTime = arg.TimeStamp;
             // 調査用 Trace（動作は変えない）: タッチ開始の検出
-            AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
             firstTouch.populate(arg.Touches[0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID,
                 arg.Touches[0].PreviousTouch);
 
@@ -1145,7 +1184,7 @@ namespace DS4Windows.Processing.Touchpad
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
             byte tapSensitivity = _profileSettings.ForSlot(deviceNum).Touchpad.TapSensitivity;
-            AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode} sens={tapSensitivity}");
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesEnded outMode={_profileSettings.ForSlot(deviceNum).Touchpad.OutputMode} sens={tapSensitivity}");
             if (tapSensitivity != 0 && _profileSettings.ForSlot(deviceNum).Touchpad.OutputMode == TouchpadOutMode.Mouse)
             {
                 if (secondtouchbegin)
@@ -1156,7 +1195,7 @@ namespace DS4Windows.Processing.Touchpad
 
                 DateTime test = arg.TimeStamp;
                 // 調査用 Trace（動作は変えない）: タップ判定の入力値と成否
-                AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap} " +
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap} " +
                     $"elapsedMs={(test - pastTime).TotalMilliseconds:F0} limitMs={tapSensitivity * 2} buttonPressed={arg.TouchButtonPressed} tappedOnce={tappedOnce} " +
                     $"dx={Math.Abs(firstTouch.HwX - arg.Touches[0].HwX)} dy={Math.Abs(firstTouch.HwY - arg.Touches[0].HwY)}");
                 if (test <= (pastTime + TimeSpan.FromMilliseconds((double)tapSensitivity * 2)) && !arg.TouchButtonPressed && !tappedOnce)
@@ -1164,7 +1203,7 @@ namespace DS4Windows.Processing.Touchpad
                     // Phase6 変更（ユーザー承認 2026-10-15）: 上流の許容 10 は実機で厳しすぎ、タップが成立しなかったため 100 に拡大
                     if (Math.Abs(firstTouch.HwX - arg.Touches[0].HwX) < TapMaxMoveHw && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < TapMaxMoveHw)
                     {
-                        AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap})");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap})");
                         if (_profileSettings.ForSlot(deviceNum).Touchpad.DoubleTap)
                         {
                             tappedOnce = true;

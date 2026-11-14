@@ -195,15 +195,15 @@ namespace DS4Windows.Processing.Services
 
                     if (down)
                     {
-                        AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={(scanCode ? "KeyPressAlt" : "KeyPress")} native={eventMacroCode}");
+                        if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={(scanCode ? "KeyPressAlt" : "KeyPress")} native={eventMacroCode}");
                         if (scanCode) _virtualKbm.PerformKeyPressAlt(eventMacroCode);
                         else _virtualKbm.PerformKeyPress(eventMacroCode);
                     }
                     else
                     {
                         long _deltaSendDbg = 0; // inline macro release: lastSyntheticSend not tracked here
-                        AppLogger.LogTrace($"INLINE RELEASE TRACE device={device} macroCode={macroCodeValue} native={eventMacroCode} lastSendDeltaMs={_deltaSendDbg}");
-                        AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={(scanCode ? "KeyReleaseAlt" : "KeyRelease")} native={eventMacroCode}");
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"INLINE RELEASE TRACE device={device} macroCode={macroCodeValue} native={eventMacroCode} lastSendDeltaMs={_deltaSendDbg}");
+                        if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={(scanCode ? "KeyReleaseAlt" : "KeyRelease")} native={eventMacroCode}");
                         if (scanCode) _virtualKbm.PerformKeyReleaseAlt(eventMacroCode);
                         else _virtualKbm.PerformKeyRelease(eventMacroCode);
                     }
@@ -214,13 +214,13 @@ namespace DS4Windows.Processing.Services
 
         private void SendMouseButton(int device, int macroCodeValue, string eventName, uint mouseButton)
         {
-            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={eventName}");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={eventName}");
             _virtualKbm.PerformMouseButtonEvent(mouseButton);
         }
 
         private void SendMouseXButton(int device, int macroCodeValue, string eventName, uint mouseButton, int xButton)
         {
-            AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={eventName}");
+            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"EVENT SENT [INLINE] device={device} macroCode={macroCodeValue} event={eventName}");
             _virtualKbm.PerformMouseButtonEventAlt(mouseButton, xButton);
         }
     }

@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     public class Stage3ProfileActionsSnapshotGuardTests
     {
         [Fact]
-        public void Mapping_EveryGetProfileActionsRawCall_CopiesTheListWithToArray()
+        public void Mapping_EveryGetProfileActionsRawCall_CopiesTheList()
         {
             string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (path == null) return;
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
 
             int calls = Regex.Matches(text, @"GetProfileActionsRaw\(").Count;
-            int copied = Regex.Matches(text, @"GetProfileActionsRaw\([^)]*\)\s*\?\.ToArray\(\)").Count;
+            int copied = Regex.Matches(text, @"CopyProfileActionNames\(\s*[^;]*GetProfileActionsRaw\(").Count;
 
             Assert.True(calls >= 1,   // Phase8-Step8 8b: Stage3 などの旧経路を削除し、MapCustomAction の 1 か所になった
                  $"GetProfileActionsRaw の呼び出しが想定より少ない: {calls}");

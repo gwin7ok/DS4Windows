@@ -20,12 +20,18 @@ using System;
 
 namespace DS4Windows.Input
 {
+    /// <summary>
+    /// タッチパッドのイベントの引数。毎フレーム生成しないよう、<see cref="DS4Touchpad"/> が 1 つを使い回す（<see cref="Set"/>）。
+    /// 受け取る側は、呼び出しの間だけ読む。値を持ち続けるときは、値を写す（参照を保持しない）。
+    /// </summary>
     public class TouchpadEventArgs : EventArgs
     {
-        private readonly Touch[] touches = null;
-        private readonly DateTime timeStamp;
-        private readonly bool touchButtonPressed;
-        private readonly bool touchActive;
+        private readonly Touch[] oneTouch = new Touch[1];
+        private readonly Touch[] twoTouches = new Touch[2];
+        private Touch[] touches = null;
+        private DateTime timeStamp;
+        private bool touchButtonPressed;
+        private bool touchActive;
 
         public Touch[] Touches => touches;
 
@@ -35,18 +41,32 @@ namespace DS4Windows.Input
 
         public bool TouchActive => touchActive;
 
+        public TouchpadEventArgs()
+        {
+        }
+
         public TouchpadEventArgs(DateTime utcTimestamp, bool tButtonDown, bool touchActive, Touch t0, Touch t1 = null)
+        {
+            Set(utcTimestamp, tButtonDown, touchActive, t0, t1);
+        }
+
+        /// <summary>値を入れ替える。t0 も t1 も null なら <see cref="Touches"/> は null、t1 だけ null なら長さ 1、両方あれば長さ 2。</summary>
+        public void Set(DateTime utcTimestamp, bool tButtonDown, bool touchActive, Touch t0, Touch t1 = null)
         {
             if (t1 != null)
             {
-                touches = new Touch[2];
-                touches[0] = t0;
-                touches[1] = t1;
+                twoTouches[0] = t0;
+                twoTouches[1] = t1;
+                touches = twoTouches;
             }
             else if (t0 != null)
             {
-                touches = new Touch[1];
-                touches[0] = t0;
+                oneTouch[0] = t0;
+                touches = oneTouch;
+            }
+            else
+            {
+                touches = null;
             }
 
             touchButtonPressed = tButtonDown;

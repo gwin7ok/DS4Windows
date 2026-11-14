@@ -54,7 +54,7 @@ namespace DS4Windows.Processing.Services
                 var h = ResolveHandler(handler);
                 if (h == null) return;
 
-                AppLogger.LogTrace($"SYNTHETIC TRACE dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyPress");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyPress");
                 AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyPress");
 
                 if (useScanCode) h.PerformKeyPressAlt(nativeKey); else h.PerformKeyPress(nativeKey);
@@ -93,7 +93,7 @@ namespace DS4Windows.Processing.Services
             }
             catch (Exception ex)
             {
-                AppLogger.LogDebug($"SyntheticDispatcher.SendPress failed: {ex}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SyntheticDispatcher.SendPress failed: {ex}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace DS4Windows.Processing.Services
                 var h = ResolveHandler(handler);
                 if (h == null) return;
 
-                AppLogger.LogTrace($"SYNTHETIC TRACE dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyRelease");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyRelease");
                 AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] dispatcher device={device} key={kvpKey} nativeKey={nativeKey} event=KeyRelease");
 
                 if (useScanCode) h.PerformKeyReleaseAlt(nativeKey); else h.PerformKeyRelease(nativeKey);
@@ -141,7 +141,7 @@ namespace DS4Windows.Processing.Services
             }
             catch (Exception ex)
             {
-                AppLogger.LogDebug($"SyntheticDispatcher.SendRelease failed: {ex}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SyntheticDispatcher.SendRelease failed: {ex}");
             }
         }
 

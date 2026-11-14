@@ -26,9 +26,19 @@ namespace DS4Windows.Input
 
     public class SixAxisEventArgs : EventArgs
     {
-        public readonly SixAxis sixAxis;
-        public readonly DateTime timeStamp;
+        public SixAxis sixAxis { get; private set; }
+        public DateTime timeStamp { get; private set; }
+        public SixAxisEventArgs()
+        {
+        }
+
         public SixAxisEventArgs(DateTime utcTimestamp, SixAxis sa)
+        {
+            Set(utcTimestamp, sa);
+        }
+
+        /// <summary>値を入れ替える。毎フレーム生成しないよう、持ち主が 1 つを使い回す。受け取る側は、呼び出しの間だけ読む。</summary>
+        public void Set(DateTime utcTimestamp, SixAxis sa)
         {
             sixAxis = sa;
             timeStamp = utcTimestamp;

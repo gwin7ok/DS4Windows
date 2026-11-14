@@ -40,14 +40,14 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled)
                 {
-                    AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {dev}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger detected for SA '{_sa.name}' on device {dev}");
                     AppLogger.LogTrace($"SA '{_sa.name}' maps to Type:{_sa.type} Details:{_sa.details}");
                     // 旧経路は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため例外（握りつぶし）となり、常に "<none>" を記録している（既存の挙動）
-                    AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{_sa.name}': <none>");
                     var parts = new List<string>();
                     (ctx?.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
-                    AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
+                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
                 }
             }
             catch { }
@@ -65,7 +65,7 @@ namespace DS4Windows.Processing.Actions
             {
                 int count = 0;
                 try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
-                AppLogger.LogDebug($"SpecialAction GyroCalibrate: device={dev}, name={_sa.name}, index={_actionIndex}, ActionEntries={count}");
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction GyroCalibrate: device={dev}, name={_sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
             catch { }
         }

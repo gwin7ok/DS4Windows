@@ -1,7 +1,6 @@
 using DS4Windows.Core.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
@@ -90,22 +89,27 @@ namespace DS4Windows.Processing.Services
             {
                 queue.Dequeue();
             }
-            if (queue.Any(oldValues =>
+            // 毎フレーム呼ばれるため、LINQ のラムダ（捕捉・デリゲート・列挙子の割り当て）を使わず、foreach で調べる
+            bool touchesMiddle = false;
+            double deltaSquared = delta * delta;
+            foreach (DS4TimedStickAxisValue oldValues in queue)
             {
                 double distanceSquared = Math.Pow(axisXValue - oldValues.x, 2) + Math.Pow(axisYValue - oldValues.y, 2);
-                if (distanceSquared >= (delta * delta))
+                if (distanceSquared >= deltaSquared)
                 {
                     //Checks if the line between two points touches a 15 unit circle in the middle
                     double t = ((128 - axisXValue) * (oldValues.x - axisXValue) + (128 - axisYValue) * (oldValues.y - axisYValue)) / distanceSquared;
                     t = Math.Max(0, Math.Min(1, t));
                     double distanceToMiddleSquared = Math.Pow(128 - (axisXValue + t * (oldValues.x - axisXValue)), 2) + Math.Pow(128 - (axisYValue + t * (oldValues.y - axisYValue)), 2);
-                    return distanceToMiddleSquared <= 15 * 15;
+                    if (distanceToMiddleSquared <= 15 * 15)
+                    {
+                        touchesMiddle = true;
+                        break;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
-            }))
+            }
+
+            if (touchesMiddle)
             {
                 x = y = 128;
             }
