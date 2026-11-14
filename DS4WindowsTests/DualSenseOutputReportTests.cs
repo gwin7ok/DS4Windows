@@ -71,6 +71,7 @@ namespace DS4WindowsTests
 
         private static string Capture(bool bluetooth, Scenario s)
         {
+            new Crc32Algorithm();   // CRC の表を初期化する（アプリは起動時に初期化する。ほかのテストの実行順に左右されないため）
             var transport = bluetooth
                 ? new FakeHidTransport(inputReportByteLength: 78, outputReportByteLength: 78, vendorId: 0x054C, productId: 0x0CE6)
                 : new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 48, vendorId: 0x054C, productId: 0x0CE6);
@@ -129,9 +130,19 @@ namespace DS4WindowsTests
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
-        public void TheBluetoothReport_MatchesTheRecordedBytes(int scenario)
+        public void TheBluetoothReport_MatchesTheRecordedBytes_AndEndsWithTheCrcOfThem(int scenario)
         {
-            Assert.Equal(BtGolden[scenario], Capture(true, Scenarios[scenario]));
+            byte[] report = Convert.FromHexString(Capture(true, Scenarios[scenario]));
+
+            // 末尾の CRC32（74〜77）を除く 74 バイトが、記録と一致する
+            Assert.Equal(BtGolden[scenario].Substring(0, 74 * 2), Convert.ToHexString(report, 0, 74));
+
+            // 末尾の 4 バイトは、先頭に 0xA2 を付けた先頭 74 バイトの CRC32
+            uint crc = ~Crc32Algorithm.Compute(new byte[] { 0xA2 });
+            int start = 0;
+            int size = 74;
+            crc = ~Crc32Algorithm.CalculateFasterBT78Hash(ref crc, ref report, ref start, ref size);
+            Assert.Equal(crc, (uint)(report[74] | report[75] << 8 | report[76] << 16 | report[77] << 24));
         }
     }
 }
