@@ -5,7 +5,7 @@ using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase13-Step6 6-d: <see cref="IProfileLoadTarget"/> の実装（DI の Singleton。状態なし）。

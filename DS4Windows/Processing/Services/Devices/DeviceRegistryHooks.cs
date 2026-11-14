@@ -7,7 +7,7 @@ using DS4Windows.Input.Hid;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Input.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary><see cref="IDeviceRegistryHooks"/> の実装（DI の Singleton）。<c>ControlService</c> にあったフックを、そのまま移したもの。</summary>
     public sealed class DeviceRegistryHooks : IDeviceRegistryHooks

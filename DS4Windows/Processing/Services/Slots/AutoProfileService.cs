@@ -7,7 +7,7 @@ using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     public class AutoProfileService : IAutoProfileService
     {

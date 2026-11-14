@@ -1,4 +1,5 @@
 using DS4Windows.Processing.Touchpad;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4Windows.Processing.Abstractions
 {

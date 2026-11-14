@@ -3,7 +3,7 @@ using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase14b-Step14（決定 D14）: <see cref="ISpecialActionRuntimeReset"/> の実装（DI の Singleton）。

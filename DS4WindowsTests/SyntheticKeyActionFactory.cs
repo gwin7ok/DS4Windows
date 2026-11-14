@@ -1,6 +1,7 @@
 
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

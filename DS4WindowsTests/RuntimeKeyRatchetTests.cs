@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -26,14 +29,14 @@ namespace DS4WindowsTests
             ["DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs"] = (18, 0),   // Phase10-Step4d W4: ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
             ["DS4Windows/Core/Settings/ProfileActions.cs"] = (0, 1),
             ["DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs"] = (6, 0),
-            ["DS4Windows/Processing/Services/AutoProfileService.cs"] = (2, 0),
-            ["DS4Windows/Processing/Services/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
-            ["DS4Windows/Processing/Services/FirstReportActionLogger.cs"] = (1, 0),   // InputReportProcessor から、最初のレポートのログを切り出した（合計は増えていない）
-            ["DS4Windows/Processing/Services/InputReportProcessor.cs"] = (0, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
-            ["DS4Windows/Processing/Services/IpcCommandProcessor.cs"] = (2, 0),   // Phase13-Step11 11-b: IPC コマンド（loadprofile／query）の実行を MainWindow.Ipc.cs から移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Slots/AutoProfileService.cs"] = (2, 0),
+            ["DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Connection/FirstReportActionLogger.cs"] = (1, 0),   // InputReportProcessor から、最初のレポートのログを切り出した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs"] = (0, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs"] = (2, 0),   // Phase13-Step11 11-b: IPC コマンド（loadprofile／query）の実行を MainWindow.Ipc.cs から移した（合計は増えていない）
             ["DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs"] = (1, 0),
-            ["DS4Windows/Processing/Services/ProfileActionProvider.cs"] = (0, 2),
-            ["DS4Windows/Processing/Services/ProfileApplicationService.cs"] = (7, 4),
+            ["DS4Windows/Processing/Services/Slots/ProfileActionProvider.cs"] = (0, 2),
+            ["DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs"] = (7, 4),
             ["DS4Windows/Core/Persistence/ProfilePresets.cs"] = (0, 7),
             ["DS4Windows/Core/Persistence/ProfileRepository.cs"] = (6, 4),
             ["DS4Windows/Core/Persistence/ProfileSections/ProfileActionsLoadSection.cs"] = (0, 7),

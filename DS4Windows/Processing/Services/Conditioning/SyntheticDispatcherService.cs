@@ -6,7 +6,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase7-Step8 W3（Q6＝A）: <see cref="ISyntheticDispatcher"/> の実装。旧 静的クラス <c>SyntheticDispatcher</c> の処理を、

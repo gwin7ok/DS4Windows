@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Phase9 9-E E-6c（Phase9-E6-Plan.md §3.1）: <see cref="IInputDeviceModule"/> の共通の土台。種類によって何もしないメンバーは、ここで何もしない（旧コードで該当する分岐がなかったもの）。

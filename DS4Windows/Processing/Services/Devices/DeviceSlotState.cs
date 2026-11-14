@@ -4,8 +4,9 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Connection;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Phase13-Step5: <see cref="IDeviceSlotState"/> の実装（DI の Singleton。依存なし）。

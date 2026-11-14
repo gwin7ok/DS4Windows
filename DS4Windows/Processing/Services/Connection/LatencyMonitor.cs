@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="ILatencyMonitor"/> の実装（DI の Singleton）。

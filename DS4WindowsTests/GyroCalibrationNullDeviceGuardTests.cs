@@ -2,9 +2,10 @@ using DS4Windows.Core.Model;
 using System.IO;
 using System.Text.RegularExpressions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// <see cref="IMouseConversionStage"/> の実装。4 つの計算の部品への委譲だけを持つ（計算と状態は各部品のまま。値は各部品の特性化テストが守る）。

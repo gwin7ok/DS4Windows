@@ -9,6 +9,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -68,7 +69,7 @@ namespace DS4WindowsTests
             Assert.Same(synthetic.DeviceState, Field(typeof(Mapping), mapping, "deviceState"));
 
             var bootstrapper = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>();
-            Assert.Same(stick, Field(typeof(DS4Windows.Processing.Services.RuntimeBootstrapper), bootstrapper, "_stickMotion"));
+            Assert.Same(stick, Field(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper), bootstrapper, "_stickMotion"));
         }
     }
 }

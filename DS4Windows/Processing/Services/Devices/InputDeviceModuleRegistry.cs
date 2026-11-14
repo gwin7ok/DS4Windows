@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DS4Windows.Core.Model;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Phase9 9-E E-6c: <see cref="IInputDeviceModuleRegistry"/> の実装（DI の Singleton）。DI に登録された <see cref="IInputDeviceModule"/> の全部を受け取り、

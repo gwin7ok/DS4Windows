@@ -6,7 +6,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     public class ProfileActionProvider : IProfileActionProvider
     {

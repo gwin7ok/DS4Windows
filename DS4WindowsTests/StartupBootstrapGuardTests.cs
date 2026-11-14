@@ -6,6 +6,7 @@ using Xunit.Abstractions;
 using DS4Windows.Composition;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -90,7 +91,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.DoesNotContain("InputDeviceRegistry.reEnableDevice", text);
-            Assert.Contains("new DS4Windows.Processing.Services.InputDeviceRegistryAdapter()", text);
+            Assert.Contains("new DS4Windows.Processing.Services.Devices.InputDeviceRegistryAdapter()", text);
             Assert.Contains(".ReEnableDevice(parser.DeviceInstanceId)", text);
         }
     }

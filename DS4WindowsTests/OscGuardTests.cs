@@ -7,6 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -56,7 +57,7 @@ namespace DS4WindowsTests
         {
 
             // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeFeatureSwitch.cs");
+            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
             Assert.Contains("_osc.ChangeSenderStatus(state)", sw);

@@ -3,7 +3,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase9 9-A(1) (b)（Phase9-A1-Plan.md §2）: <see cref="IStickDeadZoneProcessor"/> の実装（DI の Singleton。状態は持たない）。

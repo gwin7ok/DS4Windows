@@ -6,8 +6,8 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Persistence;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input;
-using DS4Windows.Processing.Services;
 using Xunit;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

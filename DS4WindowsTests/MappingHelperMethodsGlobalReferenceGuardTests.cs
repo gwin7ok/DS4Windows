@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -34,7 +35,7 @@ namespace DS4WindowsTests
             // Phase9 9-B: 旧 Mapping.IsUsingGyroForControls は ControlActivityReader（引数の settings）へ移った。Mapping.cs には残っていないことと、移し先の判定を確かめる
             Assert.DoesNotContain("IsUsingGyroForControls", text);
 
-            string readerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/ControlActivityReader.cs");
+            string readerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ControlActivityReader.cs");
             if (readerPath == null) return;
             string reader = File.ReadAllText(readerPath);
             Assert.Contains("settings.ForSlot(device).Gyro.OutputMode == GyroOutMode.Controls", reader);

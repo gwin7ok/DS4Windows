@@ -43,6 +43,7 @@ using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows
 {
@@ -834,7 +835,7 @@ namespace DS4Windows
                 // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な InputDeviceRegistry.reEnableDevice の直接呼び出しをやめ、IInputDeviceRegistry の契約を通す。
                 // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
                 // 差: デバイスのインスタンス ID が空のときは、アダプタが何もせず戻る（旧: 例外で終了していた。不正な起動引数の場合のみ）。
-                DS4Windows.Processing.Abstractions.IInputDeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.InputDeviceRegistryAdapter();
+                DS4Windows.Processing.Abstractions.IInputDeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.Devices.InputDeviceRegistryAdapter();
                 reEnableRegistry.ReEnableDevice(parser.DeviceInstanceId);
                 runShutdown = false;
                 exitApp = true;

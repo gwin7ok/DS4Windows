@@ -4,7 +4,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// <see cref="IProfileProgramLauncher"/> の実装（DI の Singleton。状態なし）。

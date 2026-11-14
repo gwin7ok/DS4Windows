@@ -9,7 +9,7 @@ using DS4Windows.Input;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="IMacroStepExecutor"/> の実装（DI の Singleton）。

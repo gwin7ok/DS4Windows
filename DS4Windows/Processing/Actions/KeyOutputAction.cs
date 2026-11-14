@@ -4,6 +4,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4Windows.Processing.Actions
 {

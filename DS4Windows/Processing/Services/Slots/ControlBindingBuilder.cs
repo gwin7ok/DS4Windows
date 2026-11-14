@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md §3.2）: <see cref="IControlBindingBuilder"/> の実装（DI の Singleton）。

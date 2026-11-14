@@ -4,7 +4,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase9 MapCustom の分割 M1（Phase9-MapCustom-Plan.md §3）: <see cref="ISyntheticInputCommitter"/> の実装（DI の Singleton）。

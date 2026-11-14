@@ -4,7 +4,8 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -24,7 +25,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheConnection_KeepsTheOriginalOrder()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (text == null) return;
 
             string[] order =
@@ -61,7 +62,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheReportSubscription_CallsTheProcessorOnReport_WithTheSlotIndex()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.Contains("inputReport.OnReport(sender, e, tempIdx);", text);   // Phase13-Step5b: 旧 host.OnReport
@@ -73,7 +74,7 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceConnector>(TestHost.GetService<IDeviceConnector>());
             Assert.Same(TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceConnector>());
 
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceConnector が ControlService を参照している");
@@ -84,12 +85,12 @@ namespace DS4WindowsTests
         {
 
             // Phase9 9-E E-6f2: Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
-            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecycle == null) return;
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
             // Phase13-Step5b: 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
-            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/InputReportProcessor.cs");
+            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs");
             Assert.Contains("public void OnReport(InputDeviceCore device, EventArgs e, int ind)", processor);
         }
     }

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -17,7 +18,7 @@ namespace DS4WindowsTests
         [Fact]
         public void CompleteProfileApplication_CleansUpInTheFixedOrder()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ProfileApplicationService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

@@ -34,6 +34,7 @@ using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Parsers;
+using DS4Windows.Processing.Services.Connection;
 
 
 namespace DS4Windows.Input

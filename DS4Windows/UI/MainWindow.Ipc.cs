@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media;
 using DS4Windows.Core.Logging;
 using DS4Windows.UI.ViewModels;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4Windows.UI
 {

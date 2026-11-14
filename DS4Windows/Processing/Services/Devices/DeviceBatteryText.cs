@@ -3,7 +3,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Phase13-Step6 6-b: <see cref="IDeviceBatteryText"/> の実装（DI の Singleton。状態なし）。

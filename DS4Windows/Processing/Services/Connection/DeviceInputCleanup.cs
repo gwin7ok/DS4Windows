@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// <see cref="IDeviceInputCleanup"/> の実装。旧 <c>Mapping.HandleDeviceDisconnect</c> の、合成キーの解放、マクロのキューの消去、ボタン／キーのコントローラーの解除を、

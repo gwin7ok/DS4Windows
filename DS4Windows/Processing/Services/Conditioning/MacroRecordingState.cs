@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// <see cref="IMacroRecordingState"/> の実装。記録中のフラグは入力レポートの処理（<see cref="IInputReportProcessor"/>）が持つ。

@@ -4,7 +4,7 @@ using DS4Windows.Input.Devices;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Core.Model;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// <see cref="IControllerSlotCommands"/> の実装。スロットの状態の持ち主（<see cref="IDeviceSlotState"/>）から機器を引いて操作する。

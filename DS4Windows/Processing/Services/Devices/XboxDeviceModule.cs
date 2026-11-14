@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Xbox 系コントローラーの部品。設定の有効／無効のほか、接続のとき、設定「USB の親を隠す」に従って、USB 接続の機器だけ、HidHide で元の XInput の機器を隠す（二重入力を防ぐ）。Bluetooth 接続は対象外（DS4 と同じく、利用者が HidHide で隠す）。

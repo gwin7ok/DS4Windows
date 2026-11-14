@@ -6,6 +6,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -70,14 +71,14 @@ namespace DS4WindowsTests
             var store = TestHost.GetService<DS4Windows.Core.Settings.BackingStore>();
             var handler = (Action)typeof(DS4Windows.Core.Settings.BackingStore).GetField("_actionsLoadedHandler", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(store);
             Assert.NotNull(handler);
-            Assert.Same(TestHost.GetService<DS4Windows.Processing.Services.ActionsLoadedRuntimeReset>(), handler.Target);
+            Assert.Same(TestHost.GetService<DS4Windows.Processing.Services.Slots.ActionsLoadedRuntimeReset>(), handler.Target);
             Assert.Same(TestHost.GetService<DS4Windows.Processing.Synthetic.SyntheticInputState>(), TestHost.GetService<DS4Windows.Processing.Synthetic.SyntheticInputState>());
         }
 
         [Fact]
         public void ResetHandler_KeepsTheOrderAndTheLogMessage()
         {
-            string reset = SourceText.ReadCode("DS4Windows/Processing/Services/ActionsLoadedRuntimeReset.cs");
+            string reset = SourceText.ReadCode("DS4Windows/Processing/Services/Slots/ActionsLoadedRuntimeReset.cs");
             if (reset == null) return;
 
             int state = reset.IndexOf("_syntheticInput.ResetAll();");

@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Phase7-Step8 W2（Q3＝A）: <see cref="IKeyButtonControllerRegistry"/> の実装。旧 <c>Mapping</c> の静的な登録簿

@@ -5,7 +5,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase9 9-A(2)-B（Phase9-A2-Plan.md）: <see cref="IStickInputConditioner"/> の実装（DI の Singleton。状態は持たない）。

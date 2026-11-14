@@ -11,7 +11,8 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Conditioning;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -80,7 +81,7 @@ namespace DS4WindowsTests
         public void ButtonMouseMovementCalculator_CalculateIsAtMostTwoHundredLines()
         {
             // Phase9 完了条件: 巨大メソッドは 200 行以下（getMouseMapping 相当は 318 行 → Q5 の畳み込みで縮小）
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ButtonMouseMovementCalculator.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Conditioning/ButtonMouseMovementCalculator.cs");
             if (path == null) return;
 
             string text = File.ReadAllText(path);

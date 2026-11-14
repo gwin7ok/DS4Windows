@@ -2,7 +2,7 @@ using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Input.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// Phase7-Step10d W3（Q4＝A）: <see cref="IDeviceLayerSettings"/> の実装。アプリ設定とプロファイル設定のサービスを読むだけの薄い窓口

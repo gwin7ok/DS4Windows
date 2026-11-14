@@ -10,8 +10,9 @@ using DS4Windows.Output;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
 using DS4Windows.UI.Services;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

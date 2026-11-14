@@ -6,7 +6,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// <see cref="IOutputServicesLifecycle"/> の実装（DI の Singleton）。<see cref="ServiceLifecycle"/> の <c>Start</c>／<c>Stop</c> にあった、

@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Processing.Services.Conditioning;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// 接続後の最初のレポートで、プロファイルのアクションが見つからないログを 1 回出す（プロファイルの適用ごとに 1 回。抑制は尊重する）。

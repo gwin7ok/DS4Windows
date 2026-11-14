@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -23,7 +23,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRemoval_KeepsTheCleanupOrder()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (text == null) return;
 
             // 仮想パッドの取り外し → 合成入力のコミット → エンジンの切断 → スロットの解放 → 切断の通知 → 状態の初期化 → スロット管理の解除 → OSC の通知
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
             Assert.IsType<DeviceDisconnectHandler>(TestHost.GetService<IDeviceDisconnectHandler>());
             Assert.Null(typeof(IDeviceDisconnectHandler).Assembly.GetType("DS4Windows.DI.IDeviceSlotHost"));   // Phase13-Step5b: ホストの窓口は削除した
 
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
+            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceDisconnectHandler が ControlService を参照している");
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
 
             // Phase9 9-E E-6f1: イベントの購読先の委譲は不要になった（接続の組み立て［DeviceConnector］が、ハンドラーを直接購読する）
 
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/DeviceConnector.cs");
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (connector == null) return;
             // イベントの購読の登録順は変えない（Removal: 自分 → レジストリ、SyncChange: 自分 → レジストリ）
             string text = connector;

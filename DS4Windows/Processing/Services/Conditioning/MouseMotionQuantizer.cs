@@ -2,7 +2,7 @@
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="IMouseMotionQuantizer"/> の実装（DI の Singleton）。

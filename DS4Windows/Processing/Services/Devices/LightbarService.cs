@@ -8,7 +8,7 @@ using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
     /// <see cref="ILightbarService"/> の実装。ライトバーの色（虹色、電池連動、点滅、充電中、無操作のフェード、強制表示、終了時の消灯、距離プロファイル）を計算する。

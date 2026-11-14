@@ -8,7 +8,8 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -85,7 +86,7 @@ namespace DS4WindowsTests
         public void TheFirstConnection_UsesTheOlderProfilePath_AndAReconnectionUsesTheSelectedProfile()
         {
             // Phase9 9-E E-6a: プロファイルの選択は ConnectionProfileSelector へ移った
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ConnectionProfileSelector.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (path == null) return;
 
             string body = SourceText.Method(File.ReadAllText(path), "public bool ApplyOnConnect(");
@@ -129,8 +130,8 @@ namespace DS4WindowsTests
                 "DS4Windows/Core/Settings/BackingStore.cs",
                 "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs",                // アプリ設定の読込
                 "DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs",
-                "DS4Windows/Processing/Services/ConnectionProfileSelector.cs",   // 初回接続の既定（Phase9 9-E E-6a: ControlService から移した）
-                "DS4Windows/Processing/Services/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
+                "DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs",   // 初回接続の既定（Phase9 9-E E-6a: ControlService から移した）
+                "DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
                 "DS4Windows/Core/Persistence/ProfileRepository.cs",
                 "DS4Windows/UI/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除
             }.OrderBy(x => x).ToArray(), files);
@@ -166,13 +167,13 @@ namespace DS4WindowsTests
         {
 
             // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
-            string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/DeviceDisconnectHandler.cs");
+            string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
             string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
             // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
-            string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/ServiceLifecycle.cs");
+            string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
             string stop = SourceText.Method(File.ReadAllText(lifecyclePath), "public bool Stop(");
             Assert.DoesNotContain("HandleDeviceDisconnect", stop);

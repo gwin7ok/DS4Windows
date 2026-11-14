@@ -8,6 +8,7 @@ using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -143,7 +144,7 @@ namespace DS4WindowsTests
         /// </summary>
         public void PublishControlsOnly()
         {
-            var builder = new DS4Windows.Processing.Services.ControlBindingBuilder(_inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort, manager: TestActions.Manager, controllers: TestActions.Controllers);
+            var builder = new DS4Windows.Processing.Services.Slots.ControlBindingBuilder(_inner.Settings, TestHost.GetService<IMacroPlayer>(), ExtrasPort, manager: TestActions.Manager, controllers: TestActions.Controllers);
             TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 

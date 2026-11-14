@@ -3,7 +3,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase9 9-E E-6a（Phase9-E6-Plan.md）: <see cref="IConnectionProfileSelector"/> の実装（DI の Singleton。状態なし）。

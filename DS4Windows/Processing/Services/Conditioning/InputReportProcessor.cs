@@ -7,8 +7,10 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Devices;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// Phase13-Step5b: <see cref="IInputReportProcessor"/> の実装（DI の Singleton）。

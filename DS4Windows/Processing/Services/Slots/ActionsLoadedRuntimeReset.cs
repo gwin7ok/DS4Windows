@@ -2,7 +2,7 @@ using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Logging;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase7-Step7 W2（Q4＝A）: <c>BackingStore.ActionsLoaded</c> の購読者。Actions.xml の読み込み後に、合成入力とマクロの実行時状態を新品へ戻す。

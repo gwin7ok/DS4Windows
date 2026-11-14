@@ -3,7 +3,7 @@ using System.Threading;
 using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// <see cref="IBackendFailureHandler"/> の実装（DI の Singleton）。<c>ControlService.OutputslotMan_ViGEmFailure</c> をそのまま移したもの。

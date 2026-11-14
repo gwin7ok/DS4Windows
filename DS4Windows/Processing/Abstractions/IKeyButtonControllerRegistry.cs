@@ -1,5 +1,7 @@
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services.Devices;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing.Abstractions
 {
@@ -7,7 +9,7 @@ namespace DS4Windows.Processing.Abstractions
     /// Phase7-Step8 W2（Q3＝A）: デバイス × アクション名ごとの <see cref="KeyButtonActionController"/> の登録簿（生成・再利用・破棄）。
     /// 旧: <c>Mapping</c> の静的フィールド <c>keyButtonControllers</c>／<c>keyButtonControllerLock</c> と関連メソッド。
     /// <c>Mapping</c>、<c>ProfileApplicationService</c>、<c>ActionManager</c>（静的ファサード）が使う。
-    /// 実装は <c>DS4Windows.Processing.Services.KeyButtonControllerRegistry</c>。
+    /// 実装は <c>DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry</c>。
     /// </summary>
     public interface IKeyButtonControllerRegistry
     {

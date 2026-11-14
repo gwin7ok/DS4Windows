@@ -10,7 +10,7 @@ using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
         public void TheApplyPath_UsesTheResolvedTarget()
         {
             // ApplyFromAction は、解決した名前で切り替える（details をそのまま使わない）
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/ProfileApplicationService.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs");
             if (path == null) return;
 
             string source = File.ReadAllText(path);

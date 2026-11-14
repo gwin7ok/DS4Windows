@@ -6,7 +6,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary><see cref="ITouchpadMouseFactory"/> の実装（DI の Singleton。状態なし）。</summary>
     public sealed class TouchpadMouseFactory : ITouchpadMouseFactory

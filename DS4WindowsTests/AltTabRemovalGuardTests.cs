@@ -7,6 +7,7 @@ using System.Threading;
 using Xunit;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {
@@ -24,8 +25,8 @@ namespace DS4WindowsTests
             // Phase9 9-C: 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
             string text = SourceText.Read("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
-            text += SourceText.Read("DS4Windows/Processing/Services/MacroPlayback.cs") ?? string.Empty;
-            text += SourceText.Read("DS4Windows/Processing/Services/MacroStepExecutor.cs") ?? string.Empty;
+            text += SourceText.Read("DS4Windows/Processing/Services/Conditioning/MacroPlayback.cs") ?? string.Empty;
+            text += SourceText.Read("DS4Windows/Processing/Services/Conditioning/MacroStepExecutor.cs") ?? string.Empty;
 
             foreach (string token in new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow", "164/9/9/164", "18/9/9/18", "macro[0] == 164", "macroLst[0] == 164", "macroArr[0] == 164" })
                 Assert.DoesNotContain(token, text);

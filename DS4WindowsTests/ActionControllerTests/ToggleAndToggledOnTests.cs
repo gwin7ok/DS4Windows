@@ -2,6 +2,7 @@ using System;
 using DS4WindowsTests;
 using Xunit;
 using DS4Windows.Processing.Actions;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows.Actions.Tests
 {
@@ -17,12 +18,12 @@ namespace DS4Windows.Actions.Tests
         private sealed class Parts
         {
             public readonly DefaultActionManager Manager = new DefaultActionManager(TestRepositoryFactory.MappingProvider);
-            public readonly DS4Windows.Processing.Services.KeyButtonControllerRegistry Registry;
+            public readonly DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry Registry;
 
             public Parts(System.Func<System.Func<DS4Windows.Processing.RepeatHelper>, IRepeater> repeaterFactory = null)
             {
                 var controllerRegistry = new DefaultControllerRegistry();
-                Registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(
+                Registry = new DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry(
                     new DefaultKeyButtonActionControllerFactory(controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System, repeaterFactory), controllerRegistry, Manager, DS4WindowsTests.TestActions.Dispatcher, System.TimeProvider.System);
             }
         }
@@ -52,7 +53,7 @@ namespace DS4Windows.Actions.Tests
 
             // Simulate explicit Toggle-OFF by invoking controller's OnSATriggerToggleOff
             // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
-            var dictField = typeof(DS4Windows.Processing.Services.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var dictField = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
             // Find controller instance matching action name (sa.name) and invoke ToggleOff
             if (dict != null)
@@ -144,7 +145,7 @@ namespace DS4Windows.Actions.Tests
 
                 // Inspect mapping controllers and invoke TriggerOnce on any fake repeater found
                 // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
-                var dictField = typeof(DS4Windows.Processing.Services.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                var dictField = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
                 var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
                 if (dict != null)
                 {

@@ -12,7 +12,7 @@ using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Core.Model;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// Phase9 9-E E-6f2（Phase9-E6-Plan.md §9）: <see cref="IServiceLifecycle"/> の実装（DI の Singleton）。

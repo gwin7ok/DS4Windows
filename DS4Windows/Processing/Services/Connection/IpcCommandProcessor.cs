@@ -8,7 +8,7 @@ using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// <see cref="IIpcCommandProcessor"/> の実装（Phase13-Step11 11-b）。旧 <c>MainWindow.Ipc.cs</c> の 9 個の <c>Ipc*</c> を、そのまま移したもの

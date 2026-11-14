@@ -7,8 +7,9 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.Processing.Services.Slots;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
     /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: <see cref="IDeviceDisconnectHandler"/> の実装（DI の Singleton。状態なし）。

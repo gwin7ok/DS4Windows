@@ -3,7 +3,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// <see cref="IProfileSlotApplier"/> の既定実装。接続時などに、指定スロットへ通常プロファイルを適用する。

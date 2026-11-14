@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
@@ -41,7 +42,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheLightsOffWrite_RunsBeforeTheFlagIsSet_AndOnlyWhenTurnedOff()
         {
-            string code = Source("DS4Windows/Processing/Services/DeviceConnectionSetup.cs");
+            string code = Source("DS4Windows/Processing/Services/Connection/DeviceConnectionSetup.cs");
             if (code == null) return;
 
             int off = code.IndexOf("if (!_profileSettings.GetEnableOutputDataToDS4(ind)) device.WriteOutputOffOnce();", StringComparison.Ordinal);

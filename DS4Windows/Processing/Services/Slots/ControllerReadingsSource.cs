@@ -4,7 +4,7 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// <see cref="IControllerReadingsSource"/> の実装。機器の読み取りの待機（<c>ReadWaitEv</c>）を取って、入力レポートの処理と競合しないようにコピーする。

@@ -23,6 +23,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Persistence.Dto;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Core.Persistence
 {

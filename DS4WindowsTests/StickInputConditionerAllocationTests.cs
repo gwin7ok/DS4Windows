@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Services;
 using Xunit;
+using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {

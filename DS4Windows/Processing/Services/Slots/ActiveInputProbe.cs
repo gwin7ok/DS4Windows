@@ -2,7 +2,7 @@ using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="DS4Windows.Processing.Abstractions.IActiveInputProbe"/> の実装（DI の Singleton。状態は持たない）。

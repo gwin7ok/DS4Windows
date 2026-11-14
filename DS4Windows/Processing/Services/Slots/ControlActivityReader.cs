@@ -3,7 +3,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="DS4Windows.Processing.Abstractions.IControlActivityReader"/> の実装（DI の Singleton。状態は持たない）。

@@ -9,8 +9,8 @@ using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Xbox;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services;
 using Xunit;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

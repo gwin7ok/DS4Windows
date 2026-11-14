@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
 
-namespace DS4Windows.Processing.Services
+namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
     /// <see cref="ICurveAndDeadzoneStage"/> の実装。旧 <c>Mapping.SetCurveAndDeadzone</c> の本体を、そのまま移したもの（式・順序は不変）。

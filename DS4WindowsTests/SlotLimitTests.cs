@@ -11,6 +11,7 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -73,9 +74,9 @@ namespace DS4WindowsTests
             // デバイスと無関係な定数表（バッテリー表示の時間表など）は許可リストに入れる（理由を書くこと）
             var notPerDevice = new HashSet<string> { "BatteryIndicatorDurations" };
             var wrong = new List<string>();
-            var service = new DS4Windows.Processing.Services.LightbarService(
+            var service = new DS4Windows.Processing.Services.Devices.LightbarService(
                 TestHost.GetService<DS4Windows.Core.Abstractions.IProfileSettingsService>(), new DS4Windows.Core.Model.LightbarOverrides(), TimeProvider.System);
-            foreach (FieldInfo field in typeof(DS4Windows.Processing.Services.LightbarService).GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (FieldInfo field in typeof(DS4Windows.Processing.Services.Devices.LightbarService).GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 if (!field.FieldType.IsArray || notPerDevice.Contains(field.Name)) continue;
                 if (field.GetValue(field.IsStatic ? null : service) is Array array && array.Length != ControllerLimits.MaxControllerCount)

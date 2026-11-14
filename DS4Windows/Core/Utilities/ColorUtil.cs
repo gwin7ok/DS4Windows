@@ -2,6 +2,7 @@
 using System.Drawing;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows.Core.Utilities
 {

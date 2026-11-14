@@ -5,6 +5,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
+using DS4Windows.Processing.Services.Connection;
+using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
@@ -27,7 +29,7 @@ namespace DS4WindowsTests
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
             // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数と、コンテナが組み立てた結果を確かめる（AppHost を使わないことは RemovedApiRuleTests）
-            Assert.Contains(typeof(DS4Windows.Processing.Services.DeviceRegistryHooks).GetConstructors().Single().GetParameters(),
+            Assert.Contains(typeof(DS4Windows.Processing.Services.Devices.DeviceRegistryHooks).GetConstructors().Single().GetParameters(),
                 p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IElevatedProcessLauncher));
             Assert.NotNull(TestHost.GetService<DS4Windows.Core.Settings.BackingStore>());
         }
@@ -76,7 +78,7 @@ namespace DS4WindowsTests
         public void OutputSlotPersistence_GoesThroughTheContract()
         {
             string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
-            string bootstrapper = SourceText.ReadCode("DS4Windows/Processing/Services/RuntimeBootstrapper.cs");
+            string bootstrapper = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeBootstrapper.cs");
             if (app == null || bootstrapper == null) return;
 
             Assert.Contains("_outputSlotService.LoadOutputSlots()", app);
