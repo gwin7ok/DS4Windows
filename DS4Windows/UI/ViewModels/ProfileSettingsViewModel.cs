@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows;
@@ -181,10 +182,12 @@ namespace DS4Windows.UI.ViewModels
             Lightbar = new LightbarSettingsViewModel(this.profileSettings.ForSlot(device).Lightbar, lightbar, environmentService, targetDevice);
             Sticks = new StickSettingsViewModel(this.profileSettings.ForSlot(device).Sticks);
             // スティックの出力モードを変えたら、保存用のプロファイルの印を更新する
-            Sticks.PropertyChanged += (s, e) =>
+            PropertyChangedEventHandler stickOutputChanged = (s, e) =>
             {
-                if (e.PropertyName == nameof(StickSettingsViewModel.LSOutputIndex) || e.PropertyName == nameof(StickSettingsViewModel.RSOutputIndex)) CalcProfileFlags(s, EventArgs.Empty);
+                if (e.PropertyName == nameof(StickSideViewModel.OutputIndex)) CalcProfileFlags(s, EventArgs.Empty);
             };
+            Sticks.Left.PropertyChanged += stickOutputChanged;
+            Sticks.Right.PropertyChanged += stickOutputChanged;
             Triggers = new TriggerSettingsViewModel(this.profileSettings.ForSlot(device).Triggers);
             Touchpad = new TouchpadSettingsViewModel(this.profileSettings.ForSlot(device).Touchpad, environmentService);
             Gyro = new GyroSettingsViewModel(this.profileSettings.ForSlot(device).Gyro, loadTarget, environmentService);

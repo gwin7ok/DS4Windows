@@ -35,6 +35,8 @@
 | 4 | ViewModel（左右で 2 か所） | `UI/ViewModels/StickSettingsViewModel.cs:304`、`310` |
 | 5 | XAML（左右で 2 か所） | `UI/StickSettingsPanel.xaml` |
 
+（2026-11-14: Phase33 で、4 は `StickSideViewModel`、5 は `StickSideSettingsView.xaml` の 1 か所ずつになった。手順は `Model-Diagram/02-Extension-Guide.md` の 5 章）
+
 既定値・リセット・プリセット（`BackingStore` のリセット、`ProfilePresets`）に入れる場合は、さらに 1〜2 か所。
 
 ### 2.4 機種ごとの設定の項目を 1 つ足す

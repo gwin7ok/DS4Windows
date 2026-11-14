@@ -15,19 +15,19 @@ namespace DS4WindowsTests
         public void Radial_UsesSingleValueForBothAxes()
         {
             var vm = ProfileSettingsViewModelTestFactory.Create(0);
-            vm.Sticks.LSMod.deadzoneType = StickDeadZoneInfo.DeadZoneType.Radial;
-            var snap = ReadingsDeadZoneSnapshot.Create(vm, new AxialStickControlViewModel(vm.Sticks.LSMod), new AxialStickControlViewModel(vm.Sticks.RSMod));
-            Assert.Equal(vm.Sticks.LSDeadZone, snap.LsDeadX);
-            Assert.Equal(vm.Sticks.LSDeadZone, snap.LsDeadY);
+            vm.Sticks.Left.Mod.deadzoneType = StickDeadZoneInfo.DeadZoneType.Radial;
+            var snap = ReadingsDeadZoneSnapshot.Create(vm, new AxialStickControlViewModel(vm.Sticks.Left.Mod), new AxialStickControlViewModel(vm.Sticks.Right.Mod));
+            Assert.Equal(vm.Sticks.Left.DeadZone, snap.LsDeadX);
+            Assert.Equal(vm.Sticks.Left.DeadZone, snap.LsDeadY);
         }
 
         [Fact]
         public void Axial_UsesAxialViewModelValues()
         {
             var vm = ProfileSettingsViewModelTestFactory.Create(0);
-            vm.Sticks.RSMod.deadzoneType = StickDeadZoneInfo.DeadZoneType.Axial;
-            var right = new AxialStickControlViewModel(vm.Sticks.RSMod);
-            var snap = ReadingsDeadZoneSnapshot.Create(vm, new AxialStickControlViewModel(vm.Sticks.LSMod), right);
+            vm.Sticks.Right.Mod.deadzoneType = StickDeadZoneInfo.DeadZoneType.Axial;
+            var right = new AxialStickControlViewModel(vm.Sticks.Right.Mod);
+            var snap = ReadingsDeadZoneSnapshot.Create(vm, new AxialStickControlViewModel(vm.Sticks.Left.Mod), right);
             Assert.Equal(right.DeadZoneX, snap.RsDeadX);
             Assert.Equal(right.DeadZoneY, snap.RsDeadY);
         }
@@ -36,14 +36,14 @@ namespace DS4WindowsTests
         public void OtherType_LeavesValuesUnset_AndCopiesTheRest()
         {
             var vm = ProfileSettingsViewModelTestFactory.Create(0);
-            vm.Sticks.LSMod.deadzoneType = StickDeadZoneInfo.DeadZoneType.Radial;
-            vm.Sticks.RSMod.deadzoneType = (StickDeadZoneInfo.DeadZoneType)99;
-            var snap = ReadingsDeadZoneSnapshot.Create(vm, new AxialStickControlViewModel(vm.Sticks.LSMod), new AxialStickControlViewModel(vm.Sticks.RSMod));
+            vm.Sticks.Left.Mod.deadzoneType = StickDeadZoneInfo.DeadZoneType.Radial;
+            vm.Sticks.Right.Mod.deadzoneType = (StickDeadZoneInfo.DeadZoneType)99;
+            var snap = ReadingsDeadZoneSnapshot.Create(vm, new AxialStickControlViewModel(vm.Sticks.Left.Mod), new AxialStickControlViewModel(vm.Sticks.Right.Mod));
             Assert.Null(snap.RsDeadX);
             Assert.Null(snap.RsDeadY);
             Assert.Equal(vm.Triggers.L2DeadZone, snap.L2Dead);
             Assert.Equal(vm.SixAxis.SZDeadZone, snap.SixAxisZDead);
-            Assert.Equal(vm.Sticks.LeftStickDriftXAxis, snap.LsDriftX);
+            Assert.Equal(vm.Sticks.Left.DriftXAxis, snap.LsDriftX);
         }
     }
 }
