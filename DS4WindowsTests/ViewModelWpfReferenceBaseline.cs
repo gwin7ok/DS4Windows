@@ -23,7 +23,6 @@
             "DS4Windows.UI.ViewModels.MacroStepItem|System.Windows.Application",
             "DS4Windows.UI.ViewModels.MacroStepItem|System.Windows.Media.Color",
             "DS4Windows.UI.ViewModels.OutBinding|System.Windows.Media.Color",
-            "DS4Windows.UI.ViewModels.PresetMenuHelper|System.Windows.Input.KeyInterop",
             "DS4Windows.UI.ViewModels.RecordBoxViewModel|System.Windows.Media.Color",
             "DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel|System.Windows.Media.Color",
         };
