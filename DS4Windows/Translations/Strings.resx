@@ -1950,4 +1950,12 @@ Suspend support not enabled.</value>
   <data name="LightbarSectionRainbow" xml:space="preserve">
     <value>Rainbow</value>
   </data>
+  <data name="SpecialAction_RemoveConfirm" xml:space="preserve">
+    <value>Remove special action "{0}"?
+
+It will also be removed from every profile.</value>
+  </data>
+  <data name="SpecialAction_DuplicateNotSaved" xml:space="preserve">
+    <value>Special action "{0}" can't be duplicated because it isn't saved in Actions.xml.</value>
+  </data>
 </root>
