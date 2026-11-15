@@ -851,9 +851,8 @@ namespace DS4Windows
             }
             else if (parser.Command)
             {
-                // ホストを構築しない短命のクライアント。動いている本体へコマンドを送る
-                new CommandLineClient(new DS4Windows.Core.Platform.IpcMemoryMap()).Run(parser);
-
+                // コマンドの送信は、コンソール種別の DS4WindowsCli.exe が行う（GUI アプリのこの実行ファイルは cmd.exe に待たれず、結果の順序が崩れるため）。
+                // 古い書き方（DS4Windows.exe -command ...）で起動されたときは、何もせず終了する。
                 runShutdown = false;
                 exitApp = true;
                 Current.Shutdown();

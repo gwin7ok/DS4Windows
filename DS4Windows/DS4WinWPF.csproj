@@ -123,6 +123,25 @@
     <Page Remove="Resources\**" />
   </ItemGroup>
   
+	<!-- CLI（-command）は、コンソール種別の DS4WindowsCli.exe に分けた。同じ場所（DS4Windows.exe の隣）へ置く -->
+	<ItemGroup>
+		<ProjectReference Include="..\DS4WindowsCli\DS4WindowsCli.csproj" ReferenceOutputAssembly="false" Private="false" />
+	</ItemGroup>
+
+	<Target Name="CopyCliToOutput" AfterTargets="Build">
+		<ItemGroup>
+			<_CliFiles Include="$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.exe;$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.dll;$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.runtimeconfig.json;$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.deps.json" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_CliFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="AddCliToPublish" BeforeTargets="ComputeResolvedFilesToPublishList">
+		<ItemGroup>
+			<_CliPublish Include="$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.exe;$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.dll;$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.runtimeconfig.json;$(MSBuildThisFileDirectory)..\DS4WindowsCli\bin\$(Platform)\$(Configuration)\DS4WindowsCli.deps.json" />
+			<ResolvedFileToPublish Include="@(_CliPublish)" RelativePath="%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+		</ItemGroup>
+	</Target>
+
 	<ItemGroup>
 		<PackageReference Include="bloomtom.HttpProgress" Version="2.3.2" />
 		<PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.106" />

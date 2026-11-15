@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DS4WinWPF", "DS4Windows\DS4WinWPF.csproj", "{0135A24D-5DBB-483C-9FC5-9A869E23DA9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DS4WindowsCli", "DS4WindowsCli\DS4WindowsCli.csproj", "{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +29,14 @@ Global
 		{6BEB9062-56E7-4A0D-9243-BE43F09A711D}.Debug|x86.Build.0 = Debug|x86
 		{6BEB9062-56E7-4A0D-9243-BE43F09A711D}.Release|x64.ActiveCfg = Release|x64
 		{6BEB9062-56E7-4A0D-9243-BE43F09A711D}.Release|x86.ActiveCfg = Release|x86
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Debug|x64.ActiveCfg = Debug|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Debug|x64.Build.0 = Debug|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Debug|x86.ActiveCfg = Debug|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Debug|x86.Build.0 = Debug|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Release|x64.ActiveCfg = Release|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Release|x64.Build.0 = Release|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Release|x86.ActiveCfg = Release|x64
+		{5EF6D4C4-F41C-4154-BF7A-A0AE72B2895C}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
