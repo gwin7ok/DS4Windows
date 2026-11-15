@@ -1,7 +1,7 @@
 # Phase37 計画書: 設定の保持と永続化の、大きい型の分割
 
 作成日: 2026-11-12
-状態: **37-0（調査）・37-1（黄金と旧い入口の撤去）まで完了（2026-11-15）。37-3 以降は未着手（保存の形に触れる大きな作業のため、実機のデータでの確認を前提に、次の機会に行う）**
+状態: **37-0・37-1・37-3（`ResetProfile` の分割）まで完了（2026-11-16）。37-4・37-5・37-6 は保留（理由は末尾の実施の記録）**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 4）、`05-Extensibility.md` の 5-5、`Structure-Review-2026-11.md` の A（Phase25 の続き）
 前提: なし（Phase29〜36 と独立に進められる）。ただし、Phase32 の 32-A（プログラム起動の一本化）が `ProfileMiscLoadSection` と `BackingStore.ProcessInspector` に触れるため、37-3・37-4 はそのあとに行う。
 
@@ -75,3 +75,7 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - 旧い保存の入口 `SpecialActionsXmlSerializer.SaveAction`（本番の呼び出し 0 件。新しい種別を書けない）を、規則 2.4 に従って撤去した（正規の経路と重複するだけの並行実装）。連動して、呼び出しがなくなった `CreateAction`・`PrepareActionsXml`・`m_Xdoc` と、コメントだけの旧い本体（約 110 行）も削除した。旧い形式の `Actions.xml` の読み込みの黄金（`actions.xml`）は、固定の文字列（`PersistenceHarness.LegacyActionsXml`）で守る。旧い入口の書き出しの黄金テスト（`Actions_SavedXml_MatchesGolden`）は撤去。保存される XML の形は不変（本番の黄金で確認）。
 - 調査の訂正: 計画書の「`LoadActions` の 178 行」は古い記述。読み込み・書き出しはすでに `ActionsDTO` に集まっており、種別ごとの部品化（37-3・37-4）の余地は DTO の側にある。37-3 以降（`ResetProfile` の分割、節の対、`AppSettingsDTO` の `partial`）は、保存の形に触れる大きな作業のため、実機のデータでの確認とあわせて次の機会に行う。
 - 既知の不安定: `Ds4DeviceBehaviorTests.DongleScript_ReportsTheFrames_AndRemovesOnTheEndOfTheScript` が、単独で実行すると失敗することがある（全件では合格。今回の変更とは無関係の、実行の順への依存）。
+
+### 2026-11-16（37-3。ブランチ `Phase37-3`）
+- 37-3: 先に、`ResetProfile` の戻し漏れを固定するゴールデン（`ProfileResetGoldenTests`。全項目を既定と異なる値にしてから戻し、残った差を 3 つのスロットで固定）を、変更前のコードで生成してコミットした。そのうえで、`ResetProfile` を、領域のオブジェクトの `ResetForProfileLoad()`（`GyroSlotSettings`・`TouchpadSlotSettings`・`StickSlotSettings`・`TriggerSlotSettings`・`SixAxisSlotSettings`・`LightbarSlotSettings`）へ分けた（`BackingStore.ResetProfile` は 140 行 → 約 25 行）。文は移しただけで、戻す値は変えていない。ゴールデンと既存の黄金テストがすべて不変。ジャイロには、新しく作るときの既定値を戻す既存の `ResetToDefaults`（`MouseDeadZone` なども戻す）があり、プロファイル読み込み前の戻し方（それらを戻さない）とは範囲が違うため、別の名前（`ResetForProfileLoad`）にした。
+- 37-4（節の対）・37-5（配列の項目）・37-6（`AppSettingsDTO` の `partial`）は、保留にした。理由: (1) 37-6 は、`XmlSerializer` が要素の順序を「宣言の順」で決めるのに対し、`partial` で複数ファイルへ分けると、型の中の並びがコンパイラへ渡るファイルの順（ファイル名の並び）に依存する。黄金テストで検出はできるが、ファイル名を変えるだけで保存の形が変わりうる、という脆さを新しく持ち込むわりに、得られるのは読みやすさだけである。(2) 37-4 は、読み込み 15・保存 7 の節の組み替え（登録順序を保ったまま、1 型が両方の契約を持つ形）で、項目ごとの try/catch の読み込みを含み、規模が大きい。(3) 37-5 は、配列のまま残る項目の領域への移動で、`BackingStore` の公開メンバー（テスト 114 ファイルが参照）に及ぶ。いずれも、保存の形を変えない保証は黄金テストにあるが、得られる効果が小さい。ユーザーが再開を決めたときに行う。
