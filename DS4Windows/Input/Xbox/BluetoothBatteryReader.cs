@@ -8,7 +8,7 @@ using DS4Windows.Input.Abstractions;
 namespace DS4Windows.Input.Xbox
 {
     /// <summary>
-    /// <see cref="IBluetoothBatteryReader"/> の実装。機器ごとに、最後に読めた値を持ち、一定の間隔（既定 30 秒）をすぎていれば、裏で読み直す。
+    /// <see cref="IBluetoothBatteryReader"/> の実装。機器ごとに、最後に読めた値を持ち、一定の間隔（既定 5 分。電池は急には変わらず、読み取りのたびに無線を使うため）をすぎていれば、裏で読み直す。
     /// 呼び出し（入力のループから来る）を待たせない。読めなかった機器は、次の間隔まで再試行しない（失敗のたびに無線を叩かないため）。
     /// </summary>
     public sealed class BluetoothBatteryReader : IBluetoothBatteryReader
@@ -26,7 +26,7 @@ namespace DS4Windows.Input.Xbox
         private readonly ConcurrentDictionary<ulong, Entry> entries = new ConcurrentDictionary<ulong, Entry>();
 
         public BluetoothBatteryReader(IGattBatteryFetcher fetcher)
-            : this(fetcher, TimeSpan.FromSeconds(30))
+            : this(fetcher, TimeSpan.FromMinutes(5))
         {
         }
 
@@ -73,7 +73,8 @@ namespace DS4Windows.Input.Xbox
                     entry.Percent = fetched;   // 一時的に読めなかったときは、前回の値を保つ
                 }
 
-                AppLogger.LogDebug($"[BluetoothBattery] {address:X12}: {(fetched.HasValue ? fetched.Value + "%" : "not readable")}");
+                // 読めた値は、全機器共通の記録（BatteryStatusLogger）に出る。ここでは、読めなかったときだけ記録する
+                if (!fetched.HasValue) AppLogger.LogDebug($"[BluetoothBattery] {address:X12}: not readable");
             }
             catch (Exception ex)
             {

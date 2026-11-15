@@ -171,6 +171,7 @@ namespace DS4Windows.Composition
                 sp.GetServices<IInputDeviceCartridge>(), sp.GetServices<IInputTransportSource>()));   // 接続中のコントローラーの登録簿（状態を持つ）
             services.AddSingleton<IInputDeviceRegistry, InputDeviceRegistryAdapter>();
             services.AddSingleton<IDeviceRegistryHooks, DeviceRegistryHooks>();   // 登録簿が列挙・初期化の途中で呼び返すフック（対応する種類の確認、初期化の直後の処理、昇格の要求）
+            services.AddSingleton<IBatteryStatusLogger, BatteryStatusLogger>();   // 全機器の電池を、同じ間隔・同じ形式で記録する
             services.AddSingleton<IAppliedProfileRecorder, AppliedProfileRecorder>();   // 適用のたびに、コントローラーごとにプロファイルを記憶する（再接続で使う）
             services.AddSingleton<IBackendFailureHandler, BackendFailureHandler>();   // 仮想パッドのバックエンドの失敗でサービスを止める
             services.AddSingleton<IRuntimeBootstrapper, RuntimeBootstrapper>();   // 起動時の取り付け（Initialize）と終了時の後始末（Shutdown）

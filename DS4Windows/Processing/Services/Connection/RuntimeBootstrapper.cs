@@ -18,6 +18,7 @@ namespace DS4Windows.Processing.Services.Connection
         private readonly IDeviceRegistryHooks _deviceRegistryHooks;
         private readonly IAppliedProfileRecorder _appliedProfileRecorder;
         private readonly IBackendFailureHandler _backendFailureHandler;
+        private readonly IBatteryStatusLogger _batteryStatusLogger;
         private readonly IVirtualPadService _virtualPad;
         private readonly IOutputSlotService _outputSlotService;
         private readonly IEventThreadDispatcher _eventThread;
@@ -31,6 +32,7 @@ namespace DS4Windows.Processing.Services.Connection
             IDeviceRegistryHooks deviceRegistryHooks,
             IAppliedProfileRecorder appliedProfileRecorder,
             IBackendFailureHandler backendFailureHandler,
+            IBatteryStatusLogger batteryStatusLogger,
             IVirtualPadService virtualPad,
             IOutputSlotService outputSlotService,
             IEventThreadDispatcher eventThread)
@@ -41,6 +43,7 @@ namespace DS4Windows.Processing.Services.Connection
             _deviceRegistryHooks = deviceRegistryHooks ?? throw new ArgumentNullException(nameof(deviceRegistryHooks));
             _appliedProfileRecorder = appliedProfileRecorder ?? throw new ArgumentNullException(nameof(appliedProfileRecorder));
             _backendFailureHandler = backendFailureHandler ?? throw new ArgumentNullException(nameof(backendFailureHandler));
+            _batteryStatusLogger = batteryStatusLogger ?? throw new ArgumentNullException(nameof(batteryStatusLogger));
             _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
             _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
             _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
@@ -74,6 +77,7 @@ namespace DS4Windows.Processing.Services.Connection
             _appliedProfileRecorder.Attach();
             _deviceRegistryHooks.Attach();
             _backendFailureHandler.Attach();
+            _batteryStatusLogger.Attach();
         }
 
         public void Shutdown()
