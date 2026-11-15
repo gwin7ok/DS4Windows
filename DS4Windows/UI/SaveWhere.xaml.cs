@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.IO;
 using System.Windows;
 
 
@@ -28,26 +27,23 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class SaveWhere : Window
     {
-        private bool multisaves;
-        // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App）が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
-        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
+        /// <summary>選ばれた保存場所の適用。引数は、プログラムのフォルダを選んだか、古い設定を残すか。サービスを持つ呼び出し側（App）が行う。</summary>
+        public delegate void ChoiceApplier(bool programFolder, bool keepOldSettings);
+
+        private readonly ChoiceApplier _applyChoice;
         public bool ChoiceMade { get; set; }
 
-        public SaveWhere(bool multisavespots, DS4Windows.Core.Abstractions.IPathService pathService,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
+        public SaveWhere(bool multisavespots, bool adminNeeded, ChoiceApplier applyChoice)
         {
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _applyChoice = applyChoice ?? throw new ArgumentNullException(nameof(applyChoice));
 
             InitializeComponent();
-            multisaves = multisavespots;
             if (!multisavespots)
             {
                 multipleSavesDockP.Visibility = Visibility.Collapsed;
             }
 
-            if (_environmentService.AdminNeeded())
+            if (adminNeeded)
             {
                 progFolderPanel.IsEnabled = false;
             }
@@ -55,45 +51,14 @@ namespace DS4Windows.UI
 
         private void ProgFolderBtn_Click(object sender, RoutedEventArgs e)
         {
-            // SetSaveLocation は Global.SaveWhere と同じ動作（IPathService.AppDataPath の setter は使わない）
-            _pathService.SetSaveLocation(_pathService.ProgramDirectory);
-            if (multisaves && dontDeleteCk.IsChecked == false)
-            {
-                try
-                {
-                    if (Directory.Exists(_pathService.RoamingAppDataPath))
-                    {
-                        Directory.Delete(_pathService.RoamingAppDataPath, true);
-                    }
-                }
-                catch { }
-            }
-            else if (!multisaves)
-            {
-                _pathService.CreateEmptyProfilesFile(_pathService.ProgramDirectory + "\\Profiles.xml");
-            }
-
+            _applyChoice(true, dontDeleteCk.IsChecked != false);
             ChoiceMade = true;
             Close();
         }
 
         private void AppdataBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (multisaves && dontDeleteCk.IsChecked == false)
-            {
-                // 置換前は Profiles／Profiles.xml／Auto Profiles.xml の 3 つだけを削除していた（Actions.xml 等が残った）。
-                // 設定フォルダのアプリ管理ファイルをすべて削除する（ProgramFolderSettingsCleaner）。
-                if (!ProgramFolderSettingsCleaner.DeleteSettings(_pathService.ProgramDirectory))
-                {
-                    MessageBox.Show("Cannot Delete old settings, please manaully delete", "DS4Windows");
-                }
-            }
-            else if (!multisaves)
-            {
-                _pathService.CreateEmptyProfilesFile(Path.Combine(_pathService.RoamingAppDataPath, "Profiles.xml"));
-            }
-
-            _pathService.SetSaveLocation(_pathService.RoamingAppDataPath);
+            _applyChoice(false, dontDeleteCk.IsChecked != false);
             ChoiceMade = true;
             Close();
         }

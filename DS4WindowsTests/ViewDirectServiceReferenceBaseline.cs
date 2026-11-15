@@ -69,8 +69,6 @@
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IWindowSystem",
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Settings.DS4ControlSettings",
             "DS4Windows.UI.RecordBox|DS4Windows.Processing.Abstractions.IMacroRecordingState",
-            "DS4Windows.UI.SaveWhere|DS4Windows.Core.Abstractions.IEnvironmentService",
-            "DS4Windows.UI.SaveWhere|DS4Windows.Core.Abstractions.IPathService",
             "DS4Windows.UI.StickCalibrationWindow|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.TrayIconResources|DS4Windows.Core.Settings.TrayIconChoice",
             "DS4Windows.UI.WelcomeDialog|DS4Windows.Core.Abstractions.IEnvironmentService",
