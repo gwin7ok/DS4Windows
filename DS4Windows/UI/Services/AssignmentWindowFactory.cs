@@ -41,7 +41,7 @@ namespace DS4Windows.UI.Services
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose, IEditorWindowFactory editors)
-            => new BindingWindow(deviceNum, settings, targetDevice, editors, _profileSettings, _slotCommands,
+            => new BindingWindow(deviceNum, targetDevice, editors, new ActionRumbleTestController(_slotCommands),
                 _viewModelFactory.CreateBindingWindowViewModel(deviceNum, settings, targetDevice), expose);
 
         public PresetOptionWindow CreatePresetOptionWindow()

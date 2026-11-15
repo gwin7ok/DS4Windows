@@ -54,9 +54,7 @@ namespace DS4Windows.UI
         private BindingWindowViewModel bindingVM;
         // 振動テストボタンの動作（画面に依存しない判断）
         private readonly ActionRumbleTestController rumbleTest;
-        private readonly DS4Windows.Processing.Abstractions.IControllerSlotCommands slotCommands;
         // Phase6-Step10-2-4b: Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
-        private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // コントローラーの図のボタンは、ControllerVisualizerControl が配置表から生成する。元の名前のまま持つ
@@ -77,17 +75,15 @@ namespace DS4Windows.UI
         }
 
         /// <param name="deviceNum">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
-        /// <param name="settings">編集対象のボタン設定</param>
         /// <param name="targetDevice">
         /// Phase6-Step7b: ランブルテスト・ライトバーのプレビュー・マクロ記録で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
 
-        public BindingWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
+        public BindingWindow(int deviceNum, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Processing.Abstractions.IControllerSlotCommands slotCommands,
+            ActionRumbleTestController rumbleTest,
             BindingWindowViewModel viewModel,
             ExposeMode expose)
         {
@@ -95,16 +91,14 @@ namespace DS4Windows.UI
             InitializeComponent();
             InitVisualizerButtons();
 
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
 
-            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
-            rumbleTest = new ActionRumbleTestController(slotCommands);
+            this.rumbleTest = rumbleTest ?? throw new ArgumentNullException(nameof(rumbleTest));
             this.expose = expose;
             bindingVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 
-            if (settings.control != DS4Windows.Core.Model.DS4Controls.None)
+            if (bindingVM.Control != DS4Windows.Core.Model.DS4Controls.None)
             {
-                Title = $"Select action for {DS4Windows.Core.Model.DS4ControlNames.ds4inputNames[settings.control]}";
+                Title = $"Select action for {DS4Windows.Core.Model.DS4ControlNames.ds4inputNames[bindingVM.Control]}";
             }
             else
             {
@@ -204,7 +198,7 @@ namespace DS4Windows.UI
         private void OutputButtonBtn_Click(object sender, RoutedEventArgs e)
         {
             OutBinding binding = bindingVM.ActionBinding;
-            DS4Windows.Core.Model.X360Controls defaultControl = profileSettingsService.GetDefaultButtonMapping()[(int)binding.input];
+            DS4Windows.Core.Model.X360Controls defaultControl = bindingVM.DefaultMappingFor(binding.input);
             Button button = sender as Button;
             if (associatedBindings.TryGetValue(button, out BindAssociation bind))
             {
@@ -260,7 +254,7 @@ namespace DS4Windows.UI
             OutBinding binding = bindingVM.ActionBinding;
             if (binding.outputType == OutBinding.OutType.Default)
             {
-                DS4Windows.Core.Model.X360Controls defaultBind = profileSettingsService.GetDefaultButtonMapping()[(int)binding.input];
+                DS4Windows.Core.Model.X360Controls defaultBind = bindingVM.DefaultMappingFor(binding.input);
                 if (!OutBinding.IsMouseRange(defaultBind))
                 {
                     if (conBtnMap.TryGetValue(defaultBind, out Button tempBtn))
@@ -854,7 +848,7 @@ namespace DS4Windows.UI
 
             var outcome = rumbleTest.Toggle(bindingVM.TargetDevice, bindingVM.RumbleActive,
                 bindingVM.ActionBinding.HeavyRumble, bindingVM.ActionBinding.LightRumble,
-                profileSettingsService.ForSlot(bindingVM.DeviceNum).Output.InverseRumbleMotors);
+                bindingVM.InverseRumbleMotors);
             if (outcome == RumbleTestOutcome.None) return;
 
             bool started = outcome == RumbleTestOutcome.Started;
@@ -885,7 +879,7 @@ namespace DS4Windows.UI
 
             DefaultPicked = true;
             actBind.outputType = OutBinding.OutType.Default;
-            actBind.control =profileSettingsService.GetDefaultButtonMapping()[(int)actBind.input];
+            actBind.control =bindingVM.DefaultMappingFor(actBind.input);
 
             Close();
         }

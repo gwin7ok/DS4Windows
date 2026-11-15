@@ -87,6 +87,15 @@ namespace DS4Windows.UI.ViewModels
             PopulateCurrentBinds();
         }
 
+        /// <summary>編集中のボタン（DS4 の入力）。画面の見出しに使う。</summary>
+        public DS4Windows.Core.Model.DS4Controls Control => settings.control;
+
+        /// <summary>入力に対する、既定（割り当てなし）の出力のボタン。</summary>
+        public DS4Windows.Core.Model.X360Controls DefaultMappingFor(DS4Windows.Core.Model.DS4Controls input)
+            => profileSettingsService.GetDefaultButtonMapping()[(int)input];
+
+        /// <summary>振動のテストで、2 つのモーターを左右反転するか（編集中の設定の値）。</summary>
+        public bool InverseRumbleMotors => profileSettingsService.ForSlot(deviceNum).Output.InverseRumbleMotors;
         public void PopulateCurrentBinds()
         {
             DS4ControlSettings setting = settings;
