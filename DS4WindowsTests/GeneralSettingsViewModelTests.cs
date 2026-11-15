@@ -108,7 +108,7 @@ namespace DS4WindowsTests
                 vm.UpdateLaunchProgram(@"C:\Windows\notepad.exe");
                 Assert.True(vm.LaunchProgramExists);
                 Assert.Equal("notepad", vm.LaunchProgramName);
-                Assert.Contains(nameof(GeneralSettingsViewModel.LaunchProgramIcon), names);
+                Assert.Contains(nameof(GeneralSettingsViewModel.LaunchProgramIconPath), names);
                 vm.LaunchProgramExists = false;
                 Assert.Equal(string.Empty, service.LaunchProgram[0]);
                 Assert.Equal("Browse", vm.LaunchProgramName);

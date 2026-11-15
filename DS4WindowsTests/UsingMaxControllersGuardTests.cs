@@ -91,8 +91,8 @@ namespace DS4WindowsTests
             // 存在しないパスなら、アイコンの読み込みは行われない
             var expanded = new ProgramItem(@"C:\no\such\file.exe", true);
             var normal = new ProgramItem(@"C:\no\such\file.exe", false);
-            Assert.Equal(System.Windows.Visibility.Visible, expanded.ExpandedControllersVisible);
-            Assert.Equal(System.Windows.Visibility.Collapsed, normal.ExpandedControllersVisible);
+            Assert.True(expanded.ExpandedControllersShown);
+            Assert.False(normal.ExpandedControllersShown);
         }
 
         [Fact]

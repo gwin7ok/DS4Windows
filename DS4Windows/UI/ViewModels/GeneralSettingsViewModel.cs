@@ -151,23 +151,13 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public ImageSource LaunchProgramIcon
+        /// <summary>起動するプログラム（.exe が実在するとき）のパス。View がこのパスからアイコンの画像を作る（ない／.exe でないときは null）。</summary>
+        public string LaunchProgramIconPath
         {
             get
             {
-                ImageSource exeicon = null;
                 string path = general.LaunchProgram;
-                if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe")
-                {
-                    using (System.Drawing.Icon ico = System.Drawing.Icon.ExtractAssociatedIcon(path))
-                    {
-                        exeicon = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty,
-                            BitmapSizeOptions.FromEmptyOptions());
-                        exeicon.Freeze();
-                    }
-                }
-
-                return exeicon;
+                return File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe" ? path : null;
             }
         }
 
@@ -188,7 +178,7 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(LaunchProgramExists));
             OnPropertyChanged(nameof(LaunchProgram));
             OnPropertyChanged(nameof(LaunchProgramName));
-            OnPropertyChanged(nameof(LaunchProgramIcon));
+            OnPropertyChanged(nameof(LaunchProgramIconPath));
         }
 
         public bool IdleDisconnectExists

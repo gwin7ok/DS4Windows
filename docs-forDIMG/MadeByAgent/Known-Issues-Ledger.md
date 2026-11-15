@@ -73,3 +73,4 @@
 - 見送り: UDP（Cemuhook）のモーション・パッド情報（クライアントが手元になく確認手段がない。設定は `UseUDPServer=False`）、Phase35 の設定の保存先の案内（書込不可の場所が必要）。
 - Phase36 の C4（Bluetooth Xbox の 3 秒待ち）と C5（30 秒ごとの GC）: 2026-11-16 にユーザーが両方とも見送りと決定（実装しない）。
 - 未確認（2026-11-16。V1 基準値の削減）: トレイアイコンの右クリックメニューを、ViewModel の項目モデル（TrayMenuItemModel）と View 側の変換（TrayContextMenuBuilder）へ分けた。確認項目: メニューの表示、プロファイルの切替（チェック）、Disconnect、Start/Stop の表示切替、Open/Minimize/Exit、プロファイル名の _ の表示。
+- 未確認（2026-11-16。V1 基準値の削減・アイコンと表示切替）: ViewModel が持っていた画像（ImageSource）と Visibility を、パス・bool の公開と View 側の変換（FileIconConverter、BoolToVisibleCollapsedConverter、SystemIconExtension）へ移した。確認項目: 自動プロファイル一覧の各プログラムのアイコン、一般設定の「起動するプログラム」のアイコン、設定の「管理者として実行」パネルの盾アイコンと表示切替、ヘルプの「?」アイコン、UDP 平滑化パネルの表示切替、拡張コントローラー（5〜8 台目）の行の表示切替。

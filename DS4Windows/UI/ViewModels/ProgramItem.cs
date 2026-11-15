@@ -44,7 +44,6 @@ namespace DS4Windows.UI.ViewModels
         private string title;
         private string title_lowercase;
         private AutoProfileEntity matchedAutoProfile;
-        private ImageSource exeicon;
         private bool turnoff;
 
         public string Path
@@ -97,7 +96,6 @@ namespace DS4Windows.UI.ViewModels
         //public delegate void AutoProfileHandler(ProgramItem sender, bool added);
         //public event AutoProfileHandler AutoProfileAction;
         public string Filename { get => filename; }
-        public ImageSource Exeicon { get => exeicon; }
 
         public bool Turnoff
         {
@@ -217,19 +215,8 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public Visibility ExpandedControllersVisible
-        {
-            get
-            {
-                Visibility temp = Visibility.Visible;
-                if (!usingExpandedControllers)
-                {
-                    temp = Visibility.Collapsed;
-                }
-
-                return temp;
-            }
-        }
+        /// <summary>拡張したコントローラー数（5〜8 台目）の行を見せるか。表示への変換は View が行う。</summary>
+        public bool ExpandedControllersShown => usingExpandedControllers;
 
         // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。拡張コントローラー（8 台）の行を表示するかは、
         // 生成元（AutoProfilesViewModel）が IEnvironmentService.UsingMaxControllers から得た値を渡す。
@@ -247,16 +234,6 @@ namespace DS4Windows.UI.ViewModels
                 title = autoProfileEntity.Title;
                 title_lowercase = title.ToLower();
                 turnoff = autoProfileEntity.Turnoff;
-            }
-
-            if (File.Exists(path))
-            {
-                using (Icon ico = Icon.ExtractAssociatedIcon(path))
-                {
-                    exeicon = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty,
-                        BitmapSizeOptions.FromEmptyOptions());
-                    exeicon.Freeze();
-                }
             }
 
             MatchedAutoProfileChanged += ProgramItem_MatchedAutoProfileChanged;
