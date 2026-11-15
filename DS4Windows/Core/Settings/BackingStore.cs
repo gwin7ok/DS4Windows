@@ -79,6 +79,11 @@ namespace DS4Windows.Core.Settings
         public const int DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
         public const int DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
         public const int DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+        public const int DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH = WindowLayoutDefaults.AUTO_PROFILE_NAME_COL_WIDTH;
+        public const int DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH = WindowLayoutDefaults.AUTO_PROFILE_PATH_COL_WIDTH;
+        public const int DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH = WindowLayoutDefaults.AUTO_PROFILE_TITLE_COL_WIDTH;
+        public const int DEFAULT_LOG_TIME_COL_WIDTH = WindowLayoutDefaults.LOG_TIME_COL_WIDTH;
+        public const int DEFAULT_LOG_DATA_COL_WIDTH = WindowLayoutDefaults.LOG_DATA_COL_WIDTH;
 
         // Log settings
         public const int DEFAULT_LOG_MAX_ARCHIVE_FILES = 50;
@@ -106,6 +111,11 @@ namespace DS4Windows.Core.Settings
         public int outputSlotInputIdColWidth = DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
         public int outputSlotCurrentTypeColWidth = DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
         public int outputSlotReservationColWidth = DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+        public int autoProfileNameColWidth = DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
+        public int autoProfilePathColWidth = DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
+        public int autoProfileTitleColWidth = DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
+        public int logTimeColWidth = DEFAULT_LOG_TIME_COL_WIDTH;
+        public int logDataColWidth = DEFAULT_LOG_DATA_COL_WIDTH;
 
         public int logMaxArchiveFiles = DEFAULT_LOG_MAX_ARCHIVE_FILES;
         public string logMinLevel = DEFAULT_LOG_MIN_LEVEL;

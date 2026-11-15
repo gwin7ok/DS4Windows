@@ -29,6 +29,11 @@
   <outputSlotInputIdColWidth>261</outputSlotInputIdColWidth>
   <outputSlotCurrentTypeColWidth>201</outputSlotCurrentTypeColWidth>
   <outputSlotReservationColWidth>241</outputSlotReservationColWidth>
+  <autoProfileNameColWidth>201</autoProfileNameColWidth>
+  <autoProfilePathColWidth>601</autoProfilePathColWidth>
+  <autoProfileTitleColWidth>1</autoProfileTitleColWidth>
+  <logTimeColWidth>191</logTimeColWidth>
+  <logDataColWidth>1000</logDataColWidth>
   <logMaxArchiveFiles>51</logMaxArchiveFiles>
   <logMinLevel>Info_g</logMinLevel>
   <ProcessPriority>1</ProcessPriority>

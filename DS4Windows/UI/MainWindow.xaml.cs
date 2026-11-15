@@ -1120,6 +1120,7 @@ namespace DS4Windows.UI
 
             // Restore controller tab column widths
             RestoreControllerColumnWidths();
+            RestoreLogColumnWidths();
 
             HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
             HookWindowMessages(source);
@@ -1697,6 +1698,26 @@ namespace DS4Windows.UI
         {
             // Save column widths when user finishes resizing (similar to form size/position)
             SaveControllerColumnWidths();
+        }
+
+        private void LogListView_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var gridView = logListView.View as GridView;
+            if (gridView != null && gridView.Columns.Count >= 2)
+            {
+                appSettingsService.LogTimeColWidth = (int)gridView.Columns[0].Width;
+                appSettingsService.LogDataColWidth = (int)gridView.Columns[1].Width;
+            }
+        }
+
+        private void RestoreLogColumnWidths()
+        {
+            var gridView = logListView.View as GridView;
+            if (gridView != null && gridView.Columns.Count >= 2)
+            {
+                gridView.Columns[0].Width = appSettingsService.LogTimeColWidth;
+                gridView.Columns[1].Width = appSettingsService.LogDataColWidth;
+            }
         }
 
         private void SaveControllerColumnWidths()

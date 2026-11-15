@@ -70,6 +70,11 @@ namespace DS4Windows.Core.Abstractions
         int OutputSlotInputIdColWidth { get; set; }
         int OutputSlotCurrentTypeColWidth { get; set; }
         int OutputSlotReservationColWidth { get; set; }
+        int AutoProfileNameColWidth { get; set; }
+        int AutoProfilePathColWidth { get; set; }
+        int AutoProfileTitleColWidth { get; set; }
+        int LogTimeColWidth { get; set; }
+        int LogDataColWidth { get; set; }
 
         // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
         int Notifications { get; set; }

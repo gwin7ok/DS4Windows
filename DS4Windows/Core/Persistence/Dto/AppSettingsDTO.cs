@@ -112,6 +112,22 @@ public class AppSettingsDTO
     [XmlElement("outputSlotReservationColWidth")]
     public int OutputSlotReservationColWidth { get; set; } = BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
 
+    // Auto Profiles / Log tab column widths
+    [XmlElement("autoProfileNameColWidth")]
+    public int AutoProfileNameColWidth { get; set; } = BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
+
+    [XmlElement("autoProfilePathColWidth")]
+    public int AutoProfilePathColWidth { get; set; } = BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
+
+    [XmlElement("autoProfileTitleColWidth")]
+    public int AutoProfileTitleColWidth { get; set; } = BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
+
+    [XmlElement("logTimeColWidth")]
+    public int LogTimeColWidth { get; set; } = BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
+
+    [XmlElement("logDataColWidth")]
+    public int LogDataColWidth { get; set; } = BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
+
     [XmlElement("logMaxArchiveFiles")]
     public int LogMaxArchiveFiles { get; set; } = BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
 
@@ -922,6 +938,11 @@ public class AppSettingsDTO
         OutputSlotInputIdColWidth = source.outputSlotInputIdColWidth > 0 ? source.outputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
         OutputSlotCurrentTypeColWidth = source.outputSlotCurrentTypeColWidth > 0 ? source.outputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
         OutputSlotReservationColWidth = source.outputSlotReservationColWidth > 0 ? source.outputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+        AutoProfileNameColWidth = source.autoProfileNameColWidth > 0 ? source.autoProfileNameColWidth : BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
+        AutoProfilePathColWidth = source.autoProfilePathColWidth > 0 ? source.autoProfilePathColWidth : BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
+        AutoProfileTitleColWidth = source.autoProfileTitleColWidth > 0 ? source.autoProfileTitleColWidth : BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
+        LogTimeColWidth = source.logTimeColWidth > 0 ? source.logTimeColWidth : BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
+        LogDataColWidth = source.logDataColWidth > 0 ? source.logDataColWidth : BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
 
         LogMaxArchiveFiles = source.logMaxArchiveFiles > 0 ? source.logMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
         LogMinLevel = !string.IsNullOrEmpty(source.logMinLevel) ? source.logMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
@@ -1050,6 +1071,11 @@ public class AppSettingsDTO
         destination.outputSlotInputIdColWidth = OutputSlotInputIdColWidth > 0 ? OutputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
         destination.outputSlotCurrentTypeColWidth = OutputSlotCurrentTypeColWidth > 0 ? OutputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
         destination.outputSlotReservationColWidth = OutputSlotReservationColWidth > 0 ? OutputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+        destination.autoProfileNameColWidth = AutoProfileNameColWidth > 0 ? AutoProfileNameColWidth : BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
+        destination.autoProfilePathColWidth = AutoProfilePathColWidth > 0 ? AutoProfilePathColWidth : BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
+        destination.autoProfileTitleColWidth = AutoProfileTitleColWidth > 0 ? AutoProfileTitleColWidth : BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
+        destination.logTimeColWidth = LogTimeColWidth > 0 ? LogTimeColWidth : BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
+        destination.logDataColWidth = LogDataColWidth > 0 ? LogDataColWidth : BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
 
         destination.logMaxArchiveFiles = LogMaxArchiveFiles > 0 ? LogMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
         destination.logMinLevel = !string.IsNullOrEmpty(LogMinLevel) ? LogMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
