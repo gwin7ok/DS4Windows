@@ -70,17 +70,15 @@ namespace DS4WindowsTests
 
                 vm.MainColorR = 200;
                 Assert.Equal(200, service.ForSlot(0).Lightbar.Info.ds4winSettings.m_Led.red);
-                // 色の成分を変えると、色の表示文字列とライトバーの表示も再通知される
+                // 色の成分を変えると、色の表示文字列も再通知される
                 Assert.Contains(nameof(LightbarSettingsViewModel.MainColorString), names);
-                Assert.Contains(nameof(LightbarSettingsViewModel.LightbarBrush), names);
                 Assert.Equal("#C8FF0000", vm.MainColorRString);
 
-                // 虹色にすると、ライトバーの表示は色ではなく画像になる
+                // 虹色にすると、ライトバーの表示は画像（View が決める）になる
                 vm.Rainbow = 5.0;
                 Assert.True(vm.RainbowExists);
-                Assert.IsType<System.Windows.Media.ImageBrush>(vm.LightbarBrush);
+                Assert.True(vm.RainbowExists);
                 vm.Rainbow = 0.0;
-                Assert.IsType<System.Windows.Media.SolidColorBrush>(vm.LightbarBrush);
 
                 // 充電時の色の表示は、種類が 3 のときだけ
                 vm.ChargingType = 3;

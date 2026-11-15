@@ -186,7 +186,7 @@
                                     <StackPanel HorizontalAlignment="Left">
                                         <Button x:Name="batteryLowColorBtn" Width="20" Height="20" Click="BatteryEmptyColorBtn_Click">
                                             <Button.Background>
-                                                <SolidColorBrush Color="{Binding EmptyColor,FallbackValue=#FFFF0000}"/>
+                                                <SolidColorBrush Color="{Binding EmptyColor, Converter={x:Static localConverters:DS4ColorToMediaColorConverter.Instance}, FallbackValue=#FFFF0000}"/>
                                             </Button.Background>
                                         </Button>
                                         <Label Content="0%" />
@@ -194,8 +194,8 @@
                                     <Button Width="130" Height="20" VerticalAlignment="Top" Focusable="False" Margin="10,0,0,0">
                                         <Button.Background>
                                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                <GradientStop Color="{Binding EmptyColor,FallbackValue=#FFFF0000}"/>
-                                                <GradientStop Color="{Binding FullColor,FallbackValue=#FF00FF00}" Offset="1"/>
+                                                <GradientStop Color="{Binding EmptyColor, Converter={x:Static localConverters:DS4ColorToMediaColorConverter.Instance}, FallbackValue=#FFFF0000}"/>
+                                                <GradientStop Color="{Binding FullColor, Converter={x:Static localConverters:DS4ColorToMediaColorConverter.Instance}, FallbackValue=#FF00FF00}" Offset="1"/>
                                             </LinearGradientBrush>
                                         </Button.Background>
                                     </Button>
@@ -203,7 +203,7 @@
                                         <Button x:Name="batteryFullColorBtn" Width="20" Height="20"
                                                 HorizontalAlignment="Center" Click="BatteryFullColorBtn_Click">
                                             <Button.Background>
-                                                <SolidColorBrush Color="{Binding FullColor,FallbackValue=#FF00FF00}"/>
+                                                <SolidColorBrush Color="{Binding FullColor, Converter={x:Static localConverters:DS4ColorToMediaColorConverter.Instance}, FallbackValue=#FF00FF00}"/>
                                             </Button.Background>
                                         </Button>
                                         <Label Content="100%" Padding="0,5" HorizontalAlignment="Center" />

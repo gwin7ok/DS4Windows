@@ -79,15 +79,7 @@ namespace DS4Windows.UI.ViewModels
 
         public event EventHandler LightColorChanged;
 
-        public Color CustomLightColor
-        {
-            get
-            {
-                DS4Color color;
-                color = LightbarWindow.Info.ds4winSettings.m_CustomLed;
-                return new Color() { R = color.red, G = color.green, B = color.blue, A = 255 };
-            }
-        }
+        public DS4Color CustomLightColor => LightbarWindow.Info.ds4winSettings.m_CustomLed;
 
         public string BatteryState
         {
@@ -449,9 +441,9 @@ namespace DS4Windows.UI.ViewModels
             LightColorChanged?.Invoke(this, EventArgs.Empty);
             RequestColorPicker?.Invoke(this);
         }
-        public void UpdateCustomLightColor(Color color)
+        public void UpdateCustomLightColor(DS4Color color)
         {
-            LightbarWindow.Info.ds4winSettings.m_CustomLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };
+            LightbarWindow.Info.ds4winSettings.m_CustomLed = color;
             LightColorChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -459,7 +451,7 @@ namespace DS4Windows.UI.ViewModels
         /// CLI の ChangeLedColor 用。カスタム色を書き換えるだけでなく、ライトバーのモードをカスタム色にして、すぐ見た目に出す
         /// （モードがカスタム色でないと、書き換えた色が使われない）。メモリ上の設定だけを変え、プロファイルのファイルには書かない。
         /// </summary>
-        public void ForceCustomLightColor(Color color)
+        public void ForceCustomLightColor(DS4Color color)
         {
             var settings = LightbarWindow.Info.ds4winSettings;
             settings.useCustomLed = true;

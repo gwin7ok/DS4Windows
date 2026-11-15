@@ -148,12 +148,11 @@ namespace DS4Windows.UI.ViewModels
         }
 
         // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う
-        public void StartForcedColor(Color color)
+        public void StartForcedColor(DS4Color color)
         {
             if (HasTargetDevice)
             {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                _lightbar.forcedColor[targetDevice] = dcolor;
+                _lightbar.forcedColor[targetDevice] = color;
                 _lightbar.forcedFlash[targetDevice] = 0;
                 _lightbar.forcelight[targetDevice] = true;
             }
@@ -169,12 +168,11 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public void UpdateForcedColor(Color color)
+        public void UpdateForcedColor(DS4Color color)
         {
             if (HasTargetDevice)
             {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                _lightbar.forcedColor[targetDevice] = dcolor;
+                _lightbar.forcedColor[targetDevice] = color;
                 _lightbar.forcedFlash[targetDevice] = 0;
                 _lightbar.forcelight[targetDevice] = true;
             }

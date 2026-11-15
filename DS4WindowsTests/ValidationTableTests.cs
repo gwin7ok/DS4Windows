@@ -1,3 +1,4 @@
+using DS4Windows.Core.Model;
 using System;
 using System.Collections;
 using System.Linq;
@@ -150,14 +151,14 @@ namespace DS4WindowsTests
             {
                 Notification = false,
                 Lightbar = true,
-                EmptyColor = Colors.Red,
-                FullColor = Colors.Red,
+                EmptyColor = new DS4Color(255, 0, 0),
+                FullColor = new DS4Color(255, 0, 0),
             };
 
             Assert.False(vm.IsValid(Action));
             Assert.Equal(new[] { "Need to set two different colors" }, Errors(vm, "Lightbar"));
 
-            vm.FullColor = Colors.Lime;
+            vm.FullColor = new DS4Color(0, 255, 0);
 
             Assert.True(vm.IsValid(Action));
             Assert.False(vm.HasErrors);

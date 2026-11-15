@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using DS4Windows.Core.Model;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI
@@ -48,33 +50,33 @@ namespace DS4Windows.UI
 
         private void FlashColorBtn_Click(object sender, RoutedEventArgs e)
         {
-            PickColor(ViewModel.FlashColorMedia, ViewModel.UpdateFlashColor);
+            PickColor(ViewModel.FlashColorValue, ViewModel.UpdateFlashColor);
         }
 
         private void LowColorBtn_Click(object sender, RoutedEventArgs e)
         {
-            PickColor(ViewModel.LowColorMedia, ViewModel.UpdateLowColor);
+            PickColor(ViewModel.LowColorValue, ViewModel.UpdateLowColor);
         }
 
         private void ChargingColorBtn_Click(object sender, RoutedEventArgs e)
         {
-            PickColor(ViewModel.ChargingColorMedia, ViewModel.UpdateChargingColor);
+            PickColor(ViewModel.ChargingColorValue, ViewModel.UpdateChargingColor);
         }
 
         /// <summary>
         /// 色の選択画面を開く。選択中の色は実機のライトバーへ一時的に出し、閉じたら戻して、最後に選んだ色を設定へ書く。
         /// </summary>
-        private void PickColor(Color current, Action<Color> apply)
+        private void PickColor(DS4Color current, Action<DS4Color> apply)
         {
             LightbarSettingsViewModel vm = ViewModel;
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
-            dialog.colorPicker.SelectedColor = current;
+            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(current);
             vm.StartForcedColor(current);
-            dialog.ColorChanged += (sender2, color) => { vm.UpdateForcedColor(color); };
+            dialog.ColorChanged += (sender2, color) => { vm.UpdateForcedColor(MediaColors.ToDS4(color)); };
             dialog.ShowDialog();
             vm.EndForcedColor();
-            apply(dialog.colorPicker.SelectedColor.GetValueOrDefault());
+            apply(MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault()));
         }
 
         private void RainbowBtn_Click(object sender, RoutedEventArgs e)

@@ -107,8 +107,8 @@ namespace DS4WindowsTests
             Assert.False(vm.Notification);
             Assert.True(vm.Lightbar);
             Assert.Equal(3, vm.Delay);
-            Assert.Equal(Color.FromArgb(255, 10, 20, 30), vm.EmptyColor);
-            Assert.Equal(Color.FromArgb(255, 40, 50, 60), vm.FullColor);
+            Assert.Equal(new DS4Color(10, 20, 30), vm.EmptyColor);
+            Assert.Equal(new DS4Color(40, 50, 60), vm.FullColor);
 
             ControlSpecialItem back = vm.ToControlItem(SpecialAction.ActionTypeId.BatteryCheck);
             Assert.Equal(SpecialAction.ActionTypeId.BatteryCheck, back.Type);
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
         public void AnItemWithoutColors_KeepsTheInputDefaultColors()
         {
             CheckBatteryViewModel vm = NewVm();
-            Color empty = vm.EmptyColor, full = vm.FullColor;
+            DS4Color empty = vm.EmptyColor, full = vm.FullColor;
 
             vm.LoadControlItem(new ControlSpecialItem { Type = SpecialAction.ActionTypeId.BatteryCheck });
 

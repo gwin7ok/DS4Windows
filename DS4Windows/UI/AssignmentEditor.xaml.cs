@@ -24,6 +24,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
+using DS4Windows.Core.Model;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 using DS4Windows.UI.ViewModels.SpecialActions;
 
@@ -417,34 +419,34 @@ namespace DS4Windows.UI
         {
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = checkBatteryVM.EmptyColor;
-            dialog.colorPicker.SelectedColor = tempcolor;
+            DS4Color tempcolor = checkBatteryVM.EmptyColor;
+            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
             // Phase6-Step7b: 色のプレビューは実機（targetDevice）に対して行う。実機なしなら何もしない
             if (HasTargetDevice) checkBatteryVM.StartForcedColor(tempcolor, targetDevice);
             dialog.ColorChanged += (sender2, color) =>
             {
-                if (HasTargetDevice) checkBatteryVM.UpdateForcedColor(color, targetDevice);
+                if (HasTargetDevice) checkBatteryVM.UpdateForcedColor(MediaColors.ToDS4(color), targetDevice);
             };
             dialog.ShowDialog();
             if (HasTargetDevice) checkBatteryVM.EndForcedColor(targetDevice);
-            checkBatteryVM.EmptyColor = dialog.colorPicker.SelectedColor.GetValueOrDefault();
+            checkBatteryVM.EmptyColor = MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault());
         }
 
         private void BatteryFullColorBtn_Click(object sender, RoutedEventArgs e)
         {
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = checkBatteryVM.FullColor;
-            dialog.colorPicker.SelectedColor = tempcolor;
+            DS4Color tempcolor = checkBatteryVM.FullColor;
+            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
             // Phase6-Step7b: 色のプレビューは実機（targetDevice）に対して行う。実機なしなら何もしない
             if (HasTargetDevice) checkBatteryVM.StartForcedColor(tempcolor, targetDevice);
             dialog.ColorChanged += (sender2, color) =>
             {
-                if (HasTargetDevice) checkBatteryVM.UpdateForcedColor(color, targetDevice);
+                if (HasTargetDevice) checkBatteryVM.UpdateForcedColor(MediaColors.ToDS4(color), targetDevice);
             };
             dialog.ShowDialog();
             if (HasTargetDevice) checkBatteryVM.EndForcedColor(targetDevice);
-            checkBatteryVM.FullColor = dialog.colorPicker.SelectedColor.GetValueOrDefault();
+            checkBatteryVM.FullColor = MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault());
         }
 
         private void MultiTapTrigBtn_Click(object sender, RoutedEventArgs e)

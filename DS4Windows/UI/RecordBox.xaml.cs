@@ -1,4 +1,4 @@
-/*
+﻿/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -34,6 +34,8 @@ using System.Windows.Shapes;
 using NonFormTimer = System.Timers.Timer;
 using Microsoft.Win32;
 using Xceed.Wpf.Toolkit;
+using DS4Windows.Core.Model;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI
@@ -458,16 +460,16 @@ namespace DS4Windows.UI
                 {
                     colorDialog = new ColorPickerWindow();
                     colorDialog.Owner = Application.Current.MainWindow;
-                    Color tempcolor = item.LightbarColorValue();
-                    colorDialog.colorPicker.SelectedColor = tempcolor;
+                    DS4Color tempcolor = item.LightbarColorValue();
+                    colorDialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
                     recordBoxVM.StartForcedColor(tempcolor);
                     colorDialog.ColorChanged += (sender2, color) =>
                     {
-                        recordBoxVM.UpdateForcedColor(color);
+                        recordBoxVM.UpdateForcedColor(MediaColors.ToDS4(color));
                     };
                     colorDialog.ShowDialog();
                     recordBoxVM.EndForcedColor();
-                    item.UpdateLightbarValue(colorDialog.colorPicker.SelectedColor.GetValueOrDefault());
+                    item.UpdateLightbarValue(MediaColors.ToDS4(colorDialog.colorPicker.SelectedColor.GetValueOrDefault()));
 
                     FocusNavigationDirection focusDirection = FocusNavigationDirection.Next;
                     TraversalRequest request = new TraversalRequest(focusDirection);

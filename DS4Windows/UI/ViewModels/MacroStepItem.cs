@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+using DS4Windows.Core.Model;
 using DS4Windows.Processing.Macro;
 using System;
 using System.Collections.Generic;
@@ -159,12 +160,12 @@ namespace DS4Windows.UI.ViewModels
             image = imageSources[(int)step.ActType];
         }
 
-        public void UpdateLightbarValue(Color color)
+        public void UpdateLightbarValue(DS4Color color)
         {
-            step.Value = 1000000000 + (color.R * 1000000) + (color.G * 1000) + color.B;
+            step.Value = 1000000000 + (color.red * 1000000) + (color.green * 1000) + color.blue;
         }
 
-        public Color LightbarColorValue()
+        public DS4Color LightbarColorValue()
         {
             int temp = step.Value - 1000000000;
             int r = temp / 1000000;
@@ -172,7 +173,7 @@ namespace DS4Windows.UI.ViewModels
             int g = temp / 1000;
             temp -= (g * 1000);
             int b = temp;
-            return new Color() { A = 255, R = (byte)r, G = (byte)g, B = (byte)b };
+            return new DS4Color((byte)r, (byte)g, (byte)b);
         }
     }
 }

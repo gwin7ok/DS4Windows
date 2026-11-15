@@ -1,3 +1,4 @@
+using DS4Windows.Core.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -80,13 +81,12 @@ namespace DS4WindowsTests
             var names = new List<string>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
 
-            vm.UpdateMainColor(System.Windows.Media.Color.FromRgb(10, 20, 30));
+            vm.UpdateMainColor(new DS4Color(10, 20, 30));
 
             foreach (string expected in new[]
             {
                 nameof(LightbarSettingsViewModel.MainColorString), nameof(LightbarSettingsViewModel.MainColorR),
                 nameof(LightbarSettingsViewModel.MainColorG), nameof(LightbarSettingsViewModel.MainColorB),
-                nameof(LightbarSettingsViewModel.LightbarBrush),
             })
             {
                 Assert.Contains(expected, names);
