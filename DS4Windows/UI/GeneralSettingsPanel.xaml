@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
@@ -125,7 +126,7 @@
                         Margin="20,0,0,0"
                         Focusable="False">
                     <Button.Background>
-                        <ImageBrush ImageSource="{Binding LaunchProgramIcon}"/>
+                        <ImageBrush ImageSource="{Binding LaunchProgramIconPath, Converter={x:Static localConverters:FileIconConverter.Instance}}"/>
                     </Button.Background>
                 </Button>
             </StackPanel>

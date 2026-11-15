@@ -938,8 +938,7 @@ namespace DS4Windows.UI
 
         private void RunAtStartCk_Click(object sender, RoutedEventArgs e)
         {
-            settingsWrapVM.ShowRunStartPanel = runAtStartCk.IsChecked == true ? Visibility.Visible :
-                Visibility.Collapsed;
+            settingsWrapVM.ShowRunStartPanel = runAtStartCk.IsChecked == true;
         }
 
         private void ContStatusImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

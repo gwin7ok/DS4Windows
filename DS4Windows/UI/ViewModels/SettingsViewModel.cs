@@ -108,14 +108,8 @@ namespace DS4Windows.UI.ViewModels
         private bool canWriteTask;
         public bool CanWriteTask { get => canWriteTask; }
 
-        public ImageSource uacSource;
-        public ImageSource UACSource { get => uacSource; }
-
-        public ImageSource questionMarkSource;
-        public ImageSource QuestionMarkSource { get => questionMarkSource; }
-
-        private Visibility showRunStartPanel = Visibility.Collapsed;
-        public Visibility ShowRunStartPanel
+        private bool showRunStartPanel;
+        public bool ShowRunStartPanel
         {
             get => showRunStartPanel;
             set
@@ -300,9 +294,9 @@ namespace DS4Windows.UI.ViewModels
                 OnPropertyChanged(nameof(UseUdpSmoothing));
             }
         }
-        public Visibility UdpServerOneEuroPanelVisibility
+        public bool UdpServerOneEuroPanelShown
         {
-            get => _appSettings.UseUdpServer && _appSettings.UseUdpServerSmoothing ? Visibility.Visible : Visibility.Collapsed;
+            get => _appSettings.UseUdpServer && _appSettings.UseUdpServerSmoothing;
         }
         public double UdpSmoothMinCutoff
         {
@@ -434,23 +428,6 @@ namespace DS4Windows.UI.ViewModels
 
             CheckStartupOptions();
 
-            Icon img = SystemIcons.Shield;
-            Bitmap bitmap = img.ToBitmap();
-            IntPtr hBitmap = bitmap.GetHbitmap();
-
-            ImageSource wpfBitmap =
-                 Imaging.CreateBitmapSourceFromHBitmap(
-                      hBitmap, IntPtr.Zero, Int32Rect.Empty,
-                      BitmapSizeOptions.FromEmptyOptions());
-            uacSource = wpfBitmap;
-
-            img = SystemIcons.Question;
-            wpfBitmap =
-                 Imaging.CreateBitmapSourceFromHBitmap(
-                      img.ToBitmap().GetHbitmap(), IntPtr.Zero, Int32Rect.Empty,
-                      BitmapSizeOptions.FromEmptyOptions());
-            questionMarkSource = wpfBitmap;
-
             runStartProg = _startupEntries.HasStartProgEntry();
             try
             {
@@ -490,7 +467,7 @@ namespace DS4Windows.UI.ViewModels
                     else
                     {
                         runAtStartup = false;
-                        showRunStartPanel = Visibility.Collapsed;
+                        showRunStartPanel = false;
                     }
                 }
             }
@@ -506,7 +483,7 @@ namespace DS4Windows.UI.ViewModels
 
             if (runAtStartup)
             {
-                showRunStartPanel = Visibility.Visible;
+                showRunStartPanel = true;
             }
 
             PropertyChanged += OnOwnPropertyChanged;
@@ -536,12 +513,12 @@ namespace DS4Windows.UI.ViewModels
 
         private void SettingsViewModel_UseUDPServerChanged(object sender, EventArgs e)
         {
-            OnPropertyChanged(nameof(UdpServerOneEuroPanelVisibility));
+            OnPropertyChanged(nameof(UdpServerOneEuroPanelShown));
         }
 
         private void SettingsViewModel_UseUdpSmoothingChanged(object sender, EventArgs e)
         {
-            OnPropertyChanged(nameof(UdpServerOneEuroPanelVisibility));
+            OnPropertyChanged(nameof(UdpServerOneEuroPanelShown));
         }
 
         private void SettingsViewModel_FakeExeNameChangeCompare(SettingsViewModel sender,
