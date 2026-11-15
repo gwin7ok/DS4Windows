@@ -1395,51 +1395,12 @@ namespace DS4Windows.UI
 
         private void ImportProfBtn_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".xml";
-            dialog.Filter = "DS4Windows Profile (*.xml)|*.xml";
-            dialog.Title = "Select Profile to Import File";
-            if (pathService.AppDataPath != pathService.ExecutableDirectory)
-                dialog.InitialDirectory = Path.Combine(pathService.AppDataPath, "Profiles");
-            else
-                dialog.InitialDirectory = pathService.ExecutableDirectory + @"\Profiles\";
-
-            if (dialog.ShowDialog() == true)
-            {
-                string[] files = dialog.FileNames;
-                for (int i = 0, arlen = files.Length; i < arlen; i++)
-                {
-                    string profilename = System.IO.Path.GetFileName(files[i]);
-                    string basename = System.IO.Path.GetFileNameWithoutExtension(files[i]);
-                    File.Copy(dialog.FileNames[i], pathService.AppDataPath + "\\Profiles\\" + profilename, true);
-                    profileListHolder.AddProfileSort(basename);
-                }
-            }
+            profileSelection.ImportProfile(profileListHolder);
         }
 
         private void ExportProfBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (profilesListBox.SelectedIndex >= 0)
-            {
-                SaveFileDialog dialog = new SaveFileDialog();
-                dialog.AddExtension = true;
-                dialog.DefaultExt = ".xml";
-                dialog.Filter = "DS4Windows Profile (*.xml)|*.xml";
-                dialog.Title = "Select Profile to Export File";
-                Stream stream;
-                int idx = profilesListBox.SelectedIndex;
-                Stream profile = new StreamReader(pathService.AppDataPath + "\\Profiles\\" + profileListHolder.ProfileListCol[idx].Name + ".xml").BaseStream;
-                if (dialog.ShowDialog() == true)
-                {
-                    if ((stream = dialog.OpenFile()) != null)
-                    {
-                        profile.CopyTo(stream);
-                        profile.Close();
-                        stream.Close();
-                    }
-                }
-            }
+            profileSelection.ExportProfile(profileListHolder, profilesListBox.SelectedIndex);
         }
 
         private void DupProfBtn_Click(object sender, RoutedEventArgs e)
@@ -1471,19 +1432,7 @@ namespace DS4Windows.UI
 
         private void DeleteProfBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (profilesListBox.SelectedIndex >= 0)
-            {
-                int idx = profilesListBox.SelectedIndex;
-                ProfileEntity entity = profileListHolder.ProfileListCol[idx];
-                string filename = entity.Name;
-                if (MessageBox.Show(Properties.Resources.ProfileCannotRestore.Replace("*Profile name*", "\"" + filename + "\""),
-                    Properties.Resources.DeleteProfile,
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    entity.DeleteFile();
-                    profileListHolder.ProfileListCol.RemoveAt(idx);
-                }
-            }
+            profileSelection.DeleteProfile(profileListHolder, profilesListBox.SelectedIndex);
         }
 
         private void SelectProfCombo_KeyDown(object sender, KeyEventArgs e)

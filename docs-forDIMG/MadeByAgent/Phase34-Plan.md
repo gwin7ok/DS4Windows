@@ -1,7 +1,7 @@
 # Phase34 計画書: 画面の MVVM 化（コマンド・結びつけ・ダイアログの窓口）— Phase26 の続き
 
 作成日: 2026-11-12
-状態: **着手済み（2026-11-15）。34-0（棚卸しの概数）と 34-1（土台）まで完了、34-2 以降は未着手**（D4 は (A) で確定。2026-11-13。2026-11-13 に、アプリ全体で MVVM が成り立つかの点検を受けて、範囲を 5 画面から全画面へ広げた。下の「MVVM の到達の定義」）
+状態: **一区切り（2026-11-16）。土台（34-1）・ProfileEditor／RecordBox／AssignmentEditor／MainWindow の代表的な判断の移動（34-2〜34-5）・V1／V2 の検査（34-7）・規則書（34-8）を完了。ViewModel の WPF 非依存化（34-6a）と残りの画面（34-6b）は、基準値（V1: 87 件、V2: 72 件）を残して、画面を触るたびに減らす運用**（D4 は (A) で確定。2026-11-13。2026-11-13 に、アプリ全体で MVVM が成り立つかの点検を受けて、範囲を 5 画面から全画面へ広げた。下の「MVVM の到達の定義」）
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 2 と「MVVM パターンの形骸化」）、`Structure-Review-2026-11.md` の B、`Phase26-Plan.md`（一部完了。残りを本 Phase が引き継ぐ）
 前提: Phase29（29-10 が `MainWindow` のタイマーに触れる）と Phase33（スティックのパネルを作り直す）のあとに行う。PhaseX（入力側の図とボタン名）より前に行う。
 
@@ -118,3 +118,7 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 - 34-4（RecordBox。完了）: プリセットの読み書きのファイル選択（`PickAndLoadPreset`／`PickAndSavePreset`）と、移動の記録の上限の通知（`NotifyMoveRecordLimitReached`）を `RecordBoxViewModel` へ。`ProfileEditViewModelFactory` が `IDialogService` を渡す。テスト: `RecordBoxViewModelDialogTests`。
 - 34-5（AssignmentEditor。一部完了）: 起動プログラムの選択（`LaunchProgramViewModel.PickProgram`）を移した。位置を指定して出す「同名のアクションがある」の通知は、描画上の位置の指定のため View に残す（D8＝A）。
 - 34-6（BindingWindow）: 直接の `MessageBox`・ファイル選択が 0 件のため、このブランチでは変更なし。34-6a／34-6b（ViewModel の WPF 非依存化・残りの画面）は、`MainWindow`・`App` に触れる Phase35 のあとで、34-3・34-7・34-8 と一緒に行う（計画の変更。実機確認のあとの最終まとめで記録する）。
+- 34-3（MainWindow。一部）: プロファイルの取り込み・書き出し・削除（ファイル選択と確認）を `ProfileSelectionCoordinator`（`ImportProfile`／`ExportProfile`／`DeleteProfile`。`IDialogService`・`IPathService` を受ける）へ移した。テスト: `ProfileFileCommandsTests`。ログの書き出し・閉じる確認・更新確認の通知・カスタム実行ファイル名の案内は、メイン画面に残る（コンストラクターの引数が基準の上限［14］のため、窓へ依存を足さずに移せる部品を先に作る必要がある。残りの課題として記録する）。
+- 34-7（検査。完了）: 規則 V1（ViewModel は `System.Windows` を参照しない。`ICommand` だけ例外）と V2（View は業務サービスの型を直接参照しない）を、型の検査（`LayerDependencyScanner.ReferencesBetweenNamespaces`）のラチェットにした。基準値は、V1 が 87 件の参照、V2 が 72 件。減らすことが今後の目標（減らしたら同じコミットで基準も更新する）。
+- 34-8（文書。完了）: `copilot-instructions.md` §3.1 に V1・V2 と、`IDialogService`・`RelayCommand`・`IUiDispatcher` の使い方を追記した。
+- 完了の判断: 計画の「到達の定義」のうち、ViewModel の WPF 非依存化（34-6a）と残りの画面（34-6b）は、基準値（V1 の 87 件、V2 の 72 件）を残して終わった。Phase34 は、土台・5 画面の代表的な判断の移動・検査の整備まで完了とし、残りの基準値の削減は、機会があるたびに（画面を触る Step で）減らす運用にする。

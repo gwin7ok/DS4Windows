@@ -23,10 +23,13 @@ namespace DS4Windows.UI.Services
         private readonly IAppSettingsService _appSettings;
         private readonly IEnvironmentService _environmentService;
         private readonly IControllerSlotQuery _slots;
+        private readonly IPathService _pathService;
+        private readonly IDialogService _dialogs;
 
         public ProfileSelectionCoordinator(IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepo,
             IProfileSlotApplier profileSlotApplier, IAppSettingsService appSettings,
-            IEnvironmentService environmentService, IControllerSlotQuery slots)
+            IEnvironmentService environmentService, IControllerSlotQuery slots,
+            IPathService pathService, IDialogService dialogs)
         {
             _editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -34,6 +37,59 @@ namespace DS4Windows.UI.Services
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+        }
+
+        /// <summary>プロファイルの XML を選ばせ、プロファイルのフォルダーへコピーして、一覧へ加える。</summary>
+        public void ImportProfile(ProfileList profileList)
+        {
+            string initialDirectory = _pathService.AppDataPath != _pathService.ExecutableDirectory
+                ? System.IO.Path.Combine(_pathService.AppDataPath, "Profiles")
+                : System.IO.Path.Combine(_pathService.ExecutableDirectory, "Profiles");
+
+            string file = _dialogs.PickOpenFile(new FileDialogOptions
+            {
+                Title = "Select Profile to Import File",
+                Filter = "DS4Windows Profile (*.xml)|*.xml",
+                DefaultExtension = ".xml",
+                InitialDirectory = initialDirectory,
+            });
+            if (file == null) return;
+
+            System.IO.File.Copy(file, System.IO.Path.Combine(_pathService.AppDataPath, "Profiles", System.IO.Path.GetFileName(file)), true);
+            profileList.AddProfileSort(System.IO.Path.GetFileNameWithoutExtension(file));
+        }
+
+        /// <summary>選んだプロファイルの XML を、選ばせた保存先へコピーする。</summary>
+        public void ExportProfile(ProfileList profileList, int index)
+        {
+            if (index < 0) return;
+
+            string source = System.IO.Path.Combine(_pathService.AppDataPath, "Profiles", profileList.ProfileListCol[index].Name + ".xml");
+            string target = _dialogs.PickSaveFile(new FileDialogOptions
+            {
+                Title = "Select Profile to Export File",
+                Filter = "DS4Windows Profile (*.xml)|*.xml",
+                DefaultExtension = ".xml",
+                CheckFileExists = false,
+            });
+            if (target == null) return;
+
+            System.IO.File.Copy(source, target, true);
+        }
+
+        /// <summary>確認のうえ、選んだプロファイルのファイルと一覧の項目を削除する。</summary>
+        public void DeleteProfile(ProfileList profileList, int index)
+        {
+            if (index < 0) return;
+
+            ProfileEntity entity = profileList.ProfileListCol[index];
+            string text = DS4Windows.Properties.Resources.ProfileCannotRestore.Replace("*Profile name*", "\"" + entity.Name + "\"");
+            if (!_dialogs.Confirm(text, DS4Windows.Properties.Resources.DeleteProfile, DialogIcon.Question)) return;
+
+            entity.DeleteFile();
+            profileList.ProfileListCol.RemoveAt(index);
         }
 
         /// <summary>
