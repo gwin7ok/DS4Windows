@@ -228,8 +228,8 @@ namespace DS4WindowsTests
             {
                 ("DS4Windows/UI/BindingWindow.xaml.cs", "CreateRecordBox("),
                 ("DS4Windows/UI/Services/AssignmentWindowFactory.cs", "CreateBindingWindowViewModel("),
-                ("DS4Windows/UI/RecordBoxWindow.xaml.cs", "CreateRecordBox("),
-                ("DS4Windows/UI/RecordBox.xaml.cs", "CreateRecordBoxViewModel("),
+                ("DS4Windows/UI/Services/MacroRecordingWindowFactory.cs", "CreateRecordBox("),
+                ("DS4Windows/UI/Services/MacroRecordingWindowFactory.cs", "CreateRecordBoxViewModel("),
                 ("DS4Windows/UI/AssignmentEditor.xaml.cs", "CreateRecordBoxWindow("),
                 ("DS4Windows/UI/AssignmentEditor.xaml.cs", "CreateBindingWindow("),
             };
