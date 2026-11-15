@@ -28,13 +28,6 @@
             "DS4Windows.UI.ViewModels.ControllerListViewModel|System.Windows.Data.CollectionSynchronizationCallback",
             "DS4Windows.UI.ViewModels.ControllerListViewModel|System.Windows.Threading.Dispatcher",
             "DS4Windows.UI.ViewModels.ControllerListViewModel|System.Windows.Threading.DispatcherObject",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.Controls.ContextMenu",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.Controls.HeaderedItemsControl",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.Controls.ItemCollection",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.Controls.ItemsControl",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.Controls.MenuItem",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.Data.CollectionView",
-            "DS4Windows.UI.ViewModels.GyroSettingsViewModel|System.Windows.RoutedEventHandler",
             "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.Brush",
             "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.Color",
             "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.ImageBrush",
@@ -57,12 +50,6 @@
             "DS4Windows.UI.ViewModels.SpecialActions.LaunchProgramViewModel|System.Windows.Interop.Imaging",
             "DS4Windows.UI.ViewModels.SpecialActions.LaunchProgramViewModel|System.Windows.Media.ImageSource",
             "DS4Windows.UI.ViewModels.SpecialActions.LaunchProgramViewModel|System.Windows.Media.Imaging.BitmapSizeOptions",
-            "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.ContextMenu",
-            "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.HeaderedItemsControl",
-            "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.ItemCollection",
-            "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.ItemsControl",
-            "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.MenuItem",
-            "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Data.CollectionView",
         };
     }
 }

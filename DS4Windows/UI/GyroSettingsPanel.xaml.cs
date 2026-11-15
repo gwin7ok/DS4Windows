@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.Core.Model;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI
@@ -35,18 +37,18 @@ namespace DS4Windows.UI
         public void CreateTriggerMenus(GyroSettingsViewModel gyro)
         {
             viewModel = gyro ?? throw new ArgumentNullException(nameof(gyro));
-            gyro.CreateGyroTriggerMenuItems(gyroControlsTrigBtn.ContextMenu, GyroControlsMenuItem_Click);
-            gyro.CreateGyroTriggerMenuItems(gyroMouseTrigBtn.ContextMenu, GyroMouseTrigMenuItem_Click);
-            gyro.CreateGyroTriggerMenuItems(gyroMouseStickTrigBtn.ContextMenu, GyroMouseStickTrigMenuItem_Click);
+            TriggerMenuAdapter.AddItems(gyroControlsTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroControlsMenuItem_Click);
+            TriggerMenuAdapter.AddItems(gyroMouseTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroMouseTrigMenuItem_Click);
+            TriggerMenuAdapter.AddItems(gyroMouseStickTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroMouseStickTrigMenuItem_Click);
         }
 
         /// <summary>保存されているトリガーを、メニューのチェックと表示へ反映する（プロファイルの読み込み・プリセットの適用のあと）。</summary>
         public void PopulateTriggerMenus(GyroSettingsViewModel gyro)
         {
             viewModel = gyro ?? throw new ArgumentNullException(nameof(gyro));
-            gyro.PopulateGyroMouseTrig(gyroMouseTrigBtn.ContextMenu);
-            gyro.PopulateGyroMouseStickTrig(gyroMouseStickTrigBtn.ContextMenu);
-            gyro.PopulateGyroControlsTrig(gyroControlsTrigBtn.ContextMenu);
+            Populate(gyroMouseTrigBtn.ContextMenu, gyro.PopulateGyroMouseTrig);
+            Populate(gyroMouseStickTrigBtn.ContextMenu, gyro.PopulateGyroMouseStickTrig);
+            Populate(gyroControlsTrigBtn.ContextMenu, gyro.PopulateGyroControlsTrig);
         }
 
         /// <summary>傾きの 4 方向の割り当ての表示を、割り当ての一覧の各コントロールへ結ぶ。</summary>
@@ -69,6 +71,21 @@ namespace DS4Windows.UI
             CalibrationRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        // メニューのチェックを ViewModel の項目へ写して計算させ、結果をメニューへ書き戻す
+        private static void Populate(ContextMenu menu, Action<IReadOnlyList<TriggerMenuEntry>> populate)
+        {
+            var entries = TriggerMenuAdapter.Read(menu);
+            populate(entries);
+            TriggerMenuAdapter.Write(menu, entries);
+        }
+
+        private static void Update(ContextMenu menu, MenuItem alwaysOnItem, RoutedEventArgs e, Action<IReadOnlyList<TriggerMenuEntry>, bool> update)
+        {
+            var entries = TriggerMenuAdapter.Read(menu);
+            update(entries, e.OriginalSource == alwaysOnItem);
+            TriggerMenuAdapter.Write(menu, entries);
+        }
+
         private void GyroMouseTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             gyroMouseTrigBtn.ContextMenu.IsOpen = true;
@@ -88,21 +105,21 @@ namespace DS4Windows.UI
         {
             ContextMenu menu = gyroMouseTrigBtn.ContextMenu;
             MenuItem alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            viewModel.UpdateGyroMouseTrig(menu, e.OriginalSource == alwaysOnItem);
+            Update(menu, alwaysOnItem, e, viewModel.UpdateGyroMouseTrig);
         }
 
         private void GyroMouseStickTrigMenuItem_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu menu = gyroMouseStickTrigBtn.ContextMenu;
             MenuItem alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            viewModel.UpdateGyroMouseStickTrig(menu, e.OriginalSource == alwaysOnItem);
+            Update(menu, alwaysOnItem, e, viewModel.UpdateGyroMouseStickTrig);
         }
 
         private void GyroControlsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu menu = gyroControlsTrigBtn.ContextMenu;
             MenuItem alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            viewModel.UpdateGyroControlsTrig(menu, e.OriginalSource == alwaysOnItem);
+            Update(menu, alwaysOnItem, e, viewModel.UpdateGyroControlsTrig);
         }
     }
 }
