@@ -66,3 +66,8 @@
 
 - （2026-11-16。Phase34〜37・40）実機で未確認の項目: (1) Phase34: プロファイル編集画面の特殊アクション（追加・編集・複製・削除［確認の窓と、複製できない項目の通知］・エクスポート）、記録画面（RecordBox）のプリセットの保存・読み込みと、マウス移動の記録の上限の通知、割り当て編集画面の「プログラムを起動」の参照、メイン画面のプロファイルの取り込み・書き出し・削除［確認の窓］。確認・通知の文言は、新しいリソースキー（`SpecialAction_RemoveConfirm`・`SpecialAction_DuplicateNotSaved`・`Startup_*`）の日本語訳も確認する。(2) Phase40: UDP（Cemuhook）のモーション送出の開始・停止と、パッドの情報（接続・電池）、DS4 のライトバーと振動の戻り、仮想パッドの接続・取り外し、HidHide の対象の判定。(3) Phase35: 通常起動・最小化起動・`-driverinstall`・設定フォルダーへ書けないときの案内、終了（トレイ・ウィンドウ）。(4) Phase37-3: プロファイルを切り替えたとき、前のプロファイルの値が残らず既定へ戻ってから読み込まれること（ジャイロ・タッチパッド・スティック・トリガー・6 軸・ライトバー）。
 - 2026-11-15 方針（LoadTempProfile）: CLI の `LoadTempProfile` は残す（ユーザー判断）。`LoadProfile` との違いは、①再接続で記憶されない（`AppliedProfileRecorder`。再接続では直前の通常のプロファイルへ戻る）、②`OlderProfilePath` を更新しない、③ 一時の使用フラグ（`UseTempProfile`）が立つ、の 3 点。時間や条件での自動復帰は、切断・通常の適用による上書き・Auto Profiles の復帰を除き、ない。
+
+## 4. 実機確認の結果（2026-11-16。Phase34・35・37-3・40 のまとめ）
+- OK: 画面の操作（Phase34）、DS4 の振動、仮想パッドの接続・切断・再接続と HidHide（Phase40）、プロファイル切替の戻し（Phase37-3）、追加した日本語訳 5 件。
+- 不具合を 1 件修正: CLI の `ChangeLedColor` で強制したカスタム色が、`CustomLed` を持たないプロファイルへの切替で戻らなかった（`LightbarSlotSettings.ResetForProfileLoad` が `useCustomLed`・`m_CustomLed` を戻していなかった。Phase37-3 以前からの欠陥）。修正後に再確認して OK。
+- 見送り: UDP（Cemuhook）のモーション・パッド情報（クライアントが手元になく確認手段がない。設定は `UseUDPServer=False`）、Phase35 の設定の保存先の案内（書込不可の場所が必要）。
