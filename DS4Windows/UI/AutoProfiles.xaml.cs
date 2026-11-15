@@ -126,8 +126,34 @@ namespace DS4Windows.UI
             }
         }
 
+        // 列幅の保存。Window Title の列は、自動の幅（NaN）のあいだは 0 として保存し、復元でも自動のままにする
+        private void ProgramListLV_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var gridView = programListLV.View as GridView;
+            if (gridView == null || gridView.Columns.Count < 3 || appSettingsService == null) return;
+
+            appSettingsService.AutoProfileNameColWidth = (int)gridView.Columns[0].Width;
+            appSettingsService.AutoProfilePathColWidth = (int)gridView.Columns[1].Width;
+            double title = gridView.Columns[2].Width;
+            appSettingsService.AutoProfileTitleColWidth = double.IsNaN(title) ? 0 : (int)title;
+        }
+
+        private void RestoreColumnWidths()
+        {
+            var gridView = programListLV.View as GridView;
+            if (gridView == null || gridView.Columns.Count < 3) return;
+
+            gridView.Columns[0].Width = appSettingsService.AutoProfileNameColWidth;
+            gridView.Columns[1].Width = appSettingsService.AutoProfilePathColWidth;
+            if (appSettingsService.AutoProfileTitleColWidth > 0)
+            {
+                gridView.Columns[2].Width = appSettingsService.AutoProfileTitleColWidth;
+            }
+        }
+
         public void SetupDataContext(ProfileList profileList)
         {
+            RestoreColumnWidths();
             autoProfVM = viewModelFactory.CreateAutoProfilesViewModel(autoProfileHolder, profileList);
             programListLV.DataContext = autoProfVM;
             programListLV.ItemsSource = autoProfVM.ProgramColl;

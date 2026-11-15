@@ -172,5 +172,23 @@ namespace DS4Windows.Core.Utilities
 
         /// <summary>Output Slots タブの Reservation 列 初期幅</summary>
         public const int OUTPUT_SLOT_RESERVATION_COL_WIDTH = 240;
+
+        // ==============================================
+        // Auto Profiles・Log タブの ListView 列幅
+        // ==============================================
+        /// <summary>Auto Profiles タブの Name 列 初期幅</summary>
+        public const int AUTO_PROFILE_NAME_COL_WIDTH = 200;
+
+        /// <summary>Auto Profiles タブの Path 列 初期幅</summary>
+        public const int AUTO_PROFILE_PATH_COL_WIDTH = 600;
+
+        /// <summary>Auto Profiles タブの Window Title（0 は自動の幅） 列 初期幅</summary>
+        public const int AUTO_PROFILE_TITLE_COL_WIDTH = 0;
+
+        /// <summary>Log タブの Time 列 初期幅</summary>
+        public const int LOG_TIME_COL_WIDTH = 190;
+
+        /// <summary>Log タブの Data 列 初期幅</summary>
+        public const int LOG_DATA_COL_WIDTH = 1000;
     }
 }

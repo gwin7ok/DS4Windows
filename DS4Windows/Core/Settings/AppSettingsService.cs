@@ -273,6 +273,36 @@ namespace DS4Windows.Core.Settings
             set { if (_config.outputSlotReservationColWidth != value) { _config.outputSlotReservationColWidth = value; NotifyChanged(nameof(OutputSlotReservationColWidth)); } }
         }
 
+        public int AutoProfileNameColWidth
+        {
+            get => _config.autoProfileNameColWidth;
+            set { if (_config.autoProfileNameColWidth != value) { _config.autoProfileNameColWidth = value; NotifyChanged(nameof(AutoProfileNameColWidth)); } }
+        }
+
+        public int AutoProfilePathColWidth
+        {
+            get => _config.autoProfilePathColWidth;
+            set { if (_config.autoProfilePathColWidth != value) { _config.autoProfilePathColWidth = value; NotifyChanged(nameof(AutoProfilePathColWidth)); } }
+        }
+
+        public int AutoProfileTitleColWidth
+        {
+            get => _config.autoProfileTitleColWidth;
+            set { if (_config.autoProfileTitleColWidth != value) { _config.autoProfileTitleColWidth = value; NotifyChanged(nameof(AutoProfileTitleColWidth)); } }
+        }
+
+        public int LogTimeColWidth
+        {
+            get => _config.logTimeColWidth;
+            set { if (_config.logTimeColWidth != value) { _config.logTimeColWidth = value; NotifyChanged(nameof(LogTimeColWidth)); } }
+        }
+
+        public int LogDataColWidth
+        {
+            get => _config.logDataColWidth;
+            set { if (_config.logDataColWidth != value) { _config.logDataColWidth = value; NotifyChanged(nameof(LogDataColWidth)); } }
+        }
+
         // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
         public int Notifications
         {
