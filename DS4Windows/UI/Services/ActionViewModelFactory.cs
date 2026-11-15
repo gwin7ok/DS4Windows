@@ -22,21 +22,24 @@ namespace DS4Windows.UI.Services
         private readonly ISpecialActionRepository _actionRepo;
         private readonly IEnvironmentService _environmentService;
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+        private readonly IDialogService _dialogs;
 
         public ActionViewModelFactory(IProfileRepository profileRepo,
             ISpecialActionRepository actionRepo,
             IEnvironmentService environmentService,
-            DS4Windows.Core.Model.LightbarOverrides lightbar)
+            DS4Windows.Core.Model.LightbarOverrides lightbar,
+            IDialogService dialogs)
         {
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             _actionRepo = actionRepo ?? throw new ArgumentNullException(nameof(actionRepo));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
+            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
         }
 
         public MacroViewModel CreateMacroViewModel() => new MacroViewModel(_actionRepo);
 
-        public LaunchProgramViewModel CreateLaunchProgramViewModel() => new LaunchProgramViewModel(_actionRepo);
+        public LaunchProgramViewModel CreateLaunchProgramViewModel() => new LaunchProgramViewModel(_actionRepo, _dialogs);
 
         public LoadProfileViewModel CreateLoadProfileViewModel(ProfileList profileList)
             => new LoadProfileViewModel(profileList, _actionRepo);
@@ -62,7 +65,7 @@ namespace DS4Windows.UI.Services
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created SpecialActionsListViewModel for Device {device}");
-            return new SpecialActionsListViewModel(device, _actionRepo, _profileRepo);
+            return new SpecialActionsListViewModel(device, _actionRepo, _profileRepo, _dialogs);
         }
     }
 }

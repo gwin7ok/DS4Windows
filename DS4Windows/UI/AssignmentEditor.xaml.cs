@@ -494,18 +494,7 @@ namespace DS4Windows.UI
 
         private void LaunchProgBrowseBtn_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Multiselect = false;
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".exe";
-            dialog.Filter = "Exe (*.exe)|*.exe|Batch (*.bat,*.cmd)|*.bat;*.cmd|All Files (*.*)|*.*";
-            dialog.Title = "Select Program";
-
-            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            if (dialog.ShowDialog() == true)
-            {
-                launchProgVM.Filepath = dialog.FileName;
-            }
+            launchProgVM.PickProgram(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
         }
 
         private void PressKeySelectBtn_Click(object sender, RoutedEventArgs e)

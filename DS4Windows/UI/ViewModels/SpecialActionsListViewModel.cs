@@ -29,7 +29,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
+using DS4Windows.UI.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
@@ -68,10 +70,15 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
+        private readonly IDialogService dialogs;
+
+        /// <param name="dialogs">確認・通知の窓の窓口。複製・削除の確認を使うときに必要（一覧の読み書きだけなら省略できる）</param>
         public SpecialActionsListViewModel(int deviceNum,
             ISpecialActionRepository specialActionRepo,
-            IProfileRepository profileRepo)
+            IProfileRepository profileRepo,
+            IDialogService dialogs = null)
         {
+            this.dialogs = dialogs;
             this.deviceNum = deviceNum;
             this.specialActionRepo = specialActionRepo ?? throw new ArgumentNullException(nameof(specialActionRepo));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -474,6 +481,90 @@ namespace DS4Windows.UI.ViewModels
             newItem.Active = false;
             actionCol.Add(newItem);
             return newItem;
+        }
+
+        /// <summary>Actions.xml を、選んだ保存先へコピーする（エクスポート）。</summary>
+        /// <returns>コピーしたら true。取り消しなら false</returns>
+        public bool PickAndExportActions()
+        {
+            string file = dialogs.PickSaveFile(new FileDialogOptions
+            {
+                Filter = "DS4Windows Special Actions (*.xml)|*.xml",
+                DefaultExtension = ".xml",
+                FileName = "Actions",
+                CheckFileExists = false,
+            });
+            if (file == null) return false;
+
+            File.Copy(ActionsFilePath, file, true);
+            return true;
+        }
+
+        /// <summary>
+        /// 選んだ項目を、確認のうえ取り除く（Actions.xml も更新）。プロファイルの XML からの参照の削除は呼び出し側が行う。
+        /// </summary>
+        /// <returns>取り除いた項目の名前。選択なし・確認で「いいえ」のときは null</returns>
+        public string RemoveSelectedWithConfirm()
+        {
+            SpecialActionItem item = specialActionIndex >= 0 ? currentSAItem : null;
+            if (item == null) return null;
+
+            if (!dialogs.Confirm(AppLogger.UserText("SpecialAction_RemoveConfirm", item.ActionName), "DS4Windows", DialogIcon.Question))
+            {
+                return null;
+            }
+
+            string removedName = item.ActionName;
+            RemoveAction(item);
+            return removedName;
+        }
+
+        /// <summary>選んだ項目を複製する。複製できない項目（Actions.xml に無い）のときは、通知の窓を出して false を返す。</summary>
+        public bool DuplicateSelectedWithNotice()
+        {
+            SpecialActionItem item = specialActionIndex >= 0 ? currentSAItem : null;
+            if (item == null) return false;
+
+            if (DuplicateAction(item) == null)
+            {
+                dialogs.ShowMessage(AppLogger.UserText("SpecialAction_DuplicateNotSaved", item.ActionName), "DS4Windows", DialogIcon.Information);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>割り当て編集画面で新しく保存したアクションを、有効の状態で一覧の末尾へ加える。</summary>
+        public void AddSavedAction(string actionName)
+        {
+            SpecialActionItem newItem = CreateActionItem(GetActionOrPlaceholder(actionName));
+            newItem.Active = true;
+            newItem.Index = actionCol.Count;
+            actionCol.Add(newItem);
+        }
+
+        /// <summary>
+        /// 編集したアクションを、元の項目の位置へ差し替える（有効の状態は引き継ぐ）。
+        /// 一覧が変わっていて元の項目が見つからないときは <paramref name="fallbackIndex"/> を使う。
+        /// </summary>
+        public void ReplaceEditedAction(SpecialActionItem oldItem, int fallbackIndex, string newName)
+        {
+            int idx = actionCol.IndexOf(oldItem);
+            if (idx < 0) idx = fallbackIndex;
+
+            SpecialActionItem newItem = CreateActionItem(GetActionOrPlaceholder(newName));
+            newItem.Active = oldItem.Active;
+            newItem.Index = idx;
+
+            if (idx >= 0 && idx < actionCol.Count)
+            {
+                actionCol.RemoveAt(idx);
+                actionCol.Insert(idx, newItem);
+            }
+            else
+            {
+                actionCol.Add(newItem);
+            }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

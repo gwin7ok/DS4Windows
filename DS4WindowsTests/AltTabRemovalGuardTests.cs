@@ -55,7 +55,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("LoadPresetFromFileMenuItem", xaml + code);
             int handler = code.IndexOf("private void LoadPresetBtn_Click(", StringComparison.Ordinal);
             Assert.True(handler >= 0, "LoadPresetBtn_Click が見つからない");
-            Assert.Contains("OpenFileDialog", code.Substring(handler, Math.Min(900, code.Length - handler)));
+            Assert.Contains("PickAndLoadPreset", code.Substring(handler, Math.Min(900, code.Length - handler)));
         }
 
         [Fact]

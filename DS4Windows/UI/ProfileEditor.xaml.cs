@@ -1179,12 +1179,7 @@ namespace DS4Windows.UI
             };
             actEditor.Saved += (sender2, actionName) =>
             {
-                SpecialAction action = specialActionsVM.GetActionOrPlaceholder(actionName);
-                SpecialActionItem newitem = specialActionsVM.CreateActionItem(action);
-                newitem.Active = true;
-                int lastIdx = specialActionsVM.ActionCol.Count;
-                newitem.Index = lastIdx;
-                specialActionsVM.ActionCol.Add(newitem);
+                specialActionsVM.AddSavedAction(actionName);
                 CloseLeftPaneEditor();
                 // After adding a new special action, re-apply the current sort
                 // so the list reflects the user's chosen sort column and order.
@@ -1252,30 +1247,8 @@ namespace DS4Windows.UI
                     }
                     catch { }
 
-                    // Find the item index at runtime (guard against stale captured index)
-                    int idx = specialActionsVM.ActionCol.IndexOf(item);
-                    if (idx < 0)
-                    {
-                        idx = currentIndex;
-                    }
-
-                    DS4Windows.Core.Settings.SpecialAction action = specialActionsVM.GetActionOrPlaceholder(newName);
-                    SpecialActionItem newitem = specialActionsVM.CreateActionItem(action);
-                    newitem.Active = item.Active;
-                    newitem.Index = idx;
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        if (idx >= 0 && idx < specialActionsVM.ActionCol.Count)
-                        {
-                            specialActionsVM.ActionCol.RemoveAt(idx);
-                            specialActionsVM.ActionCol.Insert(idx, newitem);
-                        }
-                        else
-                        {
-                            specialActionsVM.ActionCol.Add(newitem);
-                        }
-                    });
+                    // 一覧の差し替えは UI のスレッドで行う
+                    Application.Current.Dispatcher.Invoke(() => specialActionsVM.ReplaceEditedAction(item, currentIndex, newName));
 
                     CloseLeftPaneEditor();
                     // After editing an existing special action, re-apply the
@@ -1316,16 +1289,7 @@ namespace DS4Windows.UI
             if (leftPaneEditor != null) return;
             if (specialActionsVM.SpecialActionIndex < 0) return;
 
-            SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem;
-            if (item == null) return;
-
-            SpecialActionItem newItem = specialActionsVM.DuplicateAction(item);
-            if (newItem == null)
-            {
-                MessageBox.Show($"Special action \"{item.ActionName}\" can't be duplicated because it isn't saved in Actions.xml.",
-                    "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
+            if (!specialActionsVM.DuplicateSelectedWithNotice()) return;
 
             SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
         }
@@ -1334,20 +1298,10 @@ namespace DS4Windows.UI
         {
             if (specialActionsVM.SpecialActionIndex >= 0)
             {
-                SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem;
-                //int currentIndex = specialActionsVM.ActionCol[specialActionsVM.SpecialActionIndex].Index;
-                //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
-                if (item == null) return;
+                // 確認のうえ、Actions.xml と、すべてのプロファイルの XML から取り除く
+                string removedName = specialActionsVM.RemoveSelectedWithConfirm();
+                if (removedName == null) return;
 
-                // Phase6-Step10-3b-3: 確認のうえ、Actions.xml と、すべてのプロファイルの XML から取り除く
-                MessageBoxResult confirm = MessageBox.Show(
-                    $"Remove special action \"{item.ActionName}\"?\n\n" +
-                    "It will also be removed from every profile.",
-                    "DS4Windows", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-                if (confirm != MessageBoxResult.Yes) return;
-
-                string removedName = item.ActionName;
-                specialActionsVM.RemoveAction(item);
                 NotifyProfilesUpdated(profileRepository.RemoveActionReference(removedName));
             }
         }
@@ -1702,19 +1656,7 @@ namespace DS4Windows.UI
 
         private void ExportSpecialActions_OnClick(object sender, RoutedEventArgs e)
         {
-            var dialog = new SaveFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".xml";
-            dialog.FileName = "Actions";
-            dialog.Filter = "DS4Windows Special Actions (*.xml)|*.xml";
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                var profileStream = new StreamReader(specialActionsVM.ActionsFilePath).BaseStream;
-                var dialogStream = dialog.OpenFile();
-                profileStream.CopyTo(dialogStream);
-                profileStream.Close();
-                dialogStream.Close();
-            }
+            specialActionsVM.PickAndExportActions();
         }
 
         // ソート状態（列名・方向）は SpecialActionsListViewModel.CurrentSortColumn /
