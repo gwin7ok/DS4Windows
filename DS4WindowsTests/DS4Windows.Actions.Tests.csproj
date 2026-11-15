@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DS4Windows\DS4WinWPF.csproj" />
+    <Compile Include="..\DS4WindowsCli\CliArguments.cs" Link="Shared\CliArguments.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- DS4Windows の CLI（-command）を行うコンソールのクライアント。DS4Windows.exe は GUI アプリのため、cmd.exe が終了を待たず、
+	     結果がプロンプトの後ろに出ていた。コンソール種別の実行ファイルにして、結果が先に出るようにする。
+	     動いている本体へ、WM_COPYDATA と共有メモリ（MMF）で送る。本体の DLL は参照しない（WPF を読み込まず、起動を軽くする）。 -->
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Platforms>x64</Platforms>
+		<Platform>x64</Platform>
+		<PlatformTarget>x64</PlatformTarget>
+		<RootNamespace>DS4Windows.Cli</RootNamespace>
+		<AssemblyName>DS4WindowsCli</AssemblyName>
+		<ApplicationIcon>..\DS4Windows\DS4W.ico</ApplicationIcon>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<NeutralLanguage>en</NeutralLanguage>
+		<Description>DS4Windows command line client</Description>
+	</PropertyGroup>
+
+	<!-- 本体と共有する、通信の窓口（名前空間は本体と同じ DS4Windows.Core.Platform。ファイルは 1 つの実装を共有する） -->
+	<ItemGroup>
+		<Compile Include="..\DS4Windows\Core\Platform\IpcMemoryMap.cs" Link="Shared\IpcMemoryMap.cs" />
+		<Compile Include="..\DS4Windows\Core\Platform\IpcResultText.cs" Link="Shared\IpcResultText.cs" />
+		<Compile Include="..\DS4Windows\Core\Platform\COPYDATASTRUCT.cs" Link="Shared\COPYDATASTRUCT.cs" />
+	</ItemGroup>
+
+</Project>
