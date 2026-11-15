@@ -96,7 +96,8 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
             return new RecordBoxViewModel(_lightbar, device, controlSettings, repeatable,
-                _profileSettings, _environmentService, _macroRecording, targetDevice, _dialogs, _uiDispatcher);
+                _profileSettings, _environmentService, _macroRecording, targetDevice, _dialogs, _uiDispatcher,
+                () => _pathService.AppDataPath + "\\Macros");
         }
     }
 }

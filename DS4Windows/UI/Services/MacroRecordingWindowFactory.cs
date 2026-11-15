@@ -35,7 +35,7 @@ namespace DS4Windows.UI.Services
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable, bool showPlaybackOptions)
             => new RecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable, showPlaybackOptions,
-                _macroRecording, _pathService, _viewModelFactory, _windowSystem, _mouseHook);
+                _viewModelFactory, _windowSystem, _mouseHook);
 
         public RecordBoxWindow CreateRecordBoxWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             bool repeatable, bool showPlaybackOptions, IEditorWindowFactory editors)

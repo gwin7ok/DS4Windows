@@ -56,10 +56,8 @@
             "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.RecordBoxWindow|DS4Windows.Core.Settings.DS4ControlSettings",
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IMouseInputHook",
-            "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IPathService",
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IWindowSystem",
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Settings.DS4ControlSettings",
-            "DS4Windows.UI.RecordBox|DS4Windows.Processing.Abstractions.IMacroRecordingState",
             "DS4Windows.UI.StickCalibrationWindow|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.WelcomeDialog|DS4Windows.Core.Abstractions.IEnvironmentService",
         };

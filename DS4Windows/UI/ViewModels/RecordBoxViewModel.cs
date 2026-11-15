@@ -123,6 +123,8 @@ namespace DS4Windows.UI.ViewModels
         // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService environmentService;
         private readonly IMacroRecordingState macroRecording;
+        // マクロのプリセットを置くフォルダ（プリセットの選択の初期位置）。null は指定なし（単体テスト）
+        private readonly Func<string> macrosFolder;
 
         // Phase6-Step7b: 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
         // 記録中のタッチパッド Passthru で実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」。
@@ -146,9 +148,11 @@ namespace DS4Windows.UI.ViewModels
             IMacroRecordingState macroRecording,
             int targetDevice = -1,
             IDialogService dialogs = null,
-            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher = null)
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher = null,
+            Func<string> macrosFolder = null)
         {
             this.dialogs = dialogs;
+            this.macrosFolder = macrosFolder;
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.targetDevice = targetDevice;
@@ -229,6 +233,18 @@ namespace DS4Windows.UI.ViewModels
             // Phase8-Fix-MacroRepeatUnify（D1）: 「Repeat while held」は RepeatMacro だけで表す（旧: HoldMacro と RepeatMacro の両方）
             settings.keyType = playbackOptions.ApplyTo(DS4KeyType.Macro);
         }
+
+        /// <summary>記録中か。画面が記録の開始・終了で切り替える。マクロの入力の取り込みと他の画面（割り当ての実行）が、この状態を見る。</summary>
+        public void SetMacroRecordingActive(bool active)
+        {
+            if (macroRecording != null) macroRecording.IsRecording = active;
+        }
+
+        /// <summary>マクロのフォルダを初期位置にして、プリセットを読み込む。</summary>
+        public bool PickAndLoadPreset() => PickAndLoadPreset(macrosFolder?.Invoke());
+
+        /// <summary>マクロのフォルダを初期位置にして、プリセットを書き出す。</summary>
+        public bool PickAndSavePreset() => PickAndSavePreset(macrosFolder?.Invoke());
 
         /// <summary>プリセットのファイルを選ばせ、選ばれたら今の手順を置き換えて読み込む。</summary>
         /// <returns>読み込んだら true。取り消しなら false</returns>
