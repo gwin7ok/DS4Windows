@@ -71,3 +71,4 @@
 - OK: 画面の操作（Phase34）、DS4 の振動、仮想パッドの接続・切断・再接続と HidHide（Phase40）、プロファイル切替の戻し（Phase37-3）、追加した日本語訳 5 件。
 - 不具合を 1 件修正: CLI の `ChangeLedColor` で強制したカスタム色が、`CustomLed` を持たないプロファイルへの切替で戻らなかった（`LightbarSlotSettings.ResetForProfileLoad` が `useCustomLed`・`m_CustomLed` を戻していなかった。Phase37-3 以前からの欠陥）。修正後に再確認して OK。
 - 見送り: UDP（Cemuhook）のモーション・パッド情報（クライアントが手元になく確認手段がない。設定は `UseUDPServer=False`）、Phase35 の設定の保存先の案内（書込不可の場所が必要）。
+- Phase36 の C4（Bluetooth Xbox の 3 秒待ち）と C5（30 秒ごとの GC）: 2026-11-16 にユーザーが両方とも見送りと決定（実装しない）。
