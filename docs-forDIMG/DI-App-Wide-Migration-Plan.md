@@ -1286,7 +1286,7 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 **（2026-11-15更新）Phase7b〜Phase33・Phase38 は完了した。Phase34〜37・40 は一部完了。次の候補は、次のとおり。**
 
 1. **（2026-11-16更新）Phase34〜37・40 の実施の結果**: Phase40 と Phase35 は完了。Phase34 は一区切り（残りは V1・V2 の基準値の削減）。Phase37 は 37-3 まで完了で、37-4〜37-6 は保留。いずれも実機確認は、最後のまとめで行う。
-2. **Phase34 の続き（V1・V2 の基準値の削減）**: 画面を触る Step で、`ViewModelWpfReferenceBaseline`（23 件。2026-11-16 に TrayIconViewModel の 13 件、アイコン・表示切替の 16 件、Visibility の 5 件、トリガーメニューの 13 件、コレクション同期・Dispatcher・プログラムのアイコンの 14 件、出力ピッカーの選択色の 3 件を解消。残りは Color・ブラシ・メニュー・キー型）・`ViewDirectServiceReferenceBaseline`（72 件）を減らす。
+2. **Phase34 の続き（V1・V2 の基準値の削減）**: 画面を触る Step で、`ViewModelWpfReferenceBaseline`（16 件。2026-11-16 に TrayIconViewModel の 13 件、アイコン・表示切替の 16 件、Visibility の 5 件、トリガーメニューの 13 件、コレクション同期・Dispatcher・プログラムのアイコンの 14 件、出力ピッカーの選択色の 3 件、機器一覧の色メニューの 7 件を解消。残りは Color・ブラシ・メニュー・キー型）・`ViewDirectServiceReferenceBaseline`（72 件）を減らす。
 3. **Phase37 の続き（37-4〜37-6）・Phase36 の C 部**: 判断項目。保存の形に触れる作業は、黄金テストが守る。
 4. 時期が未定の計画（§6.16。PhaseX＝KI-7［一番最後］、PhaseX3＝日本語化、PhaseX4＝KI-14）は、実施するかどうか・時期をユーザーが決める。
 5. 実機で未確認の項目（`Known-Issues-Ledger.md` §3、`Device-Check-Checklist.md`）は、任意のタイミングで確認する（DualSense・Switch Pro は、実機が得られたとき）。

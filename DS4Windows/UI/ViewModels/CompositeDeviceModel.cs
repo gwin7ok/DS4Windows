@@ -321,8 +321,6 @@ namespace DS4Windows.UI.ViewModels
         private bool useCustomColor;
         public bool UseCustomColor { get => useCustomColor; set => useCustomColor = value; }
 
-        private ContextMenu lightContext;
-        public ContextMenu LightContext { get => lightContext; set => lightContext = value; }
 
         public string IdText
         {
@@ -435,39 +433,22 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public void AddLightContextItems()
-        {
-            MenuItem thing = new MenuItem() { Header = "Use Profile Color", IsChecked = !useCustomColor };
-            thing.Click += ProfileColorMenuClick;
-            lightContext.Items.Add(thing);
-            thing = new MenuItem() { Header = "Use Custom Color", IsChecked = useCustomColor };
-            thing.Click += CustomColorItemClick;
-            lightContext.Items.Add(thing);
-        }
-
-        private void ProfileColorMenuClick(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>ライトバーの色を、プロファイルの色にする（メニューの「Use Profile Color」）。</summary>
+        public void UseProfileLightColor()
         {
             useCustomColor = false;
-            RefreshLightContext();
             LightbarWindow.Info.ds4winSettings.useCustomLed = false;
             LightColorChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void CustomColorItemClick(object sender, System.Windows.RoutedEventArgs e)
+        /// <summary>ライトバーの色を、カスタム色にし、色の選択を求める（メニューの「Use Custom Color」）。</summary>
+        public void UseCustomLightColor()
         {
             useCustomColor = true;
-            RefreshLightContext();
             LightbarWindow.Info.ds4winSettings.useCustomLed = true;
             LightColorChanged?.Invoke(this, EventArgs.Empty);
             RequestColorPicker?.Invoke(this);
         }
-
-        private void RefreshLightContext()
-        {
-            (lightContext.Items[0] as MenuItem).IsChecked = !useCustomColor;
-            (lightContext.Items[1] as MenuItem).IsChecked = useCustomColor;
-        }
-
         public void UpdateCustomLightColor(Color color)
         {
             LightbarWindow.Info.ds4winSettings.m_CustomLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };

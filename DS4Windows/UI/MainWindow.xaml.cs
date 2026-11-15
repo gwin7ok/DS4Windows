@@ -815,8 +815,6 @@ namespace DS4Windows.UI
                 {
                     foreach (CompositeDeviceModel item in newitems)
                     {
-                        item.LightContext = new ContextMenu();
-                        item.AddLightContextItems();
                         item.Device.SyncChange += DS4Device_SyncChange;
                         item.RequestColorPicker += Item_RequestColorPicker;
                         //item.LightContext.Items.Add(new MenuItem() { Header = "Use Profile Color", IsChecked = !item.UseCustomColor });
@@ -1030,6 +1028,19 @@ namespace DS4Windows.UI
 
         }
 
+        // ライトバーの色（プロファイルの色／カスタム色）を選ぶメニュー。開くたびに、いまの状態のチェックで作る
+        private static ContextMenu BuildLightContext(CompositeDeviceModel item)
+        {
+            var menu = new ContextMenu();
+            var profileItem = new MenuItem() { Header = "Use Profile Color", IsChecked = !item.UseCustomColor };
+            profileItem.Click += (s, e) => item.UseProfileLightColor();
+            var customItem = new MenuItem() { Header = "Use Custom Color", IsChecked = item.UseCustomColor };
+            customItem.Click += (s, e) => item.UseCustomLightColor();
+            menu.Items.Add(profileItem);
+            menu.Items.Add(customItem);
+            return menu;
+        }
+
         private void LightColorBtn_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
@@ -1037,7 +1048,7 @@ namespace DS4Windows.UI
             CompositeDeviceModel item = conLvViewModel.ControllerDict[idx];
             //(button.ContextMenu.Items[0] as MenuItem).IsChecked = conLvViewModel.ControllerCol[idx].UseCustomColor;
             //(button.ContextMenu.Items[1] as MenuItem).IsChecked = !conLvViewModel.ControllerCol[idx].UseCustomColor;
-            button.ContextMenu = item.LightContext;
+            button.ContextMenu = BuildLightContext(item);
             button.ContextMenu.IsOpen = true;
         }
 
