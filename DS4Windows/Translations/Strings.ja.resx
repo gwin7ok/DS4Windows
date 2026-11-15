@@ -1066,4 +1066,10 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="LightbarSectionRainbow" xml:space="preserve">
     <value>虹色</value>
   </data>
+  <data name="OutputSlotMan.SlotNum" xml:space="preserve">
+    <value>スロット #</value>
+  </data>
+  <data name="OutputSlotMan.InputNum" xml:space="preserve">
+    <value>入力コントローラー</value>
+  </data>
 </root>

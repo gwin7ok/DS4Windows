@@ -1282,6 +1282,9 @@ Disabled:
   <data name="Intro" xml:space="preserve">
     <value>Intro</value>
   </data>
+  <data name="OutputSlotMan.SlotNum" xml:space="preserve">
+    <value>Slot #</value>
+  </data>
   <data name="OutputSlotMan.InputNum" xml:space="preserve">
     <value>Input #</value>
   </data>

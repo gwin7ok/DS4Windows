@@ -256,6 +256,9 @@ namespace DS4Windows.Output.Services
                     }
                     else
                     {
+                        // 画面の「入力 #」に出す値は、結び付けの通知より先に入れる
+                        slotDevice.InputIndex = index;
+                        slotDevice.InputDisplayString = $"{device.DisplayName} [{device.MacAddress}]";
                         slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
                         OutputDevice tempOut = _cartridges[contType].Narrow(slotDevice.OutputDevice);
 
@@ -310,6 +313,8 @@ namespace DS4Windows.Output.Services
                     }
                     else if (slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.Attached)
                     {
+                        slotDevice.InputIndex = OutSlotDevice.INPUT_INDEX_DEFAULT;
+                        slotDevice.InputDisplayString = string.Empty;
                         slotDevice.CurrentInputBound = OutputSlotInputBound.Unbound;
                         dev.ResetState();
                         dev.RemoveFeedbacks();
