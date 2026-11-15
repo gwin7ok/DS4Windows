@@ -244,7 +244,7 @@ namespace DS4Windows.Output.Services
                             // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
                             EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
 
-                            outputslotMan.DeferredPlugin(tempOut, index, $"{device.DisplayName} [{device.MacAddress}]", outputDevices, contType);
+                            outputslotMan.DeferredPlugin(tempOut, index, $"{device.DisplayName} ({device.MacAddress})", outputDevices, contType);
                             //slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
 
                             success = true;
@@ -258,7 +258,8 @@ namespace DS4Windows.Output.Services
                     {
                         // 画面の「入力 #」に出す値は、結び付けの通知より先に入れる
                         slotDevice.InputIndex = index;
-                        slotDevice.InputDisplayString = $"{device.DisplayName} [{device.MacAddress}]";
+                        // コントローラータブの ID 列と同じ書式
+                        slotDevice.InputDisplayString = $"{device.DisplayName} ({device.MacAddress})";
                         slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
                         OutputDevice tempOut = _cartridges[contType].Narrow(slotDevice.OutputDevice);
 
