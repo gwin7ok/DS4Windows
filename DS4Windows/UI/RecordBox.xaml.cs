@@ -68,16 +68,14 @@ namespace DS4Windows.UI
         /// Phase6-Step7b: ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
         /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
         /// </param>
-        public RecordBox(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, int targetDevice,
-            bool showscan, bool repeatable, bool showPlaybackOptions,
-            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
+        public RecordBox(RecordBoxViewModel viewModel,
+            bool showscan, bool showPlaybackOptions,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem, DS4Windows.Core.Abstractions.IMouseInputHook mouseHook)
         {
             this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
-            if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             InitializeComponent();
-            recordBoxVM = viewModelFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, repeatable, targetDevice);
+            recordBoxVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
             // Phase10-Step1 W2: Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）

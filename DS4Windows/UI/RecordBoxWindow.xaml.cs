@@ -39,20 +39,11 @@ namespace DS4Windows.UI
     {
         public event EventHandler Saved;
 
-        /// <param name="targetDevice">
-        /// Phase6-Step7b: マクロ記録で使う実機のスロット番号。-1 は実機なし。
-        /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
-        /// </param>
-        // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
-        public RecordBoxWindow(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings settings, int targetDevice,
-            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, bool repeatable = true,
-            bool showPlaybackOptions = true)
+        /// <param name="box">記録の本体。ViewModel とともに、窓口（工場）が作って渡す。</param>
+        public RecordBoxWindow(RecordBox box)
         {
-            if (editorWindowFactory == null) throw new ArgumentNullException(nameof(editorWindowFactory));
+            if (box == null) throw new ArgumentNullException(nameof(box));
             InitializeComponent();
-
-            RecordBox box = editorWindowFactory.CreateRecordBox(deviceNum, settings, targetDevice, repeatable: repeatable,
-                showPlaybackOptions: showPlaybackOptions);
             mainPanel.Children.Add(box);
 
             box.Save += RecordBox_Save;
