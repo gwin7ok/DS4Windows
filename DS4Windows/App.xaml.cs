@@ -396,6 +396,50 @@ namespace DS4Windows
         /// <summary>
         /// Phase9 9-F F-1b: 初回起動の保存先の選択と、設定フォルダの骨格の作成。選ばなかった、または作れなかったときは、終了を要求して false を返す。
         /// </summary>
+        /// <summary>
+        /// 初回の保存場所の選択の適用。SetSaveLocation は <c>IPathService.AppDataPath</c> の setter とは別の動作（設定ファイルのパスも書き換える）。
+        /// 複数の保存場所があり、残さないと選んだときは、もう一方の古い設定を削除する。
+        /// </summary>
+        private void ApplySaveLocationChoice(bool multisaves, bool programFolder, bool keepOldSettings)
+        {
+            if (programFolder)
+            {
+                _pathService.SetSaveLocation(_pathService.ProgramDirectory);
+                if (multisaves && !keepOldSettings)
+                {
+                    try
+                    {
+                        if (Directory.Exists(_pathService.RoamingAppDataPath))
+                        {
+                            Directory.Delete(_pathService.RoamingAppDataPath, true);
+                        }
+                    }
+                    catch { }
+                }
+                else if (!multisaves)
+                {
+                    _pathService.CreateEmptyProfilesFile(_pathService.ProgramDirectory + "\\Profiles.xml");
+                }
+            }
+            else
+            {
+                if (multisaves && !keepOldSettings)
+                {
+                    // Profiles／Profiles.xml／Auto Profiles.xml だけでなく、設定フォルダのアプリ管理ファイルをすべて削除する（ProgramFolderSettingsCleaner）。
+                    if (!ProgramFolderSettingsCleaner.DeleteSettings(_pathService.ProgramDirectory))
+                    {
+                        MessageBox.Show("Cannot Delete old settings, please manaully delete", "DS4Windows");
+                    }
+                }
+                else if (!multisaves)
+                {
+                    _pathService.CreateEmptyProfilesFile(Path.Combine(_pathService.RoamingAppDataPath, "Profiles.xml"));
+                }
+
+                _pathService.SetSaveLocation(_pathService.RoamingAppDataPath);
+            }
+        }
+
         private bool RunFirstRunSaveLocationAndSkeleton(bool firstRun)
         {
             // Could not find unique profile location; does not exist or multiple places.
@@ -403,8 +447,9 @@ namespace DS4Windows
             // and profiles
             if (firstRun)
             {
-                DS4Windows.UI.SaveWhere savewh =
-                    new DS4Windows.UI.SaveWhere(_pathService.HasMultipleSaveLocations, _pathService, _environmentService);
+                bool multisaves = _pathService.HasMultipleSaveLocations;
+                DS4Windows.UI.SaveWhere savewh = new DS4Windows.UI.SaveWhere(multisaves, _environmentService.AdminNeeded(),
+                    (programFolder, keepOldSettings) => ApplySaveLocationChoice(multisaves, programFolder, keepOldSettings));
                 savewh.ShowDialog();
                 if (!savewh.ChoiceMade)
                 {
