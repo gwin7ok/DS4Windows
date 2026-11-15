@@ -234,8 +234,29 @@ namespace DS4Windows.UI
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
-            autoProfControl.Initialize(pathService, appSettingsService, _autoProfileService,
-                viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)), environmentService);
+            string autoProfilesFile = pathService.AppDataPath + "\\Auto Profiles.xml";
+            if (!File.Exists(autoProfilesFile))
+                _autoProfileService.CreateAutoProfilesFile(autoProfilesFile);
+
+            string steamGamesDir;
+            if (appSettingsService.UseCustomSteamFolder && Directory.Exists(appSettingsService.CustomSteamFolder))
+                steamGamesDir = appSettingsService.CustomSteamFolder;
+            else if (Directory.Exists(AutoProfiles.steamCommx86Loc))
+                steamGamesDir = AutoProfiles.steamCommx86Loc;
+            else if (Directory.Exists(AutoProfiles.steamCommLoc))
+                steamGamesDir = AutoProfiles.steamCommLoc;
+            else
+                steamGamesDir = null;
+
+            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, environmentService.ControllerSlotLimit,
+                _autoProfileService.Holder, viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)),
+                () => (appSettingsService.AutoProfileNameColWidth, appSettingsService.AutoProfilePathColWidth, appSettingsService.AutoProfileTitleColWidth),
+                (name, path, title) =>
+                {
+                    appSettingsService.AutoProfileNameColWidth = name;
+                    appSettingsService.AutoProfilePathColWidth = path;
+                    appSettingsService.AutoProfileTitleColWidth = title;
+                });
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 

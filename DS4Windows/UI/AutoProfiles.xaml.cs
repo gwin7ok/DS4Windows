@@ -47,9 +47,9 @@ namespace DS4Windows.UI
     {
         // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、AutoProfileHolder を読む前に 1 回だけ呼ぶ）。
-        private DS4Windows.Core.Abstractions.IPathService pathService;
-        private DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
-        private DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService;
+        // 列幅の読み書きは、設定を持つ MainWindow が関数で渡す（View は設定のサービスを参照しない）
+        private Func<(int name, int path, int title)> loadColumnWidths;
+        private Action<int, int, int> saveColumnWidths;
         private DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory;
         protected String m_Profile;
         public const string steamCommx86Loc = @"C:\Program Files (x86)\Steam\steamapps\common";
@@ -75,48 +75,31 @@ namespace DS4Windows.UI
         }
 
         /// <summary>
-        /// 依存を受け取り、画面の初期化（保存先ファイルの作成、Steam フォルダの判定、AutoProfileHolder の取得、
+        /// 値を受け取り、画面の初期化（保存先ファイルの設定、Steam フォルダの有無、AutoProfileHolder、
         /// 行数の調整）を行う。置換前はコンストラクタで行っていた処理で、順序は同じ。
         /// MainWindow のコンストラクタから、AutoProfileHolder を読む前に 1 回だけ呼ぶ。
         /// </summary>
-        public void Initialize(DS4Windows.Core.Abstractions.IPathService pathService,
-            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
-            DS4Windows.Processing.Abstractions.IAutoProfileService autoProfileService,
-            DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
+        public void Initialize(string autoProfilesFile, string steamGamesDir, int slotLimit,
+            AutoProfileHolder autoProfileHolder, DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
+            Func<(int name, int path, int title)> loadColumnWidths, Action<int, int, int> saveColumnWidths)
         {
-            if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
-            if (this.pathService != null) throw new InvalidOperationException("AutoProfiles is already initialized.");
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
+            if (this.viewModelFactory != null) throw new InvalidOperationException("AutoProfiles is already initialized.");
             this.viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            this.loadColumnWidths = loadColumnWidths ?? throw new ArgumentNullException(nameof(loadColumnWidths));
+            this.saveColumnWidths = saveColumnWidths ?? throw new ArgumentNullException(nameof(saveColumnWidths));
 
-            m_Profile = pathService.AppDataPath + "\\Auto Profiles.xml";
+            m_Profile = autoProfilesFile ?? throw new ArgumentNullException(nameof(autoProfilesFile));
 
-            if (!File.Exists(pathService.AppDataPath + @"\Auto Profiles.xml"))
-                autoProfileService.CreateAutoProfilesFile(m_Profile);
-
-            //LoadP();
-
-            if (appSettingsService.UseCustomSteamFolder &&
-                Directory.Exists(appSettingsService.CustomSteamFolder))
-                steamgamesdir = appSettingsService.CustomSteamFolder;
-            else if (Directory.Exists(steamCommx86Loc))
-                steamgamesdir = steamCommx86Loc;
-            else if (Directory.Exists(steamCommLoc))
-                steamgamesdir = steamCommLoc;
-            else
+            // Steam のゲームのフォルダが無い（null）ときは、メニューの項目を外す
+            steamgamesdir = steamGamesDir;
+            if (steamgamesdir == null)
                 addProgramsBtn.ContextMenu.Items.Remove(steamMenuItem);
 
-            // Phase5-Step13-4: IAutoProfileServiceが監視に使用している唯一のHolderを共有する。
-            // 独自に new AutoProfileHolder() すると、本画面での編集・保存がバックグラウンド監視
-            // (AutoProfileService.CheckProfiles)に反映されない二重インスタンス問題が発生するため。
-            autoProfileHolder = autoProfileService.Holder;
+            // 監視に使われている唯一の Holder を共有する。独自に作ると、この画面での編集・保存が
+            // バックグラウンドの監視（AutoProfileService.CheckProfiles）に反映されない二重インスタンスになる。
+            this.autoProfileHolder = autoProfileHolder ?? throw new ArgumentNullException(nameof(autoProfileHolder));
 
             int currentRowCount = autoProfilesGrid.RowDefinitions.Count;
-            // Phase7-Step10e W2: 行数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
-            int slotLimit = environmentService.ControllerSlotLimit;
             if (currentRowCount > slotLimit)
             {
                 for (int i = currentRowCount - 1; i >= slotLimit; i--)
@@ -130,12 +113,10 @@ namespace DS4Windows.UI
         private void ProgramListLV_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             var gridView = programListLV.View as GridView;
-            if (gridView == null || gridView.Columns.Count < 3 || appSettingsService == null) return;
+            if (gridView == null || gridView.Columns.Count < 3 || saveColumnWidths == null) return;
 
-            appSettingsService.AutoProfileNameColWidth = (int)gridView.Columns[0].Width;
-            appSettingsService.AutoProfilePathColWidth = (int)gridView.Columns[1].Width;
             double title = gridView.Columns[2].Width;
-            appSettingsService.AutoProfileTitleColWidth = double.IsNaN(title) ? 0 : (int)title;
+            saveColumnWidths((int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width, double.IsNaN(title) ? 0 : (int)title);
         }
 
         private void RestoreColumnWidths()
@@ -143,11 +124,12 @@ namespace DS4Windows.UI
             var gridView = programListLV.View as GridView;
             if (gridView == null || gridView.Columns.Count < 3) return;
 
-            gridView.Columns[0].Width = appSettingsService.AutoProfileNameColWidth;
-            gridView.Columns[1].Width = appSettingsService.AutoProfilePathColWidth;
-            if (appSettingsService.AutoProfileTitleColWidth > 0)
+            var widths = loadColumnWidths();
+            gridView.Columns[0].Width = widths.name;
+            gridView.Columns[1].Width = widths.path;
+            if (widths.title > 0)
             {
-                gridView.Columns[2].Width = appSettingsService.AutoProfileTitleColWidth;
+                gridView.Columns[2].Width = widths.title;
             }
         }
 
@@ -181,124 +163,8 @@ namespace DS4Windows.UI
         {
             if (item != null)
             {
-                if (item.MatchedAutoProfile != null)
-                {
-                    ProfileEntity tempProf = null;
-                    string profileName = item.MatchedAutoProfile.ProfileNames[0];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
-                        {
-                            item.SelectedIndexCon1 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                        }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon1 = 0;
-                    }
-
-                    profileName = item.MatchedAutoProfile.ProfileNames[1];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
-                        {
-                            item.SelectedIndexCon2 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                        }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon2 = 0;
-                    }
-
-                    profileName = item.MatchedAutoProfile.ProfileNames[2];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
-                        {
-                            item.SelectedIndexCon3 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                        }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon3 = 0;
-                    }
-
-                    profileName = item.MatchedAutoProfile.ProfileNames[3];
-                    if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                    {
-                        tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                        if (tempProf != null)
-                        {
-                            item.SelectedIndexCon4 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                        }
-                    }
-                    else
-                    {
-                        item.SelectedIndexCon4 = 0;
-                    }
-
-                    if (autoProfVM.UsingExpandedControllers)
-                    {
-                        profileName = item.MatchedAutoProfile.ProfileNames[4];
-                        if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                        {
-                            tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                            if (tempProf != null)
-                            {
-                                item.SelectedIndexCon5 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                            }
-                        }
-                        else
-                        {
-                            item.SelectedIndexCon5 = 0;
-                        }
-
-                        profileName = item.MatchedAutoProfile.ProfileNames[5];
-                        if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                        {
-                            tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                            if (tempProf != null)
-                            {
-                                item.SelectedIndexCon6 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                            }
-                        }
-                        else
-                        {
-                            item.SelectedIndexCon6 = 0;
-                        }
-
-                        profileName = item.MatchedAutoProfile.ProfileNames[6];
-                        if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                        {
-                            tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                            if (tempProf != null)
-                            {
-                                item.SelectedIndexCon7 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                            }
-                        }
-                        else
-                        {
-                            item.SelectedIndexCon7 = 0;
-                        }
-
-                        profileName = item.MatchedAutoProfile.ProfileNames[7];
-                        if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                        {
-                            tempProf = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                            if (tempProf != null)
-                            {
-                                item.SelectedIndexCon8 = profileList.ProfileListCol.IndexOf(tempProf) + 1;
-                            }
-                        }
-                        else
-                        {
-                            item.SelectedIndexCon8 = 0;
-                        }
-                    }
-                }
+                // 保存されているプロファイル名を、各コントローラーの選択位置へ反映する（ViewModel が決める）
+                sender.LoadSelectedIndexes(item);
 
                 editControlsPanel.DataContext = item;
                 editControlsPanel.IsEnabled = true;
