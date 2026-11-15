@@ -1,4 +1,4 @@
-﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Core.Logging;
@@ -92,6 +92,40 @@ namespace DS4Windows.Core.Settings
         {
             if (value == 6) RsBezier.InitBezierCurve(RsBezier.CustomDefinition, BezierCurve.AxisType.LSRS);
             _rSCurveMode = value;
+        }
+
+        /// <summary>スティックの設定を既定へ戻す（プロファイルの読み込みの前。<c>BackingStore.ResetProfile</c> から呼ばれる）。</summary>
+        public void ResetForProfileLoad()
+        {
+            // 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）
+            LeftStickDriftXAxis = 0;
+            LeftStickDriftYAxis = 0;
+            RightStickDriftXAxis = 0;
+            RightStickDriftYAxis = 0;
+
+            LSMod.Reset();
+            RSMod.Reset();
+            LSMod.deadZone = RSMod.deadZone = StickDeadZoneInfo.DEFAULT_DEADZONE;
+            LSMod.antiDeadZone = RSMod.antiDeadZone = StickDeadZoneInfo.DEFAULT_ANTIDEADZONE;
+            LSMod.maxZone = RSMod.maxZone = StickDeadZoneInfo.DEFAULT_MAXZONE;
+            LSMod.maxOutput = RSMod.maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
+            LSMod.fuzz = RSMod.fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
+
+            // Rotation angles expressed in radians
+            LSRotation = 0.0;
+            RSRotation = 0.0;
+
+            LSSens = RSSens = BackingStore.DEFAULT_ANALOG_SENS;
+
+            LSOutput.ResetSettings();
+            RSOutput.ResetSettings();
+
+            SquStick.Reset();
+            LSAntiSnapback.timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT;
+            LSAntiSnapback.delta = StickAntiSnapbackInfo.DEFAULT_DELTA;
+            LSAntiSnapback.enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
+            ApplyLSCurveMode(0);
+            ApplyRSCurveMode(0);
         }
     }
 }

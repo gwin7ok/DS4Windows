@@ -1,4 +1,4 @@
-﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
@@ -73,6 +73,21 @@ namespace DS4Windows.Core.Settings
         {
             if (value == 6) R2Bezier.InitBezierCurve(R2Bezier.CustomDefinition, BezierCurve.AxisType.L2R2);
             _r2CurveMode = value;
+        }
+
+        /// <summary>トリガーの設定を既定へ戻す（プロファイルの読み込みの前）。</summary>
+        public void ResetForProfileLoad()
+        {
+            L2Mod.Reset();
+            R2Mod.Reset();
+
+            L2Sens = R2Sens = BackingStore.DEFAULT_ANALOG_SENS;
+
+            L2Output.ResetSettings();
+            R2Output.ResetSettings();
+
+            L2CurveMode = 0;
+            R2CurveMode = 0;
         }
     }
 }

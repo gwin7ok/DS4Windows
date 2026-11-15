@@ -987,139 +987,29 @@ namespace DS4Windows.Core.Settings
         // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
         public void ResetProfile(int device)
         {
+            // 領域ごとの設定は、各領域のオブジェクトが自分を既定へ戻す。ここは、順に呼ぶのと、領域に入っていない配列の項目の既定値だけ
             removedShiftSettings[device].Clear();
-            gyroSlots[device].RemovedSwipe.Clear();
             buttonMouseInfos[device].Reset();
-            gyroSlots[device].Controls.Reset();
 
             enableTouchToggle[device] = DEFAULT_TOUCH_TOGGLE;
             idleDisconnectTimeout[device] = 0;
             enableOutputDataToDS4[device] = DEFAULT_OUTPUT_TO_DS4;
-            touchpadSlots[device].JitterCompensation = DEFAULT_TOUCHPAD_JITTER_COMP;
-            // Phase6-Step12: 旧形式の読込に追加した設定の既定値（要素の無いプロファイルで、前の値を引き継がないようにする）。
             inverseRumbleMotors[device] = false;
-            stickSlots[device].LeftStickDriftXAxis = 0;
-            stickSlots[device].LeftStickDriftYAxis = 0;
-            stickSlots[device].RightStickDriftXAxis = 0;
-            stickSlots[device].RightStickDriftYAxis = 0;
             outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
-            touchpadSlots[device].LowerRightAsRightClick = false;
-            touchpadSlots[device].ClickPassthru = false;
-
             rumble[device] = DEFAULT_RUMBLE;
             rumbleAutostopTime[device] = 0;
-            touchpadSlots[device].TouchSensitivity = DEFAULT_TOUCHPAD_SENS;
-
-            stickSlots[device].LSMod.Reset();
-            stickSlots[device].RSMod.Reset();
-            stickSlots[device].LSMod.deadZone = stickSlots[device].RSMod.deadZone = StickDeadZoneInfo.DEFAULT_DEADZONE;
-            stickSlots[device].LSMod.antiDeadZone = stickSlots[device].RSMod.antiDeadZone = StickDeadZoneInfo.DEFAULT_ANTIDEADZONE;
-            stickSlots[device].LSMod.maxZone = stickSlots[device].RSMod.maxZone = StickDeadZoneInfo.DEFAULT_MAXZONE;
-            stickSlots[device].LSMod.maxOutput = stickSlots[device].RSMod.maxOutput = StickDeadZoneInfo.DEFAULT_MAXOUTPUT;
-            stickSlots[device].LSMod.fuzz = stickSlots[device].RSMod.fuzz = StickDeadZoneInfo.DEFAULT_FUZZ;
-
-            //triggerSlots[device].L2Mod.deadZone = triggerSlots[device].R2Mod.deadZone = 0;
-            //triggerSlots[device].L2Mod.antiDeadZone = triggerSlots[device].R2Mod.antiDeadZone = 0;
-            //triggerSlots[device].L2Mod.maxZone = triggerSlots[device].R2Mod.maxZone = 100;
-            //triggerSlots[device].L2Mod.maxOutput = triggerSlots[device].R2Mod.maxOutput = 100.0;
-            triggerSlots[device].L2Mod.Reset();
-            triggerSlots[device].R2Mod.Reset();
-
-            // Rotation angles expressed in radians
-            stickSlots[device].LSRotation = 0.0;
-            stickSlots[device].RSRotation = 0.0;
-
-            sixAxisSlots[device].SXDeadZone = sixAxisSlots[device].SZDeadZone = DEFAULT_SX_TILT_DEADZONE;
-            sixAxisSlots[device].SXMaxZone = sixAxisSlots[device].SZMaxZone = DEFAULT_RUMBLE;
-            sixAxisSlots[device].SXAntiDeadZone = sixAxisSlots[device].SZAntiDeadZone = 0.0;
-            triggerSlots[device].L2Sens = triggerSlots[device].R2Sens = DEFAULT_ANALOG_SENS;
-            stickSlots[device].LSSens = stickSlots[device].RSSens = DEFAULT_ANALOG_SENS;
-            sixAxisSlots[device].SXSens = sixAxisSlots[device].SZSens = DEFAULT_ANALOG_SENS;
-            touchpadSlots[device].TapSensitivity = 0;
-            touchpadSlots[device].DoubleTap = false;
-            touchpadSlots[device].ScrollSensitivity = 0;
-            touchpadSlots[device].Invert = 0;
             btPollRate[device] = DEFAULT_DS4_BT_POLL_RATE;
-
-            stickSlots[device].LSOutput.ResetSettings();
-            stickSlots[device].RSOutput.ResetSettings();
-            triggerSlots[device].L2Output.ResetSettings();
-            triggerSlots[device].R2Output.ResetSettings();
-
-            LightbarSettingInfo lightbarSettings = lightbarSlots[device].Info;
-            LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
-            lightbarSettings.Mode = LightbarMode.DS4Win;
-            lightInfo.m_LowLed = new DS4Color(Color.Black);
-            //m_LowLeds[device] = new DS4Color(Color.Black);
-
-            Color tempColor = Color.Blue;
-            switch (device)
-            {
-                case 0: tempColor = Color.Blue; break;
-                case 1: tempColor = Color.Red; break;
-                case 2: tempColor = Color.Green; break;
-                case 3: tempColor = Color.Pink; break;
-                case 4: tempColor = Color.Blue; break;
-                case 5: tempColor = Color.Red; break;
-                case 6: tempColor = Color.Green; break;
-                case 7: tempColor = Color.Pink; break;
-                case 8: tempColor = Color.White; break;
-                default: tempColor = Color.Blue; break;
-            }
-
-            lightInfo.m_Led = new DS4Color(tempColor);
-            lightInfo.m_ChargingLed = new DS4Color(Color.Black);
-            lightInfo.m_FlashLed = new DS4Color(Color.Black);
-            lightInfo.flashAt = 0;
-            lightInfo.flashType = 0;
-            lightInfo.chargingType = 0;
-            lightInfo.rainbow = 0;
-            lightInfo.maxRainbowSat = LightbarDS4WinInfo.DEFAULT_MAX_RAINBOW_SAT;
-            lightInfo.ledAsBattery = false;
-
             launchProgram[device] = string.Empty;
             dinputOnly[device] = DEFAULT_DINPUT_ONLY;
-            touchpadSlots[device].StartOff = false;
-            touchpadSlots[device].OutputMode = DEFAULT_TOUCH_OUT_MODE;
-            gyroSlots[device].MouseTriggers = BackingStore.DEFAULT_SA_TRIGGERS;
-            gyroSlots[device].MouseTriggerCondAnd = DEFAULT_SA_TRIGGER_COND;
-            gyroSlots[device].OutputMode = DEFAULT_GYRO_OUT_MODE;
-            gyroSlots[device].MouseStickTriggers = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
-            gyroSlots[device].MouseStickTriggerCondAnd = true;
-
-            gyroSlots[device].MouseStick.Reset();
-
-            gyroSlots[device].MouseStickToggle = false;
-            gyroSlots[device].MouseStickTriggerTurns = DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
-            touchpadSlots[device].DisInvertTriggers = new int[1] { DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
-            gyroSlots[device].Sensitivity = DEFAULT_GYRO_SENS;
-            gyroSlots[device].SensVerticalScale = DEFAULT_GYRO_SENS_VERTICAL_SCALE;
-            gyroSlots[device].Invert = 0;
-            gyroSlots[device].TriggerTurns = DEFAULT_GYRO_TRIGGER_TURNS;
-            gyroSlots[device].Mouse.Reset();
-
-            gyroSlots[device].MouseHorizontalAxis = 0;
-            gyroSlots[device].MouseToggle = false;
-            //stickSlots[device].SquStick.lsMode = false;
-            //stickSlots[device].SquStick.rsMode = false;
-            //stickSlots[device].SquStick.lsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
-            //stickSlots[device].SquStick.rsRoundness = SquareStickInfo.DEFAULT_ROUNDNESS;
-            stickSlots[device].SquStick.Reset();
-            stickSlots[device].LSAntiSnapback.timeout = StickAntiSnapbackInfo.DEFAULT_TIMEOUT;
-            stickSlots[device].LSAntiSnapback.delta = StickAntiSnapbackInfo.DEFAULT_DELTA;
-            stickSlots[device].LSAntiSnapback.enabled = StickAntiSnapbackInfo.DEFAULT_ENABLED;
-            stickSlots[device].ApplyLSCurveMode(0);
-            stickSlots[device].ApplyRSCurveMode(0);
-            triggerSlots[device].L2CurveMode = 0;
-            triggerSlots[device].R2CurveMode = 0;
-            sixAxisSlots[device].ApplySXCurveMode(0);
-            sixAxisSlots[device].ApplySZCurveMode(0);
-            touchpadSlots[device].Trackball = DEFAULT_TRACKBALL_MODE;
-            touchpadSlots[device].TrackballFriction = DEFAULT_TRACKBALL_FRICTION;
-            touchpadSlots[device].RelMouse.Reset();
-            touchpadSlots[device].MouseStick.Reset();
-            touchpadSlots[device].ButtonMode = TouchButtonActivationMode.Click;
             outputDevType[device] = DEFAULT_OUT_CONT_TYPE;
+
+            gyroSlots[device].ResetForProfileLoad();
+            touchpadSlots[device].ResetForProfileLoad();
+            stickSlots[device].ResetForProfileLoad();
+            triggerSlots[device].ResetForProfileLoad();
+            sixAxisSlots[device].ResetForProfileLoad();
+            lightbarSlots[device].ResetForProfileLoad();
+
             ds4Mapping = false;
         }
 

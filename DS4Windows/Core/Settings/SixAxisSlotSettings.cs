@@ -1,4 +1,4 @@
-﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Core.Logging;
@@ -78,6 +78,18 @@ namespace DS4Windows.Core.Settings
         {
             if (value == 6) SZCurve.InitBezierCurve(SZCurve.CustomDefinition, BezierCurve.AxisType.SA);
             _sZCurveMode = value;
+        }
+
+        /// <summary>6 軸（傾き）の設定を既定へ戻す（プロファイルの読み込みの前）。</summary>
+        public void ResetForProfileLoad()
+        {
+            SXDeadZone = SZDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE;
+            SXMaxZone = SZMaxZone = BackingStore.DEFAULT_RUMBLE;
+            SXAntiDeadZone = SZAntiDeadZone = 0.0;
+            SXSens = SZSens = BackingStore.DEFAULT_ANALOG_SENS;
+
+            ApplySXCurveMode(0);
+            ApplySZCurveMode(0);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
@@ -48,5 +48,29 @@ namespace DS4Windows.Core.Settings
         public int[] DisInvertTriggers { get; set; }
         public TouchpadRelMouseSettings RelMouse { get; }
         public TouchMouseStickInfo MouseStick { get; }
+
+        /// <summary>タッチパッドの設定を既定へ戻す（プロファイルの読み込みの前）。</summary>
+        public void ResetForProfileLoad()
+        {
+            JitterCompensation = BackingStore.DEFAULT_TOUCHPAD_JITTER_COMP;
+            LowerRightAsRightClick = false;
+            ClickPassthru = false;
+            TouchSensitivity = BackingStore.DEFAULT_TOUCHPAD_SENS;
+
+            TapSensitivity = 0;
+            DoubleTap = false;
+            ScrollSensitivity = 0;
+            Invert = 0;
+
+            StartOff = false;
+            OutputMode = BackingStore.DEFAULT_TOUCH_OUT_MODE;
+            DisInvertTriggers = new int[1] { BackingStore.DEFAULT_TOUCH_DIS_INVERT_TRIGGER };
+
+            Trackball = BackingStore.DEFAULT_TRACKBALL_MODE;
+            TrackballFriction = BackingStore.DEFAULT_TRACKBALL_FRICTION;
+            RelMouse.Reset();
+            MouseStick.Reset();
+            ButtonMode = TouchButtonActivationMode.Click;
+        }
     }
 }
