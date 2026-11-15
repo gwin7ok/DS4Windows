@@ -36,6 +36,13 @@ namespace DS4Windows.UI.ViewModels
 
     public class PresetMenuHelper
     {
+        // 英字キーの仮想キーコードは、大文字の文字コードに等しい（Win32 の VK_A〜VK_Z。WPF の KeyInterop を使わず同じ値を得る。矢印キーは VK_LEFT〜VK_DOWN）
+        private static int VkLetter(char upperCaseLetter) => upperCaseLetter;
+        private const int VkLeft = 0x25;
+        private const int VkUp = 0x26;
+        private const int VkRight = 0x27;
+        private const int VkDown = 0x28;
+
         public enum ControlSelection : uint
         {
             None,
@@ -323,24 +330,24 @@ namespace DS4Windows.UI.ViewModels
                         // North, South, West, East
                         actionBtns.AddRange(new object[5]
                         {
-                            KeyInterop.VirtualKeyFromKey(Key.W), KeyInterop.VirtualKeyFromKey(Key.S),
-                            KeyInterop.VirtualKeyFromKey(Key.A), KeyInterop.VirtualKeyFromKey(Key.D),
+                            VkLetter('W'), VkLetter('S'),
+                            VkLetter('A'), VkLetter('D'),
                             X360Controls.Unbound,
                         });
                         break;
                     case 1:
                         actionBtns.AddRange(new object[5]
                         {
-                            KeyInterop.VirtualKeyFromKey(Key.D), KeyInterop.VirtualKeyFromKey(Key.A),
-                            KeyInterop.VirtualKeyFromKey(Key.W), KeyInterop.VirtualKeyFromKey(Key.S),
+                            VkLetter('D'), VkLetter('A'),
+                            VkLetter('W'), VkLetter('S'),
                             X360Controls.Unbound,
                         });
                         break;
                     case 2:
                         actionBtns.AddRange(new object[5]
                         {
-                            KeyInterop.VirtualKeyFromKey(Key.A), KeyInterop.VirtualKeyFromKey(Key.D),
-                            KeyInterop.VirtualKeyFromKey(Key.S), KeyInterop.VirtualKeyFromKey(Key.W),
+                            VkLetter('A'), VkLetter('D'),
+                            VkLetter('S'), VkLetter('W'),
                             X360Controls.Unbound,
                         });
                         break;
@@ -356,24 +363,24 @@ namespace DS4Windows.UI.ViewModels
                         // North, South, West, East
                         actionBtns.AddRange(new object[5]
                         {
-                            KeyInterop.VirtualKeyFromKey(Key.Up), KeyInterop.VirtualKeyFromKey(Key.Down),
-                            KeyInterop.VirtualKeyFromKey(Key.Left), KeyInterop.VirtualKeyFromKey(Key.Right),
+                            VkUp, VkDown,
+                            VkLeft, VkRight,
                             X360Controls.Unbound,
                         });
                         break;
                     case 1:
                         actionBtns.AddRange(new object[5]
                         {
-                            KeyInterop.VirtualKeyFromKey(Key.Right), KeyInterop.VirtualKeyFromKey(Key.Left),
-                            KeyInterop.VirtualKeyFromKey(Key.Up), KeyInterop.VirtualKeyFromKey(Key.Down),
+                            VkRight, VkLeft,
+                            VkUp, VkDown,
                             X360Controls.Unbound,
                         });
                         break;
                     case 2:
                         actionBtns.AddRange(new object[5]
                         {
-                            KeyInterop.VirtualKeyFromKey(Key.Left), KeyInterop.VirtualKeyFromKey(Key.Right),
-                            KeyInterop.VirtualKeyFromKey(Key.Down), KeyInterop.VirtualKeyFromKey(Key.Up),
+                            VkLeft, VkRight,
+                            VkDown, VkUp,
                             X360Controls.Unbound,
                         });
                         break;
