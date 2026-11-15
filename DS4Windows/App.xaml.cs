@@ -814,7 +814,7 @@ namespace DS4Windows
 
                 CreateBaseThread();
                 DS4Windows.UI.WelcomeDialog dialog = new DS4Windows.UI.WelcomeDialog(
-                    _bootstrapEnvironmentService,
+                    new DS4Windows.UI.Services.DriverEnvironmentAdapter(_bootstrapEnvironmentService),
                     (System.Net.Http.HttpClient)driverInstallHost.Services.GetService(typeof(System.Net.Http.HttpClient)));   // Phase14b-Step17（D10）
                 dialog.ShowDialog();
                 runShutdown = false;
