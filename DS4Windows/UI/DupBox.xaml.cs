@@ -58,20 +58,18 @@ namespace DS4Windows.UI
 
         // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが 1 回だけ呼ぶ）。
-        private DS4Windows.Core.Abstractions.IPathService pathService;
-        // Phase11 W6 K-W6-8: 複製の直後に、コピー側へ新しい ProfileId を振るために使う
-        private DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
+        // プロファイルの複製（複製元の名前, 複製先の名前）。ファイルのコピーと新しい ProfileId の割り当ては、渡す側（Composition）が行う。
+        private Action<string, string> duplicateProfile;
 
         public DupBox()
         {
             InitializeComponent();
         }
 
-        public void Initialize(DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity)
+        public void Initialize(Action<string, string> duplicateProfile)
         {
-            if (this.pathService != null) throw new InvalidOperationException("DupBox is already initialized.");
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            this.profileIdentity = profileIdentity ?? throw new ArgumentNullException(nameof(profileIdentity));
+            if (this.duplicateProfile != null) throw new InvalidOperationException("DupBox is already initialized.");
+            this.duplicateProfile = duplicateProfile ?? throw new ArgumentNullException(nameof(duplicateProfile));
         }
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
@@ -82,10 +80,7 @@ namespace DS4Windows.UI
                 !string.Equals(profile, oldfilename, StringComparison.OrdinalIgnoreCase) &&
                 profile.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) == -1)
             {
-                System.IO.File.Copy(pathService.AppDataPath + "\\Profiles\\" + oldfilename + ".xml",
-                pathService.AppDataPath + "\\Profiles\\" + profile + ".xml", true);
-                // Phase11 W6 K-W6-8: コピー側は元と同じ ProfileId を持つため、新しい ID を振る（書けなければ、起動時の補正が直す）
-                profileIdentity.AssignNewId(profile);
+                duplicateProfile(oldfilename, profile);
                 Save?.Invoke(this, profile);
             }
             else

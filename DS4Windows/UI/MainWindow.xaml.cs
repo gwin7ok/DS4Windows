@@ -1118,7 +1118,7 @@ namespace DS4Windows.UI
 
             if (!appSettingsService.FirstRun)
             {
-                WindowPlacementHelper.ApplyPlacement(this, appSettingsService, startMinimized);
+                WindowPlacementHelper.ApplyPlacement(this, appSettingsService.FormLocationX, appSettingsService.FormLocationY, appSettingsService.FormWidth, appSettingsService.FormHeight, startMinimized);
 
                 // ApplyPlacement 後に WPF 側でサイズや位置が変更される可能性があるため、
                 // レイアウト完了後に実際のウィンドウ矩形と WPF プロパティをログに残す。

@@ -27,9 +27,15 @@ namespace DS4Windows.Composition
         {
             var window = ActivatorUtilities.CreateInstance<MainWindow>(_services, parser);
             // 複製の名前入力欄が使うサービスは、窓の引数を増やさないよう、ここで渡す
-            window.dupBox.Initialize(
-                _services.GetRequiredService<IPathService>(),
-                _services.GetRequiredService<IProfileIdentityService>());
+            var pathService = _services.GetRequiredService<IPathService>();
+            var profileIdentity = _services.GetRequiredService<IProfileIdentityService>();
+            window.dupBox.Initialize((oldName, newName) =>
+            {
+                System.IO.File.Copy(pathService.AppDataPath + "\\Profiles\\" + oldName + ".xml",
+                    pathService.AppDataPath + "\\Profiles\\" + newName + ".xml", true);
+                // コピー側は元と同じ ProfileId を持つため、新しい ID を振る（書けなければ、起動時の補正が直す）
+                profileIdentity.AssignNewId(newName);
+            });
             return window;
         }
     }
