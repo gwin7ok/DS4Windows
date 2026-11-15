@@ -1107,4 +1107,14 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="SpecialAction_DuplicateNotSaved" xml:space="preserve">
     <value>特殊アクション「{0}」は Actions.xml に保存されていないため、複製できません。</value>
   </data>
+  <data name="Startup_CannotWriteCopyPrompt" xml:space="preserve">
+    <value>現在の場所には書き込めません。
+設定を appdata へコピーしますか？</value>
+  </data>
+  <data name="Startup_CopyComplete" xml:space="preserve">
+    <value>コピーが完了しました。DS4Windows を起動し直し、プログラムのフォルダーにある設定を削除してください。</value>
+  </data>
+  <data name="Startup_CannotEditClose" xml:space="preserve">
+    <value>この場所では DS4Windows が設定を編集できないため、終了します。</value>
+  </data>
 </root>

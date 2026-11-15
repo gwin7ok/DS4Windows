@@ -79,7 +79,6 @@ namespace DS4Windows
         private IOutputSlotService _outputSlotService;
         // Phase7-Step5 W4: 旧 AppHost.GetService／ServiceProviderHolder の直接呼び出しの置き換え先（InitializePostHostServices で解決）
         private DS4Windows.Core.Logging.LogSettingsApplierProxy _logSettingsApplierProxy;
-        private DS4Windows.Processing.Actions.IControllerRegistry _controllerRegistry;
 
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
@@ -598,7 +597,7 @@ namespace DS4Windows
             bool runningAsAdmin = _environmentService.IsAdministrator();
             AppLogger.LogUser(AppLogLevel.Info, runningAsAdmin ? "Log_App_RunningAsAdmin" : "Log_App_RunningAsUser");
 
-            RefreshAndLogDriverStatus();
+            new DriverStatusReporter(_environmentService).RefreshAndLog();
             if (_environmentService.HidHideInstalled)
             {
                 _runtimeFeatures.CheckHidHidePresence();
@@ -615,42 +614,6 @@ namespace DS4Windows
         /// 明示的なホスト構築と CreateControlService の直後に呼ぶ。解決できない場合は、CreateControlService と同じく
         /// 例外で起動を止める（ホスト構築の失敗は、従来から起動失敗である）。
         /// </summary>
-        // 起動時に、HidHide・ViGEmBus・FakerInput の導入状態を確認して保存し（EnvironmentService の保存値。
-        // 設定タブの「Xbox コントローラーを隠す」の赤文字などが参照する）、結果をログ（ファイルと画面）へ出す
-        private void RefreshAndLogDriverStatus()
-        {
-            _environmentService.RefreshHidHideInfo();
-            _environmentService.RefreshViGEmBusInfo();
-            _environmentService.RefreshFakerInputInfo();
-
-            if (_environmentService.HidHideInstalled)
-            {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideInstalled", _environmentService.HidHideProductVersion, _environmentService.HidHideVersion);
-            }
-            else
-            {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_HidHideNotInstalled");
-            }
-
-            if (_environmentService.IsViGEmBusInstalled())
-            {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_ViGEmBusInstalled", _environmentService.ViGEmBusVersion);
-            }
-            else
-            {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_ViGEmBusNotInstalled");
-            }
-
-            if (_environmentService.IsFakerInputInstalled())
-            {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_FakerInputInstalled", _environmentService.FakerInputVersion);
-            }
-            else
-            {
-                AppLogger.LogUser(AppLogLevel.Info, "Log_Driver_FakerInputNotInstalled");
-            }
-        }
-
         private void InitializePostHostServices()
         {
             _themeCulture = ResolvePostHostService<DS4Windows.UI.Services.AppThemeAndCultureService>();
@@ -667,7 +630,6 @@ namespace DS4Windows
             // Phase7-Step5 W3（Q7＝A）: 静的なロガー（AppLogger.LogToTray）が使う通知サービスを、DI のシングルトンに設定する
             AppLogger.NotificationService = ResolvePostHostService<INotificationService>();
             _logSettingsApplierProxy = ResolvePostHostService<DS4Windows.Core.Logging.LogSettingsApplierProxy>();
-            _controllerRegistry = ResolvePostHostService<DS4Windows.Processing.Actions.IControllerRegistry>();
             _runtimeFeatures = ResolvePostHostService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
 
             if (AppLogger.IsTraceEnabled)
@@ -676,8 +638,14 @@ namespace DS4Windows
 
         private static T ResolvePostHostService<T>() where T : class
         {
-            return AppHost.GetService<T>()
+            return TryResolvePostHostService<T>()
                 ?? throw new InvalidOperationException($"{typeof(T).Name} could not be resolved from AppHost.");
+        }
+
+        // ホストが未構築（早期終了）のときは null を返す。終了の手順だけが使う
+        private static T TryResolvePostHostService<T>() where T : class
+        {
+            return AppHost.GetService<T>();
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -746,35 +714,7 @@ namespace DS4Windows
         {
             if (!_appSettingsService.Save()) //if can't write to file
             {
-                if (MessageBox.Show("Cannot write at current location\nCopy Settings to appdata?", "DS4Windows",
-                    MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        string roamingAppDataPath = _pathService.RoamingAppDataPath;
-                        // Global.exedirpath と同じ値（ジャンクション解決済みの実行ファイルの親フォルダ）。
-                        // IPathService.ExecutableDirectory（AppContext.BaseDirectory）とは値が異なりうるため使わない。
-                        string exeDirPath = Path.GetDirectoryName(_pathService.ExecutablePath);
-                        Directory.CreateDirectory(roamingAppDataPath);
-                        File.Copy(exeDirPath + "\\Profiles.xml",
-                            roamingAppDataPath + "\\Profiles.xml");
-                        File.Copy(exeDirPath + "\\Auto Profiles.xml",
-                            roamingAppDataPath + "\\Auto Profiles.xml");
-                        Directory.CreateDirectory(roamingAppDataPath + "\\Profiles");
-                        foreach (string s in Directory.GetFiles(exeDirPath + "\\Profiles"))
-                        {
-                            File.Copy(s, roamingAppDataPath + "\\Profiles\\" + Path.GetFileName(s));
-                        }
-                    }
-                    catch { }
-                    MessageBox.Show("Copy complete, please relaunch DS4Windows and remove settings from Program Directory",
-                        "DS4Windows");
-                }
-                else
-                {
-                    MessageBox.Show("DS4Windows cannot edit settings here, This will now close",
-                        "DS4Windows");
-                }
+                new SettingsLocationFallback(_pathService, ResolvePostHostService<DS4Windows.UI.Abstractions.IDialogService>()).OfferCopyToAppData();
 
                 // 旧 TODO(Phase6-Step7 決定3＝P1)（解消済み。当時の経緯）: IPathService.AppDataPath のセッターは、保存先の状態を変えない孤立実装だったため、
                 // 置き換え先にならず、保存先の状態を直接書き換えていた。
@@ -789,13 +729,14 @@ namespace DS4Windows
 
         private void CheckOptions(ArgumentParser parser)
         {
-            if (parser.HasErrors)
+            StartupMode mode = StartupModeSelector.Select(parser);
+            if (mode == StartupMode.ArgumentError)
             {
                 runShutdown = false;
                 exitApp = true;
                 Current.Shutdown(1);
             }
-            else if (parser.Driverinstall)
+            else if (mode == StartupMode.DriverInstall)
             {
                 // Retrieve info about installed ViGEmBus device if found.
                 // Might not be needed here
@@ -830,7 +771,7 @@ namespace DS4Windows
                 exitApp = true;
                 Current.Shutdown();
             }
-            else if (parser.ReenableDevice)
+            else if (mode == StartupMode.ReenableDevice)
             {
                 // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な InputDeviceRegistry.reEnableDevice の直接呼び出しをやめ、IInputDeviceRegistry の契約を通す。
                 // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
@@ -841,7 +782,7 @@ namespace DS4Windows
                 exitApp = true;
                 Current.Shutdown();
             }
-            else if (parser.Runtask)
+            else if (mode == StartupMode.RunTask)
             {
                 // Phase14b-Step15（D12）: ホストを構築しない補助プロセスのため、起点が実装を直接作る（旧: 静的 StartupMethods.LaunchOldTask）
                 new DS4Windows.Core.Platform.StartupEntryService().LaunchOldTask();
@@ -849,7 +790,7 @@ namespace DS4Windows
                 exitApp = true;
                 Current.Shutdown();
             }
-            else if (parser.Command)
+            else if (mode == StartupMode.LegacyCommand)
             {
                 // コマンドの送信は、コンソール種別の DS4WindowsCli.exe が行う（GUI アプリのこの実行ファイルは cmd.exe に待たれず、結果の順序が崩れるため）。
                 // 古い書き方（DS4Windows.exe -command ...）で起動されたときは、何もせず終了する。
@@ -927,7 +868,7 @@ namespace DS4Windows
             new AppShutdownSequence(
                 _runtimeBootstrapper, _lifecycle,
                 skipSave ? (Action)null : () => _appSettingsService?.Save(),
-                _ipc, _controllerRegistry, ControllerLimits.MaxControllerCount,
+                _ipc, TryResolvePostHostService<DS4Windows.Processing.Actions.IControllerRegistry>(), ControllerLimits.MaxControllerCount,
                 resetTimerResolution: () => DS4Windows.Core.Utilities.Util.timeEndPeriod(1),
                 stopSingleInstance: _singleInstance.Stop,
                 disposeHost: AppHost.Dispose,

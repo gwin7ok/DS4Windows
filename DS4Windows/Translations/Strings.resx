@@ -1958,4 +1958,14 @@ It will also be removed from every profile.</value>
   <data name="SpecialAction_DuplicateNotSaved" xml:space="preserve">
     <value>Special action "{0}" can't be duplicated because it isn't saved in Actions.xml.</value>
   </data>
+  <data name="Startup_CannotWriteCopyPrompt" xml:space="preserve">
+    <value>Cannot write at current location
+Copy Settings to appdata?</value>
+  </data>
+  <data name="Startup_CopyComplete" xml:space="preserve">
+    <value>Copy complete, please relaunch DS4Windows and remove settings from Program Directory</value>
+  </data>
+  <data name="Startup_CannotEditClose" xml:space="preserve">
+    <value>DS4Windows cannot edit settings here, This will now close</value>
+  </data>
 </root>

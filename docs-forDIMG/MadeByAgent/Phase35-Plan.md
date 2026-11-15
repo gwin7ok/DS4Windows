@@ -1,7 +1,7 @@
 # Phase35 計画書: 終了の手順の集約と、登録の具象依存の解消（コードレビュー 2026-11 の 1-2・1-3・1-4）
 
 作成日: 2026-11-11
-状態: **一部完了（2026-11-15）。35-1・35-2・35-5 は完了。35-3・35-4・35-4b は、終了の実機確認のあとに行うため未着手**
+状態: **完了（2026-11-16。35-3・35-4・35-4b を実施）。終了・起動の実機確認は、最後のまとめの実機確認で行う**
 出典: `docs-forDIMG/Code-Review-2026-11/01-DI.md`
 関連: `Structure-Review-2026-11.md` の C（Phase24 で `App.xaml.cs` を 1,323 → 約 940 行にした続き）、`Phase27-Plan.md`（`RuntimeBootstrapper`）
 
@@ -76,3 +76,10 @@ D1＝**B（すべて。`App.xaml.cs` を 400 行前後へ。35-4・35-4b を含�
 - 35-1・35-2（完了）: `Composition/Startup/AppShutdownSequence` を新設し、`App.CleanShutdown` の中身を移した（順序は同じ。ホスト構築前は協力者が `null` で、その手順は何もしない）。順序は、偽物が呼ばれた順を記録する `AppShutdownSequenceTests`（6 件）で固定した。旧ソース走査の検査（`AppHostStartupShutdownGuardTests.CleanShutdown_DisposesTheHost…`）は、同じことをより確かに守るこの検査に置き換えた。未処理例外・サインアウト・通常の終了は、従来どおり同じ `CleanShutdown`（D3＝A）を通る。
 - 35-5（完了）: キャスト 3 か所を、具象を 1 つ登録して契約がそれを返す形にした（`DeviceSlotState`［3 契約］、`ProfileSettingsService`、`DefaultActionManager`）。`SingleInstanceRegistrationTests` が、契約ごとに同じインスタンスを返すことを検査する。
 - 見送り: 35-3（終了のためだけに持つフィールドを消す。`_controllerRegistry` など）、35-4・35-4b（起動後の処理・引数の処理の移動）。計画書の決定の記録のとおり、終了の手順（35-2）が実機で確認できたあとに行う。実機確認は先送りのため、台帳 §3 に項目を足した。
+
+## 実施の記録（2026-11-16。ブランチ `Phase35-3`）
+- 35-3: `App` の `_controllerRegistry` を消した（終了の手順だけが使っていたため）。終了のときに `TryResolvePostHostService<IControllerRegistry>()` で解決する（ホスト未構築の早期終了では null＝何もしない。`AppHost.GetService` の呼び出しが 1 件だけという `ServiceLocatorGuardTests` の規則を保つため、入口は `ResolvePostHostService` の中の 1 か所のまま）。`_ipc` は起動後の手順（`PublishWindowClassName`）も使うため残す。
+- 35-4: 起動後の「ドライバーの導入状態の確認とログ」を `Composition/Startup/DriverStatusReporter` へ移した（呼び出す位置と順序は同じ）。
+- 35-4b: `CheckOptions` の判断の部分を、副作用のない `StartupModeSelector`（`StartupMode`: Normal／ArgumentError／DriverInstall／ReenableDevice／RunTask／LegacyCommand。優先順位は従来のまま）へ出し、`App.CheckOptions` は種類ごとの手順を呼ぶだけにした。`AttemptSave` の「設定を appdata へコピーするか」の案内を `SettingsLocationFallback`（`IDialogService` 経由。文言は `Startup_CannotWriteCopyPrompt`／`Startup_CopyComplete`／`Startup_CannotEditClose` のリソースキー。日本語訳は、最後の実機確認で確認する一覧に入れる）へ移した。ログの準備（`RotateLogsAndLogStartupDiagnostics`・`ConfigureLoggingAndDiagnostics`）と `RunFirstLaunchSetup` は、順序への依存が強く、判断より手順が中心のため、移さなかった（`App.xaml.cs` は 936 → 約 890 行。400 行前後の目安は、この方針では到達しない。行数は結果であり目的でないため、これ以上は追わない）。
+- テスト: `StartupModeSelectorTests`、`SettingsLocationFallbackTests`。`StartupOrderGuardTests`・`ServiceLocatorGuardTests` は不変。
+- 実機確認（最後のまとめ）: 通常起動・最小化起動・`-driverinstall`・設定フォルダーへ書けない場合の案内・終了（トレイ、ウィンドウ、サインアウト）。
