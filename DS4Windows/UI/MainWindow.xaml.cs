@@ -64,6 +64,8 @@ namespace DS4Windows.UI
         private LogViewModel logvm;
         private ControllerListViewModel conLvViewModel;
         private TrayIconViewModel trayIconVM;
+        // トレイの右クリックメニュー（ViewModel の項目 TrayMenuItemModel から組み立てる）
+        private readonly ContextMenu trayContextMenu = new ContextMenu();
         private SettingsViewModel settingsWrapVM;
         private IntPtr regHandle = new IntPtr();
         private IntPtr regHandleXusb = new IntPtr();
@@ -184,10 +186,12 @@ namespace DS4Windows.UI
             view.SortDescriptions.Add(new SortDescription("DevIndex", ListSortDirection.Ascending));
             view.Refresh();
 
-            trayIconVM = _viewModelFactory.CreateTrayIconViewModel(profileListHolder, Dispatcher);
+            trayIconVM = _viewModelFactory.CreateTrayIconViewModel(profileListHolder, new WpfUiDispatcher());
 
             // Need to define before calling TaskbarIcon.ForceCreate
             notifyIcon.DataContext = trayIconVM;
+            trayIconVM.MenuChanged += TrayIconVM_MenuChanged;
+            TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems);
             notifyIcon.CustomName = pathService.ExecutablePath;
 
             // Remove TaskbarIcon from visual tree so Loaded and Unloaded events
@@ -379,6 +383,15 @@ namespace DS4Windows.UI
                 if (versionFileExists)
                     File.Delete(versionFilePath);
             }
+        }
+
+        private void TrayIconVM_MenuChanged(object sender, EventArgs e)
+        {
+            // 項目の変更は別のスレッドからも起きるため、UI のスレッドで組み直す
+            if (Dispatcher.CheckAccess())
+                TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems);
+            else
+                Dispatcher.BeginInvoke(new Action(() => TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems)));
         }
 
         private void TrayIconVM_RequestMinimize(object sender, EventArgs e)
@@ -974,7 +987,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void NotifyIcon_TrayRightMouseUp(object sender, RoutedEventArgs e)
         {
-            notifyIcon.ContextMenu = trayIconVM.ContextMenu;
+            notifyIcon.ContextMenu = trayContextMenu;
         }
 
         /// <summary>

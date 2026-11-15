@@ -19,15 +19,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.ViewModels
@@ -40,12 +38,12 @@ namespace DS4Windows.UI.ViewModels
         // Phase6-Step9-2: static の初期化子（Global.exeversion）から、コンストラクタで解決するインスタンスの値へ変更
         // （利用者は PopulateToolText のみ。静的初期化から Global を呼ばない）。
         private readonly string trayTitle;
-        private ContextMenu contextMenu;
-        private MenuItem changeServiceItem;
-        private MenuItem openItem;
-        private MenuItem minimizeItem;
-        private MenuItem openProgramItem;
-        private MenuItem closeItem;
+        private readonly List<TrayMenuItemModel> menuItems = new List<TrayMenuItemModel>();
+        private readonly TrayMenuItemModel changeServiceItem;
+        private readonly TrayMenuItemModel openItem;
+        private readonly TrayMenuItemModel minimizeItem;
+        private readonly TrayMenuItemModel openProgramItem;
+        private readonly TrayMenuItemModel closeItem;
         #pragma warning disable CS0414 // prevBattery assigned but not read; keep for future tooltip updates
         private int? prevBattery = null;
         #pragma warning restore CS0414
@@ -79,7 +77,11 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public ContextMenu ContextMenu { get => contextMenu; }
+        /// <summary>トレイのメニューの項目（View が WPF のメニューへ変換する）。変わったときは <see cref="MenuChanged"/> が起きる。</summary>
+        public IReadOnlyList<TrayMenuItemModel> MenuItems => menuItems;
+
+        /// <summary>メニューの項目か状態が変わった。UI のスレッドで起きる（呼び出しもとのスレッドによらず、View 側で受け直す）。</summary>
+        public event EventHandler MenuChanged;
 
         public event EventHandler IconSourceChanged;
         public event EventHandler RequestShutdown;
@@ -95,8 +97,8 @@ namespace DS4Windows.UI.ViewModels
         private readonly IAppearanceSettingsService appearanceSettings;
         private readonly IProfileRepository profileRepository;
         private readonly IPathService pathService;
-        // Phase6-Step10-1-5（決定D10＝A）: UI スレッドの Dispatcher（コンストラクタの必須引数）
-        private readonly System.Windows.Threading.Dispatcher uiDispatcher;
+        // UI スレッドへの受け渡し（コンストラクタの必須引数）
+        private readonly IUiDispatcher uiDispatcher;
 
         public delegate void ProfileSelectedHandler(TrayIconViewModel sender,
             ControllerHolder item, string profile);
@@ -106,9 +108,8 @@ namespace DS4Windows.UI.ViewModels
         public TrayIconViewModel(IControllerSlotQuery slots, DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle, ProfileList profileListHolder,
             IAppearanceSettingsService appearanceSettings, IProfileRepository profileRepository,
             IEnvironmentService environmentService, IPathService pathService,
-            System.Windows.Threading.Dispatcher dispatcher)
+            IUiDispatcher dispatcher)
         {
-            // Phase6-Step10-1-5（決定D10＝A）: UI スレッドの Dispatcher は引数で受け取る（App.Current／Application.Current の直接参照を廃止）
             this.uiDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
             // Phase6-Step9-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A）
             this.appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
@@ -120,24 +121,15 @@ namespace DS4Windows.UI.ViewModels
             this.slots = slots;
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));   // Phase13-Step9: 旧 ControlService.running の転送
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
-            contextMenu = new ContextMenu();
             iconSource = TrayIconResources.iconChoiceResources[appearanceSettings.UseIconChoice];
             appearanceSettings.BatteryChanged += UpdateTrayBattery;
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] TrayIconViewModel: subscribed BatteryChanged via IAppearanceSettingsService");
-            changeServiceItem = new MenuItem() { Header = "Start" };
-            changeServiceItem.Click += ChangeControlServiceItem_Click;
-            changeServiceItem.IsEnabled = false;
-
-            openItem = new MenuItem() { Header = "Open",
-                FontWeight = FontWeights.Bold };
-            openItem.Click += OpenMenuItem_Click;
-            minimizeItem = new MenuItem() { Header = "Minimize" };
-            minimizeItem.Click += MinimizeMenuItem_Click;
-            openProgramItem = new MenuItem() { Header = "Open Program Folder" };
-            openProgramItem.Click += OpenProgramFolderItem_Click;
-            closeItem = new MenuItem() { Header = "Exit" };
-            closeItem.Click += ExitMenuItem_Click;
+            changeServiceItem = new TrayMenuItemModel() { Header = "Start", Click = ChangeControlServiceItem_Click, IsEnabled = false };
+            openItem = new TrayMenuItemModel() { Header = "Open", IsBold = true, Click = OpenMenuItem_Click };
+            minimizeItem = new TrayMenuItemModel() { Header = "Minimize", Click = MinimizeMenuItem_Click };
+            openProgramItem = new TrayMenuItemModel() { Header = "Open Program Folder", Click = OpenProgramFolderItem_Click };
+            closeItem = new TrayMenuItemModel() { Header = "Exit", Click = ExitMenuItem_Click };
 
             PopulateControllerList();
             PopulateToolText();
@@ -168,6 +160,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 changeServiceItem.Header = temp;
                 changeServiceItem.IsEnabled = true;
+                MenuChanged?.Invoke(this, EventArgs.Empty);
             }));
         }
 
@@ -212,52 +205,45 @@ namespace DS4Windows.UI.ViewModels
 
         public void PopulateContextMenu()
         {
-            contextMenu.Items.Clear();
-            ItemCollection items = contextMenu.Items;
-            MenuItem item;
+            menuItems.Clear();
+            TrayMenuItemModel item;
             int idx = 0;
 
             using (ReadLocker locker = new ReadLocker(_colLocker))
             {
                 foreach (ControllerHolder holder in controllerList)
                 {
-                    IControllerSlotView currentDev = holder.Device;
-                    item = new MenuItem() { Header = $"Controller {idx + 1}" };
-                    item.Tag = idx;
-                    //item.ContextMenu = new ContextMenu();
-                    ItemCollection subitems = item.Items;
+                    int slotIdx = idx;
+                    item = new TrayMenuItemModel() { Header = $"Controller {idx + 1}" };
                     string currentProfile = profileRepository.ProfilePath[idx];
                     foreach (ProfileEntity entry in profileListHolder.ProfileListCol)
                     {
-                        // Need to escape profile name to disable Access Keys for control
-                        string name = entry.Name;
-                        name = Regex.Replace(name, "_{1}", "__");
-                        MenuItem temp = new MenuItem() { Header = name };
-                        temp.Tag = idx;
-                        temp.Click += ProfileItem_Click;
-                        if (entry.Name == currentProfile)
+                        string profileName = entry.Name;
+                        item.Children.Add(new TrayMenuItemModel()
                         {
-                            temp.IsChecked = true;
-                        }
-
-                        subitems.Add(temp);
+                            Header = profileName,
+                            IsChecked = entry.Name == currentProfile,
+                            Click = () => ProfileItem_Click(slotIdx, profileName),
+                        });
                     }
 
-                    items.Add(item);
+                    menuItems.Add(item);
                     idx++;
                 }
 
-                item = new MenuItem() { Header = "Disconnect Menu" };
+                item = new TrayMenuItemModel() { Header = "Disconnect Menu" };
                 idx = 0;
                 foreach (ControllerHolder holder in controllerList)
                 {
                     IControllerSlotView tempDev = holder.Device;
                     if (tempDev.Synced && !tempDev.Charging)
                     {
-                        MenuItem subitem = new MenuItem() { Header = $"Disconnect Controller {idx + 1}" };
-                        subitem.Click += DisconnectMenuItem_Click;
-                        subitem.Tag = idx;
-                        item.Items.Add(subitem);
+                        int slotIdx = idx;
+                        item.Children.Add(new TrayMenuItemModel()
+                        {
+                            Header = $"Disconnect Controller {idx + 1}",
+                            Click = () => DisconnectMenuItem_Click(slotIdx),
+                        });
                     }
 
                     idx++;
@@ -269,18 +255,20 @@ namespace DS4Windows.UI.ViewModels
                 }
             }
 
-            items.Add(item);
-            items.Add(new Separator());
+            menuItems.Add(item);
+            menuItems.Add(TrayMenuItemModel.Separator());
             PopulateStaticItems();
+            MenuChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ChangeControlServiceItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ChangeControlServiceItem_Click()
         {
             changeServiceItem.IsEnabled = false;
+            MenuChanged?.Invoke(this, EventArgs.Empty);
             RequestServiceChange?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OpenProgramFolderItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void OpenProgramFolderItem_Click()
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(pathService.ProgramDirectory);
             startInfo.UseShellExecute = true;
@@ -289,32 +277,24 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void OpenMenuItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void OpenMenuItem_Click()
         {
             RequestOpen?.Invoke(this, EventArgs.Empty);
         }
 
-        private void MinimizeMenuItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void MinimizeMenuItem_Click()
         {
             RequestMinimize?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ProfileItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ProfileItem_Click(int idx, string profileName)
         {
-            MenuItem item = sender as MenuItem;
-            int idx = Convert.ToInt32(item.Tag);
             ControllerHolder holder = controllerList[idx];
-            // Un-escape underscores is MenuItem header. Header holds the profile name
-            string tempProfileName = Regex.Replace(item.Header.ToString(),
-                "_{2}", "_");
-            ProfileSelected?.Invoke(this, holder, tempProfileName);
+            ProfileSelected?.Invoke(this, holder, profileName);
         }
 
-        private void DisconnectMenuItem_Click(object sender,
-            System.Windows.RoutedEventArgs e)
+        private void DisconnectMenuItem_Click(int idx)
         {
-            MenuItem item = sender as MenuItem;
-            int idx = Convert.ToInt32(item.Tag);
             ControllerHolder holder = controllerList[idx];
             IControllerSlotView tempDev = holder?.Device;
             if (tempDev != null && tempDev.Synced && !tempDev.Charging)
@@ -455,19 +435,19 @@ namespace DS4Windows.UI.ViewModels
 
         private void PopulateStaticItems()
         {
-            ItemCollection items = contextMenu.Items;
-            items.Add(changeServiceItem);
-            items.Add(openItem);
-            items.Add(minimizeItem);
-            items.Add(openProgramItem);
-            items.Add(new Separator());
-            items.Add(closeItem);
+            menuItems.Add(changeServiceItem);
+            menuItems.Add(openItem);
+            menuItems.Add(minimizeItem);
+            menuItems.Add(openProgramItem);
+            menuItems.Add(TrayMenuItemModel.Separator());
+            menuItems.Add(closeItem);
         }
 
         public void ClearContextMenu()
         {
-            contextMenu.Items.Clear();
+            menuItems.Clear();
             PopulateStaticItems();
+            MenuChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void UpdateTrayBattery(object sender, byte percentage)
@@ -489,7 +469,7 @@ namespace DS4Windows.UI.ViewModels
             };
         }
 
-        private void ExitMenuItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void ExitMenuItem_Click()
         {
             RequestShutdown?.Invoke(this, EventArgs.Empty);
         }

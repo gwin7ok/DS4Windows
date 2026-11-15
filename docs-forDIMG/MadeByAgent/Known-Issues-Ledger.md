@@ -72,3 +72,4 @@
 - 不具合を 1 件修正: CLI の `ChangeLedColor` で強制したカスタム色が、`CustomLed` を持たないプロファイルへの切替で戻らなかった（`LightbarSlotSettings.ResetForProfileLoad` が `useCustomLed`・`m_CustomLed` を戻していなかった。Phase37-3 以前からの欠陥）。修正後に再確認して OK。
 - 見送り: UDP（Cemuhook）のモーション・パッド情報（クライアントが手元になく確認手段がない。設定は `UseUDPServer=False`）、Phase35 の設定の保存先の案内（書込不可の場所が必要）。
 - Phase36 の C4（Bluetooth Xbox の 3 秒待ち）と C5（30 秒ごとの GC）: 2026-11-16 にユーザーが両方とも見送りと決定（実装しない）。
+- 未確認（2026-11-16。V1 基準値の削減）: トレイアイコンの右クリックメニューを、ViewModel の項目モデル（TrayMenuItemModel）と View 側の変換（TrayContextMenuBuilder）へ分けた。確認項目: メニューの表示、プロファイルの切替（チェック）、Disconnect、Start/Stop の表示切替、Open/Minimize/Exit、プロファイル名の _ の表示。

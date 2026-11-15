@@ -24,7 +24,7 @@ namespace DS4Windows.UI.Abstractions
         ControllerRegDeviceOptsViewModel CreateControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions deviceOptions);
         LanguagePackViewModel CreateLanguagePackViewModel();
         LogViewModel CreateLogViewModel();
-        TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, System.Windows.Threading.Dispatcher dispatcher);
+        TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, IUiDispatcher dispatcher);
         AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList);
     }
 }
