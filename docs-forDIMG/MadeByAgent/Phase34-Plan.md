@@ -99,6 +99,7 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 - `MainWindow` は、起動・終了・電源・デバイスの通知が集まる。Phase35（終了の手順）と同じファイルに触れるため、同時に進めない。
 
 ## 履歴
+- 2026-11-15: 34-2・34-4・34-5（一部）を実施し、実施の記録へ追記した。
 - 2026-11-13: 決めること（D 項目）のユーザーの回答を「決定の記録」に記録した。
 - 2026-11-13: D6 は (A)（全画面と ViewModel の WPF 非依存化まで）で確定。34-A／34-B／34-C への分割は、承認のときに決める。D7・D8 は未回答。
 - 2026-11-13: D4 は (A) で確定。アプリ全体の MVVM の点検を受けて、「MVVM の到達の定義」、決めること D6〜D8、Step 34-6a（ViewModel の WPF 非依存化）・34-6b（残りの画面）、34-0・34-1・34-7・34-8 の拡張を足した。
@@ -111,3 +112,9 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 - 34-0（棚卸しの概数。`.xaml.cs` の行数／XAML のイベント属性／`MessageBox`・ファイル選択の直接の呼び出し／サービスらしい参照の概数）: `MainWindow` 1,849／37／13／124、`ProfileEditor` 1,736／21／8／44、`BindingWindow` 942／6／0／8、`RecordBox` 900／22／3／6、`AssignmentEditor` 702／10／3／16、`WelcomeDialog` 516／6／0／13、`AutoProfiles` 425／11／1／23、`UpdaterWindow` 364／4／4／8。ViewModel のうち、`Application.Current`／`Dispatcher` を使うのは `ControllerListViewModel`（`ContextIdle` の優先度つきの呼び出しがあるため、`IUiDispatcher` に優先度の指定が要る）、`OutBinding`（`FindResource`）、`TrayIconViewModel`（`Dispatcher` を引数で受ける。`IUiDispatcher` へ置き換える）。`System.Windows` を参照する ViewModel は 35 ファイル。`MessageBox`・ファイル選択を直接作る箇所は、`UI` の View に約 47 か所（最多は `MainWindow` の 13、`ProfileEditor` の 8）。
 - 34-1（完了）: `RelayCommand`（`UI/ViewModels/Util`。`CommandManager` に依存せず、`RaiseCanExecuteChanged` で通知）、`IUiDispatcher`＋`WpfUiDispatcher`、`IDialogService`（`ShowMessage`／`Confirm`／`PickOpenFile`／`PickSaveFile`）＋`WpfDialogService`＋`DialogIcon`＋`FileDialogOptions` を新設し、DI に登録した（`ServiceRegistration.Ui`）。テストの偽物は `FakeDialogService`・`ImmediateUiDispatcher`。色の選択の窓口は、使う側（34-6b の `ColorPickerWindow` は View に残す方針）が決まるまで作らない。
 - 次: 34-2 以降（画面ごとに、判断を ViewModel のコマンドへ移し、`IDialogService`・`IUiDispatcher` を使う）。`MainWindow` が最大で、Phase35（終了の手順）と同じファイルに触れるため、先に Phase35 を済ませてから 34-3 に入るほうがよい。
+
+### 2026-11-15（続き。ブランチ `Phase34-2`）
+- 34-2（ProfileEditor。完了）: 特殊アクションの「追加・編集後の一覧の更新」「削除の確認」「複製できないときの通知」「エクスポート」を `SpecialActionsListViewModel`（`AddSavedAction`／`ReplaceEditedAction`／`RemoveSelectedWithConfirm`／`DuplicateSelectedWithNotice`／`PickAndExportActions`）へ移した。確認・通知の文言は `Strings.resx`・`Strings.ja.resx` のキー（`SpecialAction_RemoveConfirm`／`SpecialAction_DuplicateNotSaved`）にした（D5＝B。日本語訳は、最後の実機確認で確認する一覧に入れる）。`IDialogService` は `ActionViewModelFactory` が渡す。テスト: `SpecialActionsListViewModelDialogTests`。残り（ProfileEditor に残る直接の呼び出し）: 名前の入力チェックの `MessageBox`、リセットの確認、スティック校正の案内、起動プログラムの選択（`GeneralSettingsViewModel` へ移す）。34-3 のあとに行う。
+- 34-4（RecordBox。完了）: プリセットの読み書きのファイル選択（`PickAndLoadPreset`／`PickAndSavePreset`）と、移動の記録の上限の通知（`NotifyMoveRecordLimitReached`）を `RecordBoxViewModel` へ。`ProfileEditViewModelFactory` が `IDialogService` を渡す。テスト: `RecordBoxViewModelDialogTests`。
+- 34-5（AssignmentEditor。一部完了）: 起動プログラムの選択（`LaunchProgramViewModel.PickProgram`）を移した。位置を指定して出す「同名のアクションがある」の通知は、描画上の位置の指定のため View に残す（D8＝A）。
+- 34-6（BindingWindow）: 直接の `MessageBox`・ファイル選択が 0 件のため、このブランチでは変更なし。34-6a／34-6b（ViewModel の WPF 非依存化・残りの画面）は、`MainWindow`・`App` に触れる Phase35 のあとで、34-3・34-7・34-8 と一緒に行う（計画の変更。実機確認のあとの最終まとめで記録する）。
