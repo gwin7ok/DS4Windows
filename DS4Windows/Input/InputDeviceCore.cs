@@ -44,7 +44,8 @@ namespace DS4Windows.Input
     /// 全ての入力機種が共有する中核: 状態（現在・直前）、電池・充電、イベント、設定、切断、出力の合成。
     /// 読み取りのループは持たず、<see cref="DS4Windows.Input.Devices.InputLoopDevice"/> が機種ごとの差し込み口で動かす。
     /// </summary>
-    public abstract class InputDeviceCore : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice
+    public abstract class InputDeviceCore : DS4Windows.Core.Abstractions.IConfigurableDevice, DS4Windows.Input.Abstractions.ILightbarDevice,
+        DS4Windows.Core.Abstractions.IOutputBoundDevice, DS4Windows.Core.Abstractions.IMotionSource
     {
         // Indicates PostInit completed and output buffers (etc.) are initialized
         protected volatile bool postInitDone = false;
@@ -131,6 +132,40 @@ namespace DS4Windows.Input
         public ReportHandler<EventArgs> MotionEvent = null;
 
         public IHidTransport HidDevice => hDevice;
+
+        /// <summary>HID のデバイスパス（<see cref="DS4Windows.Core.Abstractions.IOutputBoundDevice"/>）。</summary>
+        public string DevicePath => hDevice.DevicePath;
+
+        public void StartMotionCallback(Action onReport)
+        {
+            MotionEvent = (sender, args) => onReport();
+            Report += MotionEvent;
+        }
+
+        public void StopMotionCallback()
+        {
+            if (MotionEvent != null)
+            {
+                Report -= MotionEvent;
+                MotionEvent = null;
+            }
+        }
+
+        public void PauseMotionCallback()
+        {
+            if (MotionEvent != null)
+            {
+                Report -= MotionEvent;
+            }
+        }
+
+        public void ResumeMotionCallback()
+        {
+            if (MotionEvent != null)
+            {
+                Report += MotionEvent;
+            }
+        }
         public bool IsHidExclusive => HidDevice.IsExclusive;
         public bool isHidExclusive()
         {
