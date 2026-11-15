@@ -1,4 +1,4 @@
-﻿using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
@@ -120,6 +120,32 @@ namespace DS4Windows.Core.Settings
             MouseStickTriggerCondAnd = BackingStore.DEFAULT_SA_MSTICK_TRIGGER_COND;
             MouseTriggers = BackingStore.DEFAULT_SA_TRIGGERS;
             MouseStickTriggers = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
+        }
+
+        /// <summary>ジャイロの設定を既定へ戻す（プロファイルの読み込みの前）。</summary>
+        public void ResetForProfileLoad()
+        {
+            RemovedSwipe.Clear();
+            Controls.Reset();
+
+            MouseTriggers = BackingStore.DEFAULT_SA_TRIGGERS;
+            MouseTriggerCondAnd = BackingStore.DEFAULT_SA_TRIGGER_COND;
+            OutputMode = BackingStore.DEFAULT_GYRO_OUT_MODE;
+            MouseStickTriggers = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGERS;
+            MouseStickTriggerCondAnd = true;
+
+            MouseStick.Reset();
+
+            MouseStickToggle = false;
+            MouseStickTriggerTurns = BackingStore.DEFAULT_GYRO_MSTICK_TRIGGER_TURNS;
+            Sensitivity = BackingStore.DEFAULT_GYRO_SENS;
+            SensVerticalScale = BackingStore.DEFAULT_GYRO_SENS_VERTICAL_SCALE;
+            Invert = 0;
+            TriggerTurns = BackingStore.DEFAULT_GYRO_TRIGGER_TURNS;
+            Mouse.Reset();
+
+            MouseHorizontalAxis = 0;
+            MouseToggle = false;
         }
     }
 }
