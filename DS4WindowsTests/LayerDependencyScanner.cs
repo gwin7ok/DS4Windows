@@ -80,6 +80,28 @@ namespace DS4WindowsTests
             return sources;
         }
 
+        /// <summary>
+        /// 名前空間が <paramref name="sourceNamespacePrefix"/> で始まる本体のトップレベルの型が、
+        /// 名前空間が <paramref name="targetNamespacePrefix"/> で始まる型を参照する組を "参照元|参照先" の形で返す（重複なし、序数順）。
+        /// 画面の部品（ViewModel）が WPF の型を参照しないことの検査に使う（Phase34-7）。
+        /// </summary>
+        public static IReadOnlyList<string> ReferencesBetweenNamespaces(string sourceNamespacePrefix, string targetNamespacePrefix)
+        {
+            var pairs = new HashSet<string>(StringComparer.Ordinal);
+            foreach (IType type in s_architecture.Value.Types)
+            {
+                if (type.IsStub || type.IsGenericParameter) continue;
+                if (!(type.Namespace?.FullName ?? string.Empty).StartsWith(sourceNamespacePrefix, StringComparison.Ordinal)) continue;
+                string source = LayerMap.ToTopLevelTypeName(type.FullName);
+                foreach (ITypeDependency dependency in type.Dependencies)
+                    foreach (IType target in TargetsOf(dependency))
+                        if (target != null && !target.IsGenericParameter
+                            && (target.Namespace?.FullName ?? string.Empty).StartsWith(targetNamespacePrefix, StringComparison.Ordinal))
+                            pairs.Add(source + "|" + target.FullName);
+            }
+            return pairs.OrderBy(p => p, StringComparer.Ordinal).ToList();
+        }
+
         /// <summary>本体の型（スタブを除く）から、本体の別の型への参照の辺（重複なし、同じトップレベルの型への参照は除く）。</summary>
         public static IReadOnlyList<Edge> Edges => s_edges.Value;
 
