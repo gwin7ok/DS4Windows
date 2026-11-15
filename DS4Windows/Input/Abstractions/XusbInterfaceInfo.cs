@@ -3,13 +3,14 @@ namespace DS4Windows.Input.Abstractions
     /// <summary>XUSB のデバイス インターフェース（Xbox 系の機器 1 台）の情報。</summary>
     public sealed class XusbInterfaceInfo
     {
-        public XusbInterfaceInfo(string devicePath, string instanceId, int vendorId, int productId, int playerIndex)
+        public XusbInterfaceInfo(string devicePath, string instanceId, int vendorId, int productId, int playerIndex, string parentInstanceId = null)
         {
             DevicePath = devicePath;
             InstanceId = instanceId;
             VendorId = vendorId;
             ProductId = productId;
             PlayerIndex = playerIndex;
+            ParentInstanceId = parentInstanceId;
         }
 
         /// <summary>デバイス インターフェースのパス（接続の識別に使う）。</summary>
@@ -17,6 +18,9 @@ namespace DS4Windows.Input.Abstractions
 
         /// <summary>機器のインスタンス ID（親の連鎖をたどる起点。シリアルを含むことがある）。</summary>
         public string InstanceId { get; }
+
+        /// <summary>親の機器のインスタンス ID（読めなければ null）。USB のポートで決まるため、つなぎ直しても同じポートなら変わらない。</summary>
+        public string ParentInstanceId { get; }
 
         public int VendorId { get; }
         public int ProductId { get; }

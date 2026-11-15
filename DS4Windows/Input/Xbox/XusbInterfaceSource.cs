@@ -31,7 +31,8 @@ namespace DS4Windows.Input.Xbox
                     continue;
                 }
 
-                result.Add(new XusbInterfaceInfo(path, DevicePathProbe.GetInstanceIdFromDevicePath(path), vid, pid, ReadPlayerIndex(path)));
+                string instanceId = DevicePathProbe.GetInstanceIdFromDevicePath(path);
+                result.Add(new XusbInterfaceInfo(path, instanceId, vid, pid, ReadPlayerIndex(path), DevicePathProbe.GetParentInstanceId(instanceId)));
             }
 
             return result;
