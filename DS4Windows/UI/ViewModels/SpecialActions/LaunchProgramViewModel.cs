@@ -54,23 +54,13 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public double Delay { get => delay; set => delay = value; }
         public string Arguments { get => arguments; set => arguments = value; }
 
-        public ImageSource ProgramIcon
+        /// <summary>起動するプログラム（.exe が実在するとき）のパス。View がこのパスからアイコンの画像を作る（ない／.exe でないときは null）。</summary>
+        public string ProgramIconPath
         {
             get
             {
-                ImageSource exeicon = null;
                 string path = filepath;
-                if (File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe")
-                {
-                    using (Icon ico = Icon.ExtractAssociatedIcon(path))
-                    {
-                        exeicon = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty,
-                            BitmapSizeOptions.FromEmptyOptions());
-                        exeicon.Freeze();
-                    }
-                }
-
-                return exeicon;
+                return File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe" ? path : null;
             }
         }
         public event EventHandler ProgramIconChanged;

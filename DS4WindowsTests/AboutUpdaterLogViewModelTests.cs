@@ -107,7 +107,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LogViewModel_RequiresEnvironmentService()
         {
-            Assert.Throws<ArgumentNullException>(() => new LogViewModel(null));
+            Assert.Throws<ArgumentNullException>(() => new LogViewModel(null, new ImmediateUiDispatcher()));
         }
 
         // Phase14b-Step17（D10）: UpdaterWindowViewModel のコンストラクターが受ける変更履歴のサービス（通信しない）

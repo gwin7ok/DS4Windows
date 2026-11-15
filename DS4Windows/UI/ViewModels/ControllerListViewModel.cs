@@ -53,6 +53,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IProfileSettingsService profileSettingsService;
         private readonly IProfileRepository profileRepo;
         private readonly IAppSettingsService appSettings;
+        private readonly DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher;
         private int currentIndex;
         public int CurrentIndex { get => currentIndex; set => currentIndex = value; }
         public CompositeDeviceModel CurrentItem
@@ -70,8 +71,10 @@ namespace DS4Windows.UI.ViewModels
         public ControllerListViewModel(IControllerSlotQuery slots, IServiceLifecycle lifecycle, ProfileList profileListHolder,
             IProfileSettingsService profileSettingsService,
             IProfileRepository profileRepo,
-            IAppSettingsService appSettings)
+            IAppSettingsService appSettings,
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {
+            this.uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
             // Phase6-Step10-2-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
             // 置換前は、任意引数の null を AppHost/Global.*Instance で補っていた。さらに、コンストラクタ本体の
             // profileRepo（引数）が null のままだと NullReferenceException になる状態だった。
@@ -100,8 +103,7 @@ namespace DS4Windows.UI.ViewModels
                 idx++;
             }
 
-            BindingOperations.EnableCollectionSynchronization(controllerCol, _colListLocker,
-                ColLockCallback);
+            uiDispatcher.EnableCollectionSynchronization(controllerCol, _colListLocker, ColLockCallback);
         }
 
         /// <summary>
@@ -118,8 +120,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void ColLockCallback(IEnumerable collection, object context,
-            Action accessMethod, bool writeAccess)
+        private void ColLockCallback(Action accessMethod, bool writeAccess)
         {
             if (writeAccess)
             {
@@ -267,7 +268,7 @@ namespace DS4Windows.UI.ViewModels
                 // 同じスロットに新しいデバイスの行が先に入っていたら、その行は消さない
                 if (controllerDict.TryGetValue(found.DevIndex, out CompositeDeviceModel registered) && registered == found)
                     controllerDict.Remove(found.DevIndex);
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                uiDispatcher.Invoke(() =>
                 {
                     appSettings?.Save();
                 });
@@ -287,7 +288,7 @@ namespace DS4Windows.UI.ViewModels
                 AppLogger.LogDebug($"Global_SelectedProfileChanged: deviceIndex={deviceIndex}, profileName='{profileName}'");
 
                 // Update UI (use BeginInvoke to avoid deadlock when already on UI thread)
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
+                uiDispatcher.BeginInvoke(() =>
                 {
                     try
                     {
@@ -310,10 +311,10 @@ namespace DS4Windows.UI.ViewModels
                                     item.suppressSelectedIndexChanged = true;
                                     item.SelectedIndex = newIndex;
 
-                                    System.Windows.Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+                                    uiDispatcher.BeginInvokeIdle(() =>
                                     {
                                         item.suppressSelectedIndexChanged = false;
-                                    }), System.Windows.Threading.DispatcherPriority.ContextIdle);
+                                    });
 
                                     AppLogger.LogDebug($"Global_SelectedProfileChanged: Updated SelectedIndex to {newIndex}");
                                 }

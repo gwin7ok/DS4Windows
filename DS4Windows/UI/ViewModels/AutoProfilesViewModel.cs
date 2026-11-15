@@ -113,8 +113,10 @@ namespace DS4Windows.UI.ViewModels
             IAppSettingsService appSettings,
             IAutoProfileService autoProfileService,
             IRuntimeFeatureSwitch runtimeFeatures,
-            IEnvironmentService environmentService)
+            IEnvironmentService environmentService,
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {
+            if (uiDispatcher == null) throw new ArgumentNullException(nameof(uiDispatcher));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
@@ -125,7 +127,7 @@ namespace DS4Windows.UI.ViewModels
             this.profileList = profileList;
             PopulateCurrentEntries();
 
-            BindingOperations.EnableCollectionSynchronization(programColl, _colLockobj);
+            uiDispatcher.EnableCollectionSynchronization(programColl, _colLockobj);
         }
 
         private void PopulateCurrentEntries()

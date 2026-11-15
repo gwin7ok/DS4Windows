@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -42,9 +42,9 @@ namespace DS4WindowsTests
             var app = TestRepositoryFactory.CreateAppSettingsService();
 
             // 依存の null 検査は、機器の窓口を使う処理より前に行われる
-            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, null, repo, app));
-            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, settings, null, app));
-            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, settings, repo, null));
+            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, null, repo, app, new ImmediateUiDispatcher()));
+            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, settings, null, app, new ImmediateUiDispatcher()));
+            Assert.Throws<ArgumentNullException>(() => new ControllerListViewModel(null, null, null, settings, repo, null, new ImmediateUiDispatcher()));
         }
 
         [Fact]
@@ -53,8 +53,8 @@ namespace DS4WindowsTests
             // 依存の null 検査は、AutoProfileHolder を使う処理より前に行われる（holder／list は null で検証できる）
             var app = TestRepositoryFactory.CreateAppSettingsService();
 
-            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, app, null, null, new EnvironmentService()));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, null, null, null, null, new ImmediateUiDispatcher()));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, app, null, null, new EnvironmentService(), new ImmediateUiDispatcher()));
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
             public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList) => null;
             public SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device) => null;
             public SettingsViewModel CreateSettingsViewModel() => null;
-            public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder) => null;
+            public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher) => null;
             public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel() => null;
             public ChangelogViewModel CreateChangelogViewModel() => null;
             public RenameProfileViewModel CreateRenameProfileViewModel() => null;
@@ -151,7 +151,7 @@ namespace DS4WindowsTests
             public LanguagePackViewModel CreateLanguagePackViewModel() => null;
             public AxialStickControlViewModel CreateAxialStickControlViewModel(StickDeadZoneInfo deadZoneInfo) => null;
             public MappingListViewModel CreateMappingListViewModel(int deviceIndex, OutContType contType) => null;
-            public LogViewModel CreateLogViewModel() => null;
+            public LogViewModel CreateLogViewModel(IUiDispatcher uiDispatcher) => null;
             public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, IUiDispatcher dispatcher) => null;
             public BindingWindowViewModel CreateBindingWindowViewModel(int deviceIndex, DS4ControlSettings settings, int targetDevice) => null;
             public ControlActionEditorViewModel CreateControlActionEditorViewModel(int deviceIndex, ControlSettingsEditTarget target) => null;

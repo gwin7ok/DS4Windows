@@ -43,6 +43,7 @@ using DS4Windows.Core.Utilities;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Translations;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
@@ -64,6 +65,8 @@ namespace DS4Windows.UI
         private LogViewModel logvm;
         private ControllerListViewModel conLvViewModel;
         private TrayIconViewModel trayIconVM;
+        // 画面のスレッドへの受け渡し（ViewModel へ渡す。状態を持たない）
+        private readonly IUiDispatcher uiDispatcher = new WpfUiDispatcher();
         // トレイの右クリックメニュー（ViewModel の項目 TrayMenuItemModel から組み立てる）
         private readonly ContextMenu trayContextMenu = new ContextMenu();
         private SettingsViewModel settingsWrapVM;
@@ -164,7 +167,7 @@ namespace DS4Windows.UI
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
             languagePackControl.Initialize(appSettingsService, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
-            logvm = viewModelFactory.CreateLogViewModel();
+            logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
@@ -175,7 +178,7 @@ namespace DS4Windows.UI
 
             UpdateStartStopText();
 
-            conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder);
+            conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder, uiDispatcher);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
             ChangeControllerPanel();
@@ -186,7 +189,7 @@ namespace DS4Windows.UI
             view.SortDescriptions.Add(new SortDescription("DevIndex", ListSortDirection.Ascending));
             view.Refresh();
 
-            trayIconVM = _viewModelFactory.CreateTrayIconViewModel(profileListHolder, new WpfUiDispatcher());
+            trayIconVM = _viewModelFactory.CreateTrayIconViewModel(profileListHolder, uiDispatcher);
 
             // Need to define before calling TaskbarIcon.ForceCreate
             notifyIcon.DataContext = trayIconVM;

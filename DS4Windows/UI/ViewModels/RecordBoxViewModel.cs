@@ -145,7 +145,8 @@ namespace DS4Windows.UI.ViewModels
             IEnvironmentService environmentService,
             IMacroRecordingState macroRecording,
             int targetDevice = -1,
-            IDialogService dialogs = null)
+            IDialogService dialogs = null,
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher = null)
         {
             this.dialogs = dialogs;
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
@@ -170,7 +171,7 @@ namespace DS4Windows.UI.ViewModels
                 LoadMacro();
             }
 
-            BindingOperations.EnableCollectionSynchronization(macroSteps, _colLockobj);
+            uiDispatcher?.EnableCollectionSynchronization(macroSteps, _colLockobj);
 
             // By default RECORD button appends new steps. User must select (click) an existing step to insert new steps in front of the selected step
             this.MacroStepIndex = -1;

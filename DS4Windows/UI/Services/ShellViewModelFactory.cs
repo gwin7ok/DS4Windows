@@ -73,7 +73,7 @@ namespace DS4Windows.UI.Services
 
         public LanguagePackViewModel CreateLanguagePackViewModel() => new LanguagePackViewModel(_appSettings);
 
-        public LogViewModel CreateLogViewModel() => new LogViewModel(_environmentService);
+        public LogViewModel CreateLogViewModel(IUiDispatcher uiDispatcher) => new LogViewModel(_environmentService, uiDispatcher);
 
         public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, IUiDispatcher dispatcher)
             => new TrayIconViewModel(_slots, _lifecycle, profileListHolder, _appearanceSettings, _profileRepo,
@@ -81,12 +81,12 @@ namespace DS4Windows.UI.Services
 
         public SettingsViewModel CreateSettingsViewModel() => _settingsFactory.Create();
 
-        public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder)
+        public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created ControllerListViewModel");
             return new ControllerListViewModel(_slots, _lifecycle, profileListHolder,
-                _profileSettings, _profileRepo, _appSettings);
+                _profileSettings, _profileRepo, _appSettings, uiDispatcher);
         }
 
         public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel()
