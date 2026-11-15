@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
@@ -51,7 +52,7 @@ namespace DS4WindowsTests
 
         public void AssignInitialDevices() => _inner?.AssignInitialDevices();
 
-        public void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device)
+        public void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, IOutputBoundDevice device)
             => _inner?.EstablishOutFeedback(index, contType, outDevice, device);
 
         public void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
@@ -64,9 +65,9 @@ namespace DS4WindowsTests
 
         public void DetachUnboundOutDev(OutSlotDevice slotDevice) => _inner?.DetachUnboundOutDev(slotDevice);
 
-        public void PluginOutDev(int index, InputDeviceCore device) => _inner?.PluginOutDev(index, device);
+        public void PluginOutDev(int index, IOutputBoundDevice device) => _inner?.PluginOutDev(index, device);
 
-        public void UnplugOutDev(int index, InputDeviceCore device, bool immediate = false, bool force = false)
+        public void UnplugOutDev(int index, IOutputBoundDevice device, bool immediate = false, bool force = false)
             => _inner?.UnplugOutDev(index, device, immediate, force);
 
         public void QueueOnEventThread(Action action) => _inner?.QueueOnEventThread(action);

@@ -135,12 +135,12 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public bool IsAffected(InputDeviceCore dev)
+        public bool IsAffected(IOutputBoundDevice dev)
         {
             bool result = false;
             if (dev != null && hidDeviceHidingEnabled)
             {
-                string deviceInstanceId = _environmentService.GetInstanceIdFromDevicePath(dev.HidDevice.DevicePath);
+                string deviceInstanceId = _environmentService.GetInstanceIdFromDevicePath(dev.DevicePath);
                 if (_environmentService.HidHideInstalled)
                 {
                     result = _environmentService.CheckHidHideAffectedStatus(deviceInstanceId,
@@ -151,7 +151,7 @@ namespace DS4Windows.Output.Services
             return result;
         }
 
-        public void MarkAffected(InputDeviceCore dev)
+        public void MarkAffected(IOutputBoundDevice dev)
         {
             if (_environmentService.HidHideInstalled)
             {

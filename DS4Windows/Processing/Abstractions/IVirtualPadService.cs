@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
@@ -51,7 +52,7 @@ namespace DS4Windows.Processing.Abstractions
         void AssignInitialDevices();
 
         /// <summary>仮想パッドからの振動・ライトバーの要求を、デバイスへ戻す処理を付ける。</summary>
-        void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device);
+        void EstablishOutFeedback(int index, OutContType contType, OutputDevice outDevice, IOutputBoundDevice device);
 
         /// <summary>仮想パッドからの振動・ライトバーの要求を戻す処理を外す。</summary>
         void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx);
@@ -63,10 +64,10 @@ namespace DS4Windows.Processing.Abstractions
         void DetachUnboundOutDev(OutSlotDevice slotDevice);
 
         /// <summary>デバイスに、設定の種類（Xbox 360／DS4）の仮想パッドを割り当てる。</summary>
-        void PluginOutDev(int index, InputDeviceCore device);
+        void PluginOutDev(int index, IOutputBoundDevice device);
 
         /// <summary>デバイスから仮想パッドを外す。</summary>
-        void UnplugOutDev(int index, InputDeviceCore device, bool immediate = false, bool force = false);
+        void UnplugOutDev(int index, IOutputBoundDevice device, bool immediate = false, bool force = false);
 
         /// <summary>イベントスレッドで、非同期に実行する（<c>OutputSlotService</c> が、画面からの抜き差しをイベントスレッドへ渡すのに使う）。</summary>
         void QueueOnEventThread(Action action);

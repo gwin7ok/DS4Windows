@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS4Windows.Core.Abstractions;
+using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
 using DS4Windows.Output.Backend;
@@ -21,7 +22,7 @@ namespace DS4Windows.Output.Abstractions
         OutputDevice Narrow(OutputDevice device);
 
         /// <summary>ゲームからの振動・ライトバーの戻りを、入力デバイスへつなぐ。</summary>
-        void AttachFeedback(int index, OutputDevice outDevice, InputDeviceCore device);
+        void AttachFeedback(int index, OutputDevice outDevice, IOutputBoundDevice device);
 
         /// <summary>つないだ戻りを外す。</summary>
         void RemoveFeedback(OutputDevice outDevice, int inputIndex);

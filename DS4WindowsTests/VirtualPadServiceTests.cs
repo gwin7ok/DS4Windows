@@ -28,7 +28,7 @@ namespace DS4WindowsTests
 
         private sealed class NoRumble : IDeviceRumbleService
         {
-            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) { }
+            public void SetDevRumble(IRumbleTarget device, byte heavyMotor, byte lightMotor, int deviceNum) { }
         }
 
         private sealed class NoControllers : IDeviceStateAccessor
@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         private sealed class RecordingRumble : IDeviceRumbleService
         {
             public readonly System.Collections.Generic.List<(byte Heavy, byte Light, int Device)> Calls = new System.Collections.Generic.List<(byte, byte, int)>();
-            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
+            public void SetDevRumble(IRumbleTarget device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
         }
 
         [Fact]

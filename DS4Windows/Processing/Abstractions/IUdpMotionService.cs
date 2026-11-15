@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Output.Udp;
 using System;
 
@@ -32,7 +33,7 @@ namespace DS4Windows.Processing.Abstractions
         void ChangeMotionEventStatus(bool state);
 
         /// <summary>そのデバイスに、モーションの送出のハンドラーを付ける（設定でスムージングが有効なら、加速度とジャイロにフィルターをかけて送る）。</summary>
-        void PrepareDeviceMotion(DS4Windows.Input.InputDeviceCore device, int index);
+        void PrepareDeviceMotion(IMotionSource device, int index);
 
         /// <summary>そのスロットのスムージングのフィルターを作り直す。</summary>
         void ResetSmoothingFilters(int idx);

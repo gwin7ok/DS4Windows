@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS4Windows.Core.Abstractions;
+using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
 using DS4Windows.Output.Abstractions;
@@ -37,7 +38,7 @@ namespace DS4Windows.Output.Devices
 
         public OutputDevice Narrow(OutputDevice device) => device as Xbox360OutDevice;
 
-        public void AttachFeedback(int index, OutputDevice outDevice, InputDeviceCore device)
+        public void AttachFeedback(int index, OutputDevice outDevice, IOutputBoundDevice device)
         {
             int devIndex = index;
             Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
