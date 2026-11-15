@@ -2387,7 +2387,7 @@ namespace DS4Windows.Translations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slot #.
+        ///   Looks up a localized string similar to Output Slot #.
         /// </summary>
         public static string OutputSlotMan_SlotNum {
             get {
@@ -2398,6 +2398,24 @@ namespace DS4Windows.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Input #.
         /// </summary>
+        public static string OutputSlotMan_InputId {
+            get {
+                return ResourceManager.GetString("OutputSlotMan.InputId", resourceCulture);
+            }
+        }
+        
+        public static string OutputSlotMan_CurrentType {
+            get {
+                return ResourceManager.GetString("OutputSlotMan.CurrentType", resourceCulture);
+            }
+        }
+        
+        public static string OutputSlotMan_Reservation {
+            get {
+                return ResourceManager.GetString("OutputSlotMan.Reservation", resourceCulture);
+            }
+        }
+        
         public static string OutputSlotMan_InputNum {
             get {
                 return ResourceManager.GetString("OutputSlotMan.InputNum", resourceCulture);

@@ -53,7 +53,7 @@
                     <ListView x:Name="controllerLV" ItemsSource="{Binding ControllerCol}" SelectionMode="Single" SelectedIndex="{Binding CurrentIndex, Mode=OneWayToSource}" Margin="0" PreviewMouseUp="ControllerLV_PreviewMouseUp">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn x:Name="indexColumn" Header="#" Width="30">
+                                <GridViewColumn x:Name="indexColumn" Header="{lex:Loc OutputSlotMan.InputNum}" Width="90">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel  Width="{Binding ElementName=indexColumn, Path=Width}">

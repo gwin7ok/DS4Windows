@@ -128,9 +128,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        #pragma warning disable CS0067 // InputSlotNumChanged may not be used in this build configuration
         public event EventHandler InputSlotNumChanged;
-        #pragma warning restore CS0067
 
         public string InputSlotDisplayString
         {
@@ -139,7 +137,7 @@ namespace DS4Windows.UI.ViewModels
                 string result = "";
                 if (slot.InputIndex >= 0)
                 {
-                    result = $"{slot.InputIndex + 1} ({slot.InputDisplayString})";
+                    result = slot.InputDisplayString;
                 }
                 return result;
             }
@@ -171,6 +169,7 @@ namespace DS4Windows.UI.ViewModels
             BoundInputChanged?.Invoke(this, EventArgs.Empty);
             // 結び付け・解除のときは、結び付いた入力の表示も変わる
             InputSlotDisplayStringChanged?.Invoke(this, EventArgs.Empty);
+            InputSlotNumChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void OutSlotDevice_PermanentTypeChanged(object sender, EventArgs e)
@@ -250,6 +249,7 @@ namespace DS4Windows.UI.ViewModels
             DesiredTypeChanged?.Invoke(this, EventArgs.Empty);
             BoundInputChanged?.Invoke(this, EventArgs.Empty);
             InputSlotDisplayStringChanged?.Invoke(this, EventArgs.Empty);
+            InputSlotNumChanged?.Invoke(this, EventArgs.Empty);
             Dirty = false;
         }
 

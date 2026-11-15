@@ -1067,9 +1067,18 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>虹色</value>
   </data>
   <data name="OutputSlotMan.SlotNum" xml:space="preserve">
-    <value>スロット #</value>
+    <value>出力スロット #</value>
   </data>
   <data name="OutputSlotMan.InputNum" xml:space="preserve">
-    <value>入力コントローラー</value>
+    <value>入力スロット #</value>
+  </data>
+  <data name="OutputSlotMan.InputId" xml:space="preserve">
+    <value>入力コントローラー ID</value>
+  </data>
+  <data name="OutputSlotMan.CurrentType" xml:space="preserve">
+    <value>現在の種類</value>
+  </data>
+  <data name="OutputSlotMan.Reservation" xml:space="preserve">
+    <value>予約（Dynamic／固定の種類）</value>
   </data>
 </root>

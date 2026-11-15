@@ -1283,10 +1283,19 @@ Disabled:
     <value>Intro</value>
   </data>
   <data name="OutputSlotMan.SlotNum" xml:space="preserve">
-    <value>Slot #</value>
+    <value>Output Slot #</value>
   </data>
   <data name="OutputSlotMan.InputNum" xml:space="preserve">
-    <value>Input #</value>
+    <value>Input Slot #</value>
+  </data>
+  <data name="OutputSlotMan.InputId" xml:space="preserve">
+    <value>Input Controller ID</value>
+  </data>
+  <data name="OutputSlotMan.CurrentType" xml:space="preserve">
+    <value>Current Type</value>
+  </data>
+  <data name="OutputSlotMan.Reservation" xml:space="preserve">
+    <value>Reservation</value>
   </data>
   <data name="OutputSlotMan.XInputNum" xml:space="preserve">
     <value>XInput #</value>
