@@ -37,6 +37,30 @@ namespace DS4Windows.UI.ViewModels
         // Phase6-Step10-5: スロット番号（IOutputSlotService.PluginSlot/UnplugSlot へ渡す）
         public int Index { get => idx; }
 
+        /// <summary>恒久（Permanent）の種類が決まっているなら、その種類で接続を要求して true を返す。決まっていなければ何もせず false。</summary>
+        public bool TryPlugPermanentType()
+        {
+            if (slot.ReserveStatus != OutputSlotReserveStatus.Permanent || slot.PermanentType == OutContType.None)
+                return false;
+
+            slot.CurrentType = slot.PermanentType;
+            RequestPlugin();
+            return true;
+        }
+
+        /// <summary>選ばれた種類と確保の方法で接続を要求する。恒久なら、その種類を恒久の種類として覚える。</summary>
+        public void PlugAs(OutContType type, OutputSlotReserveStatus reserve)
+        {
+            slot.CurrentType = type;
+            slot.ReserveStatus = reserve;
+            if (reserve == OutputSlotReserveStatus.Permanent)
+            {
+                slot.PermanentType = type;
+            }
+
+            RequestPlugin();
+        }
+
         public string CurrentType
         {
             get

@@ -122,31 +122,18 @@ namespace DS4Windows.UI
                 tempEntry = currentOutDevVM.SlotDeviceEntries[idx];
             }
 
-            if (tempEntry != null &&
-                tempEntry.Slot.ReserveStatus ==
-                OutputSlotReserveStatus.Permanent &&
-                tempEntry.Slot.PermanentType != DS4Windows.Core.Model.OutContType.None)
+            // 恒久（Permanent）の種類が決まっているスロットは、選ばせずにその種類で接続する
+            if (tempEntry != null && tempEntry.TryPlugPermanentType())
             {
-                tempEntry.Slot.CurrentType = tempEntry.Slot.PermanentType;
-                tempEntry.RequestPlugin();
+                return;
             }
-            else
-            {
-                PluginOutDevWindow devWindow = new PluginOutDevWindow();
-                devWindow.ShowDialog();
-                MessageBoxResult result = devWindow.Result;
-                if (result == MessageBoxResult.OK)
-                {
-                    tempEntry.Slot.CurrentType = devWindow.ContType;
-                    tempEntry.Slot.ReserveStatus = devWindow.ReserveType;
-                    if (tempEntry.Slot.ReserveStatus ==
-                        OutputSlotReserveStatus.Permanent)
-                    {
-                        tempEntry.Slot.PermanentType = devWindow.ContType;
-                    }
 
-                    tempEntry.RequestPlugin();
-                }
+            PluginOutDevWindow devWindow = new PluginOutDevWindow();
+            devWindow.ShowDialog();
+            MessageBoxResult result = devWindow.Result;
+            if (result == MessageBoxResult.OK)
+            {
+                tempEntry.PlugAs(devWindow.ContType, devWindow.ReserveType);
             }
         }
 
