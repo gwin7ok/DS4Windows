@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -96,22 +96,30 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDuplicateBox_AssignsANewIdRightAfterTheCopy_BeforeNotifyingTheSave()
         {
-            string path = SourceFileLocator.Find("DS4Windows/UI/DupBox.xaml.cs");
-            if (path == null)
+            // 複製（コピー → 新しい ID）は Composition の工場が行い、DupBox は複製のあとで保存を通知する
+            string factoryPath = SourceFileLocator.Find("DS4Windows/Composition/MainWindowFactory.cs");
+            string boxPath = SourceFileLocator.Find("DS4Windows/UI/DupBox.xaml.cs");
+            if (factoryPath == null || boxPath == null)
             {
-                _output.WriteLine("DupBox.xaml.cs が見つからないため検査を省略した。");
+                _output.WriteLine("MainWindowFactory.cs／DupBox.xaml.cs が見つからないため検査を省略した。");
                 return;
             }
 
-            string text = File.ReadAllText(path);
+            string factory = Normalize(File.ReadAllText(factoryPath));
+            int copy = factory.IndexOf("System.IO.File.Copy(", StringComparison.Ordinal);
+            int assign = factory.IndexOf("profileIdentity.AssignNewId(newName);", StringComparison.Ordinal);
+            Assert.True(copy >= 0 && assign > copy, "File.Copy → AssignNewId の順になっていない");
+
+            string box = Normalize(File.ReadAllText(boxPath));
+            int duplicate = box.IndexOf("duplicateProfile(oldfilename, profile);", StringComparison.Ordinal);
+            int save = box.IndexOf("Save?.Invoke(this, profile);", StringComparison.Ordinal);
+            Assert.True(duplicate >= 0 && save > duplicate, "複製 → Save の順になっていない");
+        }
+
+        private static string Normalize(string text)
+        {
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            text = Regex.Replace(text, @"\s+", " ");
-
-            int copy = text.IndexOf("System.IO.File.Copy(", StringComparison.Ordinal);
-            int assign = text.IndexOf("profileIdentity.AssignNewId(profile);", StringComparison.Ordinal);
-            int save = text.IndexOf("Save?.Invoke(this, profile);", StringComparison.Ordinal);
-            Assert.True(copy >= 0 && assign > copy && save > assign, "File.Copy → AssignNewId → Save の順になっていない");
-        }
+            return Regex.Replace(text, @"\s+", " ");        }
     }
 }

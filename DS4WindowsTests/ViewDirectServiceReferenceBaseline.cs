@@ -29,8 +29,6 @@
             "DS4Windows.UI.BindingWindow|DS4Windows.Processing.Abstractions.IControllerSlotCommands",
             "DS4Windows.UI.ControllerReadingsControl|DS4Windows.Processing.Abstractions.ControllerReadingInfo",
             "DS4Windows.UI.ControllerReadingsControl|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
-            "DS4Windows.UI.DupBox|DS4Windows.Core.Abstractions.IPathService",
-            "DS4Windows.UI.DupBox|DS4Windows.Core.Abstractions.IProfileIdentityService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IChangelogService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IEnvironmentService",
@@ -76,7 +74,6 @@
             "DS4Windows.UI.StickCalibrationWindow|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.TrayIconResources|DS4Windows.Core.Settings.TrayIconChoice",
             "DS4Windows.UI.WelcomeDialog|DS4Windows.Core.Abstractions.IEnvironmentService",
-            "DS4Windows.UI.WindowPlacementHelper|DS4Windows.Core.Abstractions.IAppSettingsService",
         };
     }
 }
