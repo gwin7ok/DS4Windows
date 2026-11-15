@@ -108,7 +108,7 @@
                                     <TextBlock Grid.Column="0" Text="{Binding ProgramName}" ToolTip="{Binding Filepath}"
                                                Padding="5" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis" />
-                                    <Image Grid.Column="1" Source="{Binding ProgramIcon}" Width="32" Height="32" Margin="10,0,0,0" />
+                                    <Image Grid.Column="1" Source="{Binding ProgramIconPath, Converter={x:Static localConverters:FileIconConverter.Instance}}" Width="32" Height="32" Margin="10,0,0,0" />
                                 </Grid>
                                 <StackPanel Margin="{StaticResource spaceMargin}">
                                     <Label Content="Arguments"/>

@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections;
 using DS4Windows.UI.Abstractions;
 
 namespace DS4WindowsTests
@@ -9,5 +10,8 @@ namespace DS4WindowsTests
         public bool CheckAccess() => true;
         public void Invoke(Action action) => action();
         public void BeginInvoke(Action action) => action();
+        public void BeginInvokeIdle(Action action) => action();
+        public void EnableCollectionSynchronization(IEnumerable collection, object lockObject) { }
+        public void EnableCollectionSynchronization(IEnumerable collection, object context, Action<Action, bool> accessCallback) { }
     }
 }

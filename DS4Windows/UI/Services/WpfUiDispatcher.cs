@@ -1,4 +1,6 @@
-using System;
+﻿using System;
+using System.Collections;
+using System.Windows.Data;
 using System.Windows;
 using System.Windows.Threading;
 using DS4Windows.UI.Abstractions;
@@ -30,5 +32,20 @@ namespace DS4Windows.UI.Services
             if (dispatcher == null) action();
             else dispatcher.BeginInvoke(action);
         }
+
+        public void BeginInvokeIdle(Action action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            Dispatcher dispatcher = Current;
+            if (dispatcher == null) action();
+            else dispatcher.BeginInvoke(action, DispatcherPriority.ContextIdle);
+        }
+
+        public void EnableCollectionSynchronization(IEnumerable collection, object lockObject)
+            => BindingOperations.EnableCollectionSynchronization(collection, lockObject);
+
+        public void EnableCollectionSynchronization(IEnumerable collection, object context, Action<Action, bool> accessCallback)
+            => BindingOperations.EnableCollectionSynchronization(collection, context,
+                (c, ctx, accessMethod, writeAccess) => accessCallback(accessMethod, writeAccess));
     }
 }

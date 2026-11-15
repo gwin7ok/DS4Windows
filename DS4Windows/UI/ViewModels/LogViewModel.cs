@@ -21,9 +21,10 @@ namespace DS4Windows.UI.ViewModels
 
         // Phase6-Step10-1-3: Global.exeversion の置換先（必須引数）。引数なしのコンストラクタは、DI の解決テスト
         // （PatternAViewModelTests）と ServiceRegistration の Transient 登録のために残している。
-        public LogViewModel(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
+        public LogViewModel(DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
+            if (uiDispatcher == null) throw new ArgumentNullException(nameof(uiDispatcher));
 
             string version = environmentService.ApplicationVersion;
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows version {version}" });
@@ -33,11 +34,11 @@ namespace DS4Windows.UI.ViewModels
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Release ID: {DS4Windows.Core.Utilities.Util.GetOSReleaseId()}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"System Architecture: {(Environment.Is64BitOperatingSystem ? "x64" : "x32")}" });
 
-            BindingOperations.EnableCollectionSynchronization(logItems, _logListLocker, LogLockCallback);
+            uiDispatcher.EnableCollectionSynchronization(logItems, _logListLocker, LogLockCallback);
             DS4Windows.Core.Logging.AppLogger.GuiLog += AddLogMessage;
         }
 
-        private void LogLockCallback(IEnumerable collection, object context, Action accessMethod, bool writeAccess)
+        private void LogLockCallback(Action accessMethod, bool writeAccess)
         {
             if (writeAccess)
             {

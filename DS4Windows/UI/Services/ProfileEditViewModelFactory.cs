@@ -29,6 +29,7 @@ namespace DS4Windows.UI.Services
         private readonly IProfileLoadTarget _loadTarget;
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
         private readonly IDialogService _dialogs;
+        private readonly DS4Windows.UI.Abstractions.IUiDispatcher _uiDispatcher;
 
         public ProfileEditViewModelFactory(IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
@@ -40,8 +41,10 @@ namespace DS4Windows.UI.Services
             IMacroRecordingState macroRecording,
             IProfileLoadTarget loadTarget,
             DS4Windows.Core.Model.LightbarOverrides lightbar,
-            IDialogService dialogs)
+            IDialogService dialogs,
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {
+            _uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
             _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
@@ -93,7 +96,7 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
             return new RecordBoxViewModel(_lightbar, device, controlSettings, repeatable,
-                _profileSettings, _environmentService, _macroRecording, targetDevice, _dialogs);
+                _profileSettings, _environmentService, _macroRecording, targetDevice, _dialogs, _uiDispatcher);
         }
     }
 }

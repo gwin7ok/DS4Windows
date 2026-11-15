@@ -19,10 +19,13 @@ namespace DS4Windows.UI.Services
         private readonly IAutoProfileService _autoProfileService;
         private readonly IRuntimeFeatureSwitch _runtimeFeatures;
         private readonly IEnvironmentService _environmentService;
+        private readonly DS4Windows.UI.Abstractions.IUiDispatcher _uiDispatcher;
 
         public AutoProfilesViewModelFactory(IAppSettingsService appSettings, IAutoProfileService autoProfileService,
-            IRuntimeFeatureSwitch runtimeFeatures, IEnvironmentService environmentService)
+            IRuntimeFeatureSwitch runtimeFeatures, IEnvironmentService environmentService,
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {
+            _uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
@@ -34,7 +37,7 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created AutoProfilesViewModel");
             return new AutoProfilesViewModel(autoProfileHolder, profileList,
-                _appSettings, _autoProfileService, _runtimeFeatures, _environmentService);
+                _appSettings, _autoProfileService, _runtimeFeatures, _environmentService, _uiDispatcher);
         }
     }
 }
