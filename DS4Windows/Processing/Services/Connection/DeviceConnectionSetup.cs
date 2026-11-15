@@ -143,7 +143,6 @@ namespace DS4Windows.Processing.Services.Connection
         public void AttachTouchpad(int ind, InputDeviceCore device, TouchpadMouse[] touchPads)
         {
             TouchpadMouse tPad = touchPads[ind];
-            //ITouchpadBehaviour tPad = touchPad[ind];
             device.Touchpad.TouchButtonDown += tPad.touchButtonDown;
             device.Touchpad.TouchButtonUp += tPad.touchButtonUp;
             device.Touchpad.TouchesBegan += tPad.touchesBegan;

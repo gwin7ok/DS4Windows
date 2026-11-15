@@ -1,4 +1,4 @@
-﻿/*
+/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -30,7 +30,7 @@ using DS4Windows.Processing.Gyro;
 
 namespace DS4Windows.Processing.Touchpad
 {
-    public class TouchpadMouse : ITouchpadBehaviour, ITouchPadGyroToggles
+    public class TouchpadMouse : ITouchPadGyroToggles
     {
         protected Touch firstTouch, secondTouch;
         private ControllerState s = new ControllerState();
