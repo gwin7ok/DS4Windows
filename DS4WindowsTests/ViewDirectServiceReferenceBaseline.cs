@@ -31,8 +31,6 @@
             "DS4Windows.UI.ControllerReadingsControl|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.DupBox|DS4Windows.Core.Abstractions.IPathService",
             "DS4Windows.UI.DupBox|DS4Windows.Core.Abstractions.IProfileIdentityService",
-            "DS4Windows.UI.LanguagePackControl|DS4Windows.Core.Abstractions.IAppSettingsService",
-            "DS4Windows.UI.LanguageSelectDialog|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IChangelogService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IEnvironmentService",

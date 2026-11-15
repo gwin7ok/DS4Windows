@@ -40,7 +40,7 @@ namespace DS4Windows.UI
     public partial class LanguagePackControl : UserControl
     {
         private LanguagePackViewModel langPackVM;
-        private DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
+        private Func<bool> _saveSettings;
         private DS4Windows.UI.Abstractions.IUiThemeAndLanguage _themeLanguage;   // Phase14b-Step16（D11）: 旧 Application.Current as App
 
         // Phase6-Step10-1-4: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
@@ -54,14 +54,14 @@ namespace DS4Windows.UI
         /// 依存を受け取り、言語パックの一覧の取得を開始する（置換前はコンストラクタで行っていた処理）。
         /// MainWindow のコンストラクタから 1 回だけ呼ぶ。
         /// </summary>
-        public void Initialize(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
+        public void Initialize(Func<bool> saveSettings,
             LanguagePackViewModel viewModel, DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage)
         {
-            if (appSettingsService == null) throw new ArgumentNullException(nameof(appSettingsService));
+            if (saveSettings == null) throw new ArgumentNullException(nameof(saveSettings));
             if (themeLanguage == null) throw new ArgumentNullException(nameof(themeLanguage));
-            if (_appSettingsService != null) throw new InvalidOperationException("LanguagePackControl is already initialized.");
+            if (_saveSettings != null) throw new InvalidOperationException("LanguagePackControl is already initialized.");
 
-            _appSettingsService = appSettingsService;
+            _saveSettings = saveSettings;
             _themeLanguage = themeLanguage;
             langPackVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             this.DataContext = null;
@@ -90,7 +90,7 @@ namespace DS4Windows.UI
                     _themeLanguage.ApplyLanguage(cultureCode);
                     
                     // Save to config
-                    _appSettingsService.Save();
+                    _saveSettings();
                     
                     MessageBox.Show(Translations.Strings.ResourceManager.GetString("LangPackControl.LanguageApplied") ?? "Language applied successfully",
                         "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Information);

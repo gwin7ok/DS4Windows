@@ -166,7 +166,7 @@ namespace DS4Windows.UI
             settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
-            languagePackControl.Initialize(appSettingsService, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
+            languagePackControl.Initialize(appSettingsService.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
             logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;

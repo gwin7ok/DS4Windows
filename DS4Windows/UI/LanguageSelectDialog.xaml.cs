@@ -37,12 +37,12 @@ namespace DS4Windows.UI
         public bool ChoiceMade { get; set; }
         public string SelectedCulture { get; private set; }
 
-        // Phase6-Step10-1-2: Global.UseLang／Global.SetCulture の置換先。呼び出し側（App）が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
+        // 選んだ言語の保存と適用。サービスを持つ呼び出し側（App）が関数で渡す（View はサービスを参照しない）。
+        private readonly Action<string> _applyCulture;
 
-        public LanguageSelectDialog(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
+        public LanguageSelectDialog(Action<string> applyCulture)
         {
-            _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            _applyCulture = applyCulture ?? throw new ArgumentNullException(nameof(applyCulture));
             InitializeComponent();
             LoadAvailableLanguages();
         }
@@ -134,9 +134,7 @@ namespace DS4Windows.UI
 
                 // Apply the selected culture immediately
                 AppLogger.LogDebug($"LanguageSelectDialog: user selected culture '{SelectedCulture}'");
-                _appSettingsService.UseLang = SelectedCulture;
-                _appSettingsService.SetCulture(SelectedCulture);
-                AppLogger.LogDebug($"LanguageSelectDialog: Global.UseLang set to '{_appSettingsService.UseLang}'");
+                _applyCulture(SelectedCulture);
 
                 Close();
             }

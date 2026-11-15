@@ -372,7 +372,12 @@ namespace DS4Windows
             // On first run, show language selection dialog first
             if (firstRun)
             {
-                DS4Windows.UI.LanguageSelectDialog langDialog = new DS4Windows.UI.LanguageSelectDialog(_appSettingsService);
+                DS4Windows.UI.LanguageSelectDialog langDialog = new DS4Windows.UI.LanguageSelectDialog(culture =>
+                {
+                    _appSettingsService.UseLang = culture;
+                    _appSettingsService.SetCulture(culture);
+                    DS4Windows.Core.Logging.AppLogger.LogDebug($"LanguageSelectDialog: Global.UseLang set to '{_appSettingsService.UseLang}'");
+                });
                 langDialog.ShowDialog();
                 if (!langDialog.ChoiceMade)
                 {
