@@ -34,11 +34,17 @@
             <ListView x:Name="currentOutDevLV" ItemsSource="{Binding SlotDeviceEntries}" SelectedIndex="{Binding SelectedIndex,Mode=OneWayToSource}" DockPanel.Dock="Top">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="100" Header="{lex:Loc OutputSlotMan.InputNum}">
+                        <GridViewColumn Width="70" Header="{lex:Loc OutputSlotMan.SlotNum}">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SlotNumber}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="260" Header="{lex:Loc OutputSlotMan.InputNum}">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding InputSlotDisplayString}" />
-                                    <!--<CheckBox IsChecked="{Binding BoundInput,Mode=OneWay}" IsEnabled="False" />-->
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -53,14 +59,6 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DesiredType}" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="60" Header="{lex:Loc OutputSlotMan.XInputNum}">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding XInputSlotNum}" Visibility="{Binding DisplayXInputSlotNum, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
-                                    <!--<CheckBox IsChecked="{Binding BoundInput,Mode=OneWay}" IsEnabled="False" />-->
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

@@ -2387,6 +2387,15 @@ namespace DS4Windows.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Slot #.
+        /// </summary>
+        public static string OutputSlotMan_SlotNum {
+            get {
+                return ResourceManager.GetString("OutputSlotMan.SlotNum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input #.
         /// </summary>
         public static string OutputSlotMan_InputNum {

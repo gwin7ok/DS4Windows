@@ -111,28 +111,8 @@ namespace DS4Windows.UI.ViewModels
         public event EventHandler UnplugRequest;
         int idx;
 
-        public bool DisplayXInputSlotNum
-        {
-            get
-            {
-                return slot.SupportsXInputSlotNumber;
-            }
-        }
-
-
-        public string XInputSlotNum
-        {
-            get
-            {
-                var xinputSlot = "?";
-                if (slot.XInputSlotNumber >= 0) xinputSlot = $"{slot.XInputSlotNumber + 1}";
-                return xinputSlot;
-            }
-
-        }
-
-        public event EventHandler DisplayXInputSlotNumChanged;
-        public event EventHandler XInputSlotNumChanged;
+        /// <summary>画面に出す、1 から始まるスロット番号（行の位置で決まる固定の値）</summary>
+        public int SlotNumber => idx + 1;
 
         public string InputSlotNum
         {
@@ -189,6 +169,8 @@ namespace DS4Windows.UI.ViewModels
         private void OutSlotDevice_CurrentInputBoundChanged(object sender, EventArgs e)
         {
             BoundInputChanged?.Invoke(this, EventArgs.Empty);
+            // 結び付け・解除のときは、結び付いた入力の表示も変わる
+            InputSlotDisplayStringChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void OutSlotDevice_PermanentTypeChanged(object sender, EventArgs e)
@@ -267,8 +249,6 @@ namespace DS4Windows.UI.ViewModels
             CurrentTypeChanged?.Invoke(this, EventArgs.Empty);
             DesiredTypeChanged?.Invoke(this, EventArgs.Empty);
             BoundInputChanged?.Invoke(this, EventArgs.Empty);
-            XInputSlotNumChanged?.Invoke(this, EventArgs.Empty);
-            DisplayXInputSlotNumChanged?.Invoke(this, EventArgs.Empty);
             InputSlotDisplayStringChanged?.Invoke(this, EventArgs.Empty);
             Dirty = false;
         }
