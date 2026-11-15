@@ -2,7 +2,7 @@
 
 作成日: 2026-11-15
 状態: **40-0（`ITouchpadBehaviour` の削除）完了。40-1 以降は未着手（承認済みの方針 A。実機確認とあわせて行う）**
-決定（2026-11-15。ユーザー）: C1＝A（用途別の小さな契約に分ける）。`ITouchpadBehaviour` は削除（実施済み）。
+決定（2026-11-15。ユーザー）: Phase34 のあとに続けて行い、実機確認は最後にまとめて行う。C1＝A（用途別の小さな契約に分ける）。`ITouchpadBehaviour` は削除（実施済み）。
 
 ## 1. 背景
 `Output`（第 3 層）の 5 つの部品（`UdpMotionService`、`VirtualPadService`、`DeviceRumbleService`、`HidHideService`、各カートリッジの `AttachFeedback`）が、第 1 層の具象 `InputDeviceCore` を直接使う。使うメンバーは約 20 種で、用途が混ざる。
