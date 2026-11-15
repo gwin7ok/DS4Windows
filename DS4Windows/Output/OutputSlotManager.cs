@@ -117,8 +117,14 @@ namespace DS4Windows.Output
             revDeviceDict.Clear();
         }
 
-        private int FindEmptySlot()
+        // 差す先のスロットを指定できる（preferredSlot）。指定が範囲外か使用中なら、最初の空きスロットにする
+        private int FindEmptySlot(int preferredSlot = -1)
         {
+            if (preferredSlot >= 0 && preferredSlot < outputDevices.Length && outputDevices[preferredSlot] == null)
+            {
+                return preferredSlot;
+            }
+
             int result = -1;
             for (int i = 0; i < outputDevices.Length && result == -1; i++)
             {
@@ -132,15 +138,16 @@ namespace DS4Windows.Output
             return result;
         }
 
+        /// <param name="preferredSlot">差す先のスロット（0 始まり）。予約したスロットや、利用者が選んだスロットへ差すときに渡す。-1 なら最初の空き</param>
         public void DeferredPlugin(OutputDevice outputDevice, int inIdx, string inDisplayString,
-            OutputDevice[] outdevs, OutContType contType)
+            OutputDevice[] outdevs, OutContType contType, int preferredSlot = -1)
         {
             // releases ReaderWriterLockSlim when locker goes out of scope
             using WriteLocker locker = new WriteLocker(queueLocker);
             //queuedTasks++;
             //Action tempAction = new Action(() =>
             {
-                int slot = FindEmptySlot();
+                int slot = FindEmptySlot(preferredSlot);
                 if (slot != -1)
                 {
                     try

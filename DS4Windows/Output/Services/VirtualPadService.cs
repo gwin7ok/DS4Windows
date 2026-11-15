@@ -128,7 +128,8 @@ namespace DS4Windows.Output.Services
                     OutputSlotReserveStatus.Permanent)
                 {
                     OutputDevice outDevice = EstablishOutDevice(0, slotDevice.PermanentType);
-                    outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, slotDevice.PermanentType);
+                    // 予約したスロット自身に差す（最初の空きに差すと、予約のないスロットに残ってしまう）
+                    outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, slotDevice.PermanentType, slotDevice.Index);
                 }
             }
             /*OutSlotDevice slotDevice =
@@ -201,7 +202,8 @@ namespace DS4Windows.Output.Services
                 slotDevice.CurrentInputBound == OutputSlotInputBound.Unbound)
             {
                 OutputDevice outDevice = EstablishOutDevice(-1, contType);
-                outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType);
+                // 利用者が選んだスロット自身に差す
+                outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType, slotDevice.Index);
             }
         }
 
