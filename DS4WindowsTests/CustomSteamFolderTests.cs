@@ -168,10 +168,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TheConsumer_StillChecksTheFolderExists_SoSavingAMissingFolderIsHarmless()
         {
-            string path = SourceFileLocator.Find("DS4Windows/UI/AutoProfiles.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
             if (path == null)
             {
-                _output.WriteLine("AutoProfiles.xaml.cs が見つからないため検査を省略した。");
+                _output.WriteLine("MainWindow.xaml.cs が見つからないため検査を省略した。");
                 return;
             }
 
