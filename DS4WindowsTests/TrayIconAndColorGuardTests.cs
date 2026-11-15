@@ -7,6 +7,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 using DS4Windows.UI;
+using DS4Windows.UI.Services;
 
 namespace DS4WindowsTests
 {

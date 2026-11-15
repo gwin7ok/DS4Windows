@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 
-namespace DS4Windows.UI
+namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// Phase7-Step10b W2（Q1＝A）: トレイアイコンの選択ごとの資源パスの表（旧: <c>Global.iconChoiceResources</c>。宣言は移動のみ）。
