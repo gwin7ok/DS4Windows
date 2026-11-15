@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheWarningText_ExistsInEnglishAndJapanese_AndTakesTheProfileName()
         {
-            var manager = new ResourceManager("DS4Windows.Properties.Resources", typeof(DS4Windows.UI.MessageBoxRemovedGyroSwipePrompt).Assembly);
+            var manager = new ResourceManager("DS4Windows.Properties.Resources", typeof(DS4Windows.UI.Services.MessageBoxRemovedGyroSwipePrompt).Assembly);
             string english = manager.GetString("RemovedGyroSwipeWarning", System.Globalization.CultureInfo.InvariantCulture);
 
             Assert.False(string.IsNullOrEmpty(english));
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePrompt_IsAnIRemovedGyroSwipePrompt_AndTheEditorCallsTheNoticeRightAfterTheLoad()
         {
-            Assert.True(typeof(IRemovedGyroSwipePrompt).IsAssignableFrom(typeof(DS4Windows.UI.MessageBoxRemovedGyroSwipePrompt)));
+            Assert.True(typeof(IRemovedGyroSwipePrompt).IsAssignableFrom(typeof(DS4Windows.UI.Services.MessageBoxRemovedGyroSwipePrompt)));
 
             string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;

@@ -2,7 +2,7 @@ using System.Windows;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 
-namespace DS4Windows.UI
+namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// Phase8-Step8 8-0 W3（Phase8-Step8-Plan.md §5.6。Q9＝A）: 廃止された「ジャイロスワイプ」の設定が残っているプロファイルを、編集画面で開いたときの警告

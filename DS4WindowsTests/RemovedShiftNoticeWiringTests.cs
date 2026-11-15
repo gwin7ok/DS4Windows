@@ -29,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheWarningText_ExistsInEnglishAndJapanese_AndTakesTheProfileName()
         {
-            var manager = new ResourceManager("DS4Windows.Properties.Resources", typeof(DS4Windows.UI.MessageBoxRemovedShiftPrompt).Assembly);
+            var manager = new ResourceManager("DS4Windows.Properties.Resources", typeof(DS4Windows.UI.Services.MessageBoxRemovedShiftPrompt).Assembly);
             string english = manager.GetString("RemovedShiftWarning", System.Globalization.CultureInfo.InvariantCulture);
 
             Assert.False(string.IsNullOrEmpty(english));
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePrompt_IsAnIRemovedShiftPrompt_AndTheEditorCallsTheNoticeRightAfterTheLoad()
         {
-            Assert.True(typeof(IRemovedShiftPrompt).IsAssignableFrom(typeof(DS4Windows.UI.MessageBoxRemovedShiftPrompt)));
+            Assert.True(typeof(IRemovedShiftPrompt).IsAssignableFrom(typeof(DS4Windows.UI.Services.MessageBoxRemovedShiftPrompt)));
 
             string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;

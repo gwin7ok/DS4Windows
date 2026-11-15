@@ -41,10 +41,6 @@
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IIpcCommandProcessor",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IServiceLifecycle",
-            "DS4Windows.UI.MessageBoxRemovedGyroSwipePrompt|DS4Windows.Core.Abstractions.IRemovedGyroSwipePrompt",
-            "DS4Windows.UI.MessageBoxRemovedGyroSwipePrompt|DS4Windows.Core.Settings.RemovedGyroSwipeChoice",
-            "DS4Windows.UI.MessageBoxRemovedShiftPrompt|DS4Windows.Core.Abstractions.IRemovedShiftPrompt",
-            "DS4Windows.UI.MessageBoxRemovedShiftPrompt|DS4Windows.Core.Settings.RemovedShiftChoice",
             "DS4Windows.UI.OutputSlotManagerControl|DS4Windows.Processing.Abstractions.IOutputSlotView",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IEnvironmentService",
@@ -70,7 +66,6 @@
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Settings.DS4ControlSettings",
             "DS4Windows.UI.RecordBox|DS4Windows.Processing.Abstractions.IMacroRecordingState",
             "DS4Windows.UI.StickCalibrationWindow|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
-            "DS4Windows.UI.TrayIconResources|DS4Windows.Core.Settings.TrayIconChoice",
             "DS4Windows.UI.WelcomeDialog|DS4Windows.Core.Abstractions.IEnvironmentService",
         };
     }
