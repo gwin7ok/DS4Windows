@@ -144,11 +144,11 @@ namespace DS4Windows.Output.Services
 
         public void ChangeMotionEventStatus(bool state)
         {
-            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
+            IEnumerable<IMotionSource> devices = _deviceRegistry.GetControllers();
             if (state)
             {
                 int i = 0;
-                foreach (InputDeviceCore dev in devices)
+                foreach (IMotionSource dev in devices)
                 {
                     int tempIdx = i;
                     dev.queueEvent(() =>
@@ -164,16 +164,9 @@ namespace DS4Windows.Output.Services
             }
             else
             {
-                foreach (InputDeviceCore dev in devices)
+                foreach (IMotionSource dev in devices)
                 {
-                    dev.queueEvent(() =>
-                    {
-                        if (dev.MotionEvent != null)
-                        {
-                            dev.Report -= dev.MotionEvent;
-                            dev.MotionEvent = null;
-                        }
-                    });
+                    dev.queueEvent(() => dev.StopMotionCallback());
                 }
             }
         }
@@ -187,16 +180,10 @@ namespace DS4Windows.Output.Services
         public async void UsePort()
         {
             ChangingPort = true;
-            IEnumerable<InputDeviceCore> devices = _deviceRegistry.GetControllers();
-            foreach (InputDeviceCore dev in devices)
+            IEnumerable<IMotionSource> devices = _deviceRegistry.GetControllers();
+            foreach (IMotionSource dev in devices)
             {
-                dev.queueEvent(() =>
-                {
-                    if (dev.MotionEvent != null)
-                    {
-                        dev.Report -= dev.MotionEvent;
-                    }
-                });
+                dev.queueEvent(() => dev.PauseMotionCallback());
             }
 
             await Task.Delay(100);
@@ -207,15 +194,9 @@ namespace DS4Windows.Output.Services
             try
             {
                 _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
-                foreach (InputDeviceCore dev in devices)
+                foreach (IMotionSource dev in devices)
                 {
-                    dev.queueEvent(() =>
-                    {
-                        if (dev.MotionEvent != null)
-                        {
-                            dev.Report += dev.MotionEvent;
-                        }
-                    });
+                    dev.queueEvent(() => dev.ResumeMotionCallback());
                 }
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Udp_Listening", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT);
             }
@@ -240,7 +221,7 @@ namespace DS4Windows.Output.Services
             meta.PadId = (byte)padIdx;
             meta.Model = DsModel.DS4;
 
-            var d = _slots.Controllers[padIdx];
+            IPadStatusSource d = _slots.Controllers[padIdx];
             if (d == null)
             {
                 meta.PadMacAddress = null;
@@ -301,11 +282,11 @@ namespace DS4Windows.Output.Services
             //return meta;
         }
 
-        public void PrepareDeviceMotion(InputDeviceCore device, int index)
+        public void PrepareDeviceMotion(IMotionSource device, int index)
         {
             IDeviceSlotState host = _slots;
             int tempIdx = index;
-            InputDeviceCore.ReportHandler<EventArgs> tempEvnt = (sender, args) =>
+            Action tempEvnt = () =>
             {
                 DualShockPadMeta padDetail = new DualShockPadMeta();
                 GetPadDetailForIdx(tempIdx, ref padDetail);
@@ -335,8 +316,7 @@ namespace DS4Windows.Output.Services
                 _udpServer?.NewReportIncoming(ref padDetail, stateForUdp, udpOutBuffers[tempIdx]);
             };
 
-            device.MotionEvent = tempEvnt;
-            device.Report += tempEvnt;
+            device.StartMotionCallback(tempEvnt);
         }
 
         public void ResetSmoothingFilters(int idx)

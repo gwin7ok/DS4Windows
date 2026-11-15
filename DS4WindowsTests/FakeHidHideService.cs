@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
@@ -14,9 +15,9 @@ namespace DS4WindowsTests
         {
         }
 
-        public bool IsAffected(InputDeviceCore dev) => false;
+        public bool IsAffected(IOutputBoundDevice dev) => false;
 
-        public void MarkAffected(InputDeviceCore dev)
+        public void MarkAffected(IOutputBoundDevice dev)
         {
         }
     }

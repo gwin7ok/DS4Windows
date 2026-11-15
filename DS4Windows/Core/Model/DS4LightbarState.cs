@@ -29,7 +29,7 @@ using System.Drawing;
 using DS4Windows.Core.Model;
 
 
-namespace DS4Windows.Input
+namespace DS4Windows.Core.Model
 {
 
     public struct DS4LightbarState : IEquatable<DS4LightbarState>

@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using System;
 using DS4Windows.Input;
 
@@ -20,9 +21,9 @@ namespace DS4Windows.Processing.Abstractions
         void UpdateAttributes();
 
         /// <summary>デバイスが HidHide の非表示の対象か（HidHide が有効なときだけ判定する）。</summary>
-        bool IsAffected(InputDeviceCore dev);
+        bool IsAffected(IOutputBoundDevice dev);
 
         /// <summary>デバイスの排他状態を「HidHide の影響を受ける」にする（HidHide が導入済みのとき）。</summary>
-        void MarkAffected(InputDeviceCore dev);
+        void MarkAffected(IOutputBoundDevice dev);
     }
 }

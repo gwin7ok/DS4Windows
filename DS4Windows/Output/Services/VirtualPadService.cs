@@ -166,7 +166,7 @@ namespace DS4Windows.Output.Services
         }
 
         public void EstablishOutFeedback(int index, OutContType contType,
-            OutputDevice outDevice, InputDeviceCore device)
+            OutputDevice outDevice, IOutputBoundDevice device)
         {
             // 種類ごとの戻り（振動・ライトバー）の接続は、出力のカートリッジが持つ。種類がない（None）ときは何もしない
             if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge))
@@ -218,7 +218,7 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public void PluginOutDev(int index, InputDeviceCore device)
+        public void PluginOutDev(int index, IOutputBoundDevice device)
         {
             OutContType contType = _profileSettings.OutContType[index];
 
@@ -284,7 +284,7 @@ namespace DS4Windows.Output.Services
         }
 
         // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける
-        private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, InputDeviceCore device)
+        private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, IOutputBoundDevice device)
         {
             if (_profileSettings.EnableOutputDataToDS4[index])
             {
@@ -293,7 +293,7 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        public void UnplugOutDev(int index, InputDeviceCore device, bool immediate = false, bool force = false)
+        public void UnplugOutDev(int index, IOutputBoundDevice device, bool immediate = false, bool force = false)
         {
             if (!_profileSettings.UseDInputOnlyArray[index])
             {

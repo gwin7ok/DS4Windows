@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         private sealed class FakeRumble : IDeviceRumbleService
         {
             public readonly List<(byte heavy, byte light, int slot)> Calls = new List<(byte, byte, int)>();
-            public void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
+            public void SetDevRumble(IRumbleTarget device, byte heavyMotor, byte lightMotor, int deviceNum) => Calls.Add((heavyMotor, lightMotor, deviceNum));
         }
 
         private static DefaultControlExtrasPort Create(FakeAccessor accessor, FakeRumble rumble)

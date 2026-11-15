@@ -1,3 +1,4 @@
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
 
 namespace DS4Windows.Processing.Abstractions
@@ -8,6 +9,6 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface IDeviceRumbleService
     {
-        void SetDevRumble(InputDeviceCore device, byte heavyMotor, byte lightMotor, int deviceNum);
+        void SetDevRumble(IRumbleTarget device, byte heavyMotor, byte lightMotor, int deviceNum);
     }
 }
