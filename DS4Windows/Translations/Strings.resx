@@ -692,7 +692,10 @@ Disabled:
     <value>Flash Lightbar at High Latency</value>
   </data>
   <data name="HideDS4Controller" xml:space="preserve">
-    <value>Hide DS4 Controller</value>
+    <value>Hide HID Device Controller</value>
+  </data>
+  <data name="HideDS4ControllerTip" xml:space="preserve">
+    <value>Opens HID controllers (DS4, DualSense, Switch Pro) in exclusive mode so that other programs cannot see the original controller. Turn this on if games receive double input. Xbox controllers are not affected by this setting; use "Hide Xbox Controller" for them. DS4Windows restarts its service when this is changed.</value>
   </data>
   <data name="HotkeysAbout" xml:space="preserve">
     <value>Hotkeys/About</value>

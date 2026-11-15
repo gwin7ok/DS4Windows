@@ -801,6 +801,12 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Log_HidHide_XboxNotHidden_DeviceNotFound" xml:space="preserve">
     <value>Xbox コントローラーを隠せません: 機器を特定できませんでした（接続し直して試してください）</value>
   </data>
+  <data name="HideDS4Controller" xml:space="preserve">
+    <value>HID コントローラーを隠す</value>
+  </data>
+  <data name="HideDS4ControllerTip" xml:space="preserve">
+    <value>HID で読むコントローラー（DS4・DualSense・Switch Pro）を排他モードで開き、他のプログラムから元のコントローラーが見えないようにします。ゲームで入力が二重になるときにオンにします。Xbox コントローラーはこの設定の対象外です。Xbox には「Xbox コントローラーを隠す」を使ってください。変更すると、DS4Windows のサービスを再起動します。</value>
+  </data>
   <data name="HideXboxController" xml:space="preserve">
     <value>Xbox コントローラーを隠す（USB 接続）</value>
   </data>

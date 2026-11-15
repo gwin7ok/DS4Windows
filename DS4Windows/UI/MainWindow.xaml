@@ -274,6 +274,9 @@
                         </WrapPanel.Resources>
                         <CheckBox x:Name="hideDS4ContCk" Content="{lex:Loc HideDS4Controller}" x:Uid="hideDS4Checkbox"
                               Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" >
+                            <CheckBox.ToolTip>
+                                <TextBlock Text="{lex:Loc HideDS4ControllerTip}" TextWrapping="Wrap" MaxWidth="420" />
+                            </CheckBox.ToolTip>
                         </CheckBox>
                         <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}"
                               Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click">
