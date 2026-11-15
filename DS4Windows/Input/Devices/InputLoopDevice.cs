@@ -246,6 +246,8 @@ namespace DS4Windows.Input.Devices
                 lastTimeElapsed = (long)lastTimeElapsedDouble;
                 previousFrameTicks = lastFrameTicks;
                 lastFrameTicks = now;
+                // 出力遅延（Controller Readings）の計測の起点。機種ごとに持たず、全機種でここで受け取った時刻を残す
+                lastInputReportTimestamp = now;
 
                 if (!IsExpectedReport())
                 {

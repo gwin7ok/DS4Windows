@@ -139,7 +139,17 @@ namespace DS4Windows.UI.ViewModels
         }
 
         public bool DisconnectBTStop { get => _appSettings.DCBTatStop; set => _appSettings.DCBTatStop = value; }
-        public bool FlashHighLatency { get => _appSettings.FlashWhenLate; set => _appSettings.FlashWhenLate = value; }
+        public bool FlashHighLatency
+        {
+            get => _appSettings.FlashWhenLate;
+            set
+            {
+                if (_appSettings.FlashWhenLate == value) return;
+                _appSettings.FlashWhenLate = value;
+                // この値で編集の可否が変わる設定（FlashHighLatencyAt）へ知らせる
+                OnPropertyChanged(nameof(FlashHighLatency));
+            }
+        }
         public int FlashHighLatencyAt { get => _appSettings.FlashWhenLateAt; set => _appSettings.FlashWhenLateAt = value; }
         public bool StartMinimize { get => _appSettings.StartMinimized; set => _appSettings.StartMinimized = value; }
         public bool MinimizeToTaskbar { get => _appSettings.MinimizeToTaskbar; set => _appSettings.MinimizeToTaskbar = value; }

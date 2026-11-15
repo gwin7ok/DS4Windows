@@ -100,7 +100,13 @@ namespace DS4Windows.UI.ViewModels
         public bool SquareStick
         {
             get => isLeft ? sticks.SquStick.lsMode : sticks.SquStick.rsMode;
-            set { if (isLeft) sticks.SquStick.lsMode = value; else sticks.SquStick.rsMode = value; }
+            set
+            {
+                if (SquareStick == value) return;
+                if (isLeft) sticks.SquStick.lsMode = value; else sticks.SquStick.rsMode = value;
+                // この値で編集の可否が変わる設定（IsEnabled の束縛）へ知らせる
+                OnPropertyChanged(nameof(SquareStick));
+            }
         }
 
         public double SquareRoundness
@@ -148,7 +154,13 @@ namespace DS4Windows.UI.ViewModels
         public bool AntiSnapback
         {
             get => AntiSnapbackInfo.enabled;
-            set => AntiSnapbackInfo.enabled = value;
+            set
+            {
+                if (AntiSnapbackInfo.enabled == value) return;
+                AntiSnapbackInfo.enabled = value;
+                // この値で編集の可否が変わる設定（IsEnabled の束縛）へ知らせる
+                OnPropertyChanged(nameof(AntiSnapback));
+            }
         }
 
         public double AntiSnapbackDelta

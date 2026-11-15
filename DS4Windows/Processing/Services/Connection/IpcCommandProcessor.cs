@@ -166,22 +166,28 @@ namespace DS4Windows.Processing.Services.Connection
                 }
                 else
                 {
-                    Task.Run(() =>
+                    // 一時プロファイルも、通常の適用と同じ入口（ProfileApplicationService）で適用する
+                    // （報告の停止・読み込み・束縛の差し替え・通知・プログラムの起動を、1 か所で行う。以前の独自の経路は、停止の待ちに失敗すると何もせず戻っていた）
+                    int idx = host.FindProfileIndex(strData[2]);
+                    if (idx >= 0)
                     {
-                        IControllerSlotView tempDevice = host.GetControllerDevice(tdevice);
-                        if (tempDevice != null)
-                        {
-                            tempDevice.HaltReportingRunAction(() =>
-                            {
-                                // Phase8-Step5 W2（Q6＝A）: この経路は適用の後始末を通らないため、読込の成功後に束縛を差し替える
-                                if (_profileRepo.LoadTempProfile(tdevice, strData[2], _loadTarget))
-                                {
-                                    _profileApplication.PublishBindings(tdevice);
-                                    _loadTarget.LaunchProfileProgram(tdevice);
-                                }
-                            });
-                        }
-                    }).Wait();
+                        string canonical = host.GetProfileName(idx);
+                        if (!string.IsNullOrEmpty(canonical)) strData[2] = canonical;
+                    }
+
+                    IControllerSlotView devitem = tdevice < host.ControllerCount ? host.GetControllerDevice(tdevice) : null;
+                    if (devitem != null)
+                    {
+                        string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
+                            (tdevice + 1).ToString(), strData[2], $"{devitem.Battery}");
+                        if (!_profileApplication.ApplyProfile(tdevice, strData[2], true, true,
+                            ProfileChangeSource.Manual, prolog))
+                            AppLogger.LogWarn($"[IPC] LoadTempProfile: ApplyProfile failed (device={tdevice + 1}, profile='{strData[2]}')");
+                    }
+                    else
+                    {
+                        AppLogger.LogWarn($"[IPC] LoadTempProfile: no controller device at list position {tdevice} (profile='{strData[2]}'); the profile was not applied");
+                    }
                 }
 
                 IControllerSlotView device = host.GetControllerDevice(tdevice);
