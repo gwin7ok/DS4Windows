@@ -51,6 +51,9 @@ namespace DS4Windows.Core.Settings
             lightInfo.rainbow = 0;
             lightInfo.maxRainbowSat = LightbarDS4WinInfo.DEFAULT_MAX_RAINBOW_SAT;
             lightInfo.ledAsBattery = false;
+            // CLI などで強制したカスタム色が、CustomLed の要素を持たないプロファイルへ引き継がれないようにする
+            lightInfo.useCustomLed = false;
+            lightInfo.m_CustomLed = new DS4Color(System.Drawing.Color.Blue);
         }
     }
 }
