@@ -90,10 +90,29 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         }
         public event EventHandler ProgramNameChanged;
 
-        public LaunchProgramViewModel(ISpecialActionRepository specialActionRepository)
+        private readonly DS4Windows.UI.Abstractions.IDialogService dialogs;
+
+        public LaunchProgramViewModel(ISpecialActionRepository specialActionRepository, DS4Windows.UI.Abstractions.IDialogService dialogs = null)
         {
+            this.dialogs = dialogs;
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             FilepathChanged += LaunchProgramViewModel_FilepathChanged;
+        }
+
+        /// <summary>起動するプログラムを選ばせ、選ばれたら <see cref="Filepath"/> へ入れる（実行ファイル・バッチ・すべて）。</summary>
+        public bool PickProgram(string initialDirectory)
+        {
+            string file = dialogs.PickOpenFile(new DS4Windows.UI.Abstractions.FileDialogOptions
+            {
+                Title = "Select Program",
+                Filter = "Exe (*.exe)|*.exe|Batch (*.bat,*.cmd)|*.bat;*.cmd|All Files (*.*)|*.*",
+                DefaultExtension = ".exe",
+                InitialDirectory = initialDirectory,
+            });
+            if (file == null) return false;
+
+            Filepath = file;
+            return true;
         }
 
         private void LaunchProgramViewModel_FilepathChanged(object sender, EventArgs e)

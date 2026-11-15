@@ -1656,19 +1656,7 @@ namespace DS4Windows.UI
 
         private void ExportSpecialActions_OnClick(object sender, RoutedEventArgs e)
         {
-            var dialog = new SaveFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".xml";
-            dialog.FileName = "Actions";
-            dialog.Filter = "DS4Windows Special Actions (*.xml)|*.xml";
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                var profileStream = new StreamReader(specialActionsVM.ActionsFilePath).BaseStream;
-                var dialogStream = dialog.OpenFile();
-                profileStream.CopyTo(dialogStream);
-                profileStream.Close();
-                dialogStream.Close();
-            }
+            specialActionsVM.PickAndExportActions();
         }
 
         // ソート状態（列名・方向）は SpecialActionsListViewModel.CurrentSortColumn /

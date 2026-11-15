@@ -125,5 +125,33 @@ namespace DS4WindowsTests
             Assert.True(vm.ActionCol[idx].Active);
             Assert.Equal(idx, vm.ActionCol[idx].Index);
         }
+
+        [Fact]
+        public void PickAndExportActions_CopiesActionsXmlToTheChosenFile()
+        {
+            using var scope = new ActionsScope("NoSuchAction_F");
+            string target = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ExpAct_" + System.Guid.NewGuid().ToString("N") + ".xml");
+            try
+            {
+                var dialogs = new FakeDialogService { SaveFileAnswer = target };
+                var vm = CreateVm(dialogs);
+
+                Assert.True(vm.PickAndExportActions());
+                Assert.True(System.IO.File.Exists(target));
+                Assert.Equal("Actions", dialogs.LastSaveOptions.FileName);
+            }
+            finally
+            {
+                try { System.IO.File.Delete(target); } catch { }
+            }
+        }
+
+        [Fact]
+        public void PickAndExportActions_WhenCancelled_CopiesNothing()
+        {
+            var vm = CreateVm(new FakeDialogService { SaveFileAnswer = null });
+
+            Assert.False(vm.PickAndExportActions());
+        }
     }
 }

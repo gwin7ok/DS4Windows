@@ -483,6 +483,23 @@ namespace DS4Windows.UI.ViewModels
             return newItem;
         }
 
+        /// <summary>Actions.xml を、選んだ保存先へコピーする（エクスポート）。</summary>
+        /// <returns>コピーしたら true。取り消しなら false</returns>
+        public bool PickAndExportActions()
+        {
+            string file = dialogs.PickSaveFile(new FileDialogOptions
+            {
+                Filter = "DS4Windows Special Actions (*.xml)|*.xml",
+                DefaultExtension = ".xml",
+                FileName = "Actions",
+                CheckFileExists = false,
+            });
+            if (file == null) return false;
+
+            File.Copy(ActionsFilePath, file, true);
+            return true;
+        }
+
         /// <summary>
         /// 選んだ項目を、確認のうえ取り除く（Actions.xml も更新）。プロファイルの XML からの参照の削除は呼び出し側が行う。
         /// </summary>

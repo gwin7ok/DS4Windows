@@ -39,7 +39,7 @@ namespace DS4Windows.UI.Services
 
         public MacroViewModel CreateMacroViewModel() => new MacroViewModel(_actionRepo);
 
-        public LaunchProgramViewModel CreateLaunchProgramViewModel() => new LaunchProgramViewModel(_actionRepo);
+        public LaunchProgramViewModel CreateLaunchProgramViewModel() => new LaunchProgramViewModel(_actionRepo, _dialogs);
 
         public LoadProfileViewModel CreateLoadProfileViewModel(ProfileList profileList)
             => new LoadProfileViewModel(profileList, _actionRepo);
