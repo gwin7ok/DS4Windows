@@ -341,7 +341,7 @@ namespace DS4Windows.UI
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version, environmentService, _viewModelFactory.CreateUpdaterWindowViewModel(version));
+                var updaterWin = new UpdaterWindow(version, environmentService.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -874,7 +874,7 @@ namespace DS4Windows.UI
 
         private void AboutBtn_Click(object sender, RoutedEventArgs e)
         {
-            About aboutWin = new About(environmentService);
+            About aboutWin = new About(environmentService.ApplicationVersion);
             aboutWin.Owner = this;
             aboutWin.ShowDialog();
         }

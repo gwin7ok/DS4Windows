@@ -27,14 +27,14 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class About : Window
     {
-        // Phase6-Step10-1-3: Global.exeversion の置換先。MainWindow が保持済みのサービスを渡す（Pure DI）。
-        public About(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
+        // バージョン文字列は、サービスを持つ MainWindow が渡す（View はサービスを参照しない）。
+        public About(string applicationVersion)
         {
-            if (environmentService == null) throw new System.ArgumentNullException(nameof(environmentService));
+            if (applicationVersion == null) throw new System.ArgumentNullException(nameof(applicationVersion));
 
             InitializeComponent();
 
-            string version = $"{environmentService.ApplicationVersion})";
+            string version = $"{applicationVersion})";
             headerLb.Content += version;
         }
 
