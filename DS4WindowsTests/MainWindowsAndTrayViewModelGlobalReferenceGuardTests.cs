@@ -58,13 +58,13 @@ namespace DS4WindowsTests
             var repo = TestRepositoryFactory.CreateProfileRepository();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, null, repo, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, null, repo, env, path, new DS4Windows.UI.Services.WpfUiDispatcher()));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, null, env, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, null, env, path, new DS4Windows.UI.Services.WpfUiDispatcher()));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, null, path, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, null, path, new DS4Windows.UI.Services.WpfUiDispatcher()));
             Assert.Throws<ArgumentNullException>(() =>
-                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, env, null, System.Windows.Threading.Dispatcher.CurrentDispatcher));
+                new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, env, null, new DS4Windows.UI.Services.WpfUiDispatcher()));
             Assert.Throws<ArgumentNullException>(() =>
                 new TrayIconViewModel(null, TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), null, appearance, repo, env, path, null));
         }

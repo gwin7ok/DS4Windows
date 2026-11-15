@@ -152,7 +152,7 @@ namespace DS4WindowsTests
             public AxialStickControlViewModel CreateAxialStickControlViewModel(StickDeadZoneInfo deadZoneInfo) => null;
             public MappingListViewModel CreateMappingListViewModel(int deviceIndex, OutContType contType) => null;
             public LogViewModel CreateLogViewModel() => null;
-            public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, System.Windows.Threading.Dispatcher dispatcher) => null;
+            public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, IUiDispatcher dispatcher) => null;
             public BindingWindowViewModel CreateBindingWindowViewModel(int deviceIndex, DS4ControlSettings settings, int targetDevice) => null;
             public ControlActionEditorViewModel CreateControlActionEditorViewModel(int deviceIndex, ControlSettingsEditTarget target) => null;
             public DS4Windows.UI.ViewModels.SpecialActions.MacroViewModel CreateMacroViewModel() => null;

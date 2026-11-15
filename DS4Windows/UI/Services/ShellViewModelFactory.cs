@@ -75,7 +75,7 @@ namespace DS4Windows.UI.Services
 
         public LogViewModel CreateLogViewModel() => new LogViewModel(_environmentService);
 
-        public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, System.Windows.Threading.Dispatcher dispatcher)
+        public TrayIconViewModel CreateTrayIconViewModel(ProfileList profileListHolder, IUiDispatcher dispatcher)
             => new TrayIconViewModel(_slots, _lifecycle, profileListHolder, _appearanceSettings, _profileRepo,
                 _environmentService, _pathService, dispatcher);
 

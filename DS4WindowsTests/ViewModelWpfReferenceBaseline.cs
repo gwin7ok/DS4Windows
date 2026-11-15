@@ -84,19 +84,6 @@
             "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.ItemsControl",
             "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Controls.MenuItem",
             "DS4Windows.UI.ViewModels.TouchpadSettingsViewModel|System.Windows.Data.CollectionView",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.ContextMenu",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.Control",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.HeaderedItemsControl",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.ItemCollection",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.ItemsControl",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.MenuItem",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Controls.Separator",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.FontWeights",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.FrameworkElement",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.RoutedEventArgs",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.RoutedEventHandler",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.Threading.Dispatcher",
-            "DS4Windows.UI.ViewModels.TrayIconViewModel|System.Windows.UIElement",
         };
     }
 }
