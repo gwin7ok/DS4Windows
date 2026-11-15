@@ -117,7 +117,7 @@ namespace DS4Windows.Core.Platform
             instanceId.IndexOf("&IG_", StringComparison.OrdinalIgnoreCase) >= 0 ||
             instanceId.IndexOf("&MI_", StringComparison.OrdinalIgnoreCase) >= 0;
 
-        private static string GetParentInstanceId(string instanceId)
+        public static string GetParentInstanceId(string instanceId)
         {
             if (NativeMethods.CM_Locate_DevNodeW(out uint node, instanceId, 0) != 0 ||
                 NativeMethods.CM_Get_Parent(out uint parent, node, 0) != 0)

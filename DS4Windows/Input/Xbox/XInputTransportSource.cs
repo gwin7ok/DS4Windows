@@ -51,7 +51,7 @@ namespace DS4Windows.Input.Xbox
                         continue;
                     }
 
-                    info = new XusbInterfaceInfo(info.DevicePath, info.InstanceId, info.VendorId, info.ProductId, assigned);
+                    info = new XusbInterfaceInfo(info.DevicePath, info.InstanceId, info.VendorId, info.ProductId, assigned, info.ParentInstanceId);
                 }
 
                 var vidPid = new VidPidInfo(info.VendorId, info.ProductId, "Xbox", InputDeviceType.Xbox,

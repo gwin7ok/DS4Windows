@@ -272,7 +272,7 @@ namespace DS4Windows.Input.Xbox
                 return address;
             }
 
-            string source = string.IsNullOrEmpty(Info.InstanceId) ? DevicePath : Info.InstanceId;
+            string source = ChooseIdentitySource(Info.InstanceId, Info.ParentInstanceId, DevicePath);
             byte[] hash;
             using (SHA1 sha = SHA1.Create())
             {
@@ -291,6 +291,29 @@ namespace DS4Windows.Input.Xbox
             }
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// 擬似のシリアルの元にする文字列を選ぶ。インスタンス ID の末尾が 1〜3 桁の連番のとき（Razer など、Xbox 360 に見せる変換型の機器。
+        /// 親のドライバーがつなぎ直すたびに 01、02、03… と番号を進める）は、番号が変わっても同じ機器と分かるよう、USB のポートで決まる親のインスタンス ID を使う。
+        /// 個体のシリアルを持つ機器（本物の Xbox など）は、これまでどおりインスタンス ID を使う。
+        /// </summary>
+        public static string ChooseIdentitySource(string instanceId, string parentInstanceId, string devicePath)
+        {
+            if (string.IsNullOrEmpty(instanceId))
+            {
+                return devicePath;
+            }
+
+            int tail = instanceId.LastIndexOf('\\') + 1;
+            string last = instanceId.Substring(tail);
+            bool counter = last.Length >= 1 && last.Length <= 3;
+            for (int i = 0; counter && i < last.Length; i++)
+            {
+                counter = last[i] >= '0' && last[i] <= '9';
+            }
+
+            return counter && !string.IsNullOrEmpty(parentInstanceId) ? parentInstanceId : instanceId;
         }
 
         // XInput には、OS 側の入力バッファの設定がない
