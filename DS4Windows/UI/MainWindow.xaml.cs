@@ -831,10 +831,10 @@ namespace DS4Windows.UI
         {
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = this;
-            dialog.colorPicker.SelectedColor = sender.CustomLightColor;
+            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(sender.CustomLightColor);
             dialog.ColorChanged += (sender2, color) =>
             {
-                sender.UpdateCustomLightColor(color);
+                sender.UpdateCustomLightColor(MediaColors.ToDS4(color));
             };
             dialog.ShowDialog();
         }

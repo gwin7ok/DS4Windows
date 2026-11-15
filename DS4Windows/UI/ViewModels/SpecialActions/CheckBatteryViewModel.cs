@@ -35,54 +35,50 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private double delay;
         private bool notification;
         private bool lightbar = true;
-        private Color emptyColor
-            = new Color() { A = 255, R = 255, G = 0, B = 0 };
-        private Color fullColor =
-            new Color() { A = 255, R = 0, G = 255, B = 0 };
+        private DS4Color emptyColor = new DS4Color(255, 0, 0);
+        private DS4Color fullColor = new DS4Color(0, 255, 0);
 
         public double Delay { get => delay; set => delay = value; }
         public bool Notification { get => notification; set => notification = value; }
         public bool Lightbar { get => lightbar; set => lightbar = value; }
-        public Color EmptyColor
+        public DS4Color EmptyColor
         {
             get => emptyColor;
             set
             {
-                if (emptyColor == value) return;
+                if (emptyColor.Equals(value)) return;
                 emptyColor = value;
                 EmptyColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler EmptyColorChanged;
-        public Color FullColor
+        public DS4Color FullColor
         {
             get => fullColor;
             set
             {
-                if (fullColor == value) return;
+                if (fullColor.Equals(value)) return;
                 fullColor = value;
                 FullColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler FullColorChanged;
 
-        public void UpdateForcedColor(System.Windows.Media.Color color, int device)
+        public void UpdateForcedColor(DS4Color color, int device)
         {
             if (device < environmentService.ControllerSlotLimit)
             {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                _lightbar.forcedColor[device] = dcolor;
+                _lightbar.forcedColor[device] = color;
                 _lightbar.forcedFlash[device] = 0;
                 _lightbar.forcelight[device] = true;
             }
         }
 
-        public void StartForcedColor(System.Windows.Media.Color color, int device)
+        public void StartForcedColor(DS4Color color, int device)
         {
             if (device < environmentService.ControllerSlotLimit)
             {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                _lightbar.forcedColor[device] = dcolor;
+                _lightbar.forcedColor[device] = color;
                 _lightbar.forcedFlash[device] = 0;
                 _lightbar.forcelight[device] = true;
             }
@@ -104,8 +100,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             delay = action.delayTime;
             bool.TryParse(details[1], out notification);
             bool.TryParse(details[2], out lightbar);
-            emptyColor = Color.FromArgb(255, byte.Parse(details[3]), byte.Parse(details[4]), byte.Parse(details[5]));
-            fullColor = Color.FromArgb(255, byte.Parse(details[6]), byte.Parse(details[7]), byte.Parse(details[8]));
+            emptyColor = new DS4Color(byte.Parse(details[3]), byte.Parse(details[4]), byte.Parse(details[5]));
+            fullColor = new DS4Color(byte.Parse(details[6]), byte.Parse(details[7]), byte.Parse(details[8]));
         }
 
         // Phase10-Step6 W7 相当: Controls のモード。型のある項目との往復（SA と同じ入力・同じ検証。色は Color ⇄ DS4Color）
@@ -120,8 +116,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             // 2 色とも既定（黒）のときは、色が保存されていない項目。入力の既定の色（空＝赤、満タン＝緑）のままにする
             if (!item.EmptyColor.Equals(default(DS4Color)) || !item.FullColor.Equals(default(DS4Color)))
             {
-                EmptyColor = Color.FromArgb(255, item.EmptyColor.red, item.EmptyColor.green, item.EmptyColor.blue);
-                FullColor = Color.FromArgb(255, item.FullColor.red, item.FullColor.green, item.FullColor.blue);
+                EmptyColor = item.EmptyColor;
+                FullColor = item.FullColor;
             }
         }
 
@@ -133,8 +129,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 HoldSeconds = delay,
                 BatteryNotification = notification,
                 BatteryLightbar = lightbar,
-                EmptyColor = new DS4Color(emptyColor.R, emptyColor.G, emptyColor.B),
-                FullColor = new DS4Color(fullColor.R, fullColor.G, fullColor.B),
+                EmptyColor = new DS4Color(emptyColor.red, emptyColor.green, emptyColor.blue),
+                FullColor = new DS4Color(fullColor.red, fullColor.green, fullColor.blue),
             };
         }
 
@@ -155,8 +151,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            string details = $"{delay.ToString("#.##", ConfigFileCulture.DecimalCulture)}|{notification}|{lightbar}|{emptyColor.R}|{emptyColor.G}|{emptyColor.B}|" +
-                $"{fullColor.R}|{fullColor.G}|{fullColor.B}";
+            string details = $"{delay.ToString("#.##", ConfigFileCulture.DecimalCulture)}|{notification}|{lightbar}|{emptyColor.red}|{emptyColor.green}|{emptyColor.blue}|" +
+                $"{fullColor.red}|{fullColor.green}|{fullColor.blue}";
 
             specialActionRepository.SaveAction(action.name, action.controls, 6, details, edit, delay, actionId: action.id);
         }
@@ -178,7 +174,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             }
             else if (lightbar)
             {
-                if (emptyColor == fullColor)
+                if (emptyColor.Equals(fullColor))
                 {
                     valid = false;
                     lightbarErrors.Add("Need to set two different colors");

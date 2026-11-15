@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
@@ -20,9 +17,6 @@ namespace DS4Windows.UI.ViewModels
         private readonly IEnvironmentService environmentService;
         private readonly int targetDevice;
 
-        private ImageBrush lightbarImgBrush = new ImageBrush();
-        private SolidColorBrush lightbarColBrush = new SolidColorBrush();
-
         public LightbarSettingsViewModel(LightbarSlotSettings lightbar, LightbarOverrides overrides,
             IEnvironmentService environmentService, int targetDevice)
         {
@@ -30,20 +24,6 @@ namespace DS4Windows.UI.ViewModels
             this.overrides = overrides ?? throw new ArgumentNullException(nameof(overrides));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.targetDevice = targetDevice;
-
-            /*ImageSourceConverter sourceConverter = new ImageSourceConverter();
-            ImageSource temp = sourceConverter.
-                ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/rainbowCCrop.png") as ImageSource;
-            lightbarImgBrush.ImageSource = temp.Clone();
-            */
-            Uri tempResourceUri = new Uri($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/rainbowCCrop.png");
-            BitmapImage tempBitmap = new BitmapImage();
-            tempBitmap.BeginInit();
-            // Needed for some systems not using the System default color profile
-            tempBitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-            tempBitmap.UriSource = tempResourceUri;
-            tempBitmap.EndInit();
-            lightbarImgBrush.ImageSource = tempBitmap.Clone();
 
             // 自分の値が変わったときの連動（派生する表示用プロパティの再通知）。値を設定した直後に同期して実行する
             PropertyChanged += OnOwnPropertyChanged;
@@ -62,20 +42,16 @@ namespace DS4Windows.UI.ViewModels
                 case nameof(MainColorR):
                     OnPropertyChanged(nameof(MainColorRString));
                     OnPropertyChanged(nameof(MainColorString));
-                    OnPropertyChanged(nameof(LightbarBrush));
                     break;
                 case nameof(MainColorG):
                     OnPropertyChanged(nameof(MainColorGString));
                     OnPropertyChanged(nameof(MainColorString));
-                    OnPropertyChanged(nameof(LightbarBrush));
                     break;
                 case nameof(MainColorB):
                     OnPropertyChanged(nameof(MainColorBString));
                     OnPropertyChanged(nameof(MainColorString));
-                    OnPropertyChanged(nameof(LightbarBrush));
                     break;
                 case nameof(Rainbow):
-                    OnPropertyChanged(nameof(LightbarBrush));
                     break;
             }
         }
@@ -86,7 +62,6 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(MainColorR));
             OnPropertyChanged(nameof(MainColorG));
             OnPropertyChanged(nameof(MainColorB));
-            OnPropertyChanged(nameof(LightbarBrush));
         }
 
         /// <summary>
@@ -128,45 +103,7 @@ namespace DS4Windows.UI.ViewModels
                 OnPropertyChanged(nameof(LightbarModeIndex));
             }
         }
-        public System.Windows.Media.Brush LightbarBrush
-        {
-            get
-            {
-                System.Windows.Media.Brush tempBrush;
-                ref DS4Color color = ref lightbar.Info.ds4winSettings.m_Led;
-                if (!RainbowExists)
-                {
-                    lightbarColBrush.Color = new System.Windows.Media.Color()
-                    {
-                        A = 255,
-                        R = color.red,
-                        G = color.green,
-                        B = color.blue
-                    };
-                    tempBrush = lightbarColBrush as System.Windows.Media.Brush;
-                }
-                else
-                {
-                    tempBrush = lightbarImgBrush as System.Windows.Media.Brush;
-                }
-
-                return tempBrush;
-            }
-        }
-        public System.Windows.Media.Color MainColor
-        {
-            get
-            {
-                ref DS4Color color = ref lightbar.Info.ds4winSettings.m_Led; //ref Global.MainColor[device];
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    G = color.green,
-                    B = color.blue
-                };
-            }
-        }
+        public DS4Color MainColor => lightbar.Info.ds4winSettings.m_Led;
         public string MainColorString
         {
             get
@@ -272,18 +209,12 @@ namespace DS4Windows.UI.ViewModels
         {
             get => $"#{lightbar.Info.ds4winSettings.m_LowLed.blue.ToString("X2")}0000FF";
         }
-        public System.Windows.Media.Color LowColorMedia
+        public DS4Color LowColorValue
         {
             get
             {
                 ref DS4Color color = ref lightbar.Info.ds4winSettings.m_LowLed;
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    B = color.blue,
-                    G = color.green
-                };
+                return color;
             }
         }
 
@@ -312,7 +243,7 @@ namespace DS4Windows.UI.ViewModels
                 return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
             }
         }
-        public System.Windows.Media.Color FlashColorMedia
+        public DS4Color FlashColorValue
         {
             get
             {
@@ -322,13 +253,7 @@ namespace DS4Windows.UI.ViewModels
                     color = ref lightbar.Info.ds4winSettings.m_Led;
                 }
 
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    B = color.blue,
-                    G = color.green
-                };
+                return color;
             }
         }
 
@@ -359,18 +284,12 @@ namespace DS4Windows.UI.ViewModels
                 return $"#FF{color.red.ToString("X2")}{color.green.ToString("X2")}{color.blue.ToString("X2")}";
             }
         }
-        public System.Windows.Media.Color ChargingColorMedia
+        public DS4Color ChargingColorValue
         {
             get
             {
                 ref DS4Color color = ref lightbar.Info.ds4winSettings.m_ChargingLed;
-                return new System.Windows.Media.Color()
-                {
-                    A = 255,
-                    R = color.red,
-                    B = color.blue,
-                    G = color.green
-                };
+                return color;
             }
         }
 
@@ -399,24 +318,21 @@ namespace DS4Windows.UI.ViewModels
             set => lightbar.Info.ds4winSettings.maxRainbowSat = value / 100.0;
         }
 
-        public void UpdateFlashColor(System.Windows.Media.Color color)
+        public void UpdateFlashColor(DS4Color color)
         {
-            lightbar.Info.ds4winSettings.m_FlashLed = new DS4Color() { red = color.R, green = color.G, blue = color.B };
+            lightbar.Info.ds4winSettings.m_FlashLed = color;
             OnPropertyChanged(nameof(FlashColor));
         }
 
-        public void UpdateMainColor(System.Windows.Media.Color color)
+        public void UpdateMainColor(DS4Color color)
         {
-            lightbar.Info.ds4winSettings.m_Led = new DS4Color() { red = color.R, green = color.G, blue = color.B };
+            lightbar.Info.ds4winSettings.m_Led = color;
             OnPropertyChanged(nameof(MainColor));
         }
 
-        public void UpdateLowColor(System.Windows.Media.Color color)
+        public void UpdateLowColor(DS4Color color)
         {
-            ref DS4Color lowColor = ref lightbar.Info.ds4winSettings.m_LowLed;
-            lowColor.red = color.R;
-            lowColor.green = color.G;
-            lowColor.blue = color.B;
+            lightbar.Info.ds4winSettings.m_LowLed = color;
 
             OnPropertyChanged(nameof(LowColor));
             OnPropertyChanged(nameof(LowColorR));
@@ -428,23 +344,21 @@ namespace DS4Windows.UI.ViewModels
         }
 
         // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（Device）ではなく実機（targetDevice）に対して行う
-        public void UpdateForcedColor(System.Windows.Media.Color color)
+        public void UpdateForcedColor(DS4Color color)
         {
             if (HasTargetDevice)
             {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                overrides.forcedColor[targetDevice] = dcolor;
+                overrides.forcedColor[targetDevice] = color;
                 overrides.forcedFlash[targetDevice] = 0;
                 overrides.forcelight[targetDevice] = true;
             }
         }
 
-        public void StartForcedColor(System.Windows.Media.Color color)
+        public void StartForcedColor(DS4Color color)
         {
             if (HasTargetDevice)
             {
-                DS4Color dcolor = new DS4Color() { red = color.R, green = color.G, blue = color.B };
-                overrides.forcedColor[targetDevice] = dcolor;
+                overrides.forcedColor[targetDevice] = color;
                 overrides.forcedFlash[targetDevice] = 0;
                 overrides.forcelight[targetDevice] = true;
             }
@@ -460,12 +374,9 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public void UpdateChargingColor(System.Windows.Media.Color color)
+        public void UpdateChargingColor(DS4Color color)
         {
-            ref DS4Color chargeColor = ref lightbar.Info.ds4winSettings.m_ChargingLed;
-            chargeColor.red = color.R;
-            chargeColor.green = color.G;
-            chargeColor.blue = color.B;
+            lightbar.Info.ds4winSettings.m_ChargingLed = color;
             OnPropertyChanged(nameof(ChargingColor));
         }
     }

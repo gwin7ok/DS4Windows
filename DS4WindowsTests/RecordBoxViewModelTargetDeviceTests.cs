@@ -169,11 +169,11 @@ namespace DS4WindowsTests
 
             var vm = CreateViewModel(settings, TargetSlot);
 
-            vm.StartForcedColor(Color.FromRgb(10, 20, 30));
+            vm.StartForcedColor(new DS4Color(10, 20, 30));
             Assert.True(TestLightbar.State.forcelight[TargetSlot]);
             Assert.Equal(new DS4Color(10, 20, 30), TestLightbar.State.forcedColor[TargetSlot]);
 
-            vm.UpdateForcedColor(Color.FromRgb(40, 50, 60));
+            vm.UpdateForcedColor(new DS4Color(40, 50, 60));
             Assert.Equal(new DS4Color(40, 50, 60), TestLightbar.State.forcedColor[TargetSlot]);
 
             for (int i = 0; i < TestLightbar.State.forcelight.Length; i++)
@@ -195,8 +195,8 @@ namespace DS4WindowsTests
 
             var vm = CreateViewModel(settings, -1);
 
-            vm.StartForcedColor(Colors.Red);
-            vm.UpdateForcedColor(Colors.Blue);
+            vm.StartForcedColor(new DS4Color(255, 0, 0));
+            vm.UpdateForcedColor(new DS4Color(0, 0, 255));
             vm.EndForcedColor();
             Assert.All(TestLightbar.State.forcelight, b => Assert.False(b));
             Assert.All(TestLightbar.State.forcedColor, c => Assert.Equal(new DS4Color(0, 0, 0), c));

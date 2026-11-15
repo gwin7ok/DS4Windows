@@ -1328,16 +1328,16 @@ namespace DS4Windows.UI
         {
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
-            Color tempcolor = profileSettingsVM.Lightbar.MainColor;
-            dialog.colorPicker.SelectedColor = tempcolor;
+            DS4Color tempcolor = profileSettingsVM.Lightbar.MainColor;
+            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
             profileSettingsVM.Lightbar.StartForcedColor(tempcolor);
             dialog.ColorChanged += (sender2, color) =>
             {
-                profileSettingsVM.Lightbar.UpdateForcedColor(color);
+                profileSettingsVM.Lightbar.UpdateForcedColor(MediaColors.ToDS4(color));
             };
             dialog.ShowDialog();
             profileSettingsVM.Lightbar.EndForcedColor();
-            profileSettingsVM.Lightbar.UpdateMainColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
+            profileSettingsVM.Lightbar.UpdateMainColor(MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault()));
         }
 
         private void InputDS4(object sender, System.Timers.ElapsedEventArgs e)

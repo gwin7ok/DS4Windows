@@ -67,14 +67,14 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler CurrentIntervalChanged;
 
-        private Color currentColor;
-        public Color CurrentColor
+        private DS4Color currentColor;
+        public DS4Color CurrentColor
         {
             get => currentColor;
             set
             {
                 currentColor = value;
-                CurrentColorString = value.ToString();
+                CurrentColorString = $"#FF{value.red:X2}{value.green:X2}{value.blue:X2}";
                 CurrentColorStringChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -204,17 +204,11 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler ExtrasColorStringChanged;
 
-        public Color ExtrasColorMedia
+        public DS4Color ExtrasColorValue
         {
             get
             {
-                return new Color()
-                {
-                    A = 255,
-                    R = extrasColor.red,
-                    B = extrasColor.blue,
-                    G = extrasColor.green
-                };
+                return extrasColor;
             }
         }
 
@@ -246,7 +240,7 @@ namespace DS4Windows.UI.ViewModels
             ExtrasColorGChanged += OutBinding_ExtrasColorGChanged;
             ExtrasColorBChanged += OutBinding_ExtrasColorBChanged;
             UseExtrasColorChanged += OutBinding_UseExtrasColorChanged;
-            CurrentColor = Color.FromRgb(255, 255, 255);
+            CurrentColor = new DS4Color(255, 255, 255);
         }
 
         private void OutBinding_ExtrasColorBChanged(object sender, EventArgs e)
@@ -431,11 +425,11 @@ namespace DS4Windows.UI.ViewModels
             profileSettingsService.RefreshActionAlias(settings);
         }
 
-        public void UpdateExtrasColor(Color color)
+        public void UpdateExtrasColor(DS4Color color)
         {
-            ExtrasColorR = color.R;
-            ExtrasColorG = color.G;
-            ExtrasColorB = color.B;
+            ExtrasColorR = color.red;
+            ExtrasColorG = color.green;
+            ExtrasColorB = color.blue;
         }
     }
 }

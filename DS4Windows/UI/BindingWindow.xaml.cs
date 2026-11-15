@@ -31,6 +31,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
 using DS4Windows.UI.Services;
@@ -866,16 +867,16 @@ namespace DS4Windows.UI
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
             OutBinding actBind = bindingVM.ActionBinding;
-            Color tempcolor = actBind.ExtrasColorMedia;
-            dialog.colorPicker.SelectedColor = tempcolor;
+            DS4Color tempcolor = actBind.ExtrasColorValue;
+            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
             bindingVM.StartForcedColor(tempcolor);
             dialog.ColorChanged += (sender2, color) =>
             {
-                bindingVM.UpdateForcedColor(color);
+                bindingVM.UpdateForcedColor(MediaColors.ToDS4(color));
             };
             dialog.ShowDialog();
             bindingVM.EndForcedColor();
-            actBind.UpdateExtrasColor(dialog.colorPicker.SelectedColor.GetValueOrDefault());
+            actBind.UpdateExtrasColor(MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault()));
         }
 
         private void DefaultBtn_Click(object sender, RoutedEventArgs e)

@@ -12,19 +12,8 @@
         {
             "DS4Windows.UI.ViewModels.AssignmentDescriber|System.Windows.Input.Key",
             "DS4Windows.UI.ViewModels.AssignmentDescriber|System.Windows.Input.KeyInterop",
-            "DS4Windows.UI.ViewModels.BindingWindowViewModel|System.Windows.Media.Color",
             "DS4Windows.UI.ViewModels.CompositeDeviceModel|System.Windows.Application",
-            "DS4Windows.UI.ViewModels.CompositeDeviceModel|System.Windows.Media.Color",
-            "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.Brush",
-            "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.Color",
-            "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.ImageBrush",
-            "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.Imaging.BitmapImage",
-            "DS4Windows.UI.ViewModels.LightbarSettingsViewModel|System.Windows.Media.SolidColorBrush",
             "DS4Windows.UI.ViewModels.MacroStepItem|System.Windows.Application",
-            "DS4Windows.UI.ViewModels.MacroStepItem|System.Windows.Media.Color",
-            "DS4Windows.UI.ViewModels.OutBinding|System.Windows.Media.Color",
-            "DS4Windows.UI.ViewModels.RecordBoxViewModel|System.Windows.Media.Color",
-            "DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel|System.Windows.Media.Color",
         };
     }
 }

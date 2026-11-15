@@ -316,9 +316,14 @@
                                 </Style>
                             </Button.Style>
                             <Rectangle x:Name="lightbarRect"
-                                       Fill="{Binding LightbarBrush,FallbackValue=Green}"
                                        Width="{Binding Path=Width, ElementName=ds4LightbarColorBtn}"
                                        Height="{Binding Path=Height, ElementName=ds4LightbarColorBtn}">
+                                <Rectangle.Fill>
+                                    <MultiBinding Converter="{x:Static localConvert:LightbarFillConverter.Instance}">
+                                        <Binding Path="RainbowExists"/>
+                                        <Binding Path="MainColorString"/>
+                                    </MultiBinding>
+                                </Rectangle.Fill>
                                 <Rectangle.OpacityMask>
                                     <ImageBrush ImageSource="{Binding Source={StaticResource resourcesPaths}, Path=DS4LightbarPNG}"/>
                                 </Rectangle.OpacityMask>
