@@ -260,7 +260,7 @@
                                 <StackPanel x:Name="gyroMouseOneEuroPanel"
                                             Orientation="Horizontal"
                                             Margin="{StaticResource spaceMargin}"
-                                            Visibility="{Binding GyroMouseOneEuroPanelVisibility,FallbackValue='Visible'}">
+                                            Visibility="{Binding GyroMouseOneEuroPanelShown, Converter={x:Static localConvert:BoolToVisibleCollapsedConverter.Instance}, FallbackValue='Visible'}">
                                     <StackPanel Orientation="Horizontal">
                                         <Label Content="1&#x20ac; MinCutoff"/>
                                         <xctk:DoubleUpDown d:IsHidden="True"
@@ -287,7 +287,7 @@
                                 <StackPanel x:Name="gyroMouseWeightedAvgPanel"
                                             Orientation="Horizontal"
                                             Margin="{StaticResource spaceMargin}"
-                                            Visibility="{Binding GyroMouseWeightAvgPanelVisibility,FallbackValue='Collapsed'}">
+                                            Visibility="{Binding GyroMouseWeightAvgPanelShown, Converter={x:Static localConvert:BoolToVisibleCollapsedConverter.Instance}, FallbackValue='Collapsed'}">
                                     <Label Content="Smooth Weight"
                                            Padding="0"/>
                                     <xctk:DoubleUpDown d:IsHidden="True"
@@ -483,7 +483,7 @@
                                 <StackPanel x:Name="gyroMouseStickOneEuroPanel"
                                             Orientation="Horizontal"
                                             Margin="{StaticResource spaceMargin}"
-                                            Visibility="{Binding GyroMouseStickOneEuroPanelVisibility,FallbackValue='Visible'}">
+                                            Visibility="{Binding GyroMouseStickOneEuroPanelShown, Converter={x:Static localConvert:BoolToVisibleCollapsedConverter.Instance}, FallbackValue='Visible'}">
                                     <StackPanel Orientation="Horizontal">
                                         <Label Content="1&#x20ac; MinCutoff"/>
                                         <xctk:DoubleUpDown d:IsHidden="True"
@@ -510,7 +510,7 @@
                                 <StackPanel x:Name="gyroMouseStickWeightedAvgPanel"
                                             Orientation="Horizontal"
                                             Margin="{StaticResource spaceMargin}"
-                                            Visibility="{Binding GyroMouseStickWeightAvgPanelVisibility,FallbackValue='Collapsed'}">
+                                            Visibility="{Binding GyroMouseStickWeightAvgPanelShown, Converter={x:Static localConvert:BoolToVisibleCollapsedConverter.Instance}, FallbackValue='Collapsed'}">
                                     <Label Content="Weight"
                                            Padding="0"
                                            Margin="20,0,0,0"/>

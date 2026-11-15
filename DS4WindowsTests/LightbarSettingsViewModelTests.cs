@@ -84,9 +84,9 @@ namespace DS4WindowsTests
 
                 // 充電時の色の表示は、種類が 3 のときだけ
                 vm.ChargingType = 3;
-                Assert.Equal(System.Windows.Visibility.Visible, vm.ChargingColorVisible);
+                Assert.True(vm.ChargingColorShown);
                 vm.ChargingType = 1;
-                Assert.Equal(System.Windows.Visibility.Hidden, vm.ChargingColorVisible);
+                Assert.False(vm.ChargingColorShown);
             }
             finally
             {

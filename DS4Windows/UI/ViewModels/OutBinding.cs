@@ -271,11 +271,11 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public Visibility MacroLbVisible
+        public bool MacroLbShown
         {
             get
             {
-                return outputType == OutType.Macro ? Visibility.Visible : Visibility.Hidden;
+                return outputType == OutType.Macro;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="DS4Windows.UI.AssignmentEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DS4Windows.UI"
@@ -157,7 +158,7 @@
                                         Tag="{Binding Value,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
                                         Margin="{StaticResource spaceMargin}" Click="PressKeySelectBtn_Click" />
                                 <!-- Phase10-Step6 後の Step5（SA 側のアナログ出力）: 出力先が軸・トリガー・マウス移動のときだけ、強さ（0〜100%）を指定する（Controls のモードには出さない） -->
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center" Visibility="{Binding ShowAnalogStrength}">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center" Visibility="{Binding ShowAnalogStrength, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}">
                                     <Label Content="Strength:" VerticalAlignment="Center" />
                                     <xctk:IntegerUpDown Value="{Binding AnalogStrength, Mode=TwoWay}" Minimum="0" Maximum="100" Width="70" Margin="8,0,0,0" />
                                     <Label Content="%" VerticalAlignment="Center" />

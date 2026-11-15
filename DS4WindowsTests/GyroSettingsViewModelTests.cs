@@ -119,8 +119,8 @@ namespace DS4WindowsTests
 
             foreach (string expected in new[]
             {
-                nameof(GyroSettingsViewModel.GyroMouseWeightAvgPanelVisibility), nameof(GyroSettingsViewModel.GyroMouseOneEuroPanelVisibility),
-                nameof(GyroSettingsViewModel.GyroMouseStickWeightAvgPanelVisibility), nameof(GyroSettingsViewModel.GyroMouseStickOneEuroPanelVisibility),
+                nameof(GyroSettingsViewModel.GyroMouseWeightAvgPanelShown), nameof(GyroSettingsViewModel.GyroMouseOneEuroPanelShown),
+                nameof(GyroSettingsViewModel.GyroMouseStickWeightAvgPanelShown), nameof(GyroSettingsViewModel.GyroMouseStickOneEuroPanelShown),
             })
             {
                 Assert.Contains(expected, names);

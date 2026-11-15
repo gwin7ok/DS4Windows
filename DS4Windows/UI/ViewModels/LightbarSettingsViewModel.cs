@@ -338,7 +338,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 lightbar.Info.ds4winSettings.chargingType = value;
-                OnPropertyChanged(nameof(ChargingColorVisible));
+                OnPropertyChanged(nameof(ChargingColorShown));
             }
         }
 
@@ -374,9 +374,9 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public Visibility ChargingColorVisible
+        public bool ChargingColorShown
         {
-            get => lightbar.Info.ds4winSettings.chargingType == 3 ? Visibility.Visible : Visibility.Hidden;
+            get => lightbar.Info.ds4winSettings.chargingType == 3;
         }
         public double Rainbow
         {

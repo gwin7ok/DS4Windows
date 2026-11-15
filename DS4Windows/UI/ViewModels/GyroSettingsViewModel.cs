@@ -177,17 +177,17 @@ namespace DS4Windows.UI.ViewModels
                 gyroMouseSmoothMethodIndex = value;
                 OnPropertyChanged(nameof(GyroMouseSmoothMethodIndex));
                 // 方式で入力欄の表示が切り替わる
-                OnPropertyChanged(nameof(GyroMouseWeightAvgPanelVisibility));
-                OnPropertyChanged(nameof(GyroMouseOneEuroPanelVisibility));
+                OnPropertyChanged(nameof(GyroMouseWeightAvgPanelShown));
+                OnPropertyChanged(nameof(GyroMouseOneEuroPanelShown));
             }
         }
 
-        public Visibility GyroMouseWeightAvgPanelVisibility =>
-            gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.WeightedAverage ? Visibility.Visible : Visibility.Collapsed;
+        public bool GyroMouseWeightAvgPanelShown =>
+            gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.WeightedAverage;
 
-        public Visibility GyroMouseOneEuroPanelVisibility =>
+        public bool GyroMouseOneEuroPanelShown =>
             gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro
-            || gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.None ? Visibility.Visible : Visibility.Collapsed;
+            || gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.None;
 
         public double GyroMouseSmoothWeight
         {
@@ -232,17 +232,17 @@ namespace DS4Windows.UI.ViewModels
 
                 gyroMouseStickSmoothMethodIndex = value;
                 OnPropertyChanged(nameof(GyroMouseStickSmoothMethodIndex));
-                OnPropertyChanged(nameof(GyroMouseStickWeightAvgPanelVisibility));
-                OnPropertyChanged(nameof(GyroMouseStickOneEuroPanelVisibility));
+                OnPropertyChanged(nameof(GyroMouseStickWeightAvgPanelShown));
+                OnPropertyChanged(nameof(GyroMouseStickOneEuroPanelShown));
             }
         }
 
-        public Visibility GyroMouseStickWeightAvgPanelVisibility =>
-            gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.WeightedAverage ? Visibility.Visible : Visibility.Collapsed;
+        public bool GyroMouseStickWeightAvgPanelShown =>
+            gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.WeightedAverage;
 
-        public Visibility GyroMouseStickOneEuroPanelVisibility =>
+        public bool GyroMouseStickOneEuroPanelShown =>
             gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.OneEuro
-            || gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.None ? Visibility.Visible : Visibility.Collapsed;
+            || gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.None;
 
         public double GyroMouseStickSmoothWeight
         {

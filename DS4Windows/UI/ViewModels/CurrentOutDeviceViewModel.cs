@@ -43,17 +43,17 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler SelectedIndexChanged;
 
-        public Visibility SidePanelVisibility
+        public bool SidePanelShown
         {
             get
             {
-                Visibility result = Visibility.Collapsed;
+                bool result = false;
                 if (selectedIndex >= 0)
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
                     if (temp.Slot.CurrentType != OutContType.None)
                     {
-                        result = Visibility.Visible;
+                        result = true;
                     }
                 }
 
