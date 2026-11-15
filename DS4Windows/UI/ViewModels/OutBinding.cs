@@ -218,50 +218,11 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        /// <summary>選択中の出力の色（テーマの OutputSelectedColor。無ければ LimeGreen）。</summary>
-        private static string SelectedColorString()
-        {
-            return (Application.Current?.TryFindResource("OutputSelectedBrush") as SolidColorBrush)?.Color.ToString()
-                ?? Colors.LimeGreen.ToString();
-        }
+        /// <summary>「Default」のボタンが選ばれているか。背景の色は View が決める（<c>OutputSelectionBrushConverter</c>）。</summary>
+        public bool IsDefaultSelected => outputType == OutType.Default;
 
-        public string DefaultColor
-        {
-            get
-            {
-                string color = string.Empty;
-                if (outputType == OutType.Default)
-                {
-                    color = SelectedColorString();
-                }
-                else
-                {
-                    color = Application.Current.FindResource("SecondaryBrush").ToString();
-                    //color = SystemColors.ControlBrush.Color.ToString();
-                }
-
-                return color;
-            }
-        }
-
-        public string UnboundColor
-        {
-            get
-            {
-                string color = string.Empty;
-                if (outputType == OutType.Button && control == X360Controls.Unbound)
-                {
-                    color = SelectedColorString();
-                }
-                else
-                {
-                    color = Application.Current.FindResource("SecondaryBrush").ToString();
-                    //color = SystemColors.ControlBrush.Color.ToString();
-                }
-
-                return color;
-            }
-        }
+        /// <summary>「Unbound」のボタンが選ばれているか。背景の色は View が決める。</summary>
+        public bool IsUnboundSelected => outputType == OutType.Button && control == X360Controls.Unbound;
 
         public string DefaultBtnString
         {
