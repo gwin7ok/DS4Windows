@@ -63,8 +63,6 @@ namespace DS4Windows.UI
         private NonFormTimer ds4 = new NonFormTimer();
 
         // Phase6-Step10-2-4b: Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
-        private readonly DS4Windows.Processing.Abstractions.IMacroRecordingState macroRecording;
-        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
         /// <param name="targetDevice">
         /// Phase6-Step7b: ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
@@ -72,14 +70,11 @@ namespace DS4Windows.UI
         /// </param>
         public RecordBox(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, int targetDevice,
             bool showscan, bool repeatable, bool showPlaybackOptions,
-            DS4Windows.Processing.Abstractions.IMacroRecordingState macroRecording, DS4Windows.Core.Abstractions.IPathService pathService,
             DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
             DS4Windows.Core.Abstractions.IWindowSystem windowSystem, DS4Windows.Core.Abstractions.IMouseInputHook mouseHook)
         {
             this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
-            this.macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             InitializeComponent();
             recordBoxVM = viewModelFactory.CreateRecordBoxViewModel(deviceNum, controlSettings, repeatable, targetDevice);
@@ -209,7 +204,7 @@ namespace DS4Windows.UI
             bool recording = recordBoxVM.Recording = !recordBoxVM.Recording;
             if (recording)
             {
-                macroRecording.IsRecording = true;
+                recordBoxVM.SetMacroRecordingActive(true);
                 recordBtn.Content = "Stop";
                 if (recordBoxVM.MacroStepIndex == -1)
                 {
@@ -236,7 +231,7 @@ namespace DS4Windows.UI
             }
             else
             {
-                macroRecording.IsRecording = false;
+                recordBoxVM.SetMacroRecordingActive(false);
                 recordBoxVM.AppendIndex = -1;
                 StopMouseRecording();
                 ds4.Stop();
@@ -354,7 +349,7 @@ namespace DS4Windows.UI
             macroListBox.SelectedIndex = -1;
 
             macroListBox.ItemsSource = null;
-            recordBoxVM.PickAndLoadPreset($"{pathService.AppDataPath}\\Macros");
+            recordBoxVM.PickAndLoadPreset();
 
             macroListBox.ItemsSource = recordBoxVM.MacroSteps;
         }
@@ -364,7 +359,7 @@ namespace DS4Windows.UI
             // Reset selected index of macro list before removing item source
             macroListBox.SelectedIndex = -1;
 
-            recordBoxVM.PickAndSavePreset($"{pathService.AppDataPath}\\Macros");
+            recordBoxVM.PickAndSavePreset();
         }
 
         private void UserControl_KeyDown(object sender, KeyEventArgs e)
