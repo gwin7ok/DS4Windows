@@ -1,7 +1,7 @@
 # Phase38 計画書: `UdpServer`（Cemuhook のモーションサーバー）の、通信と書式の分離
 
 作成日: 2026-11-12
-状態: **38-0b（型の移動）と 38-0 の調査まで完了（2026-11-15）。38-1 以降は、パケットの黄金を作ってから行うため未着手**
+状態: **完了（2026-11-15。38-0b・38-0・38-1・38-3・38-4。38-2［要求の解釈の部品化］は、効果が小さいため見送り。38-5 は、規則 R1 への `Output/Udp` の追記まで）。下の「実施の記録」**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 3）、`02-Layers-and-Placement.md` の 2-4、`00-Summary.md` §6（`UdpMotionService` の毎フレームの経路は未調査）
 前提: UDP の型 6 つを `Input/` から移す作業（旧 `Phase36-Plan.md` の 36-A2）を、本 Phase の 38-0b として引き取った（2026-11-13 統合）。同じ型に触れる作業を 1 か所で決めるため。
 
@@ -36,13 +36,13 @@ D1＝A（まず 38-0 だけ。実害が見つかれば続き）、D2＝A（`Outp
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 38-0 | 調査と守りの準備: (1) 送信の経路（`NewReportIncoming` → `ReportToBuffer` → `SendPacket`）の、毎フレームの割り当てとロックを読む。`UdpMotionService` のハンドラーとスムージングも読む。(2) パケットの黄金を作る（バージョンの要求と応答、ポートの情報、パッドのデータの登録、モーションのデータ。CRC を含む）。(3) 上流との差分（このリポジトリで変えた箇所）を一覧にする | 黄金の追加 | 未着手 |
-| 38-0b | （2026-11-13 統合。旧 36-A2）UDP の型 6 つ（`DualShockPadMeta`、`PadDataRspPacket`、`DsState`、`DsBattery`、`DsConnection`、`DsModel`）を `Input/` から移す。移し先は D2 の置き場所に合わせる（D2 が A なら `Output/Udp/`、B なら `Core/Model`）。`git mv` と名前空間の書き換えを別コミットに（規則 R7） | `NamespaceFolderGuardTests`、`LayerDependencyRuleTests` | 未着手 |
-| 38-1 | 送るパケットの書式（`ReportToBuffer`、`ReportToBufferDataRsp`、ヘッダーと CRC）を、状態を持たない部品へ | 黄金が不変。割り当て 0 | 未着手 |
-| 38-2 | 受け取った要求の解釈（`ProcessIncoming` のうち、読む部分）を、状態を持たない部品へ。応答の送信と、クライアントの登録は `UdpServer` に残す | 黄金が不変。壊れた要求（短い、CRC が合わない）の扱いを固定する | 未着手 |
-| 38-3 | クライアントの管理（`clients` の辞書と、時刻による登録の切れ）を、小さな型へ。時刻は `TimeProvider` で受ける | 登録・更新・期限切れのテスト | 未着手 |
-| 38-4 | 38-0 で見つかった、毎フレームの割り当てを直す（使い回しのバッファー、送信用のオブジェクトの使い回し） | 割り当て 0 | 未着手 |
-| 38-5 | 文書: `01-Structure.md`、規則 R1（D2 が A のとき）、`Code-Review-2026-11/00-Summary.md` の未調査の行を更新 | `ModelDiagramGuardTests`、`NamespaceFolderGuardTests` | 未着手 |
+| 38-0 | 調査と守りの準備: (1) 送信の経路（`NewReportIncoming` → `ReportToBuffer` → `SendPacket`）の、毎フレームの割り当てとロックを読む。`UdpMotionService` のハンドラーとスムージングも読む。(2) パケットの黄金を作る（バージョンの要求と応答、ポートの情報、パッドのデータの登録、モーションのデータ。CRC を含む）。(3) 上流との差分（このリポジトリで変えた箇所）を一覧にする | 黄金の追加 | 完了 |
+| 38-0b | （2026-11-13 統合。旧 36-A2）UDP の型 6 つ（`DualShockPadMeta`、`PadDataRspPacket`、`DsState`、`DsBattery`、`DsConnection`、`DsModel`）を `Input/` から移す。移し先は D2 の置き場所に合わせる（D2 が A なら `Output/Udp/`、B なら `Core/Model`）。`git mv` と名前空間の書き換えを別コミットに（規則 R7） | `NamespaceFolderGuardTests`、`LayerDependencyRuleTests` | 完了 |
+| 38-1 | 送るパケットの書式（`ReportToBuffer`、`ReportToBufferDataRsp`、ヘッダーと CRC）を、状態を持たない部品へ | 黄金が不変。割り当て 0 | 完了 |
+| 38-2 | 受け取った要求の解釈（`ProcessIncoming` のうち、読む部分）を、状態を持たない部品へ。応答の送信と、クライアントの登録は `UdpServer` に残す | 黄金が不変。壊れた要求（短い、CRC が合わない）の扱いを固定する | 見送り |
+| 38-3 | クライアントの管理（`clients` の辞書と、時刻による登録の切れ）を、小さな型へ。時刻は `TimeProvider` で受ける | 登録・更新・期限切れのテスト | 完了 |
+| 38-4 | 38-0 で見つかった、毎フレームの割り当てを直す（使い回しのバッファー、送信用のオブジェクトの使い回し） | 割り当て 0 | 完了（一部） |
+| 38-5 | 文書: `01-Structure.md`、規則 R1（D2 が A のとき）、`Code-Review-2026-11/00-Summary.md` の未調査の行を更新 | `ModelDiagramGuardTests`、`NamespaceFolderGuardTests` | 一部（規則 R1 の追記のみ） |
 
 ## 確認の方法
 - 各 Step のあと、パケットの黄金と、UDP のテスト。

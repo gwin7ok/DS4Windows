@@ -3,6 +3,7 @@
 作成日: 2026-11-02（同日、Issue #2〜#4 を取り込んで Phase を組み直し）。2026-11-03: ログ整理（L1＝Phase12 の最初、L2＝Phase13b）とトリガー系 4 クラスの引数整理（Phase13）を追加
 状態: **Phase の構成と順序は承認済みで運用中（Phase11・12 は完了。2026-11-04 時点）。§8 の追加案は 2026-11-04 に承認済み（8.1〜8.3 すべて採用）。実装は、各 Phase／Step の個別計画書を作り、承認を得てから行う（copilot-instructions §4）**
 ブランチ: `ArrangementRoadmap`
+**2026-11-15 追記**: 本書は Phase11〜Phase15 あたりまでのロードマップの記録である（Phase11〜28 は完了）。Phase29 以降の計画・状態・次の作業は、`../DI-App-Wide-Migration-Plan.md` の §6.15〜§6.17・§9.3 と、`Phase39-54-Record.md` を正とする。
 関連: `Phase9-Completion-Report.md` §7、`Phase9-Deferred-Ledger.md`、`../FurtherImprovements/01〜06`、`Release-Backlog.md`
 
 ---
