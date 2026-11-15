@@ -453,6 +453,18 @@ namespace DS4Windows.Core.Settings
         private readonly object _profileSettingsLock = new object();
         private DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
 
+        /// <summary>
+        /// 設定ファイル（Profiles.xml）へ保存するスロットのプロファイル名。一時プロファイル（CLI の LoadTempProfile、自動プロファイル）を使っている間は、
+        /// 一時の名前ではなく通常のプロファイル（profilePath）を保存する（次回の起動の既定が、一時の設定にならないように）。
+        /// </summary>
+        public string GetPersistedProfileName(int slot)
+        {
+            var linked = _profileSettings;
+            string normal = profilePath[slot];
+            bool temp = linked != null && linked.GetUseTempProfile(slot);
+            return temp && !string.IsNullOrEmpty(normal) ? normal : selectedProfile[slot];
+        }
+
         public DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettings
         {
             get
