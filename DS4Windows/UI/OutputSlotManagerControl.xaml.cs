@@ -75,6 +75,39 @@ namespace DS4Windows.UI
             }
         }
 
+        /// <summary>列幅をドラッグで変えて離したときに発生する（保存の契機）</summary>
+        public event EventHandler ColumnWidthsChanged;
+
+        private void CurrentOutDevLV_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ColumnWidthsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>列の幅（左から: 出力スロット #、入力スロット #、入力コントローラー ID、現在の種類、予約）</summary>
+        public int[] GetColumnWidths()
+        {
+            var gridView = currentOutDevLV.View as GridView;
+            int[] result = new int[gridView.Columns.Count];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = (int)gridView.Columns[i].Width;
+            }
+
+            return result;
+        }
+
+        public void SetColumnWidths(int[] widths)
+        {
+            var gridView = currentOutDevLV.View as GridView;
+            for (int i = 0; i < widths.Length && i < gridView.Columns.Count; i++)
+            {
+                if (widths[i] > 0)
+                {
+                    gridView.Columns[i].Width = widths[i];
+                }
+            }
+        }
+
         public void SetupLateEvents()
         {
 

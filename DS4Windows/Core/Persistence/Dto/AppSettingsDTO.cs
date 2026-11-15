@@ -96,6 +96,22 @@ public class AppSettingsDTO
     [XmlElement("controllerCustomColorColWidth")]
     public int ControllerCustomColorColWidth { get; set; } = BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
 
+    // Output Slots tab column widths
+    [XmlElement("outputSlotNumColWidth")]
+    public int OutputSlotNumColWidth { get; set; } = BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
+
+    [XmlElement("outputSlotInputNumColWidth")]
+    public int OutputSlotInputNumColWidth { get; set; } = BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+
+    [XmlElement("outputSlotInputIdColWidth")]
+    public int OutputSlotInputIdColWidth { get; set; } = BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+
+    [XmlElement("outputSlotCurrentTypeColWidth")]
+    public int OutputSlotCurrentTypeColWidth { get; set; } = BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+
+    [XmlElement("outputSlotReservationColWidth")]
+    public int OutputSlotReservationColWidth { get; set; } = BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+
     [XmlElement("logMaxArchiveFiles")]
     public int LogMaxArchiveFiles { get; set; } = BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
 
@@ -901,6 +917,11 @@ public class AppSettingsDTO
         ControllerLinkedProfileColWidth = source.controllerLinkedProfileColWidth > 0 ? source.controllerLinkedProfileColWidth : BackingStore.DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
         ControllerLinkProfIdColWidth = source.controllerLinkProfIdColWidth > 0 ? source.controllerLinkProfIdColWidth : BackingStore.DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
         ControllerCustomColorColWidth = source.controllerCustomColorColWidth > 0 ? source.controllerCustomColorColWidth : BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
+        OutputSlotNumColWidth = source.outputSlotNumColWidth > 0 ? source.outputSlotNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
+        OutputSlotInputNumColWidth = source.outputSlotInputNumColWidth > 0 ? source.outputSlotInputNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+        OutputSlotInputIdColWidth = source.outputSlotInputIdColWidth > 0 ? source.outputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+        OutputSlotCurrentTypeColWidth = source.outputSlotCurrentTypeColWidth > 0 ? source.outputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+        OutputSlotReservationColWidth = source.outputSlotReservationColWidth > 0 ? source.outputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
 
         LogMaxArchiveFiles = source.logMaxArchiveFiles > 0 ? source.logMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
         LogMinLevel = !string.IsNullOrEmpty(source.logMinLevel) ? source.logMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
@@ -1024,6 +1045,11 @@ public class AppSettingsDTO
         destination.controllerLinkedProfileColWidth = ControllerLinkedProfileColWidth > 0 ? ControllerLinkedProfileColWidth : BackingStore.DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
         destination.controllerLinkProfIdColWidth = ControllerLinkProfIdColWidth > 0 ? ControllerLinkProfIdColWidth : BackingStore.DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
         destination.controllerCustomColorColWidth = ControllerCustomColorColWidth > 0 ? ControllerCustomColorColWidth : BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
+        destination.outputSlotNumColWidth = OutputSlotNumColWidth > 0 ? OutputSlotNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
+        destination.outputSlotInputNumColWidth = OutputSlotInputNumColWidth > 0 ? OutputSlotInputNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+        destination.outputSlotInputIdColWidth = OutputSlotInputIdColWidth > 0 ? OutputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+        destination.outputSlotCurrentTypeColWidth = OutputSlotCurrentTypeColWidth > 0 ? OutputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+        destination.outputSlotReservationColWidth = OutputSlotReservationColWidth > 0 ? OutputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
 
         destination.logMaxArchiveFiles = LogMaxArchiveFiles > 0 ? LogMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
         destination.logMinLevel = !string.IsNullOrEmpty(LogMinLevel) ? LogMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;

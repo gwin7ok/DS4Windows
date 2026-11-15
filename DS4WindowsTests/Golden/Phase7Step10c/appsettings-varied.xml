@@ -14,16 +14,21 @@
   <specialActionNameColWidth>311</specialActionNameColWidth>
   <specialActionTriggerColWidth>151</specialActionTriggerColWidth>
   <specialActionDetailColWidth>221</specialActionDetailColWidth>
-  <controllerIndexColWidth>31</controllerIndexColWidth>
-  <controllerIdColWidth>251</controllerIdColWidth>
+  <controllerIndexColWidth>107</controllerIndexColWidth>
+  <controllerIdColWidth>225</controllerIdColWidth>
   <controllerStatusColWidth>66</controllerStatusColWidth>
-  <controllerExclusiveColWidth>66</controllerExclusiveColWidth>
+  <controllerExclusiveColWidth>49</controllerExclusiveColWidth>
   <controllerBatteryColWidth>101</controllerBatteryColWidth>
   <controllerSelectProfileColWidth>221</controllerSelectProfileColWidth>
   <controllerEditColWidth>96</controllerEditColWidth>
   <controllerLinkedProfileColWidth>221</controllerLinkedProfileColWidth>
   <controllerLinkProfIdColWidth>131</controllerLinkProfIdColWidth>
   <controllerCustomColorColWidth>161</controllerCustomColorColWidth>
+  <outputSlotNumColWidth>101</outputSlotNumColWidth>
+  <outputSlotInputNumColWidth>101</outputSlotInputNumColWidth>
+  <outputSlotInputIdColWidth>261</outputSlotInputIdColWidth>
+  <outputSlotCurrentTypeColWidth>201</outputSlotCurrentTypeColWidth>
+  <outputSlotReservationColWidth>241</outputSlotReservationColWidth>
   <logMaxArchiveFiles>51</logMaxArchiveFiles>
   <logMinLevel>Info_g</logMinLevel>
   <ProcessPriority>1</ProcessPriority>

@@ -74,6 +74,11 @@ namespace DS4Windows.Core.Settings
         public const int DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH = WindowLayoutDefaults.CONTROLLER_LINKED_PROFILE_COL_WIDTH;
         public const int DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH = WindowLayoutDefaults.CONTROLLER_LINK_PROF_ID_COL_WIDTH;
         public const int DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH = WindowLayoutDefaults.CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
+        public const int DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_NUM_COL_WIDTH;
+        public const int DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+        public const int DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+        public const int DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+        public const int DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH = WindowLayoutDefaults.OUTPUT_SLOT_RESERVATION_COL_WIDTH;
 
         // Log settings
         public const int DEFAULT_LOG_MAX_ARCHIVE_FILES = 50;
@@ -96,6 +101,11 @@ namespace DS4Windows.Core.Settings
         public int controllerLinkedProfileColWidth = DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
         public int controllerLinkProfIdColWidth = DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
         public int controllerCustomColorColWidth = DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
+        public int outputSlotNumColWidth = DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
+        public int outputSlotInputNumColWidth = DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+        public int outputSlotInputIdColWidth = DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+        public int outputSlotCurrentTypeColWidth = DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+        public int outputSlotReservationColWidth = DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
 
         public int logMaxArchiveFiles = DEFAULT_LOG_MAX_ARCHIVE_FILES;
         public string logMinLevel = DEFAULT_LOG_MIN_LEVEL;

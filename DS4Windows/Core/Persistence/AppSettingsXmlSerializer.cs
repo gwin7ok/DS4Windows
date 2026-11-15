@@ -171,6 +171,16 @@ namespace DS4Windows.Core.Persistence
                     catch { missingSetting = true; }
                     try { Item = m_Xdoc.SelectSingleNode("/Profile/controllerCustomColorColWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.controllerCustomColorColWidth); }
                     catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/outputSlotNumColWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.outputSlotNumColWidth); }
+                    catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/outputSlotInputNumColWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.outputSlotInputNumColWidth); }
+                    catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/outputSlotInputIdColWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.outputSlotInputIdColWidth); }
+                    catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/outputSlotCurrentTypeColWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.outputSlotCurrentTypeColWidth); }
+                    catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/outputSlotReservationColWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.outputSlotReservationColWidth); }
+                    catch { missingSetting = true; }
 
                     try { Item = m_Xdoc.SelectSingleNode("/Profile/logMaxArchiveFiles"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.logMaxArchiveFiles); }
                     catch { missingSetting = true; }
