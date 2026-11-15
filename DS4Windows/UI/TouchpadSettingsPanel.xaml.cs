@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.Controls;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI
@@ -33,7 +34,9 @@ namespace DS4Windows.UI
         /// <summary>反転を無効にするトリガーのメニューのチェックと表示を、保存されている値へ合わせる（プロファイルの読み込み・プリセットの適用のあと）。</summary>
         public void PopulateDisInvertMenu(TouchpadSettingsViewModel touchpad)
         {
-            touchpad.PopulateTouchDisInver(touchDisInvertBtn.ContextMenu);
+            var entries = TriggerMenuAdapter.Read(touchDisInvertBtn.ContextMenu);
+            touchpad.PopulateTouchDisInver(entries);
+            TriggerMenuAdapter.Write(touchDisInvertBtn.ContextMenu, entries);
         }
 
         /// <summary>スワイプの 4 方向の割り当ての表示を、割り当ての一覧の各コントロールへ結ぶ。</summary>
@@ -91,7 +94,9 @@ namespace DS4Windows.UI
 
         private void TouchDisInvertMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ((TouchpadSettingsViewModel)DataContext).UpdateTouchDisInvert(touchDisInvertBtn.ContextMenu);
+            var entries = TriggerMenuAdapter.Read(touchDisInvertBtn.ContextMenu);
+            ((TouchpadSettingsViewModel)DataContext).UpdateTouchDisInvert(entries);
+            TriggerMenuAdapter.Write(touchDisInvertBtn.ContextMenu, entries);
         }
     }
 }

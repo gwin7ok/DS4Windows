@@ -408,18 +408,18 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public void UpdateTouchDisInvert(ContextMenu menu)
+        public void UpdateTouchDisInvert(IReadOnlyList<TriggerMenuEntry> entries)
         {
             int index = 0;
             List<int> triggerList = new List<int>();
             List<string> triggerName = new List<string>();
 
-            foreach (MenuItem item in menu.Items)
+            foreach (TriggerMenuEntry item in entries)
             {
                 if (item.IsChecked)
                 {
                     triggerList.Add(index);
-                    triggerName.Add(item.Header.ToString());
+                    triggerName.Add(item.Header);
                 }
 
                 index++;
@@ -435,18 +435,19 @@ namespace DS4Windows.UI.ViewModels
             TouchDisInvertString = string.Join(", ", triggerName.ToArray());
         }
 
-        public void PopulateTouchDisInver(ContextMenu menu)
+        /// <summary>保存されている設定をメニューのチェックへ反映する（<paramref name="entries"/> を書き換える）。</summary>
+        public void PopulateTouchDisInver(IReadOnlyList<TriggerMenuEntry> entries)
         {
             int[] triggers = touchpad.DisInvertTriggers;
-            int itemCount = menu.Items.Count;
+            int itemCount = entries.Count;
             List<string> triggerName = new List<string>();
             foreach (int trigid in triggers)
             {
                 if (trigid >= 0 && trigid < itemCount - 1)
                 {
-                    MenuItem current = menu.Items[trigid] as MenuItem;
+                    TriggerMenuEntry current = entries[trigid];
                     current.IsChecked = true;
-                    triggerName.Add(current.Header.ToString());
+                    triggerName.Add(current.Header);
                 }
                 else if (trigid == -1)
                 {
@@ -461,6 +462,5 @@ namespace DS4Windows.UI.ViewModels
             }
 
             TouchDisInvertString = string.Join(", ", triggerName.ToArray());
-        }
-    }
+        }    }
 }
