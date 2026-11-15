@@ -666,12 +666,16 @@ namespace DS4Windows.Processing.Touchpad
 
             s = dev.getCurrentStateRef();
             TouchButtonActivationMode touchButtonMode = touchpad.ButtonMode;
-            if (s.Touch1 || s.Touch2 ||
-                touchButtonMode == TouchButtonActivationMode.Release)
+            bool checkedOnUp = s.Touch1 || s.Touch2 ||
+                touchButtonMode == TouchButtonActivationMode.Release;
+            if (checkedOnUp)
             {
                 _buttons.Check(arg, touchpad.ButtonMode);
                 synthesizeMouseButtons();
             }
+
+            // 上部タッチ（タッチパッドの上端の押し込み）が、方式によって実行されない件の診断（KI-17）
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TOUCHBTN] device={deviceNum} up mode={touchButtonMode} touches={arg.Touches?.Length} active={arg.TouchActive} pressed={arg.TouchButtonPressed} checked={checkedOnUp} L={leftDown} R={rightDown} U={upperDown} M={multiDown}");
         }
 
         public virtual void touchButtonDown(DS4Touchpad sender, TouchpadEventArgs arg)
@@ -692,6 +696,8 @@ namespace DS4Windows.Processing.Touchpad
             s = dev.getCurrentStateRef();
             _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
+
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TOUCHBTN] device={deviceNum} down mode={touchpad.ButtonMode} touches={arg.Touches?.Length} active={arg.TouchActive} pressed={arg.TouchButtonPressed} L={leftDown} R={rightDown} U={upperDown} M={multiDown}");
         }
 
         public void populatePriorButtonStates()
