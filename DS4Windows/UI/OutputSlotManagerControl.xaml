@@ -31,7 +31,7 @@
                             Click="SlotChangeAcceptBtn_Click" Margin="0,8,0,0" />
                 </StackPanel>
             </StackPanel>
-            <ListView x:Name="currentOutDevLV" ItemsSource="{Binding SlotDeviceEntries}" SelectedIndex="{Binding SelectedIndex,Mode=OneWayToSource}" DockPanel.Dock="Top">
+            <ListView x:Name="currentOutDevLV" PreviewMouseUp="CurrentOutDevLV_PreviewMouseUp" ItemsSource="{Binding SlotDeviceEntries}" SelectedIndex="{Binding SelectedIndex,Mode=OneWayToSource}" DockPanel.Dock="Top">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="100" Header="{lex:Loc OutputSlotMan.SlotNum}">

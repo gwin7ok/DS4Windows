@@ -233,6 +233,21 @@ namespace DS4Windows.UI
             autoProfControl.SetupDataContext(profileListHolder);
 
             slotManControl.SetupDataContext(viewModelFactory.CreateCurrentOutDeviceViewModel());
+            slotManControl.SetColumnWidths(new[]
+            {
+                appSettingsService.OutputSlotNumColWidth, appSettingsService.OutputSlotInputNumColWidth,
+                appSettingsService.OutputSlotInputIdColWidth, appSettingsService.OutputSlotCurrentTypeColWidth,
+                appSettingsService.OutputSlotReservationColWidth
+            });
+            slotManControl.ColumnWidthsChanged += (s, e) =>
+            {
+                int[] w = slotManControl.GetColumnWidths();
+                appSettingsService.OutputSlotNumColWidth = w[0];
+                appSettingsService.OutputSlotInputNumColWidth = w[1];
+                appSettingsService.OutputSlotInputIdColWidth = w[2];
+                appSettingsService.OutputSlotCurrentTypeColWidth = w[3];
+                appSettingsService.OutputSlotReservationColWidth = w[4];
+            };
 
             SetupEvents();
 

@@ -108,12 +108,12 @@ namespace DS4Windows.Core.Utilities
         /// <summary>
         /// Controller タブの Index列 初期幅
         /// </summary>
-        public const int CONTROLLER_INDEX_COL_WIDTH = 30;
+        public const int CONTROLLER_INDEX_COL_WIDTH = 106;
 
         /// <summary>
         /// Controller タブの ID列 初期幅
         /// </summary>
-        public const int CONTROLLER_ID_COL_WIDTH = 250;
+        public const int CONTROLLER_ID_COL_WIDTH = 224;
 
         /// <summary>
         /// Controller タブの Status列 初期幅
@@ -123,7 +123,7 @@ namespace DS4Windows.Core.Utilities
         /// <summary>
         /// Controller タブの Exclusive列 初期幅
         /// </summary>
-        public const int CONTROLLER_EXCLUSIVE_COL_WIDTH = 65;
+        public const int CONTROLLER_EXCLUSIVE_COL_WIDTH = 48;
 
         /// <summary>
         /// Controller タブの Battery列 初期幅
@@ -154,5 +154,23 @@ namespace DS4Windows.Core.Utilities
         /// Controller タブの Custom Color列 初期幅
         /// </summary>
         public const int CONTROLLER_CUSTOMCOLOR_COL_WIDTH = 160;
+
+        // ==============================================
+        // Output Slots タブの ListView 列幅
+        // ==============================================
+        /// <summary>Output Slots タブの Num 列 初期幅</summary>
+        public const int OUTPUT_SLOT_NUM_COL_WIDTH = 100;
+
+        /// <summary>Output Slots タブの InputNum 列 初期幅</summary>
+        public const int OUTPUT_SLOT_INPUT_NUM_COL_WIDTH = 100;
+
+        /// <summary>Output Slots タブの InputId 列 初期幅</summary>
+        public const int OUTPUT_SLOT_INPUT_ID_COL_WIDTH = 260;
+
+        /// <summary>Output Slots タブの CurrentType 列 初期幅</summary>
+        public const int OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH = 200;
+
+        /// <summary>Output Slots タブの Reservation 列 初期幅</summary>
+        public const int OUTPUT_SLOT_RESERVATION_COL_WIDTH = 240;
     }
 }

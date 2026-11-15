@@ -65,6 +65,11 @@ namespace DS4Windows.Core.Abstractions
         int ControllerLinkedProfileColWidth { get; set; }
         int ControllerLinkProfIdColWidth { get; set; }
         int ControllerCustomColorColWidth { get; set; }
+        int OutputSlotNumColWidth { get; set; }
+        int OutputSlotInputNumColWidth { get; set; }
+        int OutputSlotInputIdColWidth { get; set; }
+        int OutputSlotCurrentTypeColWidth { get; set; }
+        int OutputSlotReservationColWidth { get; set; }
 
         // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
         int Notifications { get; set; }

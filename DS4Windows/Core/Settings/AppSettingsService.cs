@@ -243,6 +243,36 @@ namespace DS4Windows.Core.Settings
             set { if (_config.controllerCustomColorColWidth != value) { _config.controllerCustomColorColWidth = value; NotifyChanged(nameof(ControllerCustomColorColWidth)); } }
         }
 
+        public int OutputSlotNumColWidth
+        {
+            get => _config.outputSlotNumColWidth;
+            set { if (_config.outputSlotNumColWidth != value) { _config.outputSlotNumColWidth = value; NotifyChanged(nameof(OutputSlotNumColWidth)); } }
+        }
+
+        public int OutputSlotInputNumColWidth
+        {
+            get => _config.outputSlotInputNumColWidth;
+            set { if (_config.outputSlotInputNumColWidth != value) { _config.outputSlotInputNumColWidth = value; NotifyChanged(nameof(OutputSlotInputNumColWidth)); } }
+        }
+
+        public int OutputSlotInputIdColWidth
+        {
+            get => _config.outputSlotInputIdColWidth;
+            set { if (_config.outputSlotInputIdColWidth != value) { _config.outputSlotInputIdColWidth = value; NotifyChanged(nameof(OutputSlotInputIdColWidth)); } }
+        }
+
+        public int OutputSlotCurrentTypeColWidth
+        {
+            get => _config.outputSlotCurrentTypeColWidth;
+            set { if (_config.outputSlotCurrentTypeColWidth != value) { _config.outputSlotCurrentTypeColWidth = value; NotifyChanged(nameof(OutputSlotCurrentTypeColWidth)); } }
+        }
+
+        public int OutputSlotReservationColWidth
+        {
+            get => _config.outputSlotReservationColWidth;
+            set { if (_config.outputSlotReservationColWidth != value) { _config.outputSlotReservationColWidth = value; NotifyChanged(nameof(OutputSlotReservationColWidth)); } }
+        }
+
         // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
         public int Notifications
         {
