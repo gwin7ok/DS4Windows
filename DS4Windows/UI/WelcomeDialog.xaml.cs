@@ -60,7 +60,7 @@ namespace DS4Windows.UI
         NonFormTimer monitorTimer;
 
         // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
-        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
+        private readonly DS4Windows.UI.Abstractions.IDriverEnvironment _environmentService;
 
         // Phase7-Step4 W2: 旧 loadConfig 引数（唯一の呼び出し元 App.xaml.cs の -driverinstall 分岐が true を渡していた）と、
         // 中の Global.FindConfigLocation／Global.Load を削除した。呼び出し元が、直前に同じ処理（FindConfigLocation と設定の読込）を
@@ -68,7 +68,7 @@ namespace DS4Windows.UI
         // Phase14b-Step17（決定 D10）: ドライバーのダウンロードに使う HttpClient（旧 App.requestClient。DI の Singleton）
         private readonly System.Net.Http.HttpClient _httpClient;
 
-        public WelcomeDialog(DS4Windows.Core.Abstractions.IEnvironmentService environmentService, System.Net.Http.HttpClient httpClient)
+        public WelcomeDialog(DS4Windows.UI.Abstractions.IDriverEnvironment environmentService, System.Net.Http.HttpClient httpClient)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
