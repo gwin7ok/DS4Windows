@@ -90,11 +90,11 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public int SelectedButton => lastActionBtn;
         public event EventHandler IsToggleChanged;
 
-        public Visibility ShowToggleControls
+        public bool ShowToggleControls
         {
             get
             {
-                return ((keyType & DS4KeyType.Toggle) != 0) ? Visibility.Visible : Visibility.Collapsed;
+                return (keyType & DS4KeyType.Toggle) != 0;
             }
         }
         public event EventHandler ShowToggleControlsChanged;
@@ -121,7 +121,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public bool IsAnalogOutput => lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0
             && AnalogOutputTargets.KindOf((X360Controls)lastActionBtn) != AnalogOutputKind.None;
 
-        public Visibility ShowAnalogStrength => StrengthApplies && IsAnalogOutput ? Visibility.Visible : Visibility.Collapsed;
+        public bool ShowAnalogStrength => StrengthApplies && IsAnalogOutput;
 
         public string DescribeText
         {

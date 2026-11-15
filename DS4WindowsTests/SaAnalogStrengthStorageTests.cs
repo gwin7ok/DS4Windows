@@ -150,18 +150,18 @@ namespace DS4WindowsTests
 
             vm.LoadAction(new SpecialAction("a", "Cross", "Button", ((int)X360Controls.LXPos).ToString(), 0, "Press\n"));
             Assert.True(vm.IsAnalogOutput);
-            Assert.Equal(System.Windows.Visibility.Visible, vm.ShowAnalogStrength);
+            Assert.True(vm.ShowAnalogStrength);
 
             vm.LoadAction(new SpecialAction("a", "Cross", "Button", ((int)X360Controls.A).ToString(), 0, "Press\n"));
             Assert.False(vm.IsAnalogOutput);
-            Assert.Equal(System.Windows.Visibility.Collapsed, vm.ShowAnalogStrength);
+            Assert.False(vm.ShowAnalogStrength);
 
             vm.LoadAction(new SpecialAction("a", "Cross", "Key", "65", 0, "Press\n"));
-            Assert.Equal(System.Windows.Visibility.Collapsed, vm.ShowAnalogStrength);
+            Assert.False(vm.ShowAnalogStrength);
 
             vm.LoadAction(new SpecialAction("a", "Cross", "Button", ((int)X360Controls.MouseUp).ToString(), 0, "Press\n"));
             vm.StrengthApplies = false;   // Controls のモード
-            Assert.Equal(System.Windows.Visibility.Collapsed, vm.ShowAnalogStrength);
+            Assert.False(vm.ShowAnalogStrength);
         }
 
         [Fact]

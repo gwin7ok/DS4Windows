@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="DS4Windows.UI.LightbarSettingsPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DS4Windows.UI"
@@ -165,7 +166,7 @@
                                     Width="20"
                                     Height="20"
                                     Background="{Binding ChargingColor,FallbackValue=Blue}"
-                                    Visibility="{Binding ChargingColorVisible}"
+                                    Visibility="{Binding ChargingColorShown, Converter={x:Static localConverters:BoolToVisibleHiddenConverter.Instance}}"
                                     Click="ChargingColorBtn_Click"
                                     Margin="20,0,0,0"/>
                         </StackPanel>

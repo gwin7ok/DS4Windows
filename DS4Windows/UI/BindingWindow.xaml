@@ -261,7 +261,7 @@
                                         HorizontalAlignment="Left">
                                 <Label x:Name="macroOnLb"
                                        Content="{lex:Loc BindingWin.MacroOn}"
-                                       Visibility="{Binding MacroLbVisible}"/>
+                                       Visibility="{Binding MacroLbShown, Converter={x:Static localConverters:BoolToVisibleHiddenConverter.Instance}}"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1"
                                         HorizontalAlignment="Center">
