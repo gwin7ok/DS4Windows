@@ -30,7 +30,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
+using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 
@@ -136,13 +138,16 @@ namespace DS4Windows.UI.ViewModels
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+        private readonly IDialogService dialogs;
 
         public RecordBoxViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4ControlSettings controlSettings, bool repeatable,
             IProfileSettingsService profileSettingsService,
             IEnvironmentService environmentService,
             IMacroRecordingState macroRecording,
-            int targetDevice = -1)
+            int targetDevice = -1,
+            IDialogService dialogs = null)
         {
+            this.dialogs = dialogs;
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.targetDevice = targetDevice;
@@ -222,6 +227,48 @@ namespace DS4Windows.UI.ViewModels
             settings.actionType = DS4ControlSettings.ActionType.Macro;
             // Phase8-Fix-MacroRepeatUnify（D1）: 「Repeat while held」は RepeatMacro だけで表す（旧: HoldMacro と RepeatMacro の両方）
             settings.keyType = playbackOptions.ApplyTo(DS4KeyType.Macro);
+        }
+
+        /// <summary>プリセットのファイルを選ばせ、選ばれたら今の手順を置き換えて読み込む。</summary>
+        /// <returns>読み込んだら true。取り消しなら false</returns>
+        public bool PickAndLoadPreset(string initialDirectory)
+        {
+            string file = dialogs.PickOpenFile(new FileDialogOptions
+            {
+                Title = "Select Preset File",
+                Filter = "Text Documents (*.txt)|*.txt",
+                DefaultExtension = ".txt",
+                InitialDirectory = initialDirectory,
+            });
+            if (file == null) return false;
+
+            macroSteps.Clear();
+            LoadPresetFromFile(file);
+            return true;
+        }
+
+        /// <summary>保存先を選ばせ、選ばれたら今の手順を書き出す。</summary>
+        /// <returns>保存したら true。取り消しなら false</returns>
+        public bool PickAndSavePreset(string initialDirectory)
+        {
+            string file = dialogs.PickSaveFile(new FileDialogOptions
+            {
+                Title = "Select Export File",
+                Filter = "Text Documents (*.txt)|*.txt",
+                DefaultExtension = ".txt",
+                InitialDirectory = initialDirectory,
+                CheckFileExists = false,
+            });
+            if (file == null) return false;
+
+            SavePreset(file);
+            return true;
+        }
+
+        /// <summary>マウス移動の記録が上限に達したことを知らせる。</summary>
+        public void NotifyMoveRecordLimitReached(int maxSteps)
+        {
+            dialogs.ShowMessage(AppLogger.UserText("RecordBox.MoveRecordLimitReached", maxSteps), null, DialogIcon.None);
         }
 
         public void LoadPresetFromFile(string filepath)

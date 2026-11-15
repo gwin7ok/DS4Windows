@@ -352,17 +352,7 @@ namespace DS4Windows.UI
             macroListBox.SelectedIndex = -1;
 
             macroListBox.ItemsSource = null;
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".txt";
-            dialog.Filter = "Text Documents (*.txt)|*.txt";
-            dialog.Title = "Select Preset File";
-            dialog.InitialDirectory = $"{pathService.AppDataPath}\\Macros";
-            if (dialog.ShowDialog() == true)
-            {
-                recordBoxVM.MacroSteps.Clear();
-                recordBoxVM.LoadPresetFromFile(dialog.FileName);
-            }
+            recordBoxVM.PickAndLoadPreset($"{pathService.AppDataPath}\\Macros");
 
             macroListBox.ItemsSource = recordBoxVM.MacroSteps;
         }
@@ -372,17 +362,7 @@ namespace DS4Windows.UI
             // Reset selected index of macro list before removing item source
             macroListBox.SelectedIndex = -1;
 
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".txt";
-            dialog.Filter = "Text Documents (*.txt)|*.txt";
-            dialog.Title = "Select Export File";
-            dialog.InitialDirectory = $"{pathService.AppDataPath}\\Macros";
-            if (dialog.ShowDialog() == true)
-            {
-                //recordBoxVM.MacroSteps.Clear();
-                recordBoxVM.SavePreset(dialog.FileName);
-            }
+            recordBoxVM.PickAndSavePreset($"{pathService.AppDataPath}\\Macros");
         }
 
         private void UserControl_KeyDown(object sender, KeyEventArgs e)
@@ -755,7 +735,7 @@ namespace DS4Windows.UI
                 if (!recordBoxVM.Recording) return;
 
                 RecordBtn_Click(this, new RoutedEventArgs());
-                System.Windows.MessageBox.Show(string.Format(DS4Windows.Translations.Strings.RecordBox_MoveRecordLimitReached, DS4Windows.Processing.Macro.MacroPointerRecorder.MaxMoveSteps));
+                recordBoxVM.NotifyMoveRecordLimitReached(DS4Windows.Processing.Macro.MacroPointerRecorder.MaxMoveSteps);
             }));
         }
 

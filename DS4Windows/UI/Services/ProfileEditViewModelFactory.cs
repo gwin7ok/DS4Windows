@@ -28,6 +28,7 @@ namespace DS4Windows.UI.Services
         private readonly IMacroRecordingState _macroRecording;
         private readonly IProfileLoadTarget _loadTarget;
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
+        private readonly IDialogService _dialogs;
 
         public ProfileEditViewModelFactory(IProfileSettingsService profileSettings,
             IProfileRepository profileRepo,
@@ -38,7 +39,8 @@ namespace DS4Windows.UI.Services
             IPathService pathService,
             IMacroRecordingState macroRecording,
             IProfileLoadTarget loadTarget,
-            DS4Windows.Core.Model.LightbarOverrides lightbar)
+            DS4Windows.Core.Model.LightbarOverrides lightbar,
+            IDialogService dialogs)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
@@ -50,6 +52,7 @@ namespace DS4Windows.UI.Services
             _macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
             _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
             _lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
+            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
         }
 
         public PresetOptionViewModel CreatePresetOptionViewModel() => new PresetOptionViewModel(_presetLoader, _loadTarget);
@@ -90,7 +93,7 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created RecordBoxViewModel for Device {device}, targetDevice {targetDevice}");
             return new RecordBoxViewModel(_lightbar, device, controlSettings, repeatable,
-                _profileSettings, _environmentService, _macroRecording, targetDevice);
+                _profileSettings, _environmentService, _macroRecording, targetDevice, _dialogs);
         }
     }
 }
