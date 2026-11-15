@@ -2398,6 +2398,12 @@ namespace DS4Windows.Translations {
         /// <summary>
         ///   Looks up a localized string similar to Input #.
         /// </summary>
+        public static string ControllerLightbarColor {
+            get {
+                return ResourceManager.GetString("ControllerLightbarColor", resourceCulture);
+            }
+        }
+        
         public static string OutputSlotMan_InputId {
             get {
                 return ResourceManager.GetString("OutputSlotMan.InputId", resourceCulture);

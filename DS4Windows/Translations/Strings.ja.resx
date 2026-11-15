@@ -1066,6 +1066,9 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="LightbarSectionRainbow" xml:space="preserve">
     <value>虹色</value>
   </data>
+  <data name="ControllerLightbarColor" xml:space="preserve">
+    <value>ライトバーの色</value>
+  </data>
   <data name="OutputSlotMan.SlotNum" xml:space="preserve">
     <value>出力スロット #</value>
   </data>

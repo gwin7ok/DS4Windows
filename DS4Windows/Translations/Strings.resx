@@ -1282,6 +1282,9 @@ Disabled:
   <data name="Intro" xml:space="preserve">
     <value>Intro</value>
   </data>
+  <data name="ControllerLightbarColor" xml:space="preserve">
+    <value>Lightbar Color</value>
+  </data>
   <data name="OutputSlotMan.SlotNum" xml:space="preserve">
     <value>Output Slot #</value>
   </data>

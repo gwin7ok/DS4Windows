@@ -156,7 +156,7 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn x:Name="customColorColumn" Width="150">
+                                <GridViewColumn x:Name="customColorColumn" Header="{lex:Loc ControllerLightbarColor}" Width="150">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Width="{Binding ElementName=customColorColumn, Path=Width}">
