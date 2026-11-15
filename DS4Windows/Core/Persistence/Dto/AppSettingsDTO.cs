@@ -959,14 +959,14 @@ public class AppSettingsDTO
         FormLocationX = source.formLocationX;
         FormLocationY = source.formLocationY;
         // Save currently selected profiles to Controller1-8
-        Controller1CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[0]) ? source.selectedProfile[0] : string.Empty;
-        Controller2CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[1]) ? source.selectedProfile[1] : string.Empty;
-        Controller3CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[2]) ? source.selectedProfile[2] : string.Empty;
-        Controller4CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[3]) ? source.selectedProfile[3] : string.Empty;
-        Controller5CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[4]) ? source.selectedProfile[4] : string.Empty;
-        Controller6CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[5]) ? source.selectedProfile[5] : string.Empty;
-        Controller7CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[6]) ? source.selectedProfile[6] : string.Empty;
-        Controller8CurrentProfile = !string.IsNullOrEmpty(source.selectedProfile[7]) ? source.selectedProfile[7] : string.Empty;
+        Controller1CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(0)) ? source.GetPersistedProfileName(0) : string.Empty;
+        Controller2CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(1)) ? source.GetPersistedProfileName(1) : string.Empty;
+        Controller3CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(2)) ? source.GetPersistedProfileName(2) : string.Empty;
+        Controller4CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(3)) ? source.GetPersistedProfileName(3) : string.Empty;
+        Controller5CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(4)) ? source.GetPersistedProfileName(4) : string.Empty;
+        Controller6CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(5)) ? source.GetPersistedProfileName(5) : string.Empty;
+        Controller7CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(6)) ? source.GetPersistedProfileName(6) : string.Empty;
+        Controller8CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(7)) ? source.GetPersistedProfileName(7) : string.Empty;
 
         // Phase10-Step4d W4: 選択しているプロファイルの固定 ID（名前の要素と同じ並び。ないスロットは空）
         if (ProfileIdOf != null)
@@ -975,7 +975,7 @@ public class AppSettingsDTO
             bool anyId = false;
             for (int i = 0; i < ids.Length; i++)
             {
-                string selected = source.selectedProfile[i];
+                string selected = source.GetPersistedProfileName(i);
                 string id = !string.IsNullOrEmpty(selected) ? ProfileIdOf(selected) : null;
                 ids[i] = id ?? string.Empty;
                 anyId |= ids[i].Length > 0;
