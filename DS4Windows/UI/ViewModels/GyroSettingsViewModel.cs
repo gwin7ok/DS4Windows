@@ -341,6 +341,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (gyro.MouseStick.maxOutputEnabled == value) return;
                 gyro.MouseStick.maxOutputEnabled = value;
+                OnPropertyChanged(nameof(GyroMouseStickMaxOutputEnabled));
                 OnPropertyChanged(nameof(GyroMouseStickMaxOutput));
             }
         }
@@ -384,7 +385,12 @@ namespace DS4Windows.UI.ViewModels
         public bool GyroMouseStickSmooth
         {
             get => gyro.MouseStick.useSmoothing;
-            set => gyro.MouseStick.useSmoothing = value;
+            set
+            {
+                if (gyro.MouseStick.useSmoothing == value) return;
+                gyro.MouseStick.useSmoothing = value;
+                OnPropertyChanged(nameof(GyroMouseStickSmooth));
+            }
         }
 
         public double GyroMousetickSmoothWeight

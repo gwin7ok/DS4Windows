@@ -474,6 +474,20 @@ namespace DS4Windows.UI.ViewModels
             LightColorChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// CLI の ChangeLedColor 用。カスタム色を書き換えるだけでなく、ライトバーのモードをカスタム色にして、すぐ見た目に出す
+        /// （モードがカスタム色でないと、書き換えた色が使われない）。メモリ上の設定だけを変え、プロファイルのファイルには書かない。
+        /// </summary>
+        public void ForceCustomLightColor(Color color)
+        {
+            var settings = LightbarWindow.Info.ds4winSettings;
+            settings.useCustomLed = true;
+            settings.ledAsBattery = false;
+            settings.rainbow = 0;
+            UpdateCustomLightColor(color);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LightColor)));
+        }
+
         public void RaiseLightColorChanged()
         {
             LightColorChanged?.Invoke(this, EventArgs.Empty);

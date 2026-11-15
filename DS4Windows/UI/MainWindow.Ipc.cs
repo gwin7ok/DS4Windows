@@ -74,7 +74,7 @@ namespace DS4Windows.UI
         }
 
         void DS4Windows.Processing.Abstractions.IIpcCommandHost.SetLightColor(int index, byte red, byte green, byte blue)
-            => conLvViewModel.ControllerCol[index].UpdateCustomLightColor(Color.FromRgb(red, green, blue));
+            => conLvViewModel.ControllerCol[index].ForceCustomLightColor(Color.FromRgb(red, green, blue));
 
         int DS4Windows.Processing.Abstractions.IIpcCommandHost.FindProfileIndex(string profileName)
             => profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).

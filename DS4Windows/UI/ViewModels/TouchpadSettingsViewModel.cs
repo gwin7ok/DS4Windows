@@ -211,7 +211,12 @@ namespace DS4Windows.UI.ViewModels
         public bool TouchTrackball
         {
             get => touchpad.Trackball;
-            set => touchpad.Trackball = value;
+            set
+            {
+                if (touchpad.Trackball == value) return;
+                touchpad.Trackball = value;
+                OnPropertyChanged(nameof(TouchTrackball));
+            }
         }
 
         public double TouchTrackballFriction
@@ -278,6 +283,7 @@ namespace DS4Windows.UI.ViewModels
                 bool temp = touchpad.MouseStick.maxOutputEnabled;
                 if (temp == value) return;
                 touchpad.MouseStick.maxOutputEnabled = value;
+                OnPropertyChanged(nameof(TouchMouseStickMaxOutputEnabled));
                 OnPropertyChanged(nameof(TouchMouseStickMaxOutput));
             }
         }
@@ -324,7 +330,12 @@ namespace DS4Windows.UI.ViewModels
         public bool TouchMouseStickSmooth
         {
             get => touchpad.MouseStick.UseSmoothing;
-            set => touchpad.MouseStick.UseSmoothing = value;
+            set
+            {
+                if (touchpad.MouseStick.UseSmoothing == value) return;
+                touchpad.MouseStick.UseSmoothing = value;
+                OnPropertyChanged(nameof(TouchMouseStickSmooth));
+            }
         }
 
         public double TouchMouseStickOneEuroMinCutoff
@@ -361,7 +372,12 @@ namespace DS4Windows.UI.ViewModels
         public bool TouchMouseStickTrackball
         {
             get => touchpad.MouseStick.trackballMode;
-            set => touchpad.MouseStick.trackballMode = value;
+            set
+            {
+                if (touchpad.MouseStick.trackballMode == value) return;
+                touchpad.MouseStick.trackballMode = value;
+                OnPropertyChanged(nameof(TouchMouseStickTrackball));
+            }
         }
 
         public double TouchMouseStickTrackballFriction

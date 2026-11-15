@@ -1084,4 +1084,13 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="OutputSlotMan.Reservation" xml:space="preserve">
     <value>予約（Dynamic／固定の種類）</value>
   </data>
+  <data name="TestHeavy" xml:space="preserve">
+    <value>強振動をテスト</value>
+  </data>
+  <data name="TestLight" xml:space="preserve">
+    <value>弱振動をテスト</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>テスト</value>
+  </data>
 </root>
