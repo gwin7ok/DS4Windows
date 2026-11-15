@@ -9,7 +9,6 @@
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.UI.About|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.IProfileSettingsService",
             "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.ISpecialActionRepository",
@@ -78,7 +77,6 @@
             "DS4Windows.UI.SaveWhere|DS4Windows.Core.Abstractions.IPathService",
             "DS4Windows.UI.StickCalibrationWindow|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.TrayIconResources|DS4Windows.Core.Settings.TrayIconChoice",
-            "DS4Windows.UI.UpdaterWindow|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.WelcomeDialog|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.WindowPlacementHelper|DS4Windows.Core.Abstractions.IAppSettingsService",
         };

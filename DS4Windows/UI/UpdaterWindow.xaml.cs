@@ -39,13 +39,13 @@ namespace DS4Windows.UI
 
         private UpdaterWindowViewModel updaterWinVM;
 
-        // Phase6-Step10-1-3: Global.IsAdministrator／Global.LastVersionChecked の置換先。MainWindow が保持済みのサービスを渡す（Pure DI）。
-        private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
+        // 管理者権限で動いているかの判定。サービスを持つ MainWindow が関数で渡す（View はサービスを参照しない）。
+        private readonly Func<bool> _isAdministrator;
 
-        public UpdaterWindow(string newversion, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
+        public UpdaterWindow(string newversion, Func<bool> isAdministrator,
             UpdaterWindowViewModel viewModel)
         {
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _isAdministrator = isAdministrator ?? throw new ArgumentNullException(nameof(isAdministrator));
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
 
             InitializeComponent();
@@ -100,7 +100,7 @@ namespace DS4Windows.UI
                     }
 
                     string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-                    bool runningAsAdmin = _environmentService.IsAdministrator();
+                    bool runningAsAdmin = _isAdministrator();
                     string launchMode = runningAsAdmin ? "admin" : "user";
                     var psi = new System.Diagnostics.ProcessStartInfo(ds4UpdaterExe)
                     {
@@ -240,7 +240,7 @@ namespace DS4Windows.UI
                                         AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                                     }
                                     string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-                                    bool runningAsAdmin2 = _environmentService.IsAdministrator();
+                                    bool runningAsAdmin2 = _isAdministrator();
                                     string launchMode2 = runningAsAdmin2 ? "admin" : "user";
                                     var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
                                     {
