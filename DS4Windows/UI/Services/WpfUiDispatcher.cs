@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows;
 using System.Windows.Threading;
@@ -44,8 +45,15 @@ namespace DS4Windows.UI.Services
         public void EnableCollectionSynchronization(IEnumerable collection, object lockObject)
             => BindingOperations.EnableCollectionSynchronization(collection, lockObject);
 
+        // WPF は同期のコールバックを弱い参照でしか持たない（匿名メソッドは回収され、「同期コールバックは使用できなくなりました」の例外になる）。
+        // 包んだコールバックは、コレクションが生きている間だけ、ここで強く持つ。
+        private static readonly ConditionalWeakTable<IEnumerable, CollectionSynchronizationCallback> KeepAlive = new();
+
         public void EnableCollectionSynchronization(IEnumerable collection, object context, Action<Action, bool> accessCallback)
-            => BindingOperations.EnableCollectionSynchronization(collection, context,
-                (c, ctx, accessMethod, writeAccess) => accessCallback(accessMethod, writeAccess));
+        {
+            CollectionSynchronizationCallback wrapped = (c, ctx, accessMethod, writeAccess) => accessCallback(accessMethod, writeAccess);
+            KeepAlive.AddOrUpdate(collection, wrapped);
+            BindingOperations.EnableCollectionSynchronization(collection, context, wrapped);
+        }
     }
 }
