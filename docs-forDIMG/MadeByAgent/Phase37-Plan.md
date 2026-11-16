@@ -85,3 +85,8 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - 37-4: 読み込みの節 15・保存の節 7 は、区切りが対応しない（保存の 1 節が、読み込みの複数の節にまたがる）が、領域としては連続していた。そこで、既存の節の本体は動かさず、`ProfileAreaSection`（読み込みの節の並びと保存の節 1 つの対）を新設し、指揮役（`LegacyProfileXmlSerializer`）が 7 つの領域（General／TriggerStick／Motion／OutputCurve／OutputController／Actions／Button）を 1 回ずつ宣言する形にした。読み込みは領域内で宣言順、領域間は従来のファイル順。保存は従来の XML の順序。項目ごとの try/catch は各節のまま。`ResolveControlProfileTargets` は Button の読み込みの後へ移した（`ShiftControl` の保持とは独立のため結果は同じ）。
 - 検証: ゴールデン・全テスト（3,606 件）合格、警告 0・エラー 0。呼び出し順の検査（`ProfileLoadFoundationTests`）を領域の名前へ更新した。
 - 未確認（2026-11-16）: 実機でのプロファイルの読み込み・保存（ゴールデンは合格）。
+
+### 2026-11-16（37-5 領域 1: DualSense。ブランチ `Phase37-5-Arrays`）
+- 配列のまま残る項目のうち、DualSense 固有の 3 項目（振動のエミュレーション方式、汎用の振動の再スケール、ハプティックの強さ）を `DualSenseSlotSettings`（スロットごとに 1 つ。`BackingStore.dualSenseSlots`）へ移した。`IProfileSettingsService` の 3 つの配列プロパティは `DualSenseSlot(int slot)` 1 つに替えた。プロファイルの読み込み前の初期化では戻さない（従来どおり）。
+- 保存の XML は不変（XML のゴールデンは無変更で合格）。状態のダンプのゴールデン 6 件は、項目の経路名だけが変わる（値は同一であることを差分で確認して採用）。
+- 残る配列の項目（次の領域の候補）: 振動（`rumble`・`rumbleAutostopTime`・`rumbleSettings`・`inverseRumbleMotors`。`RumbleSettings` との二重の持ち方がある）、一般（`enableTouchToggle`・`idleDisconnectTimeout`・`enableOutputDataToDS4`・`btPollRate`・`launchProgram`・`dinputOnly`・`buttonMouseInfos`）、出力の種類（`outputDevType`・`outputVirtualTriggerButtons`）ほか。

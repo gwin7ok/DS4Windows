@@ -71,9 +71,8 @@ namespace DS4Windows.Core.Abstractions
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
         bool[] InverseRumbleMotors { get; }
         byte[] RumbleBoost { get; }
-        RumbleEmulationMode[] DualSenseRumbleEmulationMode { get; set; }
-        bool[] UseGenericRumbleStrRescaleForDualSenses { get; set; }
-        byte[] DualSenseHapticPowerLevel { get; set; }
+        /// <summary>スロットの DualSense 固有の設定（振動のエミュレーション方式、汎用の振動の再スケール、ハプティックの強さ）の持ち主。</summary>
+        DualSenseSlotSettings DualSenseSlot(int slot);
         byte GetRumbleBoost(int deviceIndex);
         int GetRumbleAutostopTime(int deviceIndex);
         ref DS4Color GetMainColor(int deviceIndex);

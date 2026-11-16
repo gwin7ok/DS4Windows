@@ -95,14 +95,14 @@ namespace DS4WindowsTests
         {
             var settings = TestHost.GetService<IProfileSettingsService>();
             var rumbleSettings = ((ProfileSettingsService)settings).RumbleSettings;
-            bool[] rescale = settings.UseGenericRumbleStrRescaleForDualSenses;
-            Assert.NotNull(rescale);
-            bool oldRescale = rescale[Slot];
+            DS4Windows.Core.Settings.DualSenseSlotSettings dualSenseSettings = settings.DualSenseSlot(Slot);
+            Assert.NotNull(dualSenseSettings);
+            bool oldRescale = dualSenseSettings.UseGenericRumbleRescale;
             byte oldBoost = rumbleSettings[Slot].RumbleBoost;
             try
             {
                 rumbleSettings[Slot].RumbleBoost = 37;   // GetRumbleBoost は RumbleSettings を先に読む
-                rescale[Slot] = false;
+                dualSenseSettings.UseGenericRumbleRescale = false;
 
                 var dualSense = (DualSenseDevice)RuntimeHelpers.GetUninitializedObject(typeof(DualSenseDevice));
                 // コンストラクターを通さないため、DualSenseDevice が自分で設定する種類を同じ値にする（判定は DeviceType で行う）
@@ -111,11 +111,11 @@ namespace DS4WindowsTests
                 using (new SlotScope(Slot, dualSense))
                     Assert.Equal(100, settings.GetRumbleBoost(Slot));   // DualSense で、汎用の再スケールなし → 100 固定
 
-                rescale[Slot] = true;
+                dualSenseSettings.UseGenericRumbleRescale = true;
                 using (new SlotScope(Slot, dualSense))
                     Assert.Equal(37, settings.GetRumbleBoost(Slot));    // 再スケールあり → 設定値
 
-                rescale[Slot] = false;
+                dualSenseSettings.UseGenericRumbleRescale = false;
                 using (new SlotScope(Slot, TestDs4Device.Create()))
                     Assert.Equal(37, settings.GetRumbleBoost(Slot));    // DualSense でなければ → 設定値
                 using (new SlotScope(Slot, null))
@@ -123,7 +123,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                rescale[Slot] = oldRescale;
+                dualSenseSettings.UseGenericRumbleRescale = oldRescale;
                 rumbleSettings[Slot].RumbleBoost = oldBoost;
             }
         }

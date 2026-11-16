@@ -41,7 +41,8 @@ namespace DS4Windows.Processing.Services.Devices
 
         public override void ApplyProfileOptions(InputDeviceCore device, int ind, IProfileSettingsService settings)
         {
-            device.ApplyRumbleEmulation(settings.DualSenseRumbleEmulationMode[ind], settings.DualSenseHapticPowerLevel[ind]);
+            DualSenseSlotSettings dualSense = settings.DualSenseSlot(ind);
+            device.ApplyRumbleEmulation(dualSense.RumbleEmulationMode, dualSense.HapticPowerLevel);
         }
     }
 }

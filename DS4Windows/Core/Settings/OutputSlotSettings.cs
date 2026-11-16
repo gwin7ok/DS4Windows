@@ -62,20 +62,20 @@ namespace DS4Windows.Core.Settings
         // （IProfileSettingsService と同じ。記録のみの規則 L2）。列挙型を Core/Model へ移せば、この参照はなくなる
         public RumbleEmulationMode DualSenseRumbleEmulationMode
         {
-            get => _settings.DualSenseRumbleEmulationMode[_slot];
-            set => _settings.DualSenseRumbleEmulationMode[_slot] = value;
+            get => _settings.DualSenseSlot(_slot).RumbleEmulationMode;
+            set => _settings.DualSenseSlot(_slot).RumbleEmulationMode = value;
         }
 
         public byte DualSenseHapticPowerLevel
         {
-            get => _settings.DualSenseHapticPowerLevel[_slot];
-            set => _settings.DualSenseHapticPowerLevel[_slot] = value;
+            get => _settings.DualSenseSlot(_slot).HapticPowerLevel;
+            set => _settings.DualSenseSlot(_slot).HapticPowerLevel = value;
         }
 
         public bool UseGenericRumbleStrRescaleForDualSenses
         {
-            get => _settings.UseGenericRumbleStrRescaleForDualSenses[_slot];
-            set => _settings.UseGenericRumbleStrRescaleForDualSenses[_slot] = value;
+            get => _settings.DualSenseSlot(_slot).UseGenericRumbleRescale;
+            set => _settings.DualSenseSlot(_slot).UseGenericRumbleRescale = value;
         }
 
         public bool InverseRumbleMotors

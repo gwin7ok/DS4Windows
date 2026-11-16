@@ -62,7 +62,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlDSRumbleGroupElement.SelectSingleNode("EmulationMode");
                         RumbleEmulationMode.TryParse(Item.InnerText, out RumbleEmulationMode temp);
-                        store.dualSenseRumbleEmulationMode[device] = temp;
+                        store.dualSenseSlots[device].RumbleEmulationMode = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -70,7 +70,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlDSRumbleGroupElement.SelectSingleNode("EnableGenericRumbleRescale");
                         bool.TryParse(Item.InnerText, out bool temp);
-                        store.useGenericRumbleRescaleForDualSenses[device] = temp;
+                        store.dualSenseSlots[device].UseGenericRumbleRescale = temp;
                     }
                     catch { missingSetting = true; }
 
@@ -78,7 +78,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     {
                         Item = xmlDSRumbleGroupElement.SelectSingleNode("HapticPowerLevel");
                         byte.TryParse(Item.InnerText, out byte temp);
-                        store.dualSenseHapticPowerLevel[device] = temp;
+                        store.dualSenseSlots[device].HapticPowerLevel = temp;
                     }
                     catch { missingSetting = true; }
 
