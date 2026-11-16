@@ -66,8 +66,8 @@ namespace DS4WindowsTests
             int start = code.IndexOf("private void OnProfileChanged(", System.StringComparison.Ordinal);
             Assert.True(start >= 0);
             string body = code.Substring(start, 1200);
-            Assert.Contains("string battery = \"N/A\";", body);
-            Assert.Contains("slots.GetSlot(devIndex)", body);
+            Assert.Contains("_autoProfileService.BatteryText(devIndex)", body);
+            
             Assert.DoesNotContain("battery = $\"{item.Device.Battery}\"", body);
         }
 

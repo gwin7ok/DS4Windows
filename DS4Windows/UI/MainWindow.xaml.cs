@@ -83,9 +83,8 @@ namespace DS4Windows.UI
         private readonly UpdateCheckPolicy updateCheckPolicy;
         // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
-        private NonFormTimer autoProfilesTimer;
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
-        private readonly IAutoProfileService _autoProfileService;
+        private readonly AutoProfileRunner _autoProfileService;
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
@@ -113,7 +112,6 @@ namespace DS4Windows.UI
 
         // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
-        private readonly DS4Windows.Processing.Abstractions.IControllerSlotQuery slots;
 
         public MainWindow(ArgumentParser parser,
             DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
@@ -123,17 +121,15 @@ namespace DS4Windows.UI
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             IpcCommandDispatcher ipcDispatcher,
             MainWindowsViewModel mainWindowsViewModel,
-            IAutoProfileService autoProfileService,
+            AutoProfileRunner autoProfileService,
             DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
             UpdateCheckPolicy updateCheckPolicy,
-            DS4Windows.Processing.Abstractions.IControllerSlotQuery slots,
             TrayAppearanceController trayAppearance,
             ProfileSelectionCoordinator profileSelection)
         {
             this.trayAppearance = trayAppearance ?? throw new ArgumentNullException(nameof(trayAppearance));
             this.profileSelection = profileSelection ?? throw new ArgumentNullException(nameof(profileSelection));
-            this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
             this.updateCheckPolicy = updateCheckPolicy ?? throw new ArgumentNullException(nameof(updateCheckPolicy));
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
             this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
@@ -235,8 +231,7 @@ namespace DS4Windows.UI
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             string autoProfilesFile = pathService.AppDataPath + "\\Auto Profiles.xml";
-            if (!File.Exists(autoProfilesFile))
-                _autoProfileService.CreateAutoProfilesFile(autoProfilesFile);
+            _autoProfileService.EnsureFile(autoProfilesFile);
 
             string steamGamesDir;
             if (appSettingsService.UseCustomSteamFolder && Directory.Exists(appSettingsService.CustomSteamFolder))
@@ -285,10 +280,6 @@ namespace DS4Windows.UI
                 hotkeysTimer = new NonFormTimer();
                 hotkeysTimer.Interval = 20;
                 hotkeysTimer.AutoReset = false;
-
-                autoProfilesTimer = new NonFormTimer();
-                autoProfilesTimer.Interval = 1000;
-                autoProfilesTimer.AutoReset = false;
             });
             timerThread.IsBackground = true;
             timerThread.Priority = ThreadPriority.Lowest;
@@ -449,7 +440,7 @@ namespace DS4Windows.UI
             autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
             _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
             // 自動プロファイルは接続中のスロットにだけ適用する。接続した直後に、最後の前景ウィンドウで照合し直す
-            slots.SlotChanged += ControlService_HotplugControllerRecheckAutoProfile;
+            _autoProfileService.AttachHotplugRecheck();
             autoProfileHolder.AutoProfileColl.CollectionChanged += AutoProfileColl_CollectionChanged;
             //autoProfControl.AutoProfVM.AutoProfileSystemChange += AutoProfVM_AutoProfileSystemChange;
             mainWinVM.FullTabsEnabledChanged += MainWinVM_FullTabsEnabledChanged;
@@ -539,12 +530,12 @@ namespace DS4Windows.UI
         {
             if (state)
             {
-                ChangeAutoProfilesStatus(true);
+                _autoProfileService.SetEnabled(true);
                 autoProfileHolder.AutoProfileColl.CollectionChanged += AutoProfileColl_CollectionChanged;
             }
             else
             {
-                ChangeAutoProfilesStatus(false);
+                _autoProfileService.SetEnabled(false);
                 autoProfileHolder.AutoProfileColl.CollectionChanged -= AutoProfileColl_CollectionChanged;
             }
         }
@@ -557,7 +548,7 @@ namespace DS4Windows.UI
 
         private void AutoProfControl_AutoDebugChanged(object sender, EventArgs e)
         {
-            _autoProfileService.AutoProfileDebugLogLevel = autoProfControl.AutoDebug == true ? 1 : 0;
+            _autoProfileService.DebugLogLevel = autoProfControl.AutoDebug == true ? 1 : 0;
         }
 
         private void PowerEventArrive(object sender, EventArrivedEventArgs e)
@@ -717,10 +708,7 @@ namespace DS4Windows.UI
                     string prof = e.ProfileName ?? string.Empty;
                     // Phase11 電池残量の一本化: 残量は一覧のモデルを経由せず、スロットのデバイスから直接読む
                     // （再接続の直後は一覧の行がまだ無く、"0" と表示されていた）
-                    string battery = "N/A";
-                    DS4Windows.Processing.Abstractions.IControllerSlotView batteryDevice = slots.GetSlot(devIndex);
-                    if (batteryDevice != null)
-                        battery = $"{batteryDevice.Battery}";
+                    string battery = _autoProfileService.BatteryText(devIndex);
 
                     CompositeDeviceModel item = null;
                     if (conLvViewModel != null && conLvViewModel.ControllerDict != null && conLvViewModel.ControllerDict.ContainsKey(devIndex))
@@ -741,8 +729,7 @@ namespace DS4Windows.UI
 
                     // 修正後（判定をメソッド側に委譲し、シンプルに1行で呼ぶ）:
                     // 2026-10-19: 自動プロファイル由来は AutoProfileSwitchNotifyChoice と接続の有無で判定する（AutoProfileNotificationPolicy）
-                    if (DS4Windows.UI.Services.AutoProfileNotificationPolicy.ShouldNotify(
-                            e.Source, _autoProfileService.AutoProfileSwitchNotifyChoice, item != null))
+                    if (_autoProfileService.ShouldNotify(e.Source, item != null))
                         trayAppearance.ShowProfileSwitchNotification(prolog);
                 }
                 catch { }
@@ -763,60 +750,8 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ChangeAutoProfilesStatus(bool state)
-        {
-            if (state)
-            {
-                autoProfilesTimer.Elapsed += AutoProfilesTimer_Elapsed;
-                autoProfilesTimer.Start();
-                _autoProfileService.Running = true;
-            }
-            else
-            {
-                autoProfilesTimer.Stop();
-                autoProfilesTimer.Elapsed -= AutoProfilesTimer_Elapsed;
-                _autoProfileService.Running = false;
-            }
-        }
-
         private void CheckAutoProfileStatus()
-        {
-            int pathCount = autoProfileHolder.AutoProfileColl.Count;
-            bool timerEnabled = _autoProfileService.Running;
-            if (pathCount > 0 && !timerEnabled)
-            {
-                ChangeAutoProfilesStatus(true);
-            }
-            else if (pathCount == 0 && timerEnabled)
-            {
-                ChangeAutoProfilesStatus(false);
-            }
-        }
-
-        private void ControlService_HotplugControllerRecheckAutoProfile(object sender, DS4Windows.Processing.Abstractions.ControllerSlotChangedEventArgs args)
-        {
-            if (!_autoProfileService.Running)
-                return;
-
-            // 接続処理（サービスのスレッド）を待たせず、別スレッドで照合する
-            System.Threading.Tasks.Task.Run(() =>
-            {
-                try { _autoProfileService.CheckProfilesForConnectedController(); }
-                catch (Exception ex) { DS4Windows.Core.Logging.AppLogger.LogError($"[DI] CheckProfilesForConnectedController failed: {ex.Message}"); }
-            });
-        }
-
-        private void AutoProfilesTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            autoProfilesTimer.Stop();
-            //Console.WriteLine("Event triggered");
-            // 例外が出ても、実行中なら始め直す（止まったままになると、自動プロファイルが以後動かなくなる）
-            GuardedTimerTick.Run(
-                () => _autoProfileService.CheckProfiles(),
-                () => _autoProfileService.Running,
-                () => autoProfilesTimer.Start(),
-                ex => DS4Windows.Core.Logging.AppLogger.LogError($"AutoProfilesTimer tick failed: {ex}"));
-        }
+            => _autoProfileService.UpdateStatus(autoProfileHolder.AutoProfileColl.Count);
 
         private void ControllerCol_CollectionChanged(object sender,
             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -1102,7 +1037,7 @@ namespace DS4Windows.UI
         {
             hotkeysTimerActive = false;
             hotkeysTimer.Stop();
-            autoProfilesTimer.Stop();
+            _autoProfileService.Stop();
             //autoProfileHolder.Save();
             Util.UnregisterNotify(regHandle);
             if (regHandleXusb != IntPtr.Zero)

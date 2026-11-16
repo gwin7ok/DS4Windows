@@ -1,4 +1,4 @@
-﻿namespace DS4WindowsTests
+namespace DS4WindowsTests
 {
     /// <summary>
     /// 規則 V2（画面［View。<c>DS4Windows.UI</c> 直下の型］は、業務のサービス・設定の型を直接参照せず、ViewModel を通す）の、今ある違反の許可リスト。
@@ -22,9 +22,6 @@
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IPathService",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.ControllerSlotChangedEventArgs",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IAutoProfileService",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IControllerSlotQuery",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IControllerSlotView",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IServiceLifecycle",
