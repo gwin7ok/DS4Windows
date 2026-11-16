@@ -65,10 +65,8 @@ namespace DS4WindowsTests
             string text = File.ReadAllText(Path.Combine(SourceFileLocator.RepoRoot(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
             string[] order =
             {
-                "_generalSection", "LoadLegacyExtraSettings(device, rootname);", "_touchpadBasicSection", "_triggerStickBasicSection",
-                "_stickAxialSection", "_motionSensitivitySection", "_miscSection", "_gyroControlsSection", "_gyroMouseSection",
-                "_stickOutputSection", "_triggerCurveSection", "_touchpadMouseSection", "_outputControllerSection",
-                "_profileActionsSection", "_buttonControlSection", "_buttonShiftSection",
+                "_general", "LoadLegacyExtraSettings(device, rootname);", "_triggerStick", "_motion", "_outputCurve", "_outputController",
+                "_actions", "_button",
             };
 
             // 節は、旧コードの要素の順序（ファイル順）で呼ぶ。追加設定の読込は、全般の節の直後
@@ -92,9 +90,9 @@ namespace DS4WindowsTests
             string text = File.ReadAllText(Path.Combine(SourceFileLocator.RepoRoot(), "DS4Windows", "Core", "Persistence", "LegacyProfileXmlSerializer.cs"));
             string[] order =
             {
-                "_generalSaveSection.Save(context);", "SaveLegacyExtraSettings(rootElement, device);", "_triggerStickSaveSection.Save(context);",
-                "_motionSaveSection.Save(context);", "_profileActionsSaveSection.Save(context);", "_outputCurveSaveSection.Save(context);",
-                "_outputControllerSaveSection.Save(context);", "_buttonSaveSection.Save(context);", "m_Xdoc.AppendChild(rootElement);",
+                "_general.Save(context);", "SaveLegacyExtraSettings(rootElement, device);", "_triggerStick.Save(context);",
+                "_motion.Save(context);", "_actions.Save(context);", "_outputCurve.Save(context);",
+                "_outputController.Save(context);", "_button.Save(context);", "m_Xdoc.AppendChild(rootElement);",
             };
 
             int previous = -1;
