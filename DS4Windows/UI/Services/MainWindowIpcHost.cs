@@ -66,10 +66,9 @@ namespace DS4Windows.UI.Services
         public string GetProfileName(int index)
             => index >= 0 && index < _profiles.ProfileListCol.Count ? _profiles.ProfileListCol[index].Name : null;
 
-        public int ControllerCount => _controllers.ControllerCol.Count;
-
+        // 番号は入力スロット（一覧の並び順ではない）。接続していなければ null
         public IControllerSlotView GetControllerDevice(int index)
-            => _controllers.ControllerCol[index]?.Device;
+            => _controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel model) ? model.Device : null;
 
         public void LogDebug(string message) => AppLogger.Log(AppLogLevel.Info, message, LogOptions.UserFacing);
     }

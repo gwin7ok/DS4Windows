@@ -29,7 +29,6 @@ namespace DS4WindowsTests
             public void SetLightColor(int index, byte red, byte green, byte blue) => Calls.Add($"led:{index}:{red}:{green}:{blue}");
             public int FindProfileIndex(string profileName) => -1;
             public string GetProfileName(int index) => null;
-            public int ControllerCount => 0;
             public IControllerSlotView GetControllerDevice(int index) => null;
             public void LogDebug(string message) => Calls.Add("log");
         }
