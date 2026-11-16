@@ -225,37 +225,13 @@ namespace DS4Windows.Core.Settings
         // 選択肢A: BackingStore への直接委譲（純粋な薄いパススルー）
         public RumbleSettings[] RumbleSettings => SafeConfig?.rumbleSettings;
 
-        public RumbleEmulationMode[] DualSenseRumbleEmulationMode
-        {
-            get => SafeConfig?.dualSenseRumbleEmulationMode;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.dualSenseRumbleEmulationMode = value;
-            }
-        }
-        public bool[] UseGenericRumbleStrRescaleForDualSenses
-        {
-            get => SafeConfig?.useGenericRumbleRescaleForDualSenses;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.useGenericRumbleRescaleForDualSenses = value;
-            }
-        }
-        public byte[] DualSenseHapticPowerLevel
-        {
-            get => SafeConfig?.dualSenseHapticPowerLevel;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.dualSenseHapticPowerLevel = value;
-            }
-        }
+        public DualSenseSlotSettings DualSenseSlot(int slot) => SafeConfig?.dualSenseSlots[slot];
 
 
         public byte GetRumbleBoost(int deviceIndex)
         {
             if (_deviceState.GetConfigurableDevice(deviceIndex)?.UsesGenericRumbleRescaleSetting == true &&
-                UseGenericRumbleStrRescaleForDualSenses != null &&
-                !UseGenericRumbleStrRescaleForDualSenses[deviceIndex])
+                DualSenseSlot(deviceIndex) is { UseGenericRumbleRescale: false })
                 return 100;
 
             if (SafeConfig?.rumbleSettings != null && deviceIndex >= 0 && deviceIndex < SafeConfig.rumbleSettings.Length)

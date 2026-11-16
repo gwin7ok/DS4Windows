@@ -219,19 +219,8 @@ namespace DS4Windows.Core.Settings
 
 
 
-        // Start of DualSense specific profile options
-        //
-        public RumbleEmulationMode[] dualSenseRumbleEmulationMode = new RumbleEmulationMode[ControllerLimits.TestProfileItemCount]
-        {
-            0,0,0,0,0,0,0,0,0
-        };
-        public bool[] useGenericRumbleRescaleForDualSenses = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public byte[] dualSenseHapticPowerLevel = new byte[ControllerLimits.TestProfileItemCount]
-        {
-            0,0,0,0,0,0,0,0,0
-        };
-        //
-        // End of DualSense specific profile options
+        /// <summary>DualSense 固有の設定の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly DualSenseSlotSettings[] dualSenseSlots = new DualSenseSlotSettings[ControllerLimits.TestProfileItemCount];
 
 
 
@@ -508,6 +497,7 @@ namespace DS4Windows.Core.Settings
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
             for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
+            for (int i = 0; i < dualSenseSlots.Length; i++) dualSenseSlots[i] = new DualSenseSlotSettings(i);
             for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
             for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
             for (int i = 0; i < triggerSlots.Length; i++) triggerSlots[i] = new TriggerSlotSettings(i);

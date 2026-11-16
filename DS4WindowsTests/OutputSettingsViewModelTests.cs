@@ -62,7 +62,7 @@ namespace DS4WindowsTests
             byte boost = service.RumbleBoost[0];
             int autostop = service.GetRumbleAutostopTime(0);
             bool inverse = service.InverseRumbleMotors[0];
-            var emulation = service.DualSenseRumbleEmulationMode[0];
+            var emulation = service.DualSenseSlot(0).RumbleEmulationMode;
             try
             {
                 var names = new List<string>();
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
                 Assert.Equal(!inverse, service.InverseRumbleMotors[0]);
 
                 vm.DualSenseRumbleEmulationPerIndex = 1;
-                Assert.Equal(DS4Windows.Core.Model.RumbleEmulationMode.Legacy, service.DualSenseRumbleEmulationMode[0]);
+                Assert.Equal(DS4Windows.Core.Model.RumbleEmulationMode.Legacy, service.DualSenseSlot(0).RumbleEmulationMode);
                 Assert.Equal(1, vm.DualSenseRumbleEmulationPerIndex);
             }
             finally
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
                 service.RumbleBoost[0] = boost;
                 service.SetRumbleAutostopTime(0, autostop);
                 service.InverseRumbleMotors[0] = inverse;
-                service.DualSenseRumbleEmulationMode[0] = emulation;
+                service.DualSenseSlot(0).RumbleEmulationMode = emulation;
             }
         }
 
