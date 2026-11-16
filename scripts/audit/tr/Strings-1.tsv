@@ -1,0 +1,279 @@
+DuplicateAction	複製
+RealWorldCalibration	実世界の校正
+RenameProfile	名前の変更
+DisableVirtualController	仮想コントローラーを無効にする
+DisableVirtualControllerTip	このプロファイルを使うコントローラーに、仮想コントローラーを作成・関連付けしません（プロファイルの保存時に適用）
+EmulatedController	エミュレートするコントローラー
+OutContNotice	出力する仮想コントローラーの種類を選びます（プロファイルの保存時に適用）
+VirtualControllerSettings	仮想コントローラーの設定
+ChangeOnNewDeviceConn	変更は、新しくデバイスを接続したときに反映されます
+StickFuzzTooltip	ファズは、有効なゾーン内でアナログスティックが動いたとき、マッピングで「変化した」と見なす最小の移動量（units）を指定します。摩耗して位置が安定しないスティックに役立ちます。値は、スティックの生の単位（units）で表します。
+StickMaxOutputForceTooltip	最大出力の設定を常に強制します。最大出力 100% で、値を円形の出力に収めたいときに便利です
+StickMaxOutputTooltip	場合によっては、アナログスティックの出力の最大値を制限したいことがあります。最大出力は、アナログスティックの最終的な出力値を抑えます。
+AntiDeadzoneTooltip	アンチデッドゾーンは、軸が割り当てられたデッドゾーンを抜けたあとに出す最小の出力値を示すオフセットです。主に、ゲーム内で軸に割り当てられたデッドゾーンの値に合わせるために使います。たとえばゲーム内の XInput LS の標準のデッドゾーンは 8000（25%）前後です。アンチデッドゾーンを設定しないと、DS4Windows のデッドゾーンに加えて、ゲーム側のデッドゾーンも越えるまで軸を動かす必要があります。
+StickInputCurveTooltip	古い、廃止予定の設定です。デッドゾーンの情報を適用する前に、生の入力座標に基づくカーブを適用しようとします。不安定です
+TouchpadMinThresholdTooltip	マウスのイベントをシステムへ送るまでに必要な、計算上の最小の移動量
+TouchpadRotationTooltip	タッチパッドのスワイプを、指定した角度で回転させます。通常のスワイプが真っすぐにならないときに便利です。値は -180 から 180 まで。既定は 0 です。
+TouchpadSlideTooltip	複数の指によるマウスホイールのスクロール操作を始める感度
+TouchpadTapTooltip	タッチパッドのタップで、マウスの左クリックを行います。最大の間隔は（値 × 2）ミリ秒です。
+TouchpadTrackballEnableTooltip	指を離したあとも、タッチパッドのスワイプに勢いを残します。タッチパッドの狭い範囲では動かせない距離まで、マウスカーソルを動かせます
+TouchpadTrackballFrictionTooltip	仮想トラックボールに摩擦を加えます。摩擦を減らすと、マウスカーソルが動き続ける時間が長くなります
+StickOuterBindDeadTooltip	アクションが発生するしきい値
+StickOuterBindInvertTooltip	しきい値に達する前にアウターバインドを発生させます。しきい値を超えるとアクションは解除されます
+StickOuterBindTooltip	スティックの移動量がしきい値を超えたときに実行するアクション。歩く・走るのキー割り当てに便利です。反転すると、しきい値までの間アクションが発生します
+StickRotationTooltip	＋ = 時計回り、－ = 反時計回り。\n\n回転の設定は、アナログスティックを動かすときに親指が少しずれる場合に、向きを補正するためのものです。たとえば、スティックを真上へいっぱいに倒したとき、親指が中心から少しずれることがあります。私の親指は、DS4 の握り方のせいで、真上に倒すと少し右へずれます。値は、最終的な軸の出力値を調整する角度（度）です。値は -180 から 180 まで。既定は 0 です。
+TouchpadJitterCompTooltip	タッチパッドの小さな動きを抑えます。タッチパッドをほぼ同じ位置で押さえているときの、意図しないマウスカーソルの動きを減らします
+DS4BTPollRate	DS4 BT ポーリングレート
+DS4LightbarPassthruDisabled	ドライバーの問題のため、この機能は現在アプリで無効です。今後の更新で修正される見込みです。
+DualSRumbleForceGenericRescale	2 種類の強度（一般用と DualSense 専用）を両方使う
+DualSRumbleModeDisabled	無効
+DualSRumbleModeAccurate	正確
+DualSRumbleModeLegacy	レガシー
+DualSRumbleModeNPowerLevelTxt	振動モードと強度:
+DualSRumbleModePassthru	パススルー
+DualSRumbleSpecificSettings	DualSense 専用の振動設定
+DualSRumbleForceGenericRescale_Tip	無効のままにすることをお勧めします。\n\n- 無効: 振動は、設定した強度に合わせてコントローラー本体が調整します（高品質）\n\n- 有効: DS4Windows の一般的な振動の調整と、DualSense 本体の調整の両方が働きます
+DualSRumbleModes_Tip	正確モード（推奨）:\n- DualShock 4／Xbox 360 コントローラーの振動の感触に近づけます\n- ゲームが意図した振動の効果を、より正確に再現します\n- 振動に深みがあります。同じ強度でも、ゲーム内の振動の最小と最大の差が大きく、ごく弱い振動から、設定した強度の最大までの幅があります\n\nレガシーモード:\n- 全体に強めですが、深みがありません\n- より「鋭い」感触です\n- ゲーム内の最小・最大の振動は、設定した強度よりわずかに弱い・わずかに強い程度になります\n\n無効:\n- 振動を完全に無効にします
+DualSRumblePowerLevel_Tip	DualSense 本体の振動の強度を調整します。\n\n- 正確モードでは、振動の［最小 // 最大］は［1% /// 選んだ強度］になります\n    - 例（62%）: ［最小 = 1% /// 最大 = 62%］\n\n- レガシーモードでは、振動の［最小 /// 最大］は、おおよそ［強度 - 12% /// 強度 + 12%］になります\n    - 例（62%）: ［最小 = 50% /// 最大 = 74%］
+Accept	確定
+Black	黒
+Colored	色付き
+Default	既定
+DeviceType	デバイスの種類
+DisconnectFromBtWhenStopping	停止時に Bluetooth を切断する
+Dynamic	動的
+FlashLightbarAtHighLatency	遅延が大きいときにライトバーを点滅
+HotkeysAbout	ホットキー／バージョン情報
+IconChoice	アイコンの選択
+OutputSlots	出力スロット
+Permanent	固定
+Plug	接続
+RevertToDefaultProfileOnUnknown	不明なときは既定のプロファイルに戻す
+ShowAutoProfileDebugMessages	自動プロファイルのデバッグメッセージを表示
+SwipeTouchpadToSwitchProfiles	タッチパッドのスワイプでプロファイルを切り替え
+TurnOffDS4WindowsTemporarily	DS4Windows を一時的にオフにする
+Unplug	取り外し
+White	白
+AppTheme	アプリのテーマ
+CheckEvery	確認の間隔
+OscServerHeading	外部からの OSC による制御と監視
+EnableOscServer	制御サーバーを有効にする
+EnableInterpretingOscMonitoring	監視メッセージを解釈する
+EnableOscSender	監視サービスを有効にする
+ControllerSupportDS4	DS4 コントローラーのサポート
+ControllerSupportDualSense	DualSense コントローラーのサポート
+ControllerSupportSwitchPro	Switch Pro コントローラーのサポート
+Copycat	Copycat
+CopycatTip	Sony 製ではない DS4 コントローラー向けに、いくつかのフラグを変更します。サードパーティー製の DS4 互換機で、振動やライトバーが使えない問題が直る場合があります
+Dark	ダーク
+Days	日
+DetectedControllers	検出したコントローラー
+DeviceOptions	デバイスのオプション
+EnableVerboseLog	詳細なログを有効にする
+EnableVerboseLogTip	ゲームパッドの接続時に、追加のログメッセージを表示します
+Hours	時間
+UseCustomSteamFolder	カスタムの Steam フォルダーを使う
+Utils	ユーティリティ
+Program	プログラム
+RunAs	実行方法
+Task	タスク
+GyroTriggerJitterCompensationTooltip	カーブの低い側で追加の抑制を行い、デバイスの揺れを補正します
+FirstLaunch.DS4EnableCkbLabel	DS4 デバイスのサポート
+FirstLaunch.DSEnableCkbLabel	DualSense デバイスのサポート
+FirstLaunch.Header	マッピングに使うデバイスの有効化
+FirstLaunch.SwitchProEnableCkbLabel	Switch Pro デバイスのサポート
+AutoProfiles.DisplaySwitchVia	プロファイルの切り替えの表示方法
+AutoProfiles.LogAndNotification	ログ＋通知
+Notification	通知
+Light	ライト
+ProfileEditor.VirtualDS4TrigOutput	DS4 のトリガー出力モード
+Analog	アナログ
+Buttons	ボタン
+DS4OutputTriggersDefault	既定（アナログ＋ボタン）
+DeadZone	デッドゾーン
+MaxZone	最大ゾーン
+AntiDeadZone	アンチデッドゾーン
+Axial	軸ごと
+AxisConfig	軸の設定
+Controls	操作
+Cubic	3 次
+DeadZone X	デッドゾーン X
+DeadZone Y	デッドゾーン Y
+DeadZoneType	デッドゾーンの種類
+EaseoutCubic	イーズアウト（3 次）
+EaseoutQuad	イーズアウト（2 次）
+EnhancedPrecision	高精度（Enhanced Precision）
+FlickStick	フリックスティック
+Linear	リニア
+MaxOutput	最大出力
+MouseOffset	マウスのオフセット
+MouseVerticalScale	マウスの垂直スケール
+OutputCurve	出力カーブ
+OutputMode	出力モード
+Quadratic	2 次
+Radial	円形
+Sensitivity	感度
+SixAxisAccel	6 軸（加速度）
+SquareStick	スクエアスティック
+VerticalScale	垂直スケール
+AntiSnapback	アンチスナップバック
+AntiSnapbackTiming	アンチスナップバックのタイミング
+Touchpad	タッチパッド
+ViGEm117MinNeeded	ViGEmBus 1.17.333.0 以降でのみ動作します
+AntiRadius	アンチ半径
+BindingWin.ChangeLight	ライトを変更
+BindingWin.ChangeMouseSensitivity	マウスの感度を変更
+BindingWin.KeyAndRelMouse	キーボードと相対マウス
+BindingWin.KeyboardAndMouse	キーボードとマウス
+BindingWin.MacroOn	マクロ実行中。無効にするキーを選ぶか、このウィンドウを閉じて保存します
+BindingWin.RecordAMacro	マクロを記録
+BindingWin.SelectShiftTrigger	シフトのトリガーを選択
+Confirm	確認
+ControllerRegOptWin.EnableHomeLED	ホーム LED を有効にする
+ControllerRegOptWin.JoinedGyroProvider	結合したジャイロの提供元
+ControllerRegOptWin.LinkMode	リンクモード
+ControllerRegOptWin.MuteLEDMode	ミュート LED モード
+ControllerRegOptWin.PlayerLEDMode	プレイヤー LED モード
+ControllerRegOptWin.WinTitle	コントローラーの種類のオプション
+DeltaAcceleration	デルタ加速
+DirectionalSwipe	方向スワイプ
+EasingDuration	イージングの時間
+Enabled	有効
+EnableTouchpadToggle	タッチパッドのトグルを有効にする
+Extra	追加
+FlashRate	点滅の速さ
+FullBtnPull	ボタンを全部押す
+Fuzz	ファズ
+GyroControlsAccel	操作（加速度）
+Heavy	強
+Height	高さ
+HipFireDelay	ヒップファイアの遅延
+ID	ID
+IdleDisconnect	アイドル時の切断
+LangPackControl.UseLangPack	言語パックを使う
+LaunchProgramWithProfile	プロファイルと同時にプログラムを起動
+Lightbar	ライトバー
+LinkProfileId	プロファイル/ID をリンク
+MainWin.EnableServer	サーバーを有効にする
+MainWin.OneEuroBeta	1€ Beta
+MainWin.OneEuroMinCutoff	1€ MinCutoff
+MaxTravel	最大移動量
+MinFactor	最小係数
+MinTravel	最小移動量
+Mode	モード
+Mouse	マウス
+MouseAcceleration	マウスの加速
+MouseJoystick	マウススティック
+MouseSensitivity	マウスの感度
+Multiplier	倍率
+No	いいえ
+Normal	通常
+Other	その他
+OuterBind	アウターバインド
+OuterBtn	外側ボタン
+OuterBtnDead	外側ボタンのデッド
+Passthru	パススルー
+Port	ポート
+RecordBox.AddRumble	振動を追加
+RecordBox.ChangeLightbarColor	ライトバーの色を変更
+RecordBox.DoubleClickWaitEdit	待ち時間をダブルクリックして時間を編集
+RecordBox.FifthMB	マウスの 5 番目のボタン
+RecordBox.FourthMB	マウスの 4 番目のボタン
+RecordBox.InsertWait	待ち時間を挿入
+RecordBox.LoadPreset	プリセットを読み込む
+RecordBox.MacroOrder	マクロの順序
+RecordBox.PlayOnce	1 回だけ再生
+RecordBox.RecordDelays	待ち時間を記録
+RecordBox.RepeatToggle	繰り返す（トグル）
+RecordBox.RepeatWhileHeld	押している間繰り返す
+RecordBox.SavePreset	プリセットを保存
+RecordBox.UseActionToRecord	キーボード/マウス＋コントローラー 1 で記録する
+RecordBoxWin.WinTitle	マクロの編集
+Regular	標準
+RenameProfileWin.TypeNewProfileName	選択したプロファイルの XML ファイルに使う、新しい名前を入力してください。
+RenameProfileWin.WinTitle	プロファイルの名前の変更
+Rotation	回転
+ScanCode	スキャンコード
+SelectedProfile	選択中のプロファイル
+ShiftModifier	シフト修飾
+SkipVersion	このバージョンをスキップ
+SnapToCenter	中心にスナップ
+Toggle	トグル
+TriggerEffect	トリガー効果
+TwoStageMode	2 段モード
+UDPServer	UDP サーバー
+Unbound	未割り当て
+UpdaterWin.WinTitle	更新ウィンドウ
+UseController	コントローラーを使う
+UseSmoothing	スムージングを使う
+Width	幅
+XCenter	X 中心
+YCenter	Y 中心
+Yes	はい
+Active	有効
+Current	現在
+Intro	はじめに
+OutputSlotMan.XInputNum	XInput 番号
+Pitch	ピッチ
+PresetOptWin.OutputController	出力コントローラー
+PresetOptWin.PresetMenu	プリセットメニュー
+ReadingsControl.BatteryZero	バッテリー: 0%
+ReadingsControl.InputDelayNA	入力遅延: 該当なし
+ReadingsControl.SixAxisXText	6 軸: 読みやすいよう、X 軸を反転して表示しています
+Requested	予約
+Roll	ロール
+Yaw	ヨー
+Appdata	Appdata
+ProgramFolder	プログラムのフォルダー
+SpecialActionEdit.CheckBattery	バッテリー残量を確認
+SpecialActionEdit.DisconnectBT	Bluetooth を切断
+SpecialActionEdit.DoubleTapTrigger	ダブルタップのトリガー
+SpecialActionEdit.HoldFor	長押し
+SpecialActionEdit.HoldTrigger	長押しのトリガー
+SpecialActionEdit.KeepKeyState	キーの状態を保持
+SpecialActionEdit.LaunchProgram	プログラムを起動
+SpecialActionEdit.LoadProfile	プロファイルを読み込む
+SpecialActionEdit.MacroRecorded	マクロを記録しました
+SpecialActionEdit.MultiAction	マルチアクションボタン
+SpecialActionEdit.PressingUnloadTrigger	解除のトリガーを押したとき
+SpecialActionEdit.PressKey	キー・マウス・ボタンを出力
+SpecialActionEdit.RecordMacro	マクロを記録
+SpecialActionEdit.ReleasingUnloadTrigger	解除のトリガーを離したとき
+SpecialActionEdit.RepeatWhileHeld	押している間繰り返す
+SpecialActionEdit.RunTriggerRelease	トリガーを離したときに実行
+SpecialActionEdit.SelectAction	-アクションを選択-
+SpecialActionEdit.SelectKey	キーを選択
+SpecialActionEdit.SelectMacro	マクロを選択
+SpecialActionEdit.SetUnloadTrigger	解除のトリガーを設定
+SpecialActionEdit.SyncRun	同期して実行
+SpecialActionEdit.TapTrigger	タップのトリガー
+SpecialActionEdit.UnloadTriggerRelease	トリガーを離したときに解除
+SpecialActionEdit.UntoggleKeyBy	キーのトグルを解除する操作
+SpecialActionEdit.ViaLightbar	ライトバー経由
+SpecialActionEdit.ViaNotification	通知経由
+UnloadTrigger	解除のトリガー
+Net8NoticeWin.WinTitle	.NET 8 が見つかりません
+Net8NotInstalledWinNotice	DS4Windows バージョン 3.3 では、お使いのシステムに .NET 8 デスクトップ ランタイムのインストールが必要になります  \n[https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer)  \n\n内容を確認したら、[OK] をクリックしてください。[キャンセル] を押すと、次回のアプリ起動時にもう一度お知らせします。
+OK	OK
+Custom	カスタム
+ControllerSupportMoonlight	仮想コントローラーのサポート
+AdvancedSupport	高度なサポート
+StickCalibration	スティックの校正
+XAxisOffset	X 軸のオフセット
+YAxisOffset	Y 軸のオフセット
+AutomaticallyRecalibrateStick	スティックを自動で再校正する
+ProcessPriority	プロセスの優先度
+RealTimeNoAdmin	リアルタイムの優先度を選ぶには、アプリを管理者モードで実行する必要があります。
+ProfileSwitchNotification	プロファイルの切り替え通知を表示
+LightbarMode	ライトバーのモード
+SolidColor	単色
+Macro	マクロ
+Add	追加
+ColorAndLength	色と長さ
+SpecialActionEdit.CalibrateGyro	ジャイロを校正
+HoldFor	長押し
+FailedToRetrieveLatestVersion	最新バージョンを取得できませんでした
+CancelCurrentMacro	実行中のマクロを中止
+CancelCurrentMacroTooltip	このマクロを実行したとき、実行中のマクロを止めるかどうかを指定します
+ExportSpecialActions	アクションをエクスポート
+InverseMotors	モーターを入れ替える

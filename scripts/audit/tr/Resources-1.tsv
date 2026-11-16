@@ -1,0 +1,105 @@
+AddingToList	リストに追加しています...
+AddPrograms	プログラムを追加
+ALocactionNeeded	続行するには、場所を選ぶ必要があります
+AlwaysRainbow	常に虹色モード
+AssignProfile	コントローラー *number* に割り当て
+Battery	バッテリー: *number*%
+BestUsedRightSide	右側をマウスの機能にしているときに最適
+BTPollRate	Bluetooth 接続時の DS4 本体のポーリングレートを決めます（プロファイルの保存時に適用）
+CannotMoveFiles	新しい場所へファイルを移動できません。DS4Tool フォルダーの名前を「DS4Windows」に変更してください
+CannotWriteHere	現在の場所には書き込めません。設定を appdata にコピーしますか?
+Charged	充電済み
+Charging	充電中: *number*%
+CloseDS4W	DS4Windows を閉じますか?
+CloseMinimize	メインウィンドウを閉じると、アプリは最小化されます。アプリの終了は、通知アイコンから行います
+Color	色
+Connecting	接続しています...
+ContextEdit	コントローラー *number* のプロファイルを編集
+ContextNew	コントローラー *number* のプロファイルを作成
+CopyComplete	コピーが完了しました。DS4Windows を再起動して、プログラムのフォルダーから設定を削除してください
+CopyFullColor	クリックして色をすべてコピー
+Day	日
+Days	日
+Disconnected	切断
+DownText	下
+DS4WindowsCannotEditHere	DS4Windows はここで設定を編集できません。これから終了します
+EditProfile	編集
+FallBackTo	*button* に戻す
+FifthMouseDown	マウスの 5 番目のボタンを押す
+FifthMouseUp	マウスの 5 番目のボタンを離す
+FlashAtTip	クリックして点滅の色を変更します。黒 = 既定の色
+FlushHID	HID をフラッシュ
+FlushHIDTip	読み取りのたびに HID のキューをフラッシュします
+FourthMouseDown	マウスの 4 番目のボタンを押す
+FourthMouseUp	マウスの 4 番目のボタンを離す
+GyroReadout	クリックして 6 軸ジャイロの読み取り値を表示します
+GyroTriggerBehavior	オンにすると、トリガーが有効な間だけジャイロを有効にします。オフにすると、トリガーが有効な間はジャイロを無効にします。
+GyroX	GyroX、左右の傾き
+GyroY	GyroY、前後の傾き
+GyroZ	GyroZ、上下の傾き
+Hour	時間
+Hours	時間
+HoverOverItems	項目にマウスを重ねると、説明や詳細を表示します
+IfRemovingDS4Windows	DS4Windows を削除する場合は、プロファイルのフォルダーへのリンクから設定を削除できます
+InstallDriver	ここでドライバーをインストール
+Jitter	6 軸を使って、タッチパッドの動きの計算を補助します
+KeepThisSize	閉じたあとも、このウィンドウのサイズを保持する
+LightByBatteryTip	DS4 が満充電のとき、有効ならアイドル時間でもライトを暗くします
+Loading	読み込んでいます...
+MacroRecorded	マクロを記録しました
+MakeNewProfile	新しいプロファイルを作成
+New	新規
+NoMacroRecorded	マクロは記録されませんでした
+noneProfile	（なし）
+NoProfileLoaded	プロファイルが読み込まれていません
+OpeningInstaller	インストーラーを開いています
+OpenScpDriver	ScpDriver.exe を開いてください
+PleaseImport	プロファイルをインポートするか、作成してください
+PlusNewProfile	新しいプロファイル
+ProfileFolderMoved	プロファイルのフォルダーをプログラムのフォルダーへ移動しました
+Programs	プログラム
+QuickCharge	USB 接続時に Bluetooth を自動で無効にする
+RecordText	記録
+RightClickPresets	右クリックで、操作セットのプリセットを設定します
+RunAtStartup	ログイン後に DS4Windows を起動するよう Windows に設定します
+SaveRecordedMacro	記録したマクロを保存しますか?
+SelectActionTitle	*action* のアクションを選択
+SetRegularTrigger	通常のトリガーを設定
+SetUnloadTrigger	解除のトリガーを設定
+Shortcuts	ショートカット
+SixAxisReading	クリックして 6 軸の詳しい読み取り値を表示します
+StartText	開始
+Step1	手順 1: ViGEmBus ドライバーをインストール
+SwipeDown	下にスワイプ
+SwipeLeft	左にスワイプ
+SwipeRight	右にスワイプ
+SwipeTouchpad	タッチパッドをスワイプしてプロファイルを切り替え
+SwipeUp	上にスワイプ
+TapAndHold	タップして長押しでドラッグ。1 回のタップは、少し遅れて反応します
+TextDocs	テキスト ドキュメント (*.txt)
+TouchpadOffTip	PS + タッチパッドで再び有効にします
+TwoFingerSwipe	タッチパッドを 2 本指で左右にスワイプ
+TypeNewName	新しい名前を入力
+TypeProfileName	プロファイル名を入力
+UACTask	このモードを有効にするには、DS4Windows を管理者として実行する必要があります。
+UpText	上
+UseControllerForMapping	コントローラーでも、割り当てを変更できます
+UsingTPSwipes	タッチパッドをマウスとして使えなくなります
+WaitMS	待ち時間 *number* ミリ秒
+WillKeep	保持します
+XMLFiles	XML ファイル (*.xml)
+EnableTouchToggle	PS + タッチパッドのクリックで、タッチパッドのマウス機能を切り替えられるようにします。
+UdpServer	UDP サーバーを有効にします。サーバーが待ち受けるアドレスとポートを指定します。アドレスの指定: 127.0.0.1 = このパソコンのみ | 0.0.0.0 = すべてのアドレス | 特定のホスト名または IP アドレス。
+AutoProfilePathAndWindowTitleEditTip	^ABC = 文字列の先頭に一致 (^) | ABC$ = 文字列の末尾に一致 ($) | *ABC = 文字列を含む (*)
+ShowAutoProfileDebugLogTip	有効にすると、[ログ] タブに、自動プロファイルのイベントの詳細なメッセージを表示します。
+MacroScanCodeTip	マクロで、キーボードのキーのスキャンコードの値を使います
+MacroRunOnReleaseTip	トリガーのキーを離したときに、マクロを実行します
+MacroSynchronizedRunTip	同じトリガーに複数のマクロがあるとき、順番に同期して実行します（キーを押すマクロが終わってから、キーを離すマクロを実行）
+MacroRepeatTip	トリガーのキーを押している間、マクロを繰り返します
+MacroKeepKeyStateTip	マクロの実行が終わったとき、最後のキーの状態を保持します（たとえば、キーが押された状態のままなら、自動では既定の状態に戻しません）
+SquareStickRoundness	スクエアスティックの角の丸み
+OscServer	OSC サーバーを有効にします。すべてのアドレスでポートを待ち受けます。
+UsingAutoTempProfile	コントローラー {0} は、一時プロファイル「{1}」を使っています
+TouchStarted	タッチ開始
+TouchEnded	タッチ終了
+Browse	参照...
