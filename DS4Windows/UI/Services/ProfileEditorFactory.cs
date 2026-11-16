@@ -45,7 +45,7 @@ namespace DS4Windows.UI.Services
         }
 
         public ProfileEditor CreateProfileEditor(int targetDevice, IEditorWindowFactory editors)
-            => new ProfileEditor(targetDevice, _appSettings, _profileSettings, editors, _profileRepository,
+            => new ProfileEditor(targetDevice, new EditorLayoutSettingsAdapter(_appSettings), _profileSettings, editors, _profileRepository,
                 _profileSwitcher, _readings, _viewModelFactory, _actionViewModelFactory, _environmentService, _runtimeFeatures, _slotCommands);
     }
 }

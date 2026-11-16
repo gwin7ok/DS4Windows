@@ -69,7 +69,7 @@ namespace DS4Windows.UI
         // ViewModel をこの値で生成するため、コンストラクタでだけ設定する
         private readonly int targetDevice = NoTargetDevice;
         // Phase6-Step8-2: レイアウト・言語設定（コンストラクタ注入。Global.ProfileEditor*Width 等の置換先）
-        private readonly IAppSettingsService appSettingsService;
+        private readonly DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService;
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileSettingsService profileSettingsService;
         private readonly IProfileEditViewModelFactory _viewModelFactory;
@@ -169,7 +169,7 @@ namespace DS4Windows.UI
         /// <param name="profileSettingsService">
         /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
-        public ProfileEditor(int targetDevice, IAppSettingsService appSettingsService, IProfileSettingsService profileSettingsService,
+        public ProfileEditor(int targetDevice, DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
             IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IProfileEditViewModelFactory viewModelFactory,
             IActionViewModelFactory actionViewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
