@@ -26,8 +26,6 @@
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IAutoProfileService",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IControllerSlotQuery",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IControllerSlotView",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IIpcCommandHost",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IIpcCommandProcessor",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IServiceLifecycle",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IEnvironmentService",

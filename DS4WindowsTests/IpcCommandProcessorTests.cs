@@ -140,11 +140,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheProcessor_IsASingleton_AndMainWindowIsTheHost_WithNoIpcMethodsLeft()
+        public void TheProcessor_IsASingleton_AndTheHostIsNotTheWindow_WithNoIpcMethodsLeft()
         {
             Assert.IsType<IpcCommandProcessor>(TestHost.GetService<IIpcCommandProcessor>());
             Assert.Same(TestHost.GetService<IIpcCommandProcessor>(), TestHost.GetService<IIpcCommandProcessor>());
-            Assert.True(typeof(IIpcCommandHost).IsAssignableFrom(typeof(MainWindow)));
+            Assert.True(typeof(IIpcCommandHost).IsAssignableFrom(typeof(DS4Windows.UI.Services.MainWindowIpcHost)));
+            Assert.False(typeof(IIpcCommandHost).IsAssignableFrom(typeof(MainWindow)));   // 画面は契約を実装せず、操作は MainWindowIpcHost が受ける
 
             BindingFlags all = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
             var leftover = typeof(MainWindow).GetMethods(all).Select(m => m.Name).Where(n => n.StartsWith("Ipc")).ToList();

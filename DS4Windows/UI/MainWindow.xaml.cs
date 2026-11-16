@@ -94,7 +94,8 @@ namespace DS4Windows.UI
         private readonly ProfileSelectionCoordinator profileSelection;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
         private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
-        private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
+        private readonly IpcCommandDispatcher ipcDispatcher;   // CLI のコマンドの実行
+        private MainWindowIpcHost ipcHost;   // コマンドが画面に頼む操作（一覧の ViewModel ができてから作る）
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
         private ProfileEditor editor;
@@ -120,7 +121,7 @@ namespace DS4Windows.UI
             DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
             DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
             DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
-            DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor,
+            IpcCommandDispatcher ipcDispatcher,
             MainWindowsViewModel mainWindowsViewModel,
             IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
@@ -149,7 +150,7 @@ namespace DS4Windows.UI
             this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
-            this.ipcProcessor = ipcProcessor ?? throw new ArgumentNullException(nameof(ipcProcessor));
+            this.ipcDispatcher = ipcDispatcher ?? throw new ArgumentNullException(nameof(ipcDispatcher));
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
@@ -177,6 +178,7 @@ namespace DS4Windows.UI
             UpdateStartStopText();
 
             conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder, uiDispatcher);
+            ipcHost = new MainWindowIpcHost(ChangeService, CloseApplicationForIpc, conLvViewModel, profileListHolder);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
             ChangeControllerPanel();
