@@ -101,21 +101,21 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Output;
-            OutContType saved = service.OutContType[0];
+            OutContType saved = service.OutputType(0).ContType;
             try
             {
                 vm.TempControllerIndex = 1;
-                Assert.Equal(OutContType.DS4, service.OutContType[0]);
+                Assert.Equal(OutContType.DS4, service.OutputType(0).ContType);
                 Assert.Equal(1, vm.ControllerTypeIndex);
                 Assert.Equal(OutContType.DS4, vm.TempConType);
 
                 vm.TempConType = OutContType.X360;
-                Assert.Equal(OutContType.X360, service.OutContType[0]);
+                Assert.Equal(OutContType.X360, service.OutputType(0).ContType);
                 Assert.Equal(0, vm.TempControllerIndex);
             }
             finally
             {
-                service.OutContType[0] = saved;
+                service.OutputType(0).ContType = saved;
             }
         }
 

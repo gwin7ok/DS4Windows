@@ -22,8 +22,8 @@ namespace DS4Windows.Core.Settings
         /// <summary>保存される出力の種類（Xbox 360／DS4）。</summary>
         public OutContType OutContType
         {
-            get => _settings.OutContType[_slot];
-            set => _settings.OutContType[_slot] = value;
+            get => _settings.OutputType(_slot).ContType;
+            set => _settings.OutputType(_slot).ContType = value;
         }
 
         /// <summary>仮想コントローラーを作らない（DInput のみ）。</summary>
@@ -35,14 +35,14 @@ namespace DS4Windows.Core.Settings
 
         public bool VirtualTriggerButtons
         {
-            get => _settings.OutputVirtualTriggerButton[_slot];
-            set => _settings.OutputVirtualTriggerButton[_slot] = value;
+            get => _settings.OutputType(_slot).VirtualTriggerButtons;
+            set => _settings.OutputType(_slot).VirtualTriggerButtons = value;
         }
 
         public DS4TriggerOutputMode OutputDS4TriggerMode
         {
-            get => _settings.OutputDS4TriggerMode[_slot];
-            set => _settings.OutputDS4TriggerMode[_slot] = value;
+            get => _settings.OutputType(_slot).DS4TriggerMode;
+            set => _settings.OutputType(_slot).DS4TriggerMode = value;
         }
 
         public byte RumbleBoost

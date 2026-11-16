@@ -21,8 +21,6 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateOutputSlotService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
-            Assert.NotSame(settings.OutContType, service.ActiveOutDevType);
-            Assert.NotSame(settings.OutContType, service.OutDevTypeTemp);
             Assert.NotSame(service.ActiveOutDevType, service.OutDevTypeTemp);
         }
 
@@ -32,21 +30,21 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateOutputSlotService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
-            OutContType originalPersistent = settings.OutContType[Slot];
+            OutContType originalPersistent = settings.OutputType(Slot).ContType;
             OutContType originalActive = service.ActiveOutDevType[Slot];
             OutContType originalTemp = service.OutDevTypeTemp[Slot];
             try
             {
                 OutContType changed = originalPersistent == OutContType.DS4 ? OutContType.X360 : OutContType.DS4;
-                settings.OutContType[Slot] = changed;
+                settings.OutputType(Slot).ContType = changed;
 
-                Assert.Equal(changed, settings.OutContType[Slot]);
+                Assert.Equal(changed, settings.OutputType(Slot).ContType);
                 Assert.Equal(originalActive, service.ActiveOutDevType[Slot]);
                 Assert.Equal(originalTemp, service.OutDevTypeTemp[Slot]);
             }
             finally
             {
-                settings.OutContType[Slot] = originalPersistent;
+                settings.OutputType(Slot).ContType = originalPersistent;
             }
         }
 
@@ -56,13 +54,13 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateOutputSlotService();
             var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
-            OutContType originalPersistent = settings.OutContType[Slot];
+            OutContType originalPersistent = settings.OutputType(Slot).ContType;
             OutContType originalActive = service.ActiveOutDevType[Slot];
             try
             {
                 service.ActiveOutDevType[Slot] = OutContType.None;
 
-                Assert.Equal(originalPersistent, settings.OutContType[Slot]);
+                Assert.Equal(originalPersistent, settings.OutputType(Slot).ContType);
             }
             finally
             {
@@ -78,10 +76,10 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateOutputSlotService(TestRepositoryFactory.CreateOutputSlotManager());
             var settings = TestRepositoryFactory.CreateProfileSettingsService(TestGlobals.Store);
 
-            OutContType originalPersistent = settings.OutContType[Slot];
+            OutContType originalPersistent = settings.OutputType(Slot).ContType;
             service.UnplugSlot(Slot);
 
-            Assert.Equal(originalPersistent, settings.OutContType[Slot]);
+            Assert.Equal(originalPersistent, settings.OutputType(Slot).ContType);
         }
     }
 }

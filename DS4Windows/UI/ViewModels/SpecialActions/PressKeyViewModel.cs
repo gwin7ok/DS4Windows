@@ -166,7 +166,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                     {
                         // Prefer using editor's device-specific output type when available
                         string btnName;
-                        if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
+                        if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                         {
                             btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                         }
@@ -210,7 +210,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 if (defaultOutputInput == DS4Controls.None) return null;
                 X360Controls output = profileSettingsService.GetDefaultButtonMapping()[(int)defaultOutputInput];
-                if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
+                if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                     return X360ControlTables.getX360ControlString(output, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                 return X360ControlTables.getX360ControlString(output);
             }
@@ -228,7 +228,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 try
                 {
                     string buttonName;
-                    if (editorDeviceNum >= 0 && editorDeviceNum < profileSettingsService.OutContType.Length)
+                    if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                     {
                         buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                     }

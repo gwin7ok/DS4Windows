@@ -240,7 +240,7 @@ namespace DS4Windows.Processing.Services.Connection
                 }
                 else if (propName == "outconttype")
                     // Phase6-Step5-1: 正本であるプロファイル設定（永続設定の OutContType）を返す
-                    propValue = _profileSettings.OutContType[tdevice].ToString();
+                    propValue = _profileSettings.OutputType(tdevice).ContType.ToString();
                 else if (propName == "activeoutdevtype")
                     propValue = _outputSlotService.ActiveOutDevType[tdevice].ToString();
                 else if (propName == "usedinputonly")

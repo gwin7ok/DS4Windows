@@ -61,8 +61,8 @@ namespace DS4Windows.Core.Abstractions
         // ---- Step10-2-A-1: スティック関連 (m_Config委譲) ----
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
-        bool[] OutputVirtualTriggerButton { get; }
-        DS4TriggerOutputMode[] OutputDS4TriggerMode { get; }
+        /// <summary>スロットの出力の種類に関わる設定（保存される仮想コントローラーの種類、仮想のトリガーボタン、DS4 のトリガーの出力方式）の持ち主。</summary>
+        OutputTypeSlotSettings OutputType(int slot);
 
         // ---- Step10-2-A-3: タッチパッド関連 (m_Config委譲) ----
 
@@ -89,11 +89,6 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>スロットの基本的な設定（タッチパッドの切り替え、無操作での切断、出力データ、BT のポーリング、起動プログラム、DInput のみ）の持ち主。</summary>
         BasicSlotSettings BasicSlot(int slot);
 
-        /// <summary>
-        /// プロファイルに永続化されているエミュレートコントローラー種別（&lt;OutputContDevice&gt;）。
-        /// Global.OutContType（m_Config.outputDevType）への読み取り専用の薄い委譲。
-        /// </summary>
-        OutContType[] OutContType { get; }
 
         // ---- 課題④: ProfileActions インターフェースプロパティ ----
         List<string>[] ProfileActions { get; set; }

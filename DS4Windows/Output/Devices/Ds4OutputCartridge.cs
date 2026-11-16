@@ -25,7 +25,7 @@ namespace DS4Windows.Output.Devices
         public OutputDevice Create(IVirtualPadBackend backend, Version busVersion)
         {
             DS4OutDevice device = DS4OutDeviceFactory.CreateDS4OutDevice(backend, busVersion);
-            device.TriggerModeProvider = slot => _profileSettings.OutputDS4TriggerMode[slot];
+            device.TriggerModeProvider = slot => _profileSettings.OutputType(slot).DS4TriggerMode;
             return device;
         }
 

@@ -197,8 +197,7 @@ namespace DS4Windows.Core.Settings
 
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
-        public bool[] OutputVirtualTriggerButton => SafeConfig?.outputVirtualTriggerButtons;
-        public DS4TriggerOutputMode[] OutputDS4TriggerMode => SafeConfig?.outputDS4TriggerMode;
+        public OutputTypeSlotSettings OutputType(int slot) => SafeConfig?.outputTypeSlots[slot];
 
 
 
@@ -259,9 +258,6 @@ namespace DS4Windows.Core.Settings
                 if (SafeConfig != null) SafeConfig.ds4Mapping = value;
             }
         }
-
-        // Issue7是正: Global.OutContType と同一の _config.outputDevType への読み取り専用委譲。
-        public OutContType[] OutContType => SafeConfig?.outputDevType;
 
         // 課題④: ProfileActions のインターフェース実装
         public List<string>[] ProfileActions
