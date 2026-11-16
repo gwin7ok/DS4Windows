@@ -135,7 +135,7 @@ namespace DS4WindowsTests
             public AutoProfilesViewModel CreateAutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList) => null;
             public SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device) => null;
             public SettingsViewModel CreateSettingsViewModel() => null;
-            public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher) => null;
+            public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher, IImageResourceLookup imageResources) => null;
             public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel() => null;
             public ChangelogViewModel CreateChangelogViewModel() => null;
             public RenameProfileViewModel CreateRenameProfileViewModel() => null;

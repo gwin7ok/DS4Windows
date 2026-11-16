@@ -36,20 +36,18 @@ namespace DS4Windows.UI.ViewModels
 
     public class MacroStepItem
     {
-        private static string[] imageSources = new string[]
-        {
-            $"{ResourcePaths.ResourcesPrefix}/{(string)App.Current.FindResource("KeyDownImg")}",
-            $"{ResourcePaths.ResourcesPrefix}/{(string)App.Current.FindResource("KeyUpImg")}",
-            $"{ResourcePaths.ResourcesPrefix}/{(string)App.Current.FindResource("ClockImg")}",
-        };
+        // 手順の種類ごとの画像のパス（RecordBoxViewModel が、画面の資源から引いて設定する。未設定のときは空）
+        private static string[] imageSources = new string[] { string.Empty, string.Empty, string.Empty };
 
-        public static void CacheImgLocations()
+        public static void CacheImgLocations(DS4Windows.UI.Abstractions.IImageResourceLookup imageResources)
         {
+            if (imageResources == null) return;
+
             imageSources = new string[]
             {
-                $"{ResourcePaths.ResourcesPrefix}/{(string)App.Current.FindResource("KeyDownImg")}",
-                $"{ResourcePaths.ResourcesPrefix}/{(string)App.Current.FindResource("KeyUpImg")}",
-                $"{ResourcePaths.ResourcesPrefix}/{(string)App.Current.FindResource("ClockImg")}",
+                $"{ResourcePaths.ResourcesPrefix}/{imageResources.Find("KeyDownImg")}",
+                $"{ResourcePaths.ResourcesPrefix}/{imageResources.Find("KeyUpImg")}",
+                $"{ResourcePaths.ResourcesPrefix}/{imageResources.Find("ClockImg")}",
             };
         }
 

@@ -54,6 +54,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IProfileRepository profileRepo;
         private readonly IAppSettingsService appSettings;
         private readonly DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher;
+        private readonly DS4Windows.UI.Abstractions.IImageResourceLookup imageResources;
         private int currentIndex;
         public int CurrentIndex { get => currentIndex; set => currentIndex = value; }
         public CompositeDeviceModel CurrentItem
@@ -72,8 +73,10 @@ namespace DS4Windows.UI.ViewModels
             IProfileSettingsService profileSettingsService,
             IProfileRepository profileRepo,
             IAppSettingsService appSettings,
-            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher,
+            DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
         {
+            this.imageResources = imageResources;
             this.uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
             // Phase6-Step10-2-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
             // 置換前は、任意引数の null を AppHost/Global.*Instance で補っていた。さらに、コンストラクタ本体の
@@ -96,7 +99,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 IControllerSlotView currentDev = entry.View;
                 CompositeDeviceModel temp = new CompositeDeviceModel(currentDev,
-                    idx, profileRepo.ProfilePath[idx], profileListHolder, profileSettingsService, profileRepo);
+                    idx, profileRepo.ProfilePath[idx], profileListHolder, profileSettingsService, profileRepo, imageResources);
                 controllerCol.Add(temp);
                 controllerDict.Add(idx, temp);
                 currentDev.Removal += Controller_Removal;
@@ -157,7 +160,7 @@ namespace DS4Windows.UI.ViewModels
                 if (!controllerDict.ContainsKey(index) && !device.IsRemoving)
                 {
                     CompositeDeviceModel temp = new CompositeDeviceModel(device,
-                        index, profileRepo.ProfilePath[index], profileListHolder, profileSettingsService, profileRepo);
+                        index, profileRepo.ProfilePath[index], profileListHolder, profileSettingsService, profileRepo, imageResources);
                     controllerCol.Add(temp);
                     controllerDict.Add(index, temp);
 
@@ -235,7 +238,7 @@ namespace DS4Windows.UI.ViewModels
                         _colListLocker.EnterWriteLock();
                         int idx = entry.SlotIndex;
                         CompositeDeviceModel temp = new CompositeDeviceModel(currentDev,
-                            idx, profileRepo.ProfilePath[idx], profileListHolder, profileSettingsService, profileRepo);
+                            idx, profileRepo.ProfilePath[idx], profileListHolder, profileSettingsService, profileRepo, imageResources);
                         controllerCol.Add(temp);
                         controllerDict.Add(idx, temp);
                         _colListLocker.ExitWriteLock();

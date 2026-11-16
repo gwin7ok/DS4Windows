@@ -10,10 +10,6 @@
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.UI.ViewModels.AssignmentDescriber|System.Windows.Input.Key",
-            "DS4Windows.UI.ViewModels.AssignmentDescriber|System.Windows.Input.KeyInterop",
-            "DS4Windows.UI.ViewModels.CompositeDeviceModel|System.Windows.Application",
-            "DS4Windows.UI.ViewModels.MacroStepItem|System.Windows.Application",
         };
     }
 }

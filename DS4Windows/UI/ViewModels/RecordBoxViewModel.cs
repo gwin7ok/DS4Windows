@@ -149,7 +149,8 @@ namespace DS4Windows.UI.ViewModels
             int targetDevice = -1,
             IDialogService dialogs = null,
             DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher = null,
-            Func<string> macrosFolder = null)
+            Func<string> macrosFolder = null,
+            DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
         {
             this.dialogs = dialogs;
             this.macrosFolder = macrosFolder;
@@ -180,7 +181,7 @@ namespace DS4Windows.UI.ViewModels
             // By default RECORD button appends new steps. User must select (click) an existing step to insert new steps in front of the selected step
             this.MacroStepIndex = -1;
 
-            MacroStepItem.CacheImgLocations();
+            MacroStepItem.CacheImgLocations(imageResources);
 
             // Temporarily use Passthru mode for Touchpad. Store old TouchOutMode.
             // Don't conflict Touchpad Click with default output Mouse button controls

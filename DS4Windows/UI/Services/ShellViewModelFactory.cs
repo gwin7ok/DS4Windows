@@ -81,12 +81,12 @@ namespace DS4Windows.UI.Services
 
         public SettingsViewModel CreateSettingsViewModel() => _settingsFactory.Create();
 
-        public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher)
+        public ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher, IImageResourceLookup imageResources)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] ViewModelFactory: Created ControllerListViewModel");
             return new ControllerListViewModel(_slots, _lifecycle, profileListHolder,
-                _profileSettings, _profileRepo, _appSettings, uiDispatcher);
+                _profileSettings, _profileRepo, _appSettings, uiDispatcher, imageResources);
         }
 
         public CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel()
