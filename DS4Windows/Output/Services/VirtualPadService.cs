@@ -286,7 +286,7 @@ namespace DS4Windows.Output.Services
         // 振動・ライトバーの出力が有効なときだけ、ViGEm の戻りのハンドラーを付ける
         private void EstablishOutFeedbackIfEnabled(int index, OutContType contType, OutputDevice outDevice, IOutputBoundDevice device)
         {
-            if (_profileSettings.EnableOutputDataToDS4[index])
+            if (_profileSettings.GetEnableOutputDataToDS4(index))
             {
                 EstablishOutFeedback(index, contType, outDevice, device);
 

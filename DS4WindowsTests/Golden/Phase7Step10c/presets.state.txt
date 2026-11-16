@@ -265,7 +265,7 @@
 + $.stickSlots[8].RSMod.maxZone = 90
 
 ## LoadDefaultKBMProfile
-- $.dinputOnly[8] = false
+- $.basicSlots[8].DinputOnly = false
 - $.ds4controlSettings[8].ControlButtons[0].IsDefault = true
 - $.ds4controlSettings[8].ControlButtons[0].action.actionKey = 0
 - $.ds4controlSettings[8].ControlButtons[0].actionType = ActionType.Default
@@ -467,7 +467,7 @@
 - $.triggerSlots[8].L2Mod.deadZone = 0
 - $.triggerSlots[8].R2Mod.DeadZone = 0
 - $.triggerSlots[8].R2Mod.deadZone = 0
-+ $.dinputOnly[8] = true
++ $.basicSlots[8].DinputOnly = true
 + $.ds4controlSettings[8].ControlButtons[0].IsDefault = false
 + $.ds4controlSettings[8].ControlButtons[0].action.actionKey = 81
 + $.ds4controlSettings[8].ControlButtons[0].actionType = ActionType.Key
@@ -671,7 +671,7 @@
 + $.triggerSlots[8].R2Mod.deadZone = 51
 
 ## LoadDefaultKBMGyroMouseProfile
-- $.dinputOnly[8] = false
+- $.basicSlots[8].DinputOnly = false
 - $.ds4controlSettings[8].ControlButtons[0].IsDefault = true
 - $.ds4controlSettings[8].ControlButtons[0].action.actionBtn = X360Controls.None
 - $.ds4controlSettings[8].ControlButtons[0].actionType = ActionType.Default
@@ -878,7 +878,7 @@
 - $.triggerSlots[8].L2Mod.deadZone = 0
 - $.triggerSlots[8].R2Mod.DeadZone = 0
 - $.triggerSlots[8].R2Mod.deadZone = 0
-+ $.dinputOnly[8] = true
++ $.basicSlots[8].DinputOnly = true
 + $.ds4controlSettings[8].ControlButtons[0].IsDefault = false
 + $.ds4controlSettings[8].ControlButtons[0].action.actionBtn = X360Controls.Unbound
 + $.ds4controlSettings[8].ControlButtons[0].actionType = ActionType.Button

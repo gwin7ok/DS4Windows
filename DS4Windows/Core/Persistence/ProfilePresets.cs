@@ -417,7 +417,7 @@ namespace DS4Windows.Core.Persistence
             r2Info.deadZone = (byte)(0.20 * 255);
 
             // Flag to unplug virtual controller
-            store.dinputOnly[device] = true;
+            store.basicSlots[device].DinputOnly = true;
 
             DS4ControlSettings setting = store.GetDS4CSetting(device, DS4Controls.LYNeg);
             setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.W), "", DS4KeyType.None);
@@ -530,7 +530,7 @@ namespace DS4Windows.Core.Persistence
             store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
             // Flag to unplug virtual controller
-            store.dinputOnly[device] = true;
+            store.basicSlots[device].DinputOnly = true;
 
             DS4ControlSettings setting = store.GetDS4CSetting(device, DS4Controls.LYNeg);
             setting.UpdateSettings(KeyInterop.VirtualKeyFromKey(Key.W), "", DS4KeyType.None);

@@ -29,8 +29,8 @@ namespace DS4Windows.Core.Settings
         /// <summary>仮想コントローラーを作らない（DInput のみ）。</summary>
         public bool DInputOnly
         {
-            get => _settings.DinputOnly[_slot];
-            set => _settings.DinputOnly[_slot] = value;
+            get => _settings.BasicSlot(_slot).DinputOnly;
+            set => _settings.BasicSlot(_slot).DinputOnly = value;
         }
 
         public bool VirtualTriggerButtons

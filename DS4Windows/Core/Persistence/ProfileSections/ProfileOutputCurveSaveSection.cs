@@ -41,7 +41,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 return store.stickOutputCurveString(id);
             }
 
-            XmlNode xmlBTPollRate = m_Xdoc.CreateNode(XmlNodeType.Element, "BTPollRate", null); xmlBTPollRate.InnerText = store.btPollRate[device].ToString(); rootElement.AppendChild(xmlBTPollRate);
+            XmlNode xmlBTPollRate = m_Xdoc.CreateNode(XmlNodeType.Element, "BTPollRate", null); xmlBTPollRate.InnerText = store.basicSlots[device].BTPollRate.ToString(); rootElement.AppendChild(xmlBTPollRate);
 
             XmlNode xmlLsOutputCurveMode = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveMode", null); xmlLsOutputCurveMode.InnerText = store.stickOutputCurveString(store.stickSlots[device].LSCurveMode); rootElement.AppendChild(xmlLsOutputCurveMode);
             XmlNode xmlLsOutputCurveCustom = m_Xdoc.CreateNode(XmlNodeType.Element, "LSOutputCurveCustom", null); xmlLsOutputCurveCustom.InnerText = store.stickSlots[device].LsBezier.ToString(); rootElement.AppendChild(xmlLsOutputCurveCustom);

@@ -51,16 +51,17 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LaunchProgram");
-                store.launchProgram[device] = Item.InnerText;
+                store.basicSlots[device].LaunchProgram = Item.InnerText;
             }
-            catch { store.launchProgram[device] = string.Empty; missingSetting = true; }
+            catch { store.basicSlots[device].LaunchProgram = string.Empty; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/DinputOnly");
-                bool.TryParse(Item.InnerText, out store.dinputOnly[device]);
+                bool.TryParse(Item.InnerText, out bool dinputOnly);
+                store.basicSlots[device].DinputOnly = dinputOnly;
             }
-            catch { store.dinputOnly[device] = false; missingSetting = true; }
+            catch { store.basicSlots[device].DinputOnly = false; missingSetting = true; }
 
             bool oldUseDInputOnly = _profileSettings.UseDInputOnlyArray[device];
 

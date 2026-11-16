@@ -195,7 +195,7 @@ namespace DS4WindowsTests
             // サービスのメソッドと配列が一致することを確認する。
             const int slot = 0;
 
-            Assert.Equal(_profileSettings.EnableTouchToggle[slot], _profileSettings.GetEnableTouchToggle(slot));
+            Assert.Equal(_profileSettings.BasicSlot(slot).EnableTouchToggle, _profileSettings.GetEnableTouchToggle(slot));
             Assert.Equal(_profileSettings.RumbleBoost[slot], _profileSettings.GetRumbleBoost(slot));
         }
     }

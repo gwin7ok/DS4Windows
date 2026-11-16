@@ -80,17 +80,14 @@ namespace DS4Windows.Core.Abstractions
 
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         ButtonMouseInfo[] ButtonMouseInfos { get; }
-        bool[] EnableTouchToggle { get; }
         bool GetEnableTouchToggle(int deviceIndex);
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
 
         // ---- Step10-2-A-8: 残余設定・デバイスオプション (m_Config委譲) ----
-        int[] BTPollRate { get; }
         bool DS4Mapping { get; set; }
-        bool[] DinputOnly { get; }
-        int[] IdleDisconnectTimeout { get; }
-        bool[] EnableOutputDataToDS4 { get; }
+        /// <summary>スロットの基本的な設定（タッチパッドの切り替え、無操作での切断、出力データ、BT のポーリング、起動プログラム、DInput のみ）の持ち主。</summary>
+        BasicSlotSettings BasicSlot(int slot);
 
         /// <summary>
         /// プロファイルに永続化されているエミュレートコントローラー種別（&lt;OutputContDevice&gt;）。
@@ -101,7 +98,6 @@ namespace DS4Windows.Core.Abstractions
         // ---- 課題④: ProfileActions インターフェースプロパティ ----
         List<string>[] ProfileActions { get; set; }
 
-        string[] LaunchProgram { get; }
         int GetBTPollRate(int deviceIndex);
         bool GetDInputOnly(int deviceIndex);
         int GetIdleDisconnectTimeout(int deviceIndex);

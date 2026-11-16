@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 
@@ -31,10 +32,9 @@ namespace DS4Windows.Processing.Services.Slots
 
         public void LaunchIfNotRunning(int slot)
         {
-            string[] programs = _profileSettings.LaunchProgram;
-            if (programs == null || slot < 0 || slot >= programs.Length) return;
+            if (slot < 0 || slot >= ControllerLimits.TestProfileItemCount) return;
 
-            string programPath = programs[slot];
+            string programPath = _profileSettings.BasicSlot(slot)?.LaunchProgram;
             if (string.IsNullOrEmpty(programPath)) return;
 
             bool running;
