@@ -439,7 +439,7 @@ namespace DS4Windows.UI.ViewModels
         {
             useCustomColor = false;
             LightbarWindow.Info.ds4winSettings.useCustomLed = false;
-            LightColorChanged?.Invoke(this, EventArgs.Empty);
+            RaiseLightColorChanged();
         }
 
         /// <summary>ライトバーの色を、カスタム色にし、色の選択を求める（メニューの「Use Custom Color」）。</summary>
@@ -447,13 +447,13 @@ namespace DS4Windows.UI.ViewModels
         {
             useCustomColor = true;
             LightbarWindow.Info.ds4winSettings.useCustomLed = true;
-            LightColorChanged?.Invoke(this, EventArgs.Empty);
+            RaiseLightColorChanged();
             RequestColorPicker?.Invoke(this);
         }
         public void UpdateCustomLightColor(DS4Color color)
         {
             LightbarWindow.Info.ds4winSettings.m_CustomLed = color;
-            LightColorChanged?.Invoke(this, EventArgs.Empty);
+            RaiseLightColorChanged();
         }
 
         /// <summary>
@@ -467,9 +467,9 @@ namespace DS4Windows.UI.ViewModels
             settings.ledAsBattery = false;
             settings.rainbow = 0;
             UpdateCustomLightColor(color);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LightColor)));
         }
 
+        /// <summary>色の列（<see cref="LightColor"/> にバインド）も更新させるため、イベントと変更通知の両方を出す。</summary>
         public void RaiseLightColorChanged()
         {
             LightColorChanged?.Invoke(this, EventArgs.Empty);
