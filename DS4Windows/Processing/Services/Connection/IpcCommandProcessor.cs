@@ -141,25 +141,19 @@ namespace DS4Windows.Processing.Services.Connection
                         if (!string.IsNullOrEmpty(canonical)) strData[2] = canonical;
                     }
 
-                    if (idx >= 0 && tdevice < host.ControllerCount)
+                    // 番号は入力スロット（ほかのコマンドと同じ）。その番号のコントローラーが接続中なら、いま適用する
+                    IControllerSlotView devitem = host.GetControllerDevice(tdevice);
+                    if (idx >= 0 && devitem != null)
                     {
-                        IControllerSlotView devitem = host.GetControllerDevice(tdevice);
-                        if (devitem != null)
-                        {
-                            string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
-                                (tdevice + 1).ToString(), strData[2], $"{devitem.Battery}");
-                            if (!_profileApplication.ApplyProfile(tdevice, strData[2], false, true,
-                                ProfileChangeSource.Manual, prolog))
-                                AppLogger.LogWarn($"[IPC] LoadProfile: ApplyProfile failed (device={tdevice + 1}, profile='{strData[2]}')");
-                        }
-                        else
-                        {
-                            AppLogger.LogWarn($"[IPC] LoadProfile: no controller device at list position {tdevice} (profile='{strData[2]}'); the profile was not applied");
-                        }
+                        string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
+                            (tdevice + 1).ToString(), strData[2], $"{devitem.Battery}");
+                        if (!_profileApplication.ApplyProfile(tdevice, strData[2], false, true,
+                            ProfileChangeSource.Manual, prolog))
+                            AppLogger.LogWarn($"[IPC] LoadProfile: ApplyProfile failed (device={tdevice + 1}, profile='{strData[2]}')");
                     }
                     else
                     {
-                        AppLogger.LogWarn($"[IPC] LoadProfile: not applied now (profileIndex={idx}, controllerCount={host.ControllerCount}, device={tdevice + 1}); only the profile path for later was set");
+                        AppLogger.LogWarn($"[IPC] LoadProfile: not applied now (profileIndex={idx}, connected={devitem != null}, device={tdevice + 1}); only the profile path for later was set");
                         // Preset profile name for later loading
                         _profileRepo.ProfilePath[tdevice] = strData[2];
                     }
@@ -175,7 +169,7 @@ namespace DS4Windows.Processing.Services.Connection
                         if (!string.IsNullOrEmpty(canonical)) strData[2] = canonical;
                     }
 
-                    IControllerSlotView devitem = tdevice < host.ControllerCount ? host.GetControllerDevice(tdevice) : null;
+                    IControllerSlotView devitem = host.GetControllerDevice(tdevice);
                     if (devitem != null)
                     {
                         string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
@@ -186,7 +180,7 @@ namespace DS4Windows.Processing.Services.Connection
                     }
                     else
                     {
-                        AppLogger.LogWarn($"[IPC] LoadTempProfile: no controller device at list position {tdevice} (profile='{strData[2]}'); the profile was not applied");
+                        AppLogger.LogWarn($"[IPC] LoadTempProfile: no controller device in slot {tdevice + 1} (profile='{strData[2]}'); the profile was not applied");
                     }
                 }
 

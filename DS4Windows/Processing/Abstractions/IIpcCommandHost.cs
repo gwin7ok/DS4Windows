@@ -18,10 +18,10 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>接続中のワイヤレスのコントローラーを、すべて切断する（一覧の写しを作ってから、各行に切断を要求する）。</summary>
         void DisconnectAllControllers();
 
-        /// <summary>指定のスロットのコントローラーに切断を要求する（一覧に無ければ何もしない）。</summary>
+        /// <summary>指定の入力スロットのコントローラーに切断を要求する（一覧に無ければ何もしない）。</summary>
         void DisconnectController(int index);
 
-        /// <summary>指定のスロットのライトバーのカスタム色を変える（範囲外の例外は呼び出し側が握る）。</summary>
+        /// <summary>指定の入力スロットのライトバーのカスタム色を変える（そのスロットに行がなければ何もしない）。</summary>
         void SetLightColor(int index, byte red, byte green, byte blue);
 
         /// <summary>プロファイル一覧での、そのプロファイル名の位置（無ければ -1。大文字小文字は区別しない）。</summary>
@@ -30,10 +30,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>プロファイル一覧のその位置の、正式なプロファイル名（大文字小文字は一覧のとおり）。範囲外は null。</summary>
         string GetProfileName(int index);
 
-        /// <summary>コントローラー一覧の行数。</summary>
-        int ControllerCount { get; }
-
-        /// <summary>指定のスロットのデバイス（行が無い・未接続なら null。範囲外は例外）。</summary>
+        /// <summary>指定の入力スロットのデバイス（行が無い・未接続・範囲外なら null）。</summary>
         IControllerSlotView GetControllerDevice(int index);
 
         /// <summary>ログ（GUI のログ、ログファイル。旧 <c>ControlService.LogDebug</c>）。</summary>
