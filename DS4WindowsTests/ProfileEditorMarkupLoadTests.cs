@@ -39,12 +39,9 @@ namespace DS4WindowsTests
                     var ex = Record.Exception(() => new DS4Windows.UI.ProfileEditor(
                         0,
                         new DS4Windows.UI.Services.EditorLayoutSettingsAdapter(TestHost.GetService<DS4Windows.Core.Abstractions.IAppSettingsService>()),
-                        TestHost.GetService<DS4Windows.Core.Abstractions.IProfileSettingsService>(),
                         TestHost.GetService<DS4Windows.UI.Abstractions.IEditorWindowFactory>(),
-                        null, null, null, null, null,
-                        TestHost.GetService<DS4Windows.Core.Abstractions.IEnvironmentService>(),
-                        TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>(),
-                        null));
+                        TestHost.GetService<DS4Windows.UI.Services.ProfileEditorBackend>(),
+                        null, null, null));
                     if (!(ex is ArgumentNullException)) throw new InvalidOperationException(ex?.ToString(), ex);
                 }
                 finally

@@ -54,7 +54,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            Assert.Contains("editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl.Setting, profList, targetDevice)", source);
+            Assert.Contains("editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl, profList, targetDevice)", source);
             Assert.Contains("controlEditorHost.Width = sidebarTabControl.ActualWidth;", source);
             Assert.Contains("sidebarTabControl.Visibility = Visibility.Collapsed;", source);
             Assert.Contains("controlEditorHost.Children.Add(editor);", source);

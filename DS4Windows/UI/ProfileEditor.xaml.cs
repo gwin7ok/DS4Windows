@@ -71,21 +71,15 @@ namespace DS4Windows.UI
         // Phase6-Step8-2: レイアウト・言語設定（コンストラクタ注入。Global.ProfileEditor*Width 等の置換先）
         private readonly DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService;
         // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
-        private readonly IProfileSettingsService profileSettingsService;
         private readonly IProfileEditViewModelFactory _viewModelFactory;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
-        // Phase7-Step10e W2: スロット数の上限は、静的な environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む
-        private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
+        // 業務のサービス（プロファイルの読み込み、特殊アクションの参照、実機の振動・入力・較正）への窓口（V2）
+        private readonly DS4Windows.UI.Services.ProfileEditorBackend backend;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
-        private bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
+        private bool HasTargetDevice => backend.HasTargetDevice(targetDevice);
         private ProfileSettingsViewModel profileSettingsVM;
-        private readonly DS4Windows.Core.Abstractions.IProfileRepository profileRepository;
-        private readonly DS4Windows.Processing.Actions.IProfileSwitcher profileSwitcher;
-        private readonly IControllerSlotCommands slotCommands;
-        private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;
         private MappingListViewModel mappingListVM;
 
         // 一覧（メイン画面のプロファイル一覧）に名前があるか。一覧が取れないときは、あるものとして扱う
@@ -169,30 +163,24 @@ namespace DS4Windows.UI
         /// <param name="profileSettingsService">
         /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
-        public ProfileEditor(int targetDevice, DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService, IProfileSettingsService profileSettingsService,
-            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher, IControllerReadingsFeed readingsSource, IProfileEditViewModelFactory viewModelFactory,
-            IActionViewModelFactory actionViewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
-            IControllerSlotCommands slotCommands)
+        public ProfileEditor(int targetDevice, DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService,
+            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, DS4Windows.UI.Services.ProfileEditorBackend backend,
+            IControllerReadingsFeed readingsSource, IProfileEditViewModelFactory viewModelFactory,
+            IActionViewModelFactory actionViewModelFactory)
         {
             if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));   // Phase13-Step10 10-d: 旧 ControlService.setRumble／GetActiveInputControl の転送
+            this.backend = backend ?? throw new ArgumentNullException(nameof(backend));
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
             this.targetDevice = targetDevice;
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             AppLogger.LogDebug($"[ProfileEditor] Opened profile editor for device={deviceNum}, targetDevice={targetDevice}");
 
             InitializeComponent();
             InitVisualizerButtons();
 
             // Phase7-Step5 W5（Q5＝A）: 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）
-            this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
-            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
-            rumbleTest = new RumbleTestController(slotCommands, environmentService);
+            rumbleTest = backend.CreateRumbleTest();
             // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(readingsSource ?? throw new ArgumentNullException(nameof(readingsSource)));
 
@@ -422,8 +410,8 @@ namespace DS4Windows.UI
                 conReadingsUserCon.RsDeadX = dead.RsDeadX.Value;
                 conReadingsUserCon.RsDeadY = dead.RsDeadY.Value;
             }
-            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.Left.Mod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
-            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.Right.Mod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.Left.IsAxialDeadZone;
+            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.Right.IsAxialDeadZone;
         }
 
         private void SticksVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -729,9 +717,7 @@ namespace DS4Windows.UI
             if (profile != null)
             {
                 currentProfile = profile;
-                profileRepository.ProfilePath[ControllerLimits.TestProfileIndex] = profile.Name;
-
-                profileRepository.LoadProfile(deviceNum, profile.Name);
+                backend.LoadProfileForEditing(deviceNum, profile.Name);
                 // 廃止された「シフト」「ジャイロスワイプ」の設定が残っていれば、警告して、削除するか残すかを選ばせる（ViewModel が判断する）
                 profileSettingsVM.ApplyRemovedSettingNotices(profile.Name);
                 profileNameTxt.Text = profile.Name;
@@ -750,10 +736,7 @@ namespace DS4Windows.UI
             }
 
             // プロファイルロード完了後に、XMLから読み込まれた ProfileActions を使ってリストを初期化・復元
-            List<string> currentActionsList = profileRepository.ProfileActions != null && profileRepository.ProfileActions.Length > deviceNum
-                ? profileRepository.ProfileActions[deviceNum]
-                : null;
-            string currentProfileActions = currentActionsList != null ? string.Join("/", currentActionsList) : string.Empty;
+            string currentProfileActions = backend.GetEnabledActionsText(deviceNum);
             specialActionsVM.LoadActions(currentProfile == null, currentProfileActions);
 
             lightbarPanel.RefreshColorByBatteryLayout(profileSettingsVM.Lightbar);
@@ -785,8 +768,8 @@ namespace DS4Windows.UI
             var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
             if (dead.LsDeadX.HasValue) { conReadingsUserCon.LsDeadX = dead.LsDeadX.Value; conReadingsUserCon.LsDeadY = dead.LsDeadY.Value; }
             if (dead.RsDeadX.HasValue) { conReadingsUserCon.RsDeadX = dead.RsDeadX.Value; conReadingsUserCon.RsDeadY = dead.RsDeadY.Value; }
-            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.Left.Mod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
-            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.Right.Mod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+            conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.Left.IsAxialDeadZone;
+            conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.Right.IsAxialDeadZone;
             conReadingsUserCon.L2Dead = dead.L2Dead;
             conReadingsUserCon.R2Dead = dead.R2Dead;
             conReadingsUserCon.SixAxisXDead = dead.SixAxisXDead;
@@ -877,10 +860,7 @@ namespace DS4Windows.UI
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (profileSettingsVM.FuncDevNum < environmentService.ControllerSlotLimit)
-            {
-                runtimeFeatures.SetRumble(0, 0, profileSettingsVM.FuncDevNum);
-            }
+            backend.StopRumble(profileSettingsVM.FuncDevNum);
 
             profileSettingsVM.Output.ResetOutDevTypeTemp();
             // Phase6-Step7b: 編集は作業スロットに対して行っており、コントローラーのスロットには届いていないため、
@@ -1076,10 +1056,7 @@ namespace DS4Windows.UI
 
         public void Close()
         {
-            if (profileSettingsVM.FuncDevNum < environmentService.ControllerSlotLimit)
-            {
-                runtimeFeatures.SetRumble(0, 0, profileSettingsVM.FuncDevNum);
-            }
+            backend.StopRumble(profileSettingsVM.FuncDevNum);
 
             // 画面サイズ保持チェックが有効な場合のみレイアウト保存
             if (keepsize)
@@ -1164,7 +1141,7 @@ namespace DS4Windows.UI
         {
             if (leftPaneEditor != null) return;
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-            AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditor(deviceNum, profList, targetDevice, null);
+            AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditor(deviceNum, profList, targetDevice);
             OpenLeftPaneEditor(actEditor);
             actEditor.Cancel += (sender2, args) =>
             {
@@ -1210,7 +1187,7 @@ namespace DS4Windows.UI
                 //int currentIndex = specialActionsVM.ActionCol[viewIndex].Index;
                 //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
                 ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-                AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditor(deviceNum, profList, targetDevice, item.SpecialAction);
+                AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditorFor(deviceNum, profList, targetDevice, item);
                 OpenLeftPaneEditor(actEditor);
                 actEditor.Cancel += (sender2, args) =>
                 {
@@ -1218,24 +1195,13 @@ namespace DS4Windows.UI
                 };
                 actEditor.Saved += (sender2, actionName) =>
                 {
-                    string oldName = item.SpecialAction?.name;
+                    string oldName = item.OriginalName;
                     string newName = actionName;
 
                     // Update current profile's references from oldName -> newName
                     try
                     {
-                        var pa = profileRepository.ProfileActions; // List<string>[]
-                        if (pa != null && pa.Length > deviceNum && pa[deviceNum] != null)
-                        {
-                            var list = pa[deviceNum];
-                            for (int i = 0; i < list.Count; i++)
-                            {
-                                if (list[i] == oldName)
-                                {
-                                    list[i] = newName;
-                                }
-                            }
-                        }
+                        backend.RenameActionInEditedProfile(deviceNum, oldName, newName);
                         profileSettingsVM.RefreshExtraProfileInfo();
                     }
                     catch { }
@@ -1254,14 +1220,14 @@ namespace DS4Windows.UI
                     // 編集中のプロファイルのメモリ上の参照は、上で置換済み。
                     if (!string.IsNullOrEmpty(oldName) && !string.Equals(oldName, newName, StringComparison.Ordinal))
                     {
-                        NotifyProfilesUpdated(profileRepository.ReplaceActionReference(oldName, newName));
+                        NotifyProfilesUpdated(backend.ReplaceActionReference(oldName, newName));
                     }
                     else
                     {
                         // 名前が同じで内容だけ変わった場合は、プロファイルの XML の書き換えは不要。ただし、接続中のコントローラーは、
                         // プロファイルの適用時に取り込んだ古い内容のアクションを保持している（Actions.xml の読み直しでは更新されない）。
                         // そのアクションを使っているプロファイルを、保存時と同じ再適用の経路で再適用して、新しい内容を反映する。
-                        NotifyProfilesUpdated(profileRepository.GetAppliedProfilesUsingAction(newName));
+                        NotifyProfilesUpdated(backend.GetAppliedProfilesUsingAction(newName));
                     }
                 };
             }
@@ -1295,7 +1261,7 @@ namespace DS4Windows.UI
                 string removedName = specialActionsVM.RemoveSelectedWithConfirm();
                 if (removedName == null) return;
 
-                NotifyProfilesUpdated(profileRepository.RemoveActionReference(removedName));
+                NotifyProfilesUpdated(backend.RemoveActionReference(removedName));
             }
         }
 
@@ -1350,7 +1316,7 @@ namespace DS4Windows.UI
                 int index = -1;
                 // Phase5-Step15-2-d: 281行目で解決済みのcontrolServiceフィールドを使わず、
                 // ここだけProgram.rootHubを直接呼んでいた置換漏れを修正。
-                switch (runtimeFeatures.GetActiveInputControl(tempDeviceNum))
+                switch (backend.GetActiveInputControl(tempDeviceNum))
                 {
                     case DS4Controls.None: break;
                     case DS4Controls.Cross: index = 0; break;
@@ -1478,7 +1444,7 @@ namespace DS4Windows.UI
             if (mpControl == null || leftPaneEditor != null) return;
 
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
-            AssignmentEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl.Setting, profList, targetDevice);
+            AssignmentEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl, profList, targetDevice);
             editor.ControlSaved += (sender2, args) =>
             {
                 CloseLeftPaneEditor();
@@ -1512,8 +1478,7 @@ namespace DS4Windows.UI
 
             foreach (MappedControl mpControl in mappingListVM.Mappings)
             {
-                mpControl.Setting.Reset();
-                mpControl.UpdateMappingName();
+                mpControl.ResetSetting();
             }
 
             profileSettingsVM.RefreshCustomsFlags();
@@ -1614,11 +1579,8 @@ namespace DS4Windows.UI
             // Phase6-Step7b: 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // 編集スロットのフィールド deviceNum と区別するため、ローカル変数名を分けた
             int calibrationDevice = profileSettingsVM.FuncDevNum;
-            if (calibrationDevice < environmentService.ControllerSlotLimit)
-            {
-                // 未接続のスロットでは何もしない（以前は null の機器を触って NullReferenceException でアプリが終了していた）
-                slotCommands.ResetGyroCalibration(calibrationDevice);
-            }
+            // 未接続のスロットでは何もしない（以前は null の機器を触って NullReferenceException でアプリが終了していた）
+            backend.ResetGyroCalibration(calibrationDevice);
         }
 
         private void CalibrateStick_OnClick(object sender, int tag)

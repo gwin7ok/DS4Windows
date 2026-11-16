@@ -98,10 +98,11 @@ namespace DS4WindowsTests
             var mouseHook = new DS4Windows.Core.Platform.LowLevelMouseHook();
             var rf = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
             var sc = TestHost.GetService<DS4Windows.Processing.Abstractions.IControllerSlotCommands>();
+            var backend = new DS4Windows.UI.Services.ProfileEditorBackend(profiles, sc, rf, env);
 
             // 窓口は 3 つの工場を受け、それぞれの工場は必要な依存を受ける
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(null, new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, mouseHook), new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, vm, env, rf, sc)));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, vm, repo, env, windowSystem, rd), null, new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, vm, env, rf, sc)));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(null, new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, mouseHook), new DS4Windows.UI.Services.ProfileEditorFactory(app, rd, vm, vm, backend)));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, vm, repo, env, windowSystem, rd), null, new DS4Windows.UI.Services.ProfileEditorFactory(app, rd, vm, vm, backend)));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(new DS4Windows.UI.Services.AssignmentWindowFactory(settings, sc, vm, vm, repo, env, windowSystem, rd), new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, mouseHook), null));
 
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.AssignmentWindowFactory(null, sc, vm, vm, repo, env, windowSystem, rd));
@@ -119,16 +120,11 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, null, mouseHook));
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, null));
 
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(null, settings, profiles, switcher, rd, vm, vm, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, null, profiles, switcher, rd, vm, vm, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, null, switcher, rd, vm, vm, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, null, rd, vm, vm, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, null, vm, vm, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, null, vm, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, null, env, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, vm, null, rf, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, vm, env, null, sc));
-            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, settings, profiles, switcher, rd, vm, vm, env, rf, null));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(null, rd, vm, vm, backend));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, null, vm, vm, backend));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, rd, null, vm, backend));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, rd, vm, null, backend));
+            Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.ProfileEditorFactory(app, rd, vm, vm, null));
         }
 
         private class NullViewModelFactory : IShellViewModelFactory, IProfileEditViewModelFactory, IActionViewModelFactory

@@ -60,8 +60,8 @@ namespace DS4WindowsTests
             Type[] ps = typeof(DS4Windows.UI.ProfileEditor).GetConstructors().Single().GetParameters().Select(p => p.ParameterType).ToArray();
             Assert.Equal(typeof(int), ps[0]);
             Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorLayoutSettings), ps[1]);
-            Assert.Equal(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService), ps[2]);
-            Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorWindowFactory), ps[3]);
+            Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorWindowFactory), ps[2]);
+            Assert.Equal(typeof(DS4Windows.UI.Services.ProfileEditorBackend), ps[3]);
 
             // 受けた設定の使い方と、null の扱い・画面の開き方（コードの形。WPF の画面は単体テストで開けないため、ソースで確かめる）
             string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");

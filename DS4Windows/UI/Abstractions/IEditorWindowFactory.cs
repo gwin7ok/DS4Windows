@@ -34,6 +34,12 @@ namespace DS4Windows.UI.Abstractions
         AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null);
 
+        /// <summary>一覧の行（<paramref name="item"/>）の特殊アクションを編集する画面。画面が設定の型を直接触らないための入口。</summary>
+        AssignmentEditor CreateAssignmentEditorFor(int deviceNum, ProfileList profileList, int targetDevice, SpecialActionItem item);
+
+        /// <summary>Controls の一覧の行（<paramref name="control"/>）の割り当てを編集する画面（Controls のモード）。</summary>
+        AssignmentEditor CreateControlActionEditor(int deviceNum, MappedControl control, ProfileList profileList, int targetDevice);
+
         /// <summary>
         /// Phase10-Step2 W3: 共通の編集画面の、Controls のモード（Controls のボタン 1 つの割り当ての編集）。
         /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、従来の選択ダイアログ（<c>BindingWindow</c> の Full のモード）の代わりに、これを使う。

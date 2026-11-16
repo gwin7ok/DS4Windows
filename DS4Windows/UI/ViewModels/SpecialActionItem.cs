@@ -136,6 +136,9 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
+        /// <summary>編集前の特殊アクションの名前（なければ null）。</summary>
+        public string OriginalName => specialAction?.name;
+
         public SpecialAction SpecialAction
         {
             get => specialAction;

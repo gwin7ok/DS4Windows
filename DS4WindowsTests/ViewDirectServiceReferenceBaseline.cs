@@ -15,15 +15,6 @@ namespace DS4WindowsTests
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IControllerSlotView",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IServiceLifecycle",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IEnvironmentService",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IProfileRepository",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IProfileSettingsService",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.DS4ControlSettings",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.ProfileSlotNames",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.SpecialAction",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.StickDeadZoneInfo",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IControllerSlotCommands",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
         };
     }
 }
