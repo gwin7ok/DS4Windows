@@ -67,8 +67,9 @@ namespace DS4WindowsTests
             System.Reflection.ParameterInfo[] ps = typeof(DS4Windows.UI.ViewModels.ProfileSettingsViewModel).GetConstructors().Single().GetParameters();
             Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IEnvironmentService));
             Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IPathService));
-            // targetDevice 以外は省略可能にしない（既定値の指定は 1 つだけ）
-            System.Reflection.ParameterInfo optional = Assert.Single(ps.Where(p => p.IsOptional));
+            // targetDevice と、廃止された設定の警告の画面（null は警告なし）以外は省略可能にしない
+            System.Reflection.ParameterInfo optional = ps.Single(p => p.IsOptional && p.Name == "targetDevice");
+            Assert.Equal(new[] { "targetDevice", "removedShiftPrompt", "removedGyroSwipePrompt" }, ps.Where(p => p.IsOptional).Select(p => p.Name).ToArray());
             Assert.Equal("targetDevice", optional.Name);
             Assert.Equal(-1, optional.DefaultValue);
             // PresetMenuHelper は Phase6-Step10b W3 で別ファイルへ分離した

@@ -88,7 +88,8 @@ namespace DS4Windows.UI.Services
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created ProfileSettingsViewModel for Device {device}, targetDevice {targetDevice}");
             return new ProfileSettingsViewModel(_lightbar, device, _profileSettings, _loadTarget,
-                _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice);
+                _outputSlotService, _profileRepo, _presetLoader, _environmentService, _pathService, targetDevice,
+                new MessageBoxRemovedShiftPrompt(), new MessageBoxRemovedGyroSwipePrompt());
         }
 
         public RecordBoxViewModel CreateRecordBoxViewModel(int device, DS4ControlSettings controlSettings, bool repeatable = false, int targetDevice = -1)

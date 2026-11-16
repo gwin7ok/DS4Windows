@@ -150,6 +150,22 @@ namespace DS4Windows.UI.ViewModels
         // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（Phase13-Step6 6-e: 旧 ControlService controlService。
         // 生成側の ViewModelFactory が IProfileLoadTarget を直接渡す）。
         // targetDevice は、編集スロット（device）と実機を分けて渡す引数（Phase6-Step7b）。変更しない。
+        // 廃止された設定が残るプロファイルを開いたときの警告の画面（null は警告を出さない。単体テスト）
+        private readonly IRemovedShiftPrompt removedShiftPrompt;
+        private readonly IRemovedGyroSwipePrompt removedGyroSwipePrompt;
+
+        /// <summary>
+        /// 編集用のスロットへプロファイルを読み込んだ直後に呼ぶ。廃止された「シフト」「ジャイロスワイプ」の設定が残っていれば、
+        /// 警告して、削除するか残すかを選ばせる（残せば、開くたびに警告する）。
+        /// </summary>
+        public void ApplyRemovedSettingNotices(string profileName)
+        {
+            if (removedShiftPrompt != null)
+                RemovedShiftNotice.Apply(profileSettings.GetRemovedShiftSettings(device), profileName, removedShiftPrompt);
+            if (removedGyroSwipePrompt != null)
+                RemovedGyroSwipeNotice.Apply(profileSettings.ForSlot(device).Gyro.RemovedSwipe, profileName, removedGyroSwipePrompt);
+        }
+
         public ProfileSettingsViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, int device, IProfileSettingsService profileSettings,
             IProfileLoadTarget loadTarget,
             IOutputSlotService outputSlotService,
@@ -157,8 +173,12 @@ namespace DS4Windows.UI.ViewModels
             IProfilePresetLoader presetLoader,
             IEnvironmentService environmentService,
             IPathService pathService,
-            int targetDevice = -1)
+            int targetDevice = -1,
+            IRemovedShiftPrompt removedShiftPrompt = null,
+            IRemovedGyroSwipePrompt removedGyroSwipePrompt = null)
         {
+            this.removedShiftPrompt = removedShiftPrompt;
+            this.removedGyroSwipePrompt = removedGyroSwipePrompt;
             if (lightbar == null) throw new System.ArgumentNullException(nameof(lightbar));
             this.device = device;
             this.targetDevice = targetDevice;

@@ -234,7 +234,7 @@ namespace DS4WindowsTests
                 "RemovedGyroSwipeSettings.cs", "RemovedGyroSwipeChoice.cs", "RemovedGyroSwipeOutcome.cs", "IRemovedGyroSwipePrompt.cs", "RemovedGyroSwipeNotice.cs",
                 "BackingStore.cs", "ProfileGyroMouseLoadSection.cs", "ProfileGyroControlsLoadSection.cs", "ProfileMotionSaveSection.cs", "ProfileButtonControlLoadSection.cs",
                 "ProfileButtonSaveSection.cs", "ProfileSettingsViewModel.cs", "GyroSlotSettings.cs", "GyroSettingsViewModel.cs", "IProfileSettingsService.cs", "ProfileSettingsService.cs",
-                "Strings.Designer.cs", "MessageBoxRemovedGyroSwipePrompt.cs", "ProfileEditor.xaml.cs", "Resources.Designer.cs",
+                "Strings.Designer.cs", "MessageBoxRemovedGyroSwipePrompt.cs", "ProfileEditor.xaml.cs", "Resources.Designer.cs", "ProfileEditViewModelFactory.cs",
             };
 
             foreach (string file in Directory.EnumerateFiles(product, "*.cs", SearchOption.AllDirectories))
