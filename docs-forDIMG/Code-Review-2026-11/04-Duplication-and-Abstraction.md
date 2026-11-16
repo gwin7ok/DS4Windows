@@ -7,7 +7,7 @@
 
 - 1 フレームの流れは `InputLoopDevice` に集まり、4 機種（`DualShock4Device`、`DualSenseDevice`、`SwitchProDevice`、`ProtocolDevice`）とも、差し込み口（`ReceiveFrame`／`IsExpectedReport`／`ProcessFrame`／`ProcessIdle`／`WriteOutputFrame`）だけを書いている（`DS4Windows/Input/Devices/InputLoopDevice.cs:102`）。
 - 電池の段階 → % は `BatteryScale`、Xbox の接続の判定は `XusbConnectionClassifier` の 1 か所に集まっている。
-- 特殊アクションの出力の組み立ては、種別ごとの部品の列（`ISpecialActionOutputBuilder` が 10 個）で、`switch` がない。
+- スペシャルアクションの出力の組み立ては、種別ごとの部品の列（`ISpecialActionOutputBuilder` が 10 個）で、`switch` がない。
 
 ## 2. 問題点（重複）
 
@@ -17,7 +17,7 @@
 - なぜ問題か: 片方だけ直すと動きがずれる。永続化の層に副作用がある（`02-Layers-and-Placement.md` の 2-1）。
 - 追加調査（2026-11-11）: 2 つは場面で分かれており、たどった範囲では二重に起動しない。
   - 接続のとき: 読み込みは「起動しない」で行い（`Processing/Services/ProfileSlotApplier.cs:38` のコメントの引数仕様）、そのあと `DeviceConnector.cs:106` が `ApplyProfileOptions`（`startUp` は既定の偽）を呼んで、第 2 層の側が起動する。
-  - 切替のとき（特殊アクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`Core/Settings/BackingStore.cs:1171`）なので、第 2 層の側は起動しない。
+  - 切替のとき（スペシャルアクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`Core/Settings/BackingStore.cs:1171`）なので、第 2 層の側は起動しない。
   - つまり、同じ処理を、場面ごとに別の実装が受け持っている。二重起動の不具合ではないが、片方だけ直すとずれる点は変わらない。
 - 修正の方向: 起動の判断と実行を、第 2 層の 1 つの部品へまとめる（`IProcessInspector` と `IProcessLauncher` を使う）。
 

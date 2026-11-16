@@ -16,7 +16,7 @@
 - `ProfileMiscLoadSection`（`Core/Persistence/ProfileSections/ProfileMiscLoadSection.cs:59`〜`110`）: `context.LaunchProgram` が真のとき、同じことをする。こちらだけ、先に `IProcessInspector` を試す。
 - 追加調査（2026-11-11）: 2 つは場面で分かれており、たどった範囲では二重に起動しない。
   - 接続のとき: 読み込みは「起動しない」で行い（`ProfileSlotApplier.cs:38` の引数仕様）、そのあと `DeviceConnector.cs:106` が `ApplyProfileOptions`（`startUp` は偽）を呼んで、第 2 層の側が起動する。
-  - 切替のとき（特殊アクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`BackingStore.cs:1171`）で、第 2 層の側は起動しない。
+  - 切替のとき（スペシャルアクションのプロファイル切替 `ProfileApplicationService.cs:124`・`130`、自動プロファイルの一時プロファイル `AutoProfileService.cs:227`、IPC の `LoadTempProfile` `IpcCommandProcessor.cs:177`）: 読み込みを「起動する」で行い、永続化の側が起動する。読み込みの中からの `CheckProfileOptions` は `startUp` が真（`BackingStore.cs:1171`）で、第 2 層の側は起動しない。
   - 画面からの手動の切替、自動プロファイルの既定への復帰（`AutoProfileService.cs:279` は「起動しない」）は、どちらも起動しない見込み（32-A0 で表にして確かめる）。
 
 ### B. 出力の種類の分岐（カートリッジと `OutContTypeInfo` の外）
@@ -38,7 +38,7 @@
 
 ## 決定の記録（2026-11-13。ユーザーの回答）
 D1＝A（同じ Phase。A を先に）、D2＝**B（場面ごとの違いを見直す）**、D3＝A（`OutContType` を持つ形）、D4＝A（DS4 の出力デバイスの中）。
-- D2＝B は機能の変更にあたる（規約 2.2）。32-A0 の表ができた時点で見直し案を提示し、**2026-11-14 に案 A を承認**: 「特殊アクションの復帰」「自動プロファイルの既定への復帰」「保存・名前変更のあとの再適用」以外の、プロファイルを選ぶ・切り替える・接続する場面は、すべて起動する。今との差は 1 点だけで、**メイン画面のプロファイル選択（コンボ）でも起動する**ようになる（今はトレイの選択だけ）。
+- D2＝B は機能の変更にあたる（規約 2.2）。32-A0 の表ができた時点で見直し案を提示し、**2026-11-14 に案 A を承認**: 「スペシャルアクションの復帰」「自動プロファイルの既定への復帰」「保存・名前変更のあとの再適用」以外の、プロファイルを選ぶ・切り替える・接続する場面は、すべて起動する。今との差は 1 点だけで、**メイン画面のプロファイル選択（コンボ）でも起動する**ようになる（今はトレイの選択だけ）。
 
 ## 32-A0 の結果（2026-11-14。調査）
 起動は、読み込みの引数 `launchProgram`（真なら `ProfileMiscLoadSection` が起動）と、接続時の `ApplyProfileOptions(startUp: false)`（`DeviceConnectionSetup` が起動）の 2 か所。読み込みの中から呼ばれる `CheckProfileOptions` は常に `startUp: true`（`BackingStore.cs:1171`）で、起動しない。
@@ -50,8 +50,8 @@ D1＝A（同じ Phase。A を先に）、D2＝**B（場面ごとの違いを見�
 | メイン画面のプロファイル選択（コンボ） | `ProfileSelectionCoordinator` → `ApplyToSlot` | 偽 | なし | **しない** |
 | 保存・名前変更のあとの再適用 | 同上 `ApplyToSlot` | 偽 | なし | しない |
 | トレイのメニューで選択 | `ApplyFromTray` → `ApplyFromUi` | 真 | `ProfileMiscLoadSection` | **する** |
-| 特殊アクションの切替 | `ApplyFromAction` | 真 | 同上 | する |
-| 特殊アクションの復帰 | `RestoreFromAction` | 偽 | なし | しない |
+| スペシャルアクションの切替 | `ApplyFromAction` | 真 | 同上 | する |
+| スペシャルアクションの復帰 | `RestoreFromAction` | 偽 | なし | しない |
 | IPC `LoadProfile`／`LoadTempProfile` | `IpcCommandProcessor` | 真 | 同上 | する |
 | 自動プロファイルの一時プロファイル | `AutoProfileService.cs:227` | 真 | 同上 | する |
 | 自動プロファイルの既定への復帰 | `AutoProfileService.cs:279` | 偽 | なし | しない |

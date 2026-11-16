@@ -9,7 +9,7 @@ namespace DS4Windows.UI.Services
 {
     /// <summary>
     /// プロファイル編集画面（<see cref="ProfileEditor"/>）が使う、業務のサービスへの窓口。プロファイルの読み込み、
-    /// 特殊アクションの参照の差し替え、実機の振動・入力・較正の操作を包み、画面が業務のサービスの型を直接参照しない（V2）ようにする。
+    /// スペシャルアクションの参照の差し替え、実機の振動・入力・較正の操作を包み、画面が業務のサービスの型を直接参照しない（V2）ようにする。
     /// 各操作の判断（スロットの範囲、未接続のときは何もしない）は、従来の画面のコードのまま。
     /// </summary>
     public sealed class ProfileEditorBackend
@@ -62,7 +62,7 @@ namespace DS4Windows.UI.Services
             profileRepository.LoadProfile(editSlot, profileName);
         }
 
-        /// <summary>プロファイルの読み込み後の、有効な特殊アクションの名前（「/」区切り）。なければ空文字。</summary>
+        /// <summary>プロファイルの読み込み後の、有効なスペシャルアクションの名前（「/」区切り）。なければ空文字。</summary>
         public string GetEnabledActionsText(int editSlot)
         {
             List<string> actions = profileRepository.ProfileActions != null && profileRepository.ProfileActions.Length > editSlot
@@ -71,7 +71,7 @@ namespace DS4Windows.UI.Services
             return actions != null ? string.Join("/", actions) : string.Empty;
         }
 
-        /// <summary>編集中のプロファイル（メモリ上）の、特殊アクションの参照を、旧名から新名へ差し替える。</summary>
+        /// <summary>編集中のプロファイル（メモリ上）の、スペシャルアクションの参照を、旧名から新名へ差し替える。</summary>
         public void RenameActionInEditedProfile(int editSlot, string oldName, string newName)
         {
             var actions = profileRepository.ProfileActions;

@@ -90,7 +90,7 @@ namespace DS4Windows.Core.Abstractions
         string DuplicateAction(string actionName);
 
         // TODO(Phase8): 購読者が 0 件のまま維持している。実装は保存・削除のたびに正しく発火する。旧 ProfileActions.ActionsChanged も購読者がなかった（移行前から同じ）。
-        // 画面の特殊アクション一覧の更新通知への接続は Phase8 で行う。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
+        // 画面のスペシャルアクション一覧の更新通知への接続は Phase8 で行う。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
         event EventHandler ActionsChanged;
     }
 }

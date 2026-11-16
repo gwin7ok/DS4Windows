@@ -9,7 +9,7 @@
 
 ## 1. 目的と位置づけ
 
-- Step7（7.1〜7.8f）で、特殊アクション（SA）のすべての種別と Controls タブの割り当て（Key／Macro／Extras／Button のパッド・マウス・ホイール・移動・Toggle）を、新経路（`TriggerDispatchEngine`）へ切り替えた。旧経路のコードは、ロールバックを `ServiceRegistration` の 1 行で済ませるために、Step8 まで残してある。
+- Step7（7.1〜7.8f）で、スペシャルアクション（SA）のすべての種別と Controls タブの割り当て（Key／Macro／Extras／Button のパッド・マウス・ホイール・移動・Toggle）を、新経路（`TriggerDispatchEngine`）へ切り替えた。旧経路のコードは、ロールバックを `ServiceRegistration` の 1 行で済ませるために、Step8 まで残してある。
 - Step8 では、新経路が処理するようになった旧コードと、役目を終えた**系統 B**（`Actions.Action` 系の `IActionFactory`、各 Adapter など）、および切替のスイッチ（`BindingMigrationOptions`）を削除する。`Mapping.cs`（現在 7,401 行）から、約 2,000 行を減らす見込み（Phase8 全体計画 §26 の見積もり）。
 - **Step8 の後は、ロールバックが「1 行を外す」ではなく「PR を git で戻す」になる。** そのため、削除を小さな PR に分け、各 PR でテスト（旧・新の比べで固定した期待値）を通す。実機確認（Step9。U-35〜U-47）を削除の前に行うかは Q1。
 - やらないこと: `Mapping` の責務分割（Phase9）、挙動・ログ・保存形式の変更（規約 2.2／2.3。削除する診断ログは Q7 で承認を得る）、ジャイロスワイプ以外の新機能。

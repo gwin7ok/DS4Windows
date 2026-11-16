@@ -36,7 +36,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
         }
 
-        /// <summary>切断時の後始末: そのデバイスの同期キュー（特殊アクションごとの Task の連鎖）を空にする。</summary>
+        /// <summary>切断時の後始末: そのデバイスの同期キュー（スペシャルアクションごとの Task の連鎖）を空にする。</summary>
         public void ClearDevice(int device)
         {
             // 旧 Mapping.HandleDeviceDisconnect の「Clear macro task queue entries for device」と同じ処理

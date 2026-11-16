@@ -74,7 +74,7 @@ namespace DS4Windows.UI
         private readonly IProfileEditViewModelFactory _viewModelFactory;
         // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
-        // 業務のサービス（プロファイルの読み込み、特殊アクションの参照、実機の振動・入力・較正）への窓口（V2）
+        // 業務のサービス（プロファイルの読み込み、スペシャルアクションの参照、実機の振動・入力・較正）への窓口（V2）
         private readonly DS4Windows.UI.Services.ProfileEditorBackend backend;
 
         /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
@@ -92,7 +92,7 @@ namespace DS4Windows.UI
         }
         private ProfileEntity currentProfile;
         private SpecialActionsListViewModel specialActionsVM;
-        // 特殊アクション一覧を最初に表示したときに、一度だけ並べ替えを適用する
+        // スペシャルアクション一覧を最初に表示したときに、一度だけ並べ替えを適用する
         private bool specialActionsSorted = false;
 
         public event EventHandler Closed;
@@ -1501,7 +1501,7 @@ namespace DS4Windows.UI
             if (e.OriginalSource != sidebarTabControl) return;
 
             AppLogger.Log(AppLogLevel.Debug, $"[SidebarTabControl_SelectionChanged] SelectedItem={sidebarTabControl.SelectedItem?.GetType().Name}, SelectedIndex={sidebarTabControl.SelectedIndex}, IsLoaded={sidebarTabControl.IsLoaded}, IsVisible={sidebarTabControl.IsVisible}, Added={e.AddedItems?.Count}, Removed={e.RemovedItems?.Count}");
-            // 特殊アクションのタブを最初に開いたときに、一度だけ並べ替えを適用する
+            // スペシャルアクションのタブを最初に開いたときに、一度だけ並べ替えを適用する
             if (!specialActionsSorted && sidebarTabControl.SelectedItem == specialActionsTab)
             {
                 specialActionsSorted = true;

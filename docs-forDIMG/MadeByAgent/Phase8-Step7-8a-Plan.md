@@ -36,7 +36,7 @@
 
 ### 2.3 Q4＝B（共有をしない）との関係
 
-旧経路は `FindSpecialActionForLogicalKey` で、同じ論理キーの Key 特殊アクションの状態を共有していた。新経路では、Controls タブの割り当てごとに**自分専用の識別用 SpecialAction**（名前は旧合成と同じ規則: `Synthetic_Key_{device}_{control}` など。通常とシフトで別）を作るため、共有は起きない。これは 7.8b で実装する（7.8a では識別用の生成は作らない）。
+旧経路は `FindSpecialActionForLogicalKey` で、同じ論理キーの Key スペシャルアクションの状態を共有していた。新経路では、Controls タブの割り当てごとに**自分専用の識別用 SpecialAction**（名前は旧合成と同じ規則: `Synthetic_Key_{device}_{control}` など。通常とシフトで別）を作るため、共有は起きない。これは 7.8b で実装する（7.8a では識別用の生成は作らない）。
 
 ### 2.4 Macro は 7.8a の対象にしない（Q3）
 

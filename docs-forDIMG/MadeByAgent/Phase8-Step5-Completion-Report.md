@@ -16,7 +16,7 @@
 | W3 | 結合テスト | `Phase8Step5W3PublishBindingsTests`（偽の登録簿・ビルダー、実ホスト、構造） |
 
 - 作る種別は Button／Key／Macro／Program／Profile の 5 種（Q2＝A）。構成は設計書 §6 のとおり: Button は Press が Fresh-press ガードなし／Toggle がガードあり、Program と Profile は `blocksWhileExecuting`、Profile の復帰は Automatic（自動）→ Buttons（`uTrigger`）→ None の優先。それ以外の種別は束縛を作らない。
-- 移行対象が空の間、`Build` は何も読まずに空のリストを返す。順序は `ProfileActions` の並び、見つからない名前とトリガーのない特殊アクションは飛ばす。
+- 移行対象が空の間、`Build` は何も読まずに空のリストを返す。順序は `ProfileActions` の並び、見つからない名前とトリガーのないスペシャルアクションは飛ばす。
 
 ## 2. 検証結果
 

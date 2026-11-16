@@ -13,7 +13,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4Windows.UI.Services
 {
     /// <summary>
-    /// 特殊アクション（割り当て編集画面の各アクション、マクロ、プログラム起動など）の ViewModel を作る。
+    /// スペシャルアクション（割り当て編集画面の各アクション、マクロ、プログラム起動など）の ViewModel を作る。
     /// 窓口は <see cref="DS4Windows.UI.Abstractions.IActionViewModelFactory"/>。依存は、ここで作る ViewModel が使うものだけを受ける。
     /// </summary>
     public sealed class ActionViewModelFactory : DS4Windows.UI.Abstractions.IActionViewModelFactory

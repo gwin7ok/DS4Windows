@@ -56,7 +56,7 @@ Step2 の本体は、次の論点を、選択肢・根拠・推奨とあわせ�
   - 理由: AND 条件のモデルを壊さず、挙動（`Phase8Step1ShiftTriggerCharacterizationTests` で固定済み）を再現できる。
 - **Q7: 移行の順序と、新旧の並行期間（D3＝C1）**
   - 方針（推奨）: 種別ごとに 1 PR。順序は、Button → Key → Macro → Program → Profile → その他（GyroCalibrate、DisconnectBT、BatteryCheck、ステアリング較正、XboxGameDVR／MultiAction は最後。実機の `DS4Device` を要する）。切り替えた種別は、`MapCustomAction` の該当の分岐を削除し、新エンジンが担う。**同じアクションを新旧の両方が処理しない**ことを、種別単位のスイッチ（`TriggerBinding` に登録された種別かどうか）で保証する。
-  - Controls タブ（単一ボタン）は、特殊アクションの切替（Step7）が済んだ後に、同じエンジンへ載せる（D2＝B1）。
+  - Controls タブ（単一ボタン）は、スペシャルアクションの切替（Step7）が済んだ後に、同じエンジンへ載せる（D2＝B1）。
 - **Q8: `IActionRegistry` の実装と、プロファイル読込・接続との接続**
   - 案 A（推奨）: DI の Singleton の実装（仮称 `ActionBindingRegistry`）。スロットごとに、不変の `IReadOnlyList<TriggerBinding>` を持ち、**参照の差し替えで更新**する（Phase7c W1 で保留した、読込側のリスト差し替えの本格案。`Clear()`→`Add()` の競合を構造的に排除）。構築は Step5（プロファイル読込時）、紐付けは Step6（コントローラー接続時）。
   - 注: `ClearState`／`ClearPendingRestore` の切断時の接続（Step6 に TODO）も、ここで意味（`OlderProfilePath` の扱い）を確定する。

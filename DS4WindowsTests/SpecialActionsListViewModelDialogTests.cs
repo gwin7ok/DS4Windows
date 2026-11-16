@@ -7,7 +7,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// 特殊アクション一覧の「削除の確認」「複製できない通知」「保存後の追加・差し替え」が、
+    /// スペシャルアクション一覧の「削除の確認」「複製できない通知」「保存後の追加・差し替え」が、
     /// 窓（MessageBox）なしの ViewModel だけで動くこと（偽の <c>IDialogService</c> で確かめる）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

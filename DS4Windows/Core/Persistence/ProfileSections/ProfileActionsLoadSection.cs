@@ -24,7 +24,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W5（Phase8-Step4b-Plan.md §3.2）: 特殊アクションの割り当て（ProfileActions）の読込と、アクションの辞書の作り直し。Step5 が組み立ての入力に使う節のため、単独のクラスにする。
+    /// Phase8-Step4b W5（Phase8-Step4b-Plan.md §3.2）: スペシャルアクションの割り当て（ProfileActions）の読込と、アクションの辞書の作り直し。Step5 が組み立ての入力に使う節のため、単独のクラスにする。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileActionsLoadSection : IProfileLoadSection

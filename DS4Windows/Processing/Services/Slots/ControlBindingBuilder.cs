@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Services.Slots
     /// </para>
     /// 「何をするか」の解釈（キー番号、Toggle、ScanCode、別名キー）はここで行い、出力（<c>KeyOutputAction</c>）には解釈済みの値を渡す（Q9＝A）。
     /// 識別用の <c>SpecialAction</c>（状態の鍵）は、旧経路の合成と同じ名前（<c>Synthetic_Key_{device}_{control}</c>）で作る。
-    /// 旧経路の <c>FindSpecialActionForLogicalKey</c> による Key 特殊アクションとの状態の共有は、再現しない（Q4＝B。承認済みの動作変更）。
+    /// 旧経路の <c>FindSpecialActionForLogicalKey</c> による Key スペシャルアクションとの状態の共有は、再現しない（Q4＝B。承認済みの動作変更）。
     /// </summary>
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {

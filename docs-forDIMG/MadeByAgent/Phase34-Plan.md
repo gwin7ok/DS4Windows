@@ -78,7 +78,7 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 |---|---|---|---|
 | 34-0 | 棚卸し: **全 37 の `.xaml.cs`**（2026-11-13 に拡張）のイベント処理と、部品への直接の代入を、(A)(B)(C) に仕分けた表を作る。あわせて、(1) ViewModel の WPF 依存（`Visibility`、`Media`、`Controls`、`Application`／`Dispatcher`）を、ファイルごと・理由ごとに一覧にする、(2) View のサービス参照を一覧にする。画面ごとの Step と、D6 の分け方を確定する | — | 完了 |
 | 34-1 | （完了 2026-11-15）土台: コマンド（D2）、ダイアログの窓口（確認・通知／ファイルの選択／色の選択）、`MainWindow` が直接作る 4 つの窓の生成の窓口、**UI スレッドの窓口**（`IUiDispatcher`。`UI/Abstractions`。ViewModel が `Application.Current.Dispatcher` を直接使わないため。偽物は、その場で実行する形）。テスト用の偽物を用意する | 窓口の契約ごとの偽物。コマンドの実行可否の通知。UI スレッドの窓口の偽物 | 完了 |
-| 34-2 | `ProfileEditor`: 保存・キャンセル・適用、特殊アクションの一覧（並べ替え、編集、削除。`SortSpecialActionsList`、`EditActionBtn_Click`）、プリセット、読み込み直し（`Reload` のうち、値の集め方）を ViewModel へ。図のホバーと `InputDS4`（入力による選択）は (C) として残す | 保存の検査、一覧の並べ替え、編集の開始の判断 | 完了 |
+| 34-2 | `ProfileEditor`: 保存・キャンセル・適用、スペシャルアクションの一覧（並べ替え、編集、削除。`SortSpecialActionsList`、`EditActionBtn_Click`）、プリセット、読み込み直し（`Reload` のうち、値の集め方）を ViewModel へ。図のホバーと `InputDS4`（入力による選択）は (C) として残す | 保存の検査、一覧の並べ替え、編集の開始の判断 | 完了 |
 | 34-3 | `MainWindow`: 設定タブのボタン、プロファイルの操作（新規・編集・複製・削除・書き出し・読み込み）、更新の確認、窓の生成（`ChangelogWindow` ほか）を、ViewModel と窓口へ。電源・デバイスの通知（`PowerEventArrive`、`OnSourceInitialized`）は、OS のメッセージの受け口なので View に残し、判断だけを部品へ | プロファイルの操作の判断、更新の確認、電源の復帰の判断 | 完了 |
 | 34-4 | `RecordBox`（記録の画面）: 記録の開始・停止、保存・読み込み、手順の編集を `RecordBoxViewModel` のコマンドへ。キーとマウスの生の入力の受け口は View に残す | 記録の状態の移り変わり、保存の検査 | 完了 |
 | 34-5 | `AssignmentEditor`（割り当て編集画面）: 種別の切り替え、保存の検査を ViewModel へ | 種別ごとの保存の検査 | 完了 |
@@ -90,7 +90,7 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 
 ## 確認の方法
 - 各 Step: 途中は `--filter "Category!=Slow&Category!=Benchmark"`、Step の終わりに Debug ALL（警告 0・エラー 0）。
-- 実機: 画面ごとに、移したボタンと操作を一通り。特に、(1) プロファイルの保存・キャンセル・未保存での閉じ方、(2) 特殊アクションの追加・編集・削除・並べ替え、(3) マクロの記録と保存、(4) 設定タブの各項目、(5) 更新の確認、(6) スリープからの復帰とコントローラーの抜き差し。
+- 実機: 画面ごとに、移したボタンと操作を一通り。特に、(1) プロファイルの保存・キャンセル・未保存での閉じ方、(2) スペシャルアクションの追加・編集・削除・並べ替え、(3) マクロの記録と保存、(4) 設定タブの各項目、(5) 更新の確認、(6) スリープからの復帰とコントローラーの抜き差し。
 
 ## リスク
 - 範囲が全画面になったため、本 Phase は大きい（約 10,400 行の code-behind。ViewModel の WPF 非依存化を含む）。D6 の (A) で、承認のときに、34-A（土台と 5 画面）・34-B（ViewModel の WPF 非依存化）・34-C（残りの画面と検査）へ分ける案を勧める。34-6a は、ViewModel の見た目の値（色、表示の有無）に触れるため、実機で画面を一通り見る（テーマの切り替えを含む）。
@@ -114,7 +114,7 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 - 次: 34-2 以降（画面ごとに、判断を ViewModel のコマンドへ移し、`IDialogService`・`IUiDispatcher` を使う）。`MainWindow` が最大で、Phase35（終了の手順）と同じファイルに触れるため、先に Phase35 を済ませてから 34-3 に入るほうがよい。
 
 ### 2026-11-15（続き。ブランチ `Phase34-2`）
-- 34-2（ProfileEditor。完了）: 特殊アクションの「追加・編集後の一覧の更新」「削除の確認」「複製できないときの通知」「エクスポート」を `SpecialActionsListViewModel`（`AddSavedAction`／`ReplaceEditedAction`／`RemoveSelectedWithConfirm`／`DuplicateSelectedWithNotice`／`PickAndExportActions`）へ移した。確認・通知の文言は `Strings.resx`・`Strings.ja.resx` のキー（`SpecialAction_RemoveConfirm`／`SpecialAction_DuplicateNotSaved`）にした（D5＝B。日本語訳は、最後の実機確認で確認する一覧に入れる）。`IDialogService` は `ActionViewModelFactory` が渡す。テスト: `SpecialActionsListViewModelDialogTests`。残り（ProfileEditor に残る直接の呼び出し）: 名前の入力チェックの `MessageBox`、リセットの確認、スティック校正の案内、起動プログラムの選択（`GeneralSettingsViewModel` へ移す）。34-3 のあとに行う。
+- 34-2（ProfileEditor。完了）: スペシャルアクションの「追加・編集後の一覧の更新」「削除の確認」「複製できないときの通知」「エクスポート」を `SpecialActionsListViewModel`（`AddSavedAction`／`ReplaceEditedAction`／`RemoveSelectedWithConfirm`／`DuplicateSelectedWithNotice`／`PickAndExportActions`）へ移した。確認・通知の文言は `Strings.resx`・`Strings.ja.resx` のキー（`SpecialAction_RemoveConfirm`／`SpecialAction_DuplicateNotSaved`）にした（D5＝B。日本語訳は、最後の実機確認で確認する一覧に入れる）。`IDialogService` は `ActionViewModelFactory` が渡す。テスト: `SpecialActionsListViewModelDialogTests`。残り（ProfileEditor に残る直接の呼び出し）: 名前の入力チェックの `MessageBox`、リセットの確認、スティック校正の案内、起動プログラムの選択（`GeneralSettingsViewModel` へ移す）。34-3 のあとに行う。
 - 34-4（RecordBox。完了）: プリセットの読み書きのファイル選択（`PickAndLoadPreset`／`PickAndSavePreset`）と、移動の記録の上限の通知（`NotifyMoveRecordLimitReached`）を `RecordBoxViewModel` へ。`ProfileEditViewModelFactory` が `IDialogService` を渡す。テスト: `RecordBoxViewModelDialogTests`。
 - 34-5（AssignmentEditor。一部完了）: 起動プログラムの選択（`LaunchProgramViewModel.PickProgram`）を移した。位置を指定して出す「同名のアクションがある」の通知は、描画上の位置の指定のため View に残す（D8＝A）。
 - 34-6（BindingWindow）: 直接の `MessageBox`・ファイル選択が 0 件のため、このブランチでは変更なし。34-6a／34-6b（ViewModel の WPF 非依存化・残りの画面）は、`MainWindow`・`App` に触れる Phase35 のあとで、34-3・34-7・34-8 と一緒に行う（計画の変更。実機確認のあとの最終まとめで記録する）。
@@ -126,5 +126,5 @@ D1＝A（ProfileEditor → MainWindow → RecordBox → AssignmentEditor → Bin
 ### 2026-11-16（締め）
 - 完了の判断（先の「基準値を残して一区切り」を改める）: 一区切りのあと、同じ日のうちに、画面を触る小さなブランチ（`Phase34-V2-*`・`Phase34-V1-*` など 40 件ほど）で、基準値をすべて 0 にした。V1（ViewModel が `System.Windows` を参照しない）は 87 → 0。V2（View が業務のサービス・設定の型を直接参照しない）は 72 → 0。許可リストは空のまま保つ（新しい違反は足さず、是正する）。
 - 主な移動先: `ProfileEditorBackend`、`AssignmentEditorSession`、`MouseRecordingHost`、`AutoProfileRunner`、`IControllerReadingsFeed`、`UpdateCheckPolicy`、`MainWindow` の用途別の窓口、`IUiDispatcher`（`Application.Current`・`Dispatcher` の代わり）、`DS4Color` と View 側の変換（色・`Visibility`）。
-- 実機確認: 2026-11-16 の最後のまとめの確認で、画面の操作（プロファイル編集、特殊アクション、記録、トレイ、出力スロット）を確認した。見つかった不具合は 1 件（Output Slots タブの設定欄が出ない。`Visibility` を bool へ変えたとき、WPF が見るイベント名［プロパティ名 + `Changed`］がずれた）で、修正して再確認 OK。
+- 実機確認: 2026-11-16 の最後のまとめの確認で、画面の操作（プロファイル編集、スペシャルアクション、記録、トレイ、出力スロット）を確認した。見つかった不具合は 1 件（Output Slots タブの設定欄が出ない。`Visibility` を bool へ変えたとき、WPF が見るイベント名［プロパティ名 + `Changed`］がずれた）で、修正して再確認 OK。
 - 残るもの: 「code-behind を `InitializeComponent()` だけにする」ことは目標にしない（見た目の処理は View に置く）。`MainWindow` の電源・デバイスの通知の窓の処理は、OS との境界のため View に残す。

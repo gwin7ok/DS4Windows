@@ -1100,12 +1100,12 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>テスト</value>
   </data>
   <data name="SpecialAction_RemoveConfirm" xml:space="preserve">
-    <value>特殊アクション「{0}」を削除しますか？
+    <value>スペシャルアクション「{0}」を削除しますか？
 
 すべてのプロファイルからも取り除かれます。</value>
   </data>
   <data name="SpecialAction_DuplicateNotSaved" xml:space="preserve">
-    <value>特殊アクション「{0}」は Actions.xml に保存されていないため、複製できません。</value>
+    <value>スペシャルアクション「{0}」は Actions.xml に保存されていないため、複製できません。</value>
   </data>
   <data name="Startup_CannotWriteCopyPrompt" xml:space="preserve">
     <value>現在の場所には書き込めません。

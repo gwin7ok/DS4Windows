@@ -11,7 +11,7 @@ Phase15 で意図的に残した 2 件を片付ける。利用者に見える機
 
 | 項目 | 内容 |
 |---|---|
-| S1 | 特殊アクション一覧の見出し・並べ替えの整理（`ProfileEditor`） |
+| S1 | スペシャルアクション一覧の見出し・並べ替えの整理（`ProfileEditor`） |
 | S2 | 編集画面の外のスロット配列の直接参照 5 か所を、領域の窓口経由にする |
 
 ## 2. 現状
@@ -62,11 +62,11 @@ Phase15 で意図的に残した 2 件を片付ける。利用者に見える機
 |---|---|---|
 | 15-8-1 | S2: `TouchpadButtonMode` を窓口へ。5 か所の置き換え。検査の対象を広げる | Debug ALL |
 | 15-8-2 | S1: ViewModel に見出しの文字 4 つとテスト。XAML をバインディングへ。`ProfileEditor` の撤去 | Debug ALL。`ProfileEditorMarkupLoadTests` |
-| 15-8-3 | 文書の更新（完了報告、`Phase15-Completion-Report.md` §7、ロードマップ）。Release ビルド | 実機確認（特殊アクション一覧: 見出しの文字と矢印、各列のクリックで並べ替え、タブの行き来、言語の切り替え、プロファイルの読み込み直し） |
+| 15-8-3 | 文書の更新（完了報告、`Phase15-Completion-Report.md` §7、ロードマップ）。Release ビルド | 実機確認（スペシャルアクション一覧: 見出しの文字と矢印、各列のクリックで並べ替え、タブの行き来、言語の切り替え、プロファイルの読み込み直し） |
 
 ## 6. 実機確認の項目（Step 3 のあとに 1 回）
 
-1. プロファイル編集画面の特殊アクションのタブで、見出しの文字（「名前」「トリガー」「アクション」。「有効」は空）が出る。
+1. プロファイル編集画面のスペシャルアクションのタブで、見出しの文字（「名前」「トリガー」「アクション」。「有効」は空）が出る。
 2. 各見出しをクリックして並べ替わり、矢印が出る。もう一度で逆順になる。
 3. 他のタブへ移って戻っても、並べ替えと矢印が保たれる。
 4. 言語を切り替えると、見出しの文字が追従する。
@@ -75,5 +75,5 @@ Phase15 で意図的に残した 2 件を片付ける。利用者に見える機
 ## 7. 結果
 
 - Step 15-8-1: スロット配列の直接参照 5 か所を窓口経由にした。`TouchpadSlotSettings.ButtonMode` を追加。`CompositeDeviceModel` は窓口を一度作って使い回す（`ForSlot` は呼ぶたびに作るため）。`SettingsSlotWindowUsageTests` の対象は 2 → 7 ファイル。
-- Step 15-8-2: `SpecialActionsListViewModel` に見出しの文字 4 つ（`…HeaderText`）と `RefreshHeaderTexts` を追加し、XAML の `TextBlock` から `RelativeSource AncestorType=ListView` 経由でバインドした。`ProfileEditor.xaml.cs` から約 300 行（`EnsureSpecialActionsHeadersAssigned`、`UpdateSpecialActionsHeaderTexts`、`SetAndLogHeaderText`、`*SortButtonContent`、保持用のフィールド、開発用ログ約 25 行）を除いた。最初に特殊アクションのタブを開いたときの並べ替えは一度だけ適用する（`specialActionsSorted`）。編集画面は開いたまま設定タブへ移れず、言語を切り替えられないため、言語変更の通知は受けない（開くたびに表示言語で作る）。`RefreshHeaderTexts` は並べ替えの通知で使う。
+- Step 15-8-2: `SpecialActionsListViewModel` に見出しの文字 4 つ（`…HeaderText`）と `RefreshHeaderTexts` を追加し、XAML の `TextBlock` から `RelativeSource AncestorType=ListView` 経由でバインドした。`ProfileEditor.xaml.cs` から約 300 行（`EnsureSpecialActionsHeadersAssigned`、`UpdateSpecialActionsHeaderTexts`、`SetAndLogHeaderText`、`*SortButtonContent`、保持用のフィールド、開発用ログ約 25 行）を除いた。最初にスペシャルアクションのタブを開いたときの並べ替えは一度だけ適用する（`specialActionsSorted`）。編集画面は開いたまま設定タブへ移れず、言語を切り替えられないため、言語変更の通知は受けない（開くたびに表示言語で作る）。`RefreshHeaderTexts` は並べ替えの通知で使う。
 - Debug ALL: 警告 0・エラー 0、3,267 件合格。

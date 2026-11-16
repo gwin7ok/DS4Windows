@@ -9,11 +9,11 @@
 
 ## 1. 目的と、なぜ最大のリスクか
 
-Profile 種別の特殊アクション（ボタンの組み合わせで、プロファイルを切り替え、離したとき（または解除トリガーで）元へ戻す）を、旧ループから、統一ディスパッチ（エンジン）へ切り替える。7.1〜7.4 と同じ運用（`ServiceRegistration` の既定の一覧に `Profile` を足す。外すと戻る。旧コードは Step8 まで残す）。
+Profile 種別のスペシャルアクション（ボタンの組み合わせで、プロファイルを切り替え、離したとき（または解除トリガーで）元へ戻す）を、旧ループから、統一ディスパッチ（エンジン）へ切り替える。7.1〜7.4 と同じ運用（`ServiceRegistration` の既定の一覧に `Profile` を足す。外すと戻る。旧コードは Step8 まで残す）。
 
 **7.1〜7.4 と違う点（リスク）**:
 1. 切替は、**自分自身の束縛を差し替える**（プロファイルを適用すると、登録簿が新しいプロファイルの束縛に置き換わる）。
-2. 復帰の合図（`UntriggerAction`）は、**切替の前のプロファイルの特殊アクションを指したまま、適用をまたいで残る**。復帰は、その合図が毎フレーム見張る。
+2. 復帰の合図（`UntriggerAction`）は、**切替の前のプロファイルのスペシャルアクションを指したまま、適用をまたいで残る**。復帰は、その合図が毎フレーム見張る。
 3. 旧ループは、切替のあと、**フレームの残りを打ち切る**（`return`）。
 4. 切替の直前に、トリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す副作用がある。
 5. 一時プロファイルの間は、復帰の合図が残っている限り、別の Profile 切替を始めない（連鎖の防止）。
@@ -28,7 +28,7 @@ Profile 種別の特殊アクション（ボタンの組み合わせで、プロ
 - `IsExecuting = true`。**復帰の合図の設定**（`uTrigger` がある、または `automaticUntrigger` のとき）: `UntriggerAction = action`、`UntriggerIndex = index`、前のプロファイル名の記録（`prevProfileName`／`prevProfileWasTemporary`。**書くだけで、読む場所はない**）。
 - トリガーのボタンの通常の割り当てがキーまたはマクロなら、そのキーを離す（`VirtualKBM.PerformKeyRelease`）。
 - `DispatchInputEdge` → `ActionManager` → `ProfileSwitchActionAdapter` → `IProfileSwitcher.SwitchProfile` → `IProfileApplicationService.ApplyFromAction`（`Task.Run` で、HaltReporting の内側で適用）。
-- **`return`**（`MapCustomAction` を終わる。フレームの残りの特殊アクションと、後述の復帰の確認は、そのフレームでは行わない）。`finally` で `IsExecuting = false`。
+- **`return`**（`MapCustomAction` を終わる。フレームの残りのスペシャルアクションと、後述の復帰の確認は、そのフレームでは行わない）。`finally` で `IsExecuting = false`。
 
 **復帰（`MapCustomAction` の後段。5316〜5398 行付近）**: `UntriggerAction` があるとき、毎フレーム:
 - 自動（`automaticUntrigger`）: トリガーのうち**どれか 1 つでも離れた**ら成立。手動（`uTrigger`）: 解除トリガーが**すべて押された**ら成立。
@@ -57,7 +57,7 @@ Profile 種別の特殊アクション（ボタンの組み合わせで、プロ
 ### 7.5a の作業
 
 - **W1 の実装（2026-10-19。ビルド・テスト成功）**: `SpecialActionTestScope(migrated: true)` が Profile も移行。`Phase8Step75aW1ProfileSwitchDualPathTests`（新設）。前半（旧・新の両経路）: 切替・復帰の回数、ガード中、実行中、AND 条件、遅延、押している最中の適用。後半（**旧経路だけ**。新経路に、まだ無い項目の固定。W2 で、新経路の検査を足す）: 切替のあとフレームの残りが処理されない、トリガーのボタンのキーの解放、連鎖の防止。
-- **W1 特性化**: `Phase8Step1ProfileSwitchCharacterizationTests` の切替の検査（成立で `ApplyFromAction` が 1 回、直接の `ApplyProfile` は呼ばれない、復帰なしでは合図を設定しない）を、旧・新の両経路にする。新規: 保持中は再切替しない、ガード中・実行中・連鎖（一時プロファイル＋復帰の合図が Profile）で切り替えない、切替のあとでフレームが打ち切られる（同じフレームの後ろの特殊アクションが処理されない）、トリガーのボタンの通常の割り当て（キー、マクロ）のキーが離される、押している最中のプロファイル適用。観察は、`RecordingProfileApplicationService`（`InstallProfileRecorder`）と、`PerformKeyRelease` の記録。
+- **W1 特性化**: `Phase8Step1ProfileSwitchCharacterizationTests` の切替の検査（成立で `ApplyFromAction` が 1 回、直接の `ApplyProfile` は呼ばれない、復帰なしでは合図を設定しない）を、旧・新の両経路にする。新規: 保持中は再切替しない、ガード中・実行中・連鎖（一時プロファイル＋復帰の合図が Profile）で切り替えない、切替のあとでフレームが打ち切られる（同じフレームの後ろのスペシャルアクションが処理されない）、トリガーのボタンの通常の割り当て（キー、マクロ）のキーが離される、押している最中のプロファイル適用。観察は、`RecordingProfileApplicationService`（`InstallProfileRecorder`）と、`PerformKeyRelease` の記録。
 - **W2 の実装（2026-10-19。ビルド・テスト成功）**: `IGatedOutputAction`（新設。立ち上がりの実行の直前の条件の口。偽なら、エンジンは状態を変えず素通し）、`TriggerDispatchEngine`（立ち上がりで条件を確認）、`ProfileSwitchAction`（エンジン用のコンストラクター: 連鎖の防止、ログ［Trace 4 行、Debug 3 行］、トリガーのボタンのキーの解放、`RequestEndFrame`）、`ActionBindingBuilder`（復帰を持つ Profile は束縛を作らない。`ProfileUntriggerMigrated = false`。`Func<IMapping>` を省略可で受ける）。テスト: `Phase8Step75aW1…` の後半を旧・新の両経路に、`Phase8Step75aW2ProfileLogTests`、`Phase8Step5W1BuilderTests` の Profile の検査を更新（復帰つきは束縛なし）。
 - **W2 新経路の不足分**: `ProfileSwitchAction` に、エンジン用のコンストラクターで、(1) ログ（Trace 4 行、Debug 3 行）、(2) トリガーのボタンのキーの解放（`IProfileSettingsService` と出力の KBM［`ctx.OutputHandler`］）、(3) `ctx.RequestEndFrame()`（Intent 5）を足す。連鎖の防止は、**任意の実行条件の口**（`IGatedOutputAction`。`CanExecute(ctx)` が偽なら、エンジンは、`IsExecuting`・`BeingTriggered` を変えずに素通しする）として足し、`ProfileSwitchAction` が、`GetUseTempProfile` と `IMapping.CaptureProfileUntrigger(device).Action` で、旧経路と同じ条件を評価する（Q2）。ビルダーは、復帰なしの Profile だけ束縛を作る。
 - **W3**: `ServiceRegistration` の既定の一覧に `Profile` を足す（7.5a。復帰つきは旧経路のまま）。ロールバック、割り当て、性能。
@@ -89,7 +89,7 @@ Profile 種別の特殊アクション（ボタンの組み合わせで、プロ
 ## 5. リスクと対応
 
 - **切替の最中の登録簿の差し替え**: 切替が、非同期（`Task.Run`）で、適用を行い、登録簿を差し替える。エンジンは、デバイスごとのロックの下で、次の処理の先頭で、登録簿のスナップショットの差し替えを検出して、実行時の配列を作り直す（7.1〜7.4 の適用・再接続の実機確認で、確認済みの経路）。
-- **フレームの打ち切り**: `RequestEndFrame` → `ProcessOwned` が `EndFrame` を返し、`Mapping` が `return`（Step4 で配線・テスト済み）。W1 で、「後ろの特殊アクションが、そのフレームで処理されない」ことを、旧・新で比べる。
+- **フレームの打ち切り**: `RequestEndFrame` → `ProcessOwned` が `EndFrame` を返し、`Mapping` が `return`（Step4 で配線・テスト済み）。W1 で、「後ろのスペシャルアクションが、そのフレームで処理されない」ことを、旧・新で比べる。
 - **ロールバック**: `ServiceRegistration` の Profile の 1 行を外す（7.5a・7.5b とも）。
 - **Phase7b の復帰の不具合（U-23）**: 復帰の合図が適用で消える問題は、Phase7b で是正済み。7.5b で、エンジンの合図でも、同じ観点をテストする。
 

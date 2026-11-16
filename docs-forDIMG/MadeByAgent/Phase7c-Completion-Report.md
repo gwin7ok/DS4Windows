@@ -18,13 +18,13 @@
 ## 2. Wave ごとの実績
 
 ### W1: Stage3 の列挙競合の是正
-- 原因: `Mapping.cs` の Stage3（Button の特殊アクションの同期処理）が、`GetProfileActionsRaw` の返す生の `List<string>` を直接列挙していた。プロファイルの読込（`LegacyProfileXmlSerializer`）が同じリストを `Clear()`→`Add()` するため、`Collection was modified` になり、そのフレームの Button SA の出力が途中で打ち切られていた（例外は捕まえられ、クラッシュはしない）。`HaltReportingRunAction` は入力レポートの発火だけを止め、`async void` の `MapCustomAction` の実行中のフレームは止めない。
+- 原因: `Mapping.cs` の Stage3（Button のスペシャルアクションの同期処理）が、`GetProfileActionsRaw` の返す生の `List<string>` を直接列挙していた。プロファイルの読込（`LegacyProfileXmlSerializer`）が同じリストを `Clear()`→`Add()` するため、`Collection was modified` になり、そのフレームの Button SA の出力が途中で打ち切られていた（例外は捕まえられ、クラッシュはしない）。`HaltReportingRunAction` は入力レポートの発火だけを止め、`async void` の `MapCustomAction` の実行中のフレームは止めない。
 - 是正（Q1＝A）: Stage3 と、プロファイル切替のチェーン処理（`Count` 固定の添字ループ）を、`ToArray()` による複製に変えた。`MapCustomAction` の冒頭と同じ守り方。
 - 旧実装との比較: 上流の元の実装には Stage3 がなく、同じ列挙は複製で守られていた。Stage3 は Phase6-Step10-3d で足したもの。**フォークの機能追加で入った不具合**で、DI 移行そのものが原因ではない。
 - テスト: 構造ガード `Phase7cW1Stage3ProfileActionsSnapshotGuardTests`（`GetProfileActionsRaw` の呼び出しがすべて複製を伴うこと）。実走行の並行変更テストは W2 に含めた。
 
 ### W2: `MapCustomAction` の特性化テスト（前半）
-- ハーネス `SpecialActionTestScope`: `MappingCharacterizationScope` の専用デバイスに、特殊アクションを登録して `MapCustom` を実走行させる。`MapCustomAction` は `async void` だが、初期化待ちが完了済みの `Task` のため、最初の実際の `await` までは同期的に走る。
+- ハーネス `SpecialActionTestScope`: `MappingCharacterizationScope` の専用デバイスに、スペシャルアクションを登録して `MapCustom` を実走行させる。`MapCustomAction` は `async void` だが、初期化待ちが完了済みの `Task` のため、最初の実際の `await` までは同期的に走る。
 - テスト `Phase7cW2SpecialActionTriggerCharacterizationTests`（16 件）:
   - Button の Press（トリガー成立で出力、トリガーのボタンは消える、離すと出力なし）。
   - トリガーの AND 条件（片方だけでは不成立で素通し）。
@@ -78,7 +78,7 @@ DS4Windows を起動 → コントローラーを Bluetooth で接続 → プロ
 - 例外の種類（`IndexOutOfRangeException`、`AccessViolationException`、`coreclr.dll` のアクセス違反など）。
 - 直前の操作と、アプリのログ（`Logs`）の末尾。
 
-特殊アクションのトリガー・実行の経路（Phase8 の対象）で落ちたのか、第 1 層（`DS4Device`／`HidDevice`）や WPF の画面で落ちたのかを、これで区別する。
+スペシャルアクションのトリガー・実行の経路（Phase8 の対象）で落ちたのか、第 1 層（`DS4Device`／`HidDevice`）や WPF の画面で落ちたのかを、これで区別する。
 
 ### 4.4 過去の発生記録（参考）
 2026-09-26 の 3 回は、落ちた場所・種類が毎回違った（入力スレッドの `IndexOutOfRangeException`［`DS4Device.sendOutputReport`］、`coreclr.dll` のアクセス違反、UI スレッドの `AccessViolationException`）。メモリ破壊が疑われる。候補は、ポインタ操作や非同期 I/O を使う第 1 層で、Phase6 以降も未変更。

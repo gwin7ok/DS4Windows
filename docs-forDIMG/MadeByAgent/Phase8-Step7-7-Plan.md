@@ -30,14 +30,14 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
   - タップ: 終わりから間隔を過ぎたら、`details` の 1 つ目のマクロを実行し、状態を戻す（ダブルタップの余地のための遅延）。長押し: `firstTouch` のまま 500ms ＋ debounce 経過で 2 つ目のマクロ。ダブルタップ: 3 つ目のマクロ。
 - マクロの実行: `PlayMacro(device, macroControl, <マクロの文字列>, null, null, DS4Controls.None, DS4KeyType.None)`。`SpecialAction` ではなく文字列を渡す。空なら何もしない。実行の直前に Trace 4 行。Debug はなし。
 - ガード: 見ない。`BeingTriggered` を設定しない。トリガーの全部が押されている間のボタンの抑制・出力の消去は、共通の部分。
-- 旧ループの位置で動く（前の特殊アクションが `return` したフレームでは、この枝に来ない）。
+- 旧ループの位置で動く（前のスペシャルアクションが `return` したフレームでは、この枝に来ない）。
 
 ### 2.2 XboxGameDVR
 
 - 構築時に、`details` の整数をマクロの文字列に置き換え、`type` の文字列を `MultiAction` に書き換える（`typeID` は `XboxGameDVR` のまま）。旧経路の分岐は `details` を整数として読み直すため、読み取りに失敗して**マクロは一度も実行されない**（W1 のテストで確認する）。
 - 編集画面の種別の一覧にない（新しく作れない）。`Actions.xml` への保存では、`typeID` が `XboxGameDVR` の項目は**書き出されない**（`ActionsDTO` の分岐にない）。
 - 参照箇所（削除の範囲）: `SpecialAction.cs`（列挙の値、構築の分岐）、`Mapping.cs`（5069 行の条件、5132 行の分岐、およびその中の整数からマクロへの置き換え［3 か所の `switch`］、4481 行のコメント）、`ActionBindingBuilder.cs` のコメント、`Phase8Step7W3ButtonSwitchTests` の 1 行。
-- 古い `Actions.xml` に `<Type>XboxGameDVR</Type>` の項目が残っている場合: 削除後は種別が不明（`None`）の項目になり、何も実行されず、次の保存で書き出されない（今も保存では書き出されないため、実質同じ）。プロファイルの特殊アクションの一覧に名前だけが残ると「見つからない項目」（灰色）として表示される（既存の動き）。
+- 古い `Actions.xml` に `<Type>XboxGameDVR</Type>` の項目が残っている場合: 削除後は種別が不明（`None`）の項目になり、何も実行されず、次の保存で書き出されない（今も保存では書き出されないため、実質同じ）。プロファイルのスペシャルアクションの一覧に名前だけが残ると「見つからない項目」（灰色）として表示される（既存の動き）。
 
 ### 2.3 新経路で足りないもの
 
@@ -63,7 +63,7 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 - **`IGestureOutputAction`（新設。`IOutputAction` の拡張）**: `OnGesture(IOutputContext ctx, int gesture)`。
 - **`MultiActionOutput`（新設）**: ジェスチャーに対応するマクロの文字列（`details` を「,」で分けた 3 つ。足りなければ空）が空でなければ、Trace 4 行（旧 `LogSpecialActionTrace`）→ `IMultiActionMacroPlayer.PlayMacroString(device, macro)`（Q4＝A）。Debug はなし（Q5＝A）。
 - **エンジンの変更（小さい）**: `ProcessBinding` が `Evaluate` の結果を得た直後（ガードや成立の判定の**前**）に、`Gesture` が 0 でなければ、出力の `IGestureOutputAction.OnGesture` を呼ぶ。`BeingTriggered`・`IsExecuting` は変えない。ガードで止めない（旧経路もガードを見ない）。例外は握りつぶして記録する（既存の方式）。
-- **位置**: 旧ループの、そのアクションの位置で動く（`ProcessOwned`）。前の特殊アクションが `return` したフレームでは来ない、という旧経路の性質も保たれる（旧経路との違いなし）。
+- **位置**: 旧ループの、そのアクションの位置で動く（`ProcessOwned`）。前のスペシャルアクションが `return` したフレームでは来ない、という旧経路の性質も保たれる（旧経路との違いなし）。
 - **方針（`BindingPolicy`）**: `respectsFreshPressGuard: false`、`blocksWhileExecuting: false`、`stopOnRelease: false`（出力の `Stop` は不要）。トリガーのボタンの抑制・出力の消去は既定。
 - **`IMultiActionMacroPlayer`（新設。`Actions/`）**: `PlayMacroString(int device, string macro)`。`Mapping` が実装する（旧 `PlayMacro(…, 文字列, …)` を呼ぶだけ）。DI は、`IMapping` と同じインスタンスを返す（`IMapping` は 10 メンバーのまま）。
 - **ビルダー**: `MultiAction` の束縛。窓口（プレーヤー）がなければ作らない。
@@ -95,7 +95,7 @@ MultiAction は、他の種別と**構造が違う**。「トリガーが成立�
 
 - **7.7a**: W1 削除と、テスト（上記）。ビルド・テスト。
 - **7.7b**
-  - **W1（特性化。2026-10-20 ビルド・テスト成功）**: `Phase8Step77bW1MultiActionDualPathTests`（新設）と `TestDs4Device`（テスト用のデバイス。前回のレポートだけを返す）。旧経路は `d.getPreviousStateRef()` を使うため、スロットにテスト用のデバイスを置く。時刻は旧経路が `DateTime.UtcNow` を使うため、実際に待つ（待ち時間に余裕を持たせる。全体で約 10 秒）。内容: タップ［離した直後は実行しない、間隔後に 1 つ目を 1 回だけ］、長押し［2 つ目を 1 回。離してもタップは実行しない］、ダブルタップ［3 つ目のみ］、空のマクロ、`DebouncingMs`（200 で、タップの間隔が 350ms になる）、Fresh-press ガードを見ない、押している間トリガーの出力が消える、前の特殊アクション［Profile の切替］のフレームの打ち切りで押下を見逃す。旧・新の両経路（W1 の時点では、新経路の指定でも旧経路が処理する）。計画: `SpecialActionTestScope` に MultiAction。旧経路を、`PlayMacro` の記録（`Mapping` の窓口の差し替え）と、入力の時刻の差し込みで固定する: タップ（遅延後に 1 つ目）、長押し、ダブルタップ、間隔と `DebouncingMs`、マクロが空のとき、トリガーの抑制・出力の消去、前の特殊アクションの `return` のフレームでの見逃し。時刻の足場が足りなければ追加する。
+  - **W1（特性化。2026-10-20 ビルド・テスト成功）**: `Phase8Step77bW1MultiActionDualPathTests`（新設）と `TestDs4Device`（テスト用のデバイス。前回のレポートだけを返す）。旧経路は `d.getPreviousStateRef()` を使うため、スロットにテスト用のデバイスを置く。時刻は旧経路が `DateTime.UtcNow` を使うため、実際に待つ（待ち時間に余裕を持たせる。全体で約 10 秒）。内容: タップ［離した直後は実行しない、間隔後に 1 つ目を 1 回だけ］、長押し［2 つ目を 1 回。離してもタップは実行しない］、ダブルタップ［3 つ目のみ］、空のマクロ、`DebouncingMs`（200 で、タップの間隔が 350ms になる）、Fresh-press ガードを見ない、押している間トリガーの出力が消える、前のスペシャルアクション［Profile の切替］のフレームの打ち切りで押下を見逃す。旧・新の両経路（W1 の時点では、新経路の指定でも旧経路が処理する）。計画: `SpecialActionTestScope` に MultiAction。旧経路を、`PlayMacro` の記録（`Mapping` の窓口の差し替え）と、入力の時刻の差し込みで固定する: タップ（遅延後に 1 つ目）、長押し、ダブルタップ、間隔と `DebouncingMs`、マクロが空のとき、トリガーの抑制・出力の消去、前のスペシャルアクションの `return` のフレームでの見逃し。時刻の足場が足りなければ追加する。
   - **W1 は成功（ビルド・テスト。2026-10-20）。W2（実装。W2b と合わせて、ビルド・テスト成功［2026-10-20］）**: 新設 — `IGestureOutputAction`、`MultiTapInputAction`（`ComboTriggerInputAction` を中に持ち、`trigger[0]` のエッジと時刻と `DebouncingMs` から旧経路と同じ状態機械を動かし `Gesture` を返す）、`MultiActionOutput`、`IMultiActionMacroPlayer`、`DefaultMultiActionMacroPlayer`（`Func<IMapping>` から `Mapping` へ委譲）。変更 — `TriggerDispatchEngine.ProcessBinding`（`Evaluate` の直後に、`Gesture` が 0 でなければ出力の `OnGesture` を呼ぶ。ガード・成立・`BeingTriggered` によらない）、`Mapping`（`IMultiActionMacroPlayer.PlayMacroString` を実装。`IMapping` は 10 メンバーのまま）、`ActionBindingBuilder`（MultiAction の束縛。`respectsFreshPressGuard: false`、`stopOnRelease: false`）、`ServiceRegistration`（窓口の登録、既定の一覧に MultiAction の 1 行）。テスト: `Phase8Step77bW2MultiTapTests`（偽の入力［時刻と押下を差し込める］での状態機械、出力、ビルダー、ロールバック、窓口、旧・新のログの一致、割り当て）。計画: 上記の新設と変更、既定の一覧の 1 行。旧・新の両経路で、W1 の期待値を変えずに成功。ログの一致。
   - **W2b（設計の見直し。§3.3。Q8＝A、Q9＝A 承認済み。2026-10-20 実装済み。W2 と合わせて、ビルド・テスト成功［2026-10-20］）**: 上記のとおり — `BindingPolicy.RoutesOutputsByGesture`（追加。既定は偽）、`TriggerDispatchEngine`（`Gesture` が0でないフレームだけ `Outputs[Gesture − 1]` を実行。この項目が真の束縛は、抑制と出力の消去のあと、通常の出力の実行をしない）、`MacroStringAction`（新設）、`IGestureOutputAction`／`MultiActionOutput`（削除）、`IMacroStringPlayer`／`DefaultMacroStringPlayer`（改名）、`ActionBindingBuilder`（`details` の3つから、ジェスチャーごとの出力を3つそろえて作る）、`Mapping`（実装するインターフェース名）、`ServiceRegistration`（登録名）。テストの更新: `Phase8Step77bW2MultiTapTests`（`MacroStringAction` のテスト、ビルダーが3つの出力を作り、ジェスチャーごとのマクロに対応づけるテスト［空・足りない場合］、`BindingPolicy` の既定値、窓口の改名）。ジェスチャーでの出力の選択は、W1 の旧・新の両経路のテスト［タップ・長押し・ダブルタップがそれぞれ正しいマクロを1回だけ再生する］が確かめる。W1 と、`MultiTapInputAction` の状態機械のテスト、旧・新のログの一致、割り当てのテストは、期待値を変えずに成功すること。
   - **W3（W2 のテストに含めて成功）**: ロールバック［`RemovingTheLine_BringsBackTheLegacyPath_NoBindingIsBuilt`］、割り当て［`TheNewPath_DoesNotAddAllocationsToTheFrame_WhileHeld`］。

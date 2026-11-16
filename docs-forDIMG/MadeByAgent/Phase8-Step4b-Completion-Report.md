@@ -63,6 +63,6 @@
 
 ## 5. 次の Step への引き継ぎ・注意
 
-- **Step5（ビルダーと `Replace`）**: 特殊アクションの読込は `ProfileActionsLoadSection`、保存は `ProfileActionsSaveSection` に単独で置いてある。ビルダーの呼び出し（読込・適用の完了後に `TriggerBinding` を組み立てて `Replace`）は、`LoadProfile` の後始末か、`ProfileSlotApplier` の適用の後に足す。`OnProfileApplied` の接続（適用時に抑制の集合が空になる）は、Step5 の計画書で判断する（Step4 完了報告書 §5）。
+- **Step5（ビルダーと `Replace`）**: スペシャルアクションの読込は `ProfileActionsLoadSection`、保存は `ProfileActionsSaveSection` に単独で置いてある。ビルダーの呼び出し（読込・適用の完了後に `TriggerBinding` を組み立てて `Replace`）は、`LoadProfile` の後始末か、`ProfileSlotApplier` の適用の後に足す。`OnProfileApplied` の接続（適用時に抑制の集合が空になる）は、Step5 の計画書で判断する（Step4 完了報告書 §5）。
 - **右スティックのデルタ加速の読込の不具合**（§2-6）: 右スティックの要素が、左スティックの要素の有無で読まれる。左のデルタ加速の要素がない古いプロファイルで、右スティックの値が既定値のままになりうる。直すと挙動が変わるため、**ユーザーの承認を得て、別の Step で扱う**。
 - **モデル図の更新案**（図の変更は、ユーザーの指示があるまで行わない）: `LegacyProfileXmlSerializer` の下に、節のクラス群（`ProfileSections`）と文脈を足す。

@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             ControllerStateFieldMapping fields = new ControllerStateFieldMapping();
             var state = new ControllerState();
 
-            fields.triggers[(int)DS4Controls.L2] = 1;   // 0 より大きい（Controls の判定）。100 より大きくはない（特殊アクションの判定）
+            fields.triggers[(int)DS4Controls.L2] = 1;   // 0 より大きい（Controls の判定）。100 より大きくはない（スペシャルアクションの判定）
             input.Update(state, null, null, null, fields);
 
             Assert.True(action.Evaluate(input).IsEstablished);
@@ -157,7 +157,7 @@ namespace DS4WindowsTests
                 IReadOnlyList<IActionBinding> all = TestHost.GetService<IActionBindingBuilder>().Build(Device);
 
                 Assert.Equal(2, all.Count);
-                Assert.Same(sa, all[0].Source);                       // 特殊アクションが先
+                Assert.Same(sa, all[0].Source);                       // スペシャルアクションが先
                 Assert.IsType<ControlButtonInputAction>(all[1].Input); // Controls が後
             }
             finally
@@ -230,7 +230,7 @@ namespace DS4WindowsTests
 
             var logged = RunLogged(frames);
 
-            // Phase10-Step4c W2（ユーザー承認、2026-10-21）: Controls タブの Key も、特殊アクションの書式のログを出す（立ち上がりは Trace と Debug、離したときは KeyReleased。以前は抑止していた［Q4＝A］）
+            // Phase10-Step4c W2（ユーザー承認、2026-10-21）: Controls タブの Key も、スペシャルアクションの書式のログを出す（立ち上がりは Trace と Debug、離したときは KeyReleased。以前は抑止していた［Q4＝A］）
             Assert.Contains(logged, l => l.Contains("Trigger detected for SA '" + name + "'"));
             Assert.Contains(logged, l => l.Contains("SpecialAction KEY triggered: name=" + name));
             Assert.Contains(logged, l => l.Contains("SpecialAction KeyReleased: device=" + Device + ", name=" + name));

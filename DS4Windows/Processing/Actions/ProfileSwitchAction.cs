@@ -74,12 +74,12 @@ namespace DS4Windows.Processing.Actions
 
             profileSwitcher.SwitchProfile(dev, sa);
 
-            // 旧ループの return と同じ: 切替のあとは、このフレームの残りの特殊アクションを処理しない
+            // 旧ループの return と同じ: 切替のあとは、このフレームの残りのスペシャルアクションを処理しない
             if (_engineMode) ctx?.RequestEndFrame();
         }
 
         /// <summary>
-        /// 連鎖の防止（旧経路の条件と同じ）: 一時プロファイルの間、復帰の合図が Profile の特殊アクションなら、別の切替を始めない。
+        /// 連鎖の防止（旧経路の条件と同じ）: 一時プロファイルの間、復帰の合図が Profile のスペシャルアクションなら、別の切替を始めない。
         /// 復帰の合図は、エンジン（<see cref="IPendingUntriggerQuery"/>）と旧経路（<c>Mapping</c>。解除トリガーつきの Profile）のどちらにもありうるため、両方を見る。
         /// </summary>
         public bool CanExecute(IOutputContext ctx)

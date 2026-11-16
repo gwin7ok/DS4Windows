@@ -74,7 +74,7 @@ flowchart LR
     Out --> Be["IVirtualPadBackend（ViGEm）"]
 ```
 
-- 毎フレームの経路（Mapping）は割り当て 0 を保つ。検査しているテスト: `StickInputConditionerAllocationTests`（アンチスナップバック）、`MappingProfileActionSnapshotTests`（特殊アクション名の写し）、`DefaultActionManagerToggleAllocationTests`（トグル）、`InputEventArgsReuseTests`（タッチ・6 軸のイベント引数）、`ProcessingLogGuardRuleTests`（Trace／Debug のログのレベル判定）。
+- 毎フレームの経路（Mapping）は割り当て 0 を保つ。検査しているテスト: `StickInputConditionerAllocationTests`（アンチスナップバック）、`MappingProfileActionSnapshotTests`（スペシャルアクション名の写し）、`DefaultActionManagerToggleAllocationTests`（トグル）、`InputEventArgsReuseTests`（タッチ・6 軸のイベント引数）、`ProcessingLogGuardRuleTests`（Trace／Debug のログのレベル判定）。
 - 切断時の後始末は `IDeviceInputCleanup`、ライトバーの色は `ILightbarService`。
 
 ## 5. 実在する主要な型
@@ -87,7 +87,7 @@ flowchart LR
 | `DriverStatusReporter` | 4-b | 起動後に、仮想パッドのドライバーの導入状態をログへ出す。`Composition/Startup` |
 | `SettingsLocationFallback` | 4-b | 設定の保存先へ書けないときの、appdata へのコピーの案内。`Composition/Startup` |
 | `Mapping` | 2 | 入力の評価（カーブ・割り当て・合成入力） |
-| `TriggerDispatchEngine` | 2 | 特殊アクションと割り当ての判定→実行 |
+| `TriggerDispatchEngine` | 2 | スペシャルアクションと割り当ての判定→実行 |
 | `SyntheticDispatcherService` | 2 | 合成キー・マウスの送出 |
 | `CurveAndDeadzoneStage` | 2 | 入力の補正の段 |
 | `MouseConversionStage` | 2 | マウス変換の段 |
@@ -125,7 +125,7 @@ flowchart LR
 | `ServiceRegistration` | 4-b | DI 登録（層ごとの partial） |
 | `ShellViewModelFactory` | 4-a | メイン画面の枠の ViewModel の生成（窓口は `IShellViewModelFactory`） |
 | `ProfileEditViewModelFactory` | 4-a | プロファイル編集画面と子画面の ViewModel の生成（`IProfileEditViewModelFactory`） |
-| `ActionViewModelFactory` | 4-a | 特殊アクションと割り当て編集の種別ごとの ViewModel の生成（`IActionViewModelFactory`） |
+| `ActionViewModelFactory` | 4-a | スペシャルアクションと割り当て編集の種別ごとの ViewModel の生成（`IActionViewModelFactory`） |
 | `MainWindowFactory` | 4-a | メイン画面の生成 |
 | `EditorWindowFactory` | 4-a | 編集画面の生成 |
 

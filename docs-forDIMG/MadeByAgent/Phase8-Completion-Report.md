@@ -19,7 +19,7 @@
 ## 2. 承認済みの機能廃止・動作変更（規約 2.2）
 
 - 機能廃止: ジャイロスワイプ（8-0）、シフト（7.8d）、Lightbar マクロ（7.8e）、XboxGameDVR（7.7a）、Profile 切替の解除トリガー（uTrigger）のボタンによる復帰（8b）。保存済みのデータは、読み込んで解釈せず、保持して書き戻す（廃止の通知で「残す／削除」を選べる）。
-- 動作変更: Controls の Key は Key 特殊アクションと状態を共有しない（Q4＝B）、Play Once のマクロは 1 回だけ実行、DisconnectBT は失敗なら再試行、マウスボタンの Toggle は押すたびに 1 回だけ切り替わる、アナログのホイールは複数同時でも干渉しない、`WheelRecalibrate` のログ（コピーの名残り）を削除、旧経路だけの診断ログ（`Phase8-Step8-Q7-Legacy-Log-List.md` の承認済み一覧）を削除。
+- 動作変更: Controls の Key は Key スペシャルアクションと状態を共有しない（Q4＝B）、Play Once のマクロは 1 回だけ実行、DisconnectBT は失敗なら再試行、マウスボタンの Toggle は押すたびに 1 回だけ切り替わる、アナログのホイールは複数同時でも干渉しない、`WheelRecalibrate` のログ（コピーの名残り）を削除、旧経路だけの診断ログ（`Phase8-Step8-Q7-Legacy-Log-List.md` の承認済み一覧）を削除。
 - 画面に出るログの変化は、旧経路だけの 2 件（`BeingTriggered initialization failed ...`、Stage3 の `Synchronous Button SA handling error`）のみ。
 
 ## 3. 持ち越し（Phase9 以降）

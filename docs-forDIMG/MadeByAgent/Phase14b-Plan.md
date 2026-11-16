@@ -243,7 +243,7 @@
 
 ### 8.6 Step 14b-11（実機確認）— 完了（2026-11-05。ユーザー確認: 問題なし）
 - Release ビルド 2 か所: `DS4Windows\bin\x64\Release\`（`dotnet build DS4WindowsWPF.sln -c Release /p:platform=x64`、警告 0・エラー 0）と、`DS4Windows\bin\x64\DS4Windows\`（`publish-win-x64.ps1` → `post-build.ps1`。`CopyDS4WindowsToJK.bat` が導入するもの）。`DS4Windows.exe`／`DS4Windows.dll` はどちらも 2026-11-05 08:44 のビルド。v4.3.1。
-- 確認項目: (1) 起動、(2) コントローラーの接続時のトレイ通知（14b-5）と切断・電池の通知、(3) プロファイルの保存・読込（タッチパッドのボタンのモード［14b-2］、ジャイロのトグル・デッドゾーン［14b-7 の `ITouchPadGyroToggles`］、出力カーブ［`BezierCurve`］）、(4) 割り当て編集画面・出力ピッカー・マクロ記録・プリセット・スティック較正の各画面が開くこと（14b-6 のファクトリー）、(5) 特殊アクションの一覧・編集・保存と、ウィンドウのフォーカス（14b-7・14b-8）、(6) 自動プロファイルの切り替え（`WindowTargetMatcher`）。
+- 確認項目: (1) 起動、(2) コントローラーの接続時のトレイ通知（14b-5）と切断・電池の通知、(3) プロファイルの保存・読込（タッチパッドのボタンのモード［14b-2］、ジャイロのトグル・デッドゾーン［14b-7 の `ITouchPadGyroToggles`］、出力カーブ［`BezierCurve`］）、(4) 割り当て編集画面・出力ピッカー・マクロ記録・プリセット・スティック較正の各画面が開くこと（14b-6 のファクトリー）、(5) スペシャルアクションの一覧・編集・保存と、ウィンドウのフォーカス（14b-7・14b-8）、(6) 自動プロファイルの切り替え（`WindowTargetMatcher`）。
 
 ## 9. 次の候補（Phase14b の残り、または後続）
 - 残る違反 18 件の是正（多くは 1 型の移動か、小さな契約の切り出しで済む）。
@@ -259,7 +259,7 @@
 | D11 | テーマ・言語の切り替え（UI → `App`） | **契約を注入**。`UI/Abstractions` に契約、`Composition` のアダプターが `App` へ委譲。`MainWindow` はコンストラクターで受け、`LanguagePackControl` には `Initialize` で渡す |
 | D12 | `StartupMethods`（スタートアップ登録） | **サービス化して注入**。`Core/Abstractions` に契約、`Core/Platform` に実装（中身は今の `StartupMethods`）。`SettingsViewModel` へ注入 |
 | D13 | トレイアイコンの画像パス | **UI で直接引く**。`IAppearanceSettingsService.GetIconResourcePath` を外し、UI の 2 か所が `TrayIconResources` を引く |
-| D14 | 特殊アクションの保存・読込の後の実行時状態のリセット | **リセットの契約を置く**（`Core/Abstractions`。第2層で実装。`SpecialActionRepository`／`SpecialActionsXmlSerializer` はその契約だけを受ける） |
+| D14 | スペシャルアクションの保存・読込の後の実行時状態のリセット | **リセットの契約を置く**（`Core/Abstractions`。第2層で実装。`SpecialActionRepository`／`SpecialActionsXmlSerializer` はその契約だけを受ける） |
 | D15 | 実機確認 | **最後に 1 回** |
 | D16 | 取り込み | **実機確認の後、master へ fast-forward で取り込み、origin へ push**（その都度の確認は不要） |
 
@@ -294,7 +294,7 @@
 - Debug ALL: 緑（ビルド 警告 0・エラー 0、`DS4Windows.Actions.Tests` 3,245 件合格、`StandaloneTests` 11 件合格）。
 
 ### 10.4 実機確認（D15）と、確認で見つかった CLI の不具合の修正（2026-11-05）
-- 実機確認: 起動・テーマ／言語の切り替え、トレイアイコン、スタートアップ登録、更新の確認・変更履歴、特殊アクションの保存は**問題なし**。
+- 実機確認: 起動・テーマ／言語の切り替え、トレイアイコン、スタートアップ登録、更新の確認・変更履歴、スペシャルアクションの保存は**問題なし**。
 - CLI の `-command Query…` で見つかった既存の不具合 2 件を修正した（Phase14b-2 の変更による回帰ではない）。
   1. 日本語などの 2 バイト文字が `??` に化けた: 結果の共有メモリの読み書きが ASCII だった → UTF-8（`Core/Platform/IpcResultText`）。7618034e。
   2. `|more` なしでは表示されなかった: GUI アプリはコンソールを持たない → 起動元のコンソールに接続して書く（`Composition/Startup/CliResultConsoleWriter`。出力はコンソールのコードページ）。7618034e。最初の版は、標準出力のハンドルが無いことを `Console.IsOutputRedirected` が「リダイレクト」と返すため表示されず、自前の判定に直した（943091a4）。

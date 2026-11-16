@@ -73,7 +73,7 @@ namespace DS4Windows.Processing.Actions
         // Phase10-Step6 I5b: SA の束縛（と、SA に Extras が付いていれば、その前に並べる Extras の束縛）を一覧へ足す
         private void AddBindings(int device, SpecialAction sa, int index, List<IActionBinding> result)
         {
-            // トリガーのボタンがない特殊アクションは、旧経路でも成立しない。束縛を作らない
+            // トリガーのボタンがないスペシャルアクションは、旧経路でも成立しない。束縛を作らない
             if (sa.trigger == null || sa.trigger.Count == 0) return;
 
             // Phase10-Step4 W2: 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null（旧経路が処理する）

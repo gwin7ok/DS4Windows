@@ -16,14 +16,14 @@ namespace DS4WindowsTests
         /// <summary>Phase14c-Step3（R-06）: 合成キーの送出（コンテナの Singleton。旧: 静的な橋渡し SyntheticDispatcher が束縛していたもの）。</summary>
         public static ISyntheticDispatcher Dispatcher => TestHost.GetService<ISyntheticDispatcher>();
 
-        /// <summary>Phase14b-Step14（D14）: 特殊アクションの保存・読込の後の実行時状態のリセット（コンテナの Singleton。<see cref="Manager"/> と同じ管理役を使う）。</summary>
+        /// <summary>Phase14b-Step14（D14）: スペシャルアクションの保存・読込の後の実行時状態のリセット（コンテナの Singleton。<see cref="Manager"/> と同じ管理役を使う）。</summary>
         public static DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset RuntimeReset => TestHost.GetService<DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset>();
 
         public static IKeyButtonControllerRegistry Controllers => TestHost.GetService<IKeyButtonControllerRegistry>();
 
         /// <summary>
         /// 旧 <c>ActionManager.PreallocateForProfileApply</c>（本番では <c>ProfileApplicationService</c> の private メソッドへ移した）と同じ手順で、
-        /// プロファイルの特殊アクションの状態とコントローラーを先に作る。
+        /// プロファイルのスペシャルアクションの状態とコントローラーを先に作る。
         /// </summary>
         public static void PreallocateForProfileApply(int device)
         {

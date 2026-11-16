@@ -26,7 +26,7 @@
 
 | # | 場所 | 使う画面 | 備考 |
 |---|---|---|---|
-| 1 | `UI/ViewModels/InputControlCatalog.cs` | Controls タブの一覧（`MappingListViewModel`）、特殊アクションのトリガーの一覧（`TriggerCatalog`） | クラスのコメントに「表示順と表示名の唯一の定義」とある。各項目は、表示名と、保存する名前（`InputControlEntry.Name`）を別に持つ。**表示名と保存名の分離は、ここではすでにできている** |
+| 1 | `UI/ViewModels/InputControlCatalog.cs` | Controls タブの一覧（`MappingListViewModel`）、スペシャルアクションのトリガーの一覧（`TriggerCatalog`） | クラスのコメントに「表示順と表示名の唯一の定義」とある。各項目は、表示名と、保存する名前（`InputControlEntry.Name`）を別に持つ。**表示名と保存名の分離は、ここではすでにできている** |
 | 2 | `Core/Model/DS4ControlNames.ds4inputNames` | 割り当て編集の対象の名前（`UI/ViewModels/ControlEditTarget.cs:25`）、出力ピッカーのタイトル（`UI/BindingWindow.xaml.cs:106`） | 1 と別の表。同じ入力に、1 と 2 で別の文字列を持つものがある（例: 左スティックの左は、1 が「LS Left」、2 が「Left X-Axis-」） |
 | 3 | `UI/ViewModels/GyroSettingsViewModel.cs:25`〜`35` | ジャイロのトリガーのメニュー | **メニューの並びが、そのまま保存する番号になる**。並びは変えられない（変えてよいのは文字だけ） |
 | 4 | `UI/TouchpadSettingsPanel.xaml:225`〜`282` | タッチパッドのメニュー（13 項目） | XAML に直書き |
@@ -35,7 +35,7 @@
 ### 2.3 表示ではない名前の表（触らない）
 | 場所 | 役割 |
 |---|---|
-| `DS4ControlNames.getDS4ControlsByName`、`Core/Settings/SpecialAction.cs:253` | プロファイルの XML と特殊アクションの、**保存する名前の読み取り**（`ProfileButtonControlLoadSection`、`BackingStore.cs:842`〜`894`）。互換のため変えない |
+| `DS4ControlNames.getDS4ControlsByName`、`Core/Settings/SpecialAction.cs:253` | プロファイルの XML とスペシャルアクションの、**保存する名前の読み取り**（`ProfileButtonControlLoadSection`、`BackingStore.cs:842`〜`894`）。互換のため変えない |
 | `DS4ControlNames.macroDS4Values` | マクロの値の表（`UI/ViewModels/RecordBoxViewModel.cs:431`）。表示名ではない |
 | `Processing/Macro/MacroParser.InputName(value, OutContType)` | マクロの各手順の表示名。**出力の種類（Xbox 360／DS4）で出し分ける、出力側の名前**であり、入力機種とは関係がない |
 

@@ -26,7 +26,7 @@
 ### 2.2 接続の経路
 
 - `PrepareConnectedInputController`: 一時プロファイル／AutoProfile を使っていなければ（`!useAutoProfile`）、`IProfileSlotApplier.ApplyToSlot` で適用する。**適用すれば Step5 の `PublishBindings` が走る**ので、束縛は入る。
-- **`useAutoProfile` が真のときは適用しない**（メモリ上のプロファイルの状態が残っているため）。この経路では、切断時に登録簿を空にすると、**再接続後に束縛が空のまま**になる（Step7 で種別を切り替えた後に、特殊アクションが効かなくなる）。→ 接続時に差し替える必要がある。
+- **`useAutoProfile` が真のときは適用しない**（メモリ上のプロファイルの状態が残っているため）。この経路では、切断時に登録簿を空にすると、**再接続後に束縛が空のまま**になる（Step7 で種別を切り替えた後に、スペシャルアクションが効かなくなる）。→ 接続時に差し替える必要がある。
 - `IControllerRegistry`（`DefaultControllerRegistry`）は、系統 B の `KeyButtonActionController` の登録簿（`KeyButtonControllerRegistry` が使う）。新経路（エンジン）は、出力を `IOutputContext.OutputHandler` で行い、コントローラーの紐付けを必要としない。系統 B は Step8 で削除する。
 
 ### 2.3 `ClearState`／`ClearPendingRestore` の意味

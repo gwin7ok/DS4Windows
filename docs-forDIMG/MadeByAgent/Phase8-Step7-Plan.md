@@ -81,7 +81,7 @@
 - 食い違いが出た場合は、本計画書 §2.3 の表に記録し、実装を直す（意図の差ならユーザーに相談）。
 - W1 の結果: 失敗は 1 本のみ（私の期待の誤り）。**`delayTime` は Button の出力を遅らせない**（旧・新とも、Press は成立中すぐ出力する）。テストを実測の固定に直した。新旧の出力は、全シナリオで一致した。
 
-- `SpecialActionTestScope` に、種別の集合を指定するパラメーター（`migrated`）を足す。`true` のときは、`BindingMigrationOptions.MigratedTypes` に種別を足し、スコープが登録した特殊アクションから `ActionBindingBuilder.Build` を呼んで登録簿へ `Replace` する（本番の `PublishBindings` と同じ経路）。終了時に元へ戻す。
+- `SpecialActionTestScope` に、種別の集合を指定するパラメーター（`migrated`）を足す。`true` のときは、`BindingMigrationOptions.MigratedTypes` に種別を足し、スコープが登録したスペシャルアクションから `ActionBindingBuilder.Build` を呼んで登録簿へ `Replace` する（本番の `PublishBindings` と同じ経路）。終了時に元へ戻す。
 - Button に関する既存のテスト（`ButtonSpecialActionOutputTests` ほか、Press／Toggle、AND 条件、抑制、Fresh-press、遅延、順序）を `[Theory]` にして、両経路で流す。**期待値は変えない**。
 - 食い違いがあれば、本計画書 §2.3 の表に記録し、直すか（実装）、ユーザーに相談する（意図の差）。
 

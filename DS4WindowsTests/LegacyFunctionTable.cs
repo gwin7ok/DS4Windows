@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// 決定的な入力（種つきの乱数）で、全コントロールについて表にする。旧関数を削除（8a・8b）したあとも、新経路の関数（<c>TriggerInput</c>）を、
     /// 旧関数が返した値（ゴールデン）と比べられるようにするため、削除の前に値を固定する。
     /// 1 行 ＝ 1 回の入力。コントロールごとに 1 つの項目（9 文字）をコンマで区切る:
-    /// 判定（特殊アクション用）1、判定（Controls 用）1、<c>GetBoolMapping</c> 1、バイト値 2（16 進）、軸の値 alt＝false 2、軸の値 alt＝true 2。
+    /// 判定（スペシャルアクション用）1、判定（Controls 用）1、<c>GetBoolMapping</c> 1、バイト値 2（16 進）、軸の値 alt＝false 2、軸の値 alt＝true 2。
     /// 真偽は 1／0、例外は x。新経路の表（<see cref="BuildNew"/>）は、<c>GetBoolMapping</c> の位置が '-'（新経路に同じ関数がない。Q3＝A で SA の判定に揃えた）。
     /// </summary>
     internal static class LegacyFunctionTable

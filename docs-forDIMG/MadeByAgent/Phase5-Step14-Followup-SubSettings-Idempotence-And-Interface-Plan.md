@@ -103,7 +103,7 @@ Phase 5 Step 14 の完了レビューおよび実機・ビルド検証におい�
    profileSettings.ProfileActions[deviceNum] = currentActions;
    ```
 3. **`SpecialActionCheckBox_Click` メソッド**:
-   特殊アクションのチェックボックス操作時にリストを更新する箇所。
+   スペシャルアクションのチェックボックス操作時にリストを更新する箇所。
    ```csharp
    // 変更前
    Global.ProfileActions[deviceNum].Add(actionName);

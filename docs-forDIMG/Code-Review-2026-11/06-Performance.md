@@ -1,7 +1,7 @@
 # コードレビュー（2026-11）観点 6: パフォーマンスを阻害する処理がないか
 
 作成日: 2026-11-11（対象のコミットと読み方は `00-Summary.md`）
-読んだ経路: 入力ループ（`InputLoopDevice`、`XInputTransport`）→ 1 フレームの処理（`InputReportProcessor`、`LatencyMonitor`、`Mapping` の入口と特殊アクション、`StickInputConditioner`、`SyntheticInputCommitter`）→ 出力（`VirtualPadService`、`Xbox360OutDevice`）→ 画面の定期更新（トレイ、`ControllerReadingsControl`、`MainWindow` のタイマー）。
+読んだ経路: 入力ループ（`InputLoopDevice`、`XInputTransport`）→ 1 フレームの処理（`InputReportProcessor`、`LatencyMonitor`、`Mapping` の入口とスペシャルアクション、`StickInputConditioner`、`SyntheticInputCommitter`）→ 出力（`VirtualPadService`、`Xbox360OutDevice`）→ 画面の定期更新（トレイ、`ControllerReadingsControl`、`MainWindow` のタイマー）。
 追加調査（2026-11-11）で読んだもの: `TouchpadMouse` のジャイロの処理、`TriggerDispatchEngine`、動き・タッチの取り込み（`DS4SixAxis`、`DS4Touchpad`）、解析器。
 読めていないもの: `TouchpadMouse` のタッチの各出力（マウス、スティック、トラックボール）の計算の中身、`MouseCursor`、`OscService`、`UdpMotionService`。計測はしていない（コードの読み取りだけ）。
 
@@ -18,11 +18,11 @@
 
 ## 2. 問題点
 
-### 6-1（中）特殊アクションを持つプロファイルで、毎フレーム配列を割り当てる
+### 6-1（中）スペシャルアクションを持つプロファイルで、毎フレーム配列を割り当てる
 - 場所: `DS4Windows/Processing/Mapping.cs:692`（呼び出しは同 `349`〜`350`）
-- 事実: `_profileActionProvider.GetProfileActionsRaw(device)?.ToArray()`。条件は「プロファイルに特殊アクションが 1 つ以上ある、または一時プロファイルを使っている」で、成り立つ間は毎フレーム（DS4 の USB で 1 秒に約 250 回、機器の数だけ）走る。コメントによれば、UI スレッドが一覧を変えても列挙が壊れないための写し。
+- 事実: `_profileActionProvider.GetProfileActionsRaw(device)?.ToArray()`。条件は「プロファイルにスペシャルアクションが 1 つ以上ある、または一時プロファイルを使っている」で、成り立つ間は毎フレーム（DS4 の USB で 1 秒に約 250 回、機器の数だけ）走る。コメントによれば、UI スレッドが一覧を変えても列挙が壊れないための写し。
 - なぜ問題か: `01-Structure.md` §4 の「毎フレームの経路は割り当て 0 を保つ」に反する。`ControlServiceHotPathAllocationTests` は設定の getter だけを検査し、この経路を見ていない。
-- 修正の方向: 一覧を「差し替えのたびに新しい不変の配列を作る」形にして、読む側は参照を 1 回読むだけにする。または、スロットごとの使い回しのバッファーへ写す。割り当て 0 のテストを、特殊アクションつきの `MapCustom` へ足す。
+- 修正の方向: 一覧を「差し替えのたびに新しい不変の配列を作る」形にして、読む側は参照を 1 回読むだけにする。または、スロットごとの使い回しのバッファーへ写す。割り当て 0 のテストを、スペシャルアクションつきの `MapCustom` へ足す。
 
 ### 6-2（中）アンチスナップバックが有効なとき、毎フレーム割り当てる
 - 場所: `DS4Windows/Processing/Services/StickInputConditioner.cs:93`〜`107`

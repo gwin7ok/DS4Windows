@@ -25,7 +25,7 @@
 - 入口は 3 系統ある。
   - `ProfileApplicationService.ApplyProfile`（Halt あり。`source == MappingAction` のときだけ Halt なし）と `ApplyFromAction`（Halt の内側で `Global.ApplyProfile` を直接呼ぶ）。呼び出しは `Global.ApplyProfile` の 3 箇所。
   - `ProfileSlotApplier.ApplyToSlot` → `Global.ApplyProfileToSlot`（Halt なし。`Program.rootHub` を使う）。呼び出し元: `ControlService`（接続時）と `MainWindow` の 2 箇所（手動）。
-  - `Mapping.cs` の特殊アクション処理（`!handled` の経路）。`Task.Run` と `HaltReportingRunAction` の内側で `Global.ApplyProfile` を直接呼ぶ。
+  - `Mapping.cs` のスペシャルアクション処理（`!handled` の経路）。`Task.Run` と `HaltReportingRunAction` の内側で `Global.ApplyProfile` を直接呼ぶ。
 - 既存の `ProfileRepository.LoadProfile` は、`Global.LoadProfile` とは別物（ファイルの存在確認があり、読み込み結果を無視して `true` を返す）。そのため、置き換えには使えない。
 - 2026-10-17 時点の Phase6 の TODO（K1: スロット 5〜8 の拒否など）は是正済み。残っているのは「接続処理中の Halt の入れ子」だけ。
 
@@ -39,7 +39,7 @@
 ### 1.3 移管先に必要な依存と、残る静的呼び出し
 - `ProfileApplicationService` の新しい依存: `IProfileXmlStore`（読み込み）、`IProfileActionProvider`（プロファイルのアクションの取得。`Global.GetProfileAction` の置き換え）。パスは `IPathService`、配列とイベントは `IProfileRepository` が持つ（`ProfilePath`／`OlderProfilePath`／`SelectedProfile`／`RaiseSelectedProfileChanged`）。循環はない（`ControlService` は従来どおり `Func` で遅延解決）。
 - 移した後も静的に残る呼び出し: `ActionManager.ClearAllEntries`／`ClearDeviceState`／`PreallocateForProfileApply`（Phase8 の範囲）、`Mapping.ClearKeyButtonControllersForDevice`（Step7〜9）、`AppLogger`。これらは TODO を付けて残す。
-- `ProfilePresetLoader` の新しい依存: `BackingStore`、`IProfileSettingsService`。10 名の本体は同じ形（読み込み、既定の特殊アクション、エクストラ情報のキャッシュ、一時プロファイル状態のリセット）なので、1 つの私的ヘルパーにまとめられる。
+- `ProfilePresetLoader` の新しい依存: `BackingStore`、`IProfileSettingsService`。10 名の本体は同じ形（読み込み、既定のスペシャルアクション、エクストラ情報のキャッシュ、一時プロファイル状態のリセット）なので、1 つの私的ヘルパーにまとめられる。
 
 ## 2. 設計
 
@@ -83,7 +83,7 @@
 - **Halt の入れ子**（Q2）: 接続処理中の `ApplyToSlot` が Halt を使わない現在の動作を保つ。
 - **イベントの `sender` の変更**（Q5）: 購読者は `e` のみ使う。ログ（`Global_SelectedProfileChanged` ほか）に影響しない。
 - **`Mapping.cs`**（Q3）: 入力処理の経路に近いため、変更は 1 呼び出しに限り、前後の `HaltReportingRunAction`、`Task.Run`、後続の `DispatchOrSetBeingTriggered` は触らない。
-- **実機確認 U-13**（チェックリスト §11 に追記予定）: 特殊アクションでのプロファイル切替（通常・一時・復帰）、自動プロファイル、コントローラー接続時の適用、メイン画面での手動切替（`SelectedProfileChanged` による一覧の更新）、プロファイルエディターのプリセット読み込み。
+- **実機確認 U-13**（チェックリスト §11 に追記予定）: スペシャルアクションでのプロファイル切替（通常・一時・復帰）、自動プロファイル、コントローラー接続時の適用、メイン画面での手動切替（`SelectedProfileChanged` による一覧の更新）、プロファイルエディターのプリセット読み込み。
 - 持ち越し: 窓口の `tempprofileDistance` ほか（Step7〜9）、`ActionManager` の静的呼び出し（Phase8）。
 
 ## 6. 完了判定チェックリスト
@@ -107,7 +107,7 @@
   - 副作用の対策: `Global.appdatapath` を書き換える `PathServiceTests` を、同じ `ServiceProviderHolder` コレクションに入れて直列化した。
   - 注意: このテストは W1 の時点で **現行コードに対して成功する** ことが前提（コードは変更していない）。失敗した場合は、テストの前提の誤りであり、移管の前に修正する。
 - **W2 実装済み（ビルド・テスト待ち）**
-  - `ProfilePresetLoader`: `BackingStore` と `IProfileSettingsService` を必須で受け取る。10 名の読み込みを、`BackingStore` の同名の読み込み＋共通の後処理 `CompleteLoad`（既定の特殊アクションの作成、エクストラ情報のキャッシュ、一時プロファイルの名前・使用・距離のクリア）に置き換えた（処理は旧 `Global` と同一。距離のクリアは `tempprofileDistance[...] = false` から `SetTempProfileDistance(..., false)` に変えたが、同じ配列への同じ書き込み）。
+  - `ProfilePresetLoader`: `BackingStore` と `IProfileSettingsService` を必須で受け取る。10 名の読み込みを、`BackingStore` の同名の読み込み＋共通の後処理 `CompleteLoad`（既定のスペシャルアクションの作成、エクストラ情報のキャッシュ、一時プロファイルの名前・使用・距離のクリア）に置き換えた（処理は旧 `Global` と同一。距離のクリアは `tempprofileDistance[...] = false` から `SetTempProfileDistance(..., false)` に変えたが、同じ配列への同じ書き込み）。
   - `Global`: プリセット 10 名を削除。`IProfileRepository.LoadBlankProfile` とその実装を削除（Q4＝A）。`ProfileSettingsViewModel` と `ViewModelFactory` に `IProfilePresetLoader` を追加し、`LoadBlankProfile(ControlService)` は `presetLoader.LoadBlank` を呼ぶ。
   - テスト: `TestRepositoryFactory.CreateProfilePresetLoader` を追加し、`ProfileSettingsViewModel` の生成 6 件と `ProfilePresetLoader` の生成 2 件を更新。`Phase6Step10GroupTwoContractTests` の委譲確認は新しい実装の形（`_config.<読み込み>` ＋ `CompleteLoad`）に、`Phase6Step8ContractExtensionTests` の `LoadBlankProfile` の確認は契約ごと削除。特性化テストのプリセットは `ProfilePresetLoader` 経由に変更（期待値は同じ）。ガードテストの名前一覧に 10 名を追記。
   - ラチェット基準値: `ProfilePresetLoader.cs` 10→0、`ProfileRepository.cs` 6→5（`Global.*` 合計 516→505）。
@@ -121,7 +121,7 @@
 - **W4 実装済み（ビルド・テスト待ち）**: 呼び出し元の切り替えと `Global` の旧メンバーの削除。
   - `ProfileApplicationService`: 3 箇所の `Global.ApplyProfile` を `ApplyCore` に切り替え（Halt の有無は従来どおり）。
   - `ProfileSlotApplier`: `IProfileApplicationService` を受け取り、スロット範囲・名前の検査のあと `ApplyProfileWithoutHalt` に委譲（Q2＝A。Halt なしの動作を維持）。
-  - `Mapping.cs`: 特殊アクションの `!handled` 経路の `Global.ApplyProfile` を、すでに保持している `profileApplication.ApplyProfile(…, MappingAction, prolog)` に置換（Q3＝A。呼び出し 1 箇所だけ。前後の `HaltReportingRunAction`／`Task.Run`／後続の処理は変更なし）。
+  - `Mapping.cs`: スペシャルアクションの `!handled` 経路の `Global.ApplyProfile` を、すでに保持している `profileApplication.ApplyProfile(…, MappingAction, prolog)` に置換（Q3＝A。呼び出し 1 箇所だけ。前後の `HaltReportingRunAction`／`Task.Run`／後続の処理は変更なし）。
   - `ProfileRepository.SelectedProfileChanged` を、`Global` の静的イベントの転送から、リポジトリ自身のインスタンスイベントに変更（Q5＝A。W3 で見送った分）。
   - `Global`: `ApplyProfile`／`ApplyProfileToSlot`／`CompleteProfileApplication`／`LoadProfile`／`LoadTempProfile`／`ProfilePath`／`OlderProfilePath`／`SelectedProfile`／`SelectedProfileChanged`／`RaiseSelectedProfileChanged`／`getProfileActions`／`GetProfileAction` の 12 名と、領域マーカーを削除。
   - テスト: 特性化テストを移管先だけ（`ApplyProfileWithoutHalt`／`ApplyProfile` の両入口、`ProfileSlotApplier`、`ProfileRepository.LoadTempProfile`）に書き換え（期待値は W1 から変更なし）。`ControlServicePr2ShimEquivalenceTests` の `ProfileSlotApplier` の確認から旧 `Global` との比較を除去。`MappingStep3FinalGlobalReferenceGuardTests` は `Global.ApplyProfile(` の出現が 0 件に変更。ほか、`Global.ProfilePath` 系の参照を `Global.store.<field>` に書き換え。ガードテストの名前一覧に 12 名を追記。

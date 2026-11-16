@@ -95,7 +95,7 @@ DI の骨格は健全で、Service Locator も静的な窓口もほぼ残って�
 | `Phase26-Plan.md`（残りの扱いを追記） | 残りを Phase34 へ引き継ぐ案 | 統合 |
 | `Phase34-Plan.md` | 画面の MVVM 化（コマンド・結びつけ・ダイアログの窓口）。5 画面 | 新設 |
 | `Phase30-Plan.md` | `TouchpadMouse`（1,810 行）の分割 | 新設 |
-| `Phase37-Plan.md` | 設定の保持と永続化の分割（特殊アクションの保存・読み込み、`ResetProfile`、節の対。5-5 をここへ移した） | 新設 |
+| `Phase37-Plan.md` | 設定の保持と永続化の分割（スペシャルアクションの保存・読み込み、`ResetProfile`、節の対。5-5 をここへ移した） | 新設 |
 | `Phase38-Plan.md` | `UdpServer` の通信と書式の分離（実施するかどうかから決める） | 新設 |
 
 ## 6. 未調査・要確認

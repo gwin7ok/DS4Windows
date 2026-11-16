@@ -29,7 +29,7 @@ namespace DS4WindowsTests
 
         private static bool IsProfileLogLine(string line, string name)
         {
-            // 「SpecialAction PROFILE: beingTriggered=…, useTempProfile=…」の行は、特殊アクションの名前を含まない（旧経路と同じ文言）
+            // 「SpecialAction PROFILE: beingTriggered=…, useTempProfile=…」の行は、スペシャルアクションの名前を含まない（旧経路と同じ文言）
             if (line.Contains("SpecialAction PROFILE: beingTriggered=")) return true;
             if (!line.Contains(name)) return false;
             return line.Contains("SpecialAction PROFILE") || line.Contains("SpecialAction Profile:") || line.Contains("Trigger detected for SA")

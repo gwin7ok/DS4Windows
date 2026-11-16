@@ -122,7 +122,7 @@ public sealed class HighPerformanceInputWorker<TParser>
 ```text
 [ 入力スレッド (1000Hz) ] ──┐
 [ マクロスレッド ]         ──┼──> [ Lock-Free SPSC RingBuffer ] ──> [ 専用送信ワーカースレッド ] ──> ViGEm Driver
-[ UI / 特殊アクション ]    ──┘
+[ UI / スペシャルアクション ]    ──┘
 ```
 
 ```csharp

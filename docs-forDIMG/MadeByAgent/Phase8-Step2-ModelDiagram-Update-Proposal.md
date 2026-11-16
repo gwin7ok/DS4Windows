@@ -51,7 +51,7 @@ class Core_Engine,Core_Registry,Core_Builder,Core_Binding plannedNode;
   - 現行: `【アクション】 IManagedActionManager (アクション実行・トグル)`
   - 案: `【アクション】 ITriggerDispatchEngine (判定→実行の統一) / IActionRegistry (束縛) / IActionBindingBuilder / IManagedActionManager (状態)`
 - 依存方向図は変更なし（第 4 層 → 第 2 層 → 第 1・第 3 層・基盤）。
-- 注釈の追記案: 「Phase8: 特殊アクションと Controls タブのトリガー→実行を、第 2 層の統一エンジンに集約。入力の 1 フレーム 2 段階（通常の割り当ての前後）」。
+- 注釈の追記案: 「Phase8: スペシャルアクションと Controls タブのトリガー→実行を、第 2 層の統一エンジンに集約。入力の 1 フレーム 2 段階（通常の割り当ての前後）」。
 
 ## 4. 03: クラス図
 

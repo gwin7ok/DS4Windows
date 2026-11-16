@@ -15,7 +15,7 @@ namespace DS4Windows.Processing.Actions
     {
         // ---- 旧ループのフック（並行期間。Step4〜Step7）----
 
-        /// <summary>束縛が登録されている特殊アクションか。</summary>
+        /// <summary>束縛が登録されているスペシャルアクションか。</summary>
         bool Owns(int device, SpecialAction action);
 
         /// <summary>旧ループの中の、そのアクションの位置で呼ぶ（順序を保つ）。<see cref="FrameResult.EndFrame"/> なら、旧ループは打ち切る。</summary>

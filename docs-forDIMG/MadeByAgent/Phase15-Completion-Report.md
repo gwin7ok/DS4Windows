@@ -62,7 +62,7 @@
 
 ## 7. 残り（次の候補）
 
-- 特殊アクション一覧の見出し・並べ替え（`UpdateSpecialActionsHeaderTexts` ほか）の整理。表示の生成のタイミングに依存し、見え方の確認が要る。
+- スペシャルアクション一覧の見出し・並べ替え（`UpdateSpecialActionsHeaderTexts` ほか）の整理。表示の生成のタイミングに依存し、見え方の確認が要る。
 - 編集画面の外のスロット配列の直接参照 5 か所（`CompositeDeviceModel`、`RecordBoxViewModel`、`PressKeyViewModel`、`TouchButtonUserControlViewModel`、`BindingWindow`）。
 - L2 の整理（`DualSenseDevice.RumbleEmulationMode` ほか、列挙型の置き場所）。
 

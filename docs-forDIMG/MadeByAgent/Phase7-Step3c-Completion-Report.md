@@ -46,7 +46,7 @@
 
 ## 5. 未完了・持ち越し
 
-- **実機確認 U-13**（ユーザー判断で先送り。チェックリスト §11 に手順を記録済み）。`Mapping.cs` の呼び出しを変更したため、特殊アクションでのプロファイル切替（通常・一時・復帰）の確認が最も重要。U-11、U-12 も未。
+- **実機確認 U-13**（ユーザー判断で先送り。チェックリスト §11 に手順を記録済み）。`Mapping.cs` の呼び出しを変更したため、スペシャルアクションでのプロファイル切替（通常・一時・復帰）の確認が最も重要。U-11、U-12 も未。
 - 静的呼び出しのまま残る: `ActionManager.*`（→ Phase8）、`Mapping.ClearKeyButtonControllersForDevice`（→ Step7〜9）。
 - `Global` に残る窓口: `tempprofileDistance`／`useTempProfile`／`DistanceProfiles`（→ Step7〜9）、`ProfileSettingsServiceInstance`／`ProfileXmlStoreInstance`（→ Step4／Step5）。
 - Step4 へ: `firstRun`／`runHotPlug`、`SetCulture`、環境・パスの実体、`Global.cs` に残るフォールバックの `new`。

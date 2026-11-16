@@ -51,7 +51,7 @@
   - `IsFirstConnection(int slotIndex, string macAddress)`／`MarkConnected(int slotIndex, string macAddress)`（MAC 版を追加）。MAC を持たない（有効なシリアルがない）コントローラーは、従来のスロット単位に落とす（Q2）。
   - `void RememberProfile(string macAddress, string profileName)`／`string GetRememberedProfile(string macAddress)`（新設。大文字小文字を区別しない辞書）。
   - `ResetConnectionFlags()` は、MAC の記憶も消す（起動時）。従来のスロット単位の API は残す（有効なシリアルがない場合と、既存のテスト用）。
-- **記憶の書き込み**: プロファイルを適用したとき（`CompleteProfileApplication`。非同期の切替、手動の切替、自動プロファイル、特殊アクション、再接続のすべてが通る）に、そのスロットのコントローラーの MAC で記憶する（Q4）。切断の経路（`Removal` イベント、`Stop` など）に依存せず、常に最新になる。
+- **記憶の書き込み**: プロファイルを適用したとき（`CompleteProfileApplication`。非同期の切替、手動の切替、自動プロファイル、スペシャルアクション、再接続のすべてが通る）に、そのスロットのコントローラーの MAC で記憶する（Q4）。切断の経路（`Removal` イベント、`Stop` など）に依存せず、常に最新になる。
 - **選択の変更（`ControlService.cs:2218〜2243`）**:
   - 初回接続（その MAC が未登録）→ 従来どおり、LinkedProfile（なければ `OlderProfilePath[index]`）。
   - 再接続（その MAC が登録済み）→ 記憶したプロファイル。記憶がなければ、従来どおり `SelectedProfile[index]`。

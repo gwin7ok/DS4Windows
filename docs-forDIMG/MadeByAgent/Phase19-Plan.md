@@ -19,7 +19,7 @@
 | `ProfileEditViewModelFactory` | 10 | 実行時に何度も（引数あり） | プロファイル編集の ViewModel |
 | `ProfileEditorFactory` | 9 | 実行時に何度も | プロファイル編集の窓 |
 | `AssignmentWindowFactory`／`EditorWindowFactory`／`MacroRecordingWindowFactory`／`ActionViewModelFactory`／`ViewModelFactory` | 調査 | 実行時 | 各種の窓・ViewModel |
-| `SpecialActionOutputFactory`（Processing） | 14 | 実行時 | 特殊アクションの出力 |
+| `SpecialActionOutputFactory`（Processing） | 14 | 実行時 | スペシャルアクションの出力 |
 
 （上は例。Step 19-0 で全工場を分類する。）
 

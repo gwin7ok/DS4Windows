@@ -112,7 +112,7 @@ L7 の参照元の上位: `RecordBoxViewModel` 7、`BindingWindow` 5、`Controll
 | 14c-5 | 996e461d | 静的な `ActionRegistry` を削除（規約 §2.4 の調査: 本番で `Initialize` を呼んだ履歴なし。正規の経路と重複する孤立実装と判断） |
 | 14c-6 | c15d5ab1 | `ServiceRegistration` を層ごとの partial ファイル（Wiring／Core／Processing／Output／Ui）に分割。登録 127 件は前後で同じ、`IInputDeviceModule` の並びも同じ。後付けの配線 3 つを `AddWiredServices` に集め、静的フィールド `_subscribedReset` を `BackingStore.ReplaceActionsLoadedHandler` に置き換えた。配線の時点（遅延）は変えていない |
 | 14c-7 | dcee985b | 規約: §3.1（登録の分割・後付けの配線の置き場所）、§3.3 原則5（R-15）、§3.4 R1・R2（`Core/Model`）、§4（テストの命名［R-16］、Slow の印）。モデル図 01〜04、ロードマップ（Phase15・16 への追記）、レビューの対応状況 |
-| 14c-8 | （本コミット） | Release ビルド（`DS4WindowsWPF.sln` の Release と、publish・post-build の `DS4Windows/bin/x64/DS4Windows`）は警告 0・エラー 0。実機確認（E5）はユーザーが「問題なし」（起動・接続、Controls と特殊アクションのキーの出力、ライトバーの強制色、特殊アクションの保存の後の動作）。master へ fast-forward で取り込み push（E6） |
+| 14c-8 | （本コミット） | Release ビルド（`DS4WindowsWPF.sln` の Release と、publish・post-build の `DS4Windows/bin/x64/DS4Windows`）は警告 0・エラー 0。実機確認（E5）はユーザーが「問題なし」（起動・接続、Controls とスペシャルアクションのキーの出力、ライトバーの強制色、スペシャルアクションの保存の後の動作）。master へ fast-forward で取り込み push（E6） |
 
 - 層の依存: 禁止の規則は 0 件のまま。記録のみは 155 → 59 件（L2 29、L7 30。見込みの約 66 件より少ない）。
 - 各 Step の終わりの Debug ALL は、警告 0・エラー 0、全テスト合格（14c-6 の時点で 3,264 件＋StandaloneTests 11 件）。

@@ -113,7 +113,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AfterTheSwitch_TheRestOfTheFrameIsNotProcessed()
         {
-            // 切替（Intent-Decisions 項目 5）のあと、同じフレームの後ろの特殊アクションは処理されない（旧ループの return）。
+            // 切替（Intent-Decisions 項目 5）のあと、同じフレームの後ろのスペシャルアクションは処理されない（旧ループの return）。
             // 後ろの Key は、次のフレーム（切替が済んでいる）で処理される。
             using var t = new SpecialActionTestScope();
             t.InstallProfileRecorder().SimulateStateReset = false;   // 状態の掃除をしない（Key の状態を、そのまま観察する）
@@ -169,7 +169,7 @@ namespace DS4WindowsTests
             {
                 RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
                 AddProfile(t, "L1");
-                // 復帰の合図（別の Profile の特殊アクション。解除トリガー R1 は押されないので、合図は残り続ける）
+                // 復帰の合図（別の Profile のスペシャルアクション。解除トリガー R1 は押されないので、合図は残り続ける）
                 var pending = new SpecialAction("p8s75_pending", "Cross", "Profile", "p8s75-other", 0, "R1");
                 t.Mapping.RestoreProfileUntrigger(t.Device, new ProfileUntriggerSnapshot(pending, 0));
                 settings.SetUseTempProfile(t.Device, true);

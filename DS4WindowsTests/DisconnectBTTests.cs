@@ -49,7 +49,7 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        /// <summary>切断の後ろに置く Key（同じ L1 で成立）。フレームが打ち切られたかどうか（後ろの特殊アクションが処理されたか）の観察用。</summary>
+        /// <summary>切断の後ろに置く Key（同じ L1 で成立）。フレームが打ち切られたかどうか（後ろのスペシャルアクションが処理されたか）の観察用。</summary>
         private static SpecialAction AddKeyAfter(SpecialActionTestScope t, IControllerDisconnectPort port)
         {
             SpecialAction key = t.AddKey("L1", toggle: false);

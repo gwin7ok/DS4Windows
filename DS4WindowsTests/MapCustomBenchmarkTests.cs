@@ -16,7 +16,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step4 W1／W5（Phase8-Step4-Plan.md §2.1／§3）: <c>Mapping.MapCustom</c> 全体の簡易ベンチマーク（出力のみ。失敗条件にしない）。
-    /// ボタン種別（Press）30 件の特殊アクションを登録し、何も押さない状態と、トリガーのボタンを押した状態を、それぞれ繰り返し評価する。
+    /// ボタン種別（Press）30 件のスペシャルアクションを登録し、何も押さない状態と、トリガーのボタンを押した状態を、それぞれ繰り返し評価する。
     /// W4（配線）の追加分の費用は、<see cref="WiringOverhead_PerFrame_IsReported"/> が、同じ実行の中で <c>MapCustom</c> 全体と並べて出力する
     /// （配線の前のコードを別に実行しなくても、割合を比べられる。許容: +5% 以内）。
     /// 結果は標準出力に出る。コンソールに出すには <c>--logger "console;verbosity=detailed"</c> を付けて実行する。

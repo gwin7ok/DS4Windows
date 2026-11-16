@@ -37,7 +37,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IProfileSwitcher>(), TestHost.GetService<ISpecialActionRepository>(),
                 TestHost.GetService<IMapping>(), port, controllers: TestActions.Controllers);
 
-        /// <summary>登録した GyroCalibrate の特殊アクションの束縛を、記録用のポートを持つビルダーで作り直して登録簿へ差し替える。</summary>
+        /// <summary>登録した GyroCalibrate のスペシャルアクションの束縛を、記録用のポートを持つビルダーで作り直して登録簿へ差し替える。</summary>
         private static SpecialAction AddGyro(SpecialActionTestScope t, string triggers, RecordingGyroCalibrationPort port, bool freshPressGuard = false)
         {
             SpecialAction sa = t.Add(new SpecialAction("p8s76a_gyro_" + Guid.NewGuid().ToString("N"), triggers, "GyroCalibration", string.Empty, 0, string.Empty));
@@ -193,7 +193,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNewPath_DoesNotAddAllocationsToTheFrame_WhileHeld()
         {
-            // 1 フレームの割り当ては、テストの足場（入力のコピー、特殊アクションがあるときの一覧の複製など）が約 6 KB 持つ。
+            // 1 フレームの割り当ては、テストの足場（入力のコピー、スペシャルアクションがあるときの一覧の複製など）が約 6 KB 持つ。
             // 同じ件数の GyroCalibrate で、トリガーが押されていない（R1。押すのは L1）場合を基準にして、成立中に増えないことを確かめる
             long baseline;
             using (var t = new SpecialActionTestScope())

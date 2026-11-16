@@ -9,7 +9,7 @@
 
 ## 1. 目的
 
-Program 種別の特殊アクション（ボタンの組み合わせで、外部のプログラムを起動する）を、旧ループ（`MapCustomAction` の Program の分岐）から、統一ディスパッチ（エンジン）へ切り替える。7.1〜7.3 と同じ運用: `ServiceRegistration` の既定の一覧に `Program` を 1 行足すと切り替わり、外すと戻る。旧コードは Step8 まで残す。起動の処理（`LaunchProcessAction`／`DefaultProcessLauncher`）は変更しない。
+Program 種別のスペシャルアクション（ボタンの組み合わせで、外部のプログラムを起動する）を、旧ループ（`MapCustomAction` の Program の分岐）から、統一ディスパッチ（エンジン）へ切り替える。7.1〜7.3 と同じ運用: `ServiceRegistration` の既定の一覧に `Program` を 1 行足すと切り替わり、外すと戻る。旧コードは Step8 まで残す。起動の処理（`LaunchProcessAction`／`DefaultProcessLauncher`）は変更しない。
 
 ## 2. 現状の調査
 

@@ -90,7 +90,7 @@ Phase16 は、次の 2 つを 1 つの Phase として行う。第 1 層・第 3
 | 曲線・デッドゾーン段 | `IStickDeadZoneProcessor`、`IOutputCurveProcessor`、`ITriggerDeadZoneProcessor`、`IGyroControlsProcessor`、`IStickInputConditioner`（5） | `SetCurveAndDeadzone`（158 行）だけ |
 | スティック／マウス変換段 | `IFlickStickProcessor`、`IButtonMouseMovementCalculator`、`IMouseMotionQuantizer`、`IGyroMouseStickBlender`（4） | `ProcessStick`、`SampleMouseMovement`、`TempMouseJoystick`、`MapCustom` |
 | 切断の後始末 | `IKeyButtonControllerRegistry`、`ISyntheticDispatcher`、`IMacroPlayback`（3） | `HandleDeviceDisconnect`（62 行）が中心。`IMacroPlayback` はマクロの直接再生でも使う |
-| 特殊アクション | `ITriggerDispatchEngine`（9 回使用）、`IProfileActionProvider`、`ISpecialActionRepository`、`IManagedActionManager` | `MapCustom`、`MapCustomAction`、`ProcessControlSettingAction`、`CheckForSpecialActionSuppression` |
+| スペシャルアクション | `ITriggerDispatchEngine`（9 回使用）、`IProfileActionProvider`、`ISpecialActionRepository`、`IManagedActionManager` | `MapCustom`、`MapCustomAction`、`ProcessControlSettingAction`、`CheckForSpecialActionSuppression` |
 
 ほかに、状態の入れ物（`SyntheticInputState`、`MacroRuntimeState`）、`IVirtualKBM`、`IProfileSettingsService`（15 回）、`IDeviceSlotState`、`ITwoStageTriggerProcessor`、`IControlActivityReader`、`ISyntheticInputCommitter` がある。
 
@@ -253,7 +253,7 @@ flowchart TB
 |---|---|---|
 | **A. 3 つの段（曲線・デッドゾーン段、スティック／マウス変換段、切断の後始末）に分ける。28 → 25（16-1）→ 約 16** | 使うメソッドが明確に分かれる。毎フレームの経路を壊しにくい | 新クラス 3 つの A/B 計測が要る |
 | B. 未使用の 3 引数の削除だけ（28 → 25） | ほぼリスクなし。16-1 で済む | 25 のまま。努力目標（C7）の 15 を超える |
-| C. 5 つの段に分ける（上に加えて、二段トリガーと特殊アクションの段）。28 → 約 12 | 最も小さくなる | ホットパスの変更が大きく、実機確認も多い |
+| C. 5 つの段に分ける（上に加えて、二段トリガーとスペシャルアクションの段）。28 → 約 12 | 最も小さくなる | ホットパスの変更が大きく、実機確認も多い |
 
 ### C3. 手段 A の対象の 5 クラスをすべて Phase16 に入れる
 
@@ -794,7 +794,7 @@ HidHide の登録・解除、OSC（送信・受信）、UDP（DSU 互換）、�
 - **検証**: 特性化テスト（デッドゾーン・出力カーブ・マウスの移動・ジャイロの合成）と、割り当て 0 のテストは、変更なしで合格。毎フレームの経路の増加は、仮想呼び出し 1 回。Actions 3,395 件合格・警告 0。
 
 ### Step 16-13b-1（2026-11-10。完了。`ViewModelFactory` 19 → 3 引数）
-- **分割（D-13-2）**: `ViewModelFactory`（`IViewModelFactory` の窓口。画面側の依存は変えない）を、用途別の 3 つのファクトリーへの委譲にした。`ShellViewModelFactory`（メイン画面の枠: 設定・機器一覧・出力スロット・自動プロファイル・トレイ・ダイアログ。依存 14）、`ProfileEditViewModelFactory`（プロファイル編集・出力ピッカー・ボタンの記録・プリセット。依存 10）、`ActionViewModelFactory`（特殊アクション・マクロなど。依存 4）。各 ViewModel の生成式と `[DI]` のトレースログの文言は移しただけで、変えていない。窓口は 30 メソッドの委譲だけを持つ。
+- **分割（D-13-2）**: `ViewModelFactory`（`IViewModelFactory` の窓口。画面側の依存は変えない）を、用途別の 3 つのファクトリーへの委譲にした。`ShellViewModelFactory`（メイン画面の枠: 設定・機器一覧・出力スロット・自動プロファイル・トレイ・ダイアログ。依存 14）、`ProfileEditViewModelFactory`（プロファイル編集・出力ピッカー・ボタンの記録・プリセット。依存 10）、`ActionViewModelFactory`（スペシャルアクション・マクロなど。依存 4）。各 ViewModel の生成式と `[DI]` のトレースログの文言は移しただけで、変えていない。窓口は 30 メソッドの委譲だけを持つ。
 - 「何でも箱」にしない: 3 つは、作る ViewModel が使う依存だけを受ける（全部の依存を束ねた契約は作っていない）。
 - `ConstructorArityBaseline` から `ViewModelFactory` を削除。`ProfileSettingsViewModelGlobalReferenceGuardTests` は、4 つのコンストラクターを合わせて確かめるよう更新。Actions 3,395 件合格・警告 0。
 
