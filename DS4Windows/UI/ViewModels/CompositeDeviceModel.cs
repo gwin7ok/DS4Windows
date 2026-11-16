@@ -56,6 +56,9 @@ namespace DS4Windows.UI.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         public IControllerSlotView Device { get => device; set => device = value; }
+
+        /// <summary>機器の同期の変化（USB／Bluetooth の接続の切り替わり）を購読する。画面が機器の型を直接触らないための入口。</summary>
+        public void SubscribeSyncChange(EventHandler handler) => device.SyncChange += handler;
         public string SelectedProfile { get => selectedProfile; set => selectedProfile = value; }
         public ProfileList ProfileEntities { get => profileListHolder; set => profileListHolder = value; }
         public ObservableCollection<ProfileEntity> ProfileListCol => profileListHolder.ProfileListCol;

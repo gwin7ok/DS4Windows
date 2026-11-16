@@ -9,12 +9,6 @@ namespace DS4WindowsTests
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IAppSettingsService",
-            "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IEnvironmentService",
-            "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IPathService",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IControllerSlotView",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
-            "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IServiceLifecycle",
         };
     }
 }
