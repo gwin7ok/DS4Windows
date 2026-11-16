@@ -52,11 +52,15 @@ namespace DS4WindowsTests
 
             string text = File.ReadAllText(editor);
             int load = text.IndexOf("profileRepository.LoadProfile(deviceNum, profile.Name);", StringComparison.Ordinal);
-            int notice = text.IndexOf("RemovedGyroSwipeNotice.Apply(profileSettingsService.ForSlot(deviceNum).Gyro.RemovedSwipe, profile.Name, removedGyroSwipePrompt);", StringComparison.Ordinal);
+            int notice = text.IndexOf("profileSettingsVM.ApplyRemovedSettingNotices(profile.Name);", StringComparison.Ordinal);
             Assert.True(load >= 0, "プロファイルの読込の呼び出しが見つからない");
             Assert.True(notice > load, "警告の呼び出しが、読込の直後にない");
             Assert.True(notice - load < 800, "警告の呼び出しが、読込から離れている");
-            Assert.Single(System.Text.RegularExpressions.Regex.Matches(text, "RemovedGyroSwipeNotice\\.Apply\\("));   // 警告の出し方が 1 か所に集まっている
+            // 警告の出し方は ViewModel の 1 か所に集まり、画面は直接呼ばない
+            Assert.Empty(System.Text.RegularExpressions.Regex.Matches(text, "RemovedGyroSwipeNotice\\.Apply\\("));
+            string viewModel = SourceFileLocator.Find("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
+            if (viewModel == null) return;
+            Assert.Single(System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(viewModel), "RemovedGyroSwipeNotice\\.Apply\\("));
         }
     }
 }
