@@ -53,8 +53,12 @@ namespace DS4WindowsTests
             string code = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (code == null) return;
 
-            Assert.DoesNotMatch(new Regex(@"UnregisterDataContext\(\);\s*if \(valid\)"), code);
-            Assert.Matches(new Regex(@"if \(valid\)\s*\{\s*UnregisterDataContext\(\);"), code);
+            // 結びつきを外す処理は画面が渡し、保存の判断は AssignmentEditorSession が持つ。無効なときは、外す前に戻る
+            Assert.Contains("TrySaveSpecialAction(UnregisterDataContext", code);
+            string session = SourceText.Read("DS4Windows/UI/Services/AssignmentEditorSession.cs");
+            if (session == null) return;
+            Assert.DoesNotMatch(new Regex(@"detachBindings\?\.Invoke\(\);\s*if \(valid\)"), session);
+            Assert.Matches(new Regex(@"if \(!valid\) return SaveOutcome\.Invalid;\s*detachBindings\?\.Invoke\(\);"), session);
         }
     }
 }

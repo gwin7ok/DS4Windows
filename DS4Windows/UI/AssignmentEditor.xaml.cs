@@ -37,154 +37,51 @@ namespace DS4Windows.UI
     public partial class AssignmentEditor : UserControl
     {
 
-        // Phase10-Step2 W3: SA のモードは SpecialActEditorViewModel、Controls のモードは ControlActionEditorViewModel（共通の土台は ActionEditorViewModel）
-        private ActionEditorViewModel specialActVM;
+        // 編集の状態と業務の操作は AssignmentEditorSession が持つ（V2）。画面は、表示の切り替えと、ダイアログの位置決めだけを行う
+        private readonly AssignmentEditorSession session;
+        private readonly ActionEditorViewModel specialActVM;
         private readonly bool controlMode;
-        private readonly ControlSettingsEditTarget controlTarget;
-        private MacroViewModel macroActVM;
-        private LaunchProgramViewModel launchProgVM;
-        private LoadProfileViewModel loadProfileVM;
-        private PressKeyViewModel pressKeyVM;
-        private ActionTypeEditorSet typeEditors;
-        private SpecialActionViewModel disconnectBtVM;
-        private CheckBatteryViewModel checkBatteryVM;
-        private MultiActButtonViewModel multiActButtonVM;
-        private SpecialActionViewModel calibrateGyroVM;
-        private FocusWindowViewModel focusWindowVM;
-
-        // Phase10-Step6 I5c: SA のモードで編集中の SA に付ける Extras（SpecialAction.outputExtras と同じ書式。付けないときは null）。
-        // Press Key の出力ピッカー（BindingWindow）で編集する（Controls のモードと同じ）。SA の保存のあとに SaveActionExtras で書く
-        private string saExtras;
+        private readonly MacroViewModel macroActVM;
+        private readonly LaunchProgramViewModel launchProgVM;
+        private readonly LoadProfileViewModel loadProfileVM;
+        private readonly PressKeyViewModel pressKeyVM;
+        private readonly SpecialActionViewModel disconnectBtVM;
+        private readonly CheckBatteryViewModel checkBatteryVM;
+        private readonly MultiActButtonViewModel multiActButtonVM;
+        private readonly SpecialActionViewModel calibrateGyroVM;
+        private readonly FocusWindowViewModel focusWindowVM;
 
         public event EventHandler Cancel;
 
         /// <summary>Controls のモードか。</summary>
         public bool IsControlMode => controlMode;
 
-        /// <summary>Controls のモードで「保存」が押され、入力が有効なときに発生する（受け手は、ProfileEditor の ShowControlAssignmentEditor。Phase10-Step3 W4）。</summary>
+        /// <summary>Controls のモードで「保存」が押され、入力が有効なときに発生する（受け手は、ProfileEditor の ShowControlAssignmentEditor）。</summary>
         public event EventHandler ControlSaved;
 
-        /// <summary>Controls のモードで、保存が押されたときに選ばれていた種別。</summary>
-        public DS4Windows.Core.Settings.SpecialAction.ActionTypeId ControlSaveTypeId { get; private set; }
         public delegate void SaveHandler(object sender, string actionName);
         public event SaveHandler Saved;
 
-        // Phase6-Step7b: 設定の読み書き先（specialActVM.DeviceNum＝編集スロット）とは別に、バッテリー確認の
-        // 色プレビューと、ここから開くボタン設定画面・マクロ記録で使う実機のスロット番号を持つ。-1 は「実機なし」。
-        // 詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
-        private readonly int targetDevice;
+        private bool HasTargetDevice => session.HasTargetDevice;
+        private int targetDevice => session.TargetDevice;
 
-        /// <summary>実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
-        private bool HasTargetDevice =>
-            targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
-
-        /// <param name="deviceNum">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
-        /// <param name="targetDevice">
-        /// Phase6-Step7b: 実機のスロット番号。-1 は実機なし。
-        /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
-        /// </param>
-        // Phase6-Step10-2-4a: BindingWindow／RecordBoxWindow の生成を窓口へ依頼する（必須引数）。
-        // Phase6-Step10-3-2: 種別ごとの ViewModel の生成と、名前変更時の旧名の削除に必要なサービスも必須引数で受け取る。
-        private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
-        private readonly DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository;
-        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
-        private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
-
-        /// <summary>SA のモード（従来どおり。SA の新規作成・編集）。</summary>
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
-
-        public AssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
-            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
-            DS4Windows.UI.Abstractions.IActionViewModelFactory actionViewModelFactory,
-            DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
-            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
-            DS4Windows.Core.Settings.SpecialAction specialAction = null)
-            : this(deviceNum, (DS4Windows.Core.Settings.DS4ControlSettings)null, profileList, targetDevice, editorWindowFactory, viewModelFactory, actionViewModelFactory,
-                specialActionRepository, profileSettingsService, environmentService, windowSystem, specialAction)
+        public AssignmentEditor(AssignmentEditorSession session)
         {
-        }
-
-        /// <summary>
-        /// Controls のモード（Phase10-Step2 W3・W4）: Controls のボタン 1 つの割り当て（<paramref name="controlSettings"/>）を編集する。名前は、ボタンの表示名で固定（編集不可）、
-        /// トリガーは、そのボタンだけ（変更不可）、種別の一覧は、Controls で現在保存できる種別だけ有効。
-        /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、これを左ペイン全体に重ねて表示する（Controls の絵のボタン・一覧、Tilt、Swipe、Full Pull、Outer Bind、
-        /// コントローラーの入力。Phase10-Step3-Plan.md §3.4）。保存（<see cref="ControlSaved"/>）は、編集用のコピーを元の設定へ反映してから発生する。
-        /// </summary>
-        public AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
-            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
-            DS4Windows.UI.Abstractions.IActionViewModelFactory actionViewModelFactory,
-            DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
-            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Core.Abstractions.IWindowSystem windowSystem)
-            : this(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)), profileList, targetDevice,
-                editorWindowFactory, viewModelFactory, actionViewModelFactory, specialActionRepository, profileSettingsService, environmentService, windowSystem, null)
-        {
-        }
-
-        private AssignmentEditor(int deviceNum, DS4Windows.Core.Settings.DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice,
-            DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
-            DS4Windows.UI.Abstractions.IProfileEditViewModelFactory viewModelFactory,
-            DS4Windows.UI.Abstractions.IActionViewModelFactory actionViewModelFactory,
-            DS4Windows.Core.Abstractions.ISpecialActionRepository specialActionRepository,
-            DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Core.Abstractions.IWindowSystem windowSystem,
-            DS4Windows.Core.Settings.SpecialAction specialAction)
-        {
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
-            if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
-            if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
-            if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
-            if (windowSystem == null) throw new ArgumentNullException(nameof(windowSystem));
+            this.session = session ?? throw new ArgumentNullException(nameof(session));
             InitializeComponent();
-            // Phase12-Step2 2i: FocusWindow のターゲットマークで、ドロップしたウィンドウを取得する（DS4Windows 自身のウィンドウは対象にしない）
-            focusWindowTarget.Picker = new WindowTargetPicker(windowSystem, Environment.ProcessId);
-            this.targetDevice = targetDevice;
+            focusWindowTarget.Picker = session.WindowPicker;
 
-            controlMode = controlSettings != null;
-            if (controlMode)
-            {
-                // Phase10-Step2 W4: 対象のボタンの設定は、編集用のコピーを編集し、Save で元へ反映する（Cancel では、元は変わらない）
-                controlTarget = new ControlSettingsEditTarget(controlSettings, profileSettingsService);
-                specialActVM = viewModelFactory.CreateControlActionEditorViewModel(deviceNum, controlTarget);
-            }
-            else
-            {
-                specialActVM = actionViewModelFactory.CreateSpecialActEditorViewModel(deviceNum, specialAction);
-            }
-            macroActVM = actionViewModelFactory.CreateMacroViewModel();
-            launchProgVM = actionViewModelFactory.CreateLaunchProgramViewModel();
-            loadProfileVM = actionViewModelFactory.CreateLoadProfileViewModel(profileList);
-            pressKeyVM = viewModelFactory.CreatePressKeyViewModel(deviceNum);
-            disconnectBtVM = actionViewModelFactory.CreateSpecialActionViewModel(5);
-            checkBatteryVM = actionViewModelFactory.CreateCheckBatteryViewModel();
-            multiActButtonVM = actionViewModelFactory.CreateMultiActButtonViewModel();
-            calibrateGyroVM = actionViewModelFactory.CreateSpecialActionViewModel(9);
-            focusWindowVM = actionViewModelFactory.CreateFocusWindowViewModel();
-
-            // Phase10-Step6 後の Step5: アナログな出力の強さの入力は、SA のモードだけに出す（Controls は、入力のアナログ値で強さが決まる）
-            pressKeyVM.StrengthApplies = !controlMode;
-
-            // Phase10-Step2 W1: 種別ごとの入力の対応は、ActionTypeEditorSet に 1 か所で持つ（旧: LoadAction／CheckActionValid／SaveBtn_Click の 3 つの switch）
-            typeEditors = new ActionTypeEditorSet(new Dictionary<DS4Windows.Core.Settings.SpecialAction.ActionTypeId, IActionTypeEditor>
-            {
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Macro] = macroActVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Program] = launchProgVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Profile] = loadProfileVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.Key] = pressKeyVM,   // Button も、Press Key のタブで編集する
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.DisconnectBT] = disconnectBtVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.BatteryCheck] = checkBatteryVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.MultiAction] = multiActButtonVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.GyroCalibrate] = calibrateGyroVM,
-                [DS4Windows.Core.Settings.SpecialAction.ActionTypeId.FocusWindow] = focusWindowVM,   // Phase12-Step2 2e（R-4）
-            });
+            controlMode = session.ControlMode;
+            specialActVM = session.ActionVM;
+            macroActVM = session.MacroVM;
+            launchProgVM = session.LaunchProgVM;
+            loadProfileVM = session.LoadProfileVM;
+            pressKeyVM = session.PressKeyVM;
+            disconnectBtVM = session.DisconnectBtVM;
+            checkBatteryVM = session.CheckBatteryVM;
+            multiActButtonVM = session.MultiActVM;
+            calibrateGyroVM = session.CalibrateGyroVM;
+            focusWindowVM = session.FocusWindowVM;
 
             // Hide tab headers. Tab content will still be visible
             blankActTab.Visibility = Visibility.Collapsed;
@@ -220,21 +117,6 @@ namespace DS4Windows.UI
                 {
                     typeItem.IsEnabled = specialActVM.IsTypeEnabled(i);
                 }
-            }
-
-            if (specialAction != null)
-            {
-                LoadAction(specialAction);
-            }
-
-            if (controlMode)
-            {
-                // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
-                controlTarget.LoadInto(pressKeyVM, macroActVM, typeEditors);
-                specialActVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
-
-                // Phase10-Step4 W3: Macro タブの SA 専用の項目（Run on trigger release／Synchronized Run／Keep key state）は、Controls にも保存できるようになったため、
-                // SA のモードと同じく出す（Step3 W3 までは、保存する場所がないため隠していた）
             }
 
             actionTypeTabControl.DataContext = specialActVM;
@@ -278,16 +160,6 @@ namespace DS4Windows.UI
             focusWindowTab.DataContext = null;
         }
 
-        private void LoadAction(DS4Windows.Core.Settings.SpecialAction specialAction)
-        {
-            // Phase10-Step2 W2: トリガーの読み込みと、一覧にない名前の除外は、ViewModel が行う（旧: チェックボックス 49＋49 個を、ここで 1 つずつ照合）
-            specialActVM.LoadAction(specialAction);
-            saExtras = specialAction.outputExtras;   // Phase10-Step6 I5c
-
-            // Phase10-Step2 W1: 種別に対応する入力へ読み込む（Button も、Press Key のタブ）
-            typeEditors.Load(specialAction);
-        }
-
         private void ActionTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (specialActVM.ActionTypeIndex <= 0)
@@ -302,29 +174,6 @@ namespace DS4Windows.UI
             triggersListView.Visibility = Visibility.Visible;
         }
 
-        // Controls のモードの保存。入力が無効なときは、結びつきを外さず、エラーを表示したまま戻る（SA のモードと同じ）。
-        // 有効なときは、種別ごとの入力から、編集用のコピーへ書き出し、元の設定へ反映してから ControlSaved を出す（Phase10-Step2 W4）。
-        // Phase10-Step3 W4: ControlSaved の受け手は、ProfileEditor（ShowControlAssignmentEditor）
-        private void SaveControlMode()
-        {
-            DS4Windows.Core.Settings.SpecialAction tempAct = new DS4Windows.Core.Settings.SpecialAction("null", "null", "null", "null");
-            if (!specialActVM.IsValid(tempAct)) return;
-            if (!specialActVM.IsTypeEnabled(specialActVM.ActionTypeIndex)) return;   // Controls に、まだ保存できない種別
-
-            // Phase10-Step4c W3（項目 7）: 種別ごとの入力の検証を、SA のモードと同じく呼ぶ。必須の値がない（キー未選択、プロファイル未選択、プログラムのパスが空ほか）とき、
-            // エラー（赤い枠）を表示したまま、エディターを開いたままにする。Default（None）と Unbound（Button に写る）は、入力がないため検証しない
-            int typeIndex = specialActVM.ActionTypeIndex;
-            bool hasInput = typeIndex != specialActVM.TypeCatalog.DefaultIndex && typeIndex != specialActVM.TypeCatalog.UnboundIndex;
-            if (hasInput && !typeEditors.IsValid(specialActVM.TypeAssoc[typeIndex], tempAct)) return;
-
-            controlTarget.WriteFrom(specialActVM.ActionTypeIndex, pressKeyVM, macroActVM, typeEditors);
-            controlTarget.Apply();
-
-            ControlSaveTypeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
-            UnregisterDataContext();
-            ControlSaved?.Invoke(this, EventArgs.Empty);
-        }
-
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
             UnregisterDataContext();
@@ -336,82 +185,35 @@ namespace DS4Windows.UI
         {
             if (controlMode)
             {
-                SaveControlMode();
+                // 入力が無効なときは、結びつきを外さず、エラーを表示したまま戻る
+                if (!session.TrySaveControl()) return;
+
+                UnregisterDataContext();
+                ControlSaved?.Invoke(this, EventArgs.Empty);
                 return;
             }
 
-            DS4Windows.Core.Settings.SpecialAction.ActionTypeId typeId = specialActVM.TypeAssoc[specialActVM.ActionTypeIndex];
-            DS4Windows.Core.Settings.SpecialAction tempAct = new DS4Windows.Core.Settings.SpecialAction("null", "null", "null", "null");
-            bool valid = specialActVM.IsValid(tempAct);
-            if (valid)
+            // 入力が無効なときに先にデータの結びつきを外すと、エラーが表示される前に編集画面が空になる。無効なときは結びつきを保つ
+            AssignmentEditorSession.SaveOutcome outcome = session.TrySaveSpecialAction(UnregisterDataContext, out string savedName);
+            if (outcome == AssignmentEditorSession.SaveOutcome.ExistingName)
             {
-                specialActVM.SetAction(tempAct);
-                // Duplicate-name validation is handled by the ViewModel (normalized
-                // comparison). No additional re-check here to avoid duplication
-                // and potential race conditions.
-                valid = typeEditors.IsValid(typeId, tempAct);
-            }
-            else if (specialActVM.ExistingName)
-            {
-                // If the ViewModel already detected an existing name error,
-                // show the message near the Save button and bail out *before*
-                // we detach data contexts. This keeps the editor state intact
-                // so the user can correct the name. Use a lightweight custom
-                // window so we can position it precisely.
+                // 保存ボタンの近くへメッセージを出し、結びつきを保ったまま戻る（名前を直せるように）
                 try
                 {
-                    // Use the custom-positioned window but styled to look like
-                    // a native MessageBox so we can control exact placement.
                     ShowMessageWindowAt(Properties.Resources.ActionExists, saveBtn);
                 }
                 catch
                 {
-                    // Fallback to MessageBox if positioning fails for any reason
                     MessageBox.Show(Properties.Resources.ActionExists);
                 }
-                return;
             }
-
-            // Phase10-Step2 W2（実機確認で発見。以前からの不具合）: 入力が無効なとき（トリガーなし、名前が空、種別未選択）に、先に
-            // データの結びつきを外すと、エラーが表示される前に、編集画面が空になっていた。無効なときは、結びつきを保ち、エラーを表示したまま、修正できるようにする
-            // （名前の重複で、メッセージを出して戻る経路と同じ）。保存できるときだけ、結びつきを外す
-            if (valid)
+            else if (outcome == AssignmentEditorSession.SaveOutcome.Saved)
             {
-                UnregisterDataContext();
-                bool editMode = specialActVM.EditMode;
-                if (editMode && specialActVM.SavedAction.name != specialActVM.ActionName)
-                {
-                    // Phase6-Step10-3-2: Global.RemoveAction の置換（Actions.xml への保存と読み直しを含む削除）
-                    specialActionRepository.RemoveActionAndSave(specialActVM.SavedAction.name);
-                    editMode = false;
-                }
-
-                // Phase10-Step2 W1: 種別に対応する入力を保存する
-                typeEditors.Save(typeId, tempAct, editMode);
-
-                // Phase10-Step6 I5c: SA の保存は SA を作り直すため、Extras は保存のあとに書く（付けていないときは、書くものがない）
-                if (!string.IsNullOrWhiteSpace(saExtras)) specialActionRepository.SaveActionExtras(tempAct.name, saExtras);
-
-                Saved?.Invoke(this, tempAct.name);
+                Saved?.Invoke(this, savedName);
             }
         }
 
-        private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DS4Windows.Core.Settings.DS4ControlSettings settings = macroActVM.PrepareSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice,
-                showPlaybackOptions: false);
-            recordWin.Saved += (sender2, args) =>
-            {
-                macroActVM.Macro.Clear();
-                macroActVM.Macro.AddRange((int[])settings.action.actionMacro);
-                macroActVM.UpdateMacroString();
-                // Phase10-Step1 W3: Execute Mode／Scan Code は、記録画面に出さず（記録専用）、Macro タブの PlaybackOptions だけが持つ。
-                // 記録画面へは PrepareSettings で渡し、保存で同じ値が返るため、手の書き戻しは不要
-            };
-
-            recordWin.ShowDialog();
-        }
+        private void RecordMacroBtn_Click(object sender, RoutedEventArgs e) => session.RecordMacro();
 
         // Unload trigger toggle buttons and handlers removed: Key-type SpecialActions use single-trigger toggle mode.
 
@@ -449,50 +251,11 @@ namespace DS4Windows.UI
             checkBatteryVM.FullColor = MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault());
         }
 
-        private void MultiTapTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DS4Windows.Core.Settings.DS4ControlSettings settings = multiActButtonVM.PrepareTapSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false,
-                showPlaybackOptions: false);
-            recordWin.Saved += (sender2, args) =>
-            {
-                multiActButtonVM.TapMacro.Clear();
-                multiActButtonVM.TapMacro.AddRange((int[])settings.action.actionMacro);
-                multiActButtonVM.UpdateTapDisplayText();
-            };
+        private void MultiTapTrigBtn_Click(object sender, RoutedEventArgs e) => session.RecordMultiTap();
 
-            recordWin.ShowDialog();
-        }
+        private void MultiHoldTapTrigBtn_Click(object sender, RoutedEventArgs e) => session.RecordMultiHold();
 
-        private void MultiHoldTapTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DS4Windows.Core.Settings.DS4ControlSettings settings = multiActButtonVM.PrepareHoldSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false,
-                showPlaybackOptions: false);
-            recordWin.Saved += (sender2, args) =>
-            {
-                multiActButtonVM.HoldMacro.Clear();
-                multiActButtonVM.HoldMacro.AddRange((int[])settings.action.actionMacro);
-                multiActButtonVM.UpdateHoldDisplayText();
-            };
-
-            recordWin.ShowDialog();
-        }
-
-        private void MultiDoubleTapTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DS4Windows.Core.Settings.DS4ControlSettings settings = multiActButtonVM.PrepareDoubleTapSettings();
-            RecordBoxWindow recordWin = editorWindowFactory.CreateRecordBoxWindow(specialActVM.DeviceNum, settings, targetDevice, false,
-                showPlaybackOptions: false);
-            recordWin.Saved += (sender2, args) =>
-            {
-                multiActButtonVM.DoubleTapMacro.Clear();
-                multiActButtonVM.DoubleTapMacro.AddRange((int[])settings.action.actionMacro);
-                multiActButtonVM.UpdateDoubleTapDisplayText();
-            };
-
-            recordWin.ShowDialog();
-        }
+        private void MultiDoubleTapTrigBtn_Click(object sender, RoutedEventArgs e) => session.RecordMultiDoubleTap();
 
         private void LaunchProgBrowseBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -501,47 +264,9 @@ namespace DS4Windows.UI
 
         private void PressKeySelectBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (controlMode)
-            {
-                // Phase10-Step3 W2: Controls のモードは、対象のボタンと Extras を載せた一時設定を、Control のモードの出力ピッカーへ渡す。
-                // 結果は、Press Key の状態（Default を含む）と、編集用のコピーの Extras へ取り込む（元の設定は、Save まで変わらない）
-                DS4Windows.Core.Settings.DS4ControlSettings controlSettings = pressKeyVM.PrepareSettings(controlTarget.Control, controlTarget.Extras);
-                BindingWindow controlWindow = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, controlSettings, targetDevice,
-                    BindingWindow.ExposeMode.Control);
-                controlWindow.Owner = App.Current.MainWindow;
-                bool wasDefault = pressKeyVM.SelectedActionType == DS4Windows.Core.Settings.DS4ControlSettings.ActionType.Default;
-                controlWindow.ShowDialog();
-                pressKeyVM.ReadSettings(controlSettings, specialActVM.DeviceNum, allowDefault: true);
-                controlTarget.Extras = controlSettings.extras;
-                pressKeyVM.UpdateToggleControls();
-
-                // 出力ピッカーで Default／Unbound を選んだときは、種別の一覧の「Default」「Unbound」の項目へ切り替える（一覧と、選んだ内容を一致させる）
-                // Phase11 W6 K-W6-6: 何も選ばずに閉じた［× ほか］ときは切り替えない。Default だった状態で、種別だけを Output Key などに変えてから
-                // ピッカーを開き、× で閉じると、状態は Default のまま（変わっていない）で、一覧が Default に戻って見えていた
-                if (pressKeyVM.SelectedActionType == DS4Windows.Core.Settings.DS4ControlSettings.ActionType.Default
-                    && (!wasDefault || controlWindow.DefaultPicked))
-                {
-                    actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;
-                }
-                else if (pressKeyVM.SelectedActionType == DS4Windows.Core.Settings.DS4ControlSettings.ActionType.Button
-                    && pressKeyVM.SelectedButton == (int)DS4Windows.Core.Model.X360Controls.Unbound)
-                {
-                    actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.UnboundIndex;
-                }
-
-                return;
-            }
-
-            DS4Windows.Core.Settings.DS4ControlSettings settings = pressKeyVM.PrepareSettings();
-            // Phase10-Step6 I5c: 編集中の SA の Extras を、出力ピッカーへ渡して、結果を受け取る（Controls のモードと同じ）。何も設定されていない値（全部 0）は、付けない
-            if (!string.IsNullOrEmpty(saExtras)) settings.extras = saExtras;
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(specialActVM.DeviceNum, settings, targetDevice,
-                BindingWindow.ExposeMode.SpecialAction);
-            window.Owner = App.Current.MainWindow;
-            window.ShowDialog();
-            saExtras = settings.IsExtrasEmpty(settings.extras) ? null : settings.extras;
-            pressKeyVM.ReadSettings(settings, specialActVM.DeviceNum);
-            pressKeyVM.UpdateToggleControls();
+            // 出力ピッカーで Default／Unbound を選んだときは、種別の一覧の「Default」「Unbound」の項目へ切り替える（一覧と、選んだ内容を一致させる）
+            int? typeIndex = session.PickOutput();
+            if (typeIndex.HasValue) actionTypeCombo.SelectedIndex = typeIndex.Value;
         }
 
         // Show a transient message window positioned near the given anchor element.

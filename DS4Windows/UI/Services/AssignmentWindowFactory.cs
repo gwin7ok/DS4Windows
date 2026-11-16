@@ -53,12 +53,13 @@ namespace DS4Windows.UI.Services
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction, IEditorWindowFactory editors)
-            => new AssignmentEditor(deviceNum, profileList, targetDevice, editors, _viewModelFactory, _actionViewModelFactory,
-                _specialActionRepository, _profileSettings, _environmentService, _windowSystem, specialAction);
+            => new AssignmentEditor(new AssignmentEditorSession(deviceNum, null, specialAction, profileList, targetDevice, editors, _viewModelFactory,
+                _actionViewModelFactory, _specialActionRepository, _profileSettings, _environmentService, _windowSystem));
 
         public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings,
             ProfileList profileList, int targetDevice, IEditorWindowFactory editors)
-            => new AssignmentEditor(deviceNum, controlSettings, profileList, targetDevice, editors, _viewModelFactory, _actionViewModelFactory,
-                _specialActionRepository, _profileSettings, _environmentService, _windowSystem);
+            => new AssignmentEditor(new AssignmentEditorSession(deviceNum, controlSettings ?? throw new ArgumentNullException(nameof(controlSettings)),
+                null, profileList, targetDevice, editors, _viewModelFactory, _actionViewModelFactory, _specialActionRepository, _profileSettings,
+                _environmentService, _windowSystem));
     }
 }

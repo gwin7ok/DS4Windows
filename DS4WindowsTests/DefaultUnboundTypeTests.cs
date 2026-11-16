@@ -231,8 +231,12 @@ namespace DS4WindowsTests
             Assert.Contains("if (specialActVM.ActionTypeIndex <= 0)", source);
 
             // 出力ピッカーで Default／Unbound を選んだら、一覧の項目も切り替える
-            Assert.Contains("actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;", source);
-            Assert.Contains("actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.UnboundIndex;", source);
+            string session = SourceText.Read("DS4Windows/UI/Services/AssignmentEditorSession.cs");
+            Assert.Contains("int? typeIndex = session.PickOutput();", source);
+            Assert.Contains("actionTypeCombo.SelectedIndex = typeIndex.Value;", source);
+            if (session == null) return;
+            Assert.Contains("return ActionVM.TypeCatalog.DefaultIndex;", session);
+            Assert.Contains("return ActionVM.TypeCatalog.UnboundIndex;", session);
         }
 
         [Fact]

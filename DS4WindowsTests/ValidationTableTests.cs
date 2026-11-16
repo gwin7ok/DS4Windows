@@ -194,12 +194,12 @@ namespace DS4WindowsTests
         {
             // Controls の Save（AssignmentEditor.SaveControlMode）は、SA のモードと同じく、種別ごとの入力の IsValid を呼ぶ（Default と Unbound は入力がないため除く）。
             // W6 の暫定の CanWrite（Load Profile の未選択だけ止める）は、IsValid が偽を返すことで不要になり、削除した
-            string path = SourceFileLocator.Find("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/Services/AssignmentEditorSession.cs");
             if (path == null) return;
 
             string source = System.IO.File.ReadAllText(path);
-            int start = source.IndexOf("private void SaveControlMode()", StringComparison.Ordinal);
-            int end = source.IndexOf("private void CancelBtn_Click", start, StringComparison.Ordinal);
+            int start = source.IndexOf("public bool TrySaveControl()", StringComparison.Ordinal);
+            int end = source.IndexOf("public SaveOutcome TrySaveSpecialAction", start, StringComparison.Ordinal);
             string body = source.Substring(start, end - start);
 
             Assert.Contains("typeEditors.IsValid", body);

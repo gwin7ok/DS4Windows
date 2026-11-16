@@ -110,9 +110,8 @@ namespace DS4WindowsTests
                 return;
             }
 
-            int unregister = source.IndexOf("UnregisterDataContext();\r\n            ControlSaved?.Invoke");
-            if (unregister < 0) unregister = source.IndexOf("UnregisterDataContext();\n            ControlSaved?.Invoke");
-            Assert.True(unregister >= 0, "Controls のモードの保存で、ControlSaved の前に UnregisterDataContext を呼んでいない");
+            bool unregister = System.Text.RegularExpressions.Regex.IsMatch(source, @"UnregisterDataContext\(\);\s*ControlSaved\?\.Invoke");
+            Assert.True(unregister, "Controls のモードの保存で、ControlSaved の前に UnregisterDataContext を呼んでいない");
         }
     }
 }

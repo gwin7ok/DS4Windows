@@ -328,7 +328,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_OpensThePickerInTheControlMode_WithTheButtonAndTheExtras()
         {
-            string path = SourceFileLocator.Find("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string path = SourceFileLocator.Find("DS4Windows/UI/Services/AssignmentEditorSession.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");
@@ -336,7 +336,7 @@ namespace DS4WindowsTests
             }
 
             string source = File.ReadAllText(path);
-            Assert.Contains("pressKeyVM.PrepareSettings(controlTarget.Control, controlTarget.Extras)", source);
+            Assert.Contains("PressKeyVM.PrepareSettings(controlTarget.Control, controlTarget.Extras)", source);
             Assert.Contains("BindingWindow.ExposeMode.Control", source);
             Assert.Contains("allowDefault: true", source);
             Assert.Contains("controlTarget.Extras = controlSettings.extras", source);
