@@ -231,7 +231,7 @@ namespace DS4Windows.UI
 
         // Phase6-Step10-2-5: XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
         // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
-        private DS4Windows.Processing.Abstractions.IControllerReadingsSource readingsSource;
+        private DS4Windows.UI.Abstractions.IControllerReadingsFeed readingsSource;
 
         /// <summary>現在のテーマの文字色（テーマの ForegroundColor。見つからなければ SystemColors.WindowTextColor）。</summary>
         private static Color ThemeForegroundColor()
@@ -240,7 +240,7 @@ namespace DS4Windows.UI
                 ?? SystemColors.WindowTextColor;
         }
 
-        public void Initialize(DS4Windows.Processing.Abstractions.IControllerReadingsSource readingsSource)
+        public void Initialize(DS4Windows.UI.Abstractions.IControllerReadingsFeed readingsSource)
         {
             this.readingsSource = readingsSource ?? throw new ArgumentNullException(nameof(readingsSource));
         }

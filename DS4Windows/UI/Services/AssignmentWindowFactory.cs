@@ -49,7 +49,7 @@ namespace DS4Windows.UI.Services
 
         public StickCalibrationWindow CreateStickCalibrationWindow(Stick stick, int device,
             ProfileSettingsViewModel profileSettingsViewModel)
-            => new StickCalibrationWindow(stick, device, profileSettingsViewModel, _readings);
+            => new StickCalibrationWindow(stick, device, profileSettingsViewModel, new ControllerReadingsFeedAdapter(_readings));
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction, IEditorWindowFactory editors)

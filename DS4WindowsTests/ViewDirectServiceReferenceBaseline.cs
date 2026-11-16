@@ -17,8 +17,6 @@ namespace DS4WindowsTests
             "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.DS4ControlSettings",
             "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.SpecialAction",
             "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.SpecialAction+ActionTypeId",
-            "DS4Windows.UI.ControllerReadingsControl|DS4Windows.Processing.Abstractions.ControllerReadingInfo",
-            "DS4Windows.UI.ControllerReadingsControl|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IPathService",
@@ -32,12 +30,10 @@ namespace DS4WindowsTests
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.ProfileSlotNames",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.SpecialAction",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.StickDeadZoneInfo",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IControllerSlotCommands",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IMouseInputHook",
             "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IWindowSystem",
-            "DS4Windows.UI.StickCalibrationWindow|DS4Windows.Processing.Abstractions.IControllerReadingsSource",
         };
     }
 }

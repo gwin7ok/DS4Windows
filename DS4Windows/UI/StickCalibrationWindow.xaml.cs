@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI;
@@ -11,10 +11,10 @@ public partial class StickCalibrationWindow : Window
     private Stick _stick;
     private int _device;
     private ProfileSettingsViewModel _profileSettingsVM;
-    private readonly IControllerReadingsSource _readings;
+    private readonly IControllerReadingsFeed _readings;
 
     public StickCalibrationWindow(Stick stick, int device, ProfileSettingsViewModel profileSettingsVm,
-        IControllerReadingsSource readings)
+        IControllerReadingsFeed readings)
     {
         _stick = stick;
         _device = device;

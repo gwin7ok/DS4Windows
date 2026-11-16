@@ -1,4 +1,4 @@
-namespace DS4Windows.Processing.Abstractions
+namespace DS4Windows.Core.Model
 {
     /// <summary>
     /// 読み取り表示が、状態のコピーと同じ時点で受け取る補助の値。毎回の読み取りで割り当てが出ないよう、構造体にしている。

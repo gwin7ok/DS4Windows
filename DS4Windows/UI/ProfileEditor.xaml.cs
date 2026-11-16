@@ -171,7 +171,7 @@ namespace DS4Windows.UI
         /// </param>
         public ProfileEditor(int targetDevice, DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService, IProfileSettingsService profileSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepository,
-            IProfileSwitcher profileSwitcher, IControllerReadingsSource readingsSource, IProfileEditViewModelFactory viewModelFactory,
+            IProfileSwitcher profileSwitcher, IControllerReadingsFeed readingsSource, IProfileEditViewModelFactory viewModelFactory,
             IActionViewModelFactory actionViewModelFactory, DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
             IControllerSlotCommands slotCommands)
         {
