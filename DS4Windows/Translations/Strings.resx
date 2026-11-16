@@ -1968,4 +1968,656 @@ Copy Settings to appdata?</value>
   <data name="Startup_CannotEditClose" xml:space="preserve">
     <value>DS4Windows cannot edit settings here, This will now close</value>
   </data>
+  <data name="About_DS4WindowsGwin7okBuildVersion" xml:space="preserve">
+    <value>DS4Windows - gwin7ok Build (Version </value>
+  </data>
+  <data name="About_Hotkeys" xml:space="preserve">
+    <value>Hotkeys</value>
+  </data>
+  <data name="About_License" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="About_Credits" xml:space="preserve">
+    <value>Credits</value>
+  </data>
+  <data name="About_Translators" xml:space="preserve">
+    <value>Translators:</value>
+  </data>
+  <data name="About_Extras" xml:space="preserve">
+    <value>Extras</value>
+  </data>
+  <data name="About_ViGEmBus" xml:space="preserve">
+    <value>ViGEmBus</value>
+  </data>
+  <data name="About_ProjectURL" xml:space="preserve">
+    <value>Project URL:</value>
+  </data>
+  <data name="About_FakerInput" xml:space="preserve">
+    <value>FakerInput</value>
+  </data>
+  <data name="About_CRC32" xml:space="preserve">
+    <value>CRC32</value>
+  </data>
+  <data name="Ui_1Filter" xml:space="preserve">
+    <value>1€ Filter</value>
+  </data>
+  <data name="About_HNotifyIcon" xml:space="preserve">
+    <value>H.NotifyIcon</value>
+  </data>
+  <data name="AssignmentEditor_Name" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="AssignmentEditor_LaunchProgram" xml:space="preserve">
+    <value>Launch Program</value>
+  </data>
+  <data name="AssignmentEditor_Secs" xml:space="preserve">
+    <value>secs</value>
+  </data>
+  <data name="AssignmentEditor_Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="AssignmentEditor_LoadProfile" xml:space="preserve">
+    <value>Load Profile</value>
+  </data>
+  <data name="Ui_None" xml:space="preserve">
+    <value>(none)</value>
+  </data>
+  <data name="AssignmentEditor_PressKey" xml:space="preserve">
+    <value>Press Key</value>
+  </data>
+  <data name="AssignmentEditor_SwitchMode" xml:space="preserve">
+    <value>Switch Mode:</value>
+  </data>
+  <data name="AssignmentEditor_Press" xml:space="preserve">
+    <value>Press</value>
+  </data>
+  <data name="AssignmentEditor_Strength" xml:space="preserve">
+    <value>Strength:</value>
+  </data>
+  <data name="AssignmentEditor_DisBT" xml:space="preserve">
+    <value>DisBT</value>
+  </data>
+  <data name="AssignmentEditor_CheckBattery" xml:space="preserve">
+    <value>Check Battery</value>
+  </data>
+  <data name="AssignmentEditor_MultiAct" xml:space="preserve">
+    <value>MultiAct</value>
+  </data>
+  <data name="AutoProfiles_WindowTitle" xml:space="preserve">
+    <value>Window title...</value>
+  </data>
+  <data name="BindingWindow_SelectAction" xml:space="preserve">
+    <value>Select action</value>
+  </data>
+  <data name="BindingWindow_Esc" xml:space="preserve">
+    <value>Esc</value>
+  </data>
+  <data name="BindingWindow_BkSpace" xml:space="preserve">
+    <value>BkSpace</value>
+  </data>
+  <data name="BindingWindow_Tab" xml:space="preserve">
+    <value>Tab</value>
+  </data>
+  <data name="BindingWindow_Caps" xml:space="preserve">
+    <value>Caps</value>
+  </data>
+  <data name="BindingWindow_Enter" xml:space="preserve">
+    <value>Enter</value>
+  </data>
+  <data name="BindingWindow_LShift" xml:space="preserve">
+    <value>LShift</value>
+  </data>
+  <data name="BindingWindow_RShift" xml:space="preserve">
+    <value>RShift</value>
+  </data>
+  <data name="BindingWindow_LCtrl" xml:space="preserve">
+    <value>LCtrl</value>
+  </data>
+  <data name="BindingWindow_LWin" xml:space="preserve">
+    <value>LWin</value>
+  </data>
+  <data name="BindingWindow_LAlt" xml:space="preserve">
+    <value>LAlt</value>
+  </data>
+  <data name="BindingWindow_Space" xml:space="preserve">
+    <value>Space</value>
+  </data>
+  <data name="BindingWindow_RAlt" xml:space="preserve">
+    <value>RAlt</value>
+  </data>
+  <data name="BindingWindow_RWin" xml:space="preserve">
+    <value>RWin</value>
+  </data>
+  <data name="BindingWindow_RCtrl" xml:space="preserve">
+    <value>RCtrl</value>
+  </data>
+  <data name="BindingWindow_Prt" xml:space="preserve">
+    <value>Prt</value>
+  </data>
+  <data name="BindingWindow_Scl" xml:space="preserve">
+    <value>Scl</value>
+  </data>
+  <data name="BindingWindow_Brk" xml:space="preserve">
+    <value>Brk</value>
+  </data>
+  <data name="BindingWindow_Ins" xml:space="preserve">
+    <value>Ins</value>
+  </data>
+  <data name="BindingWindow_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="BindingWindow_PgUp" xml:space="preserve">
+    <value>PgUp</value>
+  </data>
+  <data name="BindingWindow_Del" xml:space="preserve">
+    <value>Del</value>
+  </data>
+  <data name="BindingWindow_End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="BindingWindow_PgDown" xml:space="preserve">
+    <value>PgDown</value>
+  </data>
+  <data name="BindingWindow_Vol" xml:space="preserve">
+    <value>↑ Vol</value>
+  </data>
+  <data name="BindingWindow_NumLk" xml:space="preserve">
+    <value>NumLk</value>
+  </data>
+  <data name="BindingWindow_Vol2" xml:space="preserve">
+    <value>↓ Vol</value>
+  </data>
+  <data name="Ui_Mute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="ColorPickerWindow_ColorPickerWindow" xml:space="preserve">
+    <value>ColorPickerWindow</value>
+  </data>
+  <data name="ControllerReadingsControl_LXI" xml:space="preserve">
+    <value>LX (I):</value>
+  </data>
+  <data name="ControllerReadingsControl_LXO" xml:space="preserve">
+    <value>LX (O):</value>
+  </data>
+  <data name="ControllerReadingsControl_LYI" xml:space="preserve">
+    <value>LY (I):</value>
+  </data>
+  <data name="ControllerReadingsControl_LYO" xml:space="preserve">
+    <value>LY (O):</value>
+  </data>
+  <data name="ControllerReadingsControl_RXI" xml:space="preserve">
+    <value>RX (I):</value>
+  </data>
+  <data name="ControllerReadingsControl_RXO" xml:space="preserve">
+    <value>RX (O):</value>
+  </data>
+  <data name="ControllerReadingsControl_RYI" xml:space="preserve">
+    <value>RY (I):</value>
+  </data>
+  <data name="ControllerReadingsControl_RYO" xml:space="preserve">
+    <value>RY (O):</value>
+  </data>
+  <data name="ControllerReadingsControl_TX" xml:space="preserve">
+    <value>TX:</value>
+  </data>
+  <data name="ControllerReadingsControl_TY" xml:space="preserve">
+    <value>TY:</value>
+  </data>
+  <data name="GeneralSettingsPanel_ForReadout" xml:space="preserve">
+    <value>for readout</value>
+  </data>
+  <data name="GeneralSettingsPanel_Mins" xml:space="preserve">
+    <value>mins</value>
+  </data>
+  <data name="GeneralSettingsPanel_Max1Ms" xml:space="preserve">
+    <value>Max (1 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_1000Hz1Ms" xml:space="preserve">
+    <value>1000 Hz (1 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_500Hz2Ms" xml:space="preserve">
+    <value>500 Hz (2 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_333Hz3Ms" xml:space="preserve">
+    <value>333 Hz (3 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_250Hz4Ms" xml:space="preserve">
+    <value>250 Hz (4 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_200Hz5Ms" xml:space="preserve">
+    <value>200 Hz (5 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_166Hz6Ms" xml:space="preserve">
+    <value>166 Hz (6 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_142Hz7Ms" xml:space="preserve">
+    <value>142 Hz (7 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_125Hz8Ms" xml:space="preserve">
+    <value>125 Hz (8 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_111Hz9Ms" xml:space="preserve">
+    <value>111 Hz (9 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_100Hz10Ms" xml:space="preserve">
+    <value>100 Hz (10 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_90Hz11Ms" xml:space="preserve">
+    <value>90 Hz (11 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_83Hz12Ms" xml:space="preserve">
+    <value>83 Hz (12 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_76Hz13Ms" xml:space="preserve">
+    <value>76 Hz (13 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_71Hz14Ms" xml:space="preserve">
+    <value>71 Hz (14 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_66Hz15Ms" xml:space="preserve">
+    <value>66 Hz (15 ms)</value>
+  </data>
+  <data name="GeneralSettingsPanel_62Hz16Ms" xml:space="preserve">
+    <value>62 Hz (16 ms)</value>
+  </data>
+  <data name="GyroSettingsPanel_TiltUp" xml:space="preserve">
+    <value>Tilt Up</value>
+  </data>
+  <data name="GyroSettingsPanel_TiltDown" xml:space="preserve">
+    <value>Tilt Down</value>
+  </data>
+  <data name="GyroSettingsPanel_TiltLeft" xml:space="preserve">
+    <value>Tilt Left</value>
+  </data>
+  <data name="GyroSettingsPanel_TiltRight" xml:space="preserve">
+    <value>Tilt Right</value>
+  </data>
+  <data name="GyroSettingsPanel_Triggers" xml:space="preserve">
+    <value>Triggers</value>
+  </data>
+  <data name="GyroSettingsPanel_TurnBehaviorTurnsGyro" xml:space="preserve">
+    <value>Turn Behavior - Turns Gyro</value>
+  </data>
+  <data name="GyroSettingsPanel_EvalCond" xml:space="preserve">
+    <value>Eval Cond.</value>
+  </data>
+  <data name="GyroSettingsPanel_And" xml:space="preserve">
+    <value>And</value>
+  </data>
+  <data name="GyroSettingsPanel_Or" xml:space="preserve">
+    <value>Or</value>
+  </data>
+  <data name="GyroSettingsPanel_ResetGyroCalibration" xml:space="preserve">
+    <value>Reset Gyro Calibration</value>
+  </data>
+  <data name="GyroSettingsPanel_GyroSensitivity" xml:space="preserve">
+    <value>Gyro Sensitivity:</value>
+  </data>
+  <data name="GyroSettingsPanel_XAxis" xml:space="preserve">
+    <value>X Axis</value>
+  </data>
+  <data name="Ui_Invert" xml:space="preserve">
+    <value>Invert</value>
+  </data>
+  <data name="Ui_JitterCompensation" xml:space="preserve">
+    <value>Jitter Compensation</value>
+  </data>
+  <data name="Ui_MinThreshold" xml:space="preserve">
+    <value>Min Threshold</value>
+  </data>
+  <data name="Ui_Smoothing" xml:space="preserve">
+    <value>Smoothing</value>
+  </data>
+  <data name="Ui_SmoothingOptions" xml:space="preserve">
+    <value>Smoothing Options</value>
+  </data>
+  <data name="GyroSettingsPanel_WeightedAverage" xml:space="preserve">
+    <value>Weighted Average</value>
+  </data>
+  <data name="GyroSettingsPanel_SmoothWeight" xml:space="preserve">
+    <value>Smooth Weight</value>
+  </data>
+  <data name="Ui_OutputStick" xml:space="preserve">
+    <value>Output Stick</value>
+  </data>
+  <data name="Ui_OutputAxes" xml:space="preserve">
+    <value>Output Axes</value>
+  </data>
+  <data name="Ui_HorizontalAndVertical" xml:space="preserve">
+    <value>Horizontal and Vertical</value>
+  </data>
+  <data name="Ui_HorizontalOnly" xml:space="preserve">
+    <value>Horizontal Only</value>
+  </data>
+  <data name="Ui_VerticalOnly" xml:space="preserve">
+    <value>Vertical Only</value>
+  </data>
+  <data name="Ui_MinimumX" xml:space="preserve">
+    <value>Minimum X</value>
+  </data>
+  <data name="Ui_MinimumY" xml:space="preserve">
+    <value>Minimum Y</value>
+  </data>
+  <data name="GyroSettingsPanel_XAxis2" xml:space="preserve">
+    <value>X-Axis</value>
+  </data>
+  <data name="Ui_InvertX" xml:space="preserve">
+    <value>Invert X</value>
+  </data>
+  <data name="Ui_InvertY" xml:space="preserve">
+    <value>Invert Y</value>
+  </data>
+  <data name="GyroSettingsPanel_Weight" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="LanguageSelectDialog_SelectLanguage" xml:space="preserve">
+    <value>Select Language</value>
+  </data>
+  <data name="LanguageSelectDialog_WelcomeToDS4Windows" xml:space="preserve">
+    <value>Welcome to DS4Windows!</value>
+  </data>
+  <data name="LanguageSelectDialog_PleaseSelectYourPreferredLanguage" xml:space="preserve">
+    <value>Please select your preferred language.</value>
+  </data>
+  <data name="LightbarSettingsPanel_ColorByBattery" xml:space="preserve">
+    <value>Color by Battery %</value>
+  </data>
+  <data name="MainWindow_DS4Windows" xml:space="preserve">
+    <value>DS4Windows</value>
+  </data>
+  <data name="MainWindow_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="MainWindow_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="MainWindow_RightClickToDisconnectWireless" xml:space="preserve">
+    <value>Right click to disconnect wireless</value>
+  </data>
+  <data name="MainWindow_Ex" xml:space="preserve">
+    <value>Ex</value>
+  </data>
+  <data name="MainWindow_LinkedProfile" xml:space="preserve">
+    <value>Linked Profile</value>
+  </data>
+  <data name="MainWindow_UseProfileColor" xml:space="preserve">
+    <value>Use Profile Color</value>
+  </data>
+  <data name="MainWindow_UseCustomColor" xml:space="preserve">
+    <value>Use Custom Color</value>
+  </data>
+  <data name="Ui_Ms" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="MainWindow_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="MainWindow_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="OutputSettingsPanel_Xbox360" xml:space="preserve">
+    <value>Xbox 360</value>
+  </data>
+  <data name="OutputSettingsPanel_DualShock4" xml:space="preserve">
+    <value>DualShock 4</value>
+  </data>
+  <data name="PluginOutDevWindow_PluginOutDevWindow" xml:space="preserve">
+    <value>PluginOutDevWindow</value>
+  </data>
+  <data name="PluginOutDevWindow_DS4" xml:space="preserve">
+    <value>DS4</value>
+  </data>
+  <data name="Ui_SelectPreset" xml:space="preserve">
+    <value>Select Preset</value>
+  </data>
+  <data name="ProfileEditor_DPad" xml:space="preserve">
+    <value>DPad</value>
+  </data>
+  <data name="ProfileEditor_Inverted" xml:space="preserve">
+    <value>Inverted</value>
+  </data>
+  <data name="ProfileEditor_InvertedX" xml:space="preserve">
+    <value>Inverted X</value>
+  </data>
+  <data name="ProfileEditor_InvertedY" xml:space="preserve">
+    <value>Inverted Y</value>
+  </data>
+  <data name="ProfileEditor_Rotate90" xml:space="preserve">
+    <value>Rotate 90°</value>
+  </data>
+  <data name="ProfileEditor_Rotate902" xml:space="preserve">
+    <value>Rotate -90°</value>
+  </data>
+  <data name="ProfileEditor_FaceButtons" xml:space="preserve">
+    <value>Face Buttons</value>
+  </data>
+  <data name="ProfileEditor_WASD" xml:space="preserve">
+    <value>WASD</value>
+  </data>
+  <data name="ProfileEditor_ArrowKeys" xml:space="preserve">
+    <value>Arrow Keys</value>
+  </data>
+  <data name="ProfileEditor_SpecialActions" xml:space="preserve">
+    <value>Special Actions</value>
+  </data>
+  <data name="ProfileEditor_ControllerReadings" xml:space="preserve">
+    <value>Controller Readings</value>
+  </data>
+  <data name="ProfileNotificationWindow_DS4WindowsProfileNotification" xml:space="preserve">
+    <value>DS4Windows Profile Notification</value>
+  </data>
+  <data name="ProfileNotificationWindow_DS4WindowsProfileChange" xml:space="preserve">
+    <value>DS4Windows Profile Change</value>
+  </data>
+  <data name="StickCalibrationWindow_StickCalibration" xml:space="preserve">
+    <value>StickCalibration</value>
+  </data>
+  <data name="StickSettingsPanel_LS" xml:space="preserve">
+    <value>LS</value>
+  </data>
+  <data name="StickSettingsPanel_RS" xml:space="preserve">
+    <value>RS</value>
+  </data>
+  <data name="StickSideSettingsView_Force" xml:space="preserve">
+    <value>Force</value>
+  </data>
+  <data name="Unit_Degree" xml:space="preserve">
+    <value>°</value>
+  </data>
+  <data name="StickSideSettingsView_Units" xml:space="preserve">
+    <value>units</value>
+  </data>
+  <data name="StickSideSettingsView_Sec" xml:space="preserve">
+    <value>sec.</value>
+  </data>
+  <data name="TouchButtonUserControl_ButtonActivationMode" xml:space="preserve">
+    <value>Button Activation Mode</value>
+  </data>
+  <data name="TouchpadSettingsPanel_DoubleTap" xml:space="preserve">
+    <value>Double Tap</value>
+  </data>
+  <data name="TouchpadSettingsPanel_LowerRightAsRMB" xml:space="preserve">
+    <value>Lower Right as RMB</value>
+  </data>
+  <data name="TouchpadSettingsPanel_PassthruClickActionDS4Mode" xml:space="preserve">
+    <value>Passthru Click Action (DS4 mode)</value>
+  </data>
+  <data name="TouchpadSettingsPanel_StartWithSlideScrollOff" xml:space="preserve">
+    <value>Start with Slide/Scroll Off</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Trackball" xml:space="preserve">
+    <value>Trackball</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Friction" xml:space="preserve">
+    <value>Friction:</value>
+  </data>
+  <data name="TouchpadSettingsPanel_DisableInvert" xml:space="preserve">
+    <value>Disable Invert</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Cross" xml:space="preserve">
+    <value>Cross</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Circle" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Square" xml:space="preserve">
+    <value>Square</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Triangle" xml:space="preserve">
+    <value>Triangle</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Up" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Down" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="TouchpadSettingsPanel_FingerOnTouchpad" xml:space="preserve">
+    <value>Finger on Touchpad</value>
+  </data>
+  <data name="TouchpadSettingsPanel_2FingersOnTouchpad" xml:space="preserve">
+    <value>2 Fingers on Touchpad</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Options" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="TouchpadSettingsPanel_Share" xml:space="preserve">
+    <value>Share</value>
+  </data>
+  <data name="TouchpadSettingsPanel_PS" xml:space="preserve">
+    <value>PS</value>
+  </data>
+  <data name="TouchpadSettingsPanel_TouchpadClick" xml:space="preserve">
+    <value>Touchpad Click</value>
+  </data>
+  <data name="TouchpadSettingsPanel_SideL" xml:space="preserve">
+    <value>Side L</value>
+  </data>
+  <data name="TouchpadSettingsPanel_SideR" xml:space="preserve">
+    <value>Side R</value>
+  </data>
+  <data name="TouchpadSettingsPanel_FunctionLeft" xml:space="preserve">
+    <value>Function Left</value>
+  </data>
+  <data name="TouchpadSettingsPanel_FunctionRight" xml:space="preserve">
+    <value>Function Right</value>
+  </data>
+  <data name="TouchpadSettingsPanel_BottomLeftPaddle" xml:space="preserve">
+    <value>Bottom Left Paddle</value>
+  </data>
+  <data name="TouchpadSettingsPanel_BottomRightPaddle" xml:space="preserve">
+    <value>Bottom Right Paddle</value>
+  </data>
+  <data name="TouchpadSettingsPanel_SwipeUp" xml:space="preserve">
+    <value>Swipe Up</value>
+  </data>
+  <data name="TouchpadSettingsPanel_SwipeDown" xml:space="preserve">
+    <value>Swipe Down</value>
+  </data>
+  <data name="TouchpadSettingsPanel_SwipeLeft" xml:space="preserve">
+    <value>Swipe Left</value>
+  </data>
+  <data name="TouchpadSettingsPanel_SwipeRight" xml:space="preserve">
+    <value>Swipe Right</value>
+  </data>
+  <data name="WelcomeDialog_Finished" xml:space="preserve">
+    <value>Finished</value>
+  </data>
+  <data name="About_DriverThatProvidesVirtualGamepadSupport" xml:space="preserve">
+    <value>Driver that provides virtual gamepad support system-wide. Used by many controller mapping applications. Written by nefarius</value>
+  </data>
+  <data name="About_UseHidHideToConfigureAndHide" xml:space="preserve">
+    <value>Use HidHide to configure and hide any input controllers from other apps running on your system. Some games require only one controller to be present or double input will cause problems in game. Written by nefarius.</value>
+  </data>
+  <data name="About_HideDS4ControllerHidesTheDS4" xml:space="preserve">
+    <value>Hide DS4 Controller: Hides the DS4's regular input (Dinput) from other programs, check if you are getting double input in games or R2 pauses games
+Click left side of touchpad: Left Touch
+Click right side of touchpad: Right Touch
+Click touchpad with 2 fingers: Multitouch
+Click upper part of touchpad: Upper Touch
+PS + Options or hold PS for 10 secs: Disconnect Controller (Only on Bluetooth)
+Touch Touchpad + PS: Turn off touchpad movement (clicking still works)
+Pad click on lower right: Right click (Best used when right side is used as a mouse button)
+Two fingers up/down on touchpad*: Scroll Up/Down
+Tap then hold touchpad*: Left mouse drag
+2 finger touchpad swipe left or right: Cycle through profiles
+Shift Modifer: Hold an action to use another set of controls
+When mapping keyboard and mouse:
+Toggle: The key will remain in a "held down" state until pressed again
+Macro: Assign multiple keys to one input
+Scan Code: Keys are interpreted differently. May be needed for certain games
+*If enabled</value>
+  </data>
+  <data name="About_Site" xml:space="preserve">
+    <value>Site</value>
+  </data>
+  <data name="About_Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="About_InhexSTERStarterOfDS4Tool" xml:space="preserve">
+    <value>InhexSTER (Starter of DS4Tool)</value>
+  </data>
+  <data name="About_ElectrobrainsBranchedOffOf" xml:space="preserve">
+    <value>electrobrains (Branched off of)</value>
+  </data>
+  <data name="About_Contributors" xml:space="preserve">
+    <value>Contributors</value>
+  </data>
+  <data name="ControllerRegisterOptionsWindow_AboutVirtualControllerSupport" xml:space="preserve">
+    <value>About virtual controller support </value>
+  </data>
+  <data name="StickCalibrationWindow_PleaseMoveYourStickToThe" xml:space="preserve">
+    <value>Please move your stick to the sides and release it a few times, then after you are done press Save. </value>
+  </data>
+  <data name="TriggerSettingsPanel_DisablesUseOfTwoStageTriggers" xml:space="preserve">
+    <value>Disables use of Two Stage Triggers. Only bind one action to L2 or R2</value>
+  </data>
+  <data name="TriggerSettingsPanel_NormalSimpleTwoStageTriggerActivation" xml:space="preserve">
+    <value>Normal (simple) Two Stage Trigger activation. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value.</value>
+  </data>
+  <data name="TriggerSettingsPanel_Exclusive" xml:space="preserve">
+    <value>Exclusive</value>
+  </data>
+  <data name="TriggerSettingsPanel_ActivatesSoftPullActionWhenUnder" xml:space="preserve">
+    <value>Activates Soft Pull action when under maximum output. When trigger reaches maximum output, deactivate Soft Pull action and then activate Full Pull action</value>
+  </data>
+  <data name="TriggerSettingsPanel_HairTrigger" xml:space="preserve">
+    <value>Hair Trigger</value>
+  </data>
+  <data name="TriggerSettingsPanel_SimilarToNormalTwoStageTrigger" xml:space="preserve">
+    <value>Similar to Normal Two Stage Trigger mode with one difference. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value. When the trigger is partially released from Full Pull, both Full Pull and Soft Pull actions deactivate. Activating Full Pull action will activate the Soft Pull again as well.</value>
+  </data>
+  <data name="TriggerSettingsPanel_HipFire" xml:space="preserve">
+    <value>Hip Fire</value>
+  </data>
+  <data name="TriggerSettingsPanel_TakesThe" xml:space="preserve">
+    <value>Takes the </value>
+  </data>
+  <data name="TriggerSettingsPanel_TimeIntoAccountTheTriggerWill" xml:space="preserve">
+    <value> time into account. The trigger will not activate an action until the time has expired. Once the time has expired, the current action for the trigger output will be determined. This mode allows skipping the activation of Soft Pull and only firing a Full Pull action.</value>
+  </data>
+  <data name="TriggerSettingsPanel_HipFireExclusive" xml:space="preserve">
+    <value>Hip Fire Exclusive</value>
+  </data>
+  <data name="TriggerSettingsPanel_SimilarToHipFireModeThe" xml:space="preserve">
+    <value>Similar to Hip Fire mode. The main difference is only one action will ever be activated. </value>
+  </data>
+  <data name="TriggerSettingsPanel_TimeDelayUsedWithTwoState" xml:space="preserve">
+    <value>Time delay used with Two State Modes </value>
+  </data>
+  <data name="TriggerSettingsPanel_And" xml:space="preserve">
+    <value> and </value>
+  </data>
+  <data name="TriggerSettingsPanel_TheTimeDelayBeforeAnAction" xml:space="preserve">
+    <value>. The time delay before an action is first executed. </value>
+  </data>
+  <data name="TriggerSettingsPanel_L2AndR2" xml:space="preserve">
+    <value>L2 &amp; R2</value>
+  </data>
 </root>

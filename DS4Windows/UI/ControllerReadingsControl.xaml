@@ -116,14 +116,14 @@
                            Margin="0,4,0,0">
                     <StackPanel Orientation="Horizontal"
              Margin="0,0,4,0">
-                        <Label Content="LX (I):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_LXI}"
                                Padding="2,2"/>
                         <Label x:Name="lxInValLb"
                                Content=""
                                Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="LX (O):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_LXO}"
                                Padding="2,2"/>
                         <Label x:Name="lxOutValLb"
                                Content=""
@@ -134,14 +134,14 @@
                            Margin="0,2,0,0">
                     <StackPanel Orientation="Horizontal"
              Margin="0,0,4,0">
-                        <Label Content="LY (I):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_LYI}"
                                Padding="2,2"/>
                         <Label x:Name="lyInValLb"
                                Content=""
                                Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="LY (O):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_LYO}"
                                Padding="2,2"/>
                         <Label x:Name="lyOutValLb"
                                Content=""
@@ -201,14 +201,14 @@
                            Margin="0,4,0,0">
                     <StackPanel Orientation="Horizontal"
              Margin="0,0,4,0">
-                        <Label Content="RX (I):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_RXI}"
                                Padding="2,2"/>
                         <Label x:Name="rxInValLb"
                                Content=""
                                Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="RX (O):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_RXO}"
                                Padding="2,2"/>
                         <Label x:Name="rxOutValLb"
                                Content=""
@@ -219,14 +219,14 @@
                            Margin="0,2,0,0">
                     <StackPanel Orientation="Horizontal"
              Margin="0,0,4,0">
-                        <Label Content="RY (I):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_RYI}"
                                Padding="2,2"/>
                         <Label x:Name="ryInValLb"
                                Content=""
                                Style="{DynamicResource ReadingValueLabel}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="RY (O):"
+                        <Label Content="{lex:Loc ControllerReadingsControl_RYO}"
                                Padding="2,2"/>
                         <Label x:Name="ryOutValLb"
                                Content=""
@@ -456,7 +456,7 @@
                     <StackPanel HorizontalAlignment="Center"
                                 Margin="0,4,0,0">
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="TX:"
+                            <Label Content="{lex:Loc ControllerReadingsControl_TX}"
                                    Width="28"
                                    Padding="1,1"
                                    VerticalAlignment="Center"/>
@@ -465,7 +465,7 @@
                                    Style="{DynamicResource ReadingValueLabelCentered}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="TY:"
+                            <Label Content="{lex:Loc ControllerReadingsControl_TY}"
                                    Width="28"
                                    Padding="1,1"
                                    VerticalAlignment="Center"/>

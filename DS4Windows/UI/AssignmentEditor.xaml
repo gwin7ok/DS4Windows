@@ -15,7 +15,7 @@
              d:DesignHeight="350" d:DesignWidth="420">
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="4,8,4,8">
-            <Label Content="Name:" DockPanel.Dock="Left" />
+            <Label Content="{lex:Loc AssignmentEditor_Name}" DockPanel.Dock="Left" />
             <TextBox x:Name="actionNameTxt" Text="{Binding ActionName,FallbackValue=Name,ValidatesOnNotifyDataErrors=True}"
                      IsReadOnly="{Binding ActionNameReadOnly}"
                      Margin="8,0,0,0" DockPanel.Dock="Right" VerticalContentAlignment="Center" InputMethod.IsInputMethodEnabled="True" InputMethod.PreferredImeState="Off" />
@@ -73,7 +73,7 @@
                         <TabItem x:Name="blankActTab" Header="">
 
                         </TabItem>
-                        <TabItem x:Name="macroActTab" Header="Macro">
+                        <TabItem x:Name="macroActTab" Header="{lex:Loc Macro}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <Button x:Name="recordMacroBtn" Content="{lex:Loc SpecialActionEdit.RecordMacro}"
                                         Tag="{Binding MacroElements,Mode=OneWay,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}"
@@ -87,12 +87,12 @@
                                 <TextBlock Text="{Binding Macrostring,FallbackValue={lex:Loc SpecialActionEdit.MacroRecorded}}" Margin="{StaticResource spaceMargin}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="launchProgActTab" Header="Launch Program">
+                        <TabItem x:Name="launchProgActTab" Header="{lex:Loc AssignmentEditor_LaunchProgram}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
                                     <xctk:DecimalUpDown Value="{Binding Delay}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
-                                    <Label Content="secs" />
+                                    <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                                 </StackPanel>
                                 <!-- Phase10-Step4c W3: 必須の値がないエラー（パスが空）は、赤い枠で示す（名前欄・トリガー欄と同じ仕組み）。ファイルが存在しない警告も、同じ枠で示す（保存は止めない） -->
                                 <Button x:Name="launchProgBrowseBtn" Content="{lex:Loc Browse}" Margin="{StaticResource spaceMargin}"
@@ -111,12 +111,12 @@
                                     <Image Grid.Column="1" Source="{Binding ProgramIconPath, Converter={x:Static localConverters:FileIconConverter.Instance}}" Width="32" Height="32" Margin="10,0,0,0" />
                                 </Grid>
                                 <StackPanel Margin="{StaticResource spaceMargin}">
-                                    <Label Content="Arguments"/>
+                                    <Label Content="{lex:Loc AssignmentEditor_Arguments}"/>
                                     <TextBox Text="{Binding Arguments}" />
                                 </StackPanel>
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="loadProfileTab" Header="Load Profile">
+                        <TabItem x:Name="loadProfileTab" Header="{lex:Loc AssignmentEditor_LoadProfile}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <ComboBox SelectedIndex="{Binding ProfileIndex,FallbackValue=0,ValidatesOnNotifyDataErrors=True}"
                                           Margin="{StaticResource spaceMargin}">
@@ -132,7 +132,7 @@
                                     </ComboBox.Resources>
                                     <ComboBox.ItemsSource>
                                         <CompositeCollection>
-                                            <ComboBoxItem Content="(none)"/>
+                                            <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                             <CollectionContainer x:Name="profileCollection"
                                                                  Collection="{Binding Source={StaticResource profileListViewSource}}" />
                                         </CompositeCollection>
@@ -141,13 +141,13 @@
                                 <CheckBox Content="{lex:Loc SpecialActionEdit.UnloadTriggerRelease}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding AutoUntrigger}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="pressKetActTab" Header="Press Key">
+                        <TabItem x:Name="pressKetActTab" Header="{lex:Loc AssignmentEditor_PressKey}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center">
-                                    <Label Content="Switch Mode:" VerticalAlignment="Center" />
+                                    <Label Content="{lex:Loc AssignmentEditor_SwitchMode}" VerticalAlignment="Center" />
                                     <ComboBox Width="120" Margin="8,0,0,0" SelectedValue="{Binding SwitchMode, Mode=TwoWay}" SelectedValuePath="Content">
-                                        <ComboBoxItem Content="Press" />
-                                        <ComboBoxItem Content="Toggle" />
+                                        <ComboBoxItem Content="{lex:Loc AssignmentEditor_Press}" />
+                                        <ComboBoxItem Content="{lex:Loc Toggle}" />
                                     </ComboBox>
                                 </StackPanel>
                                 <!-- Phase10-Step1 W4: Scan Code は、選択ダイアログではなく、この画面で設定する -->
@@ -159,26 +159,26 @@
                                         Margin="{StaticResource spaceMargin}" Click="PressKeySelectBtn_Click" />
                                 <!-- Phase10-Step6 後の Step5（SA 側のアナログ出力）: 出力先が軸・トリガー・マウス移動のときだけ、強さ（0〜100%）を指定する（Controls のモードには出さない） -->
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center" Visibility="{Binding ShowAnalogStrength, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}">
-                                    <Label Content="Strength:" VerticalAlignment="Center" />
+                                    <Label Content="{lex:Loc AssignmentEditor_Strength}" VerticalAlignment="Center" />
                                     <xctk:IntegerUpDown Value="{Binding AnalogStrength, Mode=TwoWay}" Minimum="0" Maximum="100" Width="70" Margin="8,0,0,0" />
                                     <Label Content="%" VerticalAlignment="Center" />
                                 </StackPanel>
                                 <!-- Unload trigger UI removed: Key-type SpecialActions now use single-trigger toggle by design -->
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="disconnectBTTab" Header="DisBT">
+                        <TabItem x:Name="disconnectBTTab" Header="{lex:Loc AssignmentEditor_DisBT}">
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
                                 <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
-                                <Label Content="secs" />
+                                <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="checkBatteryTab" Header="Check Battery">
+                        <TabItem x:Name="checkBatteryTab" Header="{lex:Loc AssignmentEditor_CheckBattery}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
                                     <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5"/>
-                                    <Label Content="secs" />
+                                    <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                                 </StackPanel>
                                 <CheckBox Content="{lex:Loc SpecialActionEdit.ViaNotification}" IsChecked="{Binding Notification,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}" />
                                 <CheckBox Content="{lex:Loc SpecialActionEdit.ViaLightbar}" IsChecked="{Binding Lightbar,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}" />
@@ -211,7 +211,7 @@
                                 </StackPanel>
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="multiActTab" Header="MultiAct">
+                        <TabItem x:Name="multiActTab" Header="{lex:Loc AssignmentEditor_MultiAct}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc SpecialActionEdit.TapTrigger}" Margin="{StaticResource spaceMargin}" />
                                 <Button x:Name="multiTapTrigBtn" Content="{Binding TapMacroText,FallbackValue={lex:Loc SpecialActionEdit.SelectMacro}}"
@@ -228,7 +228,7 @@
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc HoldFor}" ContentStringFormat="{}{0} "></Label>
                                 <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
-                                <Label Content="secs" />
+                                <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                             </StackPanel>
                         </TabItem>
                         <!-- Phase12-Step2 2e（R-4）: ウィンドウのフォーカス。対象はプログラムのパスとウィンドウタイトル（Auto-Profile と同じ書式）。両方が空は保存できない -->
@@ -237,7 +237,7 @@
                                 <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
                                     <xctk:DecimalUpDown Value="{Binding Delay}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
-                                    <Label Content="secs" />
+                                    <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                                 </StackPanel>
                                 <local:WindowTargetEditor x:Name="focusWindowTarget" Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
                                                           Title="{Binding TitleText, ValidatesOnNotifyDataErrors=True}"

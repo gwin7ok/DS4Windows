@@ -9,7 +9,7 @@
         lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
         lex:ResxLocalizationProvider.DefaultDictionary="Strings"
         mc:Ignorable="d"
-        Title="PluginOutDevWindow" Height="200" Width="400"
+        Title="{lex:Loc PluginOutDevWindow_PluginOutDevWindow}" Height="200" Width="400"
         Style="{DynamicResource WindowStyle}">
     <DockPanel LastChildFill="False">
         <TextBlock Text="{lex:Loc DeviceType}" DockPanel.Dock="Top" />
@@ -20,7 +20,7 @@
 
         <ComboBox x:Name="devTypeCombo" SelectedIndex="0" DockPanel.Dock="Top">
             <ComboBoxItem Tag="0" Content="X360" />
-            <ComboBoxItem Tag="1" Content="DS4" />
+            <ComboBoxItem Tag="1" Content="{lex:Loc PluginOutDevWindow_DS4}" />
         </ComboBox>
 
         <ComboBox x:Name="reserveTypeCombo" SelectedIndex="0" DockPanel.Dock="Top">

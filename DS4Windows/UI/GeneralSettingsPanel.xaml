@@ -8,7 +8,9 @@
              xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignWidth="800"
+        lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings">
     <StackPanel>
             <StackPanel Orientation="Horizontal"
                         Margin="0,8,0,0">
@@ -26,7 +28,7 @@
                                     ToolTip="{lex:Loc Resources:UseControllerForMapping}"/>
                 <CheckBox x:Name="useControllerReadoutCk"
                           FlowDirection="RightToLeft"
-                          Content="for readout"
+                          Content="{lex:Loc GeneralSettingsPanel_ForReadout}"
                           VerticalAlignment="Center"
                           Margin="8,0,0,0"
                           IsChecked="{Binding UseControllerReadout}"
@@ -145,7 +147,7 @@
                                     Minimum="0"
                                     Maximum="60"
                                     Margin="10,0,0,0"/>
-                <Label Content="mins"/>
+                <Label Content="{lex:Loc GeneralSettingsPanel_Mins}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal"
                         Margin="0,6,0,0">
@@ -157,23 +159,23 @@
                           MinWidth="140"
                           ToolTip="{lex:Loc Resources:BtPollRate}"
                           Margin="8,0,0,0">
-                    <ComboBoxItem Content="Max (1 ms)"/>
-                    <ComboBoxItem Content="1000 Hz (1 ms)"/>
-                    <ComboBoxItem Content="500 Hz (2 ms)"/>
-                    <ComboBoxItem Content="333 Hz (3 ms)"/>
-                    <ComboBoxItem Content="250 Hz (4 ms)"/>
-                    <ComboBoxItem Content="200 Hz (5 ms)"/>
-                    <ComboBoxItem Content="166 Hz (6 ms)"/>
-                    <ComboBoxItem Content="142 Hz (7 ms)"/>
-                    <ComboBoxItem Content="125 Hz (8 ms)"/>
-                    <ComboBoxItem Content="111 Hz (9 ms)"/>
-                    <ComboBoxItem Content="100 Hz (10 ms)"/>
-                    <ComboBoxItem Content="90 Hz (11 ms)"/>
-                    <ComboBoxItem Content="83 Hz (12 ms)"/>
-                    <ComboBoxItem Content="76 Hz (13 ms)"/>
-                    <ComboBoxItem Content="71 Hz (14 ms)"/>
-                    <ComboBoxItem Content="66 Hz (15 ms)"/>
-                    <ComboBoxItem Content="62 Hz (16 ms)"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_Max1Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_1000Hz1Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_500Hz2Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_333Hz3Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_250Hz4Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_200Hz5Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_166Hz6Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_142Hz7Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_125Hz8Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_111Hz9Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_100Hz10Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_90Hz11Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_83Hz12Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_76Hz13Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_71Hz14Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_66Hz15Ms}"/>
+                    <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_62Hz16Ms}"/>
                 </ComboBox>
             </StackPanel>
     </StackPanel>

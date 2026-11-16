@@ -114,7 +114,7 @@
                     Margin="10,0,0,0"
                     Click="ApplyBtn_Click"/>
             <Button x:Name="presetBtn"
-                    Content="Select Preset"
+                    Content="{lex:Loc Ui_SelectPreset}"
                     Margin="10,0,0,0"
                     Click="PresetBtn_Click"/>
             <!-- Phase11 W3: 状態は Click ハンドラー（ProfileEditor.Keepsize の元）が持つ。以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、
@@ -156,125 +156,125 @@
                         <controls:ControllerVisualizerControl.Resources>
                             <!-- 重要: リソースの中の部品には x:Name もイベントの属性も付けない（読み込み時に接続番号がずれて、画面を開く時に落ちる）。クリックは ContextMenu で受ける -->
                             <ContextMenu x:Key="presetMenu" MenuItem.Click="PresetMenuItem_Click">
-                                <MenuItem Header="Name"
+                                <MenuItem Header="{lex:Loc Name}"
                                           IsEnabled="False"/>
                                 <Separator/>
-                                <MenuItem Header="Default"
+                                <MenuItem Header="{lex:Loc Default}"
                                           Tag="0"/>
-                                <MenuItem Header="DPad">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc ProfileEditor_DPad}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="1"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Inverted"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Inverted}"
                                               Tag="1"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Inverted X"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedX}"
                                               Tag="1"
                                               CommandParameter="2"/>
-                                    <MenuItem Header="Inverted Y"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedY}"
                                               Tag="1"
                                               CommandParameter="3"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="1"
                                               CommandParameter="4"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="1"
                                               CommandParameter="5"/>
                                 </MenuItem>
-                                <MenuItem Header="Left Stick">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc LeftStick}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="2"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Inverted"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Inverted}"
                                               Tag="2"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Inverted X"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedX}"
                                               Tag="2"
                                               CommandParameter="2"/>
-                                    <MenuItem Header="Inverted Y"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedY}"
                                               Tag="2"
                                               CommandParameter="3"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="2"
                                               CommandParameter="4"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="2"
                                               CommandParameter="5"/>
                                 </MenuItem>
-                                <MenuItem Header="Right Stick">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc RightStick}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="3"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Inverted"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Inverted}"
                                               Tag="3"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Inverted X"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedX}"
                                               Tag="3"
                                               CommandParameter="2"/>
-                                    <MenuItem Header="Inverted Y"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedY}"
                                               Tag="3"
                                               CommandParameter="3"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="3"
                                               CommandParameter="4"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="3"
                                               CommandParameter="5"/>
                                 </MenuItem>
-                                <MenuItem Header="Face Buttons">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc ProfileEditor_FaceButtons}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="4"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="4"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="4"
                                               CommandParameter="2"/>
                                 </MenuItem>
-                                <MenuItem Header="WASD">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc ProfileEditor_WASD}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="5"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="5"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="5"
                                               CommandParameter="2"/>
                                 </MenuItem>
-                                <MenuItem Header="Arrow Keys">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc ProfileEditor_ArrowKeys}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="6"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="6"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="6"
                                               CommandParameter="2"/>
                                 </MenuItem>
-                                <MenuItem Header="Mouse">
-                                    <MenuItem Header="Normal"
+                                <MenuItem Header="{lex:Loc Mouse}">
+                                    <MenuItem Header="{lex:Loc Normal}"
                                               Tag="7"
                                               CommandParameter="0"/>
-                                    <MenuItem Header="Inverted"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Inverted}"
                                               Tag="7"
                                               CommandParameter="1"/>
-                                    <MenuItem Header="Inverted X"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedX}"
                                               Tag="7"
                                               CommandParameter="2"/>
-                                    <MenuItem Header="Inverted Y"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_InvertedY}"
                                               Tag="7"
                                               CommandParameter="3"/>
-                                    <MenuItem Header="Rotate 90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate90}"
                                               Tag="7"
                                               CommandParameter="4"/>
-                                    <MenuItem Header="Rotate -90&#xb0;"
+                                    <MenuItem Header="{lex:Loc ProfileEditor_Rotate902}"
                                               Tag="7"
                                               CommandParameter="5"/>
                                 </MenuItem>
-                                <MenuItem Header="Unbound"
+                                <MenuItem Header="{lex:Loc Unbound}"
                                           Tag="8"/>
                             </ContextMenu>
                         </controls:ControllerVisualizerControl.Resources>
@@ -425,7 +425,7 @@
                 </Grid>
             </TabItem>
             <TabItem x:Name="specialActionsTab"
-                     Header="Special Actions">
+                     Header="{lex:Loc ProfileEditor_SpecialActions}">
                 <DockPanel x:Name="specialActionDockPanel"
                            HorizontalAlignment="Stretch"
                            Width="Auto">
@@ -548,7 +548,7 @@
             </TabItem>
 
             <TabItem x:Name="contReadingsTab"
-                     Header="Controller Readings"
+                     Header="{lex:Loc ProfileEditor_ControllerReadings}"
                      IsEnabled="False">
                 <local:ControllerReadingsControl x:Name="conReadingsUserCon"/>
             </TabItem>

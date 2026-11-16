@@ -58,7 +58,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer x:Name="cont1AutoProfCol" Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -78,7 +78,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer x:Name="cont2AutoProfCol" Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -98,7 +98,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer x:Name="cont3AutoProfCol" Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -118,7 +118,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer x:Name="cont4AutoProfCol" Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -138,7 +138,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -158,7 +158,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -179,7 +179,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -199,7 +199,7 @@
                                 </ComboBox.Resources>
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
-                                        <ComboBoxItem Content="(none)"/>
+                                        <ComboBoxItem Content="{lex:Loc Ui_None}"/>
                                         <CollectionContainer Collection="{Binding Source={StaticResource profileCollection}}" />
                                     </CompositeCollection>
                                 </ComboBox.ItemsSource>
@@ -213,7 +213,7 @@
                         <Grid>
                             <TextBox x:Name="mainTxtBox" Text="{Binding Title, UpdateSourceTrigger=LostFocus}" Margin="{StaticResource spaceMargin}" ToolTip="{lex:Loc AutoProfTitleTip}" />
 
-                            <TextBlock Margin="5,2" MinWidth="50" Text="Window title..." Foreground="{DynamicResource ForegroundBrush}" Opacity="0.7" IsHitTestVisible="False">
+                            <TextBlock Margin="5,2" MinWidth="50" Text="{lex:Loc AutoProfiles_WindowTitle}" Foreground="{DynamicResource ForegroundBrush}" Opacity="0.7" IsHitTestVisible="False">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>

@@ -69,7 +69,7 @@
                 </TextBlock>
             </StackPanel>
 
-            <Button x:Name="finishedBtn" Content="Finished" HorizontalAlignment="Center" Padding="10,1" Style="{StaticResource CommonMargin}" Click="FinishedBtn_Click" DockPanel.Dock="Bottom" />
+            <Button x:Name="finishedBtn" Content="{lex:Loc WelcomeDialog_Finished}" HorizontalAlignment="Center" Padding="10,1" Style="{StaticResource CommonMargin}" Click="FinishedBtn_Click" DockPanel.Dock="Bottom" />
         </DockPanel>
     </ScrollViewer>
 </Window>

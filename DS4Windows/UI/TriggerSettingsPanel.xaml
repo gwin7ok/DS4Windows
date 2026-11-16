@@ -8,7 +8,9 @@
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignWidth="800"
+        lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings">
     <UserControl.Resources>
         <Thickness x:Key="spaceMargin"
                    Left="10"
@@ -19,7 +21,7 @@
                     Value="30"/>
         </Style>
     </UserControl.Resources>
-<GroupBox Header="L2 &amp; R2">
+<GroupBox Header="{lex:Loc TriggerSettingsPanel_L2AndR2}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -249,24 +251,17 @@
                   Margin="{StaticResource spaceMargin}">
             <ComboBox.ToolTip>
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>Disabled</Bold><LineBreak/>
-                    Disables use of Two Stage Triggers. Only bind one action to L2 or R2<LineBreak/>
+                    <Bold><Run Text="{lex:Loc DualSRumbleModeDisabled}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_DisablesUseOfTwoStageTriggers}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Normal</Bold><LineBreak/>
-                    Normal (simple) Two Stage Trigger activation. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value.<LineBreak/>
+                    <Bold><Run Text="{lex:Loc Normal}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_NormalSimpleTwoStageTriggerActivation}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Exclusive</Bold><LineBreak/>
-                    Activates Soft Pull action when under maximum output. When trigger reaches maximum output, deactivate Soft Pull action and then activate Full Pull action<LineBreak/>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_Exclusive}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_ActivatesSoftPullActionWhenUnder}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Hair Trigger</Bold><LineBreak/>
-                    Similar to Normal Two Stage Trigger mode with one difference. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value. When the trigger is partially released from Full Pull, both Full Pull and Soft Pull actions deactivate. Activating Full Pull action will activate the Soft Pull again as well.<LineBreak/>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_HairTrigger}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_SimilarToNormalTwoStageTrigger}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Hip Fire</Bold><LineBreak/>
-                    Takes the <Bold>Hip Fire Delay</Bold> time into account. The trigger will not activate an action until the time has expired. Once the time has expired, the current action for the trigger output will be determined. This mode allows skipping the activation of Soft Pull and only firing a Full Pull action.<LineBreak/>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFire}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_TakesThe}"/><Bold><Run Text="{lex:Loc HipFireDelay}"/></Bold><Run Text="{lex:Loc TriggerSettingsPanel_TimeIntoAccountTheTriggerWill}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Hip Fire Exclusive</Bold><LineBreak/>
-                    Similar to Hip Fire mode. The main difference is only one action will ever be activated.
-                </TextBlock>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFireExclusive}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_SimilarToHipFireModeThe}"/></TextBlock>
             </ComboBox.ToolTip>
         </ComboBox>
 
@@ -279,24 +274,17 @@
                   Margin="{StaticResource spaceMargin}">
             <ComboBox.ToolTip>
                 <TextBlock TextWrapping="Wrap">
-                    <Bold>Disabled</Bold><LineBreak/>
-                    Disables use of Two Stage Triggers. Only bind one action to L2 or R2<LineBreak/>
+                    <Bold><Run Text="{lex:Loc DualSRumbleModeDisabled}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_DisablesUseOfTwoStageTriggers}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Normal</Bold><LineBreak/>
-                    Normal (simple) Two Stage Trigger activation. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value.<LineBreak/>
+                    <Bold><Run Text="{lex:Loc Normal}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_NormalSimpleTwoStageTriggerActivation}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Exclusive</Bold><LineBreak/>
-                    Activates Soft Pull action when under maximum output. When trigger reaches maximum output, deactivate Soft Pull action and then activate Full Pull action<LineBreak/>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_Exclusive}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_ActivatesSoftPullActionWhenUnder}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Hair Trigger</Bold><LineBreak/>
-                    Similar to Normal Two Stage Trigger mode with one difference. Activates Soft Pull action when under maximum output. Activates Full Pull action as well when trigger reaches maximum value. When the trigger is partially released from Full Pull, both Full Pull and Soft Pull actions deactivate. Activating Full Pull action will activate the Soft Pull again as well.<LineBreak/>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_HairTrigger}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_SimilarToNormalTwoStageTrigger}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Hip Fire</Bold><LineBreak/>
-                    Takes the <Bold>Hip Fire Delay</Bold> time into account. The trigger will not activate an action until the time has expired. Once the time has expired, the current action for the trigger output will be determined. This mode allows skipping the activation of Soft Pull and only firing a Full Pull action.<LineBreak/>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFire}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_TakesThe}"/><Bold><Run Text="{lex:Loc HipFireDelay}"/></Bold><Run Text="{lex:Loc TriggerSettingsPanel_TimeIntoAccountTheTriggerWill}"/><LineBreak/>
                     <LineBreak/>
-                    <Bold>Hip Fire Exclusive</Bold><LineBreak/>
-                    Similar to Hip Fire mode. The main difference is only one action will ever be activated.
-                </TextBlock>
+                    <Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFireExclusive}"/></Bold><LineBreak/><Run Text="{lex:Loc TriggerSettingsPanel_SimilarToHipFireModeThe}"/></TextBlock>
             </ComboBox.ToolTip>
         </ComboBox>
 
@@ -327,7 +315,7 @@
                Grid.Column="0"/>
         <DockPanel Grid.Row="10"
                    Grid.Column="1">
-            <Label Content="ms"
+            <Label Content="{lex:Loc Ui_Ms}"
                    DockPanel.Dock="Right"/>
             <xctk:IntegerUpDown d:IsHidden="True"
                                 Value="{Binding L2HipFireTime}"
@@ -337,16 +325,14 @@
                                 Increment="10"
                                 Margin="{StaticResource spaceMargin}">
                 <xctk:IntegerUpDown.ToolTip>
-                    <TextBlock TextWrapping="Wrap">
-                        Time delay used with Two State Modes <Bold>Hire Fire</Bold> and <Bold>Hip Fire Exclusive</Bold>. The time delay before an action is first executed.
-                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap"><Run Text="{lex:Loc TriggerSettingsPanel_TimeDelayUsedWithTwoState}"/><Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFire}"/></Bold><Run Text="{lex:Loc TriggerSettingsPanel_And}"/><Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFireExclusive}"/></Bold><Run Text="{lex:Loc TriggerSettingsPanel_TheTimeDelayBeforeAnAction}"/></TextBlock>
                 </xctk:IntegerUpDown.ToolTip>
             </xctk:IntegerUpDown>
         </DockPanel>
 
         <DockPanel Grid.Row="10"
                    Grid.Column="2">
-            <Label Content="ms"
+            <Label Content="{lex:Loc Ui_Ms}"
                    DockPanel.Dock="Right"/>
             <xctk:IntegerUpDown d:IsHidden="True"
                                 Value="{Binding R2HipFireTime}"
@@ -356,9 +342,7 @@
                                 Increment="10"
                                 Margin="{StaticResource spaceMargin}">
                 <xctk:IntegerUpDown.ToolTip>
-                    <TextBlock TextWrapping="Wrap">
-                        Time delay used with Two State Modes <Bold>Hire Fire</Bold> and <Bold>Hip Fire Exclusive</Bold>. The time delay before an action is first executed.
-                    </TextBlock>
+                    <TextBlock TextWrapping="Wrap"><Run Text="{lex:Loc TriggerSettingsPanel_TimeDelayUsedWithTwoState}"/><Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFire}"/></Bold><Run Text="{lex:Loc TriggerSettingsPanel_And}"/><Bold><Run Text="{lex:Loc TriggerSettingsPanel_HipFireExclusive}"/></Bold><Run Text="{lex:Loc TriggerSettingsPanel_TheTimeDelayBeforeAnAction}"/></TextBlock>
                 </xctk:IntegerUpDown.ToolTip>
             </xctk:IntegerUpDown>
         </DockPanel>
