@@ -137,6 +137,7 @@ namespace DS4Windows.UI.ViewModels
             PopulateContextMenu();
             SetupEvents();
             profileListHolder.ProfileListCol.CollectionChanged += ProfileListCol_CollectionChanged;
+            profileRepository.SelectedProfileChanged += ProfileRepository_SelectedProfileChanged;
 
             lifecycle.ServiceStarted += BuildControllerList;
             lifecycle.ServiceStarted += HookEvents;
@@ -191,6 +192,13 @@ namespace DS4Windows.UI.ViewModels
             _colLocker.EnterWriteLock();
             controllerList.Add(new ControllerHolder(device, index));
             _colLocker.ExitWriteLock();
+        }
+
+        // プロファイルを適用したとき（トレイ・一覧・ホットキー・自動プロファイルのどれから選んでも）、チェックを移すために組み直す。
+        // 適用は別のスレッドから来るため、項目の組み直しは UI のスレッドで行う
+        private void ProfileRepository_SelectedProfileChanged(object sender, SelectedProfileChangedEventArgs e)
+        {
+            uiDispatcher.BeginInvoke(PopulateContextMenu);
         }
 
         private void ProfileListCol_CollectionChanged(object sender,

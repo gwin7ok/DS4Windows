@@ -20,13 +20,13 @@ namespace StandaloneTests
         private class Parts
         {
             public readonly DS4Windows.Processing.Actions.DefaultActionManager Manager;
-            public readonly DS4Windows.Processing.Services.KeyButtonControllerRegistry Registry;
+            public readonly DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry Registry;
 
             public Parts(Func<DS4Windows.Processing.Actions.IManagedActionManager, DS4Windows.Processing.Actions.IKeyButtonActionControllerFactory> factoryOf)
             {
-                DS4Windows.Processing.Services.KeyButtonControllerRegistry registry = null;
+                DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry registry = null;
                 Manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
-                registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Processing.Actions.DefaultControllerRegistry(), Manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System);
+                registry = new DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry(factoryOf(Manager), new DS4Windows.Processing.Actions.DefaultControllerRegistry(), Manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System);
                 Registry = registry;
             }
         }
@@ -48,9 +48,9 @@ namespace StandaloneTests
             public void EndMacroDirect(int device) { throw new NotSupportedException(); }
         }
 
-        private static System.Collections.IDictionary ControllersOf(DS4Windows.Processing.Services.KeyButtonControllerRegistry registry)
+        private static System.Collections.IDictionary ControllersOf(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry registry)
         {
-            var field = typeof(DS4Windows.Processing.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
+            var field = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, "Could not find _controllers field via reflection");
             return field.GetValue(registry) as System.Collections.IDictionary;
         }

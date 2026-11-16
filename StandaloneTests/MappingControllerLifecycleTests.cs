@@ -40,12 +40,12 @@ namespace StandaloneTests
             // Arrange: ensure no controllers for device 5
             int device = 5;
 
-            DS4Windows.Processing.Services.KeyButtonControllerRegistry registry = null;
+            DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry registry = null;
             var manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => new DisconnectOnlyMapping(registry));
-            registry = new DS4Windows.Processing.Services.KeyButtonControllerRegistry(
+            registry = new DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry(
                 new DS4Windows.Processing.Actions.DefaultKeyButtonActionControllerFactory(new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System),
                 new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System);
-            var dictField = typeof(DS4Windows.Processing.Services.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
+            var dictField = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(dictField, "Could not find _controllers field via reflection");
             var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
             Assert.IsNotNull(dict);
