@@ -1,7 +1,7 @@
 # PhaseX3 計画書（下書き）: 日本語表示の完全な日本語化
 
 作成日: 2026-11-13
-状態: **下書き。実施の時期は未定**（番号は実施時に振る）。
+状態: **実施中（2026-11-16 に、利用者が実施を指示。X3-0 完了。X3-2 の決定の確認待ち）**。利用者の指示: XAML に直接書かれている文言をなくし、すべてリソース（`lex:Loc`）を使う形にする（キー名の文言のまま同じ値を英語・日本語に置くものも含む）。
 関連: `.github/copilot-instructions.md` §2.3（利用者向けログは `AppLogger.LogUser` とリソースのキー）、`Log-Policy.md`
 
 ## 1. 目的
@@ -38,7 +38,7 @@
 ## 5. Step 案
 | Step | 内容 | 状態 |
 |---|---|---|
-| X3-0 | 調査: 未訳キーの一覧、XAML の直書きの一覧（ファイル・行・文言）、既存の訳から用語集の案を作る。計測のスクリプトを残す | 未着手 |
+| X3-0 | 調査: 未訳キーの一覧、XAML の直書きの一覧（ファイル・行・文言）、既存の訳から用語集の案を作る。計測のスクリプトを残す | 完了（2026-11-16） |
 | X3-1 | XAML の直書きの英語をリソースのキー（`lex:Loc`）へ移す。表示は変えない（英語のまま）。キーの命名規則を決める | 未着手 |
 | X3-2 | 用語集と D1〜D6 の決定をユーザーが承認する | 未着手 |
 | X3-3 | `Strings.ja.resx`・`Resources.ja.resx` に、不足のキーの日本語を足し、英語のままの 12 件を見直す（画面ごとに分けて進める） | 未着手 |
@@ -61,3 +61,17 @@
 
 ## 履歴
 - 2026-11-13: 下書きを作成。
+- 2026-11-16: 利用者が実施を指示（用語集から。XAML の直書きをなくし、すべてリソースを使う形にする）。X3-0 を実施。
+
+## 実施の記録
+### 2026-11-16（X3-0）
+- 計測のスクリプト: `scripts/audit/Measure-Localization.py`（リポジトリのルートで `python scripts/audit/Measure-Localization.py scripts/audit/out`。出力は `.gitignore` の対象）。
+- 計測の結果（2026-11-16。11-13 の計測から、キーが増えている）:
+  | 対象 | 英語側のキー | 日本語側のキー | 日本語側に無いキー | 日本語側が英語のままの値 |
+  |---|---|---|---|---|
+  | `Strings` | 602 | 328 | 274 | 8 |
+  | `Resources` | 183 | 74 | 109 | 1 |
+  | 合計 | 785 | 402 | **383** | 9 |
+- XAML の直書きの英語: **318 件／24 ファイル**（11-13 の「約 240 件」より多い。計測の範囲を広げた）。多い順: `GyroSettingsPanel` 63、`TouchpadSettingsPanel` 58、`ProfileEditor` 46、`BindingWindow` 30、`GeneralSettingsPanel` 19、`About` 18、`AssignmentEditor` 17、`MainWindow` 13、`StickSideSettingsView` 10、`AutoProfiles` 9、`ControllerReadingsControl` 8。残りは 5 件以下の 13 ファイル。
+- 直書きの内訳（性質）: (a) 普通の文言（`Triggers`、`Smoothing`、`Reset Gyro Calibration` など）、(b) キーボードのキー名（`Esc`、`Tab`、`LShift` など。`BindingWindow`）、(c) 単位・略号（`ms`、`secs`、`LX (I):` など）、(d) 製品名・URL の見出し（`About`）、(e) 数値入りの選択肢（`GeneralSettingsPanel` のポーリングレート `1000 Hz (1 ms)` など 17 件）、(f) 同じ文言の繰り返し（`(none)` 8 件、`Normal`／`Inverted`／`Rotate 90°` の繰り返し〔`ProfileEditor` のプリセットのメニュー〕）。
+- 用語集の案: `PhaseX3-Glossary.md`（既存の訳 175 件の抜き出し、新しく決める用語の案、英語のまま残す語の案）。
