@@ -189,11 +189,8 @@ namespace DS4Windows.Core.Settings
         public LinkedProfileMap linkedProfiles = new LinkedProfileMap();   // Phase10-Step4d W5d: 値は、プロファイルの名前を読み書きする窓口（保管は ID）
         // Cache properties instead of performing a string comparison every frame
         public bool[] distanceProfiles = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
-        public Byte[] rumble = new Byte[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE,
-          DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE,
-          DEFAULT_RUMBLE, DEFAULT_RUMBLE, DEFAULT_RUMBLE };
-        public int[] rumbleAutostopTime = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Value in milliseconds (0=autustop timer disabled)
+        /// <summary>振動の設定（強さ、自動停止、モーターの入れ替え）の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly RumbleSlotSettings[] rumbleSlots = new RumbleSlotSettings[ControllerLimits.TestProfileItemCount];
 
         // Rotation angle expressed in radians
 
@@ -216,14 +213,6 @@ namespace DS4Windows.Core.Settings
 
         public int processPriority;
 
-        public RumbleSettings[] rumbleSettings = new RumbleSettings[ControllerLimits.TestProfileItemCount]
-                {
-            new RumbleSettings(), new RumbleSettings(),
-            new RumbleSettings(), new RumbleSettings(),
-            new RumbleSettings(), new RumbleSettings(),
-            new RumbleSettings(), new RumbleSettings(),
-            new RumbleSettings(),
-                };
 
 
 
@@ -355,9 +344,6 @@ namespace DS4Windows.Core.Settings
 
         // Phase11 K-W6-10: debouncingMs（デバウンス時間）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
 
-        public bool[] inverseRumbleMotors = {
-            false, false, false, false, false, false, false, false, false
-        };
 
 
         public ControlServiceDeviceOptions deviceOptions =
@@ -483,6 +469,7 @@ namespace DS4Windows.Core.Settings
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
             for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
             for (int i = 0; i < basicSlots.Length; i++) basicSlots[i] = new BasicSlotSettings(i);
+            for (int i = 0; i < rumbleSlots.Length; i++) rumbleSlots[i] = new RumbleSlotSettings(i);
             for (int i = 0; i < dualSenseSlots.Length; i++) dualSenseSlots[i] = new DualSenseSlotSettings(i);
             for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
             for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
@@ -499,16 +486,6 @@ namespace DS4Windows.Core.Settings
 
                 ds4controlSettings[i] = new ControlSettingsGroup(ds4settings[i]);
                 removedShiftSettings[i] = new RemovedShiftSettings();
-
-                // RumbleSettings の変更を生配列 rumble / rumbleAutostopTime に連動させる
-                int slot = i;
-                rumbleSettings[slot].RumbleSettingsChanged += (sender, e) =>
-                {
-                    if (rumble != null && slot < rumble.Length)
-                        rumble[slot] = rumbleSettings[slot].RumbleBoost;
-                    if (rumbleAutostopTime != null && slot < rumbleAutostopTime.Length)
-                        rumbleAutostopTime[slot] = rumbleSettings[slot].RumbleAutostopTime;
-                };
 
                 EstablishDefaultSpecialActions(i);
                 CacheExtraProfileInfo(i);
@@ -967,13 +944,11 @@ namespace DS4Windows.Core.Settings
             removedShiftSettings[device].Clear();
             buttonMouseInfos[device].Reset();
 
-            inverseRumbleMotors[device] = false;
             outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
-            rumble[device] = DEFAULT_RUMBLE;
-            rumbleAutostopTime[device] = 0;
             outputDevType[device] = DEFAULT_OUT_CONT_TYPE;
 
             basicSlots[device].ResetForProfileLoad();
+            rumbleSlots[device].ResetForProfileLoad();
             gyroSlots[device].ResetForProfileLoad();
             touchpadSlots[device].ResetForProfileLoad();
             stickSlots[device].ResetForProfileLoad();

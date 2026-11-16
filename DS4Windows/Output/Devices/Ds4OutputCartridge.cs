@@ -111,7 +111,7 @@ namespace DS4Windows.Output.Devices
                                         if ((reportData[1] & DS4OutDevice.RUMBLE_FEATURE_FLAG) != 0)
                                         {
                                             useRumble = true;
-                                            if (_profileSettings.InverseRumbleMotors[devIndex])
+                                            if (_profileSettings.RumbleSlot(devIndex).InverseMotors)
                                                 device.setRumble(reportData[5], reportData[4]);
                                             else
                                                 device.setRumble(reportData[4], reportData[5]);

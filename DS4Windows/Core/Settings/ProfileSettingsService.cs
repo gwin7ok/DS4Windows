@@ -211,19 +211,7 @@ namespace DS4Windows.Core.Settings
 
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
-        public bool[] InverseRumbleMotors => SafeConfig?.inverseRumbleMotors;
-
-        public byte[] RumbleBoost
-        {
-            get => SafeConfig?.rumble;
-            set
-            {
-                if (SafeConfig != null) SafeConfig.rumble = value;
-            }
-        }
-
-        // 選択肢A: BackingStore への直接委譲（純粋な薄いパススルー）
-        public RumbleSettings[] RumbleSettings => SafeConfig?.rumbleSettings;
+        public RumbleSlotSettings RumbleSlot(int slot) => SafeConfig?.rumbleSlots[slot];
 
         public DualSenseSlotSettings DualSenseSlot(int slot) => SafeConfig?.dualSenseSlots[slot];
 
@@ -234,31 +222,21 @@ namespace DS4Windows.Core.Settings
                 DualSenseSlot(deviceIndex) is { UseGenericRumbleRescale: false })
                 return 100;
 
-            if (SafeConfig?.rumbleSettings != null && deviceIndex >= 0 && deviceIndex < SafeConfig.rumbleSettings.Length)
-                return SafeConfig.rumbleSettings[deviceIndex].RumbleBoost;
-
-            return SafeConfig?.rumble != null ? SafeConfig.rumble[deviceIndex] : (byte)100;
+            return SafeConfig != null ? SafeConfig.rumbleSlots[deviceIndex].Boost : (byte)100;
         }
 
         public int GetRumbleAutostopTime(int deviceIndex)
         {
-            if (SafeConfig?.rumbleSettings != null && deviceIndex >= 0 && deviceIndex < SafeConfig.rumbleSettings.Length)
-                return SafeConfig.rumbleSettings[deviceIndex].RumbleAutostopTime;
-
-            return SafeConfig?.rumbleAutostopTime != null ? SafeConfig.rumbleAutostopTime[deviceIndex] : 0;
+            return SafeConfig != null ? SafeConfig.rumbleSlots[deviceIndex].AutostopTime : 0;
         }
 
         public ref DS4Color GetMainColor(int deviceIndex) => ref SafeConfig.lightbarSlots[deviceIndex].Info.ds4winSettings.m_Led;
 
         public void SetRumbleAutostopTime(int index, int value)
         {
-            if (SafeConfig?.rumbleSettings != null && index >= 0 && index < SafeConfig.rumbleSettings.Length)
+            if (SafeConfig != null && index >= 0 && index < ControllerLimits.TestProfileItemCount)
             {
-                SafeConfig.rumbleSettings[index].RumbleAutostopTime = value;
-            }
-            if (SafeConfig != null && SafeConfig.rumbleAutostopTime != null && index < SafeConfig.rumbleAutostopTime.Length)
-            {
-                SafeConfig.rumbleAutostopTime[index] = value;
+                SafeConfig.rumbleSlots[index].AutostopTime = value;
                 IConfigurableDevice tempDev = _deviceState.GetConfigurableDevice(index);
                 if (tempDev != null && tempDev.isSynced())
                     tempDev.RumbleAutostopTime = value;

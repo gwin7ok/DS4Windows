@@ -73,10 +73,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 catch { missingSetting = true; }
             }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleBoost"); Byte.TryParse(Item.InnerText, out store.rumble[device]); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleBoost"); { Byte.TryParse(Item.InnerText, out byte boost); store.rumbleSlots[device].Boost = boost; } }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleAutostopTime"); Int32.TryParse(Item.InnerText, out store.rumbleAutostopTime[device]); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleAutostopTime"); { Int32.TryParse(Item.InnerText, out int autostop); store.rumbleSlots[device].AutostopTime = autostop; } }
             catch { missingSetting = true; }
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ledAsBatteryIndicator"); Boolean.TryParse(Item.InnerText, out lightInfo.ledAsBattery); }

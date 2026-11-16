@@ -20,7 +20,7 @@ namespace DS4Windows.Output.Services
         public void SetDevRumble(IRumbleTarget device, byte heavyMotor, byte lightMotor, int deviceNum)
         {
             byte boost = _profileSettings.GetRumbleBoost(deviceNum);
-            Adjust(heavyMotor, lightMotor, boost, _profileSettings.InverseRumbleMotors[deviceNum], out byte right, out byte left);
+            Adjust(heavyMotor, lightMotor, boost, _profileSettings.RumbleSlot(deviceNum).InverseMotors, out byte right, out byte left);
             device.setRumble(right, left);
         }
 

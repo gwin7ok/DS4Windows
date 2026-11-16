@@ -95,3 +95,8 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - 配列のまま残っていた 6 項目（`enableTouchToggle`・`idleDisconnectTimeout`・`enableOutputDataToDS4`・`btPollRate`・`launchProgram`・`dinputOnly`）を `BasicSlotSettings`（`BackingStore.basicSlots`）へ移した。既定値はこの型のコンストラクターと `ResetForProfileLoad`（`ResetProfile` から呼ぶ）に 1 か所で持つ。`IProfileSettingsService` の 6 つの配列プロパティは `BasicSlot(int slot)` 1 つに替えた（`Get*` の単発の取得は、実行中の呼び出しのため残した）。`buttonMouseInfos` は、すでに項目ごとのオブジェクトなので対象外。`UseDInputOnlyArray`（実行中の状態）は別物で、そのまま。
 - 保存の XML は不変。状態ダンプのゴールデン 5 件は経路名だけが変わる（並べ替えて比べ、値が同一であることを確認して採用）。
 - 残る領域の候補: 振動（`rumble`・`rumbleAutostopTime`・`rumbleSettings`・`inverseRumbleMotors`）、出力の種類（`outputDevType`・`outputVirtualTriggerButtons`・`outputDS4TriggerMode`）ほか。
+
+### 2026-11-16（37-5 領域 3: 振動。ブランチ `Phase37-5-Rumble`）
+- 振動の `rumble`・`rumbleAutostopTime`・`inverseRumbleMotors` を `RumbleSlotSettings`（`BackingStore.rumbleSlots`。強さ・自動停止・モーターの入れ替え）へ移した。`IProfileSettingsService` の 2 つの配列プロパティは `RumbleSlot(int slot)` に替えた。
+- **発見した不具合と修正（ユーザーの承認済み。2026-11-16）**: 実行時に読む `GetRumbleBoost`／`GetRumbleAutostopTime` は、変更通知つきの並行コピー `BackingStore.rumbleSettings`（`RumbleSettings`）を先に読んでいたが、プロファイルの読み込みと画面は生配列 `rumble`／`rumbleAutostopTime` へ書いていた（並行コピーへは書く経路がなく、連動は並行コピー→生配列の一方向）。そのため、プロファイルの振動の強さ・自動停止の値は、保存・画面には出るが、実行時には効いていなかった（強さは常に 100、自動停止は 0。画面からの自動停止の変更だけは両方へ書くため効く）。持ち主を 1 つにしたことで、プロファイルの値が実行時に効くようになる（機能の欠落の修正）。誰も使わなくなった並行コピー `RumbleSettings` は削除した（2.4 の「使うべきでないもの」）。
+- 検証: 実行時の読み取りが書いた値に従うことを `RumbleSlotSettingsTests` で固定。保存の XML は不変。状態ダンプのゴールデン 6 件は、経路名の変更と、削除した並行コピーの行の消滅だけ（値は同一であることを並べ替えて確認して採用）。

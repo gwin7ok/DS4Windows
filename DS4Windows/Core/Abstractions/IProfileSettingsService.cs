@@ -69,8 +69,8 @@ namespace DS4Windows.Core.Abstractions
         // ---- Step10-2-A-4: ジャイロ関連 (m_Config委譲) ----
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
-        bool[] InverseRumbleMotors { get; }
-        byte[] RumbleBoost { get; }
+        /// <summary>スロットの振動の設定（強さ、自動停止、モーターの入れ替え）の持ち主。</summary>
+        RumbleSlotSettings RumbleSlot(int slot);
         /// <summary>スロットの DualSense 固有の設定（振動のエミュレーション方式、汎用の振動の再スケール、ハプティックの強さ）の持ち主。</summary>
         DualSenseSlotSettings DualSenseSlot(int slot);
         byte GetRumbleBoost(int deviceIndex);
