@@ -156,7 +156,7 @@
                               SelectedIndex="{Binding SXOutputCurveIndex}"
                               Margin="{StaticResource spaceMargin}">
                         <ComboBoxItem Content="{lex:Loc Linear}"/>
-                        <ComboBoxItem Content="{lex:Loc EnhancePrecision}"/>
+                        <ComboBoxItem Content="{lex:Loc EnhancedPrecision}"/>
                         <ComboBoxItem Content="{lex:Loc Quadratic}"/>
                         <ComboBoxItem Content="{lex:Loc Cubic}"/>
                         <ComboBoxItem Content="{lex:Loc EaseoutQuad}"/>
