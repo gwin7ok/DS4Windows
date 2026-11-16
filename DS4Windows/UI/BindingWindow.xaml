@@ -12,7 +12,7 @@
         xmlns:controls="clr-namespace:DS4Windows.UI.Controls"
         xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
         mc:Ignorable="d"
-        Title="Select action"
+        Title="{lex:Loc BindingWindow_SelectAction}"
         Height="540"
         Width="1020"
         Closing="Window_Closing"
@@ -342,7 +342,7 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="escBtn"
-                                            Content="Esc"
+                                            Content="{lex:Loc BindingWindow_Esc}"
                                             Grid.Column="0"/>
                                     <Button x:Name="f1Btn"
                                             Content="F1"
@@ -476,7 +476,7 @@
                                             Grid.Column="12"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="bsBtn"
-                                            Content="BkSpace"
+                                            Content="{lex:Loc BindingWindow_BkSpace}"
                                             Grid.Column="13"
                                             Style="{StaticResource midMargin}"/>
                                 </Grid>
@@ -511,7 +511,7 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="tabBtn"
-                                            Content="Tab"
+                                            Content="{lex:Loc BindingWindow_Tab}"
                                             Grid.Column="0"/>
                                     <Button x:Name="qKey"
                                             Content="Q"
@@ -597,7 +597,7 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="capsLBtn"
-                                            Content="Caps"
+                                            Content="{lex:Loc BindingWindow_Caps}"
                                             Grid.Column="0"/>
                                     <Button x:Name="aKeyBtn"
                                             Content="A"
@@ -644,7 +644,7 @@
                                             Grid.Column="11"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="enterBtn"
-                                            Content="Enter"
+                                            Content="{lex:Loc BindingWindow_Enter}"
                                             Grid.Column="12"
                                             Style="{StaticResource midMargin}"/>
                                 </Grid>
@@ -678,7 +678,7 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="lshiftBtn"
-                                            Content="LShift"
+                                            Content="{lex:Loc BindingWindow_LShift}"
                                             Grid.Column="0"/>
                                     <Button x:Name="zBtn"
                                             Content="Z"
@@ -721,7 +721,7 @@
                                             Grid.Column="10"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rshiftBtn"
-                                            Content="RShift"
+                                            Content="{lex:Loc BindingWindow_RShift}"
                                             Grid.Column="11"
                                             Style="{StaticResource midMargin}"/>
                                 </Grid>
@@ -750,30 +750,30 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="lctrlBtn"
-                                            Content="LCtrl"
+                                            Content="{lex:Loc BindingWindow_LCtrl}"
                                             Grid.Column="0"/>
                                     <Button x:Name="lWinBtn"
-                                            Content="LWin"
+                                            Content="{lex:Loc BindingWindow_LWin}"
                                             Grid.Column="1"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="laltBtn"
-                                            Content="LAlt"
+                                            Content="{lex:Loc BindingWindow_LAlt}"
                                             Grid.Column="2"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="spaceBtn"
-                                            Content="Space"
+                                            Content="{lex:Loc BindingWindow_Space}"
                                             Grid.Column="3"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="raltBtn"
-                                            Content="RAlt"
+                                            Content="{lex:Loc BindingWindow_RAlt}"
                                             Grid.Column="4"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rwinBtn"
-                                            Content="RWin"
+                                            Content="{lex:Loc BindingWindow_RWin}"
                                             Grid.Column="5"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rctrlBtn"
-                                            Content="RCtrl"
+                                            Content="{lex:Loc BindingWindow_RCtrl}"
                                             Grid.Column="6"
                                             Style="{StaticResource midMargin}"/>
                                 </Grid>
@@ -822,33 +822,33 @@
                                                 </Style>
                                             </UniformGrid.Resources>
                                             <Button x:Name="prtBtn"
-                                                    Content="Prt"
+                                                    Content="{lex:Loc BindingWindow_Prt}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="sclBtn"
-                                                    Content="Scl"
+                                                    Content="{lex:Loc BindingWindow_Scl}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="brkBtn"
-                                                    Content="Brk"
+                                                    Content="{lex:Loc BindingWindow_Brk}"
                                                     Style="{StaticResource btnMargin}"/>
 
                                             <Button x:Name="insBtn"
-                                                    Content="Ins"
+                                                    Content="{lex:Loc BindingWindow_Ins}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="homeBtn"
-                                                    Content="Home"
+                                                    Content="{lex:Loc BindingWindow_Home}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="pgupBtn"
-                                                    Content="PgUp"
+                                                    Content="{lex:Loc BindingWindow_PgUp}"
                                                     Style="{StaticResource btnMargin}"/>
 
                                             <Button x:Name="delBtn"
-                                                    Content="Del"
+                                                    Content="{lex:Loc BindingWindow_Del}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="endBtn"
-                                                    Content="End"
+                                                    Content="{lex:Loc BindingWindow_End}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="pgdwBtn"
-                                                    Content="PgDown"
+                                                    Content="{lex:Loc BindingWindow_PgDown}"
                                                     Style="{StaticResource btnMargin}"/>
                                         </UniformGrid>
 
@@ -930,12 +930,12 @@
                                                 FontFamily="Webdings"
                                                 Grid.Column="3"/>
                                         <Button x:Name="volupBtn"
-                                                Content="↑ Vol"
+                                                Content="{lex:Loc BindingWindow_Vol}"
                                                 Grid.Column="4"
                                                 FontSize="10"/>
 
                                         <Button x:Name="numlockBtn"
-                                                Content="NumLk"
+                                                Content="{lex:Loc BindingWindow_NumLk}"
                                                 Grid.Row="1"
                                                 Grid.Column="0"/>
                                         <Button x:Name="numdivideBtn"
@@ -951,7 +951,7 @@
                                                 Grid.Row="1"
                                                 Grid.Column="3"/>
                                         <Button x:Name="voldownBtn"
-                                                Content="↓ Vol"
+                                                Content="{lex:Loc BindingWindow_Vol2}"
                                                 Grid.Row="1"
                                                 Grid.Column="4"
                                                 FontSize="10"/>
@@ -974,7 +974,7 @@
                                                 Grid.Column="3"
                                                 Grid.RowSpan="2"/>
                                         <Button x:Name="volmuteBtn"
-                                                Content="Mute"
+                                                Content="{lex:Loc Ui_Mute}"
                                                 Grid.Row="2"
                                                 Grid.Column="4"
                                                 FontSize="10"/>
@@ -1009,7 +1009,7 @@
                                                 Grid.Column="3"
                                                 Grid.RowSpan="2">
                                             <Button.Content>
-                                                <TextBlock Text="Enter"
+                                                <TextBlock Text="{lex:Loc BindingWindow_Enter}"
                                                            TextWrapping="Wrap"/>
                                             </Button.Content>
                                         </Button>

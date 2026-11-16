@@ -1,8 +1,8 @@
-﻿<Window x:Class="DS4Windows.UI.ProfileNotificationWindow"
+﻿<Window xmlns:lex="http://wpflocalizeextension.codeplex.com" x:Class="DS4Windows.UI.ProfileNotificationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:DS4Windows"
-        Title="DS4Windows Profile Notification" 
+        Title="{lex:Loc ProfileNotificationWindow_DS4WindowsProfileNotification}" 
         Width="525" Height="120"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -10,7 +10,9 @@
         Topmost="True"
         ShowInTaskbar="False"
         ResizeMode="NoResize"
-        WindowStartupLocation="Manual">
+        WindowStartupLocation="Manual"
+        lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings">
     
     <Window.Resources>
         <Storyboard x:Key="FadeInStoryboard">
@@ -32,7 +34,7 @@
             
             <!-- タイトル -->
             <TextBlock Grid.Row="0" 
-                       Text="DS4Windows Profile Change"
+                       Text="{lex:Loc ProfileNotificationWindow_DS4WindowsProfileChange}"
                        FontSize="16" 
                        FontWeight="Bold"
                        Foreground="{DynamicResource Notification.Title}"

@@ -10,7 +10,9 @@
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="550"
-             d:DesignWidth="1000">
+             d:DesignWidth="1000"
+        lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings">
     <UserControl.Resources>
         <Thickness x:Key="spaceMargin"
                    Bottom="8"/>
@@ -69,7 +71,7 @@
                                                     Margin="8,0,0,0"/>
                             </StackPanel>
 
-                            <CheckBox Content="Jitter Compensation"
+                            <CheckBox Content="{lex:Loc Ui_JitterCompensation}"
                                       Grid.Row="0"
                                       Grid.Column="1"
                                       IsChecked="{Binding TouchJitter}"
@@ -93,7 +95,7 @@
                                                     Margin="8,0,0,0"/>
                             </StackPanel>
 
-                            <CheckBox Content="Double Tap"
+                            <CheckBox Content="{lex:Loc TouchpadSettingsPanel_DoubleTap}"
                                       Grid.Row="1"
                                       Grid.Column="1"
                                       IsChecked="{Binding TouchDoubleTap}"
@@ -117,21 +119,21 @@
                                                     Margin="8,0,0,0"/>
                             </StackPanel>
 
-                            <CheckBox Content="Lower Right as RMB"
+                            <CheckBox Content="{lex:Loc TouchpadSettingsPanel_LowerRightAsRMB}"
                                       Grid.Row="2"
                                       Grid.Column="1"
                                       IsChecked="{Binding LowerRightTouchRMB}"
                                       VerticalAlignment="Center"
                                       ToolTip="{lex:Loc Resources:BestUsedRightSide}"/>
 
-                            <CheckBox Content="Passthru Click Action (DS4 mode)"
+                            <CheckBox Content="{lex:Loc TouchpadSettingsPanel_PassthruClickActionDS4Mode}"
                                       Grid.Row="3"
                                       Grid.Column="0"
                                       IsChecked="{Binding TouchpadClickPassthru}"
                                       VerticalAlignment="Center"/>
                         </Grid>
 
-                        <CheckBox Content="Start with Slide/Scroll Off"
+                        <CheckBox Content="{lex:Loc TouchpadSettingsPanel_StartWithSlideScrollOff}"
                                   IsChecked="{Binding StartTouchpadOff}"
                                   VerticalAlignment="Center"
                                   ToolTip="{lex:Loc Resources:TouchpadOffTip}"
@@ -139,7 +141,7 @@
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Rotation"
+                            <Label Content="{lex:Loc Rotation}"
                                    ContentStringFormat="{}{0}:"/>
                             <xctk:DoubleUpDown d:IsHidden="True"
                                                Style="{StaticResource NumberInputLarge}"
@@ -151,14 +153,14 @@
                                                Value="{Binding TouchRelMouseRotation,FallbackValue='0'}"
                                                ToolTip="{lex:Loc TouchpadRotationTooltip}"
                                                Margin="8,0,0,0"/>
-                            <TextBlock Text="&#xb0;"
+                            <TextBlock Text="{lex:Loc Unit_Degree}"
                                        FontSize="18"
                                        Margin="{StaticResource spaceMargin}"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Min Threshold"
+                            <Label Content="{lex:Loc Ui_MinThreshold}"
                                    ContentStringFormat="{}{0}:"/>
                             <xctk:DoubleUpDown d:IsHidden="True"
                                                Style="{StaticResource NumberInputLarge}"
@@ -175,11 +177,11 @@
                         <StackPanel Orientation="Horizontal"
                                     Height="20"
                                     Margin="{StaticResource spaceMargin}">
-                            <CheckBox Content="Trackball"
+                            <CheckBox Content="{lex:Loc TouchpadSettingsPanel_Trackball}"
                                       IsChecked="{Binding TouchTrackball}"
                                       VerticalAlignment="Center"
                                       ToolTip="{lex:Loc TouchpadTrackballEnableTooltip}"/>
-                            <Label Content="Friction:"
+                            <Label Content="{lex:Loc TouchpadSettingsPanel_Friction}"
                                    Padding="0"
                                    Margin="20,0,5,0"
                                    VerticalAlignment="Center"/>
@@ -196,13 +198,13 @@
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Invert"
+                            <Label Content="{lex:Loc Ui_Invert}"
                                    Padding="0"
                                    HorizontalAlignment="Center"/>
                             <ComboBox MinWidth="160"
                                       SelectedIndex="{Binding TouchInvertIndex}"
                                       Margin="20,0,0,0">
-                                <ComboBoxItem Content="None"/>
+                                <ComboBoxItem Content="{lex:Loc None}"/>
                                 <ComboBoxItem Content="X"/>
                                 <ComboBoxItem Content="Y"/>
                                 <ComboBoxItem Content="X+Y"/>
@@ -211,7 +213,7 @@
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Disable Invert"
+                            <Label Content="{lex:Loc TouchpadSettingsPanel_DisableInvert}"
                                    Padding="0"
                                    HorizontalAlignment="Center"/>
                             <Button x:Name="touchDisInvertBtn"
@@ -222,16 +224,16 @@
                                     Margin="20,0,0,0">
                                 <Button.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Cross"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Cross}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Circle"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Circle}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Square"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Square}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Triangle"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Triangle}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
                                         <MenuItem Header="L1"
@@ -246,16 +248,16 @@
                                         <MenuItem Header="R2"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Up"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Up}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Down"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Down}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Left"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Left}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Right"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Right}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
                                         <MenuItem Header="L3"
@@ -264,45 +266,45 @@
                                         <MenuItem Header="R3"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Finger on Touchpad"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_FingerOnTouchpad}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="2 Fingers on Touchpad"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_2FingersOnTouchpad}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Options"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Options}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Share"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Share}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="PS"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_PS}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Touchpad Click"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_TouchpadClick}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Mute"
+                                        <MenuItem Header="{lex:Loc Ui_Mute}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Side L"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_SideL}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Side R"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_SideR}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
 
                                         <!-- START Extra buttons for DualSense Edge controller -->
-                                        <MenuItem Header="Function Left"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_FunctionLeft}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Function Right"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_FunctionRight}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Bottom Left Paddle"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_BottomLeftPaddle}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
-                                        <MenuItem Header="Bottom Right Paddle"
+                                        <MenuItem Header="{lex:Loc TouchpadSettingsPanel_BottomRightPaddle}"
                                                   IsCheckable="True"
                                                   Click="TouchDisInvertMenuItem_Click"/>
                                         <!-- END Extra buttons for DualSense Edge controller -->
@@ -324,7 +326,7 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="5,0,0,0">
                             <Button x:Name="swipeUpBtn"
-                                    Content="Swipe Up"
+                                    Content="{lex:Loc TouchpadSettingsPanel_SwipeUp}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeUp, Source={StaticResource controlIndexCheck}}"
                                     Click="SwipeControlsButton_Click"/>
@@ -335,7 +337,7 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="5,8,0,0">
                             <Button x:Name="swipeDownBtn"
-                                    Content="Swipe Down"
+                                    Content="{lex:Loc TouchpadSettingsPanel_SwipeDown}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeDown, Source={StaticResource controlIndexCheck}}"
                                     Click="SwipeControlsButton_Click"/>
@@ -346,7 +348,7 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="5,8,0,0">
                             <Button x:Name="swipeLeftBtn"
-                                    Content="Swipe Left"
+                                    Content="{lex:Loc TouchpadSettingsPanel_SwipeLeft}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeLeft, Source={StaticResource controlIndexCheck}}"
                                     Click="SwipeControlsButton_Click"/>
@@ -357,7 +359,7 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="5,8,0,10">
                             <Button x:Name="swipeRightBtn"
-                                    Content="Swipe Right"
+                                    Content="{lex:Loc TouchpadSettingsPanel_SwipeRight}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeRight, Source={StaticResource controlIndexCheck}}"
                                     Click="SwipeControlsButton_Click"/>
@@ -366,7 +368,7 @@
                                    Margin="10,0,0,0"/>
                         </StackPanel>
 
-                        <CheckBox Content="Passthru Click Action (DS4 mode)"
+                        <CheckBox Content="{lex:Loc TouchpadSettingsPanel_PassthruClickActionDS4Mode}"
                                   IsChecked="{Binding TouchpadClickPassthru}"
                                   VerticalAlignment="Center"
                                   Margin="5,8,0,10"/>
@@ -402,29 +404,29 @@
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Output Stick"/>
+                            <Label Content="{lex:Loc Ui_OutputStick}"/>
                             <ComboBox SelectedIndex="{Binding TouchMouseStickOutputStick}">
-                                <ComboBoxItem Content="None"/>
-                                <ComboBoxItem Content="Left Stick"/>
-                                <ComboBoxItem Content="Right Stick"/>
+                                <ComboBoxItem Content="{lex:Loc None}"/>
+                                <ComboBoxItem Content="{lex:Loc LeftStick}"/>
+                                <ComboBoxItem Content="{lex:Loc RightStick}"/>
                             </ComboBox>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Output Axes"/>
+                            <Label Content="{lex:Loc Ui_OutputAxes}"/>
                             <ComboBox SelectedIndex="{Binding TouchMouseStickOutputAxes}">
-                                <ComboBoxItem Content="None"/>
-                                <ComboBoxItem Content="Horizontal and Vertical"/>
-                                <ComboBoxItem Content="Horizontal Only"/>
-                                <ComboBoxItem Content="Vertical Only"/>
+                                <ComboBoxItem Content="{lex:Loc None}"/>
+                                <ComboBoxItem Content="{lex:Loc Ui_HorizontalAndVertical}"/>
+                                <ComboBoxItem Content="{lex:Loc Ui_HorizontalOnly}"/>
+                                <ComboBoxItem Content="{lex:Loc Ui_VerticalOnly}"/>
                             </ComboBox>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
                                     Height="30"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Minimum X"/>
+                            <Label Content="{lex:Loc Ui_MinimumX}"/>
                             <xctk:DoubleUpDown d:IsHidden="True"
                                                Margin="8,0,0,0"
                                                Value="{Binding TouchMouseStickAntiDeadX}"
@@ -435,7 +437,7 @@
                                                Increment="10.0"/>
                             <Label Content="%"/>
 
-                            <Label Content="Minimum Y"
+                            <Label Content="{lex:Loc Ui_MinimumY}"
                                    Margin="8,0,0,0"/>
                             <xctk:DoubleUpDown d:IsHidden="True"
                                                Margin="8,0,0,0"
@@ -464,11 +466,11 @@
                         <StackPanel Orientation="Horizontal"
                                     Height="20"
                                     Margin="{StaticResource spaceMargin}">
-                            <CheckBox Content="Trackball"
+                            <CheckBox Content="{lex:Loc TouchpadSettingsPanel_Trackball}"
                                       IsChecked="{Binding TouchMouseStickTrackball}"
                                       VerticalAlignment="Center"
                                       ToolTip="{lex:Loc TouchpadTrackballEnableTooltip}"/>
-                            <Label Content="Friction:"
+                            <Label Content="{lex:Loc TouchpadSettingsPanel_Friction}"
                                    Padding="0"
                                    Margin="20,0,5,0"
                                    VerticalAlignment="Center"/>
@@ -514,7 +516,7 @@
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <Label Content="Rotation"
+                            <Label Content="{lex:Loc Rotation}"
                                    ContentStringFormat="{}{0}:"/>
                             <xctk:DoubleUpDown d:IsHidden="True"
                                                Style="{StaticResource NumberInputLarge}"
@@ -526,24 +528,24 @@
                                                Value="{Binding TouchMouseStickRotation,FallbackValue='0'}"
                                                ToolTip="{lex:Loc TouchpadRotationTooltip}"
                                                Margin="8,0,0,0"/>
-                            <TextBlock Text="&#xb0;"
+                            <TextBlock Text="{lex:Loc Unit_Degree}"
                                        FontSize="18"
                                        Margin="{StaticResource spaceMargin}"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
                                     Margin="{StaticResource spaceMargin}">
-                            <CheckBox Content="Invert X"
+                            <CheckBox Content="{lex:Loc Ui_InvertX}"
                                       IsChecked="{Binding TouchMouseStickInvertX}"/>
-                            <CheckBox Content="Invert Y"
+                            <CheckBox Content="{lex:Loc Ui_InvertY}"
                                       Margin="10,0,0,0"
                                       IsChecked="{Binding TouchMouseStickInvertY}"/>
                         </StackPanel>
 
-                        <CheckBox Content="Smoothing"
+                        <CheckBox Content="{lex:Loc Ui_Smoothing}"
                                   IsChecked="{Binding TouchMouseStickSmooth}"
                                   Margin="{StaticResource spaceMargin}"/>
-                        <GroupBox Header="Smoothing Options"
+                        <GroupBox Header="{lex:Loc Ui_SmoothingOptions}"
                                   IsEnabled="{Binding TouchMouseStickSmooth, FallbackValue='False'}"
                                   Margin="{StaticResource spaceMargin}"
                                   Padding="2">
@@ -552,7 +554,7 @@
                                             Orientation="Horizontal"
                                             Margin="{StaticResource spaceMargin}">
                                     <StackPanel Orientation="Horizontal">
-                                        <Label Content="1&#x20ac; MinCutoff"/>
+                                        <Label Content="{lex:Loc MainWin.OneEuroMinCutoff}"/>
                                         <xctk:DoubleUpDown d:IsHidden="True"
                                                            FormatString="F5"
                                                            Value="{Binding TouchMouseStickOneEuroMinCutoff,FallbackValue='1.0',UpdateSourceTrigger=LostFocus}"
@@ -563,7 +565,7 @@
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal"
                                                 Margin="30,0,0,0">
-                                        <Label Content="1&#x20ac; Beta"/>
+                                        <Label Content="{lex:Loc MainWin.OneEuroBeta}"/>
                                         <xctk:DoubleUpDown d:IsHidden="True"
                                                            FormatString="F5"
                                                            Value="{Binding TouchMouseStickOneEuroBeta,FallbackValue='0.0',UpdateSourceTrigger=LostFocus}"

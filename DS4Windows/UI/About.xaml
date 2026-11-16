@@ -7,31 +7,17 @@
         xmlns:lex="http://wpflocalizeextension.codeplex.com"
         mc:Ignorable="d"
         Title="{lex:LocExtension HotkeysAbout}" Height="450" Width="800"
-        Style="{DynamicResource WindowStyle}">
+        Style="{DynamicResource WindowStyle}"
+        lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings">
     <DockPanel>
-        <Label x:Name="headerLb" Content="DS4Windows - gwin7ok Build (Version " DockPanel.Dock="Top" HorizontalAlignment="Center" />
+        <Label x:Name="headerLb" Content="{lex:Loc About_DS4WindowsGwin7okBuildVersion}" DockPanel.Dock="Top" HorizontalAlignment="Center" />
 
         <TabControl>
-            <TabItem Header="Hotkeys">
-                <TextBlock TextWrapping="Wrap" xml:space="preserve">Hide DS4 Controller: Hides the DS4's regular input (Dinput) from other programs, check if you are getting double input in games or R2 pauses games
-Click left side of touchpad: Left Touch
-Click right side of touchpad: Right Touch
-Click touchpad with 2 fingers: Multitouch
-Click upper part of touchpad: Upper Touch
-PS + Options or hold PS for 10 secs: Disconnect Controller (Only on Bluetooth)
-Touch Touchpad + PS: Turn off touchpad movement (clicking still works)
-Pad click on lower right: Right click (Best used when right side is used as a mouse button)
-Two fingers up/down on touchpad*: Scroll Up/Down
-Tap then hold touchpad*: Left mouse drag
-2 finger touchpad swipe left or right: Cycle through profiles
-Shift Modifer: Hold an action to use another set of controls
-When mapping keyboard and mouse:
-Toggle: The key will remain in a "held down" state until pressed again
-Macro: Assign multiple keys to one input
-Scan Code: Keys are interpreted differently. May be needed for certain games
-*If enabled</TextBlock>
+            <TabItem Header="{lex:Loc About_Hotkeys}">
+                <TextBlock TextWrapping="Wrap" xml:space="preserve"><Run Text="{lex:Loc About_HideDS4ControllerHidesTheDS4}"/></TextBlock>
             </TabItem>
-            <TabItem Header="License">
+            <TabItem Header="{lex:Loc About_License}">
                 <TextBox TextWrapping="Wrap" xml:space="preserve" IsReadOnly="True" VerticalScrollBarVisibility="Visible">GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
@@ -708,25 +694,25 @@ Public License instead of this License.  But first, please read
 &lt;https://www.gnu.org/licenses/why-not-lgpl.html&gt;.
                 </TextBox>
             </TabItem>
-            <TabItem Header="Credits">
+            <TabItem Header="{lex:Loc About_Credits}">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Margin="10,0">
                         <StackPanel Orientation="Horizontal">
-                            <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Site</Hyperlink></TextBlock> -->
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Source</Hyperlink></TextBlock>
+                            <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Site}"/></Hyperlink></TextBlock> -->
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Source}"/></Hyperlink></TextBlock>
                             <TextBlock Margin="20,0,0,0"><Hyperlink Click="gwin7okLink_Click" Foreground="{DynamicResource LinkAccentBrush}">gwin7ok</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock><Hyperlink x:Name="jays2KingsLink" Click="Jays2KingsLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Jays2Kings</Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource LinkAccentBrush}">InhexSTER (Starter of DS4Tool)</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_InhexSTERStarterOfDS4Tool}"/></Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource LinkAccentBrush}">electrobrains (Branched off of)</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_ElectrobrainsBranchedOffOf}"/></Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource LinkAccentBrush}">Contributors</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Contributors}"/></Hyperlink></TextBlock>
                         </StackPanel>
-                        <Label Content="Translators:" Margin="0,20,0,0" />
+                        <Label Content="{lex:Loc About_Translators}" Margin="0,20,0,0" />
                     </StackPanel>
                     <TextBox TextWrapping="Wrap" xml:space="preserve" IsReadOnly="True"
                              DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto" Margin="10,0,10,10">xLive - Arabic
@@ -747,25 +733,21 @@ dondrakon - Ukranian
                     </TextBox>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="Extras">
+            <TabItem Header="{lex:Loc About_Extras}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="4">
                         <Border BorderThickness="1" CornerRadius="10" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
-                                <TextBlock Text="ViGEmBus" FontSize="18" FontWeight="Bold" />
+                                <TextBlock Text="{lex:Loc About_ViGEmBus}" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Project URL:" />
+                                    <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
                                     <Hyperlink x:Name="viGEmBusLink" Click="ViGEmBusLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
-                                <Expander Header="Description" Margin="0,8,0,0">
+                                <Expander Header="{lex:Loc Description}" Margin="0,8,0,0">
                                     <Expander.Content>
-                                        <TextBlock TextWrapping="Wrap">
-                                            <TextBlock.Text>
-                                                Driver that provides virtual gamepad support system-wide. Used by many controller mapping applications. Written by nefarius
-                                            </TextBlock.Text>
-                                        </TextBlock>
+                                        <TextBlock TextWrapping="Wrap" Text="{lex:Loc About_DriverThatProvidesVirtualGamepadSupport}"/>
                                     </Expander.Content>
                                 </Expander>
                             </StackPanel>
@@ -773,21 +755,16 @@ dondrakon - Ukranian
 
                         <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
-                                <TextBlock Text="HidHide" FontSize="18" FontWeight="Bold" />
+                                <TextBlock Text="{lex:Loc HidHide}" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Project URL:" />
+                                    <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
                                     <Hyperlink x:Name="hidHideLink" Click="HidHideLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/HidHide/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
-                                <Expander Header="Description" Margin="0,8,0,0">
+                                <Expander Header="{lex:Loc Description}" Margin="0,8,0,0">
                                     <Expander.Content>
-                                        <TextBlock TextWrapping="Wrap">
-                                            <TextBlock.Text>
-                                                Use HidHide to configure and hide any input controllers from other apps running on your system.
-                                                Some games require only one controller to be present or double input will cause problems in game. Written by nefarius.
-                                            </TextBlock.Text>
-                                        </TextBlock>
+                                        <TextBlock TextWrapping="Wrap" Text="{lex:Loc About_UseHidHideToConfigureAndHide}"/>
                                     </Expander.Content>
                                 </Expander>
                             </StackPanel>
@@ -795,24 +772,16 @@ dondrakon - Ukranian
 
                         <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
-                                <TextBlock Text="FakerInput" FontSize="18" FontWeight="Bold" />
+                                <TextBlock Text="{lex:Loc About_FakerInput}" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Project URL:" />
+                                    <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
                                     <Hyperlink x:Name="fakerInputLink" Click="FakerInputLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
-                                <Expander Header="Description" Margin="0,8,0,0">
+                                <Expander Header="{lex:Loc Description}" Margin="0,8,0,0">
                                     <Expander.Content>
-                                        <TextBlock TextWrapping="Wrap">
-                                            <TextBlock.Text>
-                                                Use FakerInput driver to expose system-wide virtual keyboard, relative mouse, and absolute mouse.
-                                                Allows virtual KB+M events to be usable in some situations when SendInput fails.
-                                                Such situations are elevated process and games, UAC prompts, and anti-cheat systems that block SendInput events.
-                                                Use of FakerInput is necessary to allow DS4Windows to work with some games with anti-cheat protection
-                                                like Valorant.
-                                            </TextBlock.Text>
-                                        </TextBlock>
+                                        <TextBlock TextWrapping="Wrap" Text="{lex:Loc Welcome.Step5HelpText}"/>
                                     </Expander.Content>
                                 </Expander>
                             </StackPanel>
@@ -820,9 +789,9 @@ dondrakon - Ukranian
 
                         <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
-                                <TextBlock Text="CRC32" FontSize="18" FontWeight="Bold" />
+                                <TextBlock Text="{lex:Loc About_CRC32}" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Project URL:" />
+                                    <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
                                     <Hyperlink x:Name="crc32Link" Click="Crc32Link_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/dariogriffo/Crc32</Hyperlink>
                                     </TextBlock>
@@ -832,9 +801,9 @@ dondrakon - Ukranian
 
                         <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
-                                <TextBlock Text="1&#x20ac; Filter" FontSize="18" FontWeight="Bold" />
+                                <TextBlock Text="{lex:Loc Ui_1Filter}" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Project URL:" />
+                                    <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
                                     <Hyperlink x:Name="oneEuroLink" Click="OneEuroLink_Click" Foreground="{DynamicResource LinkAccentBrush}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
                                     </TextBlock>
@@ -844,9 +813,9 @@ dondrakon - Ukranian
 
                         <Border BorderThickness="1" CornerRadius="10" Margin="0,8,0,0" BorderBrush="{DynamicResource BorderBrush}">
                             <StackPanel Margin="8">
-                                <TextBlock Text="H.NotifyIcon" FontSize="18" FontWeight="Bold" />
+                                <TextBlock Text="{lex:Loc About_HNotifyIcon}" FontSize="18" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Project URL:" />
+                                    <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
                                     <Hyperlink x:Name="hNotifyIconLink" Click="HNotifyIconLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
                                     </TextBlock>

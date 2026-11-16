@@ -7,7 +7,9 @@
              xmlns:lex="http://wpflocalizeextension.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="450"
-             d:DesignWidth="800">
+             d:DesignWidth="800"
+        lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
+        lex:ResxLocalizationProvider.DefaultDictionary="Strings">
     <UserControl.Resources>
         <Thickness x:Key="spaceMargin"
                    Bottom="8"/>
@@ -28,8 +30,8 @@
                                   IsEnabled="{Binding DInputOnly, Converter={StaticResource InverseBoolConverter}}"
                                   MinWidth="140"
                                   ToolTip="{lex:Loc OutContNotice}">
-                            <ComboBoxItem Content="Xbox 360"/>
-                            <ComboBoxItem Content="DualShock 4"/>
+                            <ComboBoxItem Content="{lex:Loc OutputSettingsPanel_Xbox360}"/>
+                            <ComboBoxItem Content="{lex:Loc OutputSettingsPanel_DualShock4}"/>
                         </ComboBox>
                     </StackPanel>
                     <CheckBox Content="{lex:Loc DisableVirtualController}"

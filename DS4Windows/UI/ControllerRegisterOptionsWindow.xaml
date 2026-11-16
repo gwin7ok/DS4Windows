@@ -29,9 +29,7 @@
                           Visibility="{Binding Path=UseMoonlight, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="20 0 0 0"/>
                 <TextBlock>
                     <Hyperlink x:Name="moonlightDocLink"
-                               RequestNavigate="Hyperlink_RequestNavigate">
-                        About virtual controller support
-                    </Hyperlink>
+                               RequestNavigate="Hyperlink_RequestNavigate"><Run Text="{lex:Loc ControllerRegisterOptionsWindow_AboutVirtualControllerSupport}"/></Hyperlink>
                 </TextBlock>
             </StackPanel>
 
