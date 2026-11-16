@@ -85,9 +85,8 @@ namespace DS4Windows.UI
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly AutoProfileRunner _autoProfileService;
-        private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService;
-        private readonly DS4Windows.Core.Abstractions.IPathService pathService;
-        private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
+        private readonly MainWindowSettings appSettingsService;
+        private readonly MainWindowEnvironment environment;
         // トレイ・通知・テーマの切り替えと、プロファイルの選択・編集後の同期は、それぞれの部品が受け持つ
         private readonly TrayAppearanceController trayAppearance;
         private readonly ProfileSelectionCoordinator profileSelection;
@@ -95,8 +94,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly IpcCommandDispatcher ipcDispatcher;   // CLI のコマンドの実行
         private MainWindowIpcHost ipcHost;   // コマンドが画面に頼む操作（一覧の ViewModel ができてから作る）
-        private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
-        private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
+        private readonly MainWindowServiceControl serviceControl;   // サービスの開始・停止と、OSC／UDP／HidHide／TouchpadSlide の窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -114,11 +112,9 @@ namespace DS4Windows.UI
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
 
         public MainWindow(ArgumentParser parser,
-            DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
-            DS4Windows.Core.Abstractions.IPathService pathService,
-            DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle,
-            DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures,
+            MainWindowSettings appSettingsService,
+            MainWindowEnvironment environment,
+            MainWindowServiceControl serviceControl,
             IpcCommandDispatcher ipcDispatcher,
             MainWindowsViewModel mainWindowsViewModel,
             AutoProfileRunner autoProfileService,
@@ -141,11 +137,9 @@ namespace DS4Windows.UI
             // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            profileListHolder = new ProfileList(pathService);
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
-            this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
+            this.environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            profileListHolder = environment.CreateProfileList();
+            this.serviceControl = serviceControl ?? throw new ArgumentNullException(nameof(serviceControl));
             this.ipcDispatcher = ipcDispatcher ?? throw new ArgumentNullException(nameof(ipcDispatcher));
 
             // Initialize log settings ComboBox
@@ -191,7 +185,7 @@ namespace DS4Windows.UI
             notifyIcon.DataContext = trayIconVM;
             trayIconVM.MenuChanged += TrayIconVM_MenuChanged;
             TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems);
-            notifyIcon.CustomName = pathService.ExecutablePath;
+            notifyIcon.CustomName = environment.ExecutablePath;
 
             // Remove TaskbarIcon from visual tree so Loaded and Unloaded events
             // are not fired for TaskbarIcon instance. Ignores early Dispose calls
@@ -216,61 +210,37 @@ namespace DS4Windows.UI
 
             startMinimized = appSettingsService.StartMinimized || parser.Mini;
 
-            bool isElevated = environmentService.IsAdministrator();
+            bool isElevated = environment.IsAdministrator();
             if (isElevated)
             {
                 uacImg.Visibility = Visibility.Collapsed;
             }
 
             noContLb.Content = string.Format(Strings.NoControllersConnected,
-                environmentService.ControllerSlotLimit);
+                environment.ControllerSlotLimit);
 
             // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
             // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
-            string autoProfilesFile = pathService.AppDataPath + "\\Auto Profiles.xml";
+            string autoProfilesFile = environment.AppDataPath + "\\Auto Profiles.xml";
             _autoProfileService.EnsureFile(autoProfilesFile);
 
-            string steamGamesDir;
-            if (appSettingsService.UseCustomSteamFolder && Directory.Exists(appSettingsService.CustomSteamFolder))
-                steamGamesDir = appSettingsService.CustomSteamFolder;
-            else if (Directory.Exists(AutoProfiles.steamCommx86Loc))
-                steamGamesDir = AutoProfiles.steamCommx86Loc;
-            else if (Directory.Exists(AutoProfiles.steamCommLoc))
-                steamGamesDir = AutoProfiles.steamCommLoc;
-            else
-                steamGamesDir = null;
+            string steamGamesDir = appSettingsService.CustomSteamFolderIfValid
+                ?? (Directory.Exists(AutoProfiles.steamCommx86Loc) ? AutoProfiles.steamCommx86Loc
+                    : Directory.Exists(AutoProfiles.steamCommLoc) ? AutoProfiles.steamCommLoc : null);
 
-            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, environmentService.ControllerSlotLimit,
+            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, environment.ControllerSlotLimit,
                 _autoProfileService.Holder, viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)),
-                () => (appSettingsService.AutoProfileNameColWidth, appSettingsService.AutoProfilePathColWidth, appSettingsService.AutoProfileTitleColWidth),
-                (name, path, title) =>
-                {
-                    appSettingsService.AutoProfileNameColWidth = name;
-                    appSettingsService.AutoProfilePathColWidth = path;
-                    appSettingsService.AutoProfileTitleColWidth = title;
-                });
+                () => appSettingsService.AutoProfileColumnWidths,
+                (name, path, title) => appSettingsService.AutoProfileColumnWidths = (name, path, title));
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
             slotManControl.SetupDataContext(viewModelFactory.CreateCurrentOutDeviceViewModel());
-            slotManControl.SetColumnWidths(new[]
-            {
-                appSettingsService.OutputSlotNumColWidth, appSettingsService.OutputSlotInputNumColWidth,
-                appSettingsService.OutputSlotInputIdColWidth, appSettingsService.OutputSlotCurrentTypeColWidth,
-                appSettingsService.OutputSlotReservationColWidth
-            });
-            slotManControl.ColumnWidthsChanged += (s, e) =>
-            {
-                int[] w = slotManControl.GetColumnWidths();
-                appSettingsService.OutputSlotNumColWidth = w[0];
-                appSettingsService.OutputSlotInputNumColWidth = w[1];
-                appSettingsService.OutputSlotInputIdColWidth = w[2];
-                appSettingsService.OutputSlotCurrentTypeColWidth = w[3];
-                appSettingsService.OutputSlotReservationColWidth = w[4];
-            };
+            slotManControl.SetColumnWidths(appSettingsService.OutputSlotColumnWidths);
+            slotManControl.ColumnWidthsChanged += (s, e) => appSettingsService.OutputSlotColumnWidths = slotManControl.GetColumnWidths();
 
             SetupEvents();
 
@@ -300,7 +270,7 @@ namespace DS4Windows.UI
                         StartStopBtn.IsEnabled = false;
                     }));
                     Thread.Sleep(1000);
-                    lifecycle.Start();
+                    serviceControl.Start();
                     //root.rootHubtest.Start();
                 }
             });
@@ -346,7 +316,7 @@ namespace DS4Windows.UI
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version, environmentService.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
+                var updaterWin = new UpdaterWindow(version, environment.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -354,9 +324,9 @@ namespace DS4Windows.UI
 
         private void Check_Version(bool showstatus = false)
         {
-            string version = environmentService.ApplicationVersion;
+            string version = environment.ApplicationVersion;
             string newversion = string.Empty;
-            string versionFilePath = Path.Combine(pathService.AppDataPath, "version.txt");
+            string versionFilePath = Path.Combine(environment.AppDataPath, "version.txt");
             ulong lastVersionNum = appSettingsService.LastVersionCheckedNum;
             //ulong lastVersion = Global.CompileVersionNumberFromString("2.1.1");
 
@@ -418,9 +388,9 @@ namespace DS4Windows.UI
         private void SetupEvents()
         {
             WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += OnLocalizationCultureChanged;
-            lifecycle.ServiceStarted += ControlServiceStarted;
-            lifecycle.RunningChanged += ControlServiceChanged;
-            lifecycle.PreServiceStop += PrepareForServiceStop;
+            serviceControl.ServiceStarted += ControlServiceStarted;
+            serviceControl.RunningChanged += ControlServiceChanged;
+            serviceControl.PreServiceStop += PrepareForServiceStop;
             //root.rootHubtest.RunningChanged += ControlServiceChanged;
             conLvViewModel.ControllerCol.CollectionChanged += ControllerCol_CollectionChanged;
             trayAppearance.SubscribeNotifications();
@@ -559,7 +529,7 @@ namespace DS4Windows.UI
                 // Wakeup from Suspend
                 case POWER_RESUME:
                     {
-                        lifecycle.Suspending = false;
+                        serviceControl.Suspending = false;
 
                         if (wasrunning)
                         {
@@ -578,7 +548,7 @@ namespace DS4Windows.UI
                             //Task startupTask = Task.Run(() =>
                             Task startupTask = Task.Delay(5000).ContinueWith(t =>
                             {
-                                lifecycle.Start();
+                                serviceControl.Start();
                             });
 
                             // Log exceptions that might occur
@@ -590,16 +560,16 @@ namespace DS4Windows.UI
                 // Entering Suspend
                 case POWER_SUSPEND:
                     {
-                        lifecycle.Suspending = true;
+                        serviceControl.Suspending = true;
 
-                        if (lifecycle.Running)
+                        if (serviceControl.Running)
                         {
                             //Dispatcher.Invoke(() =>
                             //{
                             //    StartStopBtn.IsEnabled = false;
                             //});
 
-                            lifecycle.Stop(immediateUnplug: true);
+                            serviceControl.Stop(immediateUnplug: true);
                             wasrunning = true;
 
                             Thread.Sleep(1000);
@@ -648,7 +618,7 @@ namespace DS4Windows.UI
             // 一覧はホットプラグで別のスレッドから変わるため、読み取りロックの下で複製した行を列挙する
             foreach (CompositeDeviceModel item in conLvViewModel.SnapshotRows())
             {
-                string slide = runtimeFeatures.TouchpadSlide(item.DevIndex);
+                string slide = serviceControl.TouchpadSlide(item.DevIndex);
                 // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
                 if (slide == "left" || slide == "right")
                 {
@@ -764,14 +734,14 @@ namespace DS4Windows.UI
                 {
                     foreach (CompositeDeviceModel item in newitems)
                     {
-                        item.Device.SyncChange += DS4Device_SyncChange;
+                        item.SubscribeSyncChange(DS4Device_SyncChange);
                         item.RequestColorPicker += Item_RequestColorPicker;
                         //item.LightContext.Items.Add(new MenuItem() { Header = "Use Profile Color", IsChecked = !item.UseCustomColor });
                         //item.LightContext.Items.Add(new MenuItem() { Header = "Use Custom Color", IsChecked = item.UseCustomColor });
                     }
                 }
 
-                if (lifecycle.Running)
+                if (serviceControl.Running)
                     trayIconVM.PopulateContextMenu();
             }));
         }
@@ -802,7 +772,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void UpdateStartStopText()
         {
-            StartStopBtn.Content = lifecycle.Running ? Translations.Strings.StopText : Translations.Strings.StartText;
+            StartStopBtn.Content = serviceControl.Running ? Translations.Strings.StopText : Translations.Strings.StartText;
         }
 
         private void OnLocalizationCultureChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -817,13 +787,13 @@ namespace DS4Windows.UI
             {
                 UpdateStartStopText();
                 StartStopBtn.IsEnabled = true;
-                slotManControl.IsEnabled = lifecycle.Running;
+                slotManControl.IsEnabled = serviceControl.Running;
             }));
         }
 
         private void AboutBtn_Click(object sender, RoutedEventArgs e)
         {
-            About aboutWin = new About(environmentService.ApplicationVersion);
+            About aboutWin = new About(environment.ApplicationVersion);
             aboutWin.Owner = this;
             aboutWin.ShowDialog();
         }
@@ -839,10 +809,10 @@ namespace DS4Windows.UI
             //Tester service = root.rootHubtest;
             Task serviceTask = Task.Run(() =>
             {
-                if (lifecycle.Running)
-                    lifecycle.Stop(immediateUnplug: true);
+                if (serviceControl.Running)
+                    serviceControl.Stop(immediateUnplug: true);
                 else
-                    lifecycle.Start();
+                    serviceControl.Start();
             });
 
             // Log exceptions that might occur
@@ -912,7 +882,7 @@ namespace DS4Windows.UI
             dialog.Filter = "Text Documents (*.txt)|*.txt";
             dialog.Title = "Select Export File";
             // TODO: Expose config dir
-            dialog.InitialDirectory = pathService.AppDataPath;
+            dialog.InitialDirectory = environment.AppDataPath;
             if (dialog.ShowDialog() == true)
             {
                 LogWriter logWriter = new LogWriter(dialog.FileName, logvm.LogItems.ToList());
@@ -1169,11 +1139,11 @@ namespace DS4Windows.UI
                 hotplugCounter = 0;
             }
 
-            runtimeFeatures.UpdateHidHiddenAttributes();
+            serviceControl.UpdateHidHiddenAttributes();
             while (loopHotplug == true)
             {
                 Thread.Sleep(HOTPLUG_CHECK_DELAY);
-                lifecycle.HotPlug();
+                serviceControl.HotPlug();
 
                 lock (hotplugCounterLock)
                 {
@@ -1187,7 +1157,7 @@ namespace DS4Windows.UI
 
         private void HookWindowMessages(HwndSource source)
         {
-            bool result = Util.RegisterNotify(source.Handle, environmentService.HidClassGuid, ref regHandle);
+            bool result = Util.RegisterNotify(source.Handle, environment.HidClassGuid, ref regHandle);
             if (!result)
             {
                 Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
@@ -1196,7 +1166,7 @@ namespace DS4Windows.UI
             // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
             try
             {
-                Util.RegisterNotify(source.Handle, environmentService.XusbClassGuid, ref regHandleXusb);
+                Util.RegisterNotify(source.Handle, environment.XusbClassGuid, ref regHandleXusb);
             }
             catch (Exception)
             {
@@ -1237,8 +1207,8 @@ namespace DS4Windows.UI
             hideDS4ContCk.IsEnabled = false;
             Task serviceTask = Task.Run(() =>
             {
-                lifecycle.Stop();
-                lifecycle.Start();
+                serviceControl.Stop();
+                serviceControl.Start();
             });
 
             // Log exceptions that might occur
@@ -1256,8 +1226,8 @@ namespace DS4Windows.UI
             hideXboxContCk.IsEnabled = false;
             Task serviceTask = Task.Run(() =>
             {
-                lifecycle.Stop();
-                lifecycle.Start();
+                serviceControl.Stop();
+                serviceControl.Start();
             });
 
             Util.LogAssistBackgroundTask(serviceTask);
@@ -1270,13 +1240,13 @@ namespace DS4Windows.UI
         private void UseOscServerCk_Click(object sender, RoutedEventArgs e)
         {
             bool status = useOscServerCk.IsChecked == true;
-            runtimeFeatures.ChangeOscListenerStatus(status);
+            serviceControl.ChangeOscListenerStatus(status);
         }
 
         private void UseOscSenderCk_Click(object sender, RoutedEventArgs e)
         {
             bool status = useOscSenderCk.IsChecked == true;
-            runtimeFeatures.ChangeOscSenderStatus(status);
+            serviceControl.ChangeOscSenderStatus(status);
         }
 
         private async void UseUdpServerCk_Click(object sender, RoutedEventArgs e)
@@ -1284,25 +1254,25 @@ namespace DS4Windows.UI
             bool status = useUdpServerCk.IsChecked == true;
             if (!status)
             {
-                runtimeFeatures.ChangeMotionEventStatus(status);
+                serviceControl.ChangeMotionEventStatus(status);
                 await Task.Delay(200).ContinueWith((t) =>
                 {
-                    runtimeFeatures.ChangeUdpStatus(status);
+                    serviceControl.ChangeUdpStatus(status);
                 });
             }
             else
             {
-                runtimeFeatures.ChangeUdpStatus(status);
+                serviceControl.ChangeUdpStatus(status);
                 await Task.Delay(200).ContinueWith((t) =>
                 {
-                    runtimeFeatures.ChangeMotionEventStatus(status);
+                    serviceControl.ChangeMotionEventStatus(status);
                 });
             }
         }
 
         private void ProfFolderBtn_Click(object sender, RoutedEventArgs e)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(pathService.AppDataPath + "\\Profiles");
+            ProcessStartInfo startInfo = new ProcessStartInfo(environment.AppDataPath + "\\Profiles");
             startInfo.UseShellExecute = true;
             try
             {
@@ -1323,13 +1293,13 @@ namespace DS4Windows.UI
             StartStopBtn.IsEnabled = false;
             await Task.Run(() =>
             {
-                if (lifecycle.Running)
-                    lifecycle.Stop();
+                if (serviceControl.Running)
+                    serviceControl.Stop();
             });
 
             StartStopBtn.IsEnabled = true;
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = pathService.ExecutablePath;
+            startInfo.FileName = environment.ExecutablePath;
             startInfo.Arguments = "-driverinstall";
             startInfo.Verb = "runas";
             startInfo.UseShellExecute = true;
@@ -1338,8 +1308,8 @@ namespace DS4Windows.UI
                 using (Process temp = Process.Start(startInfo))
                 {
                     temp.WaitForExit();
-                    environmentService.RefreshHidHideInfo();
-                    environmentService.RefreshFakerInputInfo();
+                    environment.RefreshHidHideInfo();
+                    environment.RefreshFakerInputInfo();
 
                     settingsWrapVM.DriverCheckRefresh();
                 }
@@ -1629,8 +1599,7 @@ namespace DS4Windows.UI
             var gridView = logListView.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 2)
             {
-                appSettingsService.LogTimeColWidth = (int)gridView.Columns[0].Width;
-                appSettingsService.LogDataColWidth = (int)gridView.Columns[1].Width;
+                appSettingsService.LogColumnWidths = new[] { (int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width };
             }
         }
 
@@ -1639,8 +1608,9 @@ namespace DS4Windows.UI
             var gridView = logListView.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 2)
             {
-                gridView.Columns[0].Width = appSettingsService.LogTimeColWidth;
-                gridView.Columns[1].Width = appSettingsService.LogDataColWidth;
+                int[] widths = appSettingsService.LogColumnWidths;
+                gridView.Columns[0].Width = widths[0];
+                gridView.Columns[1].Width = widths[1];
             }
         }
 
@@ -1649,16 +1619,9 @@ namespace DS4Windows.UI
             var gridView = controllerLV.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 10)
             {
-                appSettingsService.ControllerIndexColWidth = (int)gridView.Columns[0].Width;
-                appSettingsService.ControllerIdColWidth = (int)gridView.Columns[1].Width;
-                appSettingsService.ControllerStatusColWidth = (int)gridView.Columns[2].Width;
-                appSettingsService.ControllerExclusiveColWidth = (int)gridView.Columns[3].Width;
-                appSettingsService.ControllerBatteryColWidth = (int)gridView.Columns[4].Width;
-                appSettingsService.ControllerSelectProfileColWidth = (int)gridView.Columns[5].Width;
-                appSettingsService.ControllerEditColWidth = (int)gridView.Columns[6].Width;
-                appSettingsService.ControllerLinkedProfileColWidth = (int)gridView.Columns[7].Width;
-                appSettingsService.ControllerLinkProfIdColWidth = (int)gridView.Columns[8].Width;
-                appSettingsService.ControllerCustomColorColWidth = (int)gridView.Columns[9].Width;
+                int[] widths = new int[10];
+                for (int i = 0; i < widths.Length; i++) widths[i] = (int)gridView.Columns[i].Width;
+                appSettingsService.ControllerColumnWidths = widths;
             }
         }
 
@@ -1667,16 +1630,8 @@ namespace DS4Windows.UI
             var gridView = controllerLV.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 10)
             {
-                gridView.Columns[0].Width = appSettingsService.ControllerIndexColWidth;
-                gridView.Columns[1].Width = appSettingsService.ControllerIdColWidth;
-                gridView.Columns[2].Width = appSettingsService.ControllerStatusColWidth;
-                gridView.Columns[3].Width = appSettingsService.ControllerExclusiveColWidth;
-                gridView.Columns[4].Width = appSettingsService.ControllerBatteryColWidth;
-                gridView.Columns[5].Width = appSettingsService.ControllerSelectProfileColWidth;
-                gridView.Columns[6].Width = appSettingsService.ControllerEditColWidth;
-                gridView.Columns[7].Width = appSettingsService.ControllerLinkedProfileColWidth;
-                gridView.Columns[8].Width = appSettingsService.ControllerLinkProfIdColWidth;
-                gridView.Columns[9].Width = appSettingsService.ControllerCustomColorColWidth;
+                int[] widths = appSettingsService.ControllerColumnWidths;
+                for (int i = 0; i < widths.Length; i++) gridView.Columns[i].Width = widths[i];
             }
         }
 
@@ -1728,7 +1683,7 @@ namespace DS4Windows.UI
 
         private void XinputCheckerBtn_Click(object sender, RoutedEventArgs e)
         {
-            string path = System.IO.Path.Combine(pathService.ExecutableDirectory, "Tools",
+            string path = System.IO.Path.Combine(environment.ExecutableDirectory, "Tools",
                 "XInputChecker", "XInputChecker.exe");
 
             if (File.Exists(path))
@@ -1750,7 +1705,7 @@ namespace DS4Windows.UI
         private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(_viewModelFactory.CreateControllerRegDeviceOptsViewModel(appSettingsService.DeviceOptions));
+                new ControllerRegisterOptionsWindow(appSettingsService.CreateDeviceOptionsViewModel(_viewModelFactory));
 
             optsWindow.Owner = this;
             optsWindow.Show();
@@ -1762,7 +1717,7 @@ namespace DS4Windows.UI
             {
                 int idx = profilesListBox.SelectedIndex;
                 ProfileEntity entity = profileListHolder.ProfileListCol[idx];
-                string filename = Path.Combine(pathService.AppDataPath,
+                string filename = Path.Combine(environment.AppDataPath,
                     "Profiles", $"{entity.Name}.xml");
 
                 // Disallow renaming Default profile
@@ -1796,7 +1751,7 @@ namespace DS4Windows.UI
             using var process = Process.GetCurrentProcess();
             var s = (ComboBox)sender;
             var selectedPriority = (ProcessPriorityClass)s.SelectedItem;
-            if (!environmentService.IsAdministrator() && selectedPriority == ProcessPriorityClass.RealTime)
+            if (!environment.IsAdministrator() && selectedPriority == ProcessPriorityClass.RealTime)
             {
                 MessageBox.Show(Strings.RealTimeNoAdmin);
                 selectedPriority = ProcessPriorityClass.High;

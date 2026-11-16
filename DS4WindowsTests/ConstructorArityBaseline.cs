@@ -14,7 +14,6 @@ namespace DS4WindowsTests
         {
             "DS4Windows.Processing.Mapping|15",
             "DS4Windows.Processing.Services.Connection.DeviceConnector|13",
-            "DS4Windows.UI.MainWindow|14",
         };
     }
 }
