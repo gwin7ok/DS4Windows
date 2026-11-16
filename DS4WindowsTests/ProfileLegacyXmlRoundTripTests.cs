@@ -49,7 +49,7 @@ namespace DS4WindowsTests
         public void SaveThenLoad_RestoresAllTenSettings()
         {
             var source = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            source.inverseRumbleMotors[Device] = true;
+            source.rumbleSlots[Device].InverseMotors = true;
             source.stickSlots[Device].LeftStickDriftXAxis = -5;
             source.stickSlots[Device].LeftStickDriftYAxis = 7;
             source.stickSlots[Device].RightStickDriftXAxis = 3;
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
             ResetProfile(target);
             targetXml.LoadLegacyExtraSettings(Device, Root);
 
-            Assert.True(target.inverseRumbleMotors[Device]);
+            Assert.True(target.rumbleSlots[Device].InverseMotors);
             Assert.Equal(-5, target.stickSlots[Device].LeftStickDriftXAxis);
             Assert.Equal(7, target.stickSlots[Device].LeftStickDriftYAxis);
             Assert.Equal(3, target.stickSlots[Device].RightStickDriftXAxis);
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         {
             // 古いプロファイル（10 要素が無い）を読み込んでも、既定値になること（前のプロファイルの値を引き継がない）
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            store.inverseRumbleMotors[Device] = true;
+            store.rumbleSlots[Device].InverseMotors = true;
             store.stickSlots[Device].LeftStickDriftXAxis = -5;
             store.stickSlots[Device].RightStickDriftYAxis = 9;
             store.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
             ResetProfile(store);
             xml.LoadLegacyExtraSettings(Device, Root);
 
-            Assert.False(store.inverseRumbleMotors[Device]);
+            Assert.False(store.rumbleSlots[Device].InverseMotors);
             Assert.Equal(0, store.stickSlots[Device].LeftStickDriftXAxis);
             Assert.Equal(0, store.stickSlots[Device].RightStickDriftYAxis);
             Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
@@ -134,7 +134,7 @@ namespace DS4WindowsTests
 
             Assert.Equal(0, store.stickSlots[Device].LeftStickDriftXAxis);
             Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
-            Assert.False(store.inverseRumbleMotors[Device]);
+            Assert.False(store.rumbleSlots[Device].InverseMotors);
         }
 
         [Fact]

@@ -116,7 +116,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 string r = macroCodeValue.ToString().Substring(1);
                 byte heavy = (byte)(int.Parse(r[0].ToString()) * 100 + int.Parse(r[1].ToString()) * 10 + int.Parse(r[2].ToString()));
                 byte light = (byte)(int.Parse(r[3].ToString()) * 100 + int.Parse(r[4].ToString()) * 10 + int.Parse(r[5].ToString()));
-                if (_profileSettings.InverseRumbleMotors[device])
+                if (_profileSettings.RumbleSlot(device).InverseMotors)
                     d.setRumble(heavy, light);
                 else
                     d.setRumble(light, heavy);

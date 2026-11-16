@@ -196,7 +196,7 @@ namespace DS4WindowsTests
             const int slot = 0;
 
             Assert.Equal(_profileSettings.BasicSlot(slot).EnableTouchToggle, _profileSettings.GetEnableTouchToggle(slot));
-            Assert.Equal(_profileSettings.RumbleBoost[slot], _profileSettings.GetRumbleBoost(slot));
+            Assert.Equal(_profileSettings.RumbleSlot(slot).Boost, _profileSettings.GetRumbleBoost(slot));
         }
     }
 }

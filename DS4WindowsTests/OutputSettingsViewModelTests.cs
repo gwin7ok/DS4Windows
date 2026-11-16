@@ -59,9 +59,9 @@ namespace DS4WindowsTests
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Output;
             bool dinputOnly = service.BasicSlot(0).DinputOnly;
-            byte boost = service.RumbleBoost[0];
+            byte boost = service.RumbleSlot(0).Boost;
             int autostop = service.GetRumbleAutostopTime(0);
-            bool inverse = service.InverseRumbleMotors[0];
+            bool inverse = service.RumbleSlot(0).InverseMotors;
             var emulation = service.DualSenseSlot(0).RumbleEmulationMode;
             try
             {
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
                 Assert.Contains(nameof(OutputSettingsViewModel.DInputOnly), names);
 
                 vm.RumbleBoost = 150;
-                Assert.Equal(150, service.RumbleBoost[0]);
+                Assert.Equal(150, service.RumbleSlot(0).Boost);
 
                 // 画面は秒、設定はミリ秒
                 vm.RumbleAutostopTime = 12;
@@ -80,7 +80,7 @@ namespace DS4WindowsTests
                 Assert.Equal(12, vm.RumbleAutostopTime);
 
                 vm.InverseRumbleMotors = !inverse;
-                Assert.Equal(!inverse, service.InverseRumbleMotors[0]);
+                Assert.Equal(!inverse, service.RumbleSlot(0).InverseMotors);
 
                 vm.DualSenseRumbleEmulationPerIndex = 1;
                 Assert.Equal(DS4Windows.Core.Model.RumbleEmulationMode.Legacy, service.DualSenseSlot(0).RumbleEmulationMode);
@@ -89,9 +89,9 @@ namespace DS4WindowsTests
             finally
             {
                 service.BasicSlot(0).DinputOnly = dinputOnly;
-                service.RumbleBoost[0] = boost;
+                service.RumbleSlot(0).Boost = boost;
                 service.SetRumbleAutostopTime(0, autostop);
-                service.InverseRumbleMotors[0] = inverse;
+                service.RumbleSlot(0).InverseMotors = inverse;
                 service.DualSenseSlot(0).RumbleEmulationMode = emulation;
             }
         }
@@ -124,15 +124,15 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             OutputSlotSettings output = service.ForSlot(3).Output;
-            bool saved = service.InverseRumbleMotors[3];
+            bool saved = service.RumbleSlot(3).InverseMotors;
             try
             {
                 output.InverseRumbleMotors = !saved;
-                Assert.Equal(!saved, service.InverseRumbleMotors[3]);
+                Assert.Equal(!saved, service.RumbleSlot(3).InverseMotors);
             }
             finally
             {
-                service.InverseRumbleMotors[3] = saved;
+                service.RumbleSlot(3).InverseMotors = saved;
             }
 
             // 出力の項目は、ProfileSettingsViewModel から Output（サブ ViewModel）へ移った

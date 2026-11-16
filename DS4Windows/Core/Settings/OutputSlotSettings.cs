@@ -47,8 +47,8 @@ namespace DS4Windows.Core.Settings
 
         public byte RumbleBoost
         {
-            get => _settings.RumbleBoost[_slot];
-            set => _settings.RumbleBoost[_slot] = value;
+            get => _settings.RumbleSlot(_slot).Boost;
+            set => _settings.RumbleSlot(_slot).Boost = value;
         }
 
         /// <summary>振動の自動停止までの時間（ミリ秒。XML と同じ単位）。</summary>
@@ -80,8 +80,8 @@ namespace DS4Windows.Core.Settings
 
         public bool InverseRumbleMotors
         {
-            get => _settings.InverseRumbleMotors[_slot];
-            set => _settings.InverseRumbleMotors[_slot] = value;
+            get => _settings.RumbleSlot(_slot).InverseMotors;
+            set => _settings.RumbleSlot(_slot).InverseMotors = value;
         }
     }
 }

@@ -94,14 +94,14 @@ namespace DS4WindowsTests
         public void RumbleBoost_ADualSense_WithoutTheGenericRescale_IsOneHundred_OtherwiseTheConfiguredValue()
         {
             var settings = TestHost.GetService<IProfileSettingsService>();
-            var rumbleSettings = ((ProfileSettingsService)settings).RumbleSettings;
+            var rumbleSettings = new[] { settings.RumbleSlot(Slot) };
             DS4Windows.Core.Settings.DualSenseSlotSettings dualSenseSettings = settings.DualSenseSlot(Slot);
             Assert.NotNull(dualSenseSettings);
             bool oldRescale = dualSenseSettings.UseGenericRumbleRescale;
-            byte oldBoost = rumbleSettings[Slot].RumbleBoost;
+            byte oldBoost = rumbleSettings[0].Boost;
             try
             {
-                rumbleSettings[Slot].RumbleBoost = 37;   // GetRumbleBoost は RumbleSettings を先に読む
+                rumbleSettings[0].Boost = 37;   // GetRumbleBoost は、スロットの振動の設定の強さを読む
                 dualSenseSettings.UseGenericRumbleRescale = false;
 
                 var dualSense = (DualSenseDevice)RuntimeHelpers.GetUninitializedObject(typeof(DualSenseDevice));
@@ -124,7 +124,7 @@ namespace DS4WindowsTests
             finally
             {
                 dualSenseSettings.UseGenericRumbleRescale = oldRescale;
-                rumbleSettings[Slot].RumbleBoost = oldBoost;
+                rumbleSettings[0].Boost = oldBoost;
             }
         }
     }

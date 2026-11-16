@@ -230,7 +230,7 @@ namespace DS4Windows.Core.Persistence
         {
             // Phase11 K-W6-10: <DebouncingMs> は機能廃止で読み捨てる（古いプロファイルの互換のため、タグがあっても無視する）。保存もしない
             if (bool.TryParse(ReadLegacyElement(rootname, "InverseRumbleMotors"), out bool inverseRumble))
-                store.inverseRumbleMotors[device] = inverseRumble;
+                store.rumbleSlots[device].InverseMotors = inverseRumble;
 
 
             if (sbyte.TryParse(ReadLegacyElement(rootname, "LeftStickDriftXAxis"), out sbyte value))
@@ -361,7 +361,7 @@ namespace DS4Windows.Core.Persistence
 
         public void SaveLegacyExtraSettings(XmlNode rootElement, int device)
         {
-            AppendLegacyElement(rootElement, "InverseRumbleMotors", store.inverseRumbleMotors[device].ToString());
+            AppendLegacyElement(rootElement, "InverseRumbleMotors", store.rumbleSlots[device].InverseMotors.ToString());
             AppendLegacyElement(rootElement, "LeftStickDriftXAxis", store.stickSlots[device].LeftStickDriftXAxis.ToString());
             AppendLegacyElement(rootElement, "LeftStickDriftYAxis", store.stickSlots[device].LeftStickDriftYAxis.ToString());
             AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.stickSlots[device].RightStickDriftXAxis.ToString());
