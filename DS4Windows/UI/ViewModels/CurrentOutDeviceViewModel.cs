@@ -51,7 +51,9 @@ namespace DS4Windows.UI.ViewModels
                 if (selectedIndex >= 0)
                 {
                     SlotDeviceEntry temp = slotDeviceEntries[selectedIndex];
-                    if (temp.Slot.CurrentType != OutContType.None)
+                    // 接続中の行に加え、恒久（Permanent）で予約された行も、予約を変えられるよう設定欄を出す
+                    if (temp.Slot.CurrentType != OutContType.None ||
+                        temp.Slot.ReserveStatus == OutputSlotReserveStatus.Permanent)
                     {
                         result = true;
                     }
