@@ -52,6 +52,11 @@
 
 `Processing/Actions/` に、`Action*` と `*ActionController` の組で足す（規約 3.4 R4）。判定と実行は `TriggerDispatchEngine` が担う。
 
+### 保存・読み込み（Phase37）
+
+- 特殊アクションの保存は 1 本だけ。`SpecialActionRepository.SaveAction` → `SpecialActionsXmlSerializer.SaveActionNew`（種別の数 `mode` ごとに `SpecialAction` を作って一覧へ入れる）→ `SaveActions`（一覧全体を `ActionsDTO` で書く）。読み込みも `ActionsDTO`（`Core/Persistence/Dto`）に集まっている。種別を足すときは、`ActionTypeId`・`SaveActionNew` の種別の分岐・`ActionsDTO` の読み書きを揃える（種別の数は 1〜7、9、10、11。8 は欠番）。
+- 保存する XML の形（要素名と順序）は変えない。**全種別を本番の保存の経路で書いた黄金**（`actions-production.xml`／`.state.txt`。`ActionsProduction_*` のテスト）に、新しい種別を足す。
+
 ## 4. 足したあとの確認
 
 1. `dotnet build`／`dotnet test DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Debug -p:platform=x64`（警告 0・エラー 0）。
@@ -71,6 +76,9 @@
 | 4 | ViewModel | `UI/ViewModels/StickSideViewModel.cs` に 1 つ。左右の振り分けは型の中にあるので、左右で書き分けない |
 | 5 | 画面 | `UI/StickSideSettingsView.xaml` に 1 か所。左右とも同じ部品を使う（`StickSettingsPanel` は部品を 2 つ置くだけ） |
 
+- 領域ごとの持ち主（Phase25・Phase37-5）: 配列ではなく、スロットごとのオブジェクトに足す。`GyroSlotSettings`・`TouchpadSlotSettings`・`StickSlotSettings`・`TriggerSlotSettings`・`SixAxisSlotSettings`・`LightbarSlotSettings`・`DualSenseSlotSettings`（DualSense の振動方式など）・`BasicSlotSettings`（タッチの切り替え、無操作の切断、出力データ、BT のポーリング、起動プログラム、DInput のみ）・`RumbleSlotSettings`（振動の強さ、自動停止、モーターの入れ替え）・`OutputTypeSlotSettings`（仮想コントローラーの種類、DS4 のトリガーの出力方式）。持ち主は `BackingStore` が作り、`IProfileSettingsService` の `DualSenseSlot(slot)`・`BasicSlot(slot)`・`RumbleSlot(slot)`・`OutputType(slot)` から引く。既定へ戻す処理は、持ち主の `ResetForProfileLoad()`（`BackingStore.ResetProfile` が順に呼ぶ）に書く。
+- 読み込みの節と保存の節は、領域ごとに `ProfileAreaSection` で対にして `LegacyProfileXmlSerializer` が宣言する（General／TriggerStick／Motion／OutputCurve／OutputController／Actions／Button）。項目を足す節が、どの領域に属するかを、そこで確かめる。
+- 状態を丸ごと書き出すゴールデン（`Golden/Phase7Step10c/*.state.txt`）は、項目の経路名で比べる。持ち主を足す・移すと経路名が変わるので、値が同一であることを（並べ替えて）確かめてから、新しい出力を採用する。
 - 保存する名前（XML の要素名）は変えない。項目を足したら、`StickSideViewModelTests` が公開プロパティを全部たどって、左右の一致と片側の変更の独立を検査する（検査の書き足しは要らない）。
 - 左右で挙動が違う項目は作らない。違いが要るときは、`StickSideViewModel` へ引数を足さず、先にユーザーへ相談する。
 - 既定値・リセット・プリセットに入れる場合は、`BackingStore` のリセットと `ProfilePresets` も触る。

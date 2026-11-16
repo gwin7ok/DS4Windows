@@ -1,7 +1,7 @@
 # Phase37 計画書: 設定の保持と永続化の、大きい型の分割
 
 作成日: 2026-11-12
-状態: **37-0・37-1・37-3（`ResetProfile` の分割）まで完了（2026-11-16）。37-4・37-5・37-6 は保留（理由は末尾の実施の記録）**
+状態: **完了（2026-11-16）。37-0〜37-5・37-7 を実施、37-6（`AppSettingsDTO` の `partial`）は見送り**
 出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 4）、`05-Extensibility.md` の 5-5、`Structure-Review-2026-11.md` の A（Phase25 の続き）
 前提: なし（Phase29〜36 と独立に進められる）。ただし、Phase32 の 32-A（プログラム起動の一本化）が `ProfileMiscLoadSection` と `BackingStore.ProcessInspector` に触れるため、37-3・37-4 はそのあとに行う。
 
@@ -49,7 +49,7 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 | 37-4 | （D4 が A のとき）プロファイルの読み込みと保存の節を、領域ごとに対にする（まず 1 領域で行い、形を確かめてから広げる） | 黄金が不変 | 完了（2026-11-16。全領域） |
 | 37-5 | （D1 が B のとき）まだ配列のままの項目を、領域のオブジェクトへ移す（Phase25 と同じ進め方。領域ごと） | 黄金が不変。`SettingsSlotWindowUsageTests` | 未着手 |
 | 37-6 | `AppSettingsDTO`（D3） | 黄金が不変 | 見送り（2026-11-16 のユーザーの決定。要素の順序が型の中の並び［ファイル名の順］に依存する脆さを持ち込むため） |
-| 37-7 | 文書: `02-Extension-Guide.md` の §3（特殊アクションを足す手順に、保存・読み込みの部品を足す）、`Structure-Review-2026-11.md` の A の更新履歴 | — | 未着手 |
+| 37-7 | 文書: `02-Extension-Guide.md` の §3（特殊アクションを足す手順に、保存・読み込みの部品を足す）、`Structure-Review-2026-11.md` の A の更新履歴 | — | 完了（2026-11-16） |
 
 ## 確認の方法
 - 各 Step のあと、保存の黄金テストと、`BackingStore`・特殊アクションのテスト。Step の終わりに Debug ALL。
@@ -106,3 +106,6 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - `outputVirtualTriggerButtons` は、保存・読み込みの対象でなく、利用者もほぼいない（`OutputSlotSettings.VirtualTriggerButtons` だけ）。挙動を変えないため、そのまま持ち主へ移した（初期化でも戻さない）。
 - 保存の XML は不変。状態ダンプのゴールデン 7 件は、経路名の変更だけ（並べ替えて同一を確認して採用）。
 - 37-5 は、DualSense・基本的な設定・振動・出力の種類の 4 領域を移した。残るのは、領域の持ち主に入っていない小さな配列（`distanceProfiles`、`profileActions`、`containsCustomAction` など、実行中の状態や別の整理が要るもの）で、必要になったときに個別に判断する。
+
+### 2026-11-16（37-7 文書）
+- `02-Extension-Guide.md` の §3 に、特殊アクションの保存・読み込みの経路（`SaveActionNew`→`SaveActions`／`ActionsDTO`）と黄金を足し、§5 に、領域ごとの持ち主・`ResetForProfileLoad`・`ProfileAreaSection`・状態ダンプのゴールデンの扱いを足した。`Structure-Review-2026-11.md` の更新履歴に A の続きを足した。Phase37 は完了。
