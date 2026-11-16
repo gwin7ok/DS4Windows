@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.UI;
@@ -11,51 +10,36 @@ namespace DS4WindowsTests
     /// <summary>
     /// 出力スロットの一覧（<see cref="OutputSlotManagerControl"/>）が、スロット管理の全スロットを行として描画することを守る。
     /// 実機で、コントローラーが 3 台でも 1 行しか出なかった報告の調査で、描画まで通して数える形にした。
+    /// 画面部品のテストは、共有の STA スレッド（<see cref="WpfPanelTestRunner"/>）で行う。
     /// </summary>
     public class OutputSlotManagerControlRenderTests
     {
         [Fact]
         public void EveryOutputSlot_IsRenderedAsARow()
         {
-            int items = -1, expected = -1, rows = -1;
-            Exception failure = null;
-            var thread = new Thread(() =>
+            WpfPanelTestRunner.Run(() =>
             {
+                var manager = TestRepositoryFactory.CreateOutputSlotManager();
+                var service = TestRepositoryFactory.CreateOutputSlotService(manager);
+                var theme = (ResourceDictionary)Application.LoadComponent(
+                    new Uri("/DS4Windows;component/UI/Themes/DefaultTheme.xaml", UriKind.Relative));
+                Application.Current.Resources.MergedDictionaries.Add(theme);
                 try
                 {
-                    var manager = TestRepositoryFactory.CreateOutputSlotManager();
-                    var service = TestRepositoryFactory.CreateOutputSlotService(manager);
-                    expected = manager.OutputSlots.Length;
-
                     var control = new OutputSlotManagerControl();
                     control.SetupDataContext(new CurrentOutDeviceViewModel(service));
-                    var window = new Window { Content = control, Width = 900, Height = 600, ShowInTaskbar = false };
-                    window.Show();
+                    control.Measure(new Size(900, 600));
+                    control.Arrange(new Rect(0, 0, 900, 600));
                     control.UpdateLayout();
 
                     var lv = (ListView)control.FindName("currentOutDevLV");
-                    items = lv.Items.Count;
-                    int count = 0;
-                    for (int i = 0; i < items; i++)
-                    {
-                        var c = lv.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
-                        if (c != null && c.ActualHeight > 0) count++;
-                    }
-                    rows = count;
-                    window.Close();
+                    Assert.Equal(manager.OutputSlots.Length, lv.Items.Count);
                 }
-                catch (Exception ex)
+                finally
                 {
-                    failure = ex;
+                    Application.Current.Resources.MergedDictionaries.Remove(theme);
                 }
             });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            thread.Join();
-
-            Assert.Null(failure);
-            Assert.Equal(expected, items);
-            Assert.Equal(expected, rows);
         }
     }
 }

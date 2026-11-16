@@ -27,5 +27,23 @@ namespace DS4WindowsTests
             service.SlotViews[0].ReserveStatus = OutputSlotReserveStatus.Dynamic;
             Assert.False(vm.SidePanelShown);
         }
+
+        /// <summary>
+        /// ViewModel は INotifyPropertyChanged を持たず、WPF は「プロパティ名 + Changed」のイベントで更新を知る。
+        /// イベント名がずれると、行を選んでも設定欄が出ない（Phase34 の名前変更で起きた）。
+        /// </summary>
+        [Theory]
+        [InlineData("SidePanelShown")]
+        [InlineData("PluginEnabled")]
+        [InlineData("UnpluginEnabled")]
+        public void TheBoundProperties_SupportChangeEvents(string name)
+        {
+            var manager = TestRepositoryFactory.CreateOutputSlotManager();
+            var vm = new CurrentOutDeviceViewModel(TestRepositoryFactory.CreateOutputSlotService(manager));
+
+            var property = System.ComponentModel.TypeDescriptor.GetProperties(vm)[name];
+
+            Assert.True(property.SupportsChangeEvents);
+        }
     }
 }

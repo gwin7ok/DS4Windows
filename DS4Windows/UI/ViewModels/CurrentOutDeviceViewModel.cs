@@ -62,7 +62,8 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler SidePanelVisibilityChanged;
+        // WPF は、プロパティ名 + "Changed" のイベントを見て、バインディングを更新する（名前を変えると画面が更新されない）
+        public event EventHandler SidePanelShownChanged;
 
         public bool PluginEnabled
         {
@@ -135,7 +136,7 @@ namespace DS4Windows.UI.ViewModels
         private void CurrentOutDeviceViewModel_SelectedIndexChanged(object sender,
             EventArgs e)
         {
-            SidePanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
+            SidePanelShownChanged?.Invoke(this, EventArgs.Empty);
             PluginEnabledChanged?.Invoke(this, EventArgs.Empty);
             UnpluginEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -167,7 +168,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void RefreshPanels()
         {
-            SidePanelVisibilityChanged?.Invoke(this, EventArgs.Empty);
+            SidePanelShownChanged?.Invoke(this, EventArgs.Empty);
             PluginEnabledChanged?.Invoke(this, EventArgs.Empty);
             UnpluginEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
