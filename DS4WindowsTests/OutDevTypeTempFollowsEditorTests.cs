@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         private static (ProfileSettingsViewModel Vm, ProfileSettingsService Service, DS4Windows.Processing.Abstractions.IOutputSlotService Slots) Create(OutContType type)
         {
             ProfileSettingsService service = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore(new EnvironmentService()));
-            service.OutContType[Device] = type;
+            service.OutputType(Device).ContType = type;
             var slots = TestHost.GetService<DS4Windows.Processing.Abstractions.IOutputSlotService>();
             return (ProfileSettingsViewModelTestFactory.Create(Device, service, slots), service, slots);
         }
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             vm.Output.TempControllerIndex = newIndex;
 
             Assert.Equal(expected, slots.OutDevTypeTemp[Device]);
-            Assert.Equal(expected, service.OutContType[Device]);
+            Assert.Equal(expected, service.OutputType(Device).ContType);
         }
 
     }

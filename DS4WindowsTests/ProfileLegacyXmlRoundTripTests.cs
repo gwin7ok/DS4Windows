@@ -54,7 +54,7 @@ namespace DS4WindowsTests
             source.stickSlots[Device].LeftStickDriftYAxis = 7;
             source.stickSlots[Device].RightStickDriftXAxis = 3;
             source.stickSlots[Device].RightStickDriftYAxis = -9;
-            source.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
+            source.outputTypeSlots[Device].DS4TriggerMode = DS4TriggerOutputMode.Buttons;
             source.gyroSlots[Device].Mouse.jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
             source.gyroSlots[Device].MouseStick.jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
 
@@ -71,7 +71,7 @@ namespace DS4WindowsTests
             Assert.Equal(7, target.stickSlots[Device].LeftStickDriftYAxis);
             Assert.Equal(3, target.stickSlots[Device].RightStickDriftXAxis);
             Assert.Equal(-9, target.stickSlots[Device].RightStickDriftYAxis);
-            Assert.Equal(DS4TriggerOutputMode.Buttons, target.outputDS4TriggerMode[Device]);
+            Assert.Equal(DS4TriggerOutputMode.Buttons, target.outputTypeSlots[Device].DS4TriggerMode);
             Assert.Equal(!GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].Mouse.jitterCompensation);
             Assert.Equal(!GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].MouseStick.jitterCompensation);
 
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
             store.rumbleSlots[Device].InverseMotors = true;
             store.stickSlots[Device].LeftStickDriftXAxis = -5;
             store.stickSlots[Device].RightStickDriftYAxis = 9;
-            store.outputDS4TriggerMode[Device] = DS4TriggerOutputMode.Buttons;
+            store.outputTypeSlots[Device].DS4TriggerMode = DS4TriggerOutputMode.Buttons;
             store.gyroSlots[Device].Mouse.jitterCompensation = !GyroMouseInfo.JITTER_COMPENSATION_DEFAULT;
             store.gyroSlots[Device].MouseStick.jitterCompensation = !GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT;
 
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
             Assert.False(store.rumbleSlots[Device].InverseMotors);
             Assert.Equal(0, store.stickSlots[Device].LeftStickDriftXAxis);
             Assert.Equal(0, store.stickSlots[Device].RightStickDriftYAxis);
-            Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
+            Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputTypeSlots[Device].DS4TriggerMode);
             Assert.Equal(GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, store.gyroSlots[Device].Mouse.jitterCompensation);
             Assert.Equal(GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, store.gyroSlots[Device].MouseStick.jitterCompensation);
         }
@@ -133,7 +133,7 @@ namespace DS4WindowsTests
             xml.LoadLegacyExtraSettings(Device, Root);
 
             Assert.Equal(0, store.stickSlots[Device].LeftStickDriftXAxis);
-            Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputDS4TriggerMode[Device]);
+            Assert.Equal(BackingStore.DEFAULT_DS4_TRIGGER_OUTPUT, store.outputTypeSlots[Device].DS4TriggerMode);
             Assert.False(store.rumbleSlots[Device].InverseMotors);
         }
 

@@ -37,7 +37,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlElement rootElement = context.RootElement;
             int device = context.Device;
 
-            XmlNode xmlOutContDevice = m_Xdoc.CreateNode(XmlNodeType.Element, "OutputContDevice", null); xmlOutContDevice.InnerText = OutContTypeInfo.SaveKey(store.outputDevType[device]); rootElement.AppendChild(xmlOutContDevice);
+            XmlNode xmlOutContDevice = m_Xdoc.CreateNode(XmlNodeType.Element, "OutputContDevice", null); xmlOutContDevice.InnerText = OutContTypeInfo.SaveKey(store.outputTypeSlots[device].ContType); rootElement.AppendChild(xmlOutContDevice);
         }
     }
 }

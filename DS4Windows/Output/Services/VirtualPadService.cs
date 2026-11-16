@@ -220,7 +220,7 @@ namespace DS4Windows.Output.Services
 
         public void PluginOutDev(int index, IOutputBoundDevice device)
         {
-            OutContType contType = _profileSettings.OutContType[index];
+            OutContType contType = _profileSettings.OutputType(index).ContType;
 
             OutSlotDevice slotDevice = null;
             if (!_profileSettings.GetDInputOnly(index))
@@ -297,7 +297,7 @@ namespace DS4Windows.Output.Services
         {
             if (!_profileSettings.UseDInputOnlyArray[index])
             {
-                //OutContType contType = Global.OutContType[index];
+                //OutContType contType = Global.OutputType(index).ContType;
                 OutputDevice dev = outputDevices[index];
                 OutSlotDevice slotDevice = outputslotMan.GetOutSlotDevice(dev);
                 if (dev != null && slotDevice != null)

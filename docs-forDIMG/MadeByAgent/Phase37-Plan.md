@@ -100,3 +100,9 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - 振動の `rumble`・`rumbleAutostopTime`・`inverseRumbleMotors` を `RumbleSlotSettings`（`BackingStore.rumbleSlots`。強さ・自動停止・モーターの入れ替え）へ移した。`IProfileSettingsService` の 2 つの配列プロパティは `RumbleSlot(int slot)` に替えた。
 - **発見した不具合と修正（ユーザーの承認済み。2026-11-16）**: 実行時に読む `GetRumbleBoost`／`GetRumbleAutostopTime` は、変更通知つきの並行コピー `BackingStore.rumbleSettings`（`RumbleSettings`）を先に読んでいたが、プロファイルの読み込みと画面は生配列 `rumble`／`rumbleAutostopTime` へ書いていた（並行コピーへは書く経路がなく、連動は並行コピー→生配列の一方向）。そのため、プロファイルの振動の強さ・自動停止の値は、保存・画面には出るが、実行時には効いていなかった（強さは常に 100、自動停止は 0。画面からの自動停止の変更だけは両方へ書くため効く）。持ち主を 1 つにしたことで、プロファイルの値が実行時に効くようになる（機能の欠落の修正）。誰も使わなくなった並行コピー `RumbleSettings` は削除した（2.4 の「使うべきでないもの」）。
 - 検証: 実行時の読み取りが書いた値に従うことを `RumbleSlotSettingsTests` で固定。保存の XML は不変。状態ダンプのゴールデン 6 件は、経路名の変更と、削除した並行コピーの行の消滅だけ（値は同一であることを並べ替えて確認して採用）。
+
+### 2026-11-16（37-5 領域 4: 出力の種類。ブランチ `Phase37-5-OutputType`）
+- `outputDevType`・`outputVirtualTriggerButtons`・`outputDS4TriggerMode` を `OutputTypeSlotSettings`（`BackingStore.outputTypeSlots`。保存される仮想コントローラーの種類、仮想のトリガーボタン、DS4 のトリガーの出力方式）へ移した。`IProfileSettingsService` の `OutContType`・`OutputVirtualTriggerButton`・`OutputDS4TriggerMode`（配列）は `OutputType(int slot)` 1 つに替えた。実行中の接続の種類（`ActiveOutDevType`）と画面の一時の種類（`OutDevTypeTemp`）は、出力スロットのサービスが持つ別物で、対象外。
+- `outputVirtualTriggerButtons` は、保存・読み込みの対象でなく、利用者もほぼいない（`OutputSlotSettings.VirtualTriggerButtons` だけ）。挙動を変えないため、そのまま持ち主へ移した（初期化でも戻さない）。
+- 保存の XML は不変。状態ダンプのゴールデン 7 件は、経路名の変更だけ（並べ替えて同一を確認して採用）。
+- 37-5 は、DualSense・基本的な設定・振動・出力の種類の 4 領域を移した。残るのは、領域の持ち主に入っていない小さな配列（`distanceProfiles`、`profileActions`、`containsCustomAction` など、実行中の状態や別の整理が要るもの）で、必要になったときに個別に判断する。

@@ -40,28 +40,28 @@ namespace DS4WindowsTests
             TestGlobals.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
-            OutContType original = service.OutContType[device];
+            OutContType original = service.OutputType(device).ContType;
             try
             {
                 // 1. 初期状態: X360
-                service.OutContType[device] = OutContType.X360;
+                service.OutputType(device).ContType = OutContType.X360;
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
                 Assert.Equal(0, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.Output.ContType);
 
                 // 2. X360 -> DS4 への変更
-                service.OutContType[device] = OutContType.DS4;
+                service.OutputType(device).ContType = OutContType.DS4;
                 Assert.Equal(1, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.DS4, vm.Output.ContType);
 
                 // 3. DS4 -> X360 への変更（今回の不具合再発防止の検証）
-                service.OutContType[device] = OutContType.X360;
+                service.OutputType(device).ContType = OutContType.X360;
                 Assert.Equal(0, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.Output.ContType);
             }
             finally
             {
-                service.OutContType[device] = original;
+                service.OutputType(device).ContType = original;
             }
         }
 
@@ -72,10 +72,10 @@ namespace DS4WindowsTests
             TestGlobals.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
-            OutContType original = service.OutContType[device];
+            OutContType original = service.OutputType(device).ContType;
             try
             {
-                service.OutContType[device] = OutContType.DS4;
+                service.OutputType(device).ContType = OutContType.DS4;
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service);
                 vm.UpdateLateProperties();
                 Assert.Equal(1, vm.Output.TempControllerIndex);
@@ -84,14 +84,14 @@ namespace DS4WindowsTests
                 vm.Output.TempControllerIndex = 0;
 
                 // SSOT (service.OutContType) および各プロパティが即座に X360 に追従すること
-                Assert.Equal(OutContType.X360, service.OutContType[device]);
+                Assert.Equal(OutContType.X360, service.OutputType(device).ContType);
                 Assert.Equal(0, vm.Output.ControllerTypeIndex);
                 Assert.Equal(OutContType.X360, vm.Output.TempConType);
                 Assert.Equal(OutContType.X360, vm.Output.ContType);
             }
             finally
             {
-                service.OutContType[device] = original;
+                service.OutputType(device).ContType = original;
             }
         }
 
@@ -103,7 +103,7 @@ namespace DS4WindowsTests
             TestGlobals.ProfileSettingsServiceInstance = service;
 
             const int device = 0;
-            OutContType original = service.OutContType[device];
+            OutContType original = service.OutputType(device).ContType;
             try
             {
                 var vm = ProfileSettingsViewModelTestFactory.Create(device, service, outputSlotService: outputSlotService);
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
                 vm.General.EnableOutputDataToDS4 = true;
 
                 // DS4 -> X360 への変更
-                service.OutContType[device] = OutContType.X360;
+                service.OutputType(device).ContType = OutContType.X360;
                 vm.UpdateLateProperties();
 
                 Assert.Equal(0, vm.Output.TempControllerIndex);
@@ -120,7 +120,7 @@ namespace DS4WindowsTests
                 Assert.Equal(OutContType.X360, vm.Output.ContType);
 
                 // X360 -> DS4 への変更
-                service.OutContType[device] = OutContType.DS4;
+                service.OutputType(device).ContType = OutContType.DS4;
                 vm.UpdateLateProperties();
 
                 Assert.Equal(1, vm.Output.TempControllerIndex);
@@ -129,7 +129,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                service.OutContType[device] = original;
+                service.OutputType(device).ContType = original;
             }
         }
     }

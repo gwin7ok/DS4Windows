@@ -88,7 +88,7 @@ namespace DS4WindowsTests
             OutputDevice device = TestOutputCartridges.Allocate(OutContType.DS4, backend, new Version(1, 16, 0, 0));
             device.Connect();
             var settings = TestHost.GetService<IProfileSettingsService>();
-            settings.OutputDS4TriggerMode[0] = mode;
+            settings.OutputType(0).DS4TriggerMode = mode;
             return (device, settings, backend.Ds4Targets[0]);
         }
 
@@ -98,7 +98,7 @@ namespace DS4WindowsTests
         [InlineData(DS4TriggerOutputMode.Buttons, true, 0, 0)]
         public void Ds4TriggerMode_IsAppliedByTheDevice_BeforeTheReport(DS4TriggerOutputMode mode, bool buttons, byte l2, byte r2)
         {
-            DS4TriggerOutputMode original = TestHost.GetService<IProfileSettingsService>().OutputDS4TriggerMode[0];
+            DS4TriggerOutputMode original = TestHost.GetService<IProfileSettingsService>().OutputType(0).DS4TriggerMode;
             try
             {
                 var t = CreateDs4(mode);
@@ -115,17 +115,17 @@ namespace DS4WindowsTests
             }
             finally
             {
-                TestHost.GetService<IProfileSettingsService>().OutputDS4TriggerMode[0] = original;
+                TestHost.GetService<IProfileSettingsService>().OutputType(0).DS4TriggerMode = original;
             }
         }
 
         [Fact]
         public void Xbox360_IgnoresTheDs4TriggerMode()
         {
-            DS4TriggerOutputMode original = TestHost.GetService<IProfileSettingsService>().OutputDS4TriggerMode[0];
+            DS4TriggerOutputMode original = TestHost.GetService<IProfileSettingsService>().OutputType(0).DS4TriggerMode;
             try
             {
-                TestHost.GetService<IProfileSettingsService>().OutputDS4TriggerMode[0] = DS4TriggerOutputMode.Buttons;
+                TestHost.GetService<IProfileSettingsService>().OutputType(0).DS4TriggerMode = DS4TriggerOutputMode.Buttons;
                 var backend = new FakeVirtualPadBackend();
                 backend.Start();
                 OutputDevice device = TestOutputCartridges.Allocate(OutContType.X360, backend, new Version(1, 0));
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                TestHost.GetService<IProfileSettingsService>().OutputDS4TriggerMode[0] = original;
+                TestHost.GetService<IProfileSettingsService>().OutputType(0).DS4TriggerMode = original;
             }
         }
 

@@ -87,7 +87,7 @@ namespace DS4Windows.Core.Persistence
             TriggerDeadZoneZInfo r2Info = store.triggerSlots[device].R2Mod;
             r2Info.deadZone = (byte)(0.00 * 255);
 
-            store.outputDevType[device] = OutContType.DS4;
+            store.outputTypeSlots[device].ContType = OutContType.DS4;
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
@@ -202,7 +202,7 @@ namespace DS4Windows.Core.Persistence
             store.gyroSlots[device].MouseStick.useSmoothing = true;
             store.gyroSlots[device].MouseStick.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
 
-            store.outputDevType[device] = OutContType.DS4;
+            store.outputTypeSlots[device].ContType = OutContType.DS4;
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
@@ -287,7 +287,7 @@ namespace DS4Windows.Core.Persistence
             store.gyroSlots[device].Mouse.enableSmoothing = true;
             store.gyroSlots[device].Mouse.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
 
-            store.outputDevType[device] = OutContType.DS4;
+            store.outputTypeSlots[device].ContType = OutContType.DS4;
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance
@@ -316,7 +316,7 @@ namespace DS4Windows.Core.Persistence
             rsInfo.antiDeadZone = 0;
             rsInfo.maxZone = 90;
 
-            store.outputDevType[device] = OutContType.DS4;
+            store.outputTypeSlots[device].ContType = OutContType.DS4;
 
             // If a device exists, make sure to transfer relevant profile device
             // options to device instance

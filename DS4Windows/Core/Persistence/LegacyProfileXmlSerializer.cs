@@ -246,7 +246,7 @@ namespace DS4Windows.Core.Persistence
             if (triggerMode != null && Enum.TryParse(triggerMode, out DS4TriggerOutputMode mode) &&
                 Enum.IsDefined(typeof(DS4TriggerOutputMode), mode))
             {
-                store.outputDS4TriggerMode[device] = mode;
+                store.outputTypeSlots[device].DS4TriggerMode = mode;
             }
 
             if (bool.TryParse(ReadLegacyElement(rootname, "GyroMouseJitterCompensation"), out bool gyroMouseJitter))
@@ -366,7 +366,7 @@ namespace DS4Windows.Core.Persistence
             AppendLegacyElement(rootElement, "LeftStickDriftYAxis", store.stickSlots[device].LeftStickDriftYAxis.ToString());
             AppendLegacyElement(rootElement, "RightStickDriftXAxis", store.stickSlots[device].RightStickDriftXAxis.ToString());
             AppendLegacyElement(rootElement, "RightStickDriftYAxis", store.stickSlots[device].RightStickDriftYAxis.ToString());
-            AppendLegacyElement(rootElement, "DS4OutputTriggerMode", store.outputDS4TriggerMode[device].ToString());
+            AppendLegacyElement(rootElement, "DS4OutputTriggerMode", store.outputTypeSlots[device].DS4TriggerMode.ToString());
             AppendLegacyElement(rootElement, "GyroMouseJitterCompensation", store.gyroSlots[device].Mouse.jitterCompensation.ToString());
             AppendLegacyElement(rootElement, "GyroMouseStickJitterCompensation", store.gyroSlots[device].MouseStick.jitterCompensation.ToString());
         }

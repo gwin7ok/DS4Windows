@@ -365,27 +365,12 @@ namespace DS4Windows.Core.Settings
 
 
 
-        // Used to hold the controller type desired in a profile
-        public OutContType[] outputDevType = new OutContType[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_OUT_CONT_TYPE, DEFAULT_OUT_CONT_TYPE, DEFAULT_OUT_CONT_TYPE,
-          DEFAULT_OUT_CONT_TYPE, DEFAULT_OUT_CONT_TYPE, DEFAULT_OUT_CONT_TYPE,
-          DEFAULT_OUT_CONT_TYPE, DEFAULT_OUT_CONT_TYPE, DEFAULT_OUT_CONT_TYPE};
+        /// <summary>出力の種類（保存される仮想コントローラーの種類、仮想のトリガーボタン、DS4 のトリガーの出力方式）の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly OutputTypeSlotSettings[] outputTypeSlots = new OutputTypeSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public const bool DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS = true;
-        public bool[] outputVirtualTriggerButtons = new bool[ControllerLimits.TestProfileItemCount]
-        {
-            DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS, DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS, DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS, DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS,
-            DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS, DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS, DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS, DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS,
-            DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS,
-        };
 
         public const DS4TriggerOutputMode DEFAULT_DS4_TRIGGER_OUTPUT = DS4TriggerOutputMode.Default;
-        public DS4TriggerOutputMode[] outputDS4TriggerMode = new DS4TriggerOutputMode[ControllerLimits.TestProfileItemCount]
-        {
-            DEFAULT_DS4_TRIGGER_OUTPUT,DEFAULT_DS4_TRIGGER_OUTPUT,DEFAULT_DS4_TRIGGER_OUTPUT,
-            DEFAULT_DS4_TRIGGER_OUTPUT,DEFAULT_DS4_TRIGGER_OUTPUT,DEFAULT_DS4_TRIGGER_OUTPUT,
-            DEFAULT_DS4_TRIGGER_OUTPUT,DEFAULT_DS4_TRIGGER_OUTPUT,DEFAULT_DS4_TRIGGER_OUTPUT,
-        };
 
 
         // TRUE=AutoProfile reverts to default profile if current foreground process is unknown, FALSE=Leave existing profile active when a foreground proces is unknown (ie. no matching auto-profile rule)
@@ -470,6 +455,7 @@ namespace DS4Windows.Core.Settings
             for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
             for (int i = 0; i < basicSlots.Length; i++) basicSlots[i] = new BasicSlotSettings(i);
             for (int i = 0; i < rumbleSlots.Length; i++) rumbleSlots[i] = new RumbleSlotSettings(i);
+            for (int i = 0; i < outputTypeSlots.Length; i++) outputTypeSlots[i] = new OutputTypeSlotSettings(i);
             for (int i = 0; i < dualSenseSlots.Length; i++) dualSenseSlots[i] = new DualSenseSlotSettings(i);
             for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
             for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
@@ -944,11 +930,10 @@ namespace DS4Windows.Core.Settings
             removedShiftSettings[device].Clear();
             buttonMouseInfos[device].Reset();
 
-            outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
-            outputDevType[device] = DEFAULT_OUT_CONT_TYPE;
 
             basicSlots[device].ResetForProfileLoad();
             rumbleSlots[device].ResetForProfileLoad();
+            outputTypeSlots[device].ResetForProfileLoad();
             gyroSlots[device].ResetForProfileLoad();
             touchpadSlots[device].ResetForProfileLoad();
             stickSlots[device].ResetForProfileLoad();
@@ -988,7 +973,7 @@ namespace DS4Windows.Core.Settings
                     }
                 }
                 else if (!basicSlots[device].DinputOnly &&
-                    oldContType != outputDevType[device])
+                    oldContType != outputTypeSlots[device].ContType)
                 {
                     xinputPlug = true;
                     xinputStatus = true;
@@ -1016,7 +1001,7 @@ namespace DS4Windows.Core.Settings
                                 control.UnplugOutDev(device, tempDev);
                             }
 
-                            OutContType tempContType = outputDevType[device];
+                            OutContType tempContType = outputTypeSlots[device].ContType;
                             control.PluginOutDev(device, tempDev);
                             //Global.useDInputOnly[device] = false;
                         }
