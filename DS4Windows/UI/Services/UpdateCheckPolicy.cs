@@ -18,6 +18,27 @@ namespace DS4Windows.UI.Services
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
         }
 
+        /// <summary>
+        /// 新しい版があるかを問い合わせる。起動時の自動の確認（<paramref name="startup"/> が true）は、スキップした版を除く（キャッシュを使う）。
+        /// 手動の確認は、スキップした版も含めて確認する。通信の失敗などの例外は、そのまま呼び出し側へ伝える。
+        /// </summary>
+        public bool TryFindNewerVersion(bool startup, out Version version)
+            => changelogService.CheckNewerVersionExists(out version, appSettingsService.LastVersionChecked, false, startup);
+
+        /// <summary>起動時の自動の確認が有効で、前回の確認から設定の間隔が経っているか。</summary>
+        public bool IsStartupCheckDue()
+        {
+            if (!appSettingsService.CheckUpdateStartupEnabled) return false;
+
+            int everyVal = appSettingsService.CheckEveryValue;
+            int everyUnit = appSettingsService.CheckEveryUnit; // 0=hours, 1=days
+            double hoursToWait = (everyUnit == 0) ? everyVal : everyVal * 24.0;
+            return everyVal == 0 || DateTime.Now >= appSettingsService.LastChecked + TimeSpan.FromHours(hoursToWait);
+        }
+
+        /// <summary>確認した時刻を、いまにする。</summary>
+        public void MarkChecked() => appSettingsService.LastChecked = DateTime.Now;
+
         /// <param name="currentVersion">いま動いている版。</param>
         /// <param name="recordedVersion">版の記録ファイルの内容（ファイルがなければ空）。</param>
         /// <param name="latest">新しい版があるとき、その版。</param>

@@ -80,7 +80,7 @@ namespace DS4Windows.UI
         // タイマーの処理中に止められたとき（終了・サービス停止）、始め直さないための印
         private volatile bool hotkeysTimerActive;
         // 更新の確認の判断（画面に依存しない）
-        private UpdateCheckPolicy updateCheckPolicy;
+        private readonly UpdateCheckPolicy updateCheckPolicy;
         // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         private NonFormTimer autoProfilesTimer;
@@ -94,7 +94,6 @@ namespace DS4Windows.UI
         private readonly ProfileSelectionCoordinator profileSelection;
         private readonly DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage;   // Phase14b-Step16（D11）
         private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
-        private readonly DS4Windows.Core.Abstractions.IChangelogService changelogService;   // Phase14b-Step17（D10）: 旧 静的 Changelog   // Phase14b-Step16（旧 App.WriteIPCResultDataMMF）
         private readonly DS4Windows.Processing.Abstractions.IIpcCommandProcessor ipcProcessor;   // Phase13-Step11 11-c: 旧 MainWindow.Ipc.cs の Ipc*
         private readonly DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService の OSC／UDP／HidHide／TouchpadSlide の転送
         private readonly DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle;   // Phase13-Step9: 旧 ControlService.running／suspending の転送
@@ -126,7 +125,7 @@ namespace DS4Windows.UI
             IAutoProfileService autoProfileService,
             DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
             DS4Windows.UI.Abstractions.IUiThemeAndLanguage themeLanguage,
-            DS4Windows.Core.Abstractions.IChangelogService changelogService,
+            UpdateCheckPolicy updateCheckPolicy,
             DS4Windows.Processing.Abstractions.IControllerSlotQuery slots,
             TrayAppearanceController trayAppearance,
             ProfileSelectionCoordinator profileSelection)
@@ -134,8 +133,7 @@ namespace DS4Windows.UI
             this.trayAppearance = trayAppearance ?? throw new ArgumentNullException(nameof(trayAppearance));
             this.profileSelection = profileSelection ?? throw new ArgumentNullException(nameof(profileSelection));
             this.slots = slots ?? throw new System.ArgumentNullException(nameof(slots));
-            updateCheckPolicy = new UpdateCheckPolicy(changelogService, appSettingsService);
-            this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));   // Phase14b-Step17（D10）
+            this.updateCheckPolicy = updateCheckPolicy ?? throw new ArgumentNullException(nameof(updateCheckPolicy));
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
             this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
@@ -320,30 +318,23 @@ namespace DS4Windows.UI
             tempTask = Task.Delay(100).ContinueWith(_ =>
             {
                 // Use explicit startup-check settings persisted in Profiles.xml
-                if (appSettingsService.CheckUpdateStartupEnabled)
+                if (updateCheckPolicy.IsStartupCheckDue())
                 {
-                    int everyVal = appSettingsService.CheckEveryValue;
-                    int everyUnit = appSettingsService.CheckEveryUnit; // 0=hours, 1=days
-                    double hoursToWait = (everyUnit == 0) ? everyVal : everyVal * 24.0;
-
-                    if (everyVal == 0 || DateTime.Now >= appSettingsService.LastChecked + TimeSpan.FromHours(hoursToWait))
+                    try
                     {
-                        try
+                        if (updateCheckPolicy.TryFindNewerVersion(startup: true, out var version))
                         {
-                            if (changelogService.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, true))
-                            {
-                                DisplayUpdaterWindow(version.ToString());
-                            }
+                            DisplayUpdaterWindow(version.ToString());
                         }
-                        catch
-                        {
-                            Dispatcher.Invoke(() => MessageBox.Show(Strings.FailedToRetrieveLatestVersion, "DS4Windows Updater"));
-                            // bubble the exception up to allow to see what's wrong in the log
-                            throw;
-                        }
-
-                        appSettingsService.LastChecked = DateTime.Now;
                     }
+                    catch
+                    {
+                        Dispatcher.Invoke(() => MessageBox.Show(Strings.FailedToRetrieveLatestVersion, "DS4Windows Updater"));
+                        // bubble the exception up to allow to see what's wrong in the log
+                        throw;
+                    }
+
+                    updateCheckPolicy.MarkChecked();
                 }
 
                 // Check if main window closing was requested from app update.
@@ -1426,7 +1417,7 @@ namespace DS4Windows.UI
                 try
                 {
                     // Manual check should ignore any previously skipped version
-                    if (changelogService.CheckNewerVersionExists(out var version, appSettingsService.LastVersionChecked, false, false))
+                    if (updateCheckPolicy.TryFindNewerVersion(startup: false, out var version))
                         DisplayUpdaterWindow(version.ToString());
                     else
                         Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
