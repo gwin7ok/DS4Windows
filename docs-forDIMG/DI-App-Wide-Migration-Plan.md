@@ -1128,7 +1128,7 @@ Phase28 のあと、ブランチ `master` の全体のコードレビューを�
 | 34 | 一区切り（2026-11-16）: 土台・代表的な判断の移動（34-2〜34-5）・V1／V2 のラチェット（34-7）・規則書（34-8） | 基準値（V1: 87 件、V2: 72 件）を、画面を触るたびに減らす（34-6a／34-6b） |
 | 35 | 完了（2026-11-16） | 実機確認（最後のまとめ） |
 | 36 | A1〜A4・A6・A7・B1〜B3 完了、A5 見送り | C 部の判断項目（C1 は Phase40 へ。C6・C7 は実装しない） |
-| 37 | 37-0・37-1・37-3（`ResetProfile` の分割）完了 | 37-4（節の対）・37-5（配列の項目）・37-6（`AppSettingsDTO` の `partial`）は、保存の形に触れるため保留（理由は `Phase37-Plan.md` の実施の記録） |
+| 37 | 37-0・37-1・37-3（`ResetProfile` の分割）・37-4（節の対）完了 | 37-6（`AppSettingsDTO` の `partial`）は見送り（2026-11-16 の決定）。37-5（配列の項目）は領域ごとに少しずつ行う |
 | 38 | 完了（38-2 は見送り） | — |
 | 39 | 調査（C1・C6・C7）と `DsuClientRegistry` | — |
 | 40 | 完了（2026-11-16。40-1〜40-4。40-2 は不要と判断） | 実機確認（最後のまとめ） |
@@ -1285,7 +1285,7 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 
 **（2026-11-15更新）Phase7b〜Phase33・Phase38 は完了した。Phase34〜37・40 は一部完了。次の候補は、次のとおり。**
 
-1. **（2026-11-16更新）Phase34〜37・40 の実施の結果**: Phase40 と Phase35 は完了。Phase34 は一区切り（残りは V1・V2 の基準値の削減）。Phase37 は 37-3 まで完了で、37-4〜37-6 は保留。いずれも実機確認は、最後のまとめで行う。
+1. **（2026-11-16更新）Phase34〜37・40 の実施の結果**: Phase40 と Phase35 は完了。Phase34 は一区切り（残りは V1・V2 の基準値の削減）。Phase37 は 37-4 まで完了で、37-6 は見送り、37-5 は領域ごとに少しずつ。いずれも実機確認は、最後のまとめで行う。
 2. **Phase34 の続き（V1・V2 の基準値の削減）**: 画面を触る Step で、`ViewModelWpfReferenceBaseline`（0 件。最後の 4 件は、画像の資源名の引き当て IImageResourceLookup（CompositeDeviceModel・MacroStepItem の Application）と、キー名の表示 VirtualKeyNames（UI/Services。AssignmentDescriber の Key・KeyInterop）へ移して解消。2026-11-16 に TrayIconViewModel の 13 件、アイコン・表示切替の 16 件、Visibility の 5 件、トリガーメニューの 13 件、コレクション同期・Dispatcher・プログラムのアイコンの 14 件、出力ピッカーの選択色の 3 件、機器一覧の色メニューの 7 件、プリセットのキーの 1 件、色の型 Color・ブラシの 11 件を解消。残りは Application 2 件とキー型 2 件）・`ViewDirectServiceReferenceBaseline`（0 件。MainWindow の設定・パス・環境・サービス操作は MainWindowSettings・MainWindowEnvironment・MainWindowServiceControl と CompositeDeviceModel.SubscribeSyncChange へ移して 6 件を解消し、V2 基準は 0 件になった（計画書 Phase34-V2-MainWindow-Plan.md）。ProfileEditor の業務の参照は ProfileEditorBackend（読み込み・SA の参照・振動・較正）と StickSideViewModel.IsAxialDeadZone・SpecialActionItem.OriginalName・MappedControl.ResetSetting へ移して 9 件を解消（計画書 Phase34-V2-ProfileEditor-Plan.md）。AssignmentEditor の保存・記録・出力ピッカーの処理は AssignmentEditorSession へ移して 8 件を解消（計画書 Phase34-V2-AssignmentEditor-Plan.md）。RecordBox のマウス記録は画面側の窓口 MouseRecordingHost で解消。ControllerReadingsControl・StickCalibrationWindow・ProfileEditor の読み取りの窓口は、画面側の契約 IControllerReadingsFeed（アダプターで包む）と Core/Model へ移した ControllerReadingInfo で解消。MainWindow の自動プロファイルの監視（タイマー・接続直後の照合・通知の判定・電池の残量）は AutoProfileRunner へ移して IAutoProfileService・IControllerSlotQuery などを解消。MainWindow の IPC の窓口は MainWindowIpcHost・IpcCommandDispatcher へ分けて解消。MainWindow の更新確認は UpdateCheckPolicy へ移して IChangelogService を解消。ProfileEditor のレイアウト・言語の設定は画面側の契約 IEditorLayoutSettings で受ける形にして解消。ProfileEditor の廃止設定の警告は ProfileSettingsViewModel へ移して解消。RecordBox・RecordBoxWindow は ViewModel（と RecordBox）を工場から受ける形にして解消。OutputSlotManagerControl は接続の判断を SlotDeviceEntry へ移して解消。WelcomeDialog は画面側の契約 IDriverEnvironment を受ける形にして解消。BindingWindow は既定の割り当て・振動テストの反転・見出しを ViewModel へ移して解消。RecordBox のマクロ記録状態・マクロのフォルダは ViewModel が持つ形にして解消。AutoProfiles は初期化の値・選択位置の反映を MainWindow・ViewModel へ移して解消。確認ダイアログ 2 型とトレイ資源の表は画面ではないため UI/Services へ移して解消。SaveWhere は選択を通知する形にして解消（保存場所の適用は App）。WindowPlacementHelper・DupBox は値・複製の関数を受ける形にして解消。LanguagePackControl・LanguageSelectDialog は保存・適用の関数を受ける形にして解消。About・UpdaterWindow は、バージョン文字列・管理者判定の関数を受ける形にして解消）を減らす。
 3. **Phase37 の続き（37-4〜37-6）・Phase36 の C 部**: 判断項目。保存の形に触れる作業は、黄金テストが守る。
 4. 時期が未定の計画（§6.16。PhaseX＝KI-7［一番最後］、PhaseX3＝日本語化、PhaseX4＝KI-14）は、実施するかどうか・時期をユーザーが決める。

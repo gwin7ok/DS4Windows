@@ -48,31 +48,19 @@ namespace DS4Windows.Core.Persistence
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environment;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
-        // Phase8-Step4b W2: LoadProfile の節（Q3＝A。DI 登録せず、直列化の中で使う状態を持たない）
-        private readonly IProfileLoadSection _generalSection = new ProfileGeneralLoadSection();
-        private readonly IProfileLoadSection _touchpadBasicSection = new ProfileTouchpadBasicLoadSection();
-        private readonly IProfileLoadSection _triggerStickBasicSection = new ProfileTriggerStickBasicLoadSection();
-        private readonly IProfileLoadSection _stickAxialSection = new ProfileStickAxialLoadSection();
-        private readonly IProfileLoadSection _motionSensitivitySection = new ProfileMotionSensitivityLoadSection();
-        private readonly IProfileLoadSection _miscSection = new ProfileMiscLoadSection();
-        private readonly IProfileLoadSection _gyroControlsSection = new ProfileGyroControlsLoadSection();
-        private readonly IProfileLoadSection _gyroMouseSection = new ProfileGyroMouseLoadSection();
-        private readonly IProfileLoadSection _stickOutputSection = new ProfileStickOutputLoadSection();
-        private readonly IProfileLoadSection _triggerCurveSection = new ProfileTriggerCurveLoadSection();
-        private readonly IProfileLoadSection _touchpadMouseSection = new ProfileTouchpadMouseLoadSection();
-        private readonly IProfileLoadSection _outputControllerSection = new ProfileOutputControllerLoadSection();
-        private readonly IProfileLoadSection _profileActionsSection = new ProfileActionsLoadSection();
-        private readonly IProfileLoadSection _buttonControlSection = new ProfileButtonControlLoadSection();
-        private readonly IProfileLoadSection _buttonShiftSection = new ProfileButtonShiftLoadSection();
-        // Phase8-Step4b W6: SaveProfile の節（保存の順序）
-        private readonly IProfileSaveSection _generalSaveSection = new ProfileGeneralSaveSection();
-        private readonly IProfileSaveSection _triggerStickSaveSection = new ProfileTriggerStickSaveSection();
-        private readonly IProfileSaveSection _motionSaveSection = new ProfileMotionSaveSection();
-        private readonly IProfileSaveSection _profileActionsSaveSection = new ProfileActionsSaveSection();
+        // 読み込みと保存の節を領域ごとに対にして持つ（状態を持たず、DI 登録せず、直列化の中で使う）
+        private readonly ProfileAreaSection _general = new ProfileAreaSection("General", new ProfileGeneralSaveSection(), new ProfileGeneralLoadSection());
+        private readonly ProfileAreaSection _triggerStick = new ProfileAreaSection("TriggerStick", new ProfileTriggerStickSaveSection(),
+            new ProfileTouchpadBasicLoadSection(), new ProfileTriggerStickBasicLoadSection(), new ProfileStickAxialLoadSection());
+        private readonly ProfileAreaSection _motion = new ProfileAreaSection("Motion", new ProfileMotionSaveSection(),
+            new ProfileMotionSensitivityLoadSection(), new ProfileMiscLoadSection(), new ProfileGyroControlsLoadSection(), new ProfileGyroMouseLoadSection());
+        private readonly ProfileAreaSection _outputCurve = new ProfileAreaSection("OutputCurve", new ProfileOutputCurveSaveSection(),
+            new ProfileStickOutputLoadSection(), new ProfileTriggerCurveLoadSection(), new ProfileTouchpadMouseLoadSection());
+        private readonly ProfileAreaSection _outputController = new ProfileAreaSection("OutputController", new ProfileOutputControllerSaveSection(), new ProfileOutputControllerLoadSection());
+        private readonly ProfileAreaSection _actions = new ProfileAreaSection("Actions", new ProfileActionsSaveSection(), new ProfileActionsLoadSection());
+        private readonly ProfileAreaSection _button = new ProfileAreaSection("Button", new ProfileButtonSaveSection(),
+            new ProfileButtonControlLoadSection(), new ProfileButtonShiftLoadSection());
         private readonly ProfileIdFile _profileIdFile = new ProfileIdFile();   // Phase10-Step4d W1: プロファイルの固定 ID
-        private readonly IProfileSaveSection _outputCurveSaveSection = new ProfileOutputCurveSaveSection();
-        private readonly IProfileSaveSection _outputControllerSaveSection = new ProfileOutputControllerSaveSection();
-        private readonly IProfileSaveSection _buttonSaveSection = new ProfileButtonSaveSection();
 
 
         // Phase10-Step4d W3: Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
@@ -154,39 +142,18 @@ namespace DS4Windows.Core.Persistence
                 // profile
                 control.PreLoadReset(device);
 
-                _generalSection.Load(context);
+                _general.Load(context);
                 // Phase6-Step12: 旧形式の読込で欠けていた 10 要素。要素が無い（古いプロファイル）、または値が不正なときは、
                 // ResetProfile で設定済みの既定値のままにする（missingSetting は立てない）。
                 LoadLegacyExtraSettings(device, rootname);
 
-                _touchpadBasicSection.Load(context);
-
-                _triggerStickBasicSection.Load(context);
-
-                _stickAxialSection.Load(context);
-
-                _motionSensitivitySection.Load(context);
-
-                _miscSection.Load(context);
-
-                _gyroControlsSection.Load(context);
-
-                _gyroMouseSection.Load(context);
-
-                _stickOutputSection.Load(context);
-
-                _triggerCurveSection.Load(context);
-
-                _touchpadMouseSection.Load(context);
-
-                _outputControllerSection.Load(context);
-
-                _profileActionsSection.Load(context);
-
-                _buttonControlSection.Load(context);
+                _triggerStick.Load(context);
+                _motion.Load(context);
+                _outputCurve.Load(context);
+                _outputController.Load(context);
+                _actions.Load(context);
+                _button.Load(context);
                 ResolveControlProfileTargets(device);   // Phase10-Step4d W3
-
-                _buttonShiftSection.Load(context);
 
                 // 節が文脈へ書き戻した値を、読込の最後（保存し直し、PostLoadSnippet）が使う
                 missingSetting = context.MissingSetting;
@@ -339,17 +306,15 @@ namespace DS4Windows.Core.Persistence
 
                 FillControlProfileTargetIds(device);   // Phase10-Step4d W3
 
-                _generalSaveSection.Save(context);
+                _general.Save(context);
                 // Phase6-Step12: 旧形式（3.9.9 互換）の保存で欠けていた 10 要素（要素名は ProfileDTO と同じ。旧版は未知の要素を無視する）
                 SaveLegacyExtraSettings(rootElement, device);
-                _triggerStickSaveSection.Save(context);
-                _motionSaveSection.Save(context);
-                _profileActionsSaveSection.Save(context);
-                _outputCurveSaveSection.Save(context);
-
-                _outputControllerSaveSection.Save(context);
-
-                _buttonSaveSection.Save(context);
+                _triggerStick.Save(context);
+                _motion.Save(context);
+                _actions.Save(context);
+                _outputCurve.Save(context);
+                _outputController.Save(context);
+                _button.Save(context);
 
                 m_Xdoc.AppendChild(rootElement);
                 m_Xdoc.Save(path);
