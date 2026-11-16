@@ -443,9 +443,6 @@
   <data name="Apply" xml:space="preserve">
     <value>適用</value>
   </data>
-  <data name="HidNinja" xml:space="preserve">
-    <value>HidNinja</value>
-  </data>
   <data name="CustomExeName" xml:space="preserve">
     <value>カスタム実行ファイル名</value>
   </data>
@@ -453,9 +450,6 @@
     <value>いくつかのゲームは、実行時に DS4Windows.exe や InputMapper.exe を検出すると、そこからの入力を無視するように実装されています。その回避策として、DS4Windows.exe をリネームします。ここにカスタム実行ファイル名を指定すると、DS4Updater が自動的に DS4Windows を指定された名前にコピーして使用します。 拡張子は必ず取り除いてください。
 
 例: whyme_DS4Windows</value>
-  </data>
-  <data name="XInputChecker" xml:space="preserve">
-    <value>XInputChecker</value>
   </data>
   <data name="Controller5Text" xml:space="preserve">
     <value>コントローラー5</value>
@@ -558,9 +552,6 @@
   </data>
   <data name="UpgradeNetCaption" xml:space="preserve">
     <value>.NET ランタイムを更新してください</value>
-  </data>
-  <data name="HidHide" xml:space="preserve">
-    <value>HidHide</value>
   </data>
   <data name="HidHideConfigClient" xml:space="preserve">
     <value>HidHide 設定クライアント</value>
@@ -1135,23 +1126,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="About_Extras" xml:space="preserve">
     <value>その他</value>
   </data>
-  <data name="About_ViGEmBus" xml:space="preserve">
-    <value>ViGEmBus</value>
-  </data>
   <data name="About_ProjectURL" xml:space="preserve">
     <value>プロジェクトの URL:</value>
-  </data>
-  <data name="About_FakerInput" xml:space="preserve">
-    <value>FakerInput</value>
-  </data>
-  <data name="About_CRC32" xml:space="preserve">
-    <value>CRC32</value>
-  </data>
-  <data name="Ui_1Filter" xml:space="preserve">
-    <value>1€ Filter</value>
-  </data>
-  <data name="About_HNotifyIcon" xml:space="preserve">
-    <value>H.NotifyIcon</value>
   </data>
   <data name="AssignmentEditor_Name" xml:space="preserve">
     <value>名前:</value>
@@ -1198,80 +1174,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="BindingWindow_SelectAction" xml:space="preserve">
     <value>アクションを選択</value>
   </data>
-  <data name="BindingWindow_Esc" xml:space="preserve">
-    <value>Esc</value>
-  </data>
-  <data name="BindingWindow_BkSpace" xml:space="preserve">
-    <value>BkSpace</value>
-  </data>
-  <data name="BindingWindow_Tab" xml:space="preserve">
-    <value>Tab</value>
-  </data>
-  <data name="BindingWindow_Caps" xml:space="preserve">
-    <value>Caps</value>
-  </data>
-  <data name="BindingWindow_Enter" xml:space="preserve">
-    <value>Enter</value>
-  </data>
-  <data name="BindingWindow_LShift" xml:space="preserve">
-    <value>LShift</value>
-  </data>
-  <data name="BindingWindow_RShift" xml:space="preserve">
-    <value>RShift</value>
-  </data>
-  <data name="BindingWindow_LCtrl" xml:space="preserve">
-    <value>LCtrl</value>
-  </data>
-  <data name="BindingWindow_LWin" xml:space="preserve">
-    <value>LWin</value>
-  </data>
-  <data name="BindingWindow_LAlt" xml:space="preserve">
-    <value>LAlt</value>
-  </data>
   <data name="BindingWindow_Space" xml:space="preserve">
     <value>スペース</value>
   </data>
-  <data name="BindingWindow_RAlt" xml:space="preserve">
-    <value>RAlt</value>
-  </data>
-  <data name="BindingWindow_RWin" xml:space="preserve">
-    <value>RWin</value>
-  </data>
-  <data name="BindingWindow_RCtrl" xml:space="preserve">
-    <value>RCtrl</value>
-  </data>
-  <data name="BindingWindow_Prt" xml:space="preserve">
-    <value>Prt</value>
-  </data>
-  <data name="BindingWindow_Scl" xml:space="preserve">
-    <value>Scl</value>
-  </data>
-  <data name="BindingWindow_Brk" xml:space="preserve">
-    <value>Brk</value>
-  </data>
-  <data name="BindingWindow_Ins" xml:space="preserve">
-    <value>Ins</value>
-  </data>
-  <data name="BindingWindow_Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="BindingWindow_PgUp" xml:space="preserve">
-    <value>PgUp</value>
-  </data>
-  <data name="BindingWindow_Del" xml:space="preserve">
-    <value>Del</value>
-  </data>
-  <data name="BindingWindow_End" xml:space="preserve">
-    <value>End</value>
-  </data>
-  <data name="BindingWindow_PgDown" xml:space="preserve">
-    <value>PgDown</value>
-  </data>
   <data name="BindingWindow_Vol" xml:space="preserve">
     <value>↑ 音量</value>
-  </data>
-  <data name="BindingWindow_NumLk" xml:space="preserve">
-    <value>NumLk</value>
   </data>
   <data name="BindingWindow_Vol2" xml:space="preserve">
     <value>↓ 音量</value>
@@ -1282,92 +1189,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="ColorPickerWindow_ColorPickerWindow" xml:space="preserve">
     <value>色の選択</value>
   </data>
-  <data name="ControllerReadingsControl_LXI" xml:space="preserve">
-    <value>LX (I):</value>
-  </data>
-  <data name="ControllerReadingsControl_LXO" xml:space="preserve">
-    <value>LX (O):</value>
-  </data>
-  <data name="ControllerReadingsControl_LYI" xml:space="preserve">
-    <value>LY (I):</value>
-  </data>
-  <data name="ControllerReadingsControl_LYO" xml:space="preserve">
-    <value>LY (O):</value>
-  </data>
-  <data name="ControllerReadingsControl_RXI" xml:space="preserve">
-    <value>RX (I):</value>
-  </data>
-  <data name="ControllerReadingsControl_RXO" xml:space="preserve">
-    <value>RX (O):</value>
-  </data>
-  <data name="ControllerReadingsControl_RYI" xml:space="preserve">
-    <value>RY (I):</value>
-  </data>
-  <data name="ControllerReadingsControl_RYO" xml:space="preserve">
-    <value>RY (O):</value>
-  </data>
-  <data name="ControllerReadingsControl_TX" xml:space="preserve">
-    <value>TX:</value>
-  </data>
-  <data name="ControllerReadingsControl_TY" xml:space="preserve">
-    <value>TY:</value>
-  </data>
   <data name="GeneralSettingsPanel_ForReadout" xml:space="preserve">
     <value>読み取り用</value>
   </data>
   <data name="GeneralSettingsPanel_Mins" xml:space="preserve">
     <value>分</value>
-  </data>
-  <data name="GeneralSettingsPanel_Max1Ms" xml:space="preserve">
-    <value>Max (1 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_1000Hz1Ms" xml:space="preserve">
-    <value>1000 Hz (1 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_500Hz2Ms" xml:space="preserve">
-    <value>500 Hz (2 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_333Hz3Ms" xml:space="preserve">
-    <value>333 Hz (3 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_250Hz4Ms" xml:space="preserve">
-    <value>250 Hz (4 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_200Hz5Ms" xml:space="preserve">
-    <value>200 Hz (5 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_166Hz6Ms" xml:space="preserve">
-    <value>166 Hz (6 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_142Hz7Ms" xml:space="preserve">
-    <value>142 Hz (7 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_125Hz8Ms" xml:space="preserve">
-    <value>125 Hz (8 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_111Hz9Ms" xml:space="preserve">
-    <value>111 Hz (9 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_100Hz10Ms" xml:space="preserve">
-    <value>100 Hz (10 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_90Hz11Ms" xml:space="preserve">
-    <value>90 Hz (11 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_83Hz12Ms" xml:space="preserve">
-    <value>83 Hz (12 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_76Hz13Ms" xml:space="preserve">
-    <value>76 Hz (13 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_71Hz14Ms" xml:space="preserve">
-    <value>71 Hz (14 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_66Hz15Ms" xml:space="preserve">
-    <value>66 Hz (15 ms)</value>
-  </data>
-  <data name="GeneralSettingsPanel_62Hz16Ms" xml:space="preserve">
-    <value>62 Hz (16 ms)</value>
   </data>
   <data name="GyroSettingsPanel_TiltUp" xml:space="preserve">
     <value>上に傾ける</value>
@@ -1471,9 +1297,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="LightbarSettingsPanel_ColorByBattery" xml:space="preserve">
     <value>バッテリー残量 % で色を変える</value>
   </data>
-  <data name="MainWindow_DS4Windows" xml:space="preserve">
-    <value>DS4Windows</value>
-  </data>
   <data name="MainWindow_Open" xml:space="preserve">
     <value>開く</value>
   </data>
@@ -1495,32 +1318,17 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="MainWindow_UseCustomColor" xml:space="preserve">
     <value>カスタムの色を使う</value>
   </data>
-  <data name="Ui_Ms" xml:space="preserve">
-    <value>ms</value>
-  </data>
   <data name="MainWindow_Time" xml:space="preserve">
     <value>時刻</value>
   </data>
   <data name="MainWindow_Data" xml:space="preserve">
     <value>データ</value>
   </data>
-  <data name="OutputSettingsPanel_Xbox360" xml:space="preserve">
-    <value>Xbox 360</value>
-  </data>
-  <data name="OutputSettingsPanel_DualShock4" xml:space="preserve">
-    <value>DualShock 4</value>
-  </data>
   <data name="PluginOutDevWindow_PluginOutDevWindow" xml:space="preserve">
     <value>仮想コントローラーを接続</value>
   </data>
-  <data name="PluginOutDevWindow_DS4" xml:space="preserve">
-    <value>DS4</value>
-  </data>
   <data name="Ui_SelectPreset" xml:space="preserve">
     <value>プリセットを選択</value>
-  </data>
-  <data name="ProfileEditor_DPad" xml:space="preserve">
-    <value>DPad</value>
   </data>
   <data name="ProfileEditor_Inverted" xml:space="preserve">
     <value>反転</value>
@@ -1540,9 +1348,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="ProfileEditor_FaceButtons" xml:space="preserve">
     <value>フェイスボタン</value>
   </data>
-  <data name="ProfileEditor_WASD" xml:space="preserve">
-    <value>WASD</value>
-  </data>
   <data name="ProfileEditor_ArrowKeys" xml:space="preserve">
     <value>矢印キー</value>
   </data>
@@ -1561,20 +1366,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="StickCalibrationWindow_StickCalibration" xml:space="preserve">
     <value>スティックの校正</value>
   </data>
-  <data name="StickSettingsPanel_LS" xml:space="preserve">
-    <value>LS</value>
-  </data>
-  <data name="StickSettingsPanel_RS" xml:space="preserve">
-    <value>RS</value>
-  </data>
   <data name="StickSideSettingsView_Force" xml:space="preserve">
     <value>強制</value>
   </data>
   <data name="Unit_Degree" xml:space="preserve">
     <value>°</value>
-  </data>
-  <data name="StickSideSettingsView_Units" xml:space="preserve">
-    <value>units</value>
   </data>
   <data name="StickSideSettingsView_Sec" xml:space="preserve">
     <value>秒</value>
@@ -1638,9 +1434,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="TouchpadSettingsPanel_Share" xml:space="preserve">
     <value>シェア</value>
-  </data>
-  <data name="TouchpadSettingsPanel_PS" xml:space="preserve">
-    <value>PS</value>
   </data>
   <data name="TouchpadSettingsPanel_TouchpadClick" xml:space="preserve">
     <value>タッチパッドのクリック</value>
@@ -1945,9 +1738,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="ControllerSupportSwitchPro" xml:space="preserve">
     <value>Switch Pro コントローラーのサポート</value>
   </data>
-  <data name="Copycat" xml:space="preserve">
-    <value>Copycat</value>
-  </data>
   <data name="CopycatTip" xml:space="preserve">
     <value>Sony 製ではない DS4 コントローラー向けに、いくつかのフラグを変更します。サードパーティー製の DS4 互換機で、振動やライトバーが使えない問題が直る場合があります</value>
   </data>
@@ -2188,9 +1978,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="HipFireDelay" xml:space="preserve">
     <value>ヒップファイアの遅延</value>
   </data>
-  <data name="ID" xml:space="preserve">
-    <value>ID</value>
-  </data>
   <data name="IdleDisconnect" xml:space="preserve">
     <value>アイドル時の切断</value>
   </data>
@@ -2208,12 +1995,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="MainWin.EnableServer" xml:space="preserve">
     <value>サーバーを有効にする</value>
-  </data>
-  <data name="MainWin.OneEuroBeta" xml:space="preserve">
-    <value>1€ Beta</value>
-  </data>
-  <data name="MainWin.OneEuroMinCutoff" xml:space="preserve">
-    <value>1€ MinCutoff</value>
   </data>
   <data name="MaxTravel" xml:space="preserve">
     <value>最大移動量</value>
@@ -2413,9 +2194,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Yaw" xml:space="preserve">
     <value>ヨー</value>
   </data>
-  <data name="Appdata" xml:space="preserve">
-    <value>Appdata</value>
-  </data>
   <data name="ProgramFolder" xml:space="preserve">
     <value>プログラムのフォルダー</value>
   </data>
@@ -2505,9 +2283,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="Net8NotInstalledWinNotice" xml:space="preserve">
     <value>DS4Windows バージョン 3.3 では、お使いのシステムに .NET 8 デスクトップ ランタイムのインストールが必要になります  \n[https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer)  \n\n内容を確認したら、[OK] をクリックしてください。[キャンセル] を押すと、次回のアプリ起動時にもう一度お知らせします。</value>
-  </data>
-  <data name="OK" xml:space="preserve">
-    <value>OK</value>
   </data>
   <data name="Custom" xml:space="preserve">
     <value>カスタム</value>
