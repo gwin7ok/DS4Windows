@@ -556,4 +556,10 @@
   <data name="Browse" xml:space="preserve">
     <value>参照...</value>
   </data>
+  <data name="DinputOnly" xml:space="preserve">
+    <value />
+  </data>
+  <data name="OutContNotice" xml:space="preserve">
+    <value />
+  </data>
 </root>

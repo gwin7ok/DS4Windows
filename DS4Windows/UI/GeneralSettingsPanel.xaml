@@ -153,11 +153,11 @@
                         Margin="0,6,0,0">
                 <Label Content="{lex:Loc DS4BTPollRate}"
                        ContentStringFormat="{}{0}:"
-                       ToolTip="{lex:Loc Resources:BtPollRate}"/>
+                       ToolTip="{lex:Loc Resources:BTPollRate}"/>
                 <ComboBox x:Name="btPollRateCombo"
                           SelectedIndex="{Binding TempBTPollRateIndex,FallbackValue=4}"
                           MinWidth="140"
-                          ToolTip="{lex:Loc Resources:BtPollRate}"
+                          ToolTip="{lex:Loc Resources:BTPollRate}"
                           Margin="8,0,0,0">
                     <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_Max1Ms}"/>
                     <ComboBoxItem Content="{lex:Loc GeneralSettingsPanel_1000Hz1Ms}"/>
