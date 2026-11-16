@@ -31,7 +31,6 @@
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IIpcCommandProcessor",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
             "DS4Windows.UI.MainWindow|DS4Windows.Processing.Abstractions.IServiceLifecycle",
-            "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IProfileRepository",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Abstractions.IProfileSettingsService",

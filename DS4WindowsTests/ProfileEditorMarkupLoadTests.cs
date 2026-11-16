@@ -38,7 +38,7 @@ namespace DS4WindowsTests
                     // 読み込みに失敗すれば、その例外（InvalidCastException など）が先に出る。
                     var ex = Record.Exception(() => new DS4Windows.UI.ProfileEditor(
                         0,
-                        TestHost.GetService<DS4Windows.Core.Abstractions.IAppSettingsService>(),
+                        new DS4Windows.UI.Services.EditorLayoutSettingsAdapter(TestHost.GetService<DS4Windows.Core.Abstractions.IAppSettingsService>()),
                         TestHost.GetService<DS4Windows.Core.Abstractions.IProfileSettingsService>(),
                         TestHost.GetService<DS4Windows.UI.Abstractions.IEditorWindowFactory>(),
                         null, null, null, null, null,

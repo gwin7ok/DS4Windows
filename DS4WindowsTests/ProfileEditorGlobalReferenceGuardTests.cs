@@ -59,7 +59,7 @@ namespace DS4WindowsTests
             // Phase14d-Step3: 引数の並びは、ソースの文字列ではなくリフレクションで確かめる（書式に依存しない）
             Type[] ps = typeof(DS4Windows.UI.ProfileEditor).GetConstructors().Single().GetParameters().Select(p => p.ParameterType).ToArray();
             Assert.Equal(typeof(int), ps[0]);
-            Assert.Equal(typeof(DS4Windows.Core.Abstractions.IAppSettingsService), ps[1]);
+            Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorLayoutSettings), ps[1]);
             Assert.Equal(typeof(DS4Windows.Core.Abstractions.IProfileSettingsService), ps[2]);
             Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorWindowFactory), ps[3]);
 
