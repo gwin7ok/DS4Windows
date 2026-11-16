@@ -47,8 +47,7 @@ namespace DS4Windows.UI
     {
         private RecordBoxViewModel recordBoxVM;
         // Phase12-Step3 3e（R-3）: マウスの移動の記録（画面全体のマウス入力の監視と、記録のロジック）
-        private readonly DS4Windows.Core.Abstractions.IWindowSystem windowSystem;
-        private readonly DS4Windows.Core.Abstractions.IMouseInputHook mouseHook;
+        private readonly DS4Windows.UI.Services.MouseRecordingHost mouseHook;
         private DS4Windows.Processing.Macro.MacroPointerRecorder pointerRecorder;
         private bool limitStopRequested;
         public RecordBoxViewModel RecordBoxVM { get => recordBoxVM; }
@@ -70,9 +69,8 @@ namespace DS4Windows.UI
         /// </param>
         public RecordBox(RecordBoxViewModel viewModel,
             bool showscan, bool showPlaybackOptions,
-            DS4Windows.Core.Abstractions.IWindowSystem windowSystem, DS4Windows.Core.Abstractions.IMouseInputHook mouseHook)
+            DS4Windows.UI.Services.MouseRecordingHost mouseHook)
         {
-            this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
             this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
             InitializeComponent();
             recordBoxVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
@@ -659,8 +657,7 @@ namespace DS4Windows.UI
             if (!recordBoxVM.RecordMouseMovement) return;
 
             limitStopRequested = false;
-            pointerRecorder = new DS4Windows.Processing.Macro.MacroPointerRecorder((DS4Windows.Processing.Macro.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex,
-                windowSystem, Environment.ProcessId);
+            pointerRecorder = mouseHook.CreateRecorder((DS4Windows.Processing.Macro.MacroPointerMoveMode)recordBoxVM.PointerRecordModeIndex);
             mouseHook.PointerMoved += MouseHook_PointerMoved;
             mouseHook.ButtonChanged += MouseHook_ButtonChanged;
             if (!mouseHook.Start())

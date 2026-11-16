@@ -32,8 +32,6 @@ namespace DS4WindowsTests
             "DS4Windows.UI.ProfileEditor|DS4Windows.Core.Settings.StickDeadZoneInfo",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IControllerSlotCommands",
             "DS4Windows.UI.ProfileEditor|DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch",
-            "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IMouseInputHook",
-            "DS4Windows.UI.RecordBox|DS4Windows.Core.Abstractions.IWindowSystem",
         };
     }
 }
