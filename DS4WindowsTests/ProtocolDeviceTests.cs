@@ -101,6 +101,31 @@ namespace DS4WindowsTests
             Assert.Contains(transport.Writes, w => w.Kind == "interrupt" && w.Data[0] == 0x05);
         }
 
+        /// <summary>
+        /// 「物理コントローラーへ出力データを送る」が OFF（NoOutputData）のときは、振動・ライトバーを書かない。
+        /// 以前は、この共通のデバイス（Xbox など）が、設定を見ずに書いていた。OFF にする直前の 1 回だけ、全ての出力を止める。
+        /// </summary>
+        [Fact]
+        public void WhenOutputDataIsOff_NothingIsWritten_ExceptTheOneTimeStop()
+        {
+            var transport = new FakeHidTransport(inputReportByteLength: 8, outputReportByteLength: 8, vendorId: 0x1234, productId: 0x5678);
+            transport.EnqueueRead(HidReadStatus.Success, Report(1, 200, 80));
+            transport.EnqueueRead(HidReadStatus.Success, Report(0, 10, 80));
+
+            InputDeviceCore device = new FakeGamepadCartridge().Create(InputDeviceType.SwitchPro, transport, "Fake Gamepad", VidPidFeatureSet.DefaultDS4);
+            device.PostInit();
+            device.ModifyFeatureSetFlag(VidPidFeatureSet.NoOutputData, true);
+            using var removed = new ManualResetEventSlim();
+            device.Removal += (sender, args) => removed.Set();
+
+            device.StartUpdate();
+
+            Assert.True(removed.Wait(5000));
+            device.StopUpdate();
+            // 停止のときの「全て止める」書き込み（値が 0）だけが許される
+            Assert.DoesNotContain(transport.Writes, w => w.Kind == "interrupt" && w.Data[0] == 0x05 && w.Data[1] != 0);
+        }
+
         [Fact]
         public void TheCartridgeFollowsTheFamilyContract()
         {
