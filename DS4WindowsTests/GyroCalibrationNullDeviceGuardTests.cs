@@ -54,7 +54,7 @@ namespace DS4WindowsTests
             int end = text.IndexOf("private void ", start + 10);
             string method = text.Substring(start, end - start);
 
-            Assert.Contains("slotCommands.ResetGyroCalibration(", method);
+            Assert.Contains("backend.ResetGyroCalibration(", method);
             Assert.DoesNotContain("SixAxis", method);
         }
     }

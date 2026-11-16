@@ -52,6 +52,12 @@ namespace DS4Windows.UI.Services
             SpecialAction specialAction = null)
             => _assignments.CreateAssignmentEditor(deviceNum, profileList, targetDevice, specialAction, this);
 
+        public AssignmentEditor CreateAssignmentEditorFor(int deviceNum, ProfileList profileList, int targetDevice, SpecialActionItem item)
+            => _assignments.CreateAssignmentEditor(deviceNum, profileList, targetDevice, item?.SpecialAction, this);
+
+        public AssignmentEditor CreateControlActionEditor(int deviceNum, MappedControl control, ProfileList profileList, int targetDevice)
+            => _assignments.CreateControlActionEditor(deviceNum, control.Setting, profileList, targetDevice, this);
+
         public AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings,
             ProfileList profileList, int targetDevice)
             => _assignments.CreateControlActionEditor(deviceNum, controlSettings, profileList, targetDevice, this);

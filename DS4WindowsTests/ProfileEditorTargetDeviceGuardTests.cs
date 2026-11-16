@@ -141,7 +141,8 @@ namespace DS4WindowsTests
             var checks = new (string Call, int MinCount)[]
             {
                 ("CreateControlActionEditor(", 1),   // Phase10-Step3 W4: Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった（旧: CreateBindingWindow の 6 か所）
-                ("CreateAssignmentEditor(", 2),
+                ("CreateAssignmentEditor(", 1),
+                ("CreateAssignmentEditorFor(", 1),
                 ("CreateProfileSettingsViewModel(", 1),
             };
 

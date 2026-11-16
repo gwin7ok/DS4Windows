@@ -180,7 +180,7 @@ namespace DS4WindowsTests
             Assert.Contains("SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName)",
                 File.ReadAllText(SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs")));
             // SA の名前変更は、古いプロファイルのファイルのため、ReplaceActionReference を残している
-            Assert.Contains("profileRepository.ReplaceActionReference(oldName, newName)", File.ReadAllText(editor));
+            Assert.Contains("backend.ReplaceActionReference(oldName, newName)", File.ReadAllText(editor));
         }
     }
 }

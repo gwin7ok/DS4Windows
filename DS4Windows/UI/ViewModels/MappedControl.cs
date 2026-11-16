@@ -41,6 +41,13 @@ namespace DS4Windows.UI.ViewModels
         public int DevIndex { get => devIndex; }
         public DS4Controls Control { get => control; }
         public DS4ControlSettings Setting { get => setting; }
+
+        /// <summary>このボタンの設定を初期化する（Extras、マクロも含めて Default へ戻す）。表示名も更新する。</summary>
+        public void ResetSetting()
+        {
+            setting.Reset();
+            UpdateMappingName();
+        }
         public string ControlName { get => controlName; }
         public string MappingName { get => mappingName; }
         public OutContType DevType

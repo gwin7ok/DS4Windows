@@ -76,6 +76,9 @@ namespace DS4Windows.UI.ViewModels
             set => Mod.maxOutputForce = value;
         }
 
+        /// <summary>デッドゾーンの種類が Axial（軸ごと）か。</summary>
+        public bool IsAxialDeadZone => Mod.deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial;
+
         /// <summary>0＝Radial、1＝Axial。</summary>
         public int DeadTypeIndex
         {
