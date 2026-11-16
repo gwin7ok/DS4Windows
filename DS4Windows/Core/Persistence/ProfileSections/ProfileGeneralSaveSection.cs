@@ -55,9 +55,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 return result;
             }
 
-            XmlNode xmlTouchToggle = m_Xdoc.CreateNode(XmlNodeType.Element, "touchToggle", null); xmlTouchToggle.InnerText = store.enableTouchToggle[device].ToString(); rootElement.AppendChild(xmlTouchToggle);
-            XmlNode xmlIdleDisconnectTimeout = m_Xdoc.CreateNode(XmlNodeType.Element, "idleDisconnectTimeout", null); xmlIdleDisconnectTimeout.InnerText = store.idleDisconnectTimeout[device].ToString(); rootElement.AppendChild(xmlIdleDisconnectTimeout);
-            XmlNode xmlOutputDataToDS4 = m_Xdoc.CreateNode(XmlNodeType.Element, "outputDataToDS4", null); xmlOutputDataToDS4.InnerText = store.enableOutputDataToDS4[device].ToString(); rootElement.AppendChild(xmlOutputDataToDS4);
+            XmlNode xmlTouchToggle = m_Xdoc.CreateNode(XmlNodeType.Element, "touchToggle", null); xmlTouchToggle.InnerText = store.basicSlots[device].EnableTouchToggle.ToString(); rootElement.AppendChild(xmlTouchToggle);
+            XmlNode xmlIdleDisconnectTimeout = m_Xdoc.CreateNode(XmlNodeType.Element, "idleDisconnectTimeout", null); xmlIdleDisconnectTimeout.InnerText = store.basicSlots[device].IdleDisconnectTimeout.ToString(); rootElement.AppendChild(xmlIdleDisconnectTimeout);
+            XmlNode xmlOutputDataToDS4 = m_Xdoc.CreateNode(XmlNodeType.Element, "outputDataToDS4", null); xmlOutputDataToDS4.InnerText = store.basicSlots[device].EnableOutputDataToDS4.ToString(); rootElement.AppendChild(xmlOutputDataToDS4);
             XmlNode xmlColor = m_Xdoc.CreateNode(XmlNodeType.Element, "Color", null);
             xmlColor.InnerText = lightInfo.m_Led.red.ToString() + "," + lightInfo.m_Led.green.ToString() + "," + lightInfo.m_Led.blue.ToString();
             rootElement.AppendChild(xmlColor);

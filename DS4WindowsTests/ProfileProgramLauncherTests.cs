@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         private static (ProfileProgramLauncher Launcher, FakeInspector Inspector, RecordingLauncher Process, ManualTimeProvider Time) Create(string program)
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new BackingStore(new EnvironmentService()));
-            settings.LaunchProgram[0] = program;
+            settings.BasicSlot(0).LaunchProgram = program;
             var inspector = new FakeInspector();
             var process = new RecordingLauncher();
             var time = new ManualTimeProvider();

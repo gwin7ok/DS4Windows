@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Output;
-            bool dinputOnly = service.DinputOnly[0];
+            bool dinputOnly = service.BasicSlot(0).DinputOnly;
             byte boost = service.RumbleBoost[0];
             int autostop = service.GetRumbleAutostopTime(0);
             bool inverse = service.InverseRumbleMotors[0];
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
                 var names = new List<string>();
                 vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
                 vm.DInputOnly = !dinputOnly;
-                Assert.Equal(!dinputOnly, service.DinputOnly[0]);
+                Assert.Equal(!dinputOnly, service.BasicSlot(0).DinputOnly);
                 Assert.Contains(nameof(OutputSettingsViewModel.DInputOnly), names);
 
                 vm.RumbleBoost = 150;
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                service.DinputOnly[0] = dinputOnly;
+                service.BasicSlot(0).DinputOnly = dinputOnly;
                 service.RumbleBoost[0] = boost;
                 service.SetRumbleAutostopTime(0, autostop);
                 service.InverseRumbleMotors[0] = inverse;

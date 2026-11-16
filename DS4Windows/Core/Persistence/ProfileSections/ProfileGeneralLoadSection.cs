@@ -21,7 +21,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchToggle"); Boolean.TryParse(Item.InnerText, out store.enableTouchToggle[device]); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchToggle"); { Boolean.TryParse(Item.InnerText, out bool touchToggle); store.basicSlots[device].EnableTouchToggle = touchToggle; } }
             catch { missingSetting = true; }
 
             try
@@ -29,12 +29,12 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/idleDisconnectTimeout");
                 if (int.TryParse(Item?.InnerText ?? "", out int temp))
                 {
-                    store.idleDisconnectTimeout[device] = temp;
+                    store.basicSlots[device].IdleDisconnectTimeout = temp;
                 }
             }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/outputDataToDS4"); Boolean.TryParse(Item.InnerText, out store.enableOutputDataToDS4[device]); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/outputDataToDS4"); { Boolean.TryParse(Item.InnerText, out bool outputData); store.basicSlots[device].EnableOutputDataToDS4 = outputData; } }
             catch { missingSetting = true; }
 
             try

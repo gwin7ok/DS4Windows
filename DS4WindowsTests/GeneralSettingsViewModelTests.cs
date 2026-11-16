@@ -82,25 +82,25 @@ namespace DS4WindowsTests
         {
             var service = TestGlobals.ProfileSettingsServiceInstance;
             var vm = ProfileSettingsViewModelTestFactory.Create(0).General;
-            int idle = service.IdleDisconnectTimeout[0];
-            int poll = service.BTPollRate[0];
-            string program = service.LaunchProgram[0];
-            bool toggle = service.EnableTouchToggle[0];
+            int idle = service.BasicSlot(0).IdleDisconnectTimeout;
+            int poll = service.BasicSlot(0).BTPollRate;
+            string program = service.BasicSlot(0).LaunchProgram;
+            bool toggle = service.BasicSlot(0).EnableTouchToggle;
             try
             {
                 // 無操作での切断: 分で入れると、設定は秒で持つ。有効にすると既定の時間になる
                 vm.IdleDisconnectExists = true;
-                Assert.Equal(BackingStore.DEFAULT_ENABLE_IDLE_DISCONN_MINS * 60, service.IdleDisconnectTimeout[0]);
+                Assert.Equal(BackingStore.DEFAULT_ENABLE_IDLE_DISCONN_MINS * 60, service.BasicSlot(0).IdleDisconnectTimeout);
                 vm.IdleDisconnect = 7;
-                Assert.Equal(420, service.IdleDisconnectTimeout[0]);
+                Assert.Equal(420, service.BasicSlot(0).IdleDisconnectTimeout);
                 vm.IdleDisconnectExists = false;
-                Assert.Equal(0, service.IdleDisconnectTimeout[0]);
+                Assert.Equal(0, service.BasicSlot(0).IdleDisconnectTimeout);
 
                 vm.TempBTPollRateIndex = 3;
-                Assert.Equal(3, service.BTPollRate[0]);
+                Assert.Equal(3, service.BasicSlot(0).BTPollRate);
 
                 vm.EnableTouchpadToggle = !toggle;
-                Assert.Equal(!toggle, service.EnableTouchToggle[0]);
+                Assert.Equal(!toggle, service.BasicSlot(0).EnableTouchToggle);
 
                 // プログラムの同時起動: 設定すると関連する表示用の項目が再通知される
                 var names = new List<string>();
@@ -110,15 +110,15 @@ namespace DS4WindowsTests
                 Assert.Equal("notepad", vm.LaunchProgramName);
                 Assert.Contains(nameof(GeneralSettingsViewModel.LaunchProgramIconPath), names);
                 vm.LaunchProgramExists = false;
-                Assert.Equal(string.Empty, service.LaunchProgram[0]);
+                Assert.Equal(string.Empty, service.BasicSlot(0).LaunchProgram);
                 Assert.Equal("Browse", vm.LaunchProgramName);
             }
             finally
             {
-                service.IdleDisconnectTimeout[0] = idle;
-                service.BTPollRate[0] = poll;
-                service.LaunchProgram[0] = program;
-                service.EnableTouchToggle[0] = toggle;
+                service.BasicSlot(0).IdleDisconnectTimeout = idle;
+                service.BasicSlot(0).BTPollRate = poll;
+                service.BasicSlot(0).LaunchProgram = program;
+                service.BasicSlot(0).EnableTouchToggle = toggle;
             }
         }
 

@@ -267,13 +267,12 @@ namespace DS4Windows.Core.Settings
 
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
         public ButtonMouseInfo[] ButtonMouseInfos => SafeConfig?.buttonMouseInfos;
-        public bool[] EnableTouchToggle => SafeConfig?.enableTouchToggle;
-        public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.enableTouchToggle != null && SafeConfig.enableTouchToggle[deviceIndex];
+        public BasicSlotSettings BasicSlot(int slot) => SafeConfig?.basicSlots[slot];
+        public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.basicSlots[deviceIndex].EnableTouchToggle;
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
 
         // ---- Step10-2-A-8: 残余設定・デバイスオプション (m_Config委譲) ----
-        public int[] BTPollRate => SafeConfig?.btPollRate;
         public bool DS4Mapping
         {
             get => SafeConfig != null && SafeConfig.ds4Mapping;
@@ -282,9 +281,6 @@ namespace DS4Windows.Core.Settings
                 if (SafeConfig != null) SafeConfig.ds4Mapping = value;
             }
         }
-        public bool[] DinputOnly => SafeConfig?.dinputOnly;
-        public int[] IdleDisconnectTimeout => SafeConfig?.idleDisconnectTimeout;
-        public bool[] EnableOutputDataToDS4 => SafeConfig?.enableOutputDataToDS4;
 
         // Issue7是正: Global.OutContType と同一の _config.outputDevType への読み取り専用委譲。
         public OutContType[] OutContType => SafeConfig?.outputDevType;
@@ -302,11 +298,10 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public string[] LaunchProgram => SafeConfig?.launchProgram;
-        public int GetBTPollRate(int deviceIndex) => SafeConfig != null && SafeConfig.btPollRate != null ? SafeConfig.btPollRate[deviceIndex] : 0;
-        public bool GetDInputOnly(int deviceIndex) => SafeConfig != null && SafeConfig.dinputOnly != null && SafeConfig.dinputOnly[deviceIndex];
-        public int GetIdleDisconnectTimeout(int deviceIndex) => SafeConfig != null && SafeConfig.idleDisconnectTimeout != null ? SafeConfig.idleDisconnectTimeout[deviceIndex] : 0;
-        public bool GetEnableOutputDataToDS4(int deviceIndex) => SafeConfig != null && SafeConfig.enableOutputDataToDS4 != null && SafeConfig.enableOutputDataToDS4[deviceIndex];
+        public int GetBTPollRate(int deviceIndex) => SafeConfig != null ? SafeConfig.basicSlots[deviceIndex].BTPollRate : 0;
+        public bool GetDInputOnly(int deviceIndex) => SafeConfig != null && SafeConfig.basicSlots[deviceIndex].DinputOnly;
+        public int GetIdleDisconnectTimeout(int deviceIndex) => SafeConfig != null ? SafeConfig.basicSlots[deviceIndex].IdleDisconnectTimeout : 0;
+        public bool GetEnableOutputDataToDS4(int deviceIndex) => SafeConfig != null && SafeConfig.basicSlots[deviceIndex].EnableOutputDataToDS4;
         public DS4ControlSettings GetDS4CSetting(int deviceIndex, string control) => SafeConfig?.GetDS4CSetting(deviceIndex, control);
         public DS4ControlSettings GetDS4CSetting(int deviceIndex, DS4Controls control) => SafeConfig?.GetDS4CSetting(deviceIndex, control);
 

@@ -43,9 +43,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/BTPollRate");
                 int temp = 0;
                 int.TryParse(Item.InnerText, out temp);
-                store.btPollRate[device] = (temp >= 0 && temp <= 16) ? temp : 4;
+                store.basicSlots[device].BTPollRate = (temp >= 0 && temp <= 16) ? temp : 4;
             }
-            catch { store.btPollRate[device] = 4; missingSetting = true; }
+            catch { store.basicSlots[device].BTPollRate = 4; missingSetting = true; }
 
             // Note! xxOutputCurveCustom property needs to be read before xxOutputCurveMode property in case the curveMode is value 6
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveCustom"); store.stickSlots[device].LsBezier.CustomDefinition = Item.InnerText; }

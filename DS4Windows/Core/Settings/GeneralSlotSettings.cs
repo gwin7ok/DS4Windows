@@ -30,34 +30,34 @@ namespace DS4Windows.Core.Settings
 
         public bool EnableTouchToggle
         {
-            get => _settings.EnableTouchToggle[_slot];
-            set => _settings.EnableTouchToggle[_slot] = value;
+            get => _settings.BasicSlot(_slot).EnableTouchToggle;
+            set => _settings.BasicSlot(_slot).EnableTouchToggle = value;
         }
 
         public bool EnableOutputDataToDS4
         {
-            get => _settings.EnableOutputDataToDS4[_slot];
-            set => _settings.EnableOutputDataToDS4[_slot] = value;
+            get => _settings.BasicSlot(_slot).EnableOutputDataToDS4;
+            set => _settings.BasicSlot(_slot).EnableOutputDataToDS4 = value;
         }
 
         /// <summary>プロファイルと一緒に起動するプログラムのパス（なければ空）。</summary>
         public string LaunchProgram
         {
-            get => _settings.LaunchProgram[_slot];
-            set => _settings.LaunchProgram[_slot] = value;
+            get => _settings.BasicSlot(_slot).LaunchProgram;
+            set => _settings.BasicSlot(_slot).LaunchProgram = value;
         }
 
         /// <summary>無操作で切断するまでの時間（秒。0 なら無効）。</summary>
         public int IdleDisconnectTimeoutSeconds
         {
-            get => _settings.IdleDisconnectTimeout[_slot];
-            set => _settings.IdleDisconnectTimeout[_slot] = value;
+            get => _settings.BasicSlot(_slot).IdleDisconnectTimeout;
+            set => _settings.BasicSlot(_slot).IdleDisconnectTimeout = value;
         }
 
         public int BTPollRate
         {
-            get => _settings.BTPollRate[_slot];
-            set => _settings.BTPollRate[_slot] = value;
+            get => _settings.BasicSlot(_slot).BTPollRate;
+            set => _settings.BasicSlot(_slot).BTPollRate = value;
         }
     }
 }

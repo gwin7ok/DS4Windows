@@ -166,15 +166,9 @@ namespace DS4Windows.Core.Settings
             new ButtonMouseInfo(), new ButtonMouseInfo(), new ButtonMouseInfo(),
         };
 
-        public bool[] enableTouchToggle = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_TOUCH_TOGGLE, DEFAULT_TOUCH_TOGGLE, DEFAULT_TOUCH_TOGGLE,
-          DEFAULT_TOUCH_TOGGLE, DEFAULT_TOUCH_TOGGLE, DEFAULT_TOUCH_TOGGLE,
-          DEFAULT_TOUCH_TOGGLE, DEFAULT_TOUCH_TOGGLE, DEFAULT_TOUCH_TOGGLE };
-        public int[] idleDisconnectTimeout = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public bool[] enableOutputDataToDS4 = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4,
-          DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4,
-          DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4, DEFAULT_OUTPUT_TO_DS4 };
+        /// <summary>基本的な設定（タッチパッドの切り替え、無操作での切断、出力データ、BT のポーリング、起動プログラム、DInput のみ）の持ち主（スロットごとに 1 つ）。</summary>
+        public readonly BasicSlotSettings[] basicSlots = new BasicSlotSettings[ControllerLimits.TestProfileItemCount];
+
         public ProfileSlotNames profilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames olderProfilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames selectedProfile = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
@@ -206,10 +200,6 @@ namespace DS4Windows.Core.Settings
         // Rotation angle expressed in radians
 
 
-        public int[] btPollRate = new int[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
-          DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE,
-          DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE, DEFAULT_DS4_BT_POLL_RATE };
 
 
 
@@ -225,11 +215,6 @@ namespace DS4Windows.Core.Settings
 
 
         public int processPriority;
-        public string[] launchProgram = new string[ControllerLimits.TestProfileItemCount] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-        public bool[] dinputOnly = new bool[ControllerLimits.TestProfileItemCount]
-        { DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY,
-          DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY,
-          DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY, DEFAULT_DINPUT_ONLY };
 
         public RumbleSettings[] rumbleSettings = new RumbleSettings[ControllerLimits.TestProfileItemCount]
                 {
@@ -497,6 +482,7 @@ namespace DS4Windows.Core.Settings
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
             for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
+            for (int i = 0; i < basicSlots.Length; i++) basicSlots[i] = new BasicSlotSettings(i);
             for (int i = 0; i < dualSenseSlots.Length; i++) dualSenseSlots[i] = new DualSenseSlotSettings(i);
             for (int i = 0; i < lightbarSlots.Length; i++) lightbarSlots[i] = new LightbarSlotSettings(i);
             for (int i = 0; i < stickSlots.Length; i++) stickSlots[i] = new StickSlotSettings(i);
@@ -981,18 +967,13 @@ namespace DS4Windows.Core.Settings
             removedShiftSettings[device].Clear();
             buttonMouseInfos[device].Reset();
 
-            enableTouchToggle[device] = DEFAULT_TOUCH_TOGGLE;
-            idleDisconnectTimeout[device] = 0;
-            enableOutputDataToDS4[device] = DEFAULT_OUTPUT_TO_DS4;
             inverseRumbleMotors[device] = false;
             outputDS4TriggerMode[device] = DEFAULT_DS4_TRIGGER_OUTPUT;
             rumble[device] = DEFAULT_RUMBLE;
             rumbleAutostopTime[device] = 0;
-            btPollRate[device] = DEFAULT_DS4_BT_POLL_RATE;
-            launchProgram[device] = string.Empty;
-            dinputOnly[device] = DEFAULT_DINPUT_ONLY;
             outputDevType[device] = DEFAULT_OUT_CONT_TYPE;
 
+            basicSlots[device].ResetForProfileLoad();
             gyroSlots[device].ResetForProfileLoad();
             touchpadSlots[device].ResetForProfileLoad();
             stickSlots[device].ResetForProfileLoad();
@@ -1018,9 +999,9 @@ namespace DS4Windows.Core.Settings
                 bool exists = tempBool = (tempDevice != null);
                 bool synced = tempBool = exists ? tempDevice.isSynced() : false;
                 bool isAlive = tempBool = exists ? tempDevice.IsAlive() : false;
-                if (dinputOnly[device] != oldUseDInputOnly)
+                if (basicSlots[device].DinputOnly != oldUseDInputOnly)
                 {
-                    if (dinputOnly[device] == true)
+                    if (basicSlots[device].DinputOnly == true)
                     {
                         xinputPlug = false;
                         xinputStatus = true;
@@ -1031,7 +1012,7 @@ namespace DS4Windows.Core.Settings
                         xinputStatus = true;
                     }
                 }
-                else if (!dinputOnly[device] &&
+                else if (!basicSlots[device].DinputOnly &&
                     oldContType != outputDevType[device])
                 {
                     xinputPlug = true;

@@ -90,3 +90,8 @@ D1＝**B（節の対 37-4 と、配列のままの項目の整理 37-5 も）**�
 - 配列のまま残る項目のうち、DualSense 固有の 3 項目（振動のエミュレーション方式、汎用の振動の再スケール、ハプティックの強さ）を `DualSenseSlotSettings`（スロットごとに 1 つ。`BackingStore.dualSenseSlots`）へ移した。`IProfileSettingsService` の 3 つの配列プロパティは `DualSenseSlot(int slot)` 1 つに替えた。プロファイルの読み込み前の初期化では戻さない（従来どおり）。
 - 保存の XML は不変（XML のゴールデンは無変更で合格）。状態のダンプのゴールデン 6 件は、項目の経路名だけが変わる（値は同一であることを差分で確認して採用）。
 - 残る配列の項目（次の領域の候補）: 振動（`rumble`・`rumbleAutostopTime`・`rumbleSettings`・`inverseRumbleMotors`。`RumbleSettings` との二重の持ち方がある）、一般（`enableTouchToggle`・`idleDisconnectTimeout`・`enableOutputDataToDS4`・`btPollRate`・`launchProgram`・`dinputOnly`・`buttonMouseInfos`）、出力の種類（`outputDevType`・`outputVirtualTriggerButtons`）ほか。
+
+### 2026-11-16（37-5 領域 2: 基本的な設定。ブランチ `Phase37-5-General`）
+- 配列のまま残っていた 6 項目（`enableTouchToggle`・`idleDisconnectTimeout`・`enableOutputDataToDS4`・`btPollRate`・`launchProgram`・`dinputOnly`）を `BasicSlotSettings`（`BackingStore.basicSlots`）へ移した。既定値はこの型のコンストラクターと `ResetForProfileLoad`（`ResetProfile` から呼ぶ）に 1 か所で持つ。`IProfileSettingsService` の 6 つの配列プロパティは `BasicSlot(int slot)` 1 つに替えた（`Get*` の単発の取得は、実行中の呼び出しのため残した）。`buttonMouseInfos` は、すでに項目ごとのオブジェクトなので対象外。`UseDInputOnlyArray`（実行中の状態）は別物で、そのまま。
+- 保存の XML は不変。状態ダンプのゴールデン 5 件は経路名だけが変わる（並べ替えて比べ、値が同一であることを確認して採用）。
+- 残る領域の候補: 振動（`rumble`・`rumbleAutostopTime`・`rumbleSettings`・`inverseRumbleMotors`）、出力の種類（`outputDevType`・`outputVirtualTriggerButtons`・`outputDS4TriggerMode`）ほか。
