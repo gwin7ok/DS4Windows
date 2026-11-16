@@ -40,6 +40,7 @@
 - 通常の Phase では、既存の `AppLogger.LogToGui`、`AppLogger.LogTrace`、`AppLogger.LogDebug` 等のログ出力とログレベル（文言を含む）を完全に維持する。
 - **例外（2026-11-03 追記。Phase12-Step1）**: ログ整理の Phase（Phase13b＝L2）に限り、`docs-forDIMG/MadeByAgent/Log-Policy.md` に沿った変更を許可する。変更は「レベルのみ／文言／削除」に分けて記録し、利用者に見える GUI・トレイのログの変更は一覧で承認を得る（Phase8-Step8-Q7 の前例）。
 - 新規に書くコードは、最初から `Log-Policy.md` に沿って書く。利用者向けの文言（画面・トレイに出るもの）は、文字列を直接渡さず、`AppLogger.LogUser(level, "Log_…", 引数…)`（画面は表示言語、ファイルは英語）と `Strings.resx`／`Strings.ja.resx` のキーで書く（2026-11-08 追記。Phase15-0）。開発者向けの診断文（例外の全文など）は英語のままでよい。
+- **画面の文言（2026-11-16 追記。PhaseX3）**: XAML に表示文字を直接書かない。`{lex:Loc キー}` を使い、`Strings.resx` と `Strings.ja.resx`（または `Resources` の対）の両方へ同じキーで足す（日本語は `docs-forDIMG/MadeByAgent/PhaseX3-Glossary.md` の用語集に従う。「Special Action」は「スペシャルアクション」）。製品名・キー名・単位・軸の略号を英語のまま残すときは、日本語側にも同じ値を置き、`LocalizationResourceTests` の許可リストへ足す。`LocalizationResourceTests` が、キーの欠け・英語のまま残る日本語・`{0}` の不一致・XAML の直書きを検査する。
 - DI 境界を通過する重要操作には、標準化ログ接頭辞 `[DI]` を付与して追跡性を高める（維持）。
 
 ### 2.4 未参照コード（呼出元0件のクラス・メソッド等）の扱い
