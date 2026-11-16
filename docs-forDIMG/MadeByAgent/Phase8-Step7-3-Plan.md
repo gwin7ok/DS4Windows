@@ -9,7 +9,7 @@
 
 ## 1. 目的
 
-Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の Macro の分岐）から、統一ディスパッチ（エンジン）へ切り替える。7.1・7.2 と同じ運用: `ServiceRegistration` の既定の一覧に `Macro` を 1 行足すと切り替わり、外すと戻る。旧コードは Step8 まで残す。マクロの再生そのもの（`Mapping.PlayMacro`／`PlayMacroTask`）は変更しない。
+Macro 種別のスペシャルアクションを、旧ループ（`MapCustomAction` の Macro の分岐）から、統一ディスパッチ（エンジン）へ切り替える。7.1・7.2 と同じ運用: `ServiceRegistration` の既定の一覧に `Macro` を 1 行足すと切り替わり、外すと戻る。旧コードは Step8 まで残す。マクロの再生そのもの（`Mapping.PlayMacro`／`PlayMacroTask`）は変更しない。
 
 ## 2. 現状の調査
 
@@ -87,7 +87,7 @@ Macro 種別の特殊アクションを、旧ループ（`MapCustomAction` の M
 
 - **Alt-Tab**: Q1 のとおり。W1 で、旧・新の `EndMacro` の呼び出しを比べる。
 - **二重実行**: 再生の入口（`PlayMacro` の二重実行の防止［K3］）は変更しない。W1 で、押している間に再生が増えないことを確認。
-- **観察（変更しない）**: `PlayMacroDirect` が `new bool[4]` を渡すため、特殊アクション経由のマクロのボタン出力の手順（`macroControl` の 4 要素より後ろ）は、共有の `macroControl` に反映されない。旧経路もこの入口を通るため、新経路で差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
+- **観察（変更しない）**: `PlayMacroDirect` が `new bool[4]` を渡すため、スペシャルアクション経由のマクロのボタン出力の手順（`macroControl` の 4 要素より後ろ）は、共有の `macroControl` に反映されない。旧経路もこの入口を通るため、新経路で差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
 - **ロールバック**: `ServiceRegistration` の Macro の 1 行を外す。
 
 ## 6. 完了条件

@@ -248,7 +248,7 @@
 
 - `Global`・`Program.rootHub`・`ServiceProviderHolder` の撤廃と、`AppHost` の暗黙のホスト構築の禁止。`Func<T>` の遅延取得が本物の循環 2 件だけに絞られ、許可リストのテスト（`Phase13FuncRatchetGuardTests`）で固定されている。
 - 第2層の処理が状態なしの部品（`StickDeadZoneProcessor` など 13 個）に分かれ、状態は保持クラス（`StickMotionState` ほか）に集まっている（目標像の方針1に沿う）。
-- 統一トリガーディスパッチ（`ITriggerDispatchEngine`／`IActionRegistry`／`IActionBindingBuilder`）で、特殊アクションと Controls タブの経路が 1 本になった。
+- 統一トリガーディスパッチ（`ITriggerDispatchEngine`／`IActionRegistry`／`IActionBindingBuilder`）で、スペシャルアクションと Controls タブの経路が 1 本になった。
 - 第2層から外への操作が、用途別のポート（`IGyroCalibrationPort`、`IBatteryCheckPort`、`IControlExtrasPort` ほか）として切り出されている。
 - フォルダ＝名前空間＝層の対応が、テストで固定されている。
 

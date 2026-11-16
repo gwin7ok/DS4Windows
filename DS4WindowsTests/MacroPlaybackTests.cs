@@ -12,8 +12,8 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="MacroPlayback"/>（旧 <c>Mapping.PlayMacro</c> ほか）の予約・再生・後始末の特性化。
-    /// 特殊アクションを介する経路（同期キュー、押している間の繰り返し）は、入口の <c>PlayMacroDirect</c> を通る既存の挙動テストが守る。
-    /// ここでは、特殊アクションなし（単発の背景 Task）の再生と、文字列・配列・リストの手順、切断時のキューのクリアを調べる。
+    /// スペシャルアクションを介する経路（同期キュー、押している間の繰り返し）は、入口の <c>PlayMacroDirect</c> を通る既存の挙動テストが守る。
+    /// ここでは、スペシャルアクションなし（単発の背景 Task）の再生と、文字列・配列・リストの手順、切断時のキューのクリアを調べる。
     /// </summary>
     public class MacroPlaybackTests
     {
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Play_ReleasesAKeyThatIsStillDown_WhenTheMacroEnds()
         {
-            // 手順が 65 だけ（押したまま）。特殊アクションなし（keepKeyState の指定なし）なので、終わりに 65 をもう一度実行して離す
+            // 手順が 65 だけ（押したまま）。スペシャルアクションなし（keepKeyState の指定なし）なので、終わりに 65 をもう一度実行して離す
             var executor = new CountingExecutor();
             new MacroPlayback(TestLightbar.State, executor, new MacroRuntimeState(), TestActions.Manager, System.TimeProvider.System).Play(0, string.Empty, new List<int> { 65 }, null, DS4KeyType.None);
 

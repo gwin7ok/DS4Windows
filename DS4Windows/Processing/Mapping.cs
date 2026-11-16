@@ -284,7 +284,7 @@ namespace DS4Windows.Processing
         // IsToggledOn lifecycle is managed by Action implementations (e.g., KeyAction).
         // Mapping must not mutate per-action IsToggledOn state.
 
-        // Phase8-Step8 8b: 旧 oldnowKeyAct（タップ判定の特殊アクションの基準時刻）は、旧枝と一緒に削除した。
+        // Phase8-Step8 8b: 旧 oldnowKeyAct（タップ判定のスペシャルアクションの基準時刻）は、旧枝と一緒に削除した。
         // （Phase8-Step4 W4: 旧 nowAction／oldnowAction は _triggerInputs[device].Delay に置き換え済み）
 
         // Mouse
@@ -607,7 +607,7 @@ namespace DS4Windows.Processing
             }
         }
 
-        // Phase7b W1: プロファイル切替の特殊アクション（「Unload on trigger release」など）の復帰の合図を、
+        // Phase7b W1: プロファイル切替のスペシャルアクション（「Unload on trigger release」など）の復帰の合図を、
         // ActionManager.ClearDeviceState（内部の HandleDeviceDisconnect が deviceRuntime を作り直す）の前後で保つための退避・復元。
         // 旧: プロファイルの適用のたびに合図が消え、トリガーを離しても元のプロファイルへ戻らなかった。
         public ProfileUntriggerSnapshot CaptureProfileUntrigger(int device)

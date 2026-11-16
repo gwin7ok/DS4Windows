@@ -34,7 +34,7 @@ namespace DS4Windows.Processing.Macro
         /// <summary>デバイスごとの、出力中のマクロのキー数（旧: <c>macroCount</c>）。0 より大きい間、<c>MapCustom</c> が <c>MacroControl</c> を出力へ重ねる。</summary>
         public uint[] MacroCount { get; }
 
-        /// <summary>デバイスごと、特殊アクション名ごとの、マクロの実行 Task の連鎖（旧: <c>macroTaskQueue</c>）。</summary>
+        /// <summary>デバイスごと、スペシャルアクション名ごとの、マクロの実行 Task の連鎖（旧: <c>macroTaskQueue</c>）。</summary>
         public Dictionary<string, Task>[] TaskQueue { get; }
 
         public MacroRuntimeState()

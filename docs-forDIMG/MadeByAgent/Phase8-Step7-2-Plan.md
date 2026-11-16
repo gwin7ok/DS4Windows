@@ -9,7 +9,7 @@
 
 ## 1. 目的
 
-Key 種別の特殊アクション（キーボードのキーの出力。Press／Toggle／リピート）を、旧ループ（`MapCustomAction` の Key の分岐）から、統一ディスパッチ（エンジン）へ切り替える。1 行（`ServiceRegistration` の既定の一覧に `Key` を足す）で切り替わり、外すと戻る（Q2＝A の 7.1 と同じ運用）。旧コードは Step8 まで残す。
+Key 種別のスペシャルアクション（キーボードのキーの出力。Press／Toggle／リピート）を、旧ループ（`MapCustomAction` の Key の分岐）から、統一ディスパッチ（エンジン）へ切り替える。1 行（`ServiceRegistration` の既定の一覧に `Key` を足す）で切り替わり、外すと戻る（Q2＝A の 7.1 と同じ運用）。旧コードは Step8 まで残す。
 
 ## 2. 現状の調査
 

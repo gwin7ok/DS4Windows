@@ -8,7 +8,7 @@
 
 | ID | 種別 | 内容 | 状態 |
 |---|---|---|---|
-| R-1 | 機能追加 | SA（特殊アクション）の複製ボタン | **実装済み・実機確認 OK（d857afa）**（複製は無効で追加。名前は「元の名前 (Copy)」） |
+| R-1 | 機能追加 | SA（スペシャルアクション）の複製ボタン | **実装済み・実機確認 OK（d857afa）**（複製は無効で追加。名前は「元の名前 (Copy)」） |
 | R-2 | 機能追加 | マクロの再生モードに、「繰り返し実行する状態をトグルする」機能（押すたびに、繰り返しの開始・停止が切り替わる）を追加 | **実装済み・実機確認 OK（チェックリスト §51）**（`R2-MacroToggleRepeat-Plan.md`、[Issue #1](https://github.com/gwin7ok/DS4Windows/issues/1)） |
 | R-3 | 機能追加 | マクロに、マウスポインタを移動する機能を追加 | **実装済み・実機確認 OK（Phase12-Step3。`Phase12-Step3-Plan.md`）**（[Issue #2](https://github.com/gwin7ok/DS4Windows/issues/2)。絶対／ウィンドウ基準の移動、記録画面での記録・数値編集。**4.3.0 で公開済み**、Issue クローズ済み） |
 | R-4 | 機能追加 | 割り当て機能（SA）に、プログラム（ウィンドウ）をフォーカスする機能を追加 | **実装済み・実機確認 OK（Phase12-Step2。`Phase12-Step2-Plan.md`）**（[Issue #3](https://github.com/gwin7ok/DS4Windows/issues/3)。**4.3.0 で公開済み**、Issue クローズ済み） |

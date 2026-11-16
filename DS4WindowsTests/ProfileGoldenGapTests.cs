@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// 節ごとの分解（W2 以降）の前に、既存のゴールデン（<c>GoldenPersistenceTests</c>）で未検証だった節を固定する。
     /// <list type="bullet">
     /// <item><description>gap: 状態の自動入力（<c>BackingStoreStateFiller</c>）が変えられない項目（曲線のモード＝private なフィールド、ライトバーのモード、
-    /// 特殊アクション［<c>ProfileActions</c>］、ステアリングホイールの平滑化、タッチパッドの反転の無効トリガー、外周の結合不感帯）を、明示的に変えた状態。</description></item>
+    /// スペシャルアクション［<c>ProfileActions</c>］、ステアリングホイールの平滑化、タッチパッドの反転の無効トリガー、外周の結合不感帯）を、明示的に変えた状態。</description></item>
     /// <item><description>legacy: 旧形式の読込専用の要素（<c>UseSAforMouse</c>、<c>UseTPforControls</c>、<c>GyroSmoothing</c>、<c>GyroSmoothingWeight</c>、<c>ShiftModifier</c>）の経路。</description></item>
     /// <item><description>minimal: 要素がほとんどない XML（欠けた設定の経路。読込後に欠けた設定を追記して保存し直す動作を含む）。</description></item>
     /// </list>
@@ -51,7 +51,7 @@ namespace DS4WindowsTests
 
             store.lightbarSlots[slot].Info.mode = LightbarMode.Passthru;
 
-            // 特殊アクション（Step5 の入力になる節）
+            // スペシャルアクション（Step5 の入力になる節）
             store.profileActions[slot].Clear();
             store.profileActions[slot].Add("Golden_Macro");
             store.profileActions[slot].Add("Golden_Program");

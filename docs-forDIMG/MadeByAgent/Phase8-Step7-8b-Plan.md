@@ -24,7 +24,7 @@ Controls タブで「ボタン → キー」を割り当てた dcs（`DS4Control
 ### 1.1 暫定の範囲と最終形（別セッションからの補足と訂正。2026-10-20）
 
 - §1 の範囲と、ボタン単位の所有（Q2＝A）は、**移行中の仕組み**である。7.8c（Macro）、7.8d（シフト）、7.8e（Extras／Lightbar マクロ）、7.8f（Button／マウス／ホイール）で区分を 1 つずつ移し、最終的に Controls タブの割り当てはすべて新経路（エンジン）で同じ扱いになる。全区分が移行済みになれば、所有の判定は常に真になり、旧経路との振り分けは不要になる。旧経路は Step8 で削除する。
-- **抑制の判定**（特殊アクションが押しているボタンの通常の割り当てを止める）: データ（抑制の集合）はエンジン所有。呼び出しは、今も旧経路の `ProcessControlSettingAction` の先頭に残っている。区分の移行（7.8b〜f）が終わり、Step8 で旧経路を削除するときに、呼び出しがエンジンの Controls 処理の中へ移る（機能は残る）。
+- **抑制の判定**（スペシャルアクションが押しているボタンの通常の割り当てを止める）: データ（抑制の集合）はエンジン所有。呼び出しは、今も旧経路の `ProcessControlSettingAction` の先頭に残っている。区分の移行（7.8b〜f）が終わり、Step8 で旧経路を削除するときに、呼び出しがエンジンの Controls 処理の中へ移る（機能は残る）。
 - **通常出力の消去**（`ErasesOutputEveryFrame`）の最終形: 割り当てのあるボタンすべてを、エンジンが毎フレーム消す。**Default（未設定）と Unbound（割り当て無し）は別物**:
 
 | 区分 | 実体 | 消去 | 今 → 最終形 |
@@ -44,9 +44,9 @@ Controls タブで「ボタン → キー」を割り当てた dcs（`DS4Control
 
 dcs 1 つにつき毎フレーム、次を行う。
 
-1. 抑制（特殊アクションが押しているボタンなら、通常の割り当てを消して終了）。
+1. 抑制（スペシャルアクションが押しているボタンなら、通常の割り当てを消して終了）。
 2. 論理キー ＝ `Convert.ToUInt16(action.actionKey)`。ネイティブキー ＝ `OutputKBMMapping.GetRealEventKey(actionAlias != 0 ? actionAlias : key)`。ScanCode と Toggle は `keyType` から。
-3. 押下 ＝ `GetBoolActionMapping(control)`（**特殊アクションのトリガー判定とは閾値が違う**。§2.2）。
+3. 押下 ＝ `GetBoolActionMapping(control)`（**スペシャルアクションのトリガー判定とは閾値が違う**。§2.2）。
 4. 合成 SpecialAction を得る: `FindSpecialActionForLogicalKey(key) ?? GetOrCreateSyntheticKeyAction(device, control, key, toggle, useScan)`。
 5. `DispatchOrSetBeingTriggered(sa, device, isPressed, …)` → `DispatchInputEdge`（押下・解放の**エッジ**を、名前のハッシュ ＋ デバイスで検出）→ `ActionManager.DispatchTriggerEdge`（`BeingTriggered` を設定）→ `DefaultActionManager.DispatchTriggerEstablished`／`Released`（**名前で引いた**アクションの `OnTrigger`／`OnRelease`）→ `KeyActionAdapter` → `KeyAction` → `KeyButtonActionController`。
 6. **毎フレーム**、`ResetToDefaultValue(control)`: 押していなくても、そのボタンの通常の出力を消す（スティックの方向なら 128 に、トリガーなら 0 に戻す）。
@@ -55,11 +55,11 @@ dcs 1 つにつき毎フレーム、次を行う。
 
 | 項目 | 旧経路 | 新経路（今） | 対応 |
 |---|---|---|---|
-| 押下の判定 | `GetBoolActionMapping`: スティックは**角度の扇形**（例: `LX < 128 かつ 角度 112.5〜247.5°`）、L2／R2 は `> 0`、ジャイロは `> 0`／`< 0` | `TriggerInput.IsActive`: スティックは**±55**、L2／R2 は `> 100`、ジャイロは `±67`（特殊アクションのトリガー用） | 判定が違う。Controls 用の入力アクションと判定を足す（W2。Q2） |
+| 押下の判定 | `GetBoolActionMapping`: スティックは**角度の扇形**（例: `LX < 128 かつ 角度 112.5〜247.5°`）、L2／R2 は `> 0`、ジャイロは `> 0`／`< 0` | `TriggerInput.IsActive`: スティックは**±55**、L2／R2 は `> 100`、ジャイロは `±67`（スペシャルアクションのトリガー用） | 判定が違う。Controls 用の入力アクションと判定を足す（W2。Q2） |
 | 通常出力の消去 | 押していなくても**毎フレーム**消す | 成立中だけ（`ResetsTriggerOutput`） | 方針に「毎フレーム消す」を足す（W2。Q3） |
 | ネイティブキー | `GetRealEventKey(alias があれば alias、なければ論理キー)` | `KeyOutputAction` は論理キーだけから求める | `KeyBindingValues` にエイリアスを足す（W2） |
 | ログ | Key の枝自身は、SA タブ形式の Debug ログ（`SpecialAction KEY entry` など）を**出さない** | `KeyOutputAction` は SA タブ形式を出す | Controls では出さない指定を値に足す（W2。Q4） |
-| 状態の鍵 | 合成 SA の**名前**（`Synthetic_Key_{device}_{control}`）。`FindSpecialActionForLogicalKey` により、同じ論理キーの Key 特殊アクションがあればその状態を共有 | 束縛の `Source`（識別用 SA）の名前 | 識別用 SA を同じ名前で作る。共有はしない（Q4＝B の承認済みの動作変更。§2.3） |
+| 状態の鍵 | 合成 SA の**名前**（`Synthetic_Key_{device}_{control}`）。`FindSpecialActionForLogicalKey` により、同じ論理キーの Key スペシャルアクションがあればその状態を共有 | 束縛の `Source`（識別用 SA）の名前 | 識別用 SA を同じ名前で作る。共有はしない（Q4＝B の承認済みの動作変更。§2.3） |
 
 **通常出力の消去の対象**: §1.1 の表のとおり。Default（未設定）は消さず、Unbound を含む割り当てのあるボタンは毎フレーム消す。7.8b では Key だけがエンジンの消去に移る。
 
@@ -67,7 +67,7 @@ dcs 1 つにつき毎フレーム、次を行う。
 
 ### 2.3 Q4＝B（共有をしない）の具体的な影響
 
-旧経路では、Controls タブの Key が、同じ論理キーを出す Key 特殊アクションを見つけると、**その特殊アクションの状態**（押下中、トグルのオン）を共有していた。新経路では、Controls の Key は常に自分専用の状態を持つ。影響が出る例: 特殊アクション A（Key、論理キー 65、Toggle）と、Controls タブの Cross → 65（Toggle）がある場合、旧経路では両者のトグルが連動していたが、新経路では独立する。承認済みの動作変更（規約 2.2）。完了報告書に記録し、変更前後の差をテストで固定する。
+旧経路では、Controls タブの Key が、同じ論理キーを出す Key スペシャルアクションを見つけると、**そのスペシャルアクションの状態**（押下中、トグルのオン）を共有していた。新経路では、Controls の Key は常に自分専用の状態を持つ。影響が出る例: スペシャルアクション A（Key、論理キー 65、Toggle）と、Controls タブの Cross → 65（Toggle）がある場合、旧経路では両者のトグルが連動していたが、新経路では独立する。承認済みの動作変更（規約 2.2）。完了報告書に記録し、変更前後の差をテストで固定する。
 
 ## 3. 設計
 
@@ -86,7 +86,7 @@ dcs 1 つにつき毎フレーム、次を行う。
 - **`BindingPolicy.ErasesOutputEveryFrame`（追加。既定は偽。Q3＝A）**: 真のとき、エンジンは、成立の有無によらず毎フレーム `frame.ResetTriggerControl` する。Controls の Key は `respectsFreshPressGuard: false`、`suppressesTriggerButtons: false`、`erasesOutputEveryFrame: true`。
 - **`KeyBindingValues`（拡張）**: `AliasKey`（`actionAlias`。0 は「なし」）と `SuppressSpecialActionLogs`（Controls は真。Q4＝A）を追加する。`KeyOutputAction` は、ネイティブキーを `GetRealEventKey(AliasKey != 0 ? AliasKey : LogicalKey)` で求め、ログの抑制を尊重する。SA タブ側の既定は従来どおり（エイリアス 0、ログあり）。
 - **`ControlBindingBuilder.Build(device)`（実装）**: `ControlSettingsGroup` を走査し、§1 の条件を満たす dcs ごとに束縛を作る。識別用 SA は `Synthetic_Key_{device}_{control}`（旧合成と同じ名前。種別 Key、`keyType` は dcs の ScanCode／Toggle）。`MigratedControlKinds` に `Key` がなければ、何も読まず空を返す。
-- **束縛の置き場（Q5＝A）**: SA タブの束縛と**同じレジストリの一覧**に連結して差し替える。連結は、`ProfileApplicationService` の Replace の呼び出し元（現在 `IActionBindingBuilder.Build` の結果を渡している箇所）で行う（W0 で位置を確認）。Controls の束縛は、入力が `ControlButtonInputAction` であることで見分ける。SA のループ（`Owns`／`ProcessOwned`）は、プロファイルの特殊アクションの名前だけを引くため、Controls の束縛には触れない。
+- **束縛の置き場（Q5＝A）**: SA タブの束縛と**同じレジストリの一覧**に連結して差し替える。連結は、`ProfileApplicationService` の Replace の呼び出し元（現在 `IActionBindingBuilder.Build` の結果を渡している箇所）で行う（W0 で位置を確認）。Controls の束縛は、入力が `ControlButtonInputAction` であることで見分ける。SA のループ（`Owns`／`ProcessOwned`）は、プロファイルのスペシャルアクションの名前だけを引くため、Controls の束縛には触れない。
 - **エンジン**: `OwnsControl(device, control)` を実装する（`Rebuild` で作る「ボタン → 束縛の添字」の表を引く。ロックの下。割り当て 0）。`ProcessControl(device, control, input, frame)`（新設）は、その束縛を `ProcessBinding` で処理する。
 - **`Mapping`**: 7.8a で足した `OwnsControl` の分岐の中で `ProcessControl` を呼んで戻る（旧本体は素通り）。抑制の判定は共通（旧経路の先頭のまま）。
 - **`ServiceRegistration`**: 既定の `MigratedControlKinds` に `Key` を 1 行追加（ロールバックは、この 1 行を外す）。
@@ -105,7 +105,7 @@ dcs 1 つにつき毎フレーム、次を行う。
   2. **束縛の差し替えの位置**: 差し替えは `ProfileApplicationService.PublishBindings` の 1 か所だけ（`_actionRegistry.Replace(device, _bindingBuilderProvider().Build(device))`）。連結は、`ActionBindingBuilder` が省略可能な依存 `IControlBindingBuilder` を受け取り、`Build(device)` の結果に Controls の束縛を連結して返す形にする（`IActionBindingBuilder` と `ProfileApplicationService` のコンストラクターは変えない。影響が最小）。**Q5＝A の方針（同じ一覧に連結）のまま、実装の位置を確定した**。
   3. **ジャイロの判定**: `IsUsingGyroForControls`（`GyroOutputMode == Controls`）は `TriggerInput` の判定と同じ。違いは閾値のみ（`GetBoolActionMapping` は `gryodirs > 0`／`< 0`、`TriggerInput` は ±67）。Controls 用の判定は、`GetBoolActionMapping` どおり `> 0`／`< 0` を使う（W2 の一致テストで全コントロールを比べる）。
 - **W1（特性化。旧・新の両経路の Theory。新経路の指定でも、W1 の時点では旧経路が処理する）**: テスト足場 `ControlsKeyTestScope`（`SpecialActionTestScope` と同じ方式。dcs を設定して、`MapCustom` の 1 フレームを流す）。内容: 押下・解放（ボタン、スティックの方向、L2／R2）、Toggle、ScanCode、エイリアスのネイティブキー、押していないフレームの通常出力の消去（スティックの方向・トリガーを含む）、押したままのプロファイル適用・切断、シフト／Extras を持つ dcs が旧経路に残ること、ログの比較（NLog の `MemoryTarget`）。**Q4＝B の差のテストは、旧・新で期待値を分けて明示する**。
-- **W1 の実装（2026-10-20）**: `ControlsKeyTestScope`（足場。dcs を Key にする、本番と同じ経路で束縛を登録、合成 SA の状態を引く、`migrated` で `MigratedControlKinds` に Key を足す）と `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新の Theory。押下・解放、Toggle［オンになり、離しても保たれる］、スティックの扇形の判定［幅 28 の傾きで押下］、押していない軸の出力の消去、L2 が 1 で押下、未設定のボタンは素通し、シフト付きの割り当て、同じ論理キーの Key 特殊アクションとの状態の共有［旧経路の癖。W2 で新経路の期待値を「共有しない」に切り替える］、押したままの適用・切断の記録）。ログの比較と、キー送出の記録（リピーターの有無で安定しない）は W2 で扱う。押したままの適用・切断は、結果を `ITestOutputHelper` に出力する（期待値は結果を見て W2 で確定する）。
+- **W1 の実装（2026-10-20）**: `ControlsKeyTestScope`（足場。dcs を Key にする、本番と同じ経路で束縛を登録、合成 SA の状態を引く、`migrated` で `MigratedControlKinds` に Key を足す）と `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新の Theory。押下・解放、Toggle［オンになり、離しても保たれる］、スティックの扇形の判定［幅 28 の傾きで押下］、押していない軸の出力の消去、L2 が 1 で押下、未設定のボタンは素通し、シフト付きの割り当て、同じ論理キーの Key スペシャルアクションとの状態の共有［旧経路の癖。W2 で新経路の期待値を「共有しない」に切り替える］、押したままの適用・切断の記録）。ログの比較と、キー送出の記録（リピーターの有無で安定しない）は W2 で扱う。押したままの適用・切断は、結果を `ITestOutputHelper` に出力する（期待値は結果を見て W2 で確定する）。
 - **W1 の最初の結果と是正（2026-10-20）**: 9 件中 2 件が失敗（旧経路の挙動の読み違い）。(1) 「押していない軸の出力の消去」: LXNeg を割り当て、右へ倒した（LX＝220）とき、出力は 128 ではなく **220 のまま**だった。反対の方向（LXPos）は未設定（Default）で、その出力が `customMapQueue` で素通しされるため。軸の消去が値として見えるのは、反対の方向を含まない傾きのときに限られる。テストは「反対の方向は、その割り当てに任せる（220 のまま）」に改めた。消去の規則（`ErasesOutputEveryFrame`）自体は、エンジンへ引き継ぐ方針のまま。(2) Toggle の `IsToggledOn`: 押した後も偽だった（出力先のスタブでは、リピーターの有無で結果が分かれると推測。原因は未確認）。テストは、押下のディスパッチ（`BeingTriggered`）を固定し、`IsToggledOn` は値を記録するだけにした。W2 で旧・新の値が一致することを比べる。
 - **W2（実装）**: §3.2 のとおり。
 - **W2 の実装（2026-10-20。ビルド・テスト成功）**: 新設 — `IControlTriggerInput`、`ControlButtonInputAction`、`TriggerInput.IsControlActive`（現行の `GetBoolActionMapping` の移植）。変更 — `BindingPolicy.ErasesOutputEveryFrame`、`KeyBindingValues`（別名キー、SA 形式ログの抑制）、`KeyOutputAction`（別名キーでネイティブキーを求める、ログの抑制）、`ControlBindingBuilder`（実装。`TryInterpretKey` の条件、識別用 SA は旧合成と同じ名前、ジャイロスワイプは対象外）、`ActionBindingBuilder`（`IControlBindingBuilder` を省略可能な依存として受け、SA の束縛の後ろに連結）、`ITriggerDispatchEngine`／`TriggerDispatchEngine`（`OwnsControl` の実装、`ProcessControl`、ボタン → 束縛の表、毎フレームの消去）、`Mapping`（所有なら `ProcessControl` を呼んで戻る）、`ServiceRegistration`（`MigratedControlKinds` に Key の 1 行）。テスト — `Phase8Step78bW2ControlsKeyTests`（判定の一致、条件の表、ビルダー、連結、所有とロールバック、割り当て、ログ）。W1 のテストは、新経路を走らせる（Q4＝B に合わせ、共有のテストの期待値を切り替え済み）。
@@ -146,7 +146,7 @@ dcs 1 つにつき毎フレーム、次を行う。
 ## 9. 結果（2026-10-20。ユーザーがビルド・テストを実行し、すべて成功）
 
 - W1 のテスト（旧・新の Theory）が、新経路でも期待値のまま成功した（押下・解放、Toggle の配信、スティックの扇形、L2、未設定のボタンの素通し、シフト付きの割り当ては旧経路、押したままの適用・切断）。
-- **Q4＝B の動作変更**（承認済み）: Controls タブの Key は、同じ論理キーの Key 特殊アクションと状態を共有しなくなった（`SharesTheStateWithAKeySpecialActionOfTheSameKey` が、旧経路は共有、新経路は共有しないことを固定）。
+- **Q4＝B の動作変更**（承認済み）: Controls タブの Key は、同じ論理キーの Key スペシャルアクションと状態を共有しなくなった（`SharesTheStateWithAKeySpecialActionOfTheSameKey` が、旧経路は共有、新経路は共有しないことを固定）。
 - 押下の判定（`IsControlActive`）は、全コントロール・乱数で現行の `GetBoolActionMapping` と一致。割り当ては新 ≦ 旧。ログは、SA タブ形式の行が旧・新とも出ず、`KeyAction` 以降の行は旧・新で一致（コントローラー番号は生成のたびに増えるため、そろえて比較）。
 - ロールバック: `ServiceRegistration` の `MigratedControlKinds.Add(ControlBindingKind.Key)` の 1 行を外すと、束縛が作られず、旧経路が処理する。
 - 実機確認は Step9 でまとめて行う（Q8＝B）。チェックリストに U-41 を追加した。

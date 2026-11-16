@@ -9,7 +9,7 @@
 
 ## 1. 目的と位置づけ
 
-- プロファイルの読込・適用が終わったとき、そのデバイスの**特殊アクション（`ProfileActions`）から `TriggerBinding` のリストを組み立て**、登録簿（`IActionRegistry`）へ**アトミックに差し替える**（`Replace`）。
+- プロファイルの読込・適用が終わったとき、そのデバイスの**スペシャルアクション（`ProfileActions`）から `TriggerBinding` のリストを組み立て**、登録簿（`IActionRegistry`）へ**アトミックに差し替える**（`Replace`）。
 - 組み立てるのは、`BindingMigrationOptions.MigratedTypes` に含まれる種別だけ。**既定は空なので、本番では常に空のリストが入る**。エンジンの旧ループ内のフックは `Owns` が false のまま素通しで、**本番の挙動は変わらない**（Step4 と同じ「空配線」）。
 - Step7 の種別ごとの PR は、「`MigratedTypes` に種別を足す」ことで新経路へ切り替わる。そのとき、ビルダーと差し替えの経路が**すでに本番の読込・適用で動いている**状態にしておく（切替の PR で、初めて動かす部品を減らす）。
 - やらないこと: 切断時の `Clear`／`OnDeviceDisconnected`／`ClearState`（**Step6**）、種別ごとの切替（**Step7**）、Controls タブ（`ProcessControlSettingAction`）の取り込み（Step7.8）、`MultiAction` の束縛（Step7.7）。
@@ -38,7 +38,7 @@
 
 | 経路 | 通る場所 | `CompleteProfileApplication` を通るか |
 |---|---|---|
-| UI からの適用、AutoProfile、特殊アクション（Profile）による切替、復帰、接続時の適用 | `ProfileApplicationService.ApplyCore` → `CompleteProfileApplication` | **通る** |
+| UI からの適用、AutoProfile、スペシャルアクション（Profile）による切替、復帰、接続時の適用 | `ProfileApplicationService.ApplyCore` → `CompleteProfileApplication` | **通る** |
 | 名前付きパイプの「一時プロファイルの読込」コマンド | `MainWindow` が `profileRepo.LoadTempProfile(...)` を直接呼ぶ（Halt の中） | **通らない**（`ApplyProfile` を経由しない） |
 | 編集画面（`ProfileEditor`）の読込 | 編集スロット `TestProfileIndex`（コントローラーのスロットではない） | 対象外（束縛を作らない） |
 
@@ -104,7 +104,7 @@
 
 ## 6. 質問（推奨は A）
 
-- **Q1（呼び出しの位置）**: A（推奨）: `CompleteProfileApplication` の掃除の後（Step2-Design §8 のとおり）。適用の経路（UI、AutoProfile、特殊アクション、復帰、接続）がすべて通る。B: `LegacyProfileXmlSerializer.LoadProfile` の末尾。すべての読込を通るが、永続化の層が第2層のアクションの登録簿を知ることになり、依存の向き（規約 §1）に反する。
+- **Q1（呼び出しの位置）**: A（推奨）: `CompleteProfileApplication` の掃除の後（Step2-Design §8 のとおり）。適用の経路（UI、AutoProfile、スペシャルアクション、復帰、接続）がすべて通る。B: `LegacyProfileXmlSerializer.LoadProfile` の末尾。すべての読込を通るが、永続化の層が第2層のアクションの登録簿を知ることになり、依存の向き（規約 §1）に反する。
 - **Q2（作る種別の範囲）**: A（推奨）: Key／Button／Macro／Program／Profile の 5 種を Step5 で作り、テストで構成を固定する（本番は `MigratedTypes` が空なので出番はない）。Step7 の PR は、スイッチを入れ、特性化テストを新旧で走らせることに集中できる。B: 空のビルダーだけを作り、種別は Step7 の各 PR で足す（Step5 で動かす部品が少ないが、Step7 の各 PR が大きくなる）。
 - **Q3（循環依存の解消）**: A（推奨）: `ProfileApplicationService` が `Func<IActionBindingBuilder>` を受ける（`Func<ControlService>` と同じ遅延の作法）。B: `ProfileSwitchAction` 側に `Func<IProfileSwitcher>` を渡す（既存のアクションと Adapter のコンストラクターを変える範囲が広い）。
 - **Q4（`OnProfileApplied` の接続）**: A（推奨）: Step5 では**接続しない**（`Replace` だけ）。登録簿の `Replace` でエンジンの束縛ごとの実行時配列は作り直される。抑制の集合の扱い（適用時に空にするか）は、最初の種別の切替（Step7.1）で、特性化テストとあわせて決める。B: Step5 で接続し、抑制の集合の消去を含めて受け入れる（本番の挙動が、適用の瞬間にボタンを押していた場合だけ変わる可能性がある）。

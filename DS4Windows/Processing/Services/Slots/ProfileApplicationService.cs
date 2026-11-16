@@ -61,7 +61,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// 旧 静的 <c>ActionManager.PreallocateForProfileApply</c>（Phase13-Step4 で本サービスへ移した）。適用するプロファイルの特殊アクションについて、
+        /// 旧 静的 <c>ActionManager.PreallocateForProfileApply</c>（Phase13-Step4 で本サービスへ移した）。適用するプロファイルのスペシャルアクションについて、
         /// 状態とコントローラーを先に作る。ログは従来のまま。
         /// </summary>
         private void PreallocateForProfileApply(int device)

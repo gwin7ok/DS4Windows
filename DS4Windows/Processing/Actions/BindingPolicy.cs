@@ -67,7 +67,7 @@ namespace DS4Windows.Processing.Actions
 
         /// <summary>
         /// Phase8-Step7 7.8b（Q3＝A）: 成立の有無によらず、毎フレーム、トリガーのボタンの通常の出力を消すか（現行の Controls タブの <c>ResetToDefaultValue</c>）。
-        /// 割り当てのあるボタンだけが対象（Default＝未設定は消さない）。既定は偽（特殊アクションは、成立中だけ <see cref="ResetsTriggerOutput"/> で消す）。
+        /// 割り当てのあるボタンだけが対象（Default＝未設定は消さない）。既定は偽（スペシャルアクションは、成立中だけ <see cref="ResetsTriggerOutput"/> で消す）。
         /// </summary>
         public bool ErasesOutputEveryFrame { get; }
 

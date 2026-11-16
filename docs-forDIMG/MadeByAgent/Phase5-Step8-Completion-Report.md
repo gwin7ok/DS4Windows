@@ -115,7 +115,7 @@
 ## 7. 未実施・今後の確認事項・申し送り事項
 
 - **[実機 E2E 検証]**:
-  - 実機コントローラーを用いた特殊アクションのトリガー押し込み連鎖発火動作は、Phase 5 総合検証（Step 14 / 実機CP4）にて一括実施する。
+  - 実機コントローラーを用いたスペシャルアクションのトリガー押し込み連鎖発火動作は、Phase 5 総合検証（Step 14 / 実機CP4）にて一括実施する。
 - **[Step 9 への申し送り事項]**:
   - 次ステップ（Step 9: Actions基盤とMacroPlayerの整理）において、`DefaultActionManager` への `IActionFactory` 注入、トグル状態の内包、`DefaultMacroPlayer` への `IVirtualKBM` 注入を進める。
 

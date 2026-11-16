@@ -114,7 +114,7 @@
 - 新設: `IGyroCalibrationPort`（窓口）、`DefaultGyroCalibrationPort`（本番。`Func<IDeviceStateAccessor>` を遅延で受ける。コントローラーがいなければ何もしない。結合デバイスも較正）、`GyroCalibrateAction`（立ち上がりで 1 回: Trace 4 行 → 較正 → Debug の「SpecialAction GyroCalibrate: …」）。配置は、Actions サブシステムのため `DS4Windows/Actions/`（R3）。
 - 変更: `ActionBindingBuilder`（`IGyroCalibrationPort` を省略可で受ける。GyroCalibrate の束縛。ポートがなければ作らない）、`ServiceRegistration`（ポートの登録、既定の一覧に GyroCalibrate の 1 行）。ロールバックは、その 1 行を外す。
 - テスト: `Phase8Step76aGyroCalibrateTests`、`RecordingGyroCalibrationPort`（記録用）。既存の更新: `SpecialActionTestScope`、`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`（既定の一覧に GyroCalibrate）。
-- 注意: GyroCalibrate の特殊アクションの型の文字列（`Actions.xml` の `Type`）は `GyroCalibration`（型 ID は `GyroCalibrate`）。割り当てのテストは、同じ件数でトリガー未成立の場合を基準にする（テストの足場が、特殊アクションがあるだけで 1 フレーム約 1 KB 増えるため）。
+- 注意: GyroCalibrate のスペシャルアクションの型の文字列（`Actions.xml` の `Type`）は `GyroCalibration`（型 ID は `GyroCalibrate`）。割り当てのテストは、同じ件数でトリガー未成立の場合を基準にする（テストの足場が、スペシャルアクションがあるだけで 1 フレーム約 1 KB 増えるため）。
 - 旧経路との比較は、実機がないため、立ち上がりの Trace 4 行の一致だけ。効果は記録用のポートで確認し、実機のログで確認する（U-35）。
 
 ### 7.6b DisconnectBT の実装（2026-10-20）

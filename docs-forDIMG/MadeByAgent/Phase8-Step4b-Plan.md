@@ -9,7 +9,7 @@
 
 ## 1. 目的と位置づけ
 
-- `LegacyProfileXmlSerializer`（3,093 行）の `LoadProfile`（約 2,320 行の 1 メソッド）と `SaveProfile`（約 560 行の 1 メソッド）を、**節ごとのクラスに分ける**。Step5（読込時の `TriggerBinding` の構築）が、「特殊アクション」の節に足すためのもの。
+- `LegacyProfileXmlSerializer`（3,093 行）の `LoadProfile`（約 2,320 行の 1 メソッド）と `SaveProfile`（約 560 行の 1 メソッド）を、**節ごとのクラスに分ける**。Step5（読込時の `TriggerBinding` の構築）が、「スペシャルアクション」の節に足すためのもの。
 - あわせて、機械的な整理 2 件（4b-3）を行う: `BackingStore` の名前の変換関数、`ProfileEditor` のホバー画像・位置の表。
 - **製品の挙動・保存形式を変えない**。`Mapping.cs`・`Actions/` には触れない。Phase8 本体（統一トリガーディスパッチ）の作業ではなく、Step5 の準備。
 - 安全網: ゴールデンテスト（`Phase7Step10cGoldenPersistenceTests`: 既定の保存、変化させた状態の保存、変化させた XML の読込）、`ProfileLegacyXmlRoundTripTests`、`ProfileLegacyXmlCompletenessTests`。分解の各 Wave で、ゴールデンの文面が**一切変わらない**ことを条件にする。
@@ -34,7 +34,7 @@
 | スティックの出力（曲線、四角形、アンチスナップバック、出力モード、デルタ加速）・トリガーの二段階・DualSense | 1587〜1870 | |
 | タッチパッドのマウス・トラックボール・タッチパッドのスティック | 1871〜2103 | `TouchpadMouseStick` だけで約 200 行 |
 | 出力コントローラーの種別 | 2104〜2116 | `OutputContDevice` |
-| **特殊アクション（`ProfileActions`）** | 2117〜2151 | **Step5 が足す節** |
+| **スペシャルアクション（`ProfileActions`）** | 2117〜2151 | **Step5 が足す節** |
 | ボタン割り当て（`Control`／`ShiftControl`） | 2152〜2390 | 割り当て用の辞書 10 個を埋める |
 | 後始末 | 2391〜2430 | 欠けた設定の追記ほか |
 
@@ -47,7 +47,7 @@
 
 ### 2.3 ゴールデンテストの網羅（4b-0 の初期結果）
 - 変化させた状態（`BackingStoreStateFiller`）で保存した XML（310 行）には、読込側が読む上位の要素 166 個のうち、152 個が含まれる。ない 14 個は、入れ子の子要素（`Red`／`Green`／`Blue` ほか）と、読込専用の旧形式の要素（`GyroSmoothing`、`GyroSmoothingWeight`、`UseSAforMouse`、`UseTPforControls`、`ShiftModifier`）。
-- **既定の保存と変化させた保存で値が同じ要素**（変化が付いていない可能性があるもの）: 曲線のモード（`LSOutputCurveMode`、`RSOutputCurveMode`、`L2／R2／SX／SZOutputCurveMode`）、`LightbarMode`、`ProfileActions`（**特殊アクションが 0 件のまま**）、`SASteeringWheelUseSmoothing`、`TouchDisInvTriggers`、`LSOuterBindDead`／`RSOuterBindDead`、ドリフトの補正ほか 34 個。→ これらの節は、分解の前に**非既定値のゴールデンを足す**（4b-0）。特に `ProfileActions` は Step5 の入力になるため必須。
+- **既定の保存と変化させた保存で値が同じ要素**（変化が付いていない可能性があるもの）: 曲線のモード（`LSOutputCurveMode`、`RSOutputCurveMode`、`L2／R2／SX／SZOutputCurveMode`）、`LightbarMode`、`ProfileActions`（**スペシャルアクションが 0 件のまま**）、`SASteeringWheelUseSmoothing`、`TouchDisInvTriggers`、`LSOuterBindDead`／`RSOuterBindDead`、ドリフトの補正ほか 34 個。→ これらの節は、分解の前に**非既定値のゴールデンを足す**（4b-0）。特に `ProfileActions` は Step5 の入力になるため必須。
 
 ### 2.4 4b-3 の対象
 - `BackingStore.getDS4ControlsByName`／`getX360ControlsByName`（約 200 行。呼び出し元は本体内ほか、他のファイル・テストで 25 箇所）。移し先は、既存の `DS4ControlNames`／`X360ControlTables`。
@@ -79,7 +79,7 @@
 ## 4. テスト
 
 - ゴールデン 12 件（既存。文面は変更しない）、`ProfileLegacyXmlRoundTripTests`、`ProfileLegacyXmlCompletenessTests`、`Phase7Step10c*GuardTests` が、**各 Wave で成功**すること。
-- 4b-0 で足すゴールデン: 非既定値の節（特殊アクション、曲線のモード、ライトバーのモード、旧形式の読込専用要素ほか）。足した後、分解の前の状態でゴールデンを確定する。
+- 4b-0 で足すゴールデン: 非既定値の節（スペシャルアクション、曲線のモード、ライトバーのモード、旧形式の読込専用要素ほか）。足した後、分解の前の状態でゴールデンを確定する。
 - 差分比較: 広い入力（全要素を含む XML）の読込結果が、分解の前後で完全に一致すること。保存結果（XML）も一致すること。
 - 各節のクラスの単体テストは、原則として作らない（ゴールデンと差分比較で担保する）。ただし、`ProfileLoadContext` の初期状態と、節を呼ぶ順序（指揮役）は検査する。
 - ラチェットの一致検査、1 ファイル 1 型のガード、全既存テストが成功すること。
@@ -88,7 +88,7 @@
 
 - W1: 4b-0（監査、ゴールデンの追加、差分比較の用意）。
 - W2: 基盤（`ProfileLoadContext`、`IProfileLoadSection`、指揮役）と、最初の節（準備・後始末・全般）。
-- W3〜W5: 残りの読込の節（3〜4 節ずつ。W5 に「ボタン割り当て」と「特殊アクション」）。
+- W3〜W5: 残りの読込の節（3〜4 節ずつ。W5 に「ボタン割り当て」と「スペシャルアクション」）。
 - W6〜W8: 保存の節（基盤と節を 3 つの Wave に）。
 - W9: 4b-3a 名前の変換関数。
 - W10: 4b-3b ホバー画像・位置の表。
@@ -102,7 +102,7 @@
 - **Q2（読込と保存の関係）**: A（推奨）: 読込側と保存側は**別のクラス群**にする（`Profile*LoadSection`、`Profile*SaveSection`）。保存の順序が読込と異なるため。B: 内容ごとに 1 クラスにして、`Load`／`Save` の両方を持たせる（順序を保つには、保存側の呼び出しを細かく刻む必要がある）。
 - **Q3（DI 登録とフォルダー）**: A（推奨）: 節のクラスは、`LegacyProfileXmlSerializer` の実装の詳細として、serializer のコンストラクターで作る（内部用、`internal sealed`、状態を持たない）。DI には登録しない。配置は `DS4Control/Services/ProfileSections/`（名前空間は `DS4Windows.Services`）。B: 節ごとに DI へ登録する（登録が 24 件ほど増え、利点が少ない）。
 - **Q4（状態の受け渡し）**: A（推奨）: `ProfileLoadContext`／`ProfileSaveContext` のクラスに共有状態をまとめて渡す。B: 節ごとに引数を並べる（引数が 10 個を超える節が出る）。
-- **Q5（ゴールデンの足し方）**: A（推奨）: W1 で、足りない節のゴールデンを**先に足し、分解の前の状態で確定**する。既存のゴールデンの文面は変えない。B: 既存のゴールデンだけで進める（特殊アクションなどの節が未検証のまま動く）。
+- **Q5（ゴールデンの足し方）**: A（推奨）: W1 で、足りない節のゴールデンを**先に足し、分解の前の状態で確定**する。既存のゴールデンの文面は変えない。B: 既存のゴールデンだけで進める（スペシャルアクションなどの節が未検証のまま動く）。
 - **Q6（4b-3 の名前の変換関数）**: A（推奨）: 本体を既存のクラスへ移し、**呼び出し元（25 箇所）を付け替えて、`BackingStore` の関数を削除**する（規約 2.1: 新しい薄いシムを残さない）。B: `BackingStore` に委譲する 1 行の関数を残す（差分は小さいが、公開面が残る）。
 - **Q7（4b-3 のホバー画像・位置の表）**: A（推奨）: W10 の前に現行のコードを確認し、方針を再度相談する（WPF の画像生成を含む第 4 層の処理のため）。B: この計画書の承認で、データ用のクラスへ機械的に移す方針まで決める。
 - **Q8（長さのガード）**: A（推奨）: W11 で、`LoadProfile`／`SaveProfile` の行数の上限（分解後の実測＋余裕）を、ソースの走査のテストで固定する。B: ガードは作らない。
@@ -113,7 +113,7 @@
 - **`missingSetting` の伝播・例外の握りつぶしの変化**: 文脈のフィールドに集約し、節の中の `catch { … }` を変えない。W1 で一覧にして、各 Wave で確認。
 - **ゴールデンが足りない節の見落とし**: W1 で、未カバーの節を要素単位で洗い出す（上の 14 個、34 個を出発点にする）。足りない節は、先に足す（Q5）。
 - **`LoadProfile` を使う他の経路**（`ProfilePresetLoader`、`ControlService` の接続処理ほか）への影響: 公開メソッドと引数は変えない。
-- **Step5 との調整**: 「特殊アクション」の節（`ProfileActions`）を単独のクラスにする（Step5 が足す場所を明確にする）。
+- **Step5 との調整**: 「スペシャルアクション」の節（`ProfileActions`）を単独のクラスにする（Step5 が足す場所を明確にする）。
 
 ## 8. 完了条件
 

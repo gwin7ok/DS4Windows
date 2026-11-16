@@ -8,7 +8,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step1 W3（Phase8-Step1-Plan.md 項目 B-6）: マクロ種別の特殊アクション（<c>MapCustomAction</c> の Macro 分岐）の特性化テスト。
+    /// Phase8-Step1 W3（Phase8-Step1-Plan.md 項目 B-6）: マクロ種別のスペシャルアクション（<c>MapCustomAction</c> の Macro 分岐）の特性化テスト。
     /// マクロの再生そのもの（キーの送出の時系列）は固定せず、トリガーの成立・解除と、<c>BeingTriggered</c>、<c>firstTouch</c> の遷移だけを固定する。
     ///  - 通常（押している間ではなく、押した瞬間に 1 回）: Fresh-press ガード中は実行しない。成立で <c>BeingTriggered</c>、離すと解除。
     ///  - <c>RunOnRelease</c>（<c>pressRelease</c>）: 押したときは「準備」（<c>firstTouch = true</c>）だけで実行せず、離したときに 1 回実行する。

@@ -14,7 +14,7 @@
   1. Stage3 の列挙競合（`Collection was modified`）の是正（A1）。
   2. `MapCustomAction` の特性化テストの追加（A2）。Phase8 計画書 §6 の最初のリスク対応（Step3/4 の前に特性化テストを用意）の前倒し。
   3. Phase8 計画書ほか文書の事実誤認と古い TODO コメントの訂正（A3）。
-- 理由: Phase8 の実機確認で競合が出ると、新経路の不具合と見分けにくい。特殊アクションの「トリガー成立→実行」を走らせるテストが 0 本のため、Phase8 の書き換えが無防備になる。古い前提が残ると、Phase8 の作業者が誤読する。
+- 理由: Phase8 の実機確認で競合が出ると、新経路の不具合と見分けにくい。スペシャルアクションの「トリガー成立→実行」を走らせるテストが 0 本のため、Phase8 の書き換えが無防備になる。古い前提が残ると、Phase8 の作業者が誤読する。
 - 範囲外: Phase8 の本体、先送りした実機確認、K9-3、孤立コードの §2.4 判断（Phase8 の Step1。Q4）、`TriggerBinding` 方式の本格的なリスト差し替え（Q1）、モデル図の変更（指示を得てから）。
 - ルール: ビルド・テスト・コミットはユーザーが実行する。既存の不具合の是正は、旧実装と比較し、承認を得て行う（A1 は本計画の承認で足りる）。機能の削除はしない。
 
@@ -32,7 +32,7 @@
 ### W1: Stage3 の列挙競合の是正（A1）
 
 - 原因（確認済み）:
-  - `Mapping.cs:2673-2682` の Stage3（Button の特殊アクション）が、`ProfileActionProvider.GetProfileActionsRaw`（`ProfileActionProvider.cs:72`）の返す生の `List<string>` を `foreach` で列挙する。
+  - `Mapping.cs:2673-2682` の Stage3（Button のスペシャルアクション）が、`ProfileActionProvider.GetProfileActionsRaw`（`ProfileActionProvider.cs:72`）の返す生の `List<string>` を `foreach` で列挙する。
   - `LegacyProfileXmlSerializer.cs:2118-2127` が、プロファイルの読込のたびに同じリストを `Clear()` → `Add()` する。ロックなし。
   - `HaltReportingRunAction` が止めるのは入力レポートの発火だけで、`async void` の `MapCustomAction` の実行中のフレームは止めない。
   - `Mapping.cs:4255` は `ToArray()` で複製して守っている（コメントに理由あり）。Stage3 にだけ複製がない。
@@ -116,7 +116,7 @@
 - [ ] W2: 特性化テスト 8 項目と既存テストの Assert の補強が成功する。ガードテスト（複数型ファイル 0、ラチェットの一致検査）も成功する。
 - [ ] W3: 文書とコメントの訂正が済む。規約書とモデル図は、案の提示と承認を経る。
 - [ ] ビルド警告 0、全テスト成功（ユーザーが実行）。
-- [ ] 実機確認: 手動のプロファイル切替を繰り返し、`Collection was modified` が出ないこと。特殊アクションの通常動作（Key、Button、マクロ、プロファイル切替と復帰）が変わらないこと。
+- [ ] 実機確認: 手動のプロファイル切替を繰り返し、`Collection was modified` が出ないこと。スペシャルアクションの通常動作（Key、Button、マクロ、プロファイル切替と復帰）が変わらないこと。
 - [ ] W5: 完了報告書。
 
 ## 7. 次の Step

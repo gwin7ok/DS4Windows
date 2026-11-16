@@ -33,7 +33,7 @@
 | 問題 1: `ICommand` を使わず、クリックのイベントで処理する | **そのとおり** | アプリ全体で、`Command="{…}"` はテーマのスクロールバーの 8 か所だけ。`ICommand` の実装（`RelayCommand` など）は 1 つもない |
 | 問題 2: 結びつけを使わず、部品を名前で直接操作する | **一部そのとおり** | 結びつけは使っている（`MainWindow.xaml` に 113、`AssignmentEditor.xaml` に 52）。それでも、部品のプロパティへの直接の代入が、上の表のとおり残る |
 | 問題 3: 画面が別の画面を直接作る | **一部そのとおり** | 編集の子画面（出力ピッカー、記録の窓など）は工場 `IEditorWindowFactory` を通る。直接作っているのは、`MainWindow` の `ChangelogWindow`・`ControllerRegisterOptionsWindow`・`RenameProfileWindow`・`UpdaterWindow`、各画面の `ColorPickerWindow`、ファイルのダイアログ、`MessageBox`。ダイアログの窓口（`IDialogService` に当たるもの）はない |
-| `ProfileEditor` は、各タブの設定が同じ code-behind で処理される | **古い** | Phase15 で、8 つの領域（ジャイロ、タッチパッド、トリガー、スティック、ライトバー、出力、一般、6 軸）を、パネル（UserControl）とサブ ViewModel に分けた。残っているのは、Controls タブ（図とホバー）、特殊アクションの一覧、読み込み直し（`Reload` 96 行）、`SortSpecialActionsList`（105 行）、`EditActionBtn_Click`（91 行）など |
+| `ProfileEditor` は、各タブの設定が同じ code-behind で処理される | **古い** | Phase15 で、8 つの領域（ジャイロ、タッチパッド、トリガー、スティック、ライトバー、出力、一般、6 軸）を、パネル（UserControl）とサブ ViewModel に分けた。残っているのは、Controls タブ（図とホバー）、スペシャルアクションの一覧、読み込み直し（`Reload` 96 行）、`SortSpecialActionsList`（105 行）、`EditActionBtn_Click`（91 行）など |
 | ViewModel が値の入れ物になっている | **一部そのとおり** | Phase26 で、判断を部品へ出し始めた（`TouchpadSwipeProfileRule`、`RumbleTestController`、`UpdateCheckPolicy` など 5 つ）。大半はこれから |
 | `App.xaml.cs` に、起動・単一起動・トレイ・例外処理・サービスの起動が集中 | **一部そのとおり** | トレイは `App` にない（`MainWindow` と `TrayAppearanceController`）。単一起動と IPC は Phase24 で部品へ出した。残るのは、起動の手順（`Application_Startup` 72 行ほか）、引数の処理（`CheckOptions` 73 行）、終了（`CleanShutdown` 61 行）、未処理例外 |
 | `App.xaml.cs` は 100〜200 行にできる | **難しい** | 起動の手順は順序への依存が強く（`StartupOrderGuardTests`）、`App` は WPF の入口として、例外・セッション終了・電源のイベントを受ける。現実的な目標は、判断と手順を部品へ出して 400 行前後 |
@@ -56,7 +56,7 @@
 | `AppSettingsDTO`（1,126 行） | **大きいが、理由がある** | XML の形（`Profiles.xml`）を保つための入れ物で、コントローラー 8 台ぶんの同じ形の項目と、項目ごとの「書き出すかどうか」のメソッドが並ぶ。形を変えると、保存の互換に触れる |
 | `SpecialActionsXmlSerializer`（689 行）を節に分ける | **そのとおり** | `LoadActions` 178 行、`SaveAction` 97 行、`SaveActionNew` 84 行。保存の入口が 2 つあり、種別を数（例: 6、11）で受ける |
 | `TriggerDispatchEngine`（747 行）を、状態保持・シリアライズに分類 | **分類が違う** | 判定と実行のエンジン（第 2 層）。機器ごとのロックと、不変の配列の差し替えで作られており、問題は見つからなかった（`06-Performance.md` の良い点） |
-| プロファイルの節（`ProfileSections`）の形を、特殊アクションとアプリの設定へ広げる | **妥当** | 特殊アクションは、種別ごとの組み立て部品（`ISpecialActionOutputBuilder` が 10 個。Phase28）の前例もある |
+| プロファイルの節（`ProfileSections`）の形を、スペシャルアクションとアプリの設定へ広げる | **妥当** | スペシャルアクションは、種別ごとの組み立て部品（`ISpecialActionOutputBuilder` が 10 個。Phase28）の前例もある |
 
 ## 3. 外部レビューの優先順位について
 外部レビューは、(1) `TouchpadMouse` の分割、(2) code-behind の削減、(3) デバイスの I/O とデータ処理の分離、の順を勧める。本レビューの見立ては次のとおり。
@@ -75,7 +75,7 @@
 | `InputDeviceCore` | `Phase31-Plan.md`（既存の 31-4） | DS4 だけの分岐の解消。それ以上の分割は行わない |
 | `Mapping.cs`、`TriggerDispatchEngine` | 対応しない | 指摘が古い、または分類が違う。`Mapping` の引数（15）は `03-Constructor-Arity.md` |
 | `UdpServer` | **`Phase38-Plan.md`（新設）** | 通信と書式の分離 |
-| `BackingStore`、`SpecialActionsXmlSerializer`、`AppSettingsDTO` | **`Phase37-Plan.md`（新設）** | 特殊アクションの保存・読み込みを種別ごとに、`ResetProfile` を領域へ、読み込みと保存の節を対に（5-5）。`AppSettingsDTO` は、形を保つ前提で判断から |
+| `BackingStore`、`SpecialActionsXmlSerializer`、`AppSettingsDTO` | **`Phase37-Plan.md`（新設）** | スペシャルアクションの保存・読み込みを種別ごとに、`ResetProfile` を領域へ、読み込みと保存の節を対に（5-5）。`AppSettingsDTO` は、形を保つ前提で判断から |
 | `ControlBindingBuilder`（500 行。一覧の 17 位） | 対応しない | 最長のメソッドは `Add` 115 行。Controls の割り当ての区分ごとの解釈で、Phase8・10 で作った新しい型。外部レビューも指摘していない |
 
 ## 履歴

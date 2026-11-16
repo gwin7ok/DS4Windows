@@ -57,7 +57,7 @@
 | **2.変換**| `IManagedActionManager` | `DefaultActionManager` | **Singleton** | マクロ・キー・プロファイル切替アクションの実行統括。2026-09-04〜2026-10-14 は登録が欠落していた（Phase6-Step9b-2 で再登録）。【Phase8】アクションの状態（`ActionInstanceState`）の管理に縮小し、実行の統括は `ITriggerDispatchEngine` へ移行済み（Phase8-Step8 の 8c で、系統 B の `IActionFactory` ほかを撤去し、コンストラクターは `Func<IMapping>` のみになった） | `Func<IMapping>` |
 | **2.変換**| `IControllerRegistry` | `DefaultControllerRegistry` | **Singleton** | `KeyButtonActionController` の登録と、デバイス単位・終了時の破棄（Phase6-Step9b-2 で再登録）。【Phase8】使うか廃止するかを Step6 で確定 | なし |
 | **2.変換**| `IMapping` | `Mapping` | **Singleton** | 入力の評価（カーブ・割り当て・合成入力の確定・切断の後始末・マクロ）。旧: メンバーのほぼすべてが static（Phase7-Step8）。`DefaultActionManager`／`DefaultMacroPlayer` は `Func<IMapping>` で遅延して受ける | `ITriggerDispatchEngine`※2, `SyntheticInputState`, `MacroRuntimeState`, `StickMotionState`, `IProfileSettingsService`, `IProfileApplicationService`, `IVirtualKBM`, `IKeyButtonControllerRegistry`, `IProcessLauncher`, `IProfileSwitcher`, `ISyntheticDispatcher`, `IDeviceSlotState`, `IProfileActionProvider`, `ISpecialActionRepository`（Phase13-Step5b で `Func<IDeviceStateAccessor>` から直接注入に） |
-| **2.変換**| `ITriggerDispatchEngine` | `TriggerDispatchEngine` | **Singleton** | 【Phase8・実装済み】特殊アクションと Controls タブの判定→実行の統一。エッジ検出・Fresh-press ガード・実行中の再実行防止・抑制・復帰の合図を一元的に担う。`Mapping` が毎フレーム呼ぶ（通常の割り当ての前後に 2 回） | `IActionRegistry`, `IManagedActionManager` |
+| **2.変換**| `ITriggerDispatchEngine` | `TriggerDispatchEngine` | **Singleton** | 【Phase8・実装済み】スペシャルアクションと Controls タブの判定→実行の統一。エッジ検出・Fresh-press ガード・実行中の再実行防止・抑制・復帰の合図を一元的に担う。`Mapping` が毎フレーム呼ぶ（通常の割り当ての前後に 2 回） | `IActionRegistry`, `IManagedActionManager` |
 | **2.変換**| `IActionRegistry` | `ActionBindingRegistry` | **Singleton** | 【Phase8・実装済み】スロット別の不変の束縛リスト（`TriggerBinding`）。更新は参照ごとの差し替え（読込中の競合を排除）。切断で空にする | なし |
 | **2.変換**| `IActionBindingBuilder` | `ActionBindingBuilder` | **Singleton** | 【Phase8・実装済み】プロファイルのスペシャルアクションと Controls タブの割り当てから、束縛を組み立てる（プロファイル適用の完了後） | `IProfileActionProvider`, `IProfileSettingsService`, `IMacroPlayer`, `IProcessLauncher`, `IProfileSwitcher`, `IKeyActionCreator`（`BindingMigrationOptions` は Phase8-Step8 の 8d で撤去） |
 | **2.変換**| `IKeyButtonControllerRegistry` | `KeyButtonControllerRegistry` | **Singleton** | デバイス × アクション名ごとの `KeyButtonActionController` の登録簿（生成・再利用・破棄）。旧: `Mapping` の静的フィールド | `IKeyButtonActionControllerFactory`, `IControllerRegistry` |
@@ -118,7 +118,7 @@
 | | `IMacroStepExecutor` → `MacroStepExecutor` | マクロの 1 つの値の実行 | 状態は `MacroRuntimeState` |
 | | `IMacroStringPlayer` → `DefaultMacroStringPlayer` | マクロを文字列で指定して実行する窓口（Phase8-Step7） | |
 | 2. 入力処理（割り当ての組み立て。Phase8〜10） | `IControlBindingBuilder` → `ControlBindingBuilder` | Controls タブの割り当てから、エンジンの束縛を組み立てる | |
-| | `ISpecialActionOutputFactory` → `SpecialActionOutputFactory` | 特殊アクションの種別ごとの出力アクションと実行方針（Phase10-Step4） | SA タブと Controls タブで共有 |
+| | `ISpecialActionOutputFactory` → `SpecialActionOutputFactory` | スペシャルアクションの種別ごとの出力アクションと実行方針（Phase10-Step4） | SA タブと Controls タブで共有 |
 | | `IProfileIdentityService` → `ProfileIdentityService` | プロファイルの ID と名前の対応（Phase10-Step4d） | |
 | | `IRepeater` → `RepeatHelperToIRepeaterAdapter` | キーの繰り返しの周期呼び出し | |
 | 3. アプリ・OS 副作用（Phase12。ウィンドウ操作） | `IWindowSystem` → `Win32WindowSystem` | ウィンドウの列挙・前面化・最小化の判定・カーソル移動・前面ウィンドウの原点・座標の下のウィンドウ（Win32 の操作を包む） | `MacroStepExecutor` と `WindowFocuser` が使う。テストでは `RecordingWindowSystem` に差し替える |
@@ -247,7 +247,7 @@
 %% - `ProfileSlotApplier`: `IProfileApplicationService.ApplyProfileWithoutHalt` へ委譲する（スロット範囲・名前の検査は旧 `Global.ApplyProfileToSlot` と同じ）。`ControlService` は引き続き `IProfileSlotApplier` だけを知る（依存の逆転は変わらない）。
 %% - `ProfileRepository`: `LoadTempProfile` を実装として持ち、`SelectedProfileChanged` は自身のインスタンスイベントになった（発火は `ProfileApplicationService` が `RaiseSelectedProfileChanged` を呼ぶ。購読者は `ControllerListViewModel`）。`IProfileRepository.LoadBlankProfile` は削除（`IProfilePresetLoader.LoadBlank` に統合）。
 %% - `ProfilePresetLoader`: `BackingStore` と `IProfileSettingsService` を注入で受け、10 種のプリセットを直接読み込む。`BackingStore` が `loggedInvalidActions` を持つ。
-%% - `Mapping.cs` の特殊アクションの切替は、`Global.ApplyProfile` ではなく `IProfileApplicationService.ApplyProfile`（`MappingAction`）を呼ぶ。
+%% - `Mapping.cs` のスペシャルアクションの切替は、`Global.ApplyProfile` ではなく `IProfileApplicationService.ApplyProfile`（`MappingAction`）を呼ぶ。
 %% - 詳細は `Phase7-Step3c-Plan.md`、`Phase7-Step3c-Completion-Report.md`、台帳は `Phase7-Residual-Ledger.md` §6。
 %%
 %% Phase7-Step4（2026-10-17）: 起動・終了の手順が変わった。

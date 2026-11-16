@@ -29,7 +29,7 @@ namespace DS4WindowsTests
             return state;
         }
 
-        /// <summary>1 つの Button 特殊アクションを登録し、入力の列を流して、フレームごとの出力を記録する。</summary>
+        /// <summary>1 つの Button スペシャルアクションを登録し、入力の列を流して、フレームごとの出力を記録する。</summary>
         private static List<(bool Cross, bool L1, bool R1, bool Touch, int LeftClicks)> Run(
             string triggers, string details, string extras, int delayMs, bool freshPressGuard, ControllerState[] frames)
         {

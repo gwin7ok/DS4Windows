@@ -14,7 +14,7 @@
 - 「1 ファイル 1 型」（規約 §3.3 原則 1）は、全 `.cs` で達成済み（Phase6-Step10b）。残る課題は**「1 クラス 1 責務」**と、**巨大な単一メソッド**である。
 - 上位ファイルの調査（2026-10-19）: `Mapping.cs` 7,611 行（メンバー約 80、`SetCurveAndDeadzone` 1,194 行ほか）、`LegacyProfileXmlSerializer.cs` 3,093 行（`LoadProfile` 2,323 行）、`ControlService.cs` 3,436 行、`ProfileSettingsViewModel.cs` 3,652 行（公開プロパティ約 258）、`ProfileEditor.xaml.cs` 2,522 行、`MainWindow.xaml.cs` 2,253 行、`DS4Device.cs` 2,040 行（`performDs4Input` 511 行）、`Mouse.cs` 1,960 行、`JoyConDevice.cs` 1,944 行（`ReadInput` 486 行）ほか。
 - 目標像はモデル図 01 §2 の「解体の検証マトリクス」（`IInputMappingPipeline` と各 Processor、`IMouseEngine`、`InputLoopCoordinator`、`ILightbarService`、サブ ViewModel、`IHidTransport` とパーサーほか）。ただし、**本 Phase は同図の名前をそのまま作ることを目的にしない**。責務の境界を、実コードの分かれ目に沿って決め、同図は実装結果に合わせて更新する（Phase8 の Step2 で整理した「実在／未実装」の区別を使う）。
-- 範囲外: 特殊アクションの統一ディスパッチ（Phase8）、`LoadProfile`／`SaveProfile` の分解（Phase8 の Step4b）、機能の追加・削除、保存形式の変更。
+- 範囲外: スペシャルアクションの統一ディスパッチ（Phase8）、`LoadProfile`／`SaveProfile` の分解（Phase8 の Step4b）、機能の追加・削除、保存形式の変更。
 
 ## 2. 前提と原則
 
@@ -38,7 +38,7 @@
 
 ### 9-B: `Mapping` のマウス・ホイールへの変換と、入力の解決（約 1,400 行）
 - 対象: `getMouseMapping`（318 行）、`calculateFinalMouseMovement`、`GetMouseWheelMapping`、`TempMouseJoystick`、`GetByteMapping`、`GetBoolMapping`、`GetXYAxisMapping`、`getBool*Mapping` 群、`GetBoolMappingExternal`。
-- 前提: 値の特性化テスト。特殊アクション側の `getBoolSpecialActionMapping`／`GetBoolActionMapping` は、Phase8 の後の姿を見て扱う。
+- 前提: 値の特性化テスト。スペシャルアクション側の `getBoolSpecialActionMapping`／`GetBoolActionMapping` は、Phase8 の後の姿を見て扱う。
 
 ### 9-C: マクロの再生（約 360 行。2026-10-21 に再計測）
 - **`Phase8-Fix-MacroRepeatUnify`（2026-10-21）の影響**: 死んだ経路（`macrodone`、`DispatchInFlight`、`EndMacro` の 3 オーバーロード）は削除済み、`PlayMacroTask` の重複は `RunMacroOnce` に統合済み、`HoldMacro` は `RepeatMacro` に統合済み。K3 の暫定対策も置き換え済みのため、**「K3 の恒久的な再設計」は 9-C から外れる**。`EndMacroDirect` は空実装で、TODO コメントを残してある。
@@ -62,7 +62,7 @@
 
 ### 9-G: `ProfileSettingsViewModel` のサブ ViewModel 化（任意）
 - **判断（2026-10-23、ユーザー承認）: 先送り**。`Phase9-Deferred-Ledger.md` の G-1 に記録。
-- 対象: 公開プロパティ約 258。モデル図 01 のサブ ViewModel（スティック、トリガー、ボタン、特殊アクション）への分割。
+- 対象: 公開プロパティ約 258。モデル図 01 のサブ ViewModel（スティック、トリガー、ボタン、スペシャルアクション）への分割。
 - リスク: XAML の `DataContext` の参照パスを多数書き換える必要があり、実機（画面）での全面的な確認が要る。効果とコストを比べて、**実施するかどうかを 9-A〜9-F の後に判断する**（Q3）。
 
 ### 9-H: 第 1 層のデバイスクラス（条件付き）

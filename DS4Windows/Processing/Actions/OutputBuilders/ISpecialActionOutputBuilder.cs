@@ -6,7 +6,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions.OutputBuilders
 {
     /// <summary>
-    /// 特殊アクションの種別 1 つぶんの、出力アクションと実行方針の作り方。<see cref="SpecialActionOutputFactory"/> が、種別（<see cref="Kind"/>）で選んで呼ぶ。
+    /// スペシャルアクションの種別 1 つぶんの、出力アクションと実行方針の作り方。<see cref="SpecialActionOutputFactory"/> が、種別（<see cref="Kind"/>）で選んで呼ぶ。
     /// </summary>
     public interface ISpecialActionOutputBuilder
     {

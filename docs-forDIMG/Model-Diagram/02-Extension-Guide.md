@@ -48,13 +48,13 @@
 | DI 登録 | `ServiceRegistration.Output.cs` |
 | バックエンドの型 | ViGEm の型は `Output/Backend` の中だけ（L9） |
 
-## 3. アクション（特殊アクション）を足す
+## 3. アクション（スペシャルアクション）を足す
 
 `Processing/Actions/` に、`Action*` と `*ActionController` の組で足す（規約 3.4 R4）。判定と実行は `TriggerDispatchEngine` が担う。
 
 ### 保存・読み込み（Phase37）
 
-- 特殊アクションの保存は 1 本だけ。`SpecialActionRepository.SaveAction` → `SpecialActionsXmlSerializer.SaveActionNew`（種別の数 `mode` ごとに `SpecialAction` を作って一覧へ入れる）→ `SaveActions`（一覧全体を `ActionsDTO` で書く）。読み込みも `ActionsDTO`（`Core/Persistence/Dto`）に集まっている。種別を足すときは、`ActionTypeId`・`SaveActionNew` の種別の分岐・`ActionsDTO` の読み書きを揃える（種別の数は 1〜7、9、10、11。8 は欠番）。
+- スペシャルアクションの保存は 1 本だけ。`SpecialActionRepository.SaveAction` → `SpecialActionsXmlSerializer.SaveActionNew`（種別の数 `mode` ごとに `SpecialAction` を作って一覧へ入れる）→ `SaveActions`（一覧全体を `ActionsDTO` で書く）。読み込みも `ActionsDTO`（`Core/Persistence/Dto`）に集まっている。種別を足すときは、`ActionTypeId`・`SaveActionNew` の種別の分岐・`ActionsDTO` の読み書きを揃える（種別の数は 1〜7、9、10、11。8 は欠番）。
 - 保存する XML の形（要素名と順序）は変えない。**全種別を本番の保存の経路で書いた黄金**（`actions-production.xml`／`.state.txt`。`ActionsProduction_*` のテスト）に、新しい種別を足す。
 
 ## 4. 足したあとの確認

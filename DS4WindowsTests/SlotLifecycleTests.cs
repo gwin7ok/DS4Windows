@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             _origSelected = _store.selectedProfile[Slot];
             _origPath = _store.profilePath[Slot];
 
-            // ボタン種別の特殊アクションを 1 件、スロットのプロファイルに入れる（プロファイルの読込を通さず、設定の状態を直接作る）
+            // ボタン種別のスペシャルアクションを 1 件、スロットのプロファイルに入れる（プロファイルの読込を通さず、設定の状態を直接作る）
             _action = new SpecialAction(ActionName, "Cross/L1", "Button", ((int)X360Controls.A).ToString(), 0, "Press\n");
             _store.profileActions[Slot] = new List<string> { ActionName };
             _store.profileActionDict[Slot][ActionName] = _action;

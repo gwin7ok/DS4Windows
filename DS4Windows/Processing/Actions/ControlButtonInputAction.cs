@@ -6,7 +6,7 @@ namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md §3.2）: Controls タブの 1 ボタンの入力アクション（D2＝B1 の「要素数 1」の特殊ケース。ただし押下の判定が
-    /// 特殊アクションと違う）。成立 ＝ 入力（<see cref="IControlTriggerInput"/>）が、そのボタンを押していると判定すること。入力が <see cref="IControlTriggerInput"/> でなければ未成立。
+    /// スペシャルアクションと違う）。成立 ＝ 入力（<see cref="IControlTriggerInput"/>）が、そのボタンを押していると判定すること。入力が <see cref="IControlTriggerInput"/> でなければ未成立。
     /// 遅延・ジェスチャーはない（旧経路の Controls タブの Key にもない）。割り当て 0。
     /// Phase10-Step4 W3: Macro の「Run on trigger release」のために、離したときに成立する反転（<c>invertOnRelease</c>）を持てる
     /// （<see cref="ComboTriggerInputAction"/> と同じ規則: 押された時点で準備、離された時点で 1 回だけ成立。既定は偽で、従来と同じ）。

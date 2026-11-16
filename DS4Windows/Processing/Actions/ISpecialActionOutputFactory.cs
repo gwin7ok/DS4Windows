@@ -3,7 +3,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: 特殊アクション（<see cref="SpecialAction"/>）の種別ごとの、出力アクションと実行方針の作り方。
+    /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: スペシャルアクション（<see cref="SpecialAction"/>）の種別ごとの、出力アクションと実行方針の作り方。
     /// <see cref="ActionBindingBuilder"/>（SA タブ）と、Controls タブの束縛を作る側が、共通の組み立て（<see cref="AssignmentBindingBuilder"/>）を通して同じ部品を使う。入力アクションは、組み立ての側が作る。
     /// </summary>
     public interface ISpecialActionOutputFactory

@@ -38,7 +38,7 @@ namespace DS4Windows.Processing.Abstractions
         void HandleDeviceDisconnect(int device);
 
         /// <summary>
-        /// Phase7b W1: プロファイル切替の特殊アクションの「復帰の合図」（<c>UntriggerAction</c>／<c>UntriggerIndex</c>）を取り出す。
+        /// Phase7b W1: プロファイル切替のスペシャルアクションの「復帰の合図」（<c>UntriggerAction</c>／<c>UntriggerIndex</c>）を取り出す。
         /// <c>ActionManager.ClearDeviceState</c> が <see cref="HandleDeviceDisconnect"/> を通じて合図を消す前に退避するために使う。
         /// </summary>
         ProfileUntriggerSnapshot CaptureProfileUntrigger(int device);
@@ -46,7 +46,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>Phase7b W1: <see cref="CaptureProfileUntrigger"/> で退避した合図を戻す。合図が無かった（Action が null）ときは何もしない。</summary>
         void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot);
 
-        /// <summary>特殊アクションのマクロを再生する（<c>IMacroPlayer</c> 用）。</summary>
+        /// <summary>スペシャルアクションのマクロを再生する（<c>IMacroPlayer</c> 用）。</summary>
         void PlayMacroDirect(int device, SpecialAction action);
 
         /// <summary>マクロを停止してキーを解放する（<c>IMacroPlayer</c> 用）。</summary>

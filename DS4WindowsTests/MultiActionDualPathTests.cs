@@ -199,7 +199,7 @@ namespace DS4WindowsTests
             using (var plain = new Harness())
             {
                 plain.Step(false);
-                Assert.True(plain.Step(true).L1);   // 特殊アクションがなければ、そのまま出力される
+                Assert.True(plain.Step(true).L1);   // スペシャルアクションがなければ、そのまま出力される
             }
 
             using var h = new Harness();
@@ -213,7 +213,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WhenAnEarlierSpecialActionEndsTheFrame_ThePressEdgeIsMissed()
         {
-            // 前の特殊アクション（Profile の切替）がフレームを打ち切ると、その後ろの MultiAction は、その押下のエッジを見逃す（旧ループの return）。
+            // 前のスペシャルアクション（Profile の切替）がフレームを打ち切ると、その後ろの MultiAction は、その押下のエッジを見逃す（旧ループの return）。
             // 次のフレーム以降は「前回も押している」ため、長押しにもならない（旧経路の性質。新経路も旧ループの位置で動くため同じ）
             using var h = new Harness();
             h.Scope.InstallProfileRecorder();

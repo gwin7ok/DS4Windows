@@ -11,7 +11,7 @@
 - `SyntheticInputCommitter.Commit`（`Processing/Services/SyntheticInputCommitter.cs:43`〜`205`）: 全コントローラー共通の書き込みロックを取り、`try`／`finally` なしで約 160 行を実行して解放する。間にキーボード・マウスの送出がある。例外が出ると解放されず、全コントローラーの入力が止まる。ロックを取る場所は、本体でここだけ。
 - `DefaultActionManager.SetToggledOn`（`Processing/Actions/DefaultActionManager.cs:222`〜`242`）: 値が変わるたびに、ログのレベルを見ずに `StackTrace` を取り、文字列にする。
 - `StickInputConditioner.AntiSnapback`（`Processing/Services/StickInputConditioner.cs:93`）: `queue.Any(ラムダ)` で、毎フレーム、捕捉のオブジェクト・デリゲート・列挙子の箱詰めを割り当てる。
-- `Mapping.MapCustomAction`（`Processing/Mapping.cs:692`）: 特殊アクションを持つプロファイルで、毎フレーム `ToArray()` する。
+- `Mapping.MapCustomAction`（`Processing/Mapping.cs:692`）: スペシャルアクションを持つプロファイルで、毎フレーム `ToArray()` する。
 - `InputReportProcessor` のコンストラクター（`Processing/Services/InputReportProcessor.cs:92`〜`97`）が、`DeviceSlotState.CurrentStates` の中身を作る（生成順への隠れた依存）。
 - Trace／Debug のログの文字列を、レベルの判定なしで組み立てる箇所（`SyntheticDispatcherService.cs:57`・`58`・`107`・`108`、`SyntheticInputCommitter.cs` 34 か所、`KeyButtonActionController.cs` 9 か所、`TouchpadMouse.cs:1114`〜`1167` 4 か所）。
 - 割り当て 0 を検査する `ControlServiceHotPathAllocationTests` は、設定の getter だけを見ている。
@@ -50,7 +50,7 @@ D1＝A（まず `try`／`finally` だけ。範囲の見直しは 29-1b）、D2�
 | 29-2 | `DefaultActionManager.SetToggledOn` の、スタックトレースの取得からログまでを `if (AppLogger.IsTraceEnabled)` で囲む | Trace が無効のとき、`SetToggledOn` の切り替えで割り当てが一定以下であること | 完了 |
 | 29-3 | `StickInputConditioner.AntiSnapback` の `queue.Any(…)` を `foreach` に書き直す（計算式は同じ） | 既存のアンチスナップバックのテストが不変。新たに割り当て 0 のテスト | 完了 |
 | 29-4a | 調査: `profileActions` を書き換える場所と、そのスレッドの洗い出し。D2 の方式を確定する | — | 完了 |
-| 29-4 | `Mapping.MapCustomAction` の `ToArray()` をやめる（D2 の方式） | 特殊アクションつきのプロファイルで `MapCustom` を回し、割り当て 0。UI スレッド相当の変更と並行に回しても例外が出ないこと | 完了 |
+| 29-4 | `Mapping.MapCustomAction` の `ToArray()` をやめる（D2 の方式） | スペシャルアクションつきのプロファイルで `MapCustom` を回し、割り当て 0。UI スレッド相当の変更と並行に回しても例外が出ないこと | 完了 |
 | 29-5 | `DeviceSlotState` が、`CurrentStates` の中身を自分のコンストラクターで作る。`InputReportProcessor` は作らない（`ControllerStateExposed` の作成は、参照先ができたあとに行う順序を保つ） | `DeviceSlotState` だけを作っても、`CurrentStates[i]` が `null` でないこと | 完了 |
 | 29-6 | Trace／Debug のログの文字列の組み立てを、レベルの判定で囲む（D3 の範囲） | ログの文言の黄金テスト（あれば）が不変。なければ、代表の 1 か所に割り当てのテスト | 完了 |
 | 29-7 | 文書: `01-Structure.md` §4 の「割り当て 0」の記述に、検査しているテストの名前を足す。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ（29-8〜29-10 のあとに行う） | — | 完了 |
@@ -69,7 +69,7 @@ D1＝A（まず `try`／`finally` だけ。範囲の見直しは 29-1b）、D2�
 
 ## 確認の方法
 - 各 Step: `dotnet test … -c Debug /p:platform=x64 --filter "Category!=Slow&Category!=Benchmark"`。Step の終わりに Debug ALL（警告 0・エラー 0）。
-- 実機: DS4 で、キーの割り当て・トグル・マウスのクリック・特殊アクション（プロファイル切替を含む）・アンチスナップバックが従来どおり動くこと。未確認の項目は `Known-Issues-Ledger.md` §3 へ足す。
+- 実機: DS4 で、キーの割り当て・トグル・マウスのクリック・スペシャルアクション（プロファイル切替を含む）・アンチスナップバックが従来どおり動くこと。未確認の項目は `Known-Issues-Ledger.md` §3 へ足す。
 - 性能を比べるときだけ、Benchmark の印のテストを前後で流す。
 
 ## リスク

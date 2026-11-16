@@ -7,7 +7,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4Windows.UI.Abstractions
 {
-    /// <summary>ViewModel の生成のうち、特殊アクションの編集と、割り当て編集画面の種別ごとの ViewModelを作る窓口。</summary>
+    /// <summary>ViewModel の生成のうち、スペシャルアクションの編集と、割り当て編集画面の種別ごとの ViewModelを作る窓口。</summary>
     public interface IActionViewModelFactory
     {
         SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null);

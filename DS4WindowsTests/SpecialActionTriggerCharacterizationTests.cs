@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7c W2（Phase7c-Plan.md §3 W2）: 特殊アクションの「トリガー成立→実行」（<c>Mapping.MapCustom</c>／<c>MapCustomAction</c>／Stage3）の特性化テスト。
+    /// Phase7c W2（Phase7c-Plan.md §3 W2）: スペシャルアクションの「トリガー成立→実行」（<c>Mapping.MapCustom</c>／<c>MapCustomAction</c>／Stage3）の特性化テスト。
     /// 現在の挙動を固定することが目的で、Phase8 で経路を統一ディスパッチへ移しても、入力 → 出力・状態が変わらないことを保証する。
     /// 対象: ボタン種別の Press の出力、トリガーの AND 条件、トリガーボタンの抑制と解除、Fresh-press ガードの解除条件（80ms の連続した未成立）、
     ///       Profile／Program の実行ブロック（ガード中・実行中）、Stage3 の並行変更への耐性。

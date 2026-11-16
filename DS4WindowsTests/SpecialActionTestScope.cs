@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7c W2: <c>Mapping.MapCustom</c>／<c>MapCustomAction</c>（特殊アクションのトリガー成立→実行）を実走行させる最小のハーネス。
+    /// Phase7c W2: <c>Mapping.MapCustom</c>／<c>MapCustomAction</c>（スペシャルアクションのトリガー成立→実行）を実走行させる最小のハーネス。
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字（<see cref="Device"/>）に対し、プロファイルのアクション一覧
     /// （<c>profileActions</c>／<c>profileActionDict</c>／<c>profileActionIndexDict</c>／<c>profileActionCount</c>）と
     /// <c>BackingStore.actions</c> へ、テスト用の <see cref="SpecialAction"/> を登録する。終了時にすべて元へ戻す。
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             Delay.Reset();
         }
 
-        /// <summary>特殊アクションを 1 件登録する（<c>BackingStore.actions</c> の末尾に足し、その添字をプロファイル側の索引にする）。</summary>
+        /// <summary>スペシャルアクションを 1 件登録する（<c>BackingStore.actions</c> の末尾に足し、その添字をプロファイル側の索引にする）。</summary>
         public SpecialAction Add(SpecialAction action)
         {
             int index = _store.actions.Count;
@@ -99,21 +99,21 @@ namespace DS4WindowsTests
             PublishBindings();
         }
 
-        /// <summary>Phase8-Step7: 登録済みの特殊アクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
+        /// <summary>Phase8-Step7: 登録済みのスペシャルアクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
         public void PublishBindings()
         {
             var builder = TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>();
             TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
-        /// <summary>ボタン種別の特殊アクション（Press。出力は X360 の A ボタン＝DS4 の Cross）を作って登録する。</summary>
+        /// <summary>ボタン種別のスペシャルアクション（Press。出力は X360 の A ボタン＝DS4 の Cross）を作って登録する。</summary>
         public SpecialAction AddButtonPress(string triggers)
         {
             string name = "p7c_btn_" + Guid.NewGuid().ToString("N");
             return Add(new SpecialAction(name, triggers, "Button", ((int)X360Controls.A).ToString(), 0, "Press\n"));
         }
 
-        /// <summary>キー種別の特殊アクション（出力キーは 65）を作って登録する。<paramref name="toggle"/> が偽なら Press。</summary>
+        /// <summary>キー種別のスペシャルアクション（出力キーは 65）を作って登録する。<paramref name="toggle"/> が偽なら Press。</summary>
         public SpecialAction AddKey(string triggers, bool toggle)
         {
             string name = "p7c_key_" + Guid.NewGuid().ToString("N");

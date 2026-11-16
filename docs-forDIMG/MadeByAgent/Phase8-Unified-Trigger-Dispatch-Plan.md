@@ -278,7 +278,7 @@ Phase8 着手前の全体レビュー（`Phase7c-Plan.md`）で、本書の前�
    - 静的 `ActionManager.ClearDeviceState` の本体（フォールバック）は、`IManagedActionManager` の登録により、本番では呼ばれない（先に `DefaultActionManager` へ委譲して戻る）。Phase7b W1 の退避・復元は、`DefaultActionManager` とフォールバックの二重になっている。統合時に片方へ寄せる。
    - `ServiceProviderHolder` は `Actions/` の 17 件のみ（内訳: `ActionManager` 13／`ActionFactory` 1／`DefaultKeyButtonActionControllerFactory` 2／`KeyActionAdapter` 1）。台帳 §17.3 に載っていなかった `ActionManager.actionInstances`／`actions`（静的な可変辞書）も、統合時の整理対象。
    - `KeyButtonActionController.cs:169`、`319` の `new RepeatHelperToIRepeaterAdapter` は DI を通っていない。注入化の対象。
-   - Stage3（Button の特殊アクション。Phase6-Step10-3d）の列挙競合は、Phase7c W1 で `ToArray()` による複製に変えた。読込側のリスト差し替え（`Clear()`→`Add()` の置き換え）は、本 Phase の `TriggerBinding`（読込時に 1 回だけ解決し、不変リストを差し替える設計）で解消する。
+   - Stage3（Button のスペシャルアクション。Phase6-Step10-3d）の列挙競合は、Phase7c W1 で `ToArray()` による複製に変えた。読込側のリスト差し替え（`Clear()`→`Add()` の置き換え）は、本 Phase の `TriggerBinding`（読込時に 1 回だけ解決し、不変リストを差し替える設計）で解消する。
 8. **孤立コードの §2.4 判断**（Phase7c の Q4＝A。Step1 で行う）:
    - 旧系統の孤立ヘルパー: `ReleasePolicy`、`ToggleController`、`MacroManager`、`SingleButtonTrigger`／`ITrigger`、`KeyInputAction`、`IActionRegistry`、`IOutputHandler`。
    - 上流由来の死にコード: `DateTimeJsonConverter`、`InputMethods`、`FakerInputMapping` の `ExpandedKeyboardKeys`、`ToggleActionController`（`[Obsolete]` の殻）。
@@ -313,11 +313,11 @@ Phase8 着手前の全体レビュー（`Phase7c-Plan.md`）で、本書の前�
 - 一方、`LoadProfile` は Step5（読込時の `TriggerBinding` の構築）が触る。2,323 行の単一メソッドに足すのは危険で、節ごとに分けておけば足す場所が明確になる。ゴールデンテスト（Phase7-Step10c）の安全網があり、`Mapping.cs`・`Actions/` に触れないので、Step1〜Step4 とも独立。
 
 ### Step4b の内容（個別計画書は、Step4 の完了後に作る）
-- **4b-0 監査**: ゴールデンテストの網羅の確認。保存・読込のゴールデンは「既定」と「変化させた状態」だが、`LoadProfile` の各節（スティック、トリガー、ジャイロ、タッチパッド、ライトバー、ボタン割り当て、特殊アクション、出力種別ほか）の**すべての設定項目が非既定値で読み書きされているか**を確認し、足りない節の分のゴールデンを先に足す。`LoadProfile` が共有する局所変数（`missingSetting` など）と、節ごとの依存を一覧にする。
+- **4b-0 監査**: ゴールデンテストの網羅の確認。保存・読込のゴールデンは「既定」と「変化させた状態」だが、`LoadProfile` の各節（スティック、トリガー、ジャイロ、タッチパッド、ライトバー、ボタン割り当て、スペシャルアクション、出力種別ほか）の**すべての設定項目が非既定値で読み書きされているか**を確認し、足りない節の分のゴールデンを先に足す。`LoadProfile` が共有する局所変数（`missingSetting` など）と、節ごとの依存を一覧にする。
 - **4b-1 `LoadProfile` の分解**: 節ごとの読み込みクラス（1 ファイル 1 型。共通の契約は小さなインターフェース。DI 登録の要否は計画書で決める）。読込の順序（節の相互依存）と、`missingSetting` の伝播、ログ、例外の握りつぶしの有無を維持する。節 1 つずつを 1 PR とし、毎回ゴールデンテストを通す。
 - **4b-2 `SaveProfile` の分解**: 同様。
 - **4b-3 機械的な整理**: `BackingStore` の名前の変換関数（`getDS4ControlsByName`／`getX360ControlsByName`、約 200 行）を、既存の `DS4ControlNames`／`X360ControlTables` へ。`ProfileEditor` のホバー画像・位置の表（`PopulateHoverImages`／`PopulateHoverLocations`、約 320 行）を、データ用のクラスへ。
 - 制約: 製品の挙動・保存形式を変えない。ラチェット（`Global.*` ほか）の基準値を、新しいファイルへ引き継ぐ（合計を増やさない）。規約 §3.2（メソッド単位の置換）と §3.4（ファイル配置）に従う。
 
 ### Step5 との接続
-- Step5 は、4b-1 で分けた「特殊アクション」の節（`ProfileActions`）の読込と、`BackingStore.CalculateProfileActionDicts` の結果を入力に、プロファイルスロットごとの不変の `IReadOnlyList<TriggerBinding>` を作る（読込側のリスト差し替えは、Phase7c W1 で保留した本格案。ここで解消する）。
+- Step5 は、4b-1 で分けた「スペシャルアクション」の節（`ProfileActions`）の読込と、`BackingStore.CalculateProfileActionDicts` の結果を入力に、プロファイルスロットごとの不変の `IReadOnlyList<TriggerBinding>` を作る（読込側のリスト差し替えは、Phase7c W1 で保留した本格案。ここで解消する）。

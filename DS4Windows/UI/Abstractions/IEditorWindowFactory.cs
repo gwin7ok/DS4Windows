@@ -34,7 +34,7 @@ namespace DS4Windows.UI.Abstractions
         AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
             SpecialAction specialAction = null);
 
-        /// <summary>一覧の行（<paramref name="item"/>）の特殊アクションを編集する画面。画面が設定の型を直接触らないための入口。</summary>
+        /// <summary>一覧の行（<paramref name="item"/>）のスペシャルアクションを編集する画面。画面が設定の型を直接触らないための入口。</summary>
         AssignmentEditor CreateAssignmentEditorFor(int deviceNum, ProfileList profileList, int targetDevice, SpecialActionItem item);
 
         /// <summary>Controls の一覧の行（<paramref name="control"/>）の割り当てを編集する画面（Controls のモード）。</summary>

@@ -8,7 +8,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase8-Step1 W2（Q2＝A）: <see cref="IProfileApplicationService"/> の記録用の実装。呼ばれたことだけを記録し、実際のプロファイルの読込・適用はしない。
-    /// 特殊アクションのプロファイル切替・復帰が、どの条件で何回、どの入口（<c>ApplyFromAction</c>／<c>RestoreFromAction</c>／直接の <c>ApplyProfile</c>）を呼ぶかを
+    /// スペシャルアクションのプロファイル切替・復帰が、どの条件で何回、どの入口（<c>ApplyFromAction</c>／<c>RestoreFromAction</c>／直接の <c>ApplyProfile</c>）を呼ぶかを
     /// 特性化するために使う（<see cref="SpecialActionTestScope.InstallProfileRecorder"/>）。
     /// </summary>
     public sealed class RecordingProfileApplicationService : IProfileApplicationService

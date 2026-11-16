@@ -12,7 +12,7 @@ namespace DS4Windows.Processing.Abstractions
     {
         /// <summary>
         /// マクロをバックグラウンドで再生する。手順は <paramref name="macroStr"/>（"/" 区切りの文字列）、<paramref name="macroLst"/>、<paramref name="macroArr"/> のいずれか 1 つで渡す。
-        /// 特殊アクションが同期（または「押している間繰り返す」）なら、そのトリガーごとのキューで順番に実行する。
+        /// スペシャルアクションが同期（または「押している間繰り返す」）なら、そのトリガーごとのキューで順番に実行する。
         /// </summary>
         void Play(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType,
             SpecialAction action = null, ActionInstanceState actionDoneState = null);

@@ -48,7 +48,7 @@
 | 11 | DualSense・トリガーの二段階・曲線・SX／SZ の曲線 | 1743〜1870 | |
 | 12 | タッチパッドのマウス（トラックボール、相対マウス）・タッチパッドのスティック | 1871〜2103 | `TouchpadMouseStick` 約 200 行 |
 | 13 | 出力コントローラーの種別 | 2104〜2116 | `oldContType`、`xinputPlug`／`xinputStatus` |
-| 14 | **特殊アクション（`ProfileActions`）** | 2117〜2151 | **Step5 が足す節。単独のクラスにする** |
+| 14 | **スペシャルアクション（`ProfileActions`）** | 2117〜2151 | **Step5 が足す節。単独のクラスにする** |
 | 15 | ボタン割り当て（通常） | 2152〜2250 | `customMap*`、`keyType`、`wvk` |
 | 16 | ボタン割り当て（シフト） | 2250〜2390 | `shiftCustomMap*`、`shiftM` を読む |
 | 17 | 後始末（指揮役に残す）: 欠けた設定の追記、`CacheProfileCustomsFlags`、`PostLoadSnippet` | 2391〜2430 | `LoadProfile` に残す |
@@ -69,7 +69,7 @@
 | 3 | SX／SZ・感度・雑多・SA ステアリング | `SXDeadZone`〜`TouchDisInvTriggers` |
 | 4 | ジャイロ（制御・マウス・マウススティック・スワイプ） | `GyroSensitivity`〜`GyroSwipeSettings` |
 | 5 | スティックの出力・トリガーの二段階・DualSense・タッチパッドのマウス／スティック・曲線 | `LSOutputCurveMode` 前後〜`TouchpadMouseStick` ほか |
-| 6 | **特殊アクション（`ProfileActions`）・BT のポーリング** | 2776〜2778 |
+| 6 | **スペシャルアクション（`ProfileActions`）・BT のポーリング** | 2776〜2778 |
 | 7 | 出力コントローラーの種別 | `OutputContDevice` |
 | 8 | ボタン割り当て（通常・シフト） | `Control`／`ShiftControl` |
 | 9 | 後始末（指揮役に残す）: `SaveLegacyExtraSettings`、書き出し | 3070〜 |

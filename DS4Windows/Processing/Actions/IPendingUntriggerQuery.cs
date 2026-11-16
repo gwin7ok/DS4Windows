@@ -9,7 +9,7 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public interface IPendingUntriggerQuery
     {
-        /// <summary>復帰待ちの特殊アクション（切替前の Profile）。合図がなければ null。</summary>
+        /// <summary>復帰待ちのスペシャルアクション（切替前の Profile）。合図がなければ null。</summary>
         SpecialAction PendingUntriggerAction { get; }
     }
 }

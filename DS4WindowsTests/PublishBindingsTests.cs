@@ -84,7 +84,7 @@ namespace DS4WindowsTests
             _origOlder = _repo.OlderProfilePath[Slot];
             _origSelected = _repo.SelectedProfile[Slot];
 
-            // ボタン種別の特殊アクションを 1 件定義し、それを使うプロファイルを保存の経路で作る
+            // ボタン種別のスペシャルアクションを 1 件定義し、それを使うプロファイルを保存の経路で作る
             _action = new SpecialAction(ActionName, "Cross/L1", "Button", ((int)X360Controls.A).ToString(), 0, "Press\n");
             _store.actions.Add(_action);
             _origActions = _store.profileActions[Slot];

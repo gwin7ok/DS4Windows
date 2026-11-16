@@ -247,7 +247,7 @@ public interface ITriggerDispatchEngine
 - ホットパスの割り当て 0 の見積もり、性能の測り方。
 - 移行の順序・並行期間の二重ディスパッチ防止・各 PR のテストの流用方法（W4）。
 - `MultiTapInputAction` の状態の置き場（Step7 の最後）。
-- Controls タブ（`ProcessControlSettingAction`）の取り込み範囲と時期（特殊アクションの切替の後。Intent 項目の範囲外）。
+- Controls タブ（`ProcessControlSettingAction`）の取り込み範囲と時期（スペシャルアクションの切替の後。Intent 項目の範囲外）。
 
 ## 13. 確認したい点
 
@@ -379,7 +379,7 @@ for each binding b in registry.GetBindings(device) that has an IFrameOutputActio
 
 - **`prevInputEstablished` のキャッシュ**（Intent 項目 8）: 新エンジンはこのキャッシュを使わない。プロファイル適用の後に、「押しっぱなしのトリガーを離して再度押す」と、現行と同じく 1 回だけ実行されること（および、`BeingTriggered` が作り直された後にフォールバックで余分に実行されないこと）を、Step3 の単体テストで確認する。
 - **`ClearAllEntries` が呼ばれるタイミング**: `ActionEntry` の再作成で、系統 B の `ActionImpl`（`KeyActionAdapter` など）も作り直される。新エンジンの出力アクションは束縛が保持するため、作り直されない。系統 B の出力と並行する期間（Step7）の、`IsToggledOn` などの状態の持ち方は、W4 で設計する。
-- **Controls タブ**: `ProcessControlSettingAction` は対象外（特殊アクションの切替の後。Phase8 の後半）。
+- **Controls タブ**: `ProcessControlSettingAction` は対象外（スペシャルアクションの切替の後。Phase8 の後半）。
 
 ## 21. 確認したい点（W3）
 

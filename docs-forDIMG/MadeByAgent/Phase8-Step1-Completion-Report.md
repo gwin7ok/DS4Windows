@@ -32,7 +32,7 @@
 
 ## 3. 旧実装との比較と、判明した事項
 
-- **`nowAction`／`oldnowAction` が 4 要素（是正済み）**: 上流の 2015 年（4 台の時代）の初期化子のまま、2020 年の 8 スロット化で更新が漏れた。拡張スロット（デバイス 4〜7）で `delayTime` のアクションが毎フレーム例外になり、そのデバイスの特殊アクションと Stage3（Button）が打ち切られた。**上流の元からの不具合**。`new DateTime[MaxControllerCount]` に是正。
+- **`nowAction`／`oldnowAction` が 4 要素（是正済み）**: 上流の 2015 年（4 台の時代）の初期化子のまま、2020 年の 8 スロット化で更新が漏れた。拡張スロット（デバイス 4〜7）で `delayTime` のアクションが毎フレーム例外になり、そのデバイスのスペシャルアクションと Stage3（Button）が打ち切られた。**上流の元からの不具合**。`new DateTime[MaxControllerCount]` に是正。
 - **出力スロットの復元が 0〜3 に限られていた（是正済み）**: `OutputSlotPersistDTO.MapTo` の `idx <= 3`。上流の `OutputSlotPersist`（出力スロットが 4 つの時代）から。保存側は全スロットを書くため、5〜8 番目の恒久スロットが復元されなかった。**上流の元から**。`< OutputSlots.Length` に是正（Q1＝A）。
 - **Profile の「離したら復帰」の暗黙の依存**（台帳 §8 項目 11）: 離したときの `OnRelease` → `RestoreFromAction` が起きないのは、切替の適用が行うアクション状態の掃除（`ClearAllEntries`／`ClearDeviceState`）で `BeingTriggered` が false に戻る副作用による。統一ディスパッチで明示的な仕様にする（Step2）。
 - **`ClearState`／`ClearPendingRestore` の未接続**: Phase5-Step3 の「切断時スタック残留防止（§5.6 ガードレール 6）」の完了報告に反し、物理切断の経路から呼ばれていない（契約だけ配備）。意味（`OlderProfilePath` の扱い）を調べて Step6 で接続する。`IProfileSwitcher.ClearState` に TODO を付与した。

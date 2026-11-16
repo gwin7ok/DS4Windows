@@ -19,7 +19,7 @@
 | W2 | 旧 Stage3 の TRACE ログを新経路へ引き継ぎ。プロファイル適用の前後・順序・二重ディスパッチの比較 | `ButtonOutputAction`、`FrameOutput`（`IFrameOutputTrace` を実装）、`IFrameOutputTrace`（新設）、`Phase8Step7W2ButtonTraceLogTests`、`Phase8Step7W2ApplyAndOrderTests` |
 | W3 | 既定のスイッチに Button を追加（`ServiceRegistration` の 1 行）。ロールバックのテスト、ベンチマーク | `ServiceRegistration`、`Phase8Step7W3ButtonSwitchTests`、`Phase8Step4MapCustomBenchmarkTests` |
 
-- **本番の挙動が変わった点**: Button 種別の特殊アクションが、Stage3 ではなくエンジン（`ApplyFrameOutputs`）で処理される。出力は旧経路と同じ（比較テストで確認）。
+- **本番の挙動が変わった点**: Button 種別のスペシャルアクションが、Stage3 ではなくエンジン（`ApplyFrameOutputs`）で処理される。出力は旧経路と同じ（比較テストで確認）。
 - **ロールバック**: `ServiceRegistration` の `migration.MigratedTypes.Add(SpecialAction.ActionTypeId.Button);` の 1 行を外してビルドし直す。旧経路（Stage3）のコードは Step8 まで残す。
 
 ### 2. 検証結果
@@ -119,7 +119,7 @@
 4. 既存テストの更新: ホストの既定の一覧の検査（`Phase8Step4W1ContractTests`、`Phase8Step7W3ButtonSwitchTests`）を「Button、Key、Macro」に（設計どおりの変更）。
 5. 割り当て: 新経路 ≦ 旧経路（`TheNewPath_DoesNotAddAllocationsToTheFrame_ForMacro`）。性能: `MapCustom_MacroMigrated_PerFrameTime_IsReported` の出力を旧経路と並べて +5% 以内を確認する（測定値: 未記入）。
 6. 割り当ての実測: 最初の測定で、押している間の新経路が旧経路より多く見えたが、立ち上がりのフレーム（マクロの再生の開始。1 回だけ大きく割り当てる）を測定に含めていたため。立ち上がりを除くと、Button／Key／Macro とも、新経路 ≦ 旧経路（Macro は一致）。テストは、立ち上がりを除いて判定する形に直した。
-7. 観察（変更しない）: `PlayMacroDirect` が `new bool[4]` を渡すため、特殊アクション経由のマクロのボタン出力の手順は、共有の `macroControl` に反映されない。旧経路も同じ入口で、差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
+7. 観察（変更しない）: `PlayMacroDirect` が `new bool[4]` を渡すため、スペシャルアクション経由のマクロのボタン出力の手順は、共有の `macroControl` に反映されない。旧経路も同じ入口で、差は出ない。マクロの再設計（`TODO(Phase9-C)`）で扱う。
 
 ### 3. 実機確認（ユーザー）
 
@@ -336,7 +336,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 
 ### 2. 検証結果・判断の記録
 
-1. W1（旧経路の特性化。テスト用のデバイス `TestDs4Device` を使用）: タップ、長押し、ダブルタップ、空のマクロ、`DebouncingMs`、Fresh-press ガードを見ない、トリガーの出力の消去、前の特殊アクションのフレームの打ち切りでの見逃し。旧・新の両経路で成功。
+1. W1（旧経路の特性化。テスト用のデバイス `TestDs4Device` を使用）: タップ、長押し、ダブルタップ、空のマクロ、`DebouncingMs`、Fresh-press ガードを見ない、トリガーの出力の消去、前のスペシャルアクションのフレームの打ち切りでの見逃し。旧・新の両経路で成功。
 2. W2: 偽の入力（時刻と押下を差し込める）での状態機械、出力、ビルダー、ロールバック、窓口、旧・新のログの一致（マクロの直前の Trace 4 行）、割り当て。成功。
 3. 旧経路との違いなし（旧ループの位置で動くため、見逃しも同じ）。
 
@@ -362,7 +362,7 @@ Step7 の 7.6 は、これで 4 種別（GyroCalibrate、DisconnectBT、BatteryC
 
 - **範囲**: Controls タブで「ボタン → キー」を割り当てた dcs のうち、シフトなし、Extras なし、Lightbar マクロなし、`actionKey` が範囲内のものだけを、新経路が処理する（ボタン単位の所有）。他は旧経路が全体を処理する。ジャイロスワイプは対象外。これは移行中の仕組みで、7.8c〜f で区分を増やし、最終的にすべて新経路になる。
 - **新設・変更**: `IControlTriggerInput`／`TriggerInput.IsControlActive`（現行の `GetBoolActionMapping` の移植。スティックは角度の扇形、L2／R2 は 0 より大きい）、`ControlButtonInputAction`、`BindingPolicy.ErasesOutputEveryFrame`（割り当てのあるボタンの通常の出力を、毎フレーム消す）、`KeyBindingValues`（別名キー、SA 形式ログの抑制）、`ControlBindingBuilder`（実装）、`ActionBindingBuilder`（Controls の束縛を SA の束縛の後ろに連結）、`TriggerDispatchEngine`（`OwnsControl`／`ProcessControl`）、`Mapping`（所有なら `ProcessControl` を呼んで戻る）。
-- **動作の変更（承認済み。Q4＝B）**: Controls タブの Key は、同じ論理キーの Key 特殊アクションと状態を共有しない。
+- **動作の変更（承認済み。Q4＝B）**: Controls タブの Key は、同じ論理キーの Key スペシャルアクションと状態を共有しない。
 - **ログ**: 旧経路の Controls タブの Key が出していた行（`KeyAction` 以降）は同じ。旧ディスパッチャ内部の Trace（`DispatchInputEdge`、`DispatchTriggerEdge: firing established` など）は、7.1〜7.7 と同様、新経路では出ない。
 - **テスト**: `Phase8Step78bW1ControlsKeyCharacterizationTests`（旧・新）、`Phase8Step78bW2ControlsKeyTests`。ビルド・テスト成功。実機確認は Step9（U-41）。
 

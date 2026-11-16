@@ -17,9 +17,9 @@
 | P1 ★ | 起動ログの `This binary was built at … (commit …)` が、8d のコミットを含み、`-dirty` でないこと | ○ |
 | P2 ★ | ログの最小レベルを Trace にする | ○ |
 | P3 ★ | バックアップ: `Profiles`、`Actions.xml`、`Auto Profiles.xml`、`LinkedProfiles.xml`、`Profiles.xml`（アプリ全体の設定。`DS4Windows.xml` は存在しない）、`ControllerConfigs.xml`、`OutputSlots.xml` | ○ |
-| P4 ★ | 検証用プロファイルを 2 つ作る（A: 通常、B: 切替先）。A に次を設定する: 特殊アクション［GyroCalibrate＝L1+R1、BatteryCheck＝Share（通知あり・ライトバーあり）、MultiAction＝既存（例: PS 単押し）、Profile 切替＝B へ（Unload on trigger release 付き）、DisconnectBT＝PS+Down］。Controls タブ［Cross→キー 65、Circle→マクロ（Play Once）、Square→パッドの B、Triangle→Extras（振動・ライトバー・感度）、L1→左マウスボタン、R1→マウスの移動（右）、L2→ホイール上］ | ○ |
+| P4 ★ | 検証用プロファイルを 2 つ作る（A: 通常、B: 切替先）。A に次を設定する: スペシャルアクション［GyroCalibrate＝L1+R1、BatteryCheck＝Share（通知あり・ライトバーあり）、MultiAction＝既存（例: PS 単押し）、Profile 切替＝B へ（Unload on trigger release 付き）、DisconnectBT＝PS+Down］。Controls タブ［Cross→キー 65、Circle→マクロ（Play Once）、Square→パッドの B、Triangle→Extras（振動・ライトバー・感度）、L1→左マウスボタン、R1→マウスの移動（右）、L2→ホイール上］ | ○ |
 
-## A. 特殊アクション（SA）タブ（U-35〜U-40、U-49）
+## A. スペシャルアクション（SA）タブ（U-35〜U-40、U-49）
 
 DisconnectBT（A-8）は切断されるため、**最後**にする。
 
@@ -42,7 +42,7 @@ DisconnectBT（A-8）は切断されるため、**最後**にする。
 |---|---|---|---|
 | B-1 ★ | U-41 (1)(3) | Key: Cross→キー 65。押している間キーが入り、離すと止まる。Cross の元の出力は出ない。未設定のボタンはそのまま出る | ○ |
 | B-2 | U-41 (2) | Key の Toggle: 押すたびに切り替わる（任意） | 未 |
-| B-3（任意） | U-41 (5) | 同じキーの Key 特殊アクションと Controls の Key を同時に使っても、互いの状態に影響しない | 未 |
+| B-3（任意） | U-41 (5) | 同じキーの Key スペシャルアクションと Controls の Key を同時に使っても、互いの状態に影響しない | 未 |
 | B-4 ★ | U-42 (1)(3) | Macro: Play Once のマクロを押し続けても 1 回だけ実行される。元のボタンの出力は出ない | ○ |
 | B-5（任意） | U-42 (2)(4) | Repeat While Held の繰り返しと停止／スティックは 55 以上、L2 は 100 超で動く | 未 |
 | B-6 ★ | U-42 (5)、U-44 (5) | プロファイルを切り替えた直後に押しっぱなしだったボタンのマクロは、一度離すまで動かない。Extras のボタンを押したまま切り替え・切断しても、振動・強制色が残らない | ○ |

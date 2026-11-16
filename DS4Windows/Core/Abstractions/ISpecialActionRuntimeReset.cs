@@ -3,7 +3,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase14b-Step14（決定 D14）: 特殊アクションの保存・読込（Core の <c>SpecialActionRepository</c>／<c>SpecialActionsXmlSerializer</c>）の後に行う、
+    /// Phase14b-Step14（決定 D14）: スペシャルアクションの保存・読込（Core の <c>SpecialActionRepository</c>／<c>SpecialActionsXmlSerializer</c>）の後に行う、
     /// 実行時状態のリセットだけを切り出した契約。実装は第2層（<c>SpecialActionRuntimeReset</c>。アクションの状態の管理役と合成入力の状態を持つ）。
     /// 旧: Core が第2層の <c>IManagedActionManager</c>・<c>SyntheticInputState</c> を直接受けていた。
     /// </summary>

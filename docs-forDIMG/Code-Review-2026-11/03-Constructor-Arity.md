@@ -14,7 +14,7 @@
 | 型 | 引数 | 場所 | 見立てと、減らす方向 |
 |---|---|---|---|
 | `MainWindow` | 15 | `UI/MainWindow.xaml.cs:113` | code-behind の残り（既知 B）。Phase28 で「削れる引数なし」と確認済み。画面の責務の整理に従属 |
-| `Mapping` | 15 | `Processing/Mapping.cs:100` | 状態の入れ物 3、段 6、窓口 6。`IProfileActionProvider` は、特殊アクションの処理（`Mapping.cs:349`、`689`〜`707`）だけが使う。そこを `ITriggerDispatchEngine` の側へ寄せれば 1 減る。`IDeviceSlotState` は 4 か所（`265`、`341`、`456`、`495`）で、デバイスの経過時間などを読むために使っており、すぐには外せない |
+| `Mapping` | 15 | `Processing/Mapping.cs:100` | 状態の入れ物 3、段 6、窓口 6。`IProfileActionProvider` は、スペシャルアクションの処理（`Mapping.cs:349`、`689`〜`707`）だけが使う。そこを `ITriggerDispatchEngine` の側へ寄せれば 1 減る。`IDeviceSlotState` は 4 か所（`265`、`341`、`456`、`495`）で、デバイスの経過時間などを読むために使っており、すぐには外せない |
 | `InputReportProcessor` | 13 | `Processing/Services/InputReportProcessor.cs:51` | OSC の前後処理（`IOscService`、`IAppSettingsService` の 2 つの設定）と、DS4 型のトリガーの後処理（`IOutputDeviceTypeState`）を「出力の直前の段」へ出せば 10 前後。後者は `05-Extensibility.md` の 5-1 と同じ箇所 |
 | `DeviceConnector` | 13 | `Processing/Services/DeviceConnector.cs:33` | 接続の手順の指揮役。`IProfileXmlStore`（`DeviceConnector.cs:73`）と `IAppSettingsService`（同 `124`）は 1 か所ずつしか使わない。その 2 つの処理を `IDeviceConnectionSetup` へ寄せれば 11 になる |
 | `ServiceLifecycle` | 12 | `Processing/Services/ServiceLifecycle.cs:75` | `LightbarOverrides` と `ILightbarService` の両方を受ける。前者は、開始・停止のときに印（`shuttingdown`、`defaultLight`、`forcelight`、`forcedFlash`）を書き換えるために使う（`ServiceLifecycle.cs:56`、`125`、`203`〜`205`）。「開始のとき」「停止のとき」の操作として `ILightbarService` に持たせれば 1 減る |

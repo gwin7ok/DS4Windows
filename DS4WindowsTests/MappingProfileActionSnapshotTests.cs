@@ -7,7 +7,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// 特殊アクションを持つプロファイルでは、入力 1 フレームごとに、アクション名の一覧を写して列挙する。
+    /// スペシャルアクションを持つプロファイルでは、入力 1 フレームごとに、アクション名の一覧を写して列挙する。
     /// 写しの先は、デバイスごとの使い回しのバッファーとし、毎フレームの割り当てを起こさないこと。
     /// </summary>
     public class MappingProfileActionSnapshotTests
