@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAssignmentEditor_OpensThePickerInTheSpecialActionMode()
         {
-            string source = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string source = SourceText.Read("DS4Windows/UI/Services/AssignmentEditorSession.cs");
             if (source == null)
             {
                 return;

@@ -9,14 +9,6 @@ namespace DS4WindowsTests
     {
         public static readonly string[] Entries =
         {
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.IEnvironmentService",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.IProfileSettingsService",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.ISpecialActionRepository",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Abstractions.IWindowSystem",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.ControlActionData",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.DS4ControlSettings",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.SpecialAction",
-            "DS4Windows.UI.AssignmentEditor|DS4Windows.Core.Settings.SpecialAction+ActionTypeId",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IAppSettingsService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IEnvironmentService",
             "DS4Windows.UI.MainWindow|DS4Windows.Core.Abstractions.IPathService",

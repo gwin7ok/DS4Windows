@@ -22,11 +22,11 @@ namespace DS4WindowsTests
         [Fact]
         public void TheEditor_SwitchesTheTypeListToDefault_OnlyWhenDefaultWasPickedOrChanged()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/UI/Services/AssignmentEditorSession.cs");
             if (code == null) return;
 
-            Assert.Contains("bool wasDefault = pressKeyVM.SelectedActionType == DS4Windows.Core.Settings.DS4ControlSettings.ActionType.Default; controlWindow.ShowDialog();", code);
-            Assert.Contains("ActionType.Default && (!wasDefault || controlWindow.DefaultPicked)) { actionTypeCombo.SelectedIndex = specialActVM.TypeCatalog.DefaultIndex;", code);
+            Assert.Contains("bool wasDefault = PressKeyVM.SelectedActionType == DS4ControlSettings.ActionType.Default; controlWindow.ShowDialog();", code);
+            Assert.Contains("ActionType.Default && (!wasDefault || controlWindow.DefaultPicked)) { return ActionVM.TypeCatalog.DefaultIndex;", code);
         }
 
         [Fact]

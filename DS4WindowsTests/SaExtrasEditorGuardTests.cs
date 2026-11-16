@@ -29,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AssignmentEditor_PassesTheSaExtrasToThePicker_AndSavesThemAfterTheAction()
         {
-            string text = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
+            string text = SourceText.Read("DS4Windows/UI/Services/AssignmentEditorSession.cs");
             if (text == null) return;
 
             Assert.Contains("saExtras = specialAction.outputExtras;", text);
