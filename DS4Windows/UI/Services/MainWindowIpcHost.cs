@@ -50,8 +50,14 @@ namespace DS4Windows.UI.Services
             }
         }
 
+        // 番号は入力スロット（Disconnect などと同じ）。一覧の並び順では引かない（途中のスロットが空だと、別のコントローラーの色が変わる）
         public void SetLightColor(int index, byte red, byte green, byte blue)
-            => _controllers.ControllerCol[index].ForceCustomLightColor(new DS4Windows.Core.Model.DS4Color(red, green, blue));
+        {
+            if (_controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel model))
+            {
+                model.ForceCustomLightColor(new DS4Windows.Core.Model.DS4Color(red, green, blue));
+            }
+        }
 
         public int FindProfileIndex(string profileName)
             => _profiles.ProfileListCol.Select((item, index) => new { item, index }).
