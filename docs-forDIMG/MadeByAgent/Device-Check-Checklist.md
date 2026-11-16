@@ -80,5 +80,5 @@
 ---
 
 ## 確認が終わったあとに行う作業（実機の結果を踏まえて）
-- Phase35 35-3／35-4／35-4b（登録まわりの整理）、Phase34 34-2〜34-8（`MainWindow` の分割）、Phase36 C5、Phase33 33-5。
+- （Phase35 は 2026-11-16 に全 Step 完了）Phase34 34-2〜34-8（`MainWindow` の分割）、Phase36 C5、Phase33 33-5。
 - Phase37 の 37-3 以降（`ResetProfile` の分割、節の対、`AppSettingsDTO` の `partial`）は、保存の形に触れるため、実機のデータでの確認とあわせて行う。

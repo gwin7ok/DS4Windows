@@ -82,6 +82,10 @@ flowchart LR
 | 型 | 層 | 役割 |
 |---|---|---|
 | `RuntimeBootstrapper` | 2 | 起動時の取り付け（`Initialize`）と終了時の後始末（`Shutdown`） |
+| `AppShutdownSequence` | 4-b | アプリの終了の手順（サービスの停止、設定の保存、後始末の順序）。`Composition/Startup` |
+| `StartupModeSelector` | 4-b | 起動の引数から、起動の種類（通常／引数の誤り／ドライバー導入／デバイス再有効化／タスク実行／従来のコマンド）を決める（副作用なし）。`Composition/Startup` |
+| `DriverStatusReporter` | 4-b | 起動後に、仮想パッドのドライバーの導入状態をログへ出す。`Composition/Startup` |
+| `SettingsLocationFallback` | 4-b | 設定の保存先へ書けないときの、appdata へのコピーの案内。`Composition/Startup` |
 | `Mapping` | 2 | 入力の評価（カーブ・割り当て・合成入力） |
 | `TriggerDispatchEngine` | 2 | 特殊アクションと割り当ての判定→実行 |
 | `SyntheticDispatcherService` | 2 | 合成キー・マウスの送出 |
