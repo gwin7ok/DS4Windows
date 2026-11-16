@@ -148,7 +148,7 @@ namespace DS4Windows.UI.ViewModels
         {
             get
             {
-                string imgName = (string)App.Current.FindResource(device.ConnectionType == ConnectionType.USB ? "UsbImg" : "BtImg");
+                string imgName = ImageName(device.ConnectionType == ConnectionType.USB ? "UsbImg" : "BtImg");
                 string source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                 return source;
             }
@@ -158,17 +158,17 @@ namespace DS4Windows.UI.ViewModels
         {
             get
             {
-                string imgName = (string)App.Current.FindResource("CancelImg");
+                string imgName = ImageName("CancelImg");
                 string source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                 switch (device.ExclusiveStatus)
                 {
                     case DeviceExclusiveStatus.Exclusive:
-                        imgName = (string)App.Current.FindResource("CheckedImg");
+                        imgName = ImageName("CheckedImg");
                         source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                         break;
                     case DeviceExclusiveStatus.HidHideAffected:
                     case DeviceExclusiveStatus.HidGuardAffected:
-                        imgName = (string)App.Current.FindResource("KeyImageImg");
+                        imgName = ImageName("KeyImageImg");
                         source = $"{ResourcePaths.ResourcesPrefix}/{imgName}";
                         break;
                     default:
@@ -347,10 +347,16 @@ namespace DS4Windows.UI.ViewModels
         public delegate void CustomColorHandler(CompositeDeviceModel sender);
         public event CustomColorHandler RequestColorPicker;
 
+        // 画像の資源名の引き当て（テーマで差し替わる。null のときは名前を空として扱う）
+        private readonly DS4Windows.UI.Abstractions.IImageResourceLookup imageResources;
+
+        private string ImageName(string key) => imageResources?.Find(key) ?? string.Empty;
+
         public CompositeDeviceModel(IControllerSlotView device, int devIndex, string profile,
             ProfileList collection, IProfileSettingsService profileSettingsService,
-            IProfileRepository profileRepo)
+            IProfileRepository profileRepo, DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
         {
+            this.imageResources = imageResources;
             // Phase6-Step10-2-2: 必須引数（null は拒否する）
             this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
             this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));

@@ -13,7 +13,7 @@ namespace DS4Windows.UI.Abstractions
         /// <summary>設定タブの ViewModel。メイン画面が 1 つ作って使う。</summary>
         SettingsViewModel CreateSettingsViewModel();
         /// <summary>機器一覧（コントローラー一覧タブ）の ViewModel。プロファイルの一覧は、メイン画面が持つものを渡す。</summary>
-        ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher);
+        ControllerListViewModel CreateControllerListViewModel(ProfileList profileListHolder, IUiDispatcher uiDispatcher, IImageResourceLookup imageResources);
         /// <summary>出力スロット管理画面の ViewModel。</summary>
         CurrentOutDeviceViewModel CreateCurrentOutDeviceViewModel();
         // 子画面（ダイアログ・部品）の ViewModel。画面は ViewModel を受け取り、画面を開く側がここから作って渡す。

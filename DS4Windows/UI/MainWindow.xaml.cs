@@ -167,7 +167,7 @@ namespace DS4Windows.UI
 
             UpdateStartStopText();
 
-            conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder, uiDispatcher);
+            conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder, uiDispatcher, new WpfImageResourceLookup());
             ipcHost = new MainWindowIpcHost(ChangeService, CloseApplicationForIpc, conLvViewModel, profileListHolder);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;

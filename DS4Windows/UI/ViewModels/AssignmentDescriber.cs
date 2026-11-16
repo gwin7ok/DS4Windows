@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Input;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
@@ -27,7 +26,7 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>キー: 「W (Press)」「Q (SC) (Toggle)」。</summary>
         public static string ForKey(int virtualKey, bool scanCode, bool toggle)
-            => $"{KeyInterop.KeyFromVirtualKey(virtualKey)}{(scanCode ? " (SC)" : string.Empty)} ({Mode(toggle)})";
+            => $"{DS4Windows.UI.Services.VirtualKeyNames.Get(virtualKey)}{(scanCode ? " (SC)" : string.Empty)} ({Mode(toggle)})";
 
         /// <summary>ボタン（パッド、マウス、ホイール、マウス移動）: 「A (Press)」「Left Mouse Button (Toggle)」。</summary>
         public static string ForButton(string buttonName, bool toggle) => $"{buttonName} ({Mode(toggle)})";
