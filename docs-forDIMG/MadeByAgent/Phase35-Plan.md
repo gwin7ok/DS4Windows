@@ -1,7 +1,7 @@
 # Phase35 計画書: 終了の手順の集約と、登録の具象依存の解消（コードレビュー 2026-11 の 1-2・1-3・1-4）
 
 作成日: 2026-11-11
-状態: **完了（2026-11-16。35-3・35-4・35-4b を実施）。終了・起動の実機確認は、最後のまとめの実機確認で行う**
+状態: **完了（2026-11-16。35-0〜35-6 をすべて実施。終了・起動の実機確認も 2026-11-16 に OK）**
 出典: `docs-forDIMG/Code-Review-2026-11/01-DI.md`
 関連: `Structure-Review-2026-11.md` の C（Phase24 で `App.xaml.cs` を 1,323 → 約 940 行にした続き）、`Phase27-Plan.md`（`RuntimeBootstrapper`）
 
@@ -44,14 +44,14 @@ D1＝**B（すべて。`App.xaml.cs` を 400 行前後へ。35-4・35-4b を含�
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| 35-0 | 調査: `CleanShutdown` が呼ばれる経路（通常の終了、サインアウト、未処理例外、早期終了、`-driverinstall`）と、そのときのフィールドの状態（`null` かどうか）を表にする。`skipSave`・`runShutdown` の立つ条件を確かめる | — | 未着手 |
-| 35-1 | 順序の検査を先に足す: 偽の `IServiceLifecycle`・`IRuntimeBootstrapper`・`IAppSettingsService`・`IControllerRegistry` などで、呼ばれた順を記録して、今の順序を固定する（`CleanShutdown` の中身を、テストできる静的でないメソッドへ出すところまで） | 新規（終了の順序） | 未着手 |
-| 35-2 | 終了の手順の部品を作り、`CleanShutdown` の中身を移す（順序は同じ）。`App` は部品を呼ぶ | 35-1 が不変 | 未着手 |
-| 35-3 | `App` のフィールドのうち、終了のためだけに持っていたもの（`_controllerRegistry`、`_ipc` など）を消す | `RemovedApiRuleTests` の表へ足す | 未着手 |
-| 35-4 | （D1 が B のとき）起動後の処理（ドライバーの有無のログ、ログの設定の反映、通知サービスの取り付け）を `Composition/Startup` の部品へ出し、`InitializePostHostServices` を短くする | `StartupOrderGuardTests` が不変 | 未着手 |
-| 35-4b | （D1 が B のとき。2026-11-12 追加）引数の処理（`CheckOptions` 73 行。`App.xaml.cs:789`〜）と、設定の保存の試行（`AttemptSave` 45 行）、ログの準備（`RotateLogsAndLogStartupDiagnostics` 50 行、`ConfigureLoggingAndDiagnostics` 49 行）、はじめの起動の設定（`RunFirstLaunchSetup` 40 行）の、判断の部分を `Composition/Startup` の部品へ出す。`Application_Startup` は、手順を順に呼ぶだけの形を保つ（順序は変えない） | 引数ごとの判断（`-driverinstall`、`-command`、`-m` など）の単体テスト。`StartupOrderGuardTests` が不変 | 未着手 |
-| 35-5 | キャスト 3 か所を、登録の形で解く。`DeviceSlotState` を具象で 1 つ登録し、`IDeviceSlotState`・`IDeviceStateAccessor`・`IConfigurableDeviceLookup` がそれを返す。`ProfileSettingsService`・`DefaultActionManager` も同様 | 3 つの契約が同じインスタンスを返すこと。偽物に差し替えたとき、配線が例外で知らせること | 未着手 |
-| 35-6 | 文書: `03-Lifecycle-and-DI.md` §4（終了の順序を、部品の名前つきで書く）、`01-Structure.md` の型の表。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ | `ModelDiagramGuardTests` | 未着手 |
+| 35-0 | 調査: `CleanShutdown` が呼ばれる経路（通常の終了、サインアウト、未処理例外、早期終了、`-driverinstall`）と、そのときのフィールドの状態（`null` かどうか）を表にする。`skipSave`・`runShutdown` の立つ条件を確かめる | — | 完了 |
+| 35-1 | 順序の検査を先に足す: 偽の `IServiceLifecycle`・`IRuntimeBootstrapper`・`IAppSettingsService`・`IControllerRegistry` などで、呼ばれた順を記録して、今の順序を固定する（`CleanShutdown` の中身を、テストできる静的でないメソッドへ出すところまで） | 新規（終了の順序） | 完了 |
+| 35-2 | 終了の手順の部品を作り、`CleanShutdown` の中身を移す（順序は同じ）。`App` は部品を呼ぶ | 35-1 が不変 | 完了 |
+| 35-3 | `App` のフィールドのうち、終了のためだけに持っていたもの（`_controllerRegistry`、`_ipc` など）を消す | `RemovedApiRuleTests` の表へ足す | 完了 |
+| 35-4 | （D1 が B のとき）起動後の処理（ドライバーの有無のログ、ログの設定の反映、通知サービスの取り付け）を `Composition/Startup` の部品へ出し、`InitializePostHostServices` を短くする | `StartupOrderGuardTests` が不変 | 完了 |
+| 35-4b | （D1 が B のとき。2026-11-12 追加）引数の処理（`CheckOptions` 73 行。`App.xaml.cs:789`〜）と、設定の保存の試行（`AttemptSave` 45 行）、ログの準備（`RotateLogsAndLogStartupDiagnostics` 50 行、`ConfigureLoggingAndDiagnostics` 49 行）、はじめの起動の設定（`RunFirstLaunchSetup` 40 行）の、判断の部分を `Composition/Startup` の部品へ出す。`Application_Startup` は、手順を順に呼ぶだけの形を保つ（順序は変えない） | 引数ごとの判断（`-driverinstall`、`-command`、`-m` など）の単体テスト。`StartupOrderGuardTests` が不変 | 完了 |
+| 35-5 | キャスト 3 か所を、登録の形で解く。`DeviceSlotState` を具象で 1 つ登録し、`IDeviceSlotState`・`IDeviceStateAccessor`・`IConfigurableDeviceLookup` がそれを返す。`ProfileSettingsService`・`DefaultActionManager` も同様 | 3 つの契約が同じインスタンスを返すこと。偽物に差し替えたとき、配線が例外で知らせること | 完了 |
+| 35-6 | 文書: `03-Lifecycle-and-DI.md` §4（終了の順序を、部品の名前つきで書く）、`01-Structure.md` の型の表。`Code-Review-2026-11/00-Summary.md` の該当行を「是正済み」へ | `ModelDiagramGuardTests` | 完了 |
 
 ## 確認の方法
 - 実機: トレイからの終了、ウィンドウを閉じての終了、サインアウト、コントローラーを接続したままの終了で、(1) 仮想パッドが消える、(2) 出力スロットとアプリの設定が保存される、(3) プロセスが残らない、(4) 次の起動が正常。最小化起動（`-m`）と、2 つ目の起動（単一起動）も確かめる。
@@ -83,3 +83,7 @@ D1＝**B（すべて。`App.xaml.cs` を 400 行前後へ。35-4・35-4b を含�
 - 35-4b: `CheckOptions` の判断の部分を、副作用のない `StartupModeSelector`（`StartupMode`: Normal／ArgumentError／DriverInstall／ReenableDevice／RunTask／LegacyCommand。優先順位は従来のまま）へ出し、`App.CheckOptions` は種類ごとの手順を呼ぶだけにした。`AttemptSave` の「設定を appdata へコピーするか」の案内を `SettingsLocationFallback`（`IDialogService` 経由。文言は `Startup_CannotWriteCopyPrompt`／`Startup_CopyComplete`／`Startup_CannotEditClose` のリソースキー。日本語訳は、最後の実機確認で確認する一覧に入れる）へ移した。ログの準備（`RotateLogsAndLogStartupDiagnostics`・`ConfigureLoggingAndDiagnostics`）と `RunFirstLaunchSetup` は、順序への依存が強く、判断より手順が中心のため、移さなかった（`App.xaml.cs` は 936 → 約 890 行。400 行前後の目安は、この方針では到達しない。行数は結果であり目的でないため、これ以上は追わない）。
 - テスト: `StartupModeSelectorTests`、`SettingsLocationFallbackTests`。`StartupOrderGuardTests`・`ServiceLocatorGuardTests` は不変。
 - 実機確認（最後のまとめ）: 通常起動・最小化起動・`-driverinstall`・設定フォルダーへ書けない場合の案内・終了（トレイ、ウィンドウ、サインアウト）。
+
+### 2026-11-16（締め）
+- 35-6（完了）: `03-Lifecycle-and-DI.md` §4 に終了の手順の部品名（`AppShutdownSequence`）を記載済み。`01-Structure.md` の型の表へ、起動・終了の部品（`Composition/Startup` の `AppShutdownSequence`・`StartupModeSelector`・`DriverStatusReporter`・`SettingsLocationFallback`）の行を足した。`Code-Review-2026-11/00-Summary.md` の該当行（12・13）を「是正済み」へ更新した。
+- 実機確認（2026-11-16、最後のまとめの確認）: 起動、2 つ目の起動の拒否、トレイ・ウィンドウでの終了、再起動後の設定と出力スロットの予約の保持は OK。サインアウトでの終了は、任意の項目のため未実施。
