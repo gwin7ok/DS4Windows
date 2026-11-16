@@ -40,8 +40,9 @@
 | PhaseX（KI-7） | 下書き | 一番最後の Phase。入力側の画像・ボタン名の機種別対応 |
 | PhaseX3 | 下書き | 日本語表示の完全化。時期は未定 |
 | PhaseX4（KI-14） | 起票のみ | カスタム実行ファイル名の立て直し。元の資料は `PhaseX2` |
-| 実機で未確認の項目 | `Known-Issues-Ledger.md` §3、`Device-Check-Checklist.md` | タッチ → スティック、UDP（Cemuhook）、DualSense・Switch Pro（実機なし）ほか |
+| 実機で未確認の項目 | `Known-Issues-Ledger.md` §3・§5、`Device-Check-Checklist.md` | UDP（Cemuhook）、DS4 の振動、DualSense・Switch Pro（実機なし）。タッチ → スティックは 2026-11-16 に確認済み |
 | 多言語 | KI-13 の表示名は英・日のみ | 他の言語は旧表示名のまま |
 
 ## 履歴
 - 2026-11-15: 作成。Phase39〜54 の実施を、コミット履歴と台帳から整理した。
+- 2026-11-16: Phase39〜54 のあとの実機確認（全項目）で見つかった不具合 6 件を、小さなブランチで修正した（弱い参照のコールバックでのトレイの停止、トレイのチェック、ライトバーの色の列、CLI の番号の統一［入力スロット番号］、Output Slots タブの設定欄［イベント名のずれ］、Xbox の出力データ OFF）。結果と未確認の項目は `Known-Issues-Ledger.md` §5。
