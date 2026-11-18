@@ -1205,6 +1205,26 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 
 2026-11-15 の数値: 自動テスト 3,567 件、ビルドの警告・エラー 0。行数の多いファイルは、画面の code-behind（`MainWindow.xaml.cs` 1,884、`ProfileEditor.xaml.cs` 1,737、`BindingWindow` 943、`App` 937、`RecordBox` 901、`AssignmentEditor` 702）が最大の残り（Phase34）。`Mapping.cs` は 895 行（2026-09 の 8,827 行から約 1/10）。
 
+### 6.18 PhaseRV1〜RV8（2026-11-19 新設。コードレビュー 2026-11-19 から作った実施計画。すべて未承認）
+
+リポジトリ全体のコードレビュー（`docs-forDIMG/Code-Review-2026-11-19/00-Report.md`。数字は `01-Metrics.md`。計測は `scripts/audit/Measure-CodeReview.py`）の結果、前回のレビュー（2026-11）の弱点（DI・層・引数・重複）はほぼ是正済みで、構造の骨格は健全と確認した。新しい弱点は、構造の外側にある（MVVM の操作の流れ、例外の握りつぶし、設定の項目の追加の手数、採用手段のばらつき、経緯のコメント・文書の蓄積、品質の門の緩さ）。これらを 8 つの Phase に分けた。各計画書の「決めること」（D 項目）を、ユーザーが確認して承認した Phase から着手する。進める順は、下の番号の順を目安とする（RV5 は RV3・RV4 と入れ替え可。報告書 §7、G4）。
+
+| Phase | 主題 | 計画書 | 規模 | リスク | 状態 |
+|---|---|---|---|---|---|
+| RV1 | 品質の門と土台の整理（未使用の `using`、アナライザー、`Nullable` の試験、検査の枠 `CodeHealthRatchetTests`、未参照の型の調査） | `PhaseRV1-Plan.md` | 中 | 低 | 未承認 |
+| RV2 | 例外の握りつぶし（空の `catch` 389 件）と、`async void`・`.Result`・`Thread.Sleep` の作法 | `PhaseRV2-Plan.md` | 大 | 中 | 未承認 |
+| RV3 | MainWindow の MVVM 化（コマンド化。委譲だけの窓口の解消。V3 の検査） | `PhaseRV3-Plan.md` | 大 | 中〜高 | 未承認 |
+| RV4 | ProfileEditor・BindingWindow・RecordBox・WelcomeDialog などの MVVM 化と表駆動化 | `PhaseRV4-Plan.md` | 大 | 中〜高 | 未承認 |
+| RV5 | 設定の宣言化（`AppSettingsService` の畳み込み、プロファイルの読み込みの補助、宣言型の試作） | `PhaseRV5-Plan.md` | 大 | 高 | 未承認 |
+| RV6 | 共有部品化と、冗長な実装の整理（`Gyro*Info`、`KeyButtonActionController` まわり、未参照の型の削除。規則 2.4） | `PhaseRV6-Plan.md` | 中 | 低〜中 | 未承認 |
+| RV7 | 採用手段の統一（変更通知の基底、命名、タイマーの書き方の規則、テストの枠） | `PhaseRV7-Plan.md` | 中 | 低〜中 | 未承認 |
+| RV8 | 経緯のコメント・文書・ガードテストの整理（コメントのみの変更を機械で検証） | `PhaseRV8-Plan.md` | 中 | 低 | 未承認 |
+
+- 既決の対象外（再び持ち出さない）: `App.xaml.cs` の行数を目的にした整理、`Mapping`・`TriggerDispatchEngine` の分割、`AppSettingsDTO` の `partial` 分割（37-6 の見送り）、`AppLogger`・`PathService`・`EnvironmentService` の静的な状態、既存の実装 1・偽物なしのインターフェースの撤去、`NoWarn` の撤去。
+- 前提: RV3・RV4 は、PhaseX3（日本語化）の XAML の作業の区切りのあとに行う。PhaseX（KI-7）は、実施する場合は RV のあとの最後のまま。
+- 全体の決定事項（報告書 §8）: G1 規則 V3 の新設、G2 例外の規則の置き場所、G3 ログの追加の扱い（規則 2.3 の例外）、G4 進める順、G5 `Nullable` の範囲。
+- 各 Phase の完了時に、本節の表の状態、`01-Metrics.md` の基準、モデル図（型の一覧に変更があるとき）を更新する。
+
 ---
 
 ## 7. 既存 `docs/` たたき台との統合方針
@@ -1279,9 +1299,13 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 | - | `docs-forDIMG/MadeByAgent/Phase29-Plan.md`〜`Phase38-Plan.md`、`docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md` | コードレビューと外部レビューの照合から作った修正計画書（未着手・承認待ち。番号は進める順。§6.15。2026-11-12 追記、11-13 付け替え） |
 | - | `docs-forDIMG/MadeByAgent/PhaseX-Input-Device-Visuals-Plan.md`、`PhaseX2-Custom-Exe-Name-Plan.md` | 時期が未定の計画の下書き（§6.16。2026-11-12 追記） |
 | - | `docs-forDIMG/MadeByAgent/Known-Issues-Ledger.md`、`Release-Backlog.md` | 未解決の不具合と実機で未確認の項目の台帳、リリースの台帳（2026-11-12 追記） |
+| - | `docs-forDIMG/Code-Review-2026-11-19/00-Report.md`、`01-Metrics.md`、`docs-forDIMG/MadeByAgent/PhaseRV1-Plan.md`〜`PhaseRV8-Plan.md`、`scripts/audit/Measure-CodeReview.py` | 全体のコードレビュー（2026-11-19）の報告書・計測値・実施計画（未承認。§6.18。2026-11-19 追記） |
 | - | `docs-forDIMG/Model-Diagram/01-Structure.md`、`02-Extension-Guide.md`、`03-Lifecycle-and-DI.md`、`Ideas.md` | 現状の構造、拡張の手順、登録と寿命、未実装の構想（Phase17-0 で作り直した。旧 4 文書は `Archive/`。上の行の「01〜04」は旧い呼び方。2026-11-12 追記） |
 
 ### 9.3 次のアクション
+
+**（2026-11-19追記）コードレビュー（2026-11-19）から、PhaseRV1〜RV8 の計画書を作成した（§6.18。すべて未承認）。**
+報告書は `docs-forDIMG/Code-Review-2026-11-19/00-Report.md`、数字は `01-Metrics.md`、計画書は `docs-forDIMG/MadeByAgent/PhaseRV1-Plan.md`〜`PhaseRV8-Plan.md`。次は、各計画書の「決めること」（D 項目）と、報告書 §8 の全体の決定事項（G1〜G5）をユーザーが確認し、承認した Phase から着手する（推奨の最初は PhaseRV1）。PhaseX 系の時期が未定の計画（下の 5）は、そのまま。
 
 **（2026-11-16更新）PhaseX 系を除き、実施する Phase は残っていない。Phase7b〜Phase54 は完了した（見送りを含む）。**
 
