@@ -82,4 +82,4 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)（`BindingWindow` の実物を確認して推奨を (A) から変更）、D2＝(A)、D3＝(B)（RV3 の D2 と同じ）、D4＝(B) をユーザーが選択。
-- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。

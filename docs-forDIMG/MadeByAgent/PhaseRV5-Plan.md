@@ -90,4 +90,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)、D2＝(B)、D3＝(A)、D4＝(B) をユーザーが選択（D1・D2・D4 は推奨 (A) と異なる）。D3 の判断のため、`BackingStore` を参照するファイルの層別の数を概算で測った。D2 の修正は構造の置き換えと別のコミット（RV5-3b）に、D4 は RV5-5b に置き、関門を付けた。
-- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。

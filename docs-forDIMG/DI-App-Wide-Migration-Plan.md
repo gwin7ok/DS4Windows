@@ -1224,7 +1224,7 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 - RV9（予定。計画書は未作成）: `Nullable` の層ごとの全体有効化。RV1 の D2＝(B)（2026-11-19 決定）。実測の警告は 2,153 件／359 ファイル。計画書は、RV1-3 の試験の結果を見てから作る。
 - 前提: RV3・RV4 は、PhaseX3（日本語化）の XAML の作業の区切りのあとに行う（2026-11-19 時点で、PhaseX3 に残るのは X3-5［日本語表示の実機確認］のみ）。PhaseX（KI-7）は、実施する場合は RV のあとの最後のまま。
 - 全体の決定事項（報告書 §8）: G1 規則 V3 の新設、G2 例外の規則の置き場所、G3 ログの追加の扱い（規則 2.3 の例外）、G4 進める順、G5 `Nullable` の範囲。**2026-11-19 にすべて決定**: G1＝(A)（RV3 の完了時に V3 を規約へ足す。文面は承認を得てから）、G2＝(A)＋規約本体へのリンク、G3＝(A)、G4＝(A)（RV3→RV4→RV5→RV6→RV7→RV8）、G5＝(B)（層ごとに全体を有効化。RV9）。RV1〜RV8 の D 項目もすべて決定済み（各計画書の「決定事項」）。着手は、Phase ごとの承認を得てから。
-- 評価の算定（2026-11-19 追記）: 9 観点の A〜D を毎回同じ物差しで出すため、採点基準 `Code-Review-2026-11-19/03-Rubric.md`（承認待ち）、スクリプト `scripts/audit/Score-CodeReview.py`、手で記録する値 `scripts/audit/Rubric-Inputs.json`、推移の記録 `Code-Review-2026-11-19/02-Scorecard.md` を足した。各 PhaseRV の計画書の最終 Step が「評価の再算定」で、結果をユーザーへ報告する。
+- 評価の算定（2026-11-19 追記）: 9 観点の A〜D を毎回同じ物差しで出すため、採点基準 `Code-Review-2026-11-19/03-Rubric.md`（v1。2026-11-19 確定）、スクリプト `scripts/audit/Score-CodeReview.py`、手で記録する値 `scripts/audit/Rubric-Inputs.json`、推移の記録 `Code-Review-2026-11-19/02-Scorecard.md` を足した。各 PhaseRV の計画書の最終 Step が「評価の再算定」で、結果をユーザーへ報告する。
 - 各 Phase の完了時に、本節の表の状態、`01-Metrics.md` の基準、モデル図（型の一覧に変更があるとき）を更新する。
 
 ---
@@ -1301,7 +1301,7 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 | - | `docs-forDIMG/MadeByAgent/Phase29-Plan.md`〜`Phase38-Plan.md`、`docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md` | コードレビューと外部レビューの照合から作った修正計画書（未着手・承認待ち。番号は進める順。§6.15。2026-11-12 追記、11-13 付け替え） |
 | - | `docs-forDIMG/MadeByAgent/PhaseX-Input-Device-Visuals-Plan.md`、`PhaseX2-Custom-Exe-Name-Plan.md` | 時期が未定の計画の下書き（§6.16。2026-11-12 追記） |
 | - | `docs-forDIMG/MadeByAgent/Known-Issues-Ledger.md`、`Release-Backlog.md` | 未解決の不具合と実機で未確認の項目の台帳、リリースの台帳（2026-11-12 追記） |
-| - | `docs-forDIMG/Code-Review-2026-11-19/00-Report.md`、`01-Metrics.md`、`docs-forDIMG/MadeByAgent/PhaseRV1-Plan.md`〜`PhaseRV8-Plan.md`、`scripts/audit/Measure-CodeReview.py`、`Code-Review-2026-11-19/02-Scorecard.md`・`03-Rubric.md`、`scripts/audit/Score-CodeReview.py`・`Rubric-Inputs.json` | 全体のコードレビュー（2026-11-19）の報告書・計測値・実施計画・採点基準（未承認。§6.18。2026-11-19 追記） |
+| - | `docs-forDIMG/Code-Review-2026-11-19/00-Report.md`、`01-Metrics.md`、`docs-forDIMG/MadeByAgent/PhaseRV1-Plan.md`〜`PhaseRV8-Plan.md`、`scripts/audit/Measure-CodeReview.py`、`Code-Review-2026-11-19/02-Scorecard.md`・`03-Rubric.md`、`scripts/audit/Score-CodeReview.py`・`Rubric-Inputs.json` | 全体のコードレビュー（2026-11-19）の報告書・計測値・実施計画・採点基準（実施計画は未承認、採点基準 v1 は 2026-11-19 確定。§6.18。2026-11-19 追記） |
 | - | `docs-forDIMG/Model-Diagram/01-Structure.md`、`02-Extension-Guide.md`、`03-Lifecycle-and-DI.md`、`Ideas.md` | 現状の構造、拡張の手順、登録と寿命、未実装の構想（Phase17-0 で作り直した。旧 4 文書は `Archive/`。上の行の「01〜04」は旧い呼び方。2026-11-12 追記） |
 
 ### 9.3 次のアクション

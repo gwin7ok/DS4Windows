@@ -84,4 +84,4 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B) CommunityToolkit.Mvvm、D2＝(B) 見た目だけを除くすべて、D3＝(A) 3 つとも削除、D4＝(A) 共有する、をユーザーが選択。D3 は、全体の構造（画面→窓口→契約→第 2 層 と 画面→ViewModel→契約→第 2 層）との関係を説明して選択された。
-- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
