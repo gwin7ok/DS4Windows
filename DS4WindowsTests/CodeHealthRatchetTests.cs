@@ -38,6 +38,27 @@ namespace DS4WindowsTests
             Check(nameof(CodeHealthBaseline.UnusedNonFormTimerAliasLines), actual, CodeHealthBaseline.UnusedNonFormTimerAliasLines);
         }
 
+        [Fact]
+        public void NullableIsEnabledInEveryFileOfTheEnabledFolders()
+        {
+            var missing = CodeHealthScanner.FilesMissingNullableDirective(ProductionSources(), CodeHealthBaseline.NullableEnabledFolders);
+            Assert.True(missing.Count == 0, "#nullable enable がないファイル: " + string.Join(", ", missing.Take(20)));
+        }
+
+        [Fact]
+        public void NullForgivingOperatorAlwaysHasAReason()
+        {
+            int actual = CodeHealthScanner.CountNullForgivingWithoutReason(ProductionSources());
+            Check(nameof(CodeHealthBaseline.NullForgivingWithoutReason), actual, CodeHealthBaseline.NullForgivingWithoutReason);
+        }
+
+        [Fact]
+        public void NullableWarningsAreNotSuppressedByPragma()
+        {
+            int actual = CodeHealthScanner.CountNullableWarningPragmas(ProductionSources());
+            Check(nameof(CodeHealthBaseline.NullableWarningPragmas), actual, CodeHealthBaseline.NullableWarningPragmas);
+        }
+
         private static void Check(string name, int actual, int baseline)
         {
             string failure = CodeHealthRatchet.Evaluate(name, actual, baseline);

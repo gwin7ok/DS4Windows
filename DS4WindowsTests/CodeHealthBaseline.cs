@@ -24,5 +24,21 @@ namespace DS4WindowsTests
 
         /// <summary>別名 <c>using NonFormTimer = System.Timers.Timer;</c> を宣言しているのに、ファイルの中で使っていない行。</summary>
         public const int UnusedNonFormTimerAliasLines = 0;
+
+        /// <summary>
+        /// <c>#nullable enable</c> を、全ファイルに持たせるフォルダー（本体からの相対パス。末尾が <c>/</c> でなければ、そのファイル 1 つ）。
+        /// 層ごとに有効にしていく（PhaseRV9）。増やす方向だけで、減らさない。プロジェクト全体の <c>&lt;Nullable&gt;</c> へ切り替えたら、この表は不要になる。
+        /// </summary>
+        public static readonly string[] NullableEnabledFolders =
+        {
+            "Core/Abstractions/",
+            "Composition/",
+        };
+
+        /// <summary><c>#nullable enable</c> のファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>
+        public const int NullForgivingWithoutReason = 0;
+
+        /// <summary><c>#pragma warning disable</c> で null 許容の警告（CS86xx・CS87xx）を消している行。使わない。</summary>
+        public const int NullableWarningPragmas = 0;
     }
 }
