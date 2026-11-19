@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +21,7 @@ namespace DS4WindowsTests
         private const string BaselineOutEnv = "DS4W_VIEWCMD_BASELINE_OUT";
 
         private static readonly Regex EventAttribute = new Regex(
-            @"\s(?:Click|DoubleClick|MouseDoubleClick|MouseDown|MouseUp|MouseMove|MouseEnter|MouseLeave|MouseWheel|MouseLeftButtonDown|MouseLeftButtonUp|" +
+            @"\s(?:\w+\.)?(?:Click|DoubleClick|MouseDoubleClick|MouseDown|MouseUp|MouseMove|MouseEnter|MouseLeave|MouseWheel|MouseLeftButtonDown|MouseLeftButtonUp|" +
             @"PreviewMouse\w+|PreviewKey\w+|KeyDown|KeyUp|SelectionChanged|Checked|Unchecked|Loaded|Unloaded|Closing|Closed|StateChanged|SizeChanged|" +
             @"TextChanged|ValueChanged|GotFocus|LostFocus|Drop|DragOver|DragEnter|Initialized|ContentRendered|Activated|Deactivated|LocationChanged)=""[A-Za-z_]\w*""",
             RegexOptions.CultureInvariant);

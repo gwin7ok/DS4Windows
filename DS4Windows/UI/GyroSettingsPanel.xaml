@@ -48,7 +48,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_TiltUp}"
                                     Width="100"
                                     Tag="{Binding TiltUp, Source={StaticResource controlIndexCheck}}"
-                                    Click="TiltControlsButton_Click"/>
+                                    Command="{Binding TiltControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="gyroZNLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"/>
                         </StackPanel>
@@ -59,7 +59,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_TiltDown}"
                                     Width="100"
                                     Tag="{Binding TiltDown, Source={StaticResource controlIndexCheck}}"
-                                    Click="TiltControlsButton_Click"/>
+                                    Command="{Binding TiltControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="gyroZPLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"/>
                         </StackPanel>
@@ -70,7 +70,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_TiltLeft}"
                                     Width="100"
                                     Tag="{Binding TiltLeft, Source={StaticResource controlIndexCheck}}"
-                                    Click="TiltControlsButton_Click"/>
+                                    Command="{Binding TiltControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="gyroXLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"/>
                         </StackPanel>
@@ -81,7 +81,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_TiltRight}"
                                     Width="100"
                                     Tag="{Binding TiltRight, Source={StaticResource controlIndexCheck}}"
-                                    Click="TiltControlsButton_Click"/>
+                                    Command="{Binding TiltControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="gyroXNLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"/>
                         </StackPanel>
@@ -125,7 +125,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_ResetGyroCalibration}"
                                     MinWidth="100"
                                     Padding="10,2"
-                                    Click="GyroCalibration_Click"/>
+                                    Command="{Binding CalibrationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         </StackPanel>
                     </StackPanel>
                 </TabItem>
@@ -309,7 +309,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_ResetGyroCalibration}"
                                     MinWidth="100"
                                     Padding="10,2"
-                                    Click="GyroCalibration_Click"/>
+                                    Command="{Binding CalibrationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         </StackPanel>
                     </StackPanel>
                 </TabItem>
@@ -536,7 +536,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_ResetGyroCalibration}"
                                     MinWidth="100"
                                     Padding="10,2"
-                                    Click="GyroCalibration_Click"/>
+                                    Command="{Binding CalibrationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         </StackPanel>
                     </StackPanel>
                 </TabItem>
@@ -555,7 +555,7 @@
                                     Content="{lex:Loc GyroSettingsPanel_ResetGyroCalibration}"
                                     MinWidth="100"
                                     Padding="10,2"
-                                    Click="GyroCalibration_Click"/>
+                                    Command="{Binding CalibrationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         </StackPanel>
                     </StackPanel>
                 </TabItem>

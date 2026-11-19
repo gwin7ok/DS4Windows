@@ -19,6 +19,7 @@ namespace DS4Windows.UI
 
         public PresetOptionWindow(PresetOptionViewModel viewModel)
         {
+            InitCommands();
             InitializeComponent();
 
             presetOptionVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
@@ -44,23 +45,23 @@ namespace DS4Windows.UI
             presetOptionVM.ApplyPreset(deviceIndex);
         }
 
-        private void NoPresetBtn_Click(object sender, RoutedEventArgs e)
+        private void NoPresetBtn()
         {
             Close();
         }
 
-        private void YesPresetBtn_Click(object sender, RoutedEventArgs e)
+        private void YesPresetBtn()
         {
             screensTabControl.SelectedItem = PresetListTab;
             //PresetListTab.DataContext = presetOptionVM;
         }
 
-        private void PresetCancelBtn_Click(object sender, RoutedEventArgs e)
+        private void PresetCancelBtn()
         {
             Close();
         }
 
-        private void PresetApplyBtn_Click(object sender, RoutedEventArgs e)
+        private void PresetApplyBtn()
         {
             if (!delayPresetApply)
             {

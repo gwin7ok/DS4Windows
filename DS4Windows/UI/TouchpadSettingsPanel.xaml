@@ -223,90 +223,63 @@
                                     Click="TouchDisInvertBtn_Click"
                                     Margin="20,0,0,0">
                                 <Button.ContextMenu>
-                                    <ContextMenu>
+                                    <ContextMenu MenuItem.Click="TouchDisInvertMenuItem_Click">
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Cross}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Circle}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Square}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Triangle}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="L1"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="L2"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="R1"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="R2"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Up}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Down}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Left}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Right}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="L3"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="R3"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_FingerOnTouchpad}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_2FingersOnTouchpad}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Options}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_Share}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_PS}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_TouchpadClick}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc Ui_Mute}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_SideL}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_SideR}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
 
                                         <!-- START Extra buttons for DualSense Edge controller -->
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_FunctionLeft}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_FunctionRight}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_BottomLeftPaddle}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <MenuItem Header="{lex:Loc TouchpadSettingsPanel_BottomRightPaddle}"
-                                                  IsCheckable="True"
-                                                  Click="TouchDisInvertMenuItem_Click"/>
+                                                  IsCheckable="True"/>
                                         <!-- END Extra buttons for DualSense Edge controller -->
                                     </ContextMenu>
                                 </Button.ContextMenu>
@@ -329,7 +302,7 @@
                                     Content="{lex:Loc TouchpadSettingsPanel_SwipeUp}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeUp, Source={StaticResource controlIndexCheck}}"
-                                    Click="SwipeControlsButton_Click"/>
+                                    Command="{Binding SwipeControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="swipeUpLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"
                                    Margin="10,0,0,0"/>
@@ -340,7 +313,7 @@
                                     Content="{lex:Loc TouchpadSettingsPanel_SwipeDown}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeDown, Source={StaticResource controlIndexCheck}}"
-                                    Click="SwipeControlsButton_Click"/>
+                                    Command="{Binding SwipeControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="swipeDownLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"
                                    Margin="10,0,0,0"/>
@@ -351,7 +324,7 @@
                                     Content="{lex:Loc TouchpadSettingsPanel_SwipeLeft}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeLeft, Source={StaticResource controlIndexCheck}}"
-                                    Click="SwipeControlsButton_Click"/>
+                                    Command="{Binding SwipeControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="swipeLeftLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"
                                    Margin="10,0,0,0"/>
@@ -362,7 +335,7 @@
                                     Content="{lex:Loc TouchpadSettingsPanel_SwipeRight}"
                                     MinWidth="100"
                                     Tag="{Binding SwipeRight, Source={StaticResource controlIndexCheck}}"
-                                    Click="SwipeControlsButton_Click"/>
+                                    Command="{Binding SwipeControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
                             <Label x:Name="swipeRightLb"
                                    Content="{Binding MappingName,FallbackValue=Unassigned}"
                                    Margin="10,0,0,0"/>

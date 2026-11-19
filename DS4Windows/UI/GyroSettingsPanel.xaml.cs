@@ -16,8 +16,14 @@ namespace DS4Windows.UI
     {
         private GyroSettingsViewModel viewModel;
 
+        public System.Windows.Input.ICommand TiltControlCommand { get; }
+
+        public System.Windows.Input.ICommand CalibrationCommand { get; }
+
         public GyroSettingsPanel()
         {
+            TiltControlCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => TiltControlClicked?.Invoke(this, (DS4Controls)Convert.ToInt32(parameter)), name: nameof(TiltControlCommand));
+            CalibrationCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(() => CalibrationRequested?.Invoke(this, EventArgs.Empty), name: nameof(CalibrationCommand));
             InitializeComponent();
         }
 
@@ -58,17 +64,6 @@ namespace DS4Windows.UI
             gyroZPLb.DataContext = mappingList.ControlMap[DS4Controls.GyroZPos];
             gyroXNLb.DataContext = mappingList.ControlMap[DS4Controls.GyroXNeg];
             gyroXLb.DataContext = mappingList.ControlMap[DS4Controls.GyroXPos];
-        }
-
-        private void TiltControlsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            TiltControlClicked?.Invoke(this, (DS4Controls)Convert.ToInt32(btn.Tag));
-        }
-
-        private void GyroCalibration_Click(object sender, RoutedEventArgs e)
-        {
-            CalibrationRequested?.Invoke(this, EventArgs.Empty);
         }
 
         // メニューのチェックを ViewModel の項目へ写して計算させ、結果をメニューへ書き戻す

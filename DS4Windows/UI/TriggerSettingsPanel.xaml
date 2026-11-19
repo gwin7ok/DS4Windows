@@ -217,7 +217,7 @@
                     Tag="L2"
                     Width="20"
                     DockPanel.Dock="Right"
-                    Click="CustomEditorBtn_Click"
+                    Command="{Binding CustomEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                     Margin="{StaticResource spaceMargin}"/>
             <TextBox Text="{Binding L2CustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
                      DockPanel.Dock="Left"
@@ -231,7 +231,7 @@
                     Tag="R2"
                     Width="20"
                     DockPanel.Dock="Right"
-                    Click="CustomEditorBtn_Click"
+                    Command="{Binding CustomEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                     Margin="{StaticResource spaceMargin}"/>
             <TextBox Text="{Binding R2CustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
                      DockPanel.Dock="Left"

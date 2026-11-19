@@ -74,6 +74,7 @@ namespace DS4Windows.UI
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
 
+            InitCommands();
             InitializeComponent();
 
             // Establish default before system checks
@@ -136,7 +137,7 @@ namespace DS4Windows.UI
             return _environmentService.IsWin8OrGreater();
         }
 
-        private void FinishedBtn_Click(object sender, RoutedEventArgs e)
+        private void FinishDialog()
         {
             try
             {
@@ -150,13 +151,13 @@ namespace DS4Windows.UI
             catch (Exception ex)
             {
                 // Defensive: log and continue to close the dialog
-                DS4Windows.Core.Logging.AppLogger.LogDebug($"WelcomeDialog.FinishedBtn_Click: failed to stop monitorTimer: {ex.Message}");
+                DS4Windows.Core.Logging.AppLogger.LogDebug($"WelcomeDialog.FinishDialog: failed to stop monitorTimer: {ex.Message}");
             }
 
             this.Close();
         }
 
-        private async void VigemInstallBtn_Click(object sender, RoutedEventArgs e)
+        private async Task InstallViGEm()
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), $"{installFileName}");
             if (File.Exists(tempFilePath))
@@ -269,17 +270,17 @@ namespace DS4Windows.UI
             }
         }
 
-        private void Step2Btn_Click(object sender, RoutedEventArgs e)
+        private void OpenXboxDriverPage()
         {
             Process.Start("http://www.microsoft.com/accessories/en-gb/d/xbox-360-controller-for-windows");
         }
 
-        private void BluetoothSetLink_Click(object sender, RoutedEventArgs e)
+        private void OpenBluetoothSettings()
         {
             Process.Start("control", "bthprops.cpl");
         }
 
-        private async void HidHideInstall_Click(object sender, RoutedEventArgs e)
+        private async Task InstallHidHide()
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), $"{InstHidHideFileNameX64}");
             if (File.Exists(tempFilePath))
@@ -384,7 +385,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private async void FakerInputInstallBtn_Click(object sender, RoutedEventArgs e)
+        private async Task InstallFakerInput()
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), $"{installFileName}");
             if (File.Exists(tempFilePath))

@@ -14,8 +14,8 @@
     <DockPanel LastChildFill="False">
         <TextBlock Text="{lex:Loc DeviceType}" DockPanel.Dock="Top" />
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Height="40" HorizontalAlignment="Right">
-            <Button x:Name="acceptBtn" Content="{lex:Loc Accept}" Click="AcceptBtn_Click" />
-            <Button x:Name="cancelBtn" Content="{lex:Loc Cancel}" Click="CancelBtn_Click" Margin="20,0,0,0" />
+            <Button x:Name="acceptBtn" Content="{lex:Loc Accept}" Command="{Binding AcceptBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+            <Button x:Name="cancelBtn" Content="{lex:Loc Cancel}" Command="{Binding CancelBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" Margin="20,0,0,0" />
         </StackPanel>
 
         <ComboBox x:Name="devTypeCombo" SelectedIndex="0" DockPanel.Dock="Top">

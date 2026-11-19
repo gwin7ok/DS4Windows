@@ -16,7 +16,7 @@
              d:DesignWidth="1000">
     <UserControl.Resources>
         <DataTemplate x:Key="NameHeaderTemplate">
-            <Button Click="SpecialActionsHeader_Click"
+            <Button Command="{Binding SortColumnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                     Tag="Name"
                     Background="Transparent"
                     BorderThickness="0"
@@ -29,7 +29,7 @@
             </Button>
         </DataTemplate>
         <DataTemplate x:Key="ActiveHeaderTemplate">
-            <Button Click="SpecialActionsHeader_Click"
+            <Button Command="{Binding SortColumnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                     Tag="Active"
                     Background="Transparent"
                     BorderThickness="0"
@@ -43,7 +43,7 @@
             </Button>
         </DataTemplate>
         <DataTemplate x:Key="TriggerHeaderTemplate">
-            <Button Click="SpecialActionsHeader_Click"
+            <Button Command="{Binding SortColumnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                     Tag="Trigger"
                     Background="Transparent"
                     BorderThickness="0"
@@ -56,7 +56,7 @@
             </Button>
         </DataTemplate>
         <DataTemplate x:Key="ActionHeaderTemplate">
-            <Button Click="SpecialActionsHeader_Click"
+            <Button Command="{Binding SortColumnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                     Tag="Action"
                     Background="Transparent"
                     BorderThickness="0"
@@ -104,19 +104,19 @@
             <Button x:Name="saveBtn"
                     Content="{lex:Loc SaveProfile}"
                     Margin="10,0,0,0"
-                    Click="SaveBtn_Click"/>
+                    Command="{Binding SaveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Button x:Name="cancelBtn"
                     Content="{lex:Loc Cancel}"
                     Margin="10,0,0,0"
-                    Click="CancelBtn_Click"/>
+                    Command="{Binding CancelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Button x:Name="applyBtn"
                     Content="{lex:Loc Apply}"
                     Margin="10,0,0,0"
-                    Click="ApplyBtn_Click"/>
+                    Command="{Binding ApplyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Button x:Name="presetBtn"
                     Content="{lex:Loc Ui_SelectPreset}"
                     Margin="10,0,0,0"
-                    Click="PresetBtn_Click"/>
+                    Command="{Binding PresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <!-- Phase11 W3: 状態は Click ハンドラー（ProfileEditor.Keepsize の元）が持つ。以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、
                  DataContext がメインウィンドウの MainWindowsViewModel（Keepsize を持たない）のため、最初から解決していなかったので外した -->
             <CheckBox x:Name="keepSizeCheckBox"
@@ -135,7 +135,7 @@
             <Button x:Name="windowSizeResetBtn"
                     Content="{lex:Loc WindowSizeReset}"
                     Margin="10,0,0,0"
-                    Click="WindowSizeResetBtn_Click"/>
+                    Command="{Binding WindowSizeResetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         </StackPanel>
         <!-- 左側領域 -->
         <TabControl x:Name="sidebarTabControl"
@@ -369,7 +369,7 @@
                                 Canvas.Left="300"
                                 Canvas.Top="224"
                                 Padding="8,1"
-                                Click="ResetAllControlsBtn_Click"/>
+                                Command="{Binding ResetAllControlsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </controls:ControllerVisualizerControl>
 
                     <!-- Phase9 UI 変更: 割り当て一覧は、2 列の表（ラベル、設定値。どちらも左寄せ）。設定値は出力ピッカーのボタンのラベルと同じ書式で、Default 以外は太字 -->
@@ -379,8 +379,10 @@
                               ItemsSource="{Binding DisplayMappings}"
                               SelectedItem="{Binding SelectedMapping}"
                               Margin="6"
-                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                              MouseDoubleClick="MappingListBox_MouseDoubleClick">
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListView.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditSelectedControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        </ListView.InputBindings>
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContainerStyle>
@@ -443,25 +445,25 @@
                             <Button x:Name="newActionBtn"
                                     Content="{lex:Loc NewAction}"
                                     Margin="0,0,5,0"
-                                    Click="NewActionBtn_Click"/>
+                                    Command="{Binding NewActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             <Button x:Name="editActionBtn"
                                     Content="{lex:Loc EditAction}"
                                     IsEnabled="{Binding ItemSelected}"
                                     Margin="5,0"
-                                    Click="EditActionBtn_Click"/>
+                                    Command="{Binding EditActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             <Button x:Name="duplicateActionBtn"
                                     Content="{lex:Loc DuplicateAction}"
                                     IsEnabled="{Binding ItemSelected}"
                                     Margin="5,0"
-                                    Click="DuplicateActionBtn_Click"/>
+                                    Command="{Binding DuplicateActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             <Button x:Name="removeActionBtn"
                                     Content="{lex:Loc RemoveAction}"
                                     IsEnabled="{Binding ItemSelected}"
                                     Margin="5,0,0,0"
-                                    Click="RemoveActionBtn_Click"/>
+                                    Command="{Binding RemoveActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             <Button Content="{lex:Loc ExportSpecialActions}"
                                     Margin="5 0 0 0"
-                                    Click="ExportSpecialActions_OnClick"/>
+                                    Command="{Binding ExportActionsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         </StackPanel>
 
                         <ListView x:Name="specialActionsLV"
@@ -484,7 +486,7 @@
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <CheckBox IsChecked="{Binding Active}"
-                                                          Click="SpecialActionCheckBox_Click"
+                                                          Command="{Binding CommitEnabledActionsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           HorizontalAlignment="Center"
                                                           VerticalAlignment="Center"/>
                                             </DataTemplate>

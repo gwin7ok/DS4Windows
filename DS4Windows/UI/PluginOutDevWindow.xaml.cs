@@ -37,10 +37,11 @@ namespace DS4Windows.UI
 
         public PluginOutDevWindow()
         {
+            InitCommands();
             InitializeComponent();
         }
 
-        private void AcceptBtn_Click(object sender, RoutedEventArgs e)
+        private void AcceptBtn()
         {
             if (OutContTypeInfo.TryFromProfileChoiceIndex(devTypeCombo.SelectedIndex, out OutContType selectedType))
             {
@@ -67,7 +68,7 @@ namespace DS4Windows.UI
             Close();
         }
 
-        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        private void CancelBtn()
         {
             contType = OutContType.None;
             result = MessageBoxResult.Cancel;

@@ -11,8 +11,11 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class TriggerSettingsPanel : UserControl
     {
+        public System.Windows.Input.ICommand CustomEditorCommand { get; }
+
         public TriggerSettingsPanel()
         {
+            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => CustomCurveEditorRequested?.Invoke(this, parameter as string), name: nameof(CustomEditorCommand));
             InitializeComponent();
         }
 
@@ -26,9 +29,5 @@ namespace DS4Windows.UI
             r2FullPullLb.DataContext = mappingList.ControlMap[DS4Controls.R2FullPull];
         }
 
-        private void CustomEditorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            CustomCurveEditorRequested?.Invoke(this, (sender as Button)?.Tag as string);
-        }
     }
 }

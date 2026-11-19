@@ -49,11 +49,11 @@
         <DockPanel DockPanel.Dock="Right" Width="200" LastChildFill="False" Margin="4,0">
             <StackPanel DockPanel.Dock="Top">
                 <UniformGrid Rows="1">
-                    <Button x:Name="saveBtn" Content="{lex:Loc Save}" Click="SaveBtn_Click" Margin="0,0,5,0" />
-                    <Button x:Name="cancelBtn" Content="{lex:Loc Cancel}" Click="CancelBtn_Click" Margin="5,0,0,0" />
+                    <Button x:Name="saveBtn" Content="{lex:Loc Save}" Command="{Binding SaveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="0,0,5,0" />
+                    <Button x:Name="cancelBtn" Content="{lex:Loc Cancel}" Command="{Binding CancelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="5,0,0,0" />
                 </UniformGrid>
 
-                <Button x:Name="recordBtn" Content="{lex:Loc RecordText}" Margin="0,10,0,0" Click="RecordBtn_Click" />
+                <Button x:Name="recordBtn" Content="{lex:Loc RecordText}" Margin="0,10,0,0" Command="{Binding RecordCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
                 <CheckBox x:Name="recordDelaysCk" Content="{lex:Loc RecordBox.RecordDelays}" HorizontalAlignment="Left" IsChecked="{Binding RecordDelays}" Margin="0,10,0,0" />
 
@@ -65,37 +65,37 @@
                     <ComboBoxItem Content="{lex:Loc RecordBox.MoveModeWindow}" />
                 </ComboBox>
 
-                <Button x:Name="addMouseMoveBtn" Content="{lex:Loc RecordBox.AddMouseMove}" Margin="0,10,5,0" Click="AddMouseMoveBtn_Click" />
+                <Button x:Name="addMouseMoveBtn" Content="{lex:Loc RecordBox.AddMouseMove}" Margin="0,10,5,0" Command="{Binding AddMouseMoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <TextBlock Text="{lex:Loc RecordBox.DoubleClickMoveEdit}" Margin="0,6,0,0" TextWrapping="Wrap" />
 
-                <Button x:Name="addWaitTimeBtn" Content="{lex:Loc RecordBox.InsertWait}" Margin="0,10,5,0" Click="AddWaitTimeBtn_Click" />
+                <Button x:Name="addWaitTimeBtn" Content="{lex:Loc RecordBox.InsertWait}" Margin="0,10,5,0" Command="{Binding AddWaitTimeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <TextBlock Text="{lex:Loc RecordBox.DoubleClickWaitEdit}" Margin="0,6,0,0" TextWrapping="Wrap" />
 
                 <UniformGrid Rows="1" Columns="2" FirstColumn="1" Margin="0,10,0,0">
-                    <Button x:Name="clearStepsBtn" Content="{lex:Loc Clear}" Margin="5,00,0,0" Click="ClearStepsBtn_Click" />
+                    <Button x:Name="clearStepsBtn" Content="{lex:Loc Clear}" Margin="5,00,0,0" Command="{Binding ClearStepsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 </UniformGrid>
 
                 <UniformGrid Rows="1" Margin="0,10,0,0">
-                    <Button x:Name="loadPresetBtn" Content="{lex:Loc RecordBox.LoadPreset}" Margin="0,0,5,0" Click="LoadPresetBtn_Click" />
-                    <Button x:Name="savePresetBtn" Content="{lex:Loc RecordBox.SavePreset}" Margin="5,0,0,0" Click="SavePresetBtn_Click" />
+                    <Button x:Name="loadPresetBtn" Content="{lex:Loc RecordBox.LoadPreset}" Margin="0,0,5,0" Command="{Binding LoadPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <Button x:Name="savePresetBtn" Content="{lex:Loc RecordBox.SavePreset}" Margin="5,0,0,0" Command="{Binding SavePresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 </UniformGrid>
 
                 <local:MacroPlaybackOptionsPanel x:Name="playbackPanel" DataContext="{Binding PlaybackOptions}" Margin="0,10,0,0" />
             </StackPanel>
             <StackPanel DockPanel.Dock="Bottom">
                 <StackPanel x:Name="mouseButtonsPanel">
-                    <Button x:Name="fourMouseBtn" Content="{lex:Loc RecordBox.FourthMB}" Width="120" Click="FourMouseBtn_Click" />
-                    <Button x:Name="fiveMouseBtn" Content="{lex:Loc RecordBox.FifthMB}" Width="120" Click="FiveMouseBtn_Click" Margin="0,10,0,0" />
+                    <Button x:Name="fourMouseBtn" Content="{lex:Loc RecordBox.FourthMB}" Width="120" Command="{Binding FourMouseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <Button x:Name="fiveMouseBtn" Content="{lex:Loc RecordBox.FifthMB}" Width="120" Command="{Binding FiveMouseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="0,10,0,0" />
                 </StackPanel>
 
                 <StackPanel x:Name="extraConPanel">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0">
-                        <Button x:Name="addRumbleBtn" Content="{lex:Loc RecordBox.AddRumble}" Width="124" Click="AddRumbleBtn_Click" />
+                        <Button x:Name="addRumbleBtn" Content="{lex:Loc RecordBox.AddRumble}" Width="124" Command="{Binding AddRumbleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <Image Source="{Binding Source={StaticResource resourcePaths}, Path=LeftTouch}" Width="43" Visibility="Collapsed" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10">
-                        <Button x:Name="changeLightBtn" Content="{lex:Loc RecordBox.ChangeLightbarColor}" Width="124" Click="ChangeLightBtn_Click" />
+                        <Button x:Name="changeLightBtn" Content="{lex:Loc RecordBox.ChangeLightbarColor}" Width="124" Command="{Binding ChangeLightCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <Image Source="{Binding Source={StaticResource resourcePaths}, Path=LeftTouch}" Width="43" Visibility="Collapsed" />
                     </StackPanel>
                 </StackPanel>

@@ -34,6 +34,7 @@ namespace DS4Windows.UI
 
         public OutputSlotManagerControl()
         {
+            InitCommands();
             InitializeComponent();
         }
 
@@ -102,7 +103,7 @@ namespace DS4Windows.UI
 
         }
 
-        private void PluginBtn_Click(object sender, RoutedEventArgs e)
+        private void PluginBtn()
         {
             int idx = currentOutDevVM.SelectedIndex;
             SlotDeviceEntry tempEntry = null;
@@ -126,7 +127,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void UnplugBtn_Click(object sender, RoutedEventArgs e)
+        private void UnplugBtn()
         {
             int idx = currentOutDevVM.SelectedIndex;
             if (idx >= 0)
@@ -135,7 +136,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void SlotChangeAcceptBtn_Click(object sender, RoutedEventArgs e)
+        private void SlotChangeAcceptBtn()
         {
             int idx = currentOutDevVM.SelectedIndex;
             if (idx >= 0)

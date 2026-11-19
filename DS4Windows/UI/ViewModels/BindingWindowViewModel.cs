@@ -21,6 +21,8 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
+using CommunityToolkit.Mvvm.Input;
+using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {
@@ -178,6 +180,86 @@ namespace DS4Windows.UI.ViewModels
                 _lightbar.forcedFlash[targetDevice] = 0;
                 _lightbar.forcelight[targetDevice] = true;
             }
+        }
+
+        // ---- 出力ピッカーの選択（ボタンの Command）。選んだら、ピッカーを閉じる ----
+
+        /// <summary>選択が終わり、ピッカーを閉じてよいときに発生する。</summary>
+        public event EventHandler CloseRequested;
+
+        /// <summary>
+        /// ユーザーが「Default」を選んだ（Default ボタン、または既定の割り当てと同じ Pad のボタン）か。
+        /// × で何も選ばずに閉じたときは false。割り当てエディターが、種別の一覧を Default へ切り替えるかの判断に使う。
+        /// </summary>
+        public bool DefaultPicked { get; private set; }
+
+        private RelayCommand<string> _selectKeyCommand;
+        private RelayCommand<string> _selectButtonCommand;
+        private RelayCommand _pickDefaultCommand;
+        private RelayCommand _pickUnboundCommand;
+
+        /// <summary>キーのボタン。<c>CommandParameter</c> は仮想キーコード（<c>0x44</c> の形）。</summary>
+        public RelayCommand<string> SelectKeyCommand => _selectKeyCommand ??= CommandGuard.CreateSync<string>(SelectKey, name: nameof(SelectKeyCommand));
+
+        /// <summary>仮想パッド（マウスを含む）のボタン。<c>CommandParameter</c> は <c>X360Controls</c> の名前。</summary>
+        public RelayCommand<string> SelectButtonCommand => _selectButtonCommand ??= CommandGuard.CreateSync<string>(SelectButton, name: nameof(SelectButtonCommand));
+
+        public RelayCommand PickDefaultCommand => _pickDefaultCommand ??= CommandGuard.CreateSync(PickDefault, name: nameof(PickDefaultCommand));
+
+        public RelayCommand PickUnboundCommand => _pickUnboundCommand ??= CommandGuard.CreateSync(PickUnbound, name: nameof(PickUnboundCommand));
+
+        /// <summary>仮想キーコードの文字列（<c>0x44</c>）を、整数にする。</summary>
+        public static int ParseKeyCode(string text)
+            => Convert.ToInt32(text.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? text.Substring(2) : text, 16);
+
+        private void SelectKey(string parameter)
+        {
+            OutBinding binding = ActionBinding;
+            binding.outputType = OutBinding.OutType.Key;
+            if (!string.IsNullOrEmpty(parameter))
+            {
+                binding.outkey = ParseKeyCode(parameter);
+            }
+
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SelectButton(string parameter)
+        {
+            OutBinding binding = ActionBinding;
+            if (!string.IsNullOrEmpty(parameter))
+            {
+                X360Controls selected = (X360Controls)Enum.Parse(typeof(X360Controls), parameter);
+                if (DefaultMappingFor(binding.input) == selected)
+                {
+                    DefaultPicked = true;
+                    binding.outputType = OutBinding.OutType.Default;
+                }
+                else
+                {
+                    binding.outputType = OutBinding.OutType.Button;
+                    binding.control = selected;
+                }
+            }
+
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void PickDefault()
+        {
+            OutBinding binding = ActionBinding;
+            DefaultPicked = true;
+            binding.outputType = OutBinding.OutType.Default;
+            binding.control = DefaultMappingFor(binding.input);
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void PickUnbound()
+        {
+            OutBinding binding = ActionBinding;
+            binding.outputType = OutBinding.OutType.Button;
+            binding.control = X360Controls.Unbound;
+            CloseRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 }

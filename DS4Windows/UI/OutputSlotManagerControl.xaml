@@ -16,8 +16,8 @@
     </UserControl.Resources>
     <DockPanel Margin="4,8">
         <StackPanel x:Name="plugDevStackPanel" Orientation="Horizontal" DockPanel.Dock="Bottom" Height="30" Margin="0,20,0,0">
-            <Button x:Name="pluginBtn" MinWidth="60" Content="{lex:Loc Plug}" IsEnabled="{Binding PluginEnabled}" Click="PluginBtn_Click" />
-            <Button x:Name="unplugBtn" MinWidth="60" Content="{lex:Loc Unplug}" IsEnabled="{Binding UnpluginEnabled}" Click="UnplugBtn_Click" Margin="30,0,0,0" />
+            <Button x:Name="pluginBtn" MinWidth="60" Content="{lex:Loc Plug}" IsEnabled="{Binding PluginEnabled}" Command="{Binding PluginBtnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            <Button x:Name="unplugBtn" MinWidth="60" Content="{lex:Loc Unplug}" IsEnabled="{Binding UnpluginEnabled}" Command="{Binding UnplugBtnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="30,0,0,0" />
         </StackPanel>
 
         <DockPanel>
@@ -29,7 +29,7 @@
                     </ComboBox>
 
                     <Button x:Name="slotChangeAcceptBtn" Content="{lex:Loc Accept}" IsEnabled="{Binding Dirty,FallbackValue=False}"
-                            Click="SlotChangeAcceptBtn_Click" Margin="0,8,0,0" />
+                            Command="{Binding SlotChangeAcceptBtnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="0,8,0,0" />
                 </StackPanel>
             </StackPanel>
             <ListView x:Name="currentOutDevLV" PreviewMouseUp="CurrentOutDevLV_PreviewMouseUp" ItemsSource="{Binding SlotDeviceEntries}" SelectedIndex="{Binding SelectedIndex,Mode=OneWayToSource}" DockPanel.Dock="Top">

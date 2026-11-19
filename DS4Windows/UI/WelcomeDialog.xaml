@@ -23,14 +23,14 @@
     </Window.Resources>
     <ScrollViewer>
         <DockPanel Margin="10,10,10,10" LastChildFill="False">
-            <Button x:Name="vigemInstallBtn" Content="{lex:Loc Welcome.Step1Text}" Style="{StaticResource CommonMargin}" DockPanel.Dock="Top" Click="VigemInstallBtn_Click" />
+            <Button x:Name="vigemInstallBtn" Content="{lex:Loc Welcome.Step1Text}" Style="{StaticResource CommonMargin}" DockPanel.Dock="Top" Command="{Binding InstallViGEmCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
             <TextBlock TextAlignment="Center" DockPanel.Dock="Top" TextWrapping="Wrap">
                 <TextBlock.Text>
                     <lex:Loc Key="Welcome.Step1HelpText" />
                 </TextBlock.Text>
             </TextBlock>
             <Button x:Name="step2Btn" IsEnabled="False" Content="{lex:Loc Welcome.Step2Text}" Style="{StaticResource CommonMargin}" DockPanel.Dock="Top"
-                Click="Step2Btn_Click" />
+                Command="{Binding OpenXboxDriverPageCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
             <TextBlock TextAlignment="Center" DockPanel.Dock="Top">
                 <TextBlock.Text>
                     <lex:Loc Key="Welcome.Step2HelpText" />
@@ -44,7 +44,7 @@
                 <TextBlock TextAlignment="Center" TextWrapping="Wrap" Style="{StaticResource CommonMarginTxt}" DockPanel.Dock="Bottom">
                     <Run Text="{lex:Loc Welcome.Step3BluetoothHelpText}" />
                     <LineBreak />
-                    <Hyperlink x:Name="bluetoothSetLink" Click="BluetoothSetLink_Click" Foreground="{DynamicResource LinkAccentBrush}">
+                    <Hyperlink x:Name="bluetoothSetLink" Command="{Binding OpenBluetoothSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource LinkAccentBrush}">
                         <Run Text="{lex:Loc Welcome.BluetoothSettings}" />
                     </Hyperlink>
                 </TextBlock>
@@ -52,7 +52,7 @@
             </DockPanel>
 
             <StackPanel x:Name="step4HidHidePanel" DockPanel.Dock="Top" Margin="0,8,0,0">
-                <Button x:Name="hidHideInstallBtn" Content="{lex:Loc Welcome.Step4Text}" Click="HidHideInstall_Click" />
+                <Button x:Name="hidHideInstallBtn" Content="{lex:Loc Welcome.Step4Text}" Command="{Binding InstallHidHideCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="0, 10, 0, 0">
                     <TextBlock.Text>
                         <lex:Loc Key="Welcome.Step4HelpText" />
@@ -61,7 +61,7 @@
             </StackPanel>
 
             <StackPanel x:Name="step5FakerInputPanel" DockPanel.Dock="Top" Margin="0,8,0,0">
-                <Button x:Name="fakerInputInstallBtn" Content="{lex:Loc Welcome.Step5Text}" Click="FakerInputInstallBtn_Click" />
+                <Button x:Name="fakerInputInstallBtn" Content="{lex:Loc Welcome.Step5Text}" Command="{Binding InstallFakerInputCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="0, 10, 0, 0">
                     <TextBlock.Text>
                         <lex:Loc Key="Welcome.Step5HelpText" />
@@ -69,7 +69,7 @@
                 </TextBlock>
             </StackPanel>
 
-            <Button x:Name="finishedBtn" Content="{lex:Loc WelcomeDialog_Finished}" HorizontalAlignment="Center" Padding="10,1" Style="{StaticResource CommonMargin}" Click="FinishedBtn_Click" DockPanel.Dock="Bottom" />
+            <Button x:Name="finishedBtn" Content="{lex:Loc WelcomeDialog_Finished}" HorizontalAlignment="Center" Padding="10,1" Style="{StaticResource CommonMargin}" Command="{Binding FinishCommand, RelativeSource={RelativeSource AncestorType=Window}}" DockPanel.Dock="Bottom" />
         </DockPanel>
     </ScrollViewer>
 </Window>

@@ -20,12 +20,12 @@
                    TextWrapping="Wrap" HorizontalAlignment="Center" Margin="4,10,4,0" TextAlignment="Center" />
         <DockPanel Margin="4,10,4,0">
             <StackPanel x:Name="progFolderPanel" Width="200">
-                <Button x:Name="progFolderBtn" Content="{lex:Loc ProgramFolder}" Click="ProgFolderBtn_Click" />
+                <Button x:Name="progFolderBtn" Content="{lex:Loc ProgramFolder}" Command="{Binding ProgFolderBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Text="{lex:Loc SaveWhere.ProgramFolderDescText}">
                 </TextBlock>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Width="200">
-                <Button x:Name="appdataBtn" Content="{lex:Loc Appdata}" Click="AppdataBtn_Click" />
+                <Button x:Name="appdataBtn" Content="{lex:Loc Appdata}" Command="{Binding AppdataBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" 
                            Text="{lex:Loc SaveWhere.AppDataDescText}">
                 </TextBlock>

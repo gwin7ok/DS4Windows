@@ -35,7 +35,7 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
 
-            string body = SourceText.Method(text, "private void RecordBtn_Click(");
+            string body = SourceText.Method(text, "private void ToggleRecording(");
 
             Assert.Contains("mouseButtonsPanel.Visibility = Visibility.Visible;", body);
             Assert.Contains("extraConPanel.Visibility = Visibility.Visible;", body);

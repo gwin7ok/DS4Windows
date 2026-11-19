@@ -35,6 +35,7 @@ namespace DS4Windows.UI
         // Phase6-Step10-2-3: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
         public RenameProfileWindow(RenameProfileViewModel viewModel)
         {
+            InitCommands();
             InitializeComponent();
 
             renameProfileVM = viewModel ?? throw new System.ArgumentNullException(nameof(viewModel));
@@ -51,7 +52,7 @@ namespace DS4Windows.UI
             renameProfileVM.ProfileName = profileName;
         }
 
-        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        private void CancelBtn()
         {
             DialogResult = false;
         }

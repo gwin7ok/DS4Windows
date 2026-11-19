@@ -37,6 +37,7 @@ namespace DS4Windows.UI
         {
             _applyChoice = applyChoice ?? throw new ArgumentNullException(nameof(applyChoice));
 
+            InitCommands();
             InitializeComponent();
             if (!multisavespots)
             {
@@ -49,14 +50,14 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProgFolderBtn_Click(object sender, RoutedEventArgs e)
+        private void ProgFolderBtn()
         {
             _applyChoice(true, dontDeleteCk.IsChecked != false);
             ChoiceMade = true;
             Close();
         }
 
-        private void AppdataBtn_Click(object sender, RoutedEventArgs e)
+        private void AppdataBtn()
         {
             _applyChoice(false, dontDeleteCk.IsChecked != false);
             ChoiceMade = true;

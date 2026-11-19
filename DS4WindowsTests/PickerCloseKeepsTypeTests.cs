@@ -32,9 +32,12 @@ namespace DS4WindowsTests
         [Fact]
         public void ThePicker_SetsDefaultPicked_OnlyWhereDefaultIsChosen()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/UI/BindingWindow.xaml.cs");
-            if (code == null) return;
+            // 判断は ViewModel（BindingWindowViewModel）が持ち、画面はそれを読むだけ
+            string view = SourceText.ReadNormalized("DS4Windows/UI/BindingWindow.xaml.cs");
+            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/BindingWindowViewModel.cs");
+            if (code == null || view == null) return;
 
+            Assert.Contains("public bool DefaultPicked => bindingVM.DefaultPicked;", view);
             Assert.Contains("public bool DefaultPicked { get; private set; }", code);
             Assert.Equal(2, Regex.Matches(code, @"DefaultPicked = true; (binding|actBind)\.outputType = OutBinding\.OutType\.Default;").Count);
             Assert.DoesNotContain("DefaultPicked = true; Close", code);

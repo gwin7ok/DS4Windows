@@ -310,12 +310,12 @@ namespace DS4WindowsTests
             XDocument gyroXaml = LoadXaml("DS4Windows/UI/GyroSettingsPanel.xaml");
             string[] gyroValues = gyroXaml == null ? left : XamlTestHelper.AllAttributeValues(gyroXaml.Root).ToArray();
             Assert.DoesNotContain(right, v => v == "TiltControlsButton_Click");
-            Assert.Contains(gyroValues, v => v == "TiltControlsButton_Click");
+            Assert.Contains(gyroValues, v => v.Contains("TiltControlCommand"));
             // スワイプ（タッチパッドのタブ）の入口は TouchpadSettingsPanel にある（編集画面の左ペインのタブの中身）
             XDocument touchpadXaml = LoadXaml("DS4Windows/UI/TouchpadSettingsPanel.xaml");
             string[] touchpadValues = touchpadXaml == null ? left : XamlTestHelper.AllAttributeValues(touchpadXaml.Root).ToArray();
             Assert.DoesNotContain(right, v => v == "SwipeControlsButton_Click");
-            Assert.Contains(touchpadValues, v => v == "SwipeControlsButton_Click");
+            Assert.Contains(touchpadValues, v => v.Contains("SwipeControlCommand"));
 
             // 図のボタン（配置表から生成）のクリックは、XAML ではなくコードで結び付ける。入口は左ペインの図のコントロールだけ
             Assert.Matches(@"button\.Click \+= HoverConBtn_Click;", code);

@@ -12,8 +12,14 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class StickSideSettingsView : UserControl
     {
+        public System.Windows.Input.ICommand CustomEditorCommand { get; }
+
+        public System.Windows.Input.ICommand CalibrationCommand { get; }
+
         public StickSideSettingsView()
         {
+            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(() => CustomCurveEditorRequested?.Invoke(this, EventArgs.Empty), name: nameof(CustomEditorCommand));
+            CalibrationCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(() => CalibrationRequested?.Invoke(this, EventArgs.Empty), name: nameof(CalibrationCommand));
             InitializeComponent();
         }
 
@@ -32,14 +38,5 @@ namespace DS4Windows.UI
             outerBindLb.DataContext = mappingList.ControlMap[outerControl];
         }
 
-        private void CustomEditorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            CustomCurveEditorRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void CalibrateStick_OnClick(object sender, RoutedEventArgs e)
-        {
-            CalibrationRequested?.Invoke(this, EventArgs.Empty);
-        }
     }
 }

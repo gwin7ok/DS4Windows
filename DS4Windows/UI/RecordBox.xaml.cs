@@ -64,6 +64,7 @@ namespace DS4Windows.UI
             DS4Windows.UI.Services.MouseRecordingHost mouseHook)
         {
             this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
+            InitCommands();
             InitializeComponent();
             recordBoxVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             mouseButtonsPanel.Visibility = Visibility.Hidden;
@@ -168,7 +169,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        private void SaveMacro()
         {
             if (recordBoxVM.EditMacroIndex > -1)
             {
@@ -181,13 +182,13 @@ namespace DS4Windows.UI
             Save?.Invoke(this, EventArgs.Empty);
         }
 
-        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        private void CancelMacro()
         {
             DataContext = null;
             Cancel?.Invoke(this, EventArgs.Empty);
         }
 
-        private void RecordBtn_Click(object sender, RoutedEventArgs e)
+        private void ToggleRecording()
         {
             bool recording = recordBoxVM.Recording = !recordBoxVM.Recording;
             if (recording)
@@ -257,7 +258,7 @@ namespace DS4Windows.UI
             recordBoxVM.MacroStepIndex = -1;
         }
 
-        private void ClearStepsBtn_Click(object sender, RoutedEventArgs e)
+        private void ClearSteps()
         {
             if (!recordBoxVM.Recording)
             {
@@ -301,7 +302,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ChangeLightBtn_Click(object sender, RoutedEventArgs e)
+        private void AddLightbarStep()
         {
             ChangeLightbarAction();
         }
@@ -325,12 +326,12 @@ namespace DS4Windows.UI
             }
         }
 
-        private void AddRumbleBtn_Click(object sender, RoutedEventArgs e)
+        private void AddRumbleStep()
         {
             ChangeRumbleAction();
         }
 
-        private void LoadPresetBtn_Click(object sender, RoutedEventArgs e)
+        private void LoadPreset()
         {
             // Phase8-Step7-3a: Alt-Tab 用のプリセットの削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する
             // Reset selected index of macro list before removing item source
@@ -342,7 +343,7 @@ namespace DS4Windows.UI
             macroListBox.ItemsSource = recordBoxVM.MacroSteps;
         }
 
-        private void SavePresetBtn_Click(object sender, RoutedEventArgs e)
+        private void SavePreset()
         {
             // Reset selected index of macro list before removing item source
             macroListBox.SelectedIndex = -1;
@@ -567,7 +568,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void FourMouseBtn_Click(object sender, RoutedEventArgs e)
+        private void AddFourthMouseButton()
         {
             FourMouseBtnAction();
         }
@@ -592,7 +593,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void FiveMouseBtn_Click(object sender, RoutedEventArgs e)
+        private void AddFifthMouseButton()
         {
             FiveMouseBtnAction();
         }
@@ -718,12 +719,12 @@ namespace DS4Windows.UI
             {
                 if (!recordBoxVM.Recording) return;
 
-                RecordBtn_Click(this, new RoutedEventArgs());
+                ToggleRecording();
                 recordBoxVM.NotifyMoveRecordLimitReached(DS4Windows.Processing.Macro.MacroPointerRecorder.MaxMoveSteps);
             }));
         }
 
-        private void AddMouseMoveBtn_Click(object sender, RoutedEventArgs e)
+        private void AddMouseMoveStep()
         {
             if (recordBoxVM.Recording) return;
 
@@ -738,7 +739,7 @@ namespace DS4Windows.UI
             macroListBox.ScrollIntoView(recordBoxVM.MacroSteps[index]);
         }
 
-        private void AddWaitTimeBtn_Click(object sender, RoutedEventArgs e)
+        private void AddWaitStep()
         {
             if (recordBoxVM.Recording) return;
 
