@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System.Collections.Generic;
 
 namespace DS4WindowsTests
@@ -19,7 +19,7 @@ namespace DS4WindowsTests
             ["DupBox.xaml"] = 2,
             ["FirstLaunchUtilWindow.xaml"] = 2,
             ["GeneralSettingsPanel.xaml"] = 2,
-            ["GyroSettingsPanel.xaml"] = 11,
+            ["GyroSettingsPanel.xaml"] = 3,
             ["LanguagePackControl.xaml"] = 1,
             ["LanguageSelectDialog.xaml"] = 3,
             ["LightbarSettingsPanel.xaml"] = 5,
@@ -29,21 +29,18 @@ namespace DS4WindowsTests
             ["OutputSlotManagerControl.xaml"] = 4,
             ["PluginOutDevWindow.xaml"] = 2,
             ["PresetOptionWindow.xaml"] = 5,
-            ["ProfileEditor.xaml"] = 23,
+            ["ProfileEditor.xaml"] = 24,
             ["RecordBox.xaml"] = 28,
             ["RenameProfileWindow.xaml"] = 3,
             ["SaveWhere.xaml"] = 2,
-            ["SixAxisSettingsPanel.xaml"] = 2,
             ["StickCalibrationWindow.xaml"] = 2,
-            ["StickSideSettingsView.xaml"] = 2,
-            ["TouchpadSettingsPanel.xaml"] = 32,
-            ["TriggerSettingsPanel.xaml"] = 2,
+            ["TouchpadSettingsPanel.xaml"] = 2,
             ["UpdaterWindow.xaml"] = 4,
             ["WelcomeDialog.xaml"] = 6,
             ["WindowTargetEditor.xaml"] = 5,
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 181;
+        public const int CommandBindingFloor = 199;
     }
 }

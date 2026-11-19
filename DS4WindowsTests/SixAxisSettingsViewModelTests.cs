@@ -120,8 +120,12 @@ namespace DS4WindowsTests
                     // カスタム曲線のボタンが押されたことは、対象を付けてパネルの外へ知らせる
                     string target = null;
                     panel.CustomCurveEditorRequested += (s, t) => target = t;
+                    // コマンドのバインディングは、画面の木に組み込まれてから解決される（配置を済ませる）
+                    panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));
+                    panel.Arrange(new System.Windows.Rect(0, 0, 1000, panel.DesiredSize.Height));
+                    panel.UpdateLayout();
                     var button = (System.Windows.Controls.Button)panel.FindName("szCustomEditorBtn");
-                    button.RaiseEvent(new System.Windows.RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                    button.Command.Execute(button.CommandParameter);
                     Assert.Equal("SZ", target);
 
                     panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));

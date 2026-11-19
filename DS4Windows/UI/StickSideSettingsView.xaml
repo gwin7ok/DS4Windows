@@ -241,7 +241,7 @@
                                     Content="..."
                                     Width="20"
                                     DockPanel.Dock="Right"
-                                    Click="CustomEditorBtn_Click"
+                                    Command="{Binding CustomEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     Margin="{StaticResource spaceMargin}"/>
                             <TextBox Text="{Binding CustomCurve,UpdateSourceTrigger=LostFocus,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
                                      DockPanel.Dock="Left"
@@ -442,7 +442,7 @@
                                 Grid.Column="0"
                                 Grid.ColumnSpan="2"
                                 Content="{lex:Loc AutomaticallyRecalibrateStick}"
-                                Click="CalibrateStick_OnClick"/>
+                                Command="{Binding CalibrationCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid>
 
                     <GroupBox Header="{lex:Loc DeltaAcceleration}"

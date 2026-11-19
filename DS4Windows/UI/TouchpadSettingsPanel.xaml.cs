@@ -16,8 +16,11 @@ namespace DS4Windows.UI
     {
         private ContentControl activeTouchButtonDisplayControl;
 
+        public System.Windows.Input.ICommand SwipeControlCommand { get; }
+
         public TouchpadSettingsPanel()
         {
+            SwipeControlCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => SwipeControlClicked?.Invoke(this, (DS4Controls)Convert.ToInt32(parameter)), name: nameof(SwipeControlCommand));
             InitializeComponent();
         }
 
@@ -78,12 +81,6 @@ namespace DS4Windows.UI
                     activeTouchButtonDisplayControl = touchContentControl1;
                     break;
             }
-        }
-
-        private void SwipeControlsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            SwipeControlClicked?.Invoke(this, (DS4Controls)Convert.ToInt32(btn.Tag));
         }
 
         private void TouchDisInvertBtn_Click(object sender, RoutedEventArgs e)

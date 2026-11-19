@@ -13,14 +13,13 @@ namespace DS4Windows.UI
         /// <summary>カスタム曲線の編集が求められた。引数は対象（"SX" か "SZ"）。</summary>
         public event System.EventHandler<string> CustomCurveEditorRequested;
 
+        public System.Windows.Input.ICommand CustomEditorCommand { get; }
+
         public SixAxisSettingsPanel()
         {
+            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => CustomCurveEditorRequested?.Invoke(this, parameter as string), name: nameof(CustomEditorCommand));
             InitializeComponent();
         }
 
-        private void CustomEditorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            CustomCurveEditorRequested?.Invoke(this, (sender as Button)?.Tag as string);
-        }
     }
 }

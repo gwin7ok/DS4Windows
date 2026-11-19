@@ -184,7 +184,7 @@
                                 Tag="SX"
                                 Width="20"
                                 DockPanel.Dock="Right"
-                                Click="CustomEditorBtn_Click"
+                                Command="{Binding CustomEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                                 Margin="{StaticResource spaceMargin}"/>
                         <TextBox Text="{Binding SXCustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
                                  DockPanel.Dock="Left"
@@ -198,7 +198,7 @@
                                 Tag="SZ"
                                 Width="20"
                                 DockPanel.Dock="Right"
-                                Click="CustomEditorBtn_Click"
+                                Command="{Binding CustomEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Tag, RelativeSource={RelativeSource Self}}"
                                 Margin="{StaticResource spaceMargin}"/>
                         <TextBox Text="{Binding SZCustomCurve,FallbackValue='0.00, 0.00, 1.00, 1.00'}"
                                  DockPanel.Dock="Left"
