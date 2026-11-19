@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿#nullable enable
+
+using System.Diagnostics;
 using DS4Windows.Core.Abstractions;
 
 namespace DS4Windows.Core.Platform
