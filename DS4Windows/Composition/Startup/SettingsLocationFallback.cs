@@ -47,7 +47,7 @@ namespace DS4Windows.Composition.Startup
                         File.Copy(s, Path.Combine(roamingAppDataPath, "Profiles", Path.GetFileName(s)));
                     }
                 }
-                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
                 _dialogs.ShowMessage(AppLogger.UserText("Startup_CopyComplete"), "DS4Windows", DialogIcon.None);
                 return true;

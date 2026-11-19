@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Core.Utilities
 {
@@ -19,7 +20,7 @@ namespace DS4Windows.Core.Utilities
                 result = CompileVersionNumber(tmpVersion.Major, tmpVersion.Minor,
                     tmpVersion.Build, tmpVersion.Revision);
             }
-            catch (Exception) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[VersionUtil:22] ignored {caught.GetType().Name}: {caught.Message}"); }
 
             return result;
         }

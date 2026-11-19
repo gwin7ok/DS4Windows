@@ -2,6 +2,7 @@
 
 using System;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 
@@ -47,9 +48,9 @@ namespace DS4Windows.Processing.Services.Slots
 
                 _deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);
             }
-            catch
-            {
+            catch (Exception caught) {
                 // 記憶できなくても、適用を止めない（再接続は、スロットの SelectedProfile に戻る）
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[AppliedProfileRecorder:50] ignored {caught.GetType().Name}: {caught.Message}");
             }
         }
     }

@@ -196,9 +196,9 @@ namespace DS4Windows.UI
                     // do the same here
                     notifyIcon.ForceCreate(enablesEfficiencyMode: false);
                 }
-                catch (Exception)
-                {
+                catch (Exception caught) {
                     // Ignore exception
+                    AppLogger.LogDebug($"[MainWindow:199] ignored {caught.GetType().Name}: {caught.Message}");
                 }
             }
 
@@ -694,7 +694,7 @@ namespace DS4Windows.UI
                     if (_autoProfileService.ShouldNotify(e.Source, item != null))
                         trayAppearance.ShowProfileSwitchNotification(prolog);
                 }
-                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[MainWindow:697] ignored {caught.GetType().Name}: {caught.Message}"); }
             }));
         }
 
@@ -1272,7 +1272,7 @@ namespace DS4Windows.UI
                 {
                 }
             }
-            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+            catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private void ControlPanelBtn_Click(object sender, RoutedEventArgs e)
@@ -1306,7 +1306,7 @@ namespace DS4Windows.UI
                     settingsWrapVM.DriverCheckRefresh();
                 }
             }
-            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+            catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e)
@@ -1662,7 +1662,7 @@ namespace DS4Windows.UI
                     startInfo.UseShellExecute = true;
                     using (Process proc = Process.Start(startInfo)) { }
                 }
-                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
 
@@ -1684,7 +1684,7 @@ namespace DS4Windows.UI
                 {
                     using (Process proc = Process.Start(path)) { }
                 }
-                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
 

@@ -60,7 +60,7 @@ namespace DS4Windows.Processing.Services.Devices
                         {
                             temp = _factory.Create(device, mode, actionName ?? "<mapping>");
                         }
-                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                        catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[KeyButtonControllerRegistry:63] ignored {caught.GetType().Name}: {caught.Message}"); }
 
                         inst = temp ?? new KeyButtonActionController(device, mode, _manager, _dispatcher, _time, actionName ?? "<mapping>");
                         _controllers[dictKey] = inst;
@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Services.Devices
                         {
                             temp = _factory.Create(device, sa, name);
                         }
-                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                        catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[KeyButtonControllerRegistry:94] ignored {caught.GetType().Name}: {caught.Message}"); }
 
                         inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, _time, name);
                         _controllers[dictKey] = inst;
@@ -109,7 +109,7 @@ namespace DS4Windows.Processing.Services.Devices
                             if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"KBC DIAGNOSTIC: assignedAction mismatch for dictKey={dictKey} existing={(inst.AssignedActionName ?? "(null)")} requested={name} device={device}");
                         }
                     }
-                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                    catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[KeyButtonControllerRegistry:112] ignored {caught.GetType().Name}: {caught.Message}"); }
                     return inst;
                 }
             }

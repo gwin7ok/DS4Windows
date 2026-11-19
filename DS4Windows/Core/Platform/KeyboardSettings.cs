@@ -40,8 +40,18 @@ namespace DS4Windows.Core.Platform
 
                     int delay = 1; // default index
                     int speed = 31; // default fastest
-                    try { if (delayVal != null) delay = Convert.ToInt32(delayVal); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
-                    try { if (speedVal != null) speed = Convert.ToInt32(speedVal); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                    try { if (delayVal != null) delay = Convert.ToInt32(delayVal); }
+                    catch (Exception caught)
+                    {
+                        /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                        AppLogger.LogDebug($"[KeyboardSettings:43] ignored {caught.GetType().Name}: {caught.Message}");
+                    }
+                    try { if (speedVal != null) speed = Convert.ToInt32(speedVal); }
+                    catch (Exception caught)
+                    {
+                        /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                        AppLogger.LogDebug($"[KeyboardSettings:44] ignored {caught.GetType().Name}: {caught.Message}");
+                    }
 
                     DelayIndex = Math.Max(0, Math.Min(3, delay));
                     SpeedValue = Math.Max(0, Math.Min(31, speed));

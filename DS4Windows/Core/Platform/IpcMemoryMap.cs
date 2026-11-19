@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Platform
                 mma = mmf.CreateViewAccessor(0, IpcResultText.BufferSize);
                 mma.WriteArray(0, buffer, 0, buffer.Length);
             }
-            catch (Exception)
+            catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.Threading.WaitHandleCannotBeOpenedException or System.ArgumentException)
             {
                 // Eat all exceptions
             }
@@ -104,7 +104,7 @@ namespace DS4Windows.Core.Platform
                 mma.ReadArray(0, buffer, 0, buffer.Length);
                 return ASCIIEncoding.ASCII.GetString(buffer);
             }
-            catch (Exception)
+            catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.Threading.WaitHandleCannotBeOpenedException or System.ArgumentException)
             {
                 // Eat all exceptions
             }

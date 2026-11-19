@@ -31,9 +31,9 @@ namespace DS4Windows.UI.Services
                 // 2. HKCU レジストリに AUMID 情報を自動登録（管理者権限不要、設定の通知一覧に常時表示）
                 RegisterInRegistry();
             }
-            catch
-            {
+            catch (Exception caught) {
                 // レジストリ書き込み失敗等でもアプリの起動自体は妨げない
+                AppLogger.LogDebug($"[AppNotificationRegistration:34] ignored {caught.GetType().Name}: {caught.Message}");
             }
         }
 
@@ -177,7 +177,7 @@ namespace DS4Windows.UI.Services
                 if (type != null)
                     return type;
             }
-            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+            catch (Exception caught) when (caught is System.IO.IOException or System.BadImageFormatException or System.ArgumentException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
             return Type.GetType(fullName);
         }

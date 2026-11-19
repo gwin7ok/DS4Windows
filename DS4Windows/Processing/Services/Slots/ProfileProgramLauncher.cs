@@ -3,6 +3,7 @@
 using System;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
@@ -48,7 +49,7 @@ namespace DS4Windows.Processing.Services.Slots
             {
                 await Task.Delay(LaunchDelay, _time).ConfigureAwait(false);
                 try { _launcher.LaunchWithWorkingDirectory(programPath); }
-                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileProgramLauncher:51] ignored {caught.GetType().Name}: {caught.Message}"); }
             });
         }
     }

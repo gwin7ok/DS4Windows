@@ -329,7 +329,7 @@ namespace DS4Windows.UI
                     top = owner.Top + 100;
                 }
             }
-            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[AssignmentEditor:332] ignored {caught.GetType().Name}: {caught.Message}"); }
 
             // Measure content to determine width, then position so dialog is centered
             panel.Measure(new Size(600, 400));
@@ -379,7 +379,7 @@ namespace DS4Windows.UI
                     }
                 }
             }
-            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[AssignmentEditor:382] ignored {caught.GetType().Name}: {caught.Message}"); }
 
             // Create tiny transparent owner window at the computed point
             var ownerWindow = new Window()
