@@ -27,7 +27,7 @@ namespace DS4WindowsTests
             ["PresetOptionWindow.xaml"] = 1,
             ["ProfileEditor.xaml"] = 7,
             ["RecordBox.xaml"] = 16,
-            ["RenameProfileWindow.xaml"] = 2,
+            ["RenameProfileWindow.xaml"] = 1,
             ["StickCalibrationWindow.xaml"] = 2,
             ["TouchpadSettingsPanel.xaml"] = 2,
             ["UpdaterWindow.xaml"] = 1,
@@ -35,6 +35,6 @@ namespace DS4WindowsTests
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 259;
+        public const int CommandBindingFloor = 260;
     }
 }
