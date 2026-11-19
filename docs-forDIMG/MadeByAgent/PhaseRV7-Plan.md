@@ -1,7 +1,7 @@
 # PhaseRV7 計画書: 採用手段の統一（変更通知、命名、タイマーの書き方、テストの枠）
 
 作成日: 2026-11-19
-状態: **未承認（コードは未着手）**
+状態: **未承認（コードは未着手）**。D1〜D5 は 2026-11-19 にユーザーが選択済み（「決定事項」を参照）。規模が大きい（命名・プロパティ化・基底・タイマー・null 検査・テストの枠）ため、承認の際に、2 つ以上の Phase に分けるかを再確認する
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の RV-26〜RV-28（§3.7）
 前提: PhaseRV1〜RV6 の完了（触るファイルが広いため、機能の Phase が済んだあとに 1 回だけ行う）。PhaseRV3 の D1（コマンドの基盤）の結果。**RV3 の D1 は (B) CommunityToolkit.Mvvm に決定済み（2026-11-19）。そのため、本 Phase の D1（変更通知の基底）は、ツールキットの `ObservableObject` への移行（(C)）を前提に、確認の場で再提案する。**
 動き: **機能・保存の形・ログは変えない**。名前の変更と、基底の付け替えが中心。
@@ -26,13 +26,14 @@
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| RV7-0 | 調査と規則案。(1) 変更通知: 直接実装 13 型を、「`ObservableObject` へ載せ替えられる／別の基底を持つので載せ替えられない」に分け、`PhaseRV7-Survey.md` に表にする。(2) 命名: 小文字始まり 92 件を、外部から名前で触られるもの（リフレクション・XAML・IPC・文字列）と、そうでないものに分ける。`getXxx()`・`isXxx()`・`setXxx()` を、プロパティへ変える案の影響を数える。(3) タイマー 13 か所の、使い分けの現状（UI を触るか、周期、停止の保証）を整理し、規則案を作る。(4) `StandaloneTests` の 8 ファイルの内容を調べ、`DS4WindowsTests` へ移せるか（`ProjectReference`、別の理由）を確かめる。(5) 規約へ追記する文面の案。結果は同じ文書へ。ユーザーの承認を得る | — | 未着手 |
-| RV7-1 | `ObservableObject` を `Core` へ移す（D1）。`git mv`（内容は変えない）→ 名前空間と `using` の書き換え（別コミット）。`Core` の `ProfileEntity`・`ProfileSubSettingBase` を載せ替える。`RemovedApiRuleTests` の表へ、旧名前空間の型を足す | `LayerDependencyRuleTests`、`NamespaceFolderGuardTests`、変更通知を検査する既存のテスト | 未着手 |
-| RV7-2 | UI の直接実装 11 型（`ProfileEditor` を除く）を `ObservableObject` へ載せ替える。通知の名前・タイミングは同じ（`SetProperty` の等価の比較が、元の比較と同じ意味になること。値の入れ物・コレクションを持つ型は、1 型ずつ確かめる）。`ProfileEditor`（`UserControl`）は、理由をコメントに書いて残す | 各 ViewModel のテスト、`PropertyChanged` の通知を検査するテスト（足す） | 未着手 |
-| RV7-3 | 命名（D2）: 小文字始まりの公開メソッドを PascalCase へ。型ごとに 1 コミット（`DS4SixAxis` → `ControllerStateExposed` → `TouchpadMouse` → `Mapping` → `InputDeviceCore` の順を目安に、小さい型から）。`getXxx()`・`isXxx()`・`setXxx()` をプロパティへ変えるかは D2 に従う | ビルド、全テスト（名前の変更は、コンパイルで漏れが分かる）。文字列で名前を使う箇所の検索 | 未着手 |
-| RV7-4 | タイマーの規則（D3）: 規則の案を `copilot-instructions.md` §3.1 に 1〜2 行で足す（承認後）。既存の 13 か所は、規則に反するもの（例外で止まる、UI を別スレッドから触る）だけ直す。`NonFormTimer` の別名は、RV1 で未使用のものは消えている。残る 5 ファイルの別名は、`System.Timers.Timer` の直接の記述へ置き換える（別名の廃止） | `GuardedTimerTick` のテスト、既存のテスト | 未着手 |
+| RV7-0 | 調査と規則案。(1) 変更通知: 直接実装 13 型を、「`ObservableObject` へ載せ替えられる／別の基底を持つので載せ替えられない」に分け、`PhaseRV7-Survey.md` に表にする。(2) 命名: 小文字始まり 92 件を、外部から名前で触られるもの（リフレクション・XAML・IPC・文字列）と、そうでないものに分ける。D2＝(B) のため、プロパティへ変える対象（引数なしの `getXxx()`・`isXxx()`、`getXxx()`／`setXxx(v)` の対）と、メソッドのまま PascalCase にする対象（引数あり、副作用あり、重い処理、`ref` を返す `getCurrentStateRef()` など）に分け、既存のプロパティとの名前の衝突を調べた一覧を作る（呼び出しは本体 57 ファイル 268 か所、テスト 54 か所、XAML 0 か所）。(3) タイマー 13 か所の、使い分けの現状（UI を触るか、周期、停止の保証）を整理する。D3＝(B) のため、揃える先の 1 種類を決める（候補: `TimeProvider.CreateTimer`。時間を差し替えてテストできる）。UI スレッドに結びつくもの（`ProfileEditor` の `DispatcherTimer` など）は、UI への戻しを `IUiDispatcher`＋`GuardedTimerTick` へ寄せる。動き（スレッド、周期、停止の保証）が変わるものは一覧で承認を得る。(4) `StandaloneTests` の 8 ファイルの内容を調べ、`DS4WindowsTests` へ移せるか（`ProjectReference`、別の理由）を確かめる。(5) 規約へ追記する文面の案。結果は同じ文書へ。ユーザーの承認を得る | — | 未着手 |
+| RV7-1 | 変更通知の一本化（D1＝(C)）: 独自の `UI/ViewModels/ObservableObject` を削除し（`RemovedApiRuleTests` の表へ）、継承する 12 型と、`Core` の 2 型（`ProfileEntity`、`ProfileSubSettingBase`。`RaisePropertyChanged()` は `OnPropertyChanged()` へ）を、`CommunityToolkit.Mvvm.ComponentModel.ObservableObject` へ付け替える。移動ではないので、`git mv` の別コミットは要らない。通知の名前・タイミングは同じ（独自の `SetProperty` もツールキットも、等価の比較は `EqualityComparer<T>.Default`。独自の `SetProperty` を呼ぶ箇所は本体に 0 件）。ツールキットは `PropertyChanging` も出すので、購読者がいないことを確かめる | `LayerDependencyRuleTests`、`NamespaceFolderGuardTests`、変更通知を検査する既存のテスト | 未着手 |
+| RV7-2 | UI の直接実装 11 型（`ProfileEditor` を除く）を、ツールキットの `ObservableObject` へ載せ替える。通知の名前・タイミングは同じ（`SetProperty` の等価の比較が、元の比較と同じ意味になること。値の入れ物・コレクションを持つ型は、1 型ずつ確かめる）。`ProfileEditor`（`UserControl`）は、理由をコメントに書いて残す | 各 ViewModel のテスト、`PropertyChanged` の通知を検査するテスト（足す） | 未着手 |
+| RV7-3 | 命名（D2）: 小文字始まりの公開メソッドを PascalCase へ。型ごとに 1 コミット（`DS4SixAxis` → `ControllerStateExposed` → `TouchpadMouse` → `Mapping` → `InputDeviceCore` の順を目安に、小さい型から）。D2＝(B): 改名のあと、RV7-0 の一覧で承認された分を、プロパティへ変える（改名とは別のコミット。引数あり・副作用あり・`ref` を返すものはメソッドのまま） | ビルド、全テスト（名前の変更は、コンパイルで漏れが分かる）。文字列で名前を使う箇所の検索 | 未着手 |
+| RV7-4 | タイマーの統一（D3＝(B)）: 13 か所を、RV7-0 で決めた 1 種類へ揃える。UI を触る周期は、UI への戻しを `IUiDispatcher`＋`GuardedTimerTick` に統一する。規則を `copilot-instructions.md` §3.1 に 1〜2 行で足す（承認後）。1 か所ずつ、動き（スレッド、周期、停止の保証）が変わらないことを確かめる。`NonFormTimer` の別名は、RV1 で未使用のものは消えている。残る 5 ファイルの別名は、`System.Timers.Timer` の直接の記述へ置き換える（別名の廃止） | `GuardedTimerTick` のテスト、既存のテスト。新規: 各タイマーの周期・停止を、時間を差し替えて確かめるテスト | 未着手 |
+| RV7-4b | null 検査の統一（D5＝(B)）: `?? throw new ArgumentNullException(nameof(x))` の 666 件を `ArgumentNullException.ThrowIfNull(x)` へ。機械的な変換（Roslyn のコードフィックス、またはスクリプト）で、1 層 1 コミット。`this.x = x ?? throw …;` は、`ArgumentNullException.ThrowIfNull(x); this.x = x;` の 2 文へ。例外の型とパラメーター名が同じになる。前回の判断（Phase36 C8、前回の 3-2: 手書きの null 検査は計画に入れない）を、ユーザーの選択で改める | 全テスト（コンストラクターの null 引数のテストが、例外の型・パラメーター名で通ること）。`git diff` で、置き換え以外の差分がないこと | 未着手 |
 | RV7-5 | テストの枠（D4）: 決定に従う。(A) のとき、`StandaloneTests` の 8 ファイルを、`DS4WindowsTests` へ移し（xUnit へ書き換え）、`StandaloneTests` を削除し、`debug-all.yml` の該当の行を更新する | 移したテストが緑。CI の設定は、`gh workflow` でなく、ファイルの差分を目で確かめる | 未着手 |
-| RV7-6 | 検査: `CodeHealthRatchetTests` に、「小文字始まりの公開メソッド＝0」「`INotifyPropertyChanged` の直接実装＝許可リスト（`ProfileEditor` のみ）」「別名 `using NonFormTimer`＝0」を足す。許可リストは空に近く保つ（足さない） | 新テスト | 未着手 |
+| RV7-6 | 検査: `CodeHealthRatchetTests` に、「小文字始まりの公開メソッド＝0」「`INotifyPropertyChanged` の直接実装＝許可リスト（`ProfileEditor` のみ）」「別名 `using NonFormTimer`＝0」「`?? throw new ArgumentNullException`＝0」「統一した 1 種類以外のタイマーの生成＝許可リスト（理由つき）のみ」を足す。許可リストは空に近く保つ（足さない） | 新テスト | 未着手 |
 | RV7-7 | 文書: 規約（承認後）、`02-Extension-Guide.md`（新しい ViewModel の作り方の 1 行）、`01-Metrics.md` の基準 | `ModelDiagramGuardTests` | 未着手 |
 
 ## 決めること
@@ -44,19 +45,31 @@
 | D4 | テストの枠 | (A) `StandaloneTests`（MSTest）を、xUnit へ移して 1 つにする／(B) 残す（別の理由があるときのみ。RV7-0 で確認）／(C) 残し、方針だけ書く | (A) 利点: 枠が 1 つ。CI の手順が短くなる。欠点: 8 ファイルの書き換え（小さい）。(B) 利点: 変更なし。欠点: 2 つの枠が残る。(C) 同上。**推奨は (A)**（RV7-0 で、別プロジェクトである理由が見つかれば (B)） |
 | D5 | `?? throw new ArgumentNullException` の 666 件 | (A) 触らない（前回の 3-2 の判断を維持）。新規は `ArgumentNullException.ThrowIfNull` を許す／(B) すべて `ThrowIfNull` へ寄せる | (A) 利点: 変更なし。欠点: 2 通りの書き方が混ざる。(B) 利点: 揃う。欠点: 666 か所の機械的な変更。差分が大きく、レビューしにくい。**推奨は (A)** |
 
+## 決定事項（2026-11-19、ユーザーが選択）
+| # | 決定 | 計画への反映 |
+|---|---|---|
+| D1 | (C) ツールキットの `ObservableObject` へ一本化（RV3 の D1＝(B) を受けて、推奨を (A) から変更） | 独自の `ObservableObject` を削除。継承 12 型と `Core` の 2 型を付け替える。`ProfileEditor`（`UserControl`）だけは、別の基底のため直接実装のまま（許可リスト） |
+| D2 | (B) プロパティへ変える | 全部をプロパティにするのではなく、引数なしの `getXxx()`・`isXxx()` と、`get`／`set` の対だけが対象。引数あり・副作用あり・重い処理・`ref` を返すものは、PascalCase のメソッドのまま。一覧は RV7-0 で承認。改名とプロパティ化は別のコミット |
+| D3 | (B) タイマーを 1 種類へ揃える | 推奨は (A)（規則だけ）だったが、(B) を選択。揃える先は RV7-0 で決める（候補: `TimeProvider.CreateTimer`）。13 か所の動きに触れるので、1 か所ずつ確かめ、実機でも確認する |
+| D4 | (A) xUnit へ移して 1 つにする | `StandaloneTests`（8 ファイル・615 行。1 ファイルは空）を `DS4WindowsTests` へ。`debug-all.yml` を更新 |
+| D5 | (B) `ThrowIfNull` へ全部寄せる | 推奨は (A)（触らない）だったが、(B) を選択。前回の 3-2・Phase36 C8 の判断を改める。機械的な変換で、1 層 1 コミット |
+
 ## 確認の方法
 - 各 Step のあとに、ビルドと `--filter "Category!=Slow&Category!=Benchmark"`。Step の終わりに Debug ALL（全件。警告 0・エラー 0）。
 - 名前の変更・基底の付け替えのコミットは、`git diff` で、名前以外の差分がないことを確かめる。
-- 実機確認: 画面の起動と、プロパティの変更が画面へ反映されること（`ObservableObject` の付け替えで通知が落ちると、表示が更新されない）。`Device-Check-Checklist.md` に足す。
+- 実機確認: 画面の起動と、プロパティの変更が画面へ反映されること（`ObservableObject` の付け替えで通知が落ちると、表示が更新されない）。タイマー（バッテリーのログ、トレイ、自動プロファイル、連打、ライトバーの点滅など）の周期・停止。改名・プロパティ化した機器の状態の読み取り（`InputDeviceCore` の部分）。`Device-Check-Checklist.md` に足す。
 
 ## リスク
 - 低〜中。名前の変更は、コンパイルで漏れが分かるが、文字列での参照（`nameof` を使わないバインディング、IPC のコマンド名）は、コンパイルで分からない。事前の検索（RV7-0）と、実機の確認で守る。
 - 基底の付け替えで、`SetProperty` の等価の比較が元の `!=` と異なると、通知が増減する。1 型ずつ確かめる。
 - 他の Phase のブランチと衝突しやすい（触るファイルが広い）。機能の Phase が済んだあとに行う理由。
+- D3＝(B): タイマーの種類を替えると、スレッド（UI／スレッドプール）、周期の精度、停止の保証が変わり得る。UI を触るものは UI への戻しを明示する。1 か所ずつ確かめ、実機で確認する。
+- D2＝(B): プロパティ化で、既存のプロパティと名前が衝突する、副作用のあるメソッドの意味が変わる、毎フレームの経路の挙動が変わる、といった事故。RV7-0 の一覧と、改名とは別のコミットで抑える。
+- D5＝(B): 666 件の差分が大きい。機械的な変換と、`git diff` の確認で抑える。
 
 ## 完了の定義
 - 小文字始まりの公開メソッドが 0。`INotifyPropertyChanged` の直接実装が、許可リスト（`ProfileEditor` など、別の基底を持つもの）のみ。別名 `using NonFormTimer` が 0。
-- タイマーの書き方の規則が、規約に（承認後）ある。
+- タイマーが 1 種類に揃い（許可リストの例外を除く）、書き方の規則が規約に（承認後）ある。`?? throw new ArgumentNullException` が 0。
 - D4 が (A) のとき、テストの枠が 1 つで、`debug-all.yml` が更新されている。
 - `CodeHealthRatchetTests` に上記の項目がある。Debug ALL が警告 0・エラー 0。
 
@@ -67,3 +80,4 @@
 
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
+- 2026-11-19: D1＝(C)、D2＝(B)、D3＋D5＝(B)、D4＝(A) をユーザーが選択（D2・D3・D5 は推奨 (A) と異なる）。D1 は RV3 の D1＝(B) を受けて推奨を (A) から (C) へ変更。D2 の判断のため、小文字始まりのメソッドの呼び出し箇所（本体 57 ファイル 268 か所、テスト 54 か所、XAML 0）と、独自の `SetProperty` を呼ぶ箇所（0 件）、`StandaloneTests` の構成（8 ファイル・615 行）を調べた。
