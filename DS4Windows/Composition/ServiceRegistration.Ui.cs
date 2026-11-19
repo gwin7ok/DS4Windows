@@ -18,6 +18,7 @@ namespace DS4Windows.Composition
         {
             services.AddSingleton<INotificationService, AppNotificationService>();
             services.AddSingleton<IUiDispatcher, WpfUiDispatcher>();   // 画面のスレッドへの受け渡し（ViewModel が Dispatcher を直接使わない）
+            services.AddSingleton<IShellLauncher, ShellLauncher>();   // フォルダー・プログラム・Web ページを OS に開かせる窓口
             services.AddSingleton<IDialogService, WpfDialogService>();   // 確認・通知・ファイル選択の窓の窓口
 
             // Phase 4: UI層 ViewModel ファクトリの登録

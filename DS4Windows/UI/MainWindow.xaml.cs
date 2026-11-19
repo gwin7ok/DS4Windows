@@ -143,6 +143,7 @@ namespace DS4Windows.UI
             // Phase7-Step5 W5: 旧 AppHost 解決の失敗時の new MainWindowsViewModel(...) のフォールバックは削除した（必須引数）
             mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
             DataContext = mainWinVM;
+            mainWinVM.Navigator = new MainWindowNavigator(this);
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
@@ -783,13 +784,6 @@ namespace DS4Windows.UI
             }));
         }
 
-        private void AboutBtn_Click(object sender, RoutedEventArgs e)
-        {
-            About aboutWin = new About(environment.ApplicationVersion);
-            aboutWin.Owner = this;
-            aboutWin.ShowDialog();
-        }
-
         /// <summary>サービスの開始・停止。ボタン・トレイ・IPC のどれから呼んでも、同じコマンドを通す（実行中の再入は拒む）。</summary>
         public Task ChangeService() => mainWinVM.ToggleServiceCommand.ExecuteAsync(null);
 
@@ -1205,24 +1199,6 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProfFolderBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo(environment.AppDataPath + "\\Profiles");
-            startInfo.UseShellExecute = true;
-            try
-            {
-                using (Process temp = Process.Start(startInfo))
-                {
-                }
-            }
-            catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-        }
-
-        private void ControlPanelBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("control", "joy.cpl");
-        }
-
         private async void DriverSetupBtn_Click(object sender, RoutedEventArgs e)
         {
             mainWinVM.IsServiceBusy = true;
@@ -1250,27 +1226,6 @@ namespace DS4Windows.UI
                 }
             }
             catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-        }
-
-        private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Task.Run(() =>
-            {
-                try
-                {
-                    // Manual check should ignore any previously skipped version
-                    if (updateCheckPolicy.TryFindNewerVersion(startup: false, out var version))
-                        DisplayUpdaterWindow(version.ToString());
-                    else
-                        Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
-                }
-                catch
-                {
-                    Dispatcher.Invoke(() => MessageBox.Show(Strings.FailedToRetrieveLatestVersion, "DS4Windows Updater"));
-                    // bubble the exception up to allow to see what's wrong in the log
-                    throw;
-                }
-            });
         }
 
         private void ImportProfBtn_Click(object sender, RoutedEventArgs e)
@@ -1587,63 +1542,6 @@ namespace DS4Windows.UI
                 ProfileEntity entity = profileListHolder.ProfileListCol[profilesListBox.SelectedIndex];
                 ShowProfileEditor(ProfileEditor.NoTargetDevice, entity);
             }
-        }
-
-        private void Html5GameBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://gamepad-tester.com/");
-        }
-
-        private void HidHideBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string path = Util.GetHidHideClientPath();
-            if (!string.IsNullOrEmpty(path))
-            {
-                try
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo(path);
-                    startInfo.UseShellExecute = true;
-                    using (Process proc = Process.Start(startInfo)) { }
-                }
-                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-            }
-        }
-
-        private void FakeExeNameExplainBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string message = Translations.Strings.CustomExeNameInfo;
-            MessageBox.Show(message, "Custom Exe Name Info", MessageBoxButton.OK,
-                MessageBoxImage.Information);
-        }
-
-        private void XinputCheckerBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string path = System.IO.Path.Combine(environment.ExecutableDirectory, "Tools",
-                "XInputChecker", "XInputChecker.exe");
-
-            if (File.Exists(path))
-            {
-                try
-                {
-                    using (Process proc = Process.Start(path)) { }
-                }
-                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-            }
-        }
-
-        private void ChecklogViewBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ChangelogWindow changelogWin = new ChangelogWindow(_viewModelFactory.CreateChangelogViewModel());
-            changelogWin.ShowDialog();
-        }
-
-        private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(appSettingsService.CreateDeviceOptionsViewModel(_viewModelFactory));
-
-            optsWindow.Owner = this;
-            optsWindow.Show();
         }
 
         private void RenameProfBtn_Click(object sender, RoutedEventArgs e)

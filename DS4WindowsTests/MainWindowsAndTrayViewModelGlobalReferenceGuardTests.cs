@@ -43,9 +43,9 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var path = new PathService();
 
-            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(null, path, new FakeServiceLifecycle()));
-            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(env, null, new FakeServiceLifecycle()));
-            Assert.NotNull(new MainWindowsViewModel(env, path, new FakeServiceLifecycle()));
+            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(null, path, new FakeServiceLifecycle(), new FakeShellLauncher(), new FakeDialogService(), new DS4Windows.UI.Services.UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService())));
+            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(env, null, new FakeServiceLifecycle(), new FakeShellLauncher(), new FakeDialogService(), new DS4Windows.UI.Services.UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService())));
+            Assert.NotNull(new MainWindowsViewModel(env, path, new FakeServiceLifecycle(), new FakeShellLauncher(), new FakeDialogService(), new DS4Windows.UI.Services.UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService())));
         }
 
         [Fact]

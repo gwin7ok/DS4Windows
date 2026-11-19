@@ -16,13 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
 using System;
 using System.Diagnostics;
 using DS4Windows.Core.Abstractions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DS4Windows.Core.Logging;
+using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
+using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
@@ -37,6 +41,9 @@ namespace DS4Windows.UI.ViewModels
         private readonly IEnvironmentService _environmentService;
         private readonly IPathService _pathService;
         private readonly IServiceLifecycle _lifecycle;
+        private readonly IShellLauncher _launcher;
+        private readonly IDialogService _dialogs;
+        private readonly UpdateCheckPolicy _updateCheckPolicy;
 
         private bool _isServiceBusy;
         private bool _hideDs4ToggleEnabled = true;
@@ -53,14 +60,18 @@ namespace DS4Windows.UI.ViewModels
                 FullTabsEnabledChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler FullTabsEnabledChanged;
+        public event EventHandler? FullTabsEnabledChanged;
 
         // Phase6-Step9-2: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // 旧 RunUpdaterCheck／DownloadUpstreamVersionInfo／LauchDS4Updater／IsNET8Available と updaterExe は、
         // 呼出元 0 件の上流の更新経路の残骸（2025-12-12 の b55d160b で呼び出しが消え、現行の更新処理は
         // UpdaterWindow が担う）のため、決定6＝D1 により削除した。
-        public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService, IServiceLifecycle lifecycle)
+        public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService, IServiceLifecycle lifecycle,
+            IShellLauncher launcher, IDialogService dialogs, UpdateCheckPolicy updateCheckPolicy)
         {
+            _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
+            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            _updateCheckPolicy = updateCheckPolicy ?? throw new ArgumentNullException(nameof(updateCheckPolicy));
             _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -68,6 +79,21 @@ namespace DS4Windows.UI.ViewModels
             ToggleServiceCommand = CommandGuard.Create(ToggleServiceAsync, () => !IsServiceBusy, nameof(ToggleServiceCommand));
             RestartForHideDs4Command = CommandGuard.Create(() => RestartServiceAsync(isXbox: false), name: nameof(RestartForHideDs4Command));
             RestartForHideXboxCommand = CommandGuard.Create(() => RestartServiceAsync(isXbox: true), name: nameof(RestartForHideXboxCommand));
+
+            OpenProfilesFolderCommand = CommandGuard.CreateSync(() => _launcher.OpenPath(System.IO.Path.Combine(_pathService.AppDataPath, "Profiles")), name: nameof(OpenProfilesFolderCommand));
+            OpenControlPanelCommand = CommandGuard.CreateSync(() => _launcher.RunProgram("control", "joy.cpl"), name: nameof(OpenControlPanelCommand));
+            OpenGamepadTesterCommand = CommandGuard.CreateSync(() => _launcher.OpenUrl("https://gamepad-tester.com/"), name: nameof(OpenGamepadTesterCommand));
+            OpenXInputCheckerCommand = CommandGuard.CreateSync(
+                () => _launcher.RunProgramIfExists(System.IO.Path.Combine(_pathService.ExecutableDirectory, "Tools", "XInputChecker", "XInputChecker.exe")),
+                name: nameof(OpenXInputCheckerCommand));
+            OpenHidHideClientCommand = CommandGuard.CreateSync(OpenHidHideClient, name: nameof(OpenHidHideClientCommand));
+            ExplainCustomExeNameCommand = CommandGuard.CreateSync(
+                () => _dialogs.ShowMessage(DS4Windows.Translations.Strings.CustomExeNameInfo, "Custom Exe Name Info", DialogIcon.Information),
+                name: nameof(ExplainCustomExeNameCommand));
+            CheckUpdatesCommand = CommandGuard.Create(CheckUpdatesAsync, name: nameof(CheckUpdatesCommand));
+            ShowAboutCommand = CommandGuard.CreateSync(() => Navigator?.ShowAbout(), name: nameof(ShowAboutCommand));
+            ShowChangelogCommand = CommandGuard.CreateSync(() => Navigator?.ShowChangelog(), name: nameof(ShowChangelogCommand));
+            ShowDeviceOptionsCommand = CommandGuard.CreateSync(() => Navigator?.ShowDeviceOptions(), name: nameof(ShowDeviceOptionsCommand));
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] MainWindowsViewModel: created (IEnvironmentService, IPathService, IServiceLifecycle injected)");
@@ -100,6 +126,30 @@ namespace DS4Windows.UI.ViewModels
             private set => SetProperty(ref _hideXboxToggleEnabled, value);
         }
 
+        /// <summary>他の画面を開く窓口。画面（View）ができたあとに、画面が自分で結ぶ。</summary>
+        public IShellNavigator? Navigator { get; set; }
+
+        public RelayCommand OpenProfilesFolderCommand { get; }
+
+        public RelayCommand OpenControlPanelCommand { get; }
+
+        public RelayCommand OpenGamepadTesterCommand { get; }
+
+        public RelayCommand OpenXInputCheckerCommand { get; }
+
+        public RelayCommand OpenHidHideClientCommand { get; }
+
+        public RelayCommand ExplainCustomExeNameCommand { get; }
+
+        /// <summary>更新を手動で確認する。新しい版があれば更新の画面を、なければ「最新です」を、取れなければ失敗を知らせる。</summary>
+        public AsyncRelayCommand CheckUpdatesCommand { get; }
+
+        public RelayCommand ShowAboutCommand { get; }
+
+        public RelayCommand ShowChangelogCommand { get; }
+
+        public RelayCommand ShowDeviceOptionsCommand { get; }
+
         /// <summary>動作中なら停止、止まっていれば開始する。</summary>
         public AsyncRelayCommand ToggleServiceCommand { get; }
 
@@ -111,6 +161,39 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>サービスの状態が変わったとき（開始・停止の完了）に、画面から呼ぶ。開始・停止ボタンを再び押せるようにする。</summary>
         public void NotifyServiceStateChanged() => IsServiceBusy = false;
+
+        private void OpenHidHideClient()
+        {
+            string path = DS4Windows.Core.Utilities.Util.GetHidHideClientPath();
+            if (!string.IsNullOrEmpty(path)) _launcher.OpenPath(path);
+        }
+
+        private async Task CheckUpdatesAsync()
+        {
+            const string title = "DS4Windows Updater";
+            Version? version;
+            bool found;
+            try
+            {
+                // 手動の確認は、以前にスキップした版を無視する
+                (found, version) = await Task.Run(() =>
+                {
+                    bool result = _updateCheckPolicy.TryFindNewerVersion(startup: false, out Version? latest);
+                    return (result, latest);
+                }).ConfigureAwait(true);
+            }
+            catch
+            {
+                _dialogs.ShowMessage(DS4Windows.Translations.Strings.FailedToRetrieveLatestVersion, title);
+                // 原因をログで見られるよう、共通の窓口（CommandGuard）へ渡す
+                throw;
+            }
+
+            if (found && version != null)
+                Navigator?.ShowUpdater(version.ToString());
+            else
+                _dialogs.ShowMessage(DS4Windows.Properties.Resources.UpToDate, title);
+        }
 
         private async Task ToggleServiceAsync()
         {
@@ -165,7 +248,7 @@ namespace DS4Windows.UI.ViewModels
                 startInfo.UseShellExecute = true;
                 try
                 {
-                    using (Process temp = Process.Start(startInfo))
+                    using (Process? temp = Process.Start(startInfo))
                     {
                     }
                 }

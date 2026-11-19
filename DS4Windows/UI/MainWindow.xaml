@@ -38,7 +38,7 @@
             <DockPanel MinHeight="30">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                     <Button x:Name="aboutBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource LinkBrush}"
-                            Style="{StaticResource NoBGHoverBtn}" Click="AboutBtn_Click">
+                            Style="{StaticResource NoBGHoverBtn}" Command="{Binding ShowAboutCommand}">
                         <TextBlock Text="{lex:Loc HotkeysAbout}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" x:Uid="hotkeysText" />
                     </Button>
                     <Button x:Name="StartStopBtn" Margin="10,4,4,4" Command="{Binding ToggleServiceCommand}" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
@@ -435,7 +435,7 @@
                         </StackPanel>
                         <DockPanel Margin="{StaticResource spaceMargin}">
                             <Label Content="{lex:Loc CustomExeName}" />
-                            <Button x:Name="fakeExeNameExplainBtn" DockPanel.Dock="Right" Margin="8,0,0,0" Click="FakeExeNameExplainBtn_Click">
+                            <Button x:Name="fakeExeNameExplainBtn" DockPanel.Dock="Right" Margin="8,0,0,0" Command="{Binding DataContext.ExplainCustomExeNameCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                 <Image Source="{localConverters:SystemIcon Question}"
                                    Width="20" Height="20" Stretch="UniformToFill" />
                             </Button>
@@ -451,23 +451,23 @@
                               Padding="8" HorizontalAlignment="Left">
                             <WrapPanel HorizontalAlignment="Left" Orientation="Vertical">
                                 <Button x:Name="profFolderBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="ProfFolderBtn_Click">
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenProfilesFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                     <TextBlock Text="{lex:Loc ProfileFolder}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="controlPanelBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="ControlPanelBtn_Click" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenControlPanelCommand, RelativeSource={RelativeSource AncestorType=Window}}" >
                                     <TextBlock Text="{lex:Loc ControlPanel}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="html5GameBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="Html5GameBtn_Click" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenGamepadTesterCommand, RelativeSource={RelativeSource AncestorType=Window}}" >
                                     <TextBlock Text="{lex:Loc GamepadTest}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="xinputCheckerBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="XinputCheckerBtn_Click" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenXInputCheckerCommand, RelativeSource={RelativeSource AncestorType=Window}}" >
                                     <TextBlock Text="{lex:Loc XInputChecker}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="hidHideBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="HidHideBtn_Click" Visibility="{Binding HidHideClientFound, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenHidHideClientCommand, RelativeSource={RelativeSource AncestorType=Window}}" Visibility="{Binding HidHideClientFound, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" >
                                     <TextBlock Text="{lex:Loc HidHideConfigClient}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="driverSetupBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
@@ -475,12 +475,12 @@
                                     <TextBlock Text="{lex:Loc DriverSetup}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="checkUpdatesBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="CheckUpdatesBtn_Click">
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.CheckUpdatesCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                     <!--="CheckUpdatesBtn_Click">-->
                                     <TextBlock Text="{lex:Loc CheckUpdateNow}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="checklogViewBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="ChecklogViewBtn_Click" Margin="0,0,4,4">
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.ShowChangelogCommand, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,0,4,4">
                                     <!--="CheckUpdatesBtn_Click">-->
                                     <TextBlock Text="{lex:Loc Changelog}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
@@ -503,7 +503,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <Button x:Name="deviceOptionSettingsBtn" MaxWidth="140" HorizontalAlignment="Center" Content="{lex:Loc DeviceOptions}" Click="DeviceOptionSettingsBtn_Click" />
+                        <Button x:Name="deviceOptionSettingsBtn" MaxWidth="140" HorizontalAlignment="Center" Content="{lex:Loc DeviceOptions}" Command="{Binding DataContext.ShowDeviceOptionsCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </WrapPanel>
                 </ScrollViewer>
 

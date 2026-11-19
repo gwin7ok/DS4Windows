@@ -1,0 +1,49 @@
+#nullable enable
+using DS4Windows.UI.Abstractions;
+
+namespace DS4Windows.UI
+{
+    public partial class MainWindow
+    {
+        /// <summary>
+        /// ViewModel の頼みで、メイン画面を親（Owner）にして子画面を開く。子画面の生成に必要な部品（画面の ViewModel の工場・設定）は、
+        /// メイン画面が持っているものをそのまま使う。
+        /// </summary>
+        private sealed class MainWindowNavigator : IShellNavigator
+        {
+            private readonly MainWindow window;
+
+            public MainWindowNavigator(MainWindow window)
+            {
+                this.window = window;
+            }
+
+            public void ShowAbout()
+            {
+                var aboutWin = new About(window.environment.ApplicationVersion) { Owner = window };
+                aboutWin.ShowDialog();
+            }
+
+            public void ShowChangelog()
+            {
+                var changelogWin = new ChangelogWindow(window._viewModelFactory.CreateChangelogViewModel());
+                changelogWin.ShowDialog();
+            }
+
+            public void ShowDeviceOptions()
+            {
+                var optsWindow = new ControllerRegisterOptionsWindow(window.appSettingsService.CreateDeviceOptionsViewModel(window._viewModelFactory))
+                {
+                    Owner = window,
+                };
+                optsWindow.Show();
+            }
+
+            public void ShowUpdater(string version)
+            {
+                var updaterWin = new UpdaterWindow(version, window.environment.IsAdministrator, window._viewModelFactory.CreateUpdaterWindowViewModel(version));
+                updaterWin.ShowDialog();
+            }
+        }
+    }
+}
