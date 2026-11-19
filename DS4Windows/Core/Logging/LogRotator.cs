@@ -9,7 +9,7 @@ namespace DS4Windows.Core.Logging
     public static class LogRotator
     {
         // Perform deterministic startup rotation: move ds4windows_log.txt -> ds4windows_log_YYYYMMDD_N.txt
-        public static void PerformStartupRotation(string appDataPath, int maxArchiveFiles)
+        public static void PerformStartupRotation(string? appDataPath, int maxArchiveFiles)
         {
             try
             {

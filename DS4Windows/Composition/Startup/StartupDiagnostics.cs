@@ -31,7 +31,7 @@ namespace DS4Windows.Composition.Startup
         }
 
         /// <summary>ログの設定の後に出す、環境の情報（アーキテクチャ、OS）。<paramref name="osProductName"/>／<paramref name="osReleaseId"/> は、呼び出し側が取得して渡す。</summary>
-        public static string[] EnvironmentMessages(string version, string executablePath, string osProductName, string osReleaseId)
+        public static string[] EnvironmentMessages(string? version, string executablePath, string osProductName, string osReleaseId)
             => new[]
             {
                 $"DS4Windows version {version}",

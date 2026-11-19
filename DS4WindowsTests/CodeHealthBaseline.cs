@@ -57,6 +57,7 @@ namespace DS4WindowsTests
             "Processing/ProfileUntriggerSnapshot.cs",
             "Processing/RepeatHelper.cs",
             "Processing/StickMotionState.cs",
+            "App.xaml.cs",
         };
 
         /// <summary><c>#nullable enable</c> のファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>

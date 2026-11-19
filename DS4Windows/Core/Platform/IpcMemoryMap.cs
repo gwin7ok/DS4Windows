@@ -134,7 +134,7 @@ namespace DS4Windows.Core.Platform
         }
 
         /// <summary>結果の通知を待ち（最大 10 秒）、結果の MMF から読む。得られなければ空の文字列。</summary>
-        public string WaitAndReadResult(EventWaitHandle ipcNotifyEvent)
+        public string WaitAndReadResult(EventWaitHandle? ipcNotifyEvent)
         {
             if (resultDataMmf != null)
             {

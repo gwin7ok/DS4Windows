@@ -39,7 +39,7 @@ namespace DS4Windows.Cli
 
             using (var ipc = new IpcMemoryMap())
             {
-                int code = new CommandLineClient(ipc, Console.Out).Run(parsed.Command, parsed.IsQuery);
+                int code = new CommandLineClient(ipc, Console.Out).Run(parsed.Command!, parsed.IsQuery); // 解析に成功した（Error がない）ときはコマンドがある
                 if (code == CommandLineClient.ExitNotRunning)
                     Console.Error.WriteLine("DS4Windows is not running.");
                 else if (code == CommandLineClient.ExitBusy)

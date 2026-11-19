@@ -12,8 +12,8 @@ namespace DS4Windows.Cli
     {
         public const int MaxCommandLength = 256;
 
-        public string Command { get; private set; }
-        public string Error { get; private set; }
+        public string? Command { get; private set; }
+        public string? Error { get; private set; }
         public bool ShowHelp { get; private set; }
 
         public static CliArguments Parse(string[] args)
