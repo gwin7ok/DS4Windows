@@ -55,10 +55,15 @@ namespace DS4Windows.Core.Logging
                     if (maxArchiveFiles < 0) maxArchiveFiles = 0;
                     for (int i = maxArchiveFiles; i < archives.Count; i++)
                     {
-                        try { archives[i].Delete(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                        try { archives[i].Delete(); }
+                        catch (Exception caught)
+                        {
+                            /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                            AppLogger.LogDebug($"[LogRotator:58] ignored {caught.GetType().Name}: {caught.Message}");
+                        }
                     }
                 }
-                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
             catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }

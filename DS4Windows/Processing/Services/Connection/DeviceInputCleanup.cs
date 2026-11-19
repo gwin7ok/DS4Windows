@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace DS4Windows.Processing.Services.Connection
                                     ds.nativeKeyAlias?.TryGetValue(k, out native);
                                     _syntheticDispatcher.SendRelease(device, k, native, false, null);
                                 }
-                                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[DeviceInputCleanup:52] ignored {caught.GetType().Name}: {caught.Message}"); }
                             }
                             try { ds.keyPresses.Clear(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                             try { ds.nativeKeyAlias!.Clear(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ } // 実行中は設定済み（null なら従来どおり NullReferenceException）

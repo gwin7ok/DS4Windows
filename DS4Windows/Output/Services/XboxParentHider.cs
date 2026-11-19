@@ -227,7 +227,7 @@ namespace DS4Windows.Output.Services
             {
                 File.WriteAllLines(RecordPath, _added);
             }
-            catch (Exception)
+            catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException)
             {
                 // 記録に失敗しても、隠すこと自体は続ける（異常終了のあとの復旧ができなくなるだけ）
             }
@@ -254,7 +254,7 @@ namespace DS4Windows.Output.Services
                     File.Delete(RecordPath);
                 }
             }
-            catch (Exception)
+            catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException)
             {
                 // ファイル・プロセス・レジストリの失敗は無視して続ける
             }

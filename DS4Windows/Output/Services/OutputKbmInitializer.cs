@@ -2,6 +2,7 @@
 
 using System;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 
@@ -44,7 +45,7 @@ namespace DS4Windows.Output.Services
             {
                 handlerConnected = _virtualKBM.Connect();
             }
-            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[OutputKbmInitializer:47] ignored {caught.GetType().Name}: {caught.Message}"); }
 
             if (!handlerConnected &&
                 attemptVirtualkbmHandler != VirtualKBMFactory.GetFallbackHandlerIdentifier())

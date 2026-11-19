@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using Nefarius.ViGEm.Client;
+using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Output.Backend
 {
@@ -24,7 +25,7 @@ namespace DS4Windows.Output.Backend
                 {
                     _client = new ViGEmClient();
                 }
-                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[ViGEmVirtualPadBackend:27] ignored {caught.GetType().Name}: {caught.Message}"); }
             });
             tempThread.Priority = ThreadPriority.AboveNormal;
             tempThread.IsBackground = true;

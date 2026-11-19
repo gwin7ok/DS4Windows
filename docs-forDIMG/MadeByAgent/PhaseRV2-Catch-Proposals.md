@@ -240,3 +240,10 @@
 | `UI/ViewModels/MainWindowsViewModel.cs:73` | (すべて) | using (Process temp = Process.Start(startInfo)) { } | S3 | 型を限定: Win32Exception・InvalidOperationException |
 | `UI/WindowPlacementHelper.cs:224` | (すべて) | var dpiForWindow = GetDpiForWindow(mainWindowHandle); if (dp | S4 | LogDebug を足す（ファイルだけ） |
 | `UI/WindowPlacementHelper.cs:294` | (すべて) | int resWidth = resulting.Right - resulting.Left; int resHeig | S4 | LogDebug を足す（ファイルだけ） |
+
+
+## 実施結果（2026-11-19 承認・実施）
+
+- 型の限定: 29 件（提案 37 件のうち、外側の広い catch・ログ基盤・IPC の解析など 8 件は、想定する例外を決められないため、そのまま）。例外フィルター `catch (Exception caught) when (caught is …)` を使った。
+- LogDebug: 39 件（提案 43 件のうち、`AppLogger`・`LoggerHolder` の中の 3 件は再帰を避けるため、`IpcMemoryMap`（CLI と共有で `AppLogger` を持てない）の 1 件は、そのまま）。Processing では `AppLogger.IsDebugEnabled` で守る。
+- 実機確認: Device-Check-Checklist §9c。

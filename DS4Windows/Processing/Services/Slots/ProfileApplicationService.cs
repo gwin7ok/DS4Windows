@@ -80,15 +80,25 @@ namespace DS4Windows.Processing.Services.Slots
                         var sa = _profileActionProvider.GetProfileAction(device, actionName);
                         if (sa == null) continue;
 
-                        try { _actionManager.GetStateFor(sa, device); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
-                        try { _keyButtonControllers.GetOrCreateForAction(device, sa); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                        try { _actionManager.GetStateFor(sa, device); }
+                        catch (Exception caught)
+                        {
+                            /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:83] ignored {caught.GetType().Name}: {caught.Message}");
+                        }
+                        try { _keyButtonControllers.GetOrCreateForAction(device, sa); }
+                        catch (Exception caught)
+                        {
+                            /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                            if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:84] ignored {caught.GetType().Name}: {caught.Message}");
+                        }
                     }
-                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                    catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:86] ignored {caught.GetType().Name}: {caught.Message}"); }
                 }
 
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}");
             }
-            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:91] ignored {caught.GetType().Name}: {caught.Message}"); }
         }
 
         public void ApplyFromAction(int deviceIndex, SpecialAction action)
@@ -357,7 +367,12 @@ namespace DS4Windows.Processing.Services.Slots
                 AppLogger.LogWarn($"ApplyProfile: Failed to clear per-device controllers: {ex}");
             }
 
-            try { PreallocateForProfileApply(device); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            try { PreallocateForProfileApply(device); }
+            catch (Exception caught)
+            {
+                /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:360] ignored {caught.GetType().Name}: {caught.Message}");
+            }
 
             try
             {
@@ -381,12 +396,17 @@ namespace DS4Windows.Processing.Services.Slots
                                 else
                                 {
                                     bool isToggle = false;
-                                    try { isToggle = sa.keyType.HasFlag(DS4KeyType.Toggle); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                    try { isToggle = sa.keyType.HasFlag(DS4KeyType.Toggle); }
+                                    catch (Exception caught)
+                                    {
+                                        /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                                        if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:384] ignored {caught.GetType().Name}: {caught.Message}");
+                                    }
                                     if (isToggle) foundToggle = true; else foundPress = true;
                                 }
                             }
                         }
-                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                        catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[ProfileApplicationService:389] ignored {caught.GetType().Name}: {caught.Message}"); }
                         if (foundToggle && foundPress) break;
                     }
                 }

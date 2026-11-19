@@ -51,7 +51,7 @@ namespace DS4Windows.UI.Services
                     string baseLogs = Path.Combine(AppContext.BaseDirectory, "Logs");
                     if (!Directory.Exists(baseLogs)) Directory.CreateDirectory(baseLogs);
                 }
-                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                 AppLogger.LogDebug($"ApplyLanguageSetting requested: {cultureCode}");
                 CultureInfo culture = CultureInfo.GetCultureInfo(cultureCode);
                 // コンテナの構築より前（-driverinstall の分岐）からも呼ばれるため、DI の解決に頼らず、
@@ -67,15 +67,20 @@ namespace DS4Windows.UI.Services
                     Thread.CurrentThread.CurrentCulture = culture;
                     Thread.CurrentThread.CurrentUICulture = culture;
                 }
-                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[AppThemeAndCultureService:70] ignored {caught.GetType().Name}: {caught.Message}"); }
 
                 // Enable WPFLocalizeExtension to apply culture to current thread resources
-                try { LocalizeDictionary.Instance.SetCurrentThreadCulture = true; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                try { LocalizeDictionary.Instance.SetCurrentThreadCulture = true; }
+                catch (Exception caught)
+                {
+                    /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                    AppLogger.LogDebug($"[AppThemeAndCultureService:73] ignored {caught.GetType().Name}: {caught.Message}");
+                }
                 LocalizeDictionary.Instance.Culture = culture;
 
                 AppLogger.LogDebug($"ApplyLanguageSetting applied: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");
             }
-            catch
+            catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException)
             {
                 // Skip if culture cannot be set
             }

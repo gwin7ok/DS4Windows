@@ -378,7 +378,7 @@ namespace DS4Windows.Core.Platform
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException)
             {
                 // ファイル・プロセス・レジストリの失敗は無視して続ける
             }

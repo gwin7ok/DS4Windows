@@ -70,7 +70,7 @@ namespace DS4Windows.UI.ViewModels
                     {
                     }
                 }
-                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
     }

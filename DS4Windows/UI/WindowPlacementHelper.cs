@@ -221,7 +221,7 @@ namespace DS4Windows.UI
                     AppLogger.LogTrace($"ApplyPlacement: Current window DPI scale = {windowDpiScale:F3} (dpi={dpiForWindow})");
                 }
             }
-            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[WindowPlacementHelper:224] ignored {caught.GetType().Name}: {caught.Message}"); }
 
             double targetScale = targetDpiX; // targetScreen.ScaleFactor を earlier にセット済み
             try
@@ -291,7 +291,7 @@ namespace DS4Windows.UI
                         sidx++;
                     }
                 }
-                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[WindowPlacementHelper:294] ignored {caught.GetType().Name}: {caught.Message}"); }
 
                 if (!setRes)
                 {

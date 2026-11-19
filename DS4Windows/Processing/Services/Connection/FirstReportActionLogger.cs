@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4Windows.Processing.Services.Connection
@@ -31,7 +32,7 @@ namespace DS4Windows.Processing.Services.Connection
                 {
                     _profileRepository.EmitMissingActionLogsForDevice(ind, false);
                 }
-                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[FirstReportActionLogger:34] ignored {caught.GetType().Name}: {caught.Message}"); }
             }
         }
     }

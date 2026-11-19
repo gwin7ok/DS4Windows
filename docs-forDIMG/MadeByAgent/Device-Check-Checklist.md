@@ -78,6 +78,16 @@
 - [ ] はじめの起動画面の ViGEm・HidHide・FakerInput の導入（ダウンロード→導入）が進む。
 - 疑う場所: `UI/MainWindow.xaml.cs`（`ChangeService`）、`UI/ViewModels/AutoProfilesViewModel`、`UI/WelcomeDialog`。
 
+## 9c. 例外の型を限定した catch（PhaseRV2 S3）
+想定外の例外は握りつぶされず上へ伝わる。次の操作で、クラッシュ（未処理の例外）やログの Error が出ないことを確かめる。
+- [ ] 起動・終了を繰り返す（優先度の設定、キーボードの repeat 設定の読み込み、Logs・Macros・Profiles フォルダーの作成）。
+- [ ] 設定の保存先が書き込めない場所（読み取り専用）でも、起動できる。
+- [ ] メイン画面の「Profiles フォルダーを開く」、HidHide Client・XInputChecker の起動、ドライバー導入（失敗してもクラッシュしない）。
+- [ ] 更新画面（UpdaterWindow）で、一時フォルダーの削除に失敗しても進む。
+- [ ] Xbox の親デバイスを隠す機能のオン・オフ（記録ファイルの保存・削除）。
+- [ ] CLI（IPC）のコマンド実行の結果が返る。
+- 疑う場所: 例外フィルター `catch (Exception caught) when (caught is …)` の箇所（`git grep "caught is"`）。型を足すか、理由のコメントとともに広げる。
+
 ## 10. 実機がなく、未確認のまま残す項目
 - DualSense: 出力レポート（ライトバー、プレイヤー LED、トリガーの効果、振動、触覚の強さ。USB・Bluetooth）、振動エミュレーションの方式の切替。
 - Switch Pro: スティック・加速度・ジャイロの校正、振動。

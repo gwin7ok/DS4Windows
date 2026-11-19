@@ -2,6 +2,7 @@
 
 using System;
 using System.Threading.Tasks;
+using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 
@@ -81,7 +82,12 @@ namespace DS4Windows.Composition.Startup
             catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             // ホストの破棄は、コントローラーの停止と、レジストリの破棄のあと。ログのフラッシュより前に行い、破棄中のログも出力する。例外は握る
-            try { _disposeHost(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            try { _disposeHost(); }
+            catch (Exception caught)
+            {
+                /* 失敗しても処理を続ける（呼び出し元に影響させない） */
+                AppLogger.LogDebug($"[AppShutdownSequence:84] ignored {caught.GetType().Name}: {caught.Message}");
+            }
 
             _flushLogs();
         }

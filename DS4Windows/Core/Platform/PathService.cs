@@ -125,7 +125,7 @@ namespace DS4Windows.Core.Platform
                 string path = Path.Combine(AppDataPath, "Profiles");
                 if (!Directory.Exists(path))
                 {
-                    try { Directory.CreateDirectory(path); } catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
+                    try { Directory.CreateDirectory(path); } catch (Exception caught) when (caught is System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                 }
                 return path;
             }
