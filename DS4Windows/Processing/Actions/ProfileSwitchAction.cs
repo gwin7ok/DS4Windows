@@ -117,10 +117,10 @@ namespace DS4Windows.Processing.Actions
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction PROFILE: Triggered for device {dev}, action={sa.name}, target={sa.details}");
                 AppLogger.LogDebug($"SpecialAction PROFILE: beingTriggered={false}, useTempProfile={useTemp}");   // 旧経路は、立ち上がりのとき、常に False
                 int count = 0;
-                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
+                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction Profile: device={dev}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         // 旧経路と同じ: トリガーのボタンの通常の割り当てがキー／マクロなら、そのキーを離す（切替で、キーが押されたまま残らないように）。

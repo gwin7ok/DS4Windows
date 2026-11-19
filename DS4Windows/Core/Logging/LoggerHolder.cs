@@ -97,7 +97,7 @@ namespace DS4Windows.Core.Logging
 
                 LogManager.ReconfigExistingLoggers();
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private static LogLevel ParseLogLevelStatic(string level)

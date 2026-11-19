@@ -330,7 +330,7 @@ namespace DS4Windows.Processing
             // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
             // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
             ControllerState? previousState = null;
-            try { previousState = _slots.Controllers[device]?.getPreviousStateRef(); } catch { }
+            try { previousState = _slots.Controllers[device]?.getPreviousStateRef(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             _sampleState[device] = cState;
@@ -624,9 +624,9 @@ namespace DS4Windows.Processing
             {
                 _inputCleanup.Clear(device);
 
-                try { if (deviceRuntime != null && device >= 0 && device < deviceRuntime.Length) deviceRuntime[device] = new DeviceRuntimeState(); } catch { }
+                try { if (deviceRuntime != null && device >= 0 && device < deviceRuntime.Length) deviceRuntime[device] = new DeviceRuntimeState(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         // Phase9 MapCustom の分割 M2: 2 段階トリガーの状態機械（約 195 行）は TwoStageTriggerProcessor へ移した
@@ -690,6 +690,7 @@ namespace DS4Windows.Processing
             }
             catch (ArgumentOutOfRangeException)
             {
+                // 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける）
             }
             return copied;
         }
@@ -713,7 +714,7 @@ namespace DS4Windows.Processing
                 {
                     _engine.ReleaseSuppressed(device, _triggerInputs[device]);
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
                 for (int actionIndex = 0; actionIndex < profileListLen; actionIndex++)
                 {
@@ -741,7 +742,7 @@ namespace DS4Windows.Processing
                 {
                     AppLogger.Log(AppLogLevel.Error, $"MapCustomAction exception: {ex}", LogOptions.UserFacing);
                 }
-                catch { }
+                catch { /* 診断の出力の失敗は無視してよい */ }
 
                 return;
             }

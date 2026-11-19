@@ -78,6 +78,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch
             {
+                // 失敗しても処理を続ける（呼び出し元に影響させない）
             }
         }
 

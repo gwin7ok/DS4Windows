@@ -50,7 +50,7 @@ namespace DS4Windows.Processing.Actions
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
                 }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             try
             {
@@ -58,16 +58,16 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogWarn($"GyroCalibrateAction.Execute failed: {ex}"); } catch { }
+                AppLogger.LogWarn($"GyroCalibrateAction.Execute failed: {ex}");
             }
 
             try
             {
                 int count = 0;
-                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
+                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction GyroCalibrate: device={dev}, name={_sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         public void Stop(IOutputContext ctx)

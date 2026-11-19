@@ -55,10 +55,10 @@ namespace DS4Windows.Processing.Actions
                 }
 
                 int count = 0;
-                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
+                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction Program: device={ctx.Device}, name={sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         public void Execute(IOutputContext ctx)
@@ -99,11 +99,11 @@ namespace DS4Windows.Processing.Actions
                 }
 
                 _launcher.Launch(targetPath, arguments, true, hidden);
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"LaunchProcessAction.Execute: id={Id} target={targetPath} hidden={hidden}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"LaunchProcessAction.Execute: id={Id} target={targetPath} hidden={hidden}");
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogWarn($"LaunchProcessAction.Execute failed: {ex}"); } catch { }
+                AppLogger.LogWarn($"LaunchProcessAction.Execute failed: {ex}");
             }
         }
 

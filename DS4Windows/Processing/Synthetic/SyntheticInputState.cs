@@ -80,7 +80,7 @@ namespace DS4Windows.Processing.Synthetic
                 }
 
                 // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）。Phase13-Step4: 管理役は引数で受ける（旧: 静的 ActionManager）
-                try { actionManager?.ClearToggledOnForKey(key); } catch { }
+                try { actionManager?.ClearToggledOnForKey(key); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Synth_StateCleared", key);
             }

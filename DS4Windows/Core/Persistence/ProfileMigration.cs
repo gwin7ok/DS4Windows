@@ -71,7 +71,7 @@ namespace DS4Windows.Core.Persistence
 
                 profileRead = true;
             }
-            catch (XmlException) { }
+            catch (XmlException) { /* 欠けた・壊れた値は、既定値のまま続ける */ }
 
             // config_version not available in file. Assume either version 1 or 2.
             // Try to determine which version

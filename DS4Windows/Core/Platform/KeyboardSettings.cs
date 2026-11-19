@@ -31,7 +31,7 @@ namespace DS4Windows.Core.Platform
                 {
                     if (key == null)
                     {
-                        try { AppLogger.LogInfo("KeyboardSettings.LoadFromRegistry: registry key not found: HKCU\\Control Panel\\Keyboard"); } catch { }
+                        AppLogger.LogInfo("KeyboardSettings.LoadFromRegistry: registry key not found: HKCU\\Control Panel\\Keyboard");
                         return;
                     }
 
@@ -40,8 +40,8 @@ namespace DS4Windows.Core.Platform
 
                     int delay = 1; // default index
                     int speed = 31; // default fastest
-                    try { if (delayVal != null) delay = Convert.ToInt32(delayVal); } catch { }
-                    try { if (speedVal != null) speed = Convert.ToInt32(speedVal); } catch { }
+                    try { if (delayVal != null) delay = Convert.ToInt32(delayVal); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                    try { if (speedVal != null) speed = Convert.ToInt32(speedVal); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                     DelayIndex = Math.Max(0, Math.Min(3, delay));
                     SpeedValue = Math.Max(0, Math.Min(31, speed));
@@ -54,12 +54,12 @@ namespace DS4Windows.Core.Platform
                     int interval = (int)Math.Round(1000.0 / Math.Max(1.0, RepeatCharsPerSec));
                     // clamp to reasonable bounds
                     RepeatIntervalMs = Math.Max(30, Math.Min(400, interval));
-                    try { AppLogger.LogInfo($"Keyboard settings loaded: KeyboardDelay[{DelayIndex}:{InitialRepeatDelayMs}ms], KeyboardSpeed[{SpeedValue}:{RepeatIntervalMs}ms interval]"); } catch { }
+                    AppLogger.LogInfo($"Keyboard settings loaded: KeyboardDelay[{DelayIndex}:{InitialRepeatDelayMs}ms], KeyboardSpeed[{SpeedValue}:{RepeatIntervalMs}ms interval]");
                 }
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogError($"KeyboardSettings.LoadFromRegistry failed: {ex}"); } catch { }
+                AppLogger.LogError($"KeyboardSettings.LoadFromRegistry failed: {ex}");
             }
         }
     }

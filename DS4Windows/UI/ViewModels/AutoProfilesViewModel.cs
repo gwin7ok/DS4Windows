@@ -184,7 +184,7 @@ namespace DS4Windows.UI.ViewModels
             AutoProfileSystemChange?.Invoke(this, true);
         }
 
-        public async void AddProgramsFromStartMenu()
+        public async Task AddProgramsFromStartMenu()
         {
             AutoProfileSystemChange?.Invoke(this, false);
             await Task.Run(() =>
@@ -196,7 +196,7 @@ namespace DS4Windows.UI.ViewModels
             AutoProfileSystemChange?.Invoke(this, true);
         }
 
-        public async void AddProgramsFromSteam(string location)
+        public async Task AddProgramsFromSteam(string location)
         {
             AutoProfileSystemChange?.Invoke(this, false);
             await Task.Run(() =>
@@ -208,7 +208,7 @@ namespace DS4Windows.UI.ViewModels
             AutoProfileSystemChange?.Invoke(this, true);
         }
 
-        public async void AddProgramsFromDir(string location)
+        public async Task AddProgramsFromDir(string location)
         {
             AutoProfileSystemChange?.Invoke(this, false);
             await Task.Run(() =>
@@ -220,7 +220,7 @@ namespace DS4Windows.UI.ViewModels
             AutoProfileSystemChange?.Invoke(this, true);
         }
 
-        public async void AddProgramExeLocation(string location)
+        public async Task AddProgramExeLocation(string location)
         {
             AutoProfileSystemChange?.Invoke(this, false);
             await Task.Run(() =>

@@ -1,51 +1,51 @@
 {
- "_comment": "Score-CodeReview.py が読む、手で記録する値と、はい／いいえの確認項目。Phase の最終 Step で、根拠を確かめてから answer / value を更新する。答えを変えるときは evidence に、確かめた方法（実行したテスト名・コマンド・日付）を書く。",
- "snapshot_label": "2026-11-19 現状（PhaseRV 着手前）",
- "manual": {
-  "nullable_layers_enabled": {
-   "value": 1,
-   "evidence": "2026-11-19（RV1 完了）: プロジェクト全体の Nullable の指定はなし（DS4WinWPF.csproj・Directory.Build.props）。ファイル単位の #nullable enable で Composition の全 19 ファイルを有効にした（全ファイルが有効な層は 1）。Core は Abstractions の 37 ファイル（Core 274 ファイル中）だけなので、層としては数えない（部分の有効化。記録は PhaseRV1-Nullable-Trial.md）。全体を有効にした試算は 2,153 件／359 ファイル（01-Metrics.md §12）。層別の有効化は PhaseRV9。"
+  "_comment": "Score-CodeReview.py が読む、手で記録する値と、はい／いいえの確認項目。Phase の最終 Step で、根拠を確かめてから answer / value を更新する。答えを変えるときは evidence に、確かめた方法（実行したテスト名・コマンド・日付）を書く。",
+  "snapshot_label": "2026-11-19 RV2 完了",
+  "manual": {
+    "nullable_layers_enabled": {
+      "value": 3,
+      "evidence": "2026-11-19（RV2 完了）: RV9 A 組の完了で、Composition・Input・Output の 3 層が全ファイル #nullable enable（警告 0、CodeHealthRatchetTests.NullableIsEnabledInEveryFileOfTheEnabledFolders が検査）。Core は Settings・Persistence が、Processing は Actions が B 組で未着手のため、層としては数えない。"
+    },
+    "profile_setting_files": {
+      "value": 5,
+      "evidence": "2026-11-19: 報告書 §3 の手作業の確認で 4〜6 ファイル（読み込みと保存が別の場所）。中央値の 5 を置いた。PhaseRV5-1 で、設定の項目を 1 つ足す手順を実際にたどって数え直す"
+    }
   },
-  "profile_setting_files": {
-   "value": 5,
-   "evidence": "2026-11-19: 報告書 §3 の手作業の確認で 4〜6 ファイル（読み込みと保存が別の場所）。中央値の 5 を置いた。PhaseRV5-1 で、設定の項目を 1 つ足す手順を実際にたどって数え直す"
+  "checklist": {
+    "oo_skeleton": {
+      "text": "入力機種の読み取りが共通の骨組み（InputLoopDevice）の差し込み口だけで書かれ、機種ごとの自前のループがない",
+      "answer": true,
+      "evidence": "2026-11-19: 規約 §3.1「入力機種の読み取りの骨組み」。DeviceLoopStructureTests が検査（Debug ALL で通る）"
+    },
+    "input_device_path": {
+      "text": "入力機種を AddInputDevice<TCartridge, TModule>() の 1 行の登録で足せる",
+      "answer": true,
+      "evidence": "2026-11-19: 規約 §3.1「入力機種の追加と設定の定義」、Model-Diagram/02-Extension-Guide.md。ModelDiagramGuardTests が検査"
+    },
+    "output_cartridge_path": {
+      "text": "仮想パッドの出力の種類を IOutputDeviceCartridge と OutContTypeInfo で足せる（種類ごとの if／switch を増やさない）",
+      "answer": true,
+      "evidence": "2026-11-19: 規約 §3.1「第 1 層・第 3 層の差し替え口」「出力の種類の違いの置き場所」。OutputTypeNamingGuardTests が検査"
+    },
+    "settings_ui_from_definition": {
+      "text": "機種ごとの設定の保存・読み込み・設定画面・はじめの起動画面が、ControllerSetting の定義から作られる",
+      "answer": true,
+      "evidence": "2026-11-19: 規約 §3.1「入力機種の追加と設定の定義」（機種ごとの DTO・Wrapper・画面の switch を増やさない）"
+    },
+    "install_flow_unified": {
+      "text": "WelcomeDialog の外部コンポーネントの取得・導入の流れ（同型の 3 本）が、1 つの部品（ExternalComponentInstaller と ViewModel）に集約されている",
+      "answer": false,
+      "evidence": "2026-11-19: 報告書 §3（共有部品化）。同型の流れが WelcomeDialog.xaml.cs に 3 本。PhaseRV4-2 で集約する"
+    },
+    "policy_documented": {
+      "text": "採用手段（変更通知・タイマー・ログ・例外・命名）の方針が文書にある",
+      "answer": true,
+      "evidence": "2026-11-19: .github/copilot-instructions.md（§2.3、§3.1、§3.3）、MadeByAgent/Log-Policy.md。徹底されていない部分は別の指標で数える"
+    },
+    "safety_net_green": {
+      "text": "ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査が、Debug ALL（0 警告・0 エラー）で通る",
+      "answer": true,
+      "evidence": "2026-11-19（RV1 完了）: Debug ALL（Build-Debug.ps1、テストの建て、Execute Test）が、警告 0・エラー 0、xUnit 3,626 件＋StandaloneTests 11 件の合格。全件を続けて 3 回流して、毎回合格した。ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査を含む。Release ビルドも警告 0"
+    }
   }
- },
- "checklist": {
-  "oo_skeleton": {
-   "text": "入力機種の読み取りが共通の骨組み（InputLoopDevice）の差し込み口だけで書かれ、機種ごとの自前のループがない",
-   "answer": true,
-   "evidence": "2026-11-19: 規約 §3.1「入力機種の読み取りの骨組み」。DeviceLoopStructureTests が検査（Debug ALL で通る）"
-  },
-  "input_device_path": {
-   "text": "入力機種を AddInputDevice<TCartridge, TModule>() の 1 行の登録で足せる",
-   "answer": true,
-   "evidence": "2026-11-19: 規約 §3.1「入力機種の追加と設定の定義」、Model-Diagram/02-Extension-Guide.md。ModelDiagramGuardTests が検査"
-  },
-  "output_cartridge_path": {
-   "text": "仮想パッドの出力の種類を IOutputDeviceCartridge と OutContTypeInfo で足せる（種類ごとの if／switch を増やさない）",
-   "answer": true,
-   "evidence": "2026-11-19: 規約 §3.1「第 1 層・第 3 層の差し替え口」「出力の種類の違いの置き場所」。OutputTypeNamingGuardTests が検査"
-  },
-  "settings_ui_from_definition": {
-   "text": "機種ごとの設定の保存・読み込み・設定画面・はじめの起動画面が、ControllerSetting の定義から作られる",
-   "answer": true,
-   "evidence": "2026-11-19: 規約 §3.1「入力機種の追加と設定の定義」（機種ごとの DTO・Wrapper・画面の switch を増やさない）"
-  },
-  "install_flow_unified": {
-   "text": "WelcomeDialog の外部コンポーネントの取得・導入の流れ（同型の 3 本）が、1 つの部品（ExternalComponentInstaller と ViewModel）に集約されている",
-   "answer": false,
-   "evidence": "2026-11-19: 報告書 §3（共有部品化）。同型の流れが WelcomeDialog.xaml.cs に 3 本。PhaseRV4-2 で集約する"
-  },
-  "policy_documented": {
-   "text": "採用手段（変更通知・タイマー・ログ・例外・命名）の方針が文書にある",
-   "answer": true,
-   "evidence": "2026-11-19: .github/copilot-instructions.md（§2.3、§3.1、§3.3）、MadeByAgent/Log-Policy.md。徹底されていない部分は別の指標で数える"
-  },
-  "safety_net_green": {
-   "text": "ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査が、Debug ALL（0 警告・0 エラー）で通る",
-   "answer": true,
-   "evidence": "2026-11-19（RV1 完了）: Debug ALL（Build-Debug.ps1、テストの建て、Execute Test）が、警告 0・エラー 0、xUnit 3,626 件＋StandaloneTests 11 件の合格。全件を続けて 3 回流して、毎回合格した。ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査を含む。Release ビルドも警告 0"
-  }
- }
 }

@@ -256,7 +256,7 @@ namespace DS4Windows.Input
                                     hDevice.OpenDevice(isExclusiveMode);
                                 }
                             }
-                            catch (Exception) { }
+                            catch (Exception) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                         }
 
                         // TODO in exclusive mode, try to hold both open when both are connected
@@ -449,7 +449,7 @@ namespace DS4Windows.Input
                                 {
                                     tempDev.CloseDevice();
                                 }
-                                catch { }
+                                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                             }
 
                             if (DevicePaths.Contains(tempDev.DevicePath))

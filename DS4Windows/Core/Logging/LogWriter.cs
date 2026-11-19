@@ -51,7 +51,7 @@ namespace DS4Windows.Core.Logging
                 }
                 stream.Close();
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

@@ -49,7 +49,7 @@ namespace DS4Windows.Processing
             // repeating without disposing the instance so it can be reused.
             timer = (timeProvider ?? throw new ArgumentNullException(nameof(timeProvider))).CreateTimer(TimerCallback, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             isRunning = false;
-            try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper created: id={this.GetHashCode()} device={device} kvpKey={kvpKey} nativeKey={nativeKey} interval={IntervalMs} sendFirstImmediate={SendFirstImmediate} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+            if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper created: id={this.GetHashCode()} device={device} kvpKey={kvpKey} nativeKey={nativeKey} interval={IntervalMs} sendFirstImmediate={SendFirstImmediate} controllerId={(controllerId>=0?controllerId:-1)}");
             if (sendFirstImmediate)
             {
                 Start();
@@ -68,7 +68,7 @@ namespace DS4Windows.Processing
             {
                 _dispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // Start repeating. If configured to send first immediate, this will issue a press immediately
@@ -80,15 +80,15 @@ namespace DS4Windows.Processing
 
             try
             {
-                try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Start: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}");
                 if (SendFirstImmediate)
                 {
-                    try { _dispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler); } catch { }
+                    try { _dispatcher.SendPress(device, kvpKey, nativeKey, useScanCode, handler); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 }
                 timer.Change(TimeSpan.FromMilliseconds(IntervalMs), TimeSpan.FromMilliseconds(IntervalMs));
                 isRunning = true;
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // Stop repeating. Safe to call multiple times. Does not dispose
@@ -101,11 +101,11 @@ namespace DS4Windows.Processing
 
             try
             {
-                try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Stop: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
+                if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Stop: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}");
                 timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                 isRunning = false;
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         public void Dispose()
@@ -113,11 +113,11 @@ namespace DS4Windows.Processing
             if (Interlocked.Exchange(ref disposed, 1) == 1) return;
             try
             {
-                try { if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Dispose: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}"); } catch { }
-                try { timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan); } catch { }
-                try { timer.Dispose(); } catch { }
+                if (DS4Windows.Core.Logging.AppLogger.IsTraceEnabled) DS4Windows.Core.Logging.AppLogger.LogTrace($"RepeatHelper.Dispose: id={this.GetHashCode()} device={device} kvpKey={kvpKey} controllerId={(controllerId>=0?controllerId:-1)}");
+                try { timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                try { timer.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             // Do NOT send release here; disposal should not implicitly generate key events.
             isRunning = false;
         }

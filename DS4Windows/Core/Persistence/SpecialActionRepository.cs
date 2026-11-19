@@ -144,7 +144,7 @@ namespace DS4Windows.Core.Persistence
                     _runtimeReset.ResetRuntimeStateForKey(savedKey);
                 }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] SpecialActionRepository.SaveAction: Action '{name}' saved via DI (mode={mode}, edit={edit})");
             OnActionsChanged();
@@ -232,9 +232,9 @@ namespace DS4Windows.Core.Persistence
         {
             try
             {
-                try { _runtimeReset.ClearAllActionStates(); } catch { }   // Phase14b-Step14（D14）: 旧 _actionManager.ClearAllEntries()
+                try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }   // Phase14b-Step14（D14）: 旧 _actionManager.ClearAllEntries()
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         private void SaveActionAndReload(string name, string controls, int mode, string details, bool edit, double delayTime, string extras, string actionId,
@@ -341,7 +341,7 @@ namespace DS4Windows.Core.Persistence
                     }
                 }
             }
-            catch { }
+            catch { /* 欠けた・壊れた値は、既定値のまま続ける */ }
         }
 
         protected virtual void OnActionsChanged()

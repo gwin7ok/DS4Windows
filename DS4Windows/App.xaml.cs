@@ -175,7 +175,7 @@ namespace DS4Windows
                 _bootstrapPathService.FindConfigLocation();
                 _bootstrapConfigLocationFound = true;
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // 設定の場所を決められたか（決められなかったときは、従来どおり、ローテーションも行わない）
@@ -202,9 +202,9 @@ namespace DS4Windows
                 {
                     DS4Windows.Core.Logging.LoggerHolder.ApplyBootstrapMinLogLevel(_bootstrapBackingStore.logMinLevel);
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
             try
             {
@@ -218,7 +218,7 @@ namespace DS4Windows
                 {
                     AppLogger.LogInfo(StartupDiagnostics.ArgsMessage(e.Args));
                 }
-                catch { }
+                catch { /* 診断の出力の失敗は無視してよい */ }
 
                 string langDir = System.IO.Path.Combine(AppContext.BaseDirectory, "Lang");
                 AppLogger.LogInfo(StartupDiagnostics.LangFolderMessage(langDir));
@@ -231,7 +231,7 @@ namespace DS4Windows
                     catch (Exception ex) { AppLogger.LogError($"LangDirList exception: {ex}"); }
                 }
             }
-            catch (Exception) { }
+            catch (Exception) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace DS4Windows
                     // We are in elevated completion mode — perform move/copy and exit
                     int exit = DS4Windows.Core.Updater.UpdaterElevatedHelper.CompleteInstall(src, tgt);
                     // Ensure logs flushed then exit
-                    try { NLog.LogManager.Flush(); } catch { }
+                    try { NLog.LogManager.Flush(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     Environment.Exit(exit);
                     return true;
                 }
@@ -270,7 +270,7 @@ namespace DS4Windows
                 Process.GetCurrentProcess().PriorityClass =
                     ProcessPriorityClass.High;
             }
-            catch { } // Ignore problems raising the priority.
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ } // Ignore problems raising the priority.
 
             // Force Normal IO Priority
             IntPtr ioPrio = new IntPtr(2);
@@ -310,7 +310,7 @@ namespace DS4Windows
             {
                 DS4Windows.Core.Platform.KeyboardSettings.LoadFromRegistry();
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
             // R-6: マウスホイールを、Windows の設定（1 画面ずつ／行数）に合わせる。最初の画面ができる前に、1 回だけ登録する
             DS4Windows.UI.PageScrollWheelHandler.Register();
@@ -407,7 +407,7 @@ namespace DS4Windows
                             Directory.Delete(_pathService.RoamingAppDataPath, true);
                         }
                     }
-                    catch { }
+                    catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                 }
                 else if (!multisaves)
                 {
@@ -477,6 +477,7 @@ namespace DS4Windows
             }
             catch (Exception)
             {
+                // ファイル・プロセス・レジストリの失敗は無視して続ける
             }
         }
 
@@ -509,9 +510,15 @@ namespace DS4Windows
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             string? version = _environmentService.ApplicationVersion;
             // Log process and path information at INFO level now that logger is configured
-            try { AppLogger.LogInfo($"Process exe: {Process.GetCurrentProcess().MainModule?.FileName}"); } catch { }
-            try { AppLogger.LogInfo($"AppDomain BaseDirectory: {AppContext.BaseDirectory}"); } catch { }
-            try { AppLogger.LogInfo($"Current working directory: {Environment.CurrentDirectory}"); } catch { }
+            string? processExe = null;
+            try { processExe = Process.GetCurrentProcess().MainModule?.FileName; }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception || ex is InvalidOperationException || ex is NotSupportedException)
+            {
+                // モジュールを読めない環境（権限など）では、ファイル名なしでログを出す。
+            }
+            AppLogger.LogInfo($"Process exe: {processExe}");
+            AppLogger.LogInfo($"AppDomain BaseDirectory: {AppContext.BaseDirectory}");
+            AppLogger.LogInfo($"Current working directory: {Environment.CurrentDirectory}");
             // Phase9 9-F F-1a: 文言は StartupDiagnostics（文言と順序は変えない）
             foreach (string environmentMessage in StartupDiagnostics.EnvironmentMessages(version, _pathService.ExecutablePath,
                 DS4Windows.Core.Utilities.Util.GetOSProductName(), DS4Windows.Core.Utilities.Util.GetOSReleaseId()))
@@ -532,7 +539,7 @@ namespace DS4Windows
                 }
                 else
                 {
-                    try { AppLogger.LogInfo("Build summary not found in the executable"); } catch { }
+                    AppLogger.LogInfo("Build summary not found in the executable");
                 }
             }
             catch (Exception ex)

@@ -83,8 +83,8 @@ namespace DS4Windows.Core.Profiles
                 if (profileIdentity != null) dto.ProfileNameOf = profileIdentity.GetName;   // Phase10-Step4d W4
                 dto.MapTo(this);
             }
-            catch (InvalidOperationException) {}
-            catch (XmlException) {}
+            catch (InvalidOperationException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+            catch (XmlException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         public bool Save(string m_Profile)

@@ -44,7 +44,7 @@ namespace DS4Windows.Output.Services
             {
                 handlerConnected = _virtualKBM.Connect();
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             if (!handlerConnected &&
                 attemptVirtualkbmHandler != VirtualKBMFactory.GetFallbackHandlerIdentifier())

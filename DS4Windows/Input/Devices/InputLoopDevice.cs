@@ -183,7 +183,7 @@ namespace DS4Windows.Input.Devices
                 else
                 {
                     timeoutEvent = true;
-                    Thread.Sleep(READ_STREAM_TIMEOUT);
+                    Thread.Sleep(READ_STREAM_TIMEOUT); // 待機の理由: 読み取りスレッドの中。読み取りの失敗後の再試行の間隔
                 }
             }
         }

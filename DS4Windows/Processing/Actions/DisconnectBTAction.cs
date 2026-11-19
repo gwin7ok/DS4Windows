@@ -71,7 +71,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DisconnectBTAction.ApplyFrame failed: {ex}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DisconnectBTAction.ApplyFrame failed: {ex}");
             }
         }
 
@@ -99,7 +99,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogWarn($"DisconnectBTAction.Execute failed: {ex}"); } catch { }
+                AppLogger.LogWarn($"DisconnectBTAction.Execute failed: {ex}");
             }
         }
 
@@ -119,7 +119,7 @@ namespace DS4Windows.Processing.Actions
                 string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

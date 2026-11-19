@@ -87,7 +87,7 @@ namespace DS4Windows.Core.Platform
         public bool TrySetForeground(IntPtr window)
         {
             SetForegroundWindow(window);
-            Thread.Sleep(ForegroundSettleMs);
+            Thread.Sleep(ForegroundSettleMs); // 待機の理由: 前面化がウィンドウシステムへ反映されるのを待つ（呼び出し元は専用の処理）
             return IsForeground(window);
         }
 

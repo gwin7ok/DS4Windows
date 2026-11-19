@@ -74,9 +74,9 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 var state = manager.GetStateFor(action, device);
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger ENTER: name={action?.name} device={device} logical={logicalValue} native={nativeValue} useScan={useScan} isToggledOn={(state?.IsToggledOn ?? false)}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger ENTER: name={action?.name} device={device} logical={logicalValue} native={nativeValue} useScan={useScan} isToggledOn={(state?.IsToggledOn ?? false)}");
                 var ctrl = GetController(device);
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}");
 
                 var trigger = new DS4Windows.Processing.Actions.TriggerContextImpl
                 {
@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Actions
                 var binding = new DS4Windows.Processing.Actions.KeyActionBinding(action);
 
                 // Forward the trigger (established) to the controller and let it decide semantics (press vs toggle)
-                try { ctrl?.Handle(binding, trigger); } catch { }
+                try { ctrl?.Handle(binding, trigger); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction: trigger(established) forwarded to controller name={action?.name} device={device} key={logicalValue}");
             }
             catch (Exception ex)
@@ -117,7 +117,7 @@ namespace DS4Windows.Processing.Actions
                 };
                 var binding = new DS4Windows.Processing.Actions.KeyActionBinding(action);
                 // Forward release edge to controller and let controller instance decide how to handle it.
-                try { ctrl?.Handle(binding, trigger); } catch { }
+                try { ctrl?.Handle(binding, trigger); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             catch (Exception ex)
             {

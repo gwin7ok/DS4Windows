@@ -63,6 +63,21 @@ namespace DS4WindowsTests
         /// <summary><c>#nullable enable</c> のファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>
         public const int NullForgivingWithoutReason = 0;
 
+        /// <summary>何も書かない空の <c>catch</c>（<c>Core/Persistence/ProfileSections</c> を除く）。0 を保つ。理由のコメントか、型の限定を書く（<c>Log-Policy.md</c> §12）。</summary>
+        public const int BlankEmptyCatches = 0;
+
+        /// <summary><c>Core/Persistence/ProfileSections</c> の何も書かない空の <c>catch</c>。RV5 の宣言化で 1 つの部品へ畳むまで凍結し、畳んだら 0 にする。</summary>
+        public const int BlankEmptyCatchesInProfileSections = 58;
+
+        /// <summary>本体がコメントだけの空の <c>catch</c>。理由の質は <c>PhaseRV2-Catch-Inventory.md</c> で人が見る。減らす方向だけ。</summary>
+        public const int CommentOnlyEmptyCatches = 296;
+
+        /// <summary><c>try { ログ } catch { }</c> のように、ログ呼び出しを包む行。<c>AppLogger</c> が例外を出さないため、0 を保つ。</summary>
+        public const int LogWrappingTryLines = 0;
+
+        /// <summary>イベントハンドラーの形（第 1 引数が <c>object</c>）ではない <c>async void</c>。<c>async Task</c> にして、呼び出し側で <c>await</c> する。</summary>
+        public const int NonHandlerAsyncVoid = 0;
+
         /// <summary><c>#pragma warning disable</c> で null 許容の警告（CS86xx・CS87xx）を消している行。使わない。</summary>
         public const int NullableWarningPragmas = 0;
     }

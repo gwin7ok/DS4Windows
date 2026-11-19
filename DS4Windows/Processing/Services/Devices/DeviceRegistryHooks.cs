@@ -74,7 +74,7 @@ namespace DS4Windows.Processing.Services.Devices
                     handled = true;
                 }
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             if (!handled)
             {
@@ -98,7 +98,7 @@ namespace DS4Windows.Processing.Services.Devices
                     }
                     child.Dispose();
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
         }
     }

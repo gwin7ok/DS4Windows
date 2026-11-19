@@ -138,6 +138,62 @@ namespace DS4WindowsTests
             return -1;
         }
 
+        // 空の catch（本体が空白だけ）・コメントだけの catch・ログを包む try・イベントハンドラー以外の async void（PhaseRV2-7）。
+        private static readonly Regex EmptyCatchBlank = new Regex(
+            @"\bcatch\b(?:\s*\([^)]*\))?(?:\s*when\s*\([^)]*\))?\s*\{\s*\}", RegexOptions.Compiled);
+
+        private static readonly Regex EmptyCatchAny = new Regex(
+            @"\bcatch\b(?:\s*\([^)]*\))?(?:\s*when\s*\([^)]*\))?\s*\{(?<body>(?:\s|//[^\n]*|/\*.*?\*/)*)\}", RegexOptions.Compiled | RegexOptions.Singleline);
+
+        private static readonly Regex AsyncVoid = new Regex(@"\basync\s+void\s+\w+\s*\(([^)]*)\)", RegexOptions.Compiled);
+
+        private static readonly Regex EventHandlerParameters = new Regex(@"^\s*object\??\s+\w+\s*,", RegexOptions.Compiled);
+
+        /// <summary>何も書かない空の <c>catch</c>（本体が空白だけ）。<paramref name="excludeFolderPrefix"/> に属するファイルは数えない。</summary>
+        public static int CountBlankEmptyCatches(IEnumerable<SourceFile> files, string excludeFolderPrefix = null)
+        {
+            return files
+                .Where(f => excludeFolderPrefix == null
+                    || !f.RelativePath.Replace('\\', '/').StartsWith(excludeFolderPrefix, StringComparison.Ordinal))
+                .Sum(f => EmptyCatchBlank.Matches(f.Text).Count);
+        }
+
+        /// <summary>本体がコメントだけの <c>catch</c>（理由の質は人が見る。件数だけ凍結する）。</summary>
+        public static int CountCommentOnlyEmptyCatches(IEnumerable<SourceFile> files)
+        {
+            return files.Sum(f => EmptyCatchAny.Matches(f.Text).Cast<Match>().Count(m => m.Groups["body"].Value.Trim().Length > 0));
+        }
+
+        /// <summary><c>try { …AppLogger.… } catch …</c> と同じ行で、ログ呼び出しを包んでいる行。</summary>
+        public static int CountLogWrappingTryLines(IEnumerable<SourceFile> files)
+        {
+            int count = 0;
+            foreach (SourceFile file in files)
+            {
+                foreach (string line in file.Text.Split('\n'))
+                {
+                    if (line.Contains("AppLogger.") && line.Contains("catch") && Regex.IsMatch(line, @"\btry\s*\{")) count++;
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>イベントハンドラー（第 1 引数が <c>object</c>）の形ではない <c>async void</c>。コメントの中は数えない。</summary>
+        public static int CountNonHandlerAsyncVoid(IEnumerable<SourceFile> files)
+        {
+            int count = 0;
+            foreach (SourceFile file in files)
+            {
+                foreach (Match m in AsyncVoid.Matches(SourceText.StripComments(file.Text)))
+                {
+                    if (!EventHandlerParameters.IsMatch(m.Groups[1].Value)) count++;
+                }
+            }
+
+            return count;
+        }
+
         private static bool IsUnder(string relativePath, string prefix)
         {
             string path = relativePath.Replace('\\', '/');

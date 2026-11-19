@@ -59,6 +59,42 @@ namespace DS4WindowsTests
             Check(nameof(CodeHealthBaseline.NullableWarningPragmas), actual, CodeHealthBaseline.NullableWarningPragmas);
         }
 
+        [Fact]
+        public void EmptyCatchAlwaysHasAReasonOutsideTheProfileSections()
+        {
+            int actual = CodeHealthScanner.CountBlankEmptyCatches(ProductionSources(), "Core/Persistence/ProfileSections/");
+            Check(nameof(CodeHealthBaseline.BlankEmptyCatches), actual, CodeHealthBaseline.BlankEmptyCatches);
+        }
+
+        [Fact]
+        public void EmptyCatchInTheProfileSectionsDoesNotGrow()
+        {
+            int all = CodeHealthScanner.CountBlankEmptyCatches(ProductionSources());
+            int outside = CodeHealthScanner.CountBlankEmptyCatches(ProductionSources(), "Core/Persistence/ProfileSections/");
+            Check(nameof(CodeHealthBaseline.BlankEmptyCatchesInProfileSections), all - outside, CodeHealthBaseline.BlankEmptyCatchesInProfileSections);
+        }
+
+        [Fact]
+        public void CommentOnlyEmptyCatchDoesNotGrow()
+        {
+            int actual = CodeHealthScanner.CountCommentOnlyEmptyCatches(ProductionSources());
+            Check(nameof(CodeHealthBaseline.CommentOnlyEmptyCatches), actual, CodeHealthBaseline.CommentOnlyEmptyCatches);
+        }
+
+        [Fact]
+        public void LogCallsAreNotWrappedInTryCatch()
+        {
+            int actual = CodeHealthScanner.CountLogWrappingTryLines(ProductionSources());
+            Check(nameof(CodeHealthBaseline.LogWrappingTryLines), actual, CodeHealthBaseline.LogWrappingTryLines);
+        }
+
+        [Fact]
+        public void AsyncVoidIsOnlyUsedForEventHandlers()
+        {
+            int actual = CodeHealthScanner.CountNonHandlerAsyncVoid(ProductionSources());
+            Check(nameof(CodeHealthBaseline.NonHandlerAsyncVoid), actual, CodeHealthBaseline.NonHandlerAsyncVoid);
+        }
+
         private static void Check(string name, int actual, int baseline)
         {
             string failure = CodeHealthRatchet.Evaluate(name, actual, baseline);

@@ -383,7 +383,7 @@ namespace DS4Windows.Core.Persistence
                                 {
                                     setting.ParseOrKeep(xmlSupport.SelectSingleNode(setting.XmlName)?.InnerText)?.Invoke();
                                 }
-                                catch { }
+                                catch { /* 欠けた・壊れた値は、既定値のまま続ける */ }
                             }
                         }
                     }
@@ -401,7 +401,7 @@ namespace DS4Windows.Core.Persistence
                     }
                 }
             }
-            catch { }
+            catch { /* 欠けた・壊れた値は、既定値のまま続ける */ }
 
             if (missingSetting)
             {

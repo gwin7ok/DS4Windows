@@ -34,7 +34,7 @@ namespace DS4Windows.Core.Platform
                         procFound = true;
                     }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
             return procFound;
         }

@@ -19,7 +19,7 @@ namespace DS4Windows.Core.Utilities
                 result = CompileVersionNumber(tmpVersion.Major, tmpVersion.Minor,
                     tmpVersion.Build, tmpVersion.Revision);
             }
-            catch (Exception) { }
+            catch (Exception) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             return result;
         }

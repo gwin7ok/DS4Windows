@@ -72,6 +72,12 @@
 - [ ] 長く接続しても途切れない。クライアントを切って再接続できる。
 - 疑う場所: `Output/Udp/DsuPacketFormatter`、`Output/Udp/UdpServer`。
 
+## 9b. 非同期化したハンドラー（PhaseRV2-6）
+- [ ] メイン画面の「開始／停止」ボタン、トレイの開始／停止、自動プロファイルによるサービス切替が、これまでどおり動く（ボタンが一時的に無効になり、終わると戻る）。
+- [ ] 自動プロファイル画面の「スタートメニュー／Steam／フォルダー／exe から追加」で、一覧が埋まる（探している間は画面が無効、終わると戻る）。
+- [ ] はじめの起動画面の ViGEm・HidHide・FakerInput の導入（ダウンロード→導入）が進む。
+- 疑う場所: `UI/MainWindow.xaml.cs`（`ChangeService`）、`UI/ViewModels/AutoProfilesViewModel`、`UI/WelcomeDialog`。
+
 ## 10. 実機がなく、未確認のまま残す項目
 - DualSense: 出力レポート（ライトバー、プレイヤー LED、トリガーの効果、振動、触覚の強さ。USB・Bluetooth）、振動エミュレーションの方式の切替。
 - Switch Pro: スティック・加速度・ジャイロの校正、振動。

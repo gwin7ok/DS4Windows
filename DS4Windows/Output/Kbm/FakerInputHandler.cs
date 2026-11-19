@@ -67,7 +67,7 @@ namespace DS4Windows.Output.Kbm
             Release();
             // Add small delay before trying to perform disconnect. Precaution from
             // test mapper
-            Thread.Sleep(100);
+            Thread.Sleep(100); // 待機の理由: 切断の前の短い間隔（従来どおり）
             try
             {
                 fakerInput!.Disconnect(); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）

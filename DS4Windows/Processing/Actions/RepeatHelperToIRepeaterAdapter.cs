@@ -37,7 +37,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (tickAction != null)
                 {
-                    try { DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior"); } catch { }
+                    DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior");
                 }
 
                 // 差し替えの工場が渡されていれば、IRepeater の包みを優先して作る
@@ -49,7 +49,7 @@ namespace DS4Windows.Processing.Actions
                         helperIRepeater?.Start(initialDelay, interval, tickAction);
                         return;
                     }
-                    catch { }
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 }
 
                 if (helper == null && helperFactory != null)
@@ -59,29 +59,29 @@ namespace DS4Windows.Processing.Actions
 
                 helper?.Start();
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         public void Stop()
         {
             try
             {
-                if (helperIRepeater != null) try { helperIRepeater.Stop(); } catch { }
-                else try { helper?.Stop(); } catch { }
+                if (helperIRepeater != null) try { helperIRepeater.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                else try { helper?.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         public void Dispose()
         {
             try
             {
-                try { helperIRepeater?.Dispose(); } catch { }
-                try { helper?.Dispose(); } catch { }
+                try { helperIRepeater?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                try { helper?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 helperIRepeater = null;
                 helper = null;
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

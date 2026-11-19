@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using HttpProgress;
 using NonFormTimer = System.Timers.Timer;
@@ -155,7 +156,7 @@ namespace DS4Windows.UI
             this.Close();
         }
 
-        private void VigemInstallBtn_Click(object sender, RoutedEventArgs e)
+        private async void VigemInstallBtn_Click(object sender, RoutedEventArgs e)
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), $"{installFileName}");
             if (File.Exists(tempFilePath))
@@ -169,7 +170,7 @@ namespace DS4Windows.UI
             }
 
             EnableControls(false);
-            ViGEmDownloadLaunch();
+            await ViGEmDownloadLaunch();
 
             /*WebClient wb = new WebClient();
             wb.DownloadFileAsync(new Uri(InstallerDL), exepath + $"\\{installFileName}");
@@ -179,7 +180,7 @@ namespace DS4Windows.UI
             */
         }
 
-        private async void ViGEmDownloadLaunch()
+        private async Task ViGEmDownloadLaunch()
         {
             Progress<ICopyProgress> progress = new Progress<ICopyProgress>(x => // Please see "Notes on IProgress<T>"
             {
@@ -278,7 +279,7 @@ namespace DS4Windows.UI
             Process.Start("control", "bthprops.cpl");
         }
 
-        private void HidHideInstall_Click(object sender, RoutedEventArgs e)
+        private async void HidHideInstall_Click(object sender, RoutedEventArgs e)
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), $"{InstHidHideFileNameX64}");
             if (File.Exists(tempFilePath))
@@ -293,10 +294,10 @@ namespace DS4Windows.UI
             }
 
             EnableControls(false);
-            HidHideDownloadLaunch();
+            await HidHideDownloadLaunch();
         }
 
-        private async void HidHideDownloadLaunch()
+        private async Task HidHideDownloadLaunch()
         {
             Progress<ICopyProgress> progress = new Progress<ICopyProgress>(x => // Please see "Notes on IProgress<T>"
             {
@@ -383,7 +384,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void FakerInputInstallBtn_Click(object sender, RoutedEventArgs e)
+        private async void FakerInputInstallBtn_Click(object sender, RoutedEventArgs e)
         {
             string tempFilePath = Path.Combine(Path.GetTempPath(), $"{installFileName}");
             if (File.Exists(tempFilePath))
@@ -398,10 +399,10 @@ namespace DS4Windows.UI
             }
 
             EnableControls(false);
-            FakerInputDownloadLaunch();
+            await FakerInputDownloadLaunch();
         }
 
-        private async void FakerInputDownloadLaunch()
+        private async Task FakerInputDownloadLaunch()
         {
             Progress<ICopyProgress> progress = new Progress<ICopyProgress>(x => // Please see "Notes on IProgress<T>"
             {

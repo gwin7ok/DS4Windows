@@ -373,7 +373,7 @@ namespace DS4Windows.Core.Persistence
             bool loaded = true;
 
             store.actions.Clear();
-            try { _runtimeReset.ClearAllActionStates(); } catch { }
+            try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             //string configFile = Path.Combine(Global.appdatapath, "Actions.xml");
             if (!File.Exists(store.m_Actions))
@@ -386,12 +386,12 @@ namespace DS4Windows.Core.Persistence
                 {
                     try
                     {
-                        try { _runtimeReset.ClearAllActionStates(); } catch { }
+                        try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         // Phase7-Step7 W2（Q4＝A）: 合成入力・マクロの実行時状態のリセット（旧: Mapping の静的な状態を直接書き換え）は、
                         // ActionsLoaded の購読者（ServiceRegistration が登録する ActionsLoadedRuntimeReset）が行う。
                         store.RaiseActionsLoaded();
                     }
-                    catch { }
+                    catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
 
                 return loaded;
@@ -434,10 +434,10 @@ namespace DS4Windows.Core.Persistence
             {
                 try
                 {
-                    try { _runtimeReset.ClearAllActionStates(); } catch { }
+                    try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     store.RaiseActionsLoaded();
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
 
             return loaded;

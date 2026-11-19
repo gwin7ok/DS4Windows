@@ -162,7 +162,7 @@ namespace DS4Windows.UI
             UpdateStartStopText();
 
             conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder, uiDispatcher, new WpfImageResourceLookup());
-            ipcHost = new MainWindowIpcHost(ChangeService, CloseApplicationForIpc, conLvViewModel, profileListHolder);
+            ipcHost = new MainWindowIpcHost(() => { _ = ChangeService(); }, CloseApplicationForIpc, conLvViewModel, profileListHolder);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
             ChangeControllerPanel();
@@ -263,7 +263,7 @@ namespace DS4Windows.UI
                     {
                         StartStopBtn.IsEnabled = false;
                     }));
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
                     serviceControl.Start();
                     //root.rootHubtest.Start();
                 }
@@ -418,8 +418,8 @@ namespace DS4Windows.UI
             {
                 scope.Connect();
             }
-            catch (COMException) { }
-            catch (ManagementException) { }
+            catch (COMException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+            catch (ManagementException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             if (scope.IsConnected)
             {
@@ -450,9 +450,9 @@ namespace DS4Windows.UI
             settingsWrapVM.ViewEnabled = mainWinVM.FullTabsEnabled;
         }
 
-        private void TrayIconVM_RequestServiceChange(object sender, EventArgs e)
+        private async void TrayIconVM_RequestServiceChange(object sender, EventArgs e)
         {
-            ChangeService();
+            await ChangeService();
         }
 
         private void LogItems_CollectionChanged(object sender,
@@ -484,10 +484,8 @@ namespace DS4Windows.UI
         // Phase6-Step10-4-4: 廃止済みの AutoProfileChecker を引数に持つオーバーロードを削除し、1 つに統合した
         private void AutoprofileChecker_RequestServiceChange(bool state)
         {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                ChangeService();
-            }));
+            // ChangeService は、サービスの開始・停止の失敗を自分でログへ出す。ここでは完了を待たない。
+            _ = Dispatcher.InvokeAsync(ChangeService);
         }
 
         private void AutoProfVM_AutoProfileSystemChange(AutoProfilesViewModel sender, bool state)
@@ -566,7 +564,7 @@ namespace DS4Windows.UI
                             serviceControl.Stop(immediateUnplug: true);
                             wasrunning = true;
 
-                            Thread.Sleep(1000);
+                            Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
                         }
                     }
 
@@ -696,7 +694,7 @@ namespace DS4Windows.UI
                     if (_autoProfileService.ShouldNotify(e.Source, item != null))
                         trayAppearance.ShowProfileSwitchNotification(prolog);
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }));
         }
 
@@ -792,12 +790,12 @@ namespace DS4Windows.UI
             aboutWin.ShowDialog();
         }
 
-        private void StartStopBtn_Click(object sender, RoutedEventArgs e)
+        private async void StartStopBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChangeService();
+            await ChangeService();
         }
 
-        public async void ChangeService()
+        public async Task ChangeService()
         {
             StartStopBtn.IsEnabled = false;
             //Tester service = root.rootHubtest;
@@ -1136,7 +1134,7 @@ namespace DS4Windows.UI
             serviceControl.UpdateHidHiddenAttributes();
             while (loopHotplug == true)
             {
-                Thread.Sleep(HOTPLUG_CHECK_DELAY);
+                Thread.Sleep(HOTPLUG_CHECK_DELAY); // 待機の理由: 機器の抜き差しの検出をまとめるための待ち（バックグラウンドのスレッドの中）
                 serviceControl.HotPlug();
 
                 lock (hotplugCounterLock)
@@ -1274,7 +1272,7 @@ namespace DS4Windows.UI
                 {
                 }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private void ControlPanelBtn_Click(object sender, RoutedEventArgs e)
@@ -1308,7 +1306,7 @@ namespace DS4Windows.UI
                     settingsWrapVM.DriverCheckRefresh();
                 }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e)
@@ -1664,7 +1662,7 @@ namespace DS4Windows.UI
                     startInfo.UseShellExecute = true;
                     using (Process proc = Process.Start(startInfo)) { }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
 
@@ -1686,7 +1684,7 @@ namespace DS4Windows.UI
                 {
                     using (Process proc = Process.Start(path)) { }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
 

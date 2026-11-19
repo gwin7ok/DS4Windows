@@ -28,7 +28,7 @@ namespace DS4Windows.Core.Updater
                     {
                         if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
                         CopyDirectoryRecursive(sourcePath, targetPath);
-                        try { Directory.Delete(sourcePath, true); } catch { }
+                        try { Directory.Delete(sourcePath, true); } catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                         AppLogger.LogInfo($"[UpdaterInstall] CompleteInstall succeeded (dir): {sourcePath} -> {targetPath}");
                         return 0;
                     }

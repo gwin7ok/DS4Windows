@@ -80,15 +80,15 @@ namespace DS4Windows.Processing.Services.Slots
                         var sa = _profileActionProvider.GetProfileAction(device, actionName);
                         if (sa == null) continue;
 
-                        try { _actionManager.GetStateFor(sa, device); } catch { }
-                        try { _keyButtonControllers.GetOrCreateForAction(device, sa); } catch { }
+                        try { _actionManager.GetStateFor(sa, device); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                        try { _keyButtonControllers.GetOrCreateForAction(device, sa); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     }
-                    catch { }
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 }
 
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         public void ApplyFromAction(int deviceIndex, SpecialAction action)
@@ -338,7 +338,7 @@ namespace DS4Windows.Processing.Services.Slots
 
             try
             {
-                try { _actionManager.ClearAllEntries(); } catch { }
+                try { _actionManager.ClearAllEntries(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Cleared ActionManager global entries to force re-creation of Action instances for new profile");
             }
             catch (Exception ex)
@@ -349,7 +349,7 @@ namespace DS4Windows.Processing.Services.Slots
             try
             {
                 _keyButtonControllers.ClearForDevice(device);
-                try { _actionManager.ClearDeviceState(device); } catch { }
+                try { _actionManager.ClearDeviceState(device); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Cleared per-device SpecialAction controllers and ActionManager state for device {device}");
             }
             catch (Exception ex)
@@ -357,7 +357,7 @@ namespace DS4Windows.Processing.Services.Slots
                 AppLogger.LogWarn($"ApplyProfile: Failed to clear per-device controllers: {ex}");
             }
 
-            try { PreallocateForProfileApply(device); } catch { }
+            try { PreallocateForProfileApply(device); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             try
             {
@@ -381,12 +381,12 @@ namespace DS4Windows.Processing.Services.Slots
                                 else
                                 {
                                     bool isToggle = false;
-                                    try { isToggle = sa.keyType.HasFlag(DS4KeyType.Toggle); } catch { }
+                                    try { isToggle = sa.keyType.HasFlag(DS4KeyType.Toggle); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                     if (isToggle) foundToggle = true; else foundPress = true;
                                 }
                             }
                         }
-                        catch { }
+                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                         if (foundToggle && foundPress) break;
                     }
                 }
@@ -418,7 +418,7 @@ namespace DS4Windows.Processing.Services.Slots
             {
                 // Q5＝A: 組み立ての失敗で、プロファイルの適用を失敗にしない。そのデバイスの束縛は空にする
                 AppLogger.LogError($"[DI] ProfileApplicationService.PublishBindings FAILED for device {deviceIndex}: {ex.Message}");
-                try { _actionRegistry.Clear(deviceIndex); } catch { }
+                try { _actionRegistry.Clear(deviceIndex); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
         }
 

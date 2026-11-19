@@ -71,11 +71,11 @@ namespace DS4Windows.Core.Utilities
             }
 
             var request = _httpClient.GetAsync(GITHUB_LATEST_RELEASE_API_URI);
-            request.Wait();
+            request.Wait(); // 待機の理由: 同期の API。呼び出し側が結果をすぐに使う（バックグラウンドからの呼び出し）
             if (request.Result.IsSuccessStatusCode)
             {
                 var task = request.Result.Content.ReadFromJsonAsync<GithubRelease>();
-                task.Wait();
+                task.Wait(); // 待機の理由: 同期の API。応答の読み取りが済むまで進めない
 
                 // if can't parse the newest version
                 if (!Version.TryParse(task.Result!.TagName[1..], out version)) return false; // 応答は release のオブジェクト（null なら従来どおり NullReferenceException）

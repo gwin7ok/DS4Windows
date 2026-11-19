@@ -57,7 +57,7 @@ namespace DS4Windows.Composition.Startup
                         _lifecycle.Stop(immediateUnplug: true);
                         _bootstrapper.Shutdown();
                     }
-                }).Wait();
+                }).Wait(); // 待機の理由: 終了の手順は、サービスの停止が済むまで次へ進めない（別スレッドで実行し、UI の同期コンテキストは使わない）
             }
 
             // 設定の保存が許されるのは、起動が完了したあと（保存を止める印が解除されたあと）だけ。許されないときは null が渡される
@@ -74,14 +74,14 @@ namespace DS4Windows.Composition.Startup
                 {
                     for (int d = 0; d < _controllerSlotCount; d++)
                     {
-                        try { _registry.ClearControllersForDevice(d); } catch { }
+                        try { _registry.ClearControllersForDevice(d); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     }
                 }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             // ホストの破棄は、コントローラーの停止と、レジストリの破棄のあと。ログのフラッシュより前に行い、破棄中のログも出力する。例外は握る
-            try { _disposeHost(); } catch { }
+            try { _disposeHost(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             _flushLogs();
         }

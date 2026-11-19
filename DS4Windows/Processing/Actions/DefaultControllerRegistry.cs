@@ -34,7 +34,7 @@ namespace DS4Windows.Processing.Actions
             var keys = controllers.Keys.Where(k => k.StartsWith(prefix)).ToArray();
             foreach (var k in keys)
             {
-                try { controllers[k]?.Dispose(); } catch { }
+                try { controllers[k]?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 controllers.TryRemove(k, out _);
             }
         }

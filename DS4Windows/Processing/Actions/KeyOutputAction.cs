@@ -100,7 +100,7 @@ namespace DS4Windows.Processing.Actions
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KeyTriggered: device={device}, name={_sa.name}, trigger={TriggerCombo}, index={_index}");
                 AppLogger.LogDebug($"SpecialAction KEY triggered: name={_sa.name}, device={device}, key={_logicalKey}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // 旧 LogSpecialActionTrace（立ち上がり）と同じ文言。「Trigger keys」は、旧経路が常に <none>（状態を渡さず例外を握りつぶす既存の挙動）
@@ -118,9 +118,9 @@ namespace DS4Windows.Processing.Actions
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         // 旧 MapCustomAction の Key の分岐（解放）と同じ: KeyReleased ×2。離されたトリガーは、最初に押されていないものの名前
@@ -156,7 +156,7 @@ namespace DS4Windows.Processing.Actions
 
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KeyReleased: device={device}, name={_sa.name}, trigger={TriggerCombo}, released={released}, index={_index}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // SyntheticDispatcherService.ResolveNativeKey と同じ規則（対応表がない・例外のときは論理キーのまま）
@@ -167,7 +167,7 @@ namespace DS4Windows.Processing.Actions
                 var mapping = _profileSettings.OutputKBMMapping;
                 if (mapping != null) return mapping.GetRealEventKey(_aliasKey != 0 ? _aliasKey : _logicalKey);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             return _logicalKey;
         }

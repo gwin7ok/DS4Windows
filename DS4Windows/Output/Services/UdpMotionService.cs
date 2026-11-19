@@ -94,7 +94,7 @@ namespace DS4Windows.Output.Services
                                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
                                 AppLogger.LogToTray(errMsg, true, true);
                             }
-                        }).Wait();
+                        }).Wait(); // 待機の理由: ポートを開く処理を別スレッドで行い、結果（成功・失敗のログ）が出るまで進めない
                     }
 
                     udpChangeStatus = false;
@@ -177,7 +177,7 @@ namespace DS4Windows.Output.Services
 
         // TODO(技術的負債・Phase9 9-F 付近): 旧 ControlService.UseUDPPort の移し先。呼び出し元は 0 件（UDP のポートを変えて開き直す処理の名残り。
         // 現在の画面は ChangeStatus(false)→ChangeStatus(true) で開き直している）。使う予定が無ければ、9-F で削除をユーザーに提案する（規約 2.4）。
-        public async void UsePort()
+        public async Task UsePort()
         {
             ChangingPort = true;
             IEnumerable<IMotionSource> devices = _deviceRegistry.GetControllers();

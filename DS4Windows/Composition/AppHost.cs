@@ -130,7 +130,7 @@ namespace DS4Windows.Composition
                 var manager = _host?.Services.GetService<DS4Windows.Processing.Actions.DefaultActionManager>();
                 manager?.PreallocateEntries();
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         // Phase7-Step10e W3（Q3＝A）: ホストが未構築（または Dispose 済み）のときは、暗黙にホストを作らず null を返す。
@@ -197,7 +197,7 @@ namespace DS4Windows.Composition
                         if (AppLogger.IsTraceEnabled)
                             AppLogger.LogTrace("[DI] AppHost.Dispose: Host disposed");
                     }
-                    catch { }
+                    catch { /* 診断の出力の失敗は無視してよい */ }
                     finally
                     {
                         _host = null;
