@@ -68,7 +68,7 @@
 ## 6. 参照されない型（`unref`）
 
 型 1,041 件のうち、自分のファイル以外から参照されない型は 55 件（P/Invoke の構造体などを除く class・enum は 28 件）、テストからだけ参照される型は 5 件。
-**誤検出に注意**: 拡張メソッドの静的クラス（`InputDeviceCartridgeServiceCollectionExtensions`）、XAML のマークアップ拡張（`SystemIconExtension`。XAML では `SystemIcon`）、入れ子の型（`Entry`、`Candidate`、`DeviceRuntime`、`EngineContext` など。自分のファイルの中で使うのが正しい）は、未参照ではない。名前の検索（`.cs`・`.xaml`・テスト）で、ほかに 1 件もないと確認できたもの: `PressActionController`、`TriggerType`、`MappingDoneEventArgs`、`ViGEmBusInfo`。そのほかは、規則 2.4 の手順で 1 件ずつ調べる（RV6）。
+**誤検出に注意**: 拡張メソッドの静的クラス（`InputDeviceCartridgeServiceCollectionExtensions`）、XAML のマークアップ拡張（`SystemIconExtension`。XAML では `SystemIcon`）、入れ子の型（`Entry`、`Candidate`、`DeviceRuntime`、`EngineContext` など。自分のファイルの中で使うのが正しい）は、未参照ではない。名前の検索（`.cs`・`.xaml`・テスト）で、ほかに 1 件もないと確認できたもの: `PressActionController`、`TriggerType`、`MappingDoneEventArgs`。`ViGEmBusInfo` は、同じファイル（`EnvironmentService.cs`）の中だけで使う private の入れ子型で、未参照ではない（計測の誤検出。PhaseRV1-5 で確認。**private の入れ子型**は、自分のファイルの中で使うのが正しい）。そのほかは、規則 2.4 の手順で 1 件ずつ調べる（RV6。同じ誤検出が混じっているおそれがあるため、1 件ずつ確かめる）。
 
 ## 7. 重複（`clone`、`cloneexact`）
 
