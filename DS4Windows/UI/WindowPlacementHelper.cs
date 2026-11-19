@@ -221,14 +221,14 @@ namespace DS4Windows.UI
                     AppLogger.LogTrace($"ApplyPlacement: Current window DPI scale = {windowDpiScale:F3} (dpi={dpiForWindow})");
                 }
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             double targetScale = targetDpiX; // targetScreen.ScaleFactor を earlier にセット済み
             try
             {
                 AppLogger.LogTrace($"ApplyPlacement: Target monitor scale = {targetScale:F3}");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
 
             // 左上はターゲットスケールで計算
             int physicalX = (int)Math.Round(formLocationX * targetScale);
@@ -258,7 +258,7 @@ namespace DS4Windows.UI
                     var dpiB = GetDpiForWindow(mainWindowHandle);
                     AppLogger.LogTrace($"ApplyPlacement: GetDpiForWindow before SetWindowPlacement = {dpiB}");
                 }
-                catch { }
+                catch { /* 診断の出力の失敗は無視してよい */ }
 
                 var setRes = SetWindowPlacement(mainWindowHandle, ref placement);
 
@@ -271,7 +271,7 @@ namespace DS4Windows.UI
                     var dpiA = GetDpiForWindow(mainWindowHandle);
                     AppLogger.LogTrace($"ApplyPlacement: GetDpiForWindow after SetWindowPlacement = {dpiA}");
                 }
-                catch { }
+                catch { /* 診断の出力の失敗は無視してよい */ }
 
                 // Determine which screen contains the center of resulting rect
                 try
@@ -291,7 +291,7 @@ namespace DS4Windows.UI
                         sidx++;
                     }
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                 if (!setRes)
                 {
@@ -349,7 +349,7 @@ namespace DS4Windows.UI
             {
                 AppLogger.LogTrace($"GetLogicalPlacement: PhysicalRect={physicalRect} DPI=({dpiScaleX:F3},{dpiScaleY:F3}) => Logical=({logicalX},{logicalY}) Size=({logicalWidth}x{logicalHeight})");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
 
             return (logicalWidth, logicalHeight, logicalX, logicalY);
         }

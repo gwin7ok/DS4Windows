@@ -568,7 +568,7 @@ namespace DS4Windows.Core.Settings
                         {
                             loggedInvalidActions.Add(actionname);
                         }
-                        catch { }
+                        catch { /* 欠けた・壊れた値は、既定値のまま続ける */ }
                     }
                 }
             }

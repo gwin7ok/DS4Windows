@@ -50,7 +50,7 @@ namespace DS4Windows.Processing.Actions
                 // Delegate to existing controller entry point
                 inner.OnSATriggerEstablished(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler, true);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
         
         public void Handle(IActionBinding binding, ITriggerContext trigger)
@@ -69,7 +69,7 @@ namespace DS4Windows.Processing.Actions
                     inner.OnSATriggerReleased(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler);
                 }
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         public void Stop(IActionBinding binding, ITriggerContext trigger)
@@ -87,17 +87,17 @@ namespace DS4Windows.Processing.Actions
 
                 inner.OnSATriggerReleased(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         public void Clear()
         {
-            try { inner?.ClearKeyEntries(0); } catch { }
+            try { inner?.ClearKeyEntries(0); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         public void Dispose()
         {
-            try { inner?.Dispose(); } catch { }
+            try { inner?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

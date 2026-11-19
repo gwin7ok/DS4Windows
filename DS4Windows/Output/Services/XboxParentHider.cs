@@ -256,6 +256,7 @@ namespace DS4Windows.Output.Services
             }
             catch (Exception)
             {
+                // ファイル・プロセス・レジストリの失敗は無視して続ける
             }
         }
     }

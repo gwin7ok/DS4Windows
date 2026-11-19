@@ -93,7 +93,7 @@ namespace DS4Windows.Processing.Services.Connection
                     {
                         _mapping.HandleDeviceDisconnect(ind);
                     }
-                    catch { }
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                     // Phase8-Step6 W2: 物理的な切断だけが、エンジンの状態と登録簿の束縛を消す（HandleDeviceDisconnect は適用のたびにも呼ばれるため、そこには足さない）
                     _profileSlotApplier.ReleaseSlot(ind);

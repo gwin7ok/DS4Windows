@@ -64,7 +64,7 @@ namespace DS4Windows.UI.ViewModels
                 {
                     TooltipTextChanged?.Invoke(this, EventArgs.Empty);
                 }
-                catch (InvalidOperationException) { }
+                catch (InvalidOperationException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
         }
         public event EventHandler TooltipTextChanged;

@@ -51,7 +51,7 @@ namespace DS4Windows.UI.Services
                     string baseLogs = Path.Combine(AppContext.BaseDirectory, "Logs");
                     if (!Directory.Exists(baseLogs)) Directory.CreateDirectory(baseLogs);
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                 AppLogger.LogDebug($"ApplyLanguageSetting requested: {cultureCode}");
                 CultureInfo culture = CultureInfo.GetCultureInfo(cultureCode);
                 // コンテナの構築より前（-driverinstall の分岐）からも呼ばれるため、DI の解決に頼らず、
@@ -67,10 +67,10 @@ namespace DS4Windows.UI.Services
                     Thread.CurrentThread.CurrentCulture = culture;
                     Thread.CurrentThread.CurrentUICulture = culture;
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                 // Enable WPFLocalizeExtension to apply culture to current thread resources
-                try { LocalizeDictionary.Instance.SetCurrentThreadCulture = true; } catch { }
+                try { LocalizeDictionary.Instance.SetCurrentThreadCulture = true; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 LocalizeDictionary.Instance.Culture = culture;
 
                 AppLogger.LogDebug($"ApplyLanguageSetting applied: LocalizeDictionary={LocalizeDictionary.Instance.Culture}, SetCurrentThreadCulture={LocalizeDictionary.Instance.SetCurrentThreadCulture}, DefaultThreadCurrentUICulture={CultureInfo.DefaultThreadCurrentUICulture}, CurrentUICulture={Thread.CurrentThread.CurrentUICulture}");

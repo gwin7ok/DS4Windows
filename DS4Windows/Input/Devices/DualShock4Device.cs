@@ -464,7 +464,7 @@ namespace DS4Windows.Input.Devices
                             }
                         }
                     }
-                    catch { } // If it's dead already, don't worry about it.
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ } // If it's dead already, don't worry about it.
 
                     if (!usingBT)
                     {
@@ -522,7 +522,7 @@ namespace DS4Windows.Input.Devices
                     }
                 }
             }
-            catch (ThreadInterruptedException) { }
+            catch (ThreadInterruptedException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         private void PrepareOutputFeaturesByte()

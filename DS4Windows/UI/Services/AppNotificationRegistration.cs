@@ -154,7 +154,7 @@ namespace DS4Windows.UI.Services
             {
                 AppLogger.LogTrace($"[ModernToast] Dispatch Stacked Toast: ToastID(Tag)='{actualTag}', Title='{title}', Message='{message}'");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
 
             object notifier = _createToastNotifierMethod?.Invoke(null, new object[] { AppId });
             MethodInfo showMethod = _showMethod ?? notifier?.GetType().GetMethod("Show", new[] { _toastType });
@@ -177,7 +177,7 @@ namespace DS4Windows.UI.Services
                 if (type != null)
                     return type;
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
             return Type.GetType(fullName);
         }

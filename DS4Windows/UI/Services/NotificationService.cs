@@ -10,7 +10,7 @@ namespace DS4Windows.UI.Services
             {
                 DS4Windows.Core.Logging.AppLogger.LogToTray(message);
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
         }
     }
 }

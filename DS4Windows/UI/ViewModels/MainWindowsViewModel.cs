@@ -70,7 +70,7 @@ namespace DS4Windows.UI.ViewModels
                     {
                     }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
     }

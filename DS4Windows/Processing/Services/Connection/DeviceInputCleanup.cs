@@ -49,23 +49,23 @@ namespace DS4Windows.Processing.Services.Connection
                                     ds.nativeKeyAlias?.TryGetValue(k, out native);
                                     _syntheticDispatcher.SendRelease(device, k, native, false, null);
                                 }
-                                catch { }
+                                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                             }
-                            try { ds.keyPresses.Clear(); } catch { }
-                            try { ds.nativeKeyAlias!.Clear(); } catch { } // 実行中は設定済み（null なら従来どおり NullReferenceException）
+                            try { ds.keyPresses.Clear(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                            try { ds.nativeKeyAlias!.Clear(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ } // 実行中は設定済み（null なら従来どおり NullReferenceException）
                         }
                     }
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
                 // マクロのキューの消去
                 try { _macroPlayback.ClearDevice(device); }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
                 // デバイスごとのボタン／キーのコントローラーの解除
-                try { _keyButtonControllers.ClearForDevice(device); } catch { }
+                try { _keyButtonControllers.ClearForDevice(device); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

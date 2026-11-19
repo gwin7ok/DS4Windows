@@ -51,7 +51,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController created: id={this.GetHashCode()} device={device} mode={mode} assignedAction={this.assignedActionName}");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
 
             // Create concrete implementation based on mode. These implementations are lightweight wrappers
             // around the existing static controllers for now; this allows per-device instance semantics later.
@@ -67,12 +67,12 @@ namespace DS4Windows.Processing.Actions
                 {
                     if (sa == this.assignedActionDef && dev == this.device && oldv == true && newv == false)
                     {
-                        try { impl.ClearAll(); } catch { }
+                        try { impl.ClearAll(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     }
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             };
-            try { _manager.ToggledOnChanged += toggledOnHandler; } catch { }
+            try { _manager.ToggledOnChanged += toggledOnHandler; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
         }
 
@@ -95,12 +95,12 @@ namespace DS4Windows.Processing.Actions
                 else
                 {
                     bool isToggle = false;
-                    try { isToggle = sa != null && sa.keyType.HasFlag(DS4KeyType.Toggle); } catch { }
+                    try { isToggle = sa != null && sa.keyType.HasFlag(DS4KeyType.Toggle); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     this.mode = isToggle ? Mode.Toggle : Mode.Press;
                 }
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController created: id={this.GetHashCode()} device={device} mode={this.mode} assignedAction={this.assignedActionName}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             if (this.mode == Mode.Toggle)
                 impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time, _repeaterFactory);
@@ -114,12 +114,12 @@ namespace DS4Windows.Processing.Actions
                 {
                     if (sa == this.assignedActionDef && dev == this.device && oldv == true && newv == false)
                     {
-                        try { impl.ClearAll(); } catch { }
+                        try { impl.ClearAll(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     }
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             };
-            try { _manager.ToggledOnChanged += toggledOnHandler; } catch { }
+            try { _manager.ToggledOnChanged += toggledOnHandler; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
         }
 
@@ -187,7 +187,7 @@ namespace DS4Windows.Processing.Actions
                         if (e.handler != null && e.handler.fakeKeyRepeat)
                         {
                             if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
-                            try { _dispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                            try { _dispatcher.SendPress(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                         }
                         else
                         {
@@ -196,30 +196,30 @@ namespace DS4Windows.Processing.Actions
                                     if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                                     e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
                                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}");
-                                    try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
+                                    try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                 }
                                 else
                                 {
-                                    try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
+                                    try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                 }
                         }
 
-                        try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, true); } catch { }
+                        try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, true); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     }
                     else
                     {
                         // already toggled-on: interpret additional OnDown as explicit toggle-off
-                        try { OnToggleOff(kvpKey, nativeKey, useScanCode, handler); } catch { }
+                        try { OnToggleOff(kvpKey, nativeKey, useScanCode, handler); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
 
             public void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
             {
                     // For Toggle mode, input-edge release should not stop repeaters or clear IsToggledOn.
                     // Ignore input-level release here; rely on explicit toggle-off path.
-                try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { }
+                try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
 
             public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
@@ -228,22 +228,22 @@ namespace DS4Windows.Processing.Actions
                 {
                     try
                     {
-                        try { e.repeater.Stop(); } catch { }
+                        try { e.repeater.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnToggleOff: controllerId={controllerId} kvpKey={kvpKey} device={device} repeater stopped");
                         try
                         {
                             // Ensure toggled-on flag is cleared by the same component that set it true.
-                            try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, false); } catch { }
+                            try { if (assignedActionDef != null) manager.SetToggledOn(assignedActionDef, device, false); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                             if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                             _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                         }
-                        catch { }
+                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     }
-                    catch { }
+                    catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
                 else
                 {
-                    try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { }
+                    try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
             }
 
@@ -251,16 +251,16 @@ namespace DS4Windows.Processing.Actions
             {
                 if (entries.TryGetValue(kvpKey, out Entry e))
                 {
-                    try { e.repeater?.Stop(); } catch { }
+                    try { e.repeater?.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     try
                     {
                         if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                         _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler);
                     }
-                    catch { }
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     // keep entry for reuse; do not dispose here
                 }
-                try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { }
+                try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
 
             public void ClearAll()
@@ -278,15 +278,15 @@ namespace DS4Windows.Processing.Actions
                                 if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(k);
                                 _dispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler);
                             }
-                            catch { }
-                            try { e.repeater?.Dispose(); } catch { }
+                            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                            try { e.repeater?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                             entries.Remove(k);
-                            try { _dispatcher.ResetKeyTiming(0, k); } catch { }
+                            try { _dispatcher.ResetKeyTiming(0, k); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         }
-                        catch { }
+                        catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     }
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
         }
 
@@ -348,19 +348,19 @@ namespace DS4Windows.Processing.Actions
                                         if (localEntry.repeater == null)
                                         {
                                             localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
-                                            try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
+                                            try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                         }
                                         else
                                         {
-                                            try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
+                                            try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                         }
                                     }
                                 }
-                            catch (OperationCanceledException) { }
-                            catch { }
+                            catch (OperationCanceledException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                         });
                     }
-                    catch { }
+                    catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
 
             }
@@ -372,41 +372,41 @@ namespace DS4Windows.Processing.Actions
                     try
                     {
                         // cancel pending delayed repeater creation
-                        try { e.delayCts?.Cancel(); } catch { }
+                        try { e.delayCts?.Cancel(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         // stop repeater if running; Stop() sends single release. Keep instance for reuse.
                         if (e.repeater != null)
                         {
-                            try { e.repeater.Stop(); } catch { }
+                            try { e.repeater.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         }
                         // Ensure release is sent now for the held press
-                        try { _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                        try { _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                         e.isPressed = false;
                     }
-                    catch { }
+                    catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
                 else
                 {
-                    try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { }
+                    try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
             }
 
             public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
             {
                 // For press-mode controller, treat toggle-off as a clear of any press state.
-                try { Clear(kvpKey); } catch { }
+                try { Clear(kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
 
             public void Clear(ushort kvpKey)
             {
                 if (entries.TryGetValue(kvpKey, out Entry e))
                 {
-                    try { e.delayCts?.Cancel(); } catch { }
-                    try { e.repeater?.Stop(); } catch { }
-                    try { if (e.isPressed) _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { }
+                    try { e.delayCts?.Cancel(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                    try { e.repeater?.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                    try { if (e.isPressed) _dispatcher.SendRelease(device, kvpKey, e.nativeKey, e.useScanCode, e.handler); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     e.isPressed = false;
                     // keep entry for reuse; do not dispose here
                 }
-                try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { }
+                try { _dispatcher.ResetKeyTiming(0, kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
                 public void ClearAll()
                 {
@@ -418,16 +418,16 @@ namespace DS4Windows.Processing.Actions
                             try
                             {
                                 var e = entries[k];
-                                        try { e.delayCts?.Cancel(); } catch { }
-                                        try { if (e.isPressed) _dispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler); } catch { }
-                                        try { e.repeater?.Dispose(); } catch { }
+                                        try { e.delayCts?.Cancel(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                                        try { if (e.isPressed) _dispatcher.SendRelease(device, k, e.nativeKey, e.useScanCode, e.handler); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                        try { e.repeater?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                                 entries.Remove(k);
-                                try { _dispatcher.ResetKeyTiming(0, k); } catch { }
+                                try { _dispatcher.ResetKeyTiming(0, k); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                             }
-                            catch { }
+                            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         }
                     }
-                    catch { }
+                    catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 }
         }
 
@@ -438,7 +438,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC OnSATriggerEstablished: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey} isSpecialAction={isSpecialAction}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             impl.OnDown(kvpKey, nativeKey, useScanCode, handler, isSpecialAction);
         }
 
@@ -448,7 +448,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC OnSATriggerReleased: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey}");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
             // For Toggle-mode, ignore input-level release here; actual toggle-off should be handled explicitly.
             impl.OnUp(kvpKey, nativeKey, useScanCode, handler);
         }
@@ -460,7 +460,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC OnSATriggerToggleOff: controllerId={this.GetHashCode()} assignedAction={this.assignedActionName} device={device} kvpKey={kvpKey}");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
             impl.OnToggleOff(kvpKey, nativeKey, useScanCode, handler);
         }
 
@@ -481,15 +481,15 @@ namespace DS4Windows.Processing.Actions
             {
                 impl.ClearAll();
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             // Phase13-Step4: 静的イベントでは購読が残り続けていた。破棄後は反応しないよう、注入された管理役の購読を解除する
-            try { _manager.ToggledOnChanged -= toggledOnHandler; } catch { }
+            try { _manager.ToggledOnChanged -= toggledOnHandler; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}");
         }
 
         public void Destroy()
         {
-            try { Dispose(); } catch { }
+            try { Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

@@ -380,6 +380,7 @@ namespace DS4Windows.Core.Platform
             }
             catch (Exception)
             {
+                // ファイル・プロセス・レジストリの失敗は無視して続ける
             }
 
             return BlankDriverVersion;

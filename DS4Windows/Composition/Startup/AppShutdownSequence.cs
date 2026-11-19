@@ -74,14 +74,14 @@ namespace DS4Windows.Composition.Startup
                 {
                     for (int d = 0; d < _controllerSlotCount; d++)
                     {
-                        try { _registry.ClearControllersForDevice(d); } catch { }
+                        try { _registry.ClearControllersForDevice(d); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     }
                 }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             // ホストの破棄は、コントローラーの停止と、レジストリの破棄のあと。ログのフラッシュより前に行い、破棄中のログも出力する。例外は握る
-            try { _disposeHost(); } catch { }
+            try { _disposeHost(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             _flushLogs();
         }

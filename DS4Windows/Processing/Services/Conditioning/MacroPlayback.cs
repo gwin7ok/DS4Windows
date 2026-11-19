@@ -49,11 +49,11 @@ namespace DS4Windows.Processing.Services.Conditioning
                     var dict = queues[device];
                     if (dict != null)
                     {
-                        try { dict.Clear(); } catch { }
+                        try { dict.Clear(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     }
                 }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         // Play macro as a background task. Optionally the new macro play waits for completion of a previous macro execution (synchronized macro special action).
@@ -79,7 +79,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacro START GUARD: action={action?.name} device={device} IsMacroRunning={actionRunning} DECISION={decision}");
                 if (actionRunning) return;
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             // Note: do not use a task-wide "macro running" guard here. Per-iteration
             // running state is represented by `IsMacroRunning` on the ActionInstanceState
@@ -114,7 +114,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             // Ensure we have the per-action state from ActionManager if not provided by caller
             if (actionDoneState == null && action != null)
             {
-                try { actionDoneState = _manager.GetStateFor(action, device); } catch { }
+                try { actionDoneState = _manager.GetStateFor(action, device); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             // R-2: Repeat (Toggle) のマクロが、同期キューで待っている間にトグルが OFF になったときは、何もせずに終える（OFF の後に、1 回再生してしまうのを防ぐ）
             bool latch = action != null && keyType.HasFlag(DS4KeyType.RepeatLatchMacro);
@@ -166,7 +166,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                             string decision = keepRunning ? "RERUN" : "NORUN";
                             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask ITERATION CHECK: action={action?.name} device={device} IsMacroRunning={actionDoneState?.IsMacroRunning ?? false} IsBeingTriggered={curBeing} mode={(latch ? "LATCH" : "HELD")} DECISION={decision}");
                         }
-                        catch { }
+                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                         if (!keepRunning) break;
 
@@ -186,7 +186,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             {
                 if (actionDoneState != null)
                 {
-                    try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
+                    try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 }
             }
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}");
@@ -208,7 +208,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             // Mark iteration running for this inline repeat
             if (markRunning && actionDoneState != null)
             {
-                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = true; } } catch { }
+                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = true; } } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
 
             bool[] keydown = new bool[512];
@@ -246,7 +246,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             // Clear iteration-running so the log shows the iteration completed
             if (actionDoneState != null)
             {
-                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
+                try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}");
         }

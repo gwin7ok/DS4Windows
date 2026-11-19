@@ -24,7 +24,7 @@ namespace DS4Windows.Output.Backend
                 {
                     _client = new ViGEmClient();
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             });
             tempThread.Priority = ThreadPriority.AboveNormal;
             tempThread.IsBackground = true;

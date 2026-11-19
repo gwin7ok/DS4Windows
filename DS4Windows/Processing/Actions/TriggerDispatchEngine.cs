@@ -300,7 +300,7 @@ namespace DS4Windows.Processing.Actions
                 rt.ReleaseInput = input;
                 rt.Suppressed.RemoveWhere(rt.ReleasePredicate);
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             finally
             {
                 rt.ReleaseInput = null;
@@ -636,7 +636,7 @@ namespace DS4Windows.Processing.Actions
                 if (AppLogger.IsDebugEnabled)
                     AppLogger.LogDebug($"SpecialAction {source.type}: device={device}, name={source.name}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // Phase10-Step4c W2（項目 4）: 離したエッジのログ。全種別共通（BindingPolicy.LogsReleaseEdge）。Key の KeyReleased は、Key の出力アクションが別に出す
@@ -650,7 +650,7 @@ namespace DS4Windows.Processing.Actions
                 if (AppLogger.IsDebugEnabled)
                     AppLogger.LogDebug($"SpecialAction {source.type} released: device={device}, name={source.name}");
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // 現行の MapCustomAction と同じ: 未成立が FreshPressReleaseHoldMs 連続して初めて、Fresh-press ガードを解除する
@@ -675,7 +675,7 @@ namespace DS4Windows.Processing.Actions
             {
                 AppLogger.Log(AppLogLevel.Error, $"MapCustomAction exception: {ex}", LogOptions.UserFacing);
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
         }
 
         // デバイスごとの実行時の状態

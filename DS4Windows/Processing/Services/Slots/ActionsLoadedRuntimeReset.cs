@@ -30,11 +30,11 @@ namespace DS4Windows.Processing.Services.Slots
             try
             {
                 _syntheticInput.ResetAll();
-                try { _actionManager.ClearAllToggledOn(); } catch { }
+                try { _actionManager.ClearAllToggledOn(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                 // Phase8-Fix-MacroRepeatUnify（D5）: 旧 macrodone の解除は削除した（macrodone 自体を削除。本番では到達しない経路だった）
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Actions_RuntimeReset");
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

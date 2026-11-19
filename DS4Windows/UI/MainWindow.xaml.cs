@@ -418,8 +418,8 @@ namespace DS4Windows.UI
             {
                 scope.Connect();
             }
-            catch (COMException) { }
-            catch (ManagementException) { }
+            catch (COMException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+            catch (ManagementException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
             if (scope.IsConnected)
             {
@@ -696,7 +696,7 @@ namespace DS4Windows.UI
                     if (_autoProfileService.ShouldNotify(e.Source, item != null))
                         trayAppearance.ShowProfileSwitchNotification(prolog);
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }));
         }
 
@@ -1274,7 +1274,7 @@ namespace DS4Windows.UI
                 {
                 }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private void ControlPanelBtn_Click(object sender, RoutedEventArgs e)
@@ -1308,7 +1308,7 @@ namespace DS4Windows.UI
                     settingsWrapVM.DriverCheckRefresh();
                 }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e)
@@ -1664,7 +1664,7 @@ namespace DS4Windows.UI
                     startInfo.UseShellExecute = true;
                     using (Process proc = Process.Start(startInfo)) { }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
 
@@ -1686,7 +1686,7 @@ namespace DS4Windows.UI
                 {
                     using (Process proc = Process.Start(path)) { }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
         }
 

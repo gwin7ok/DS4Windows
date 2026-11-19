@@ -55,12 +55,12 @@ namespace DS4Windows.Core.Logging
                     if (maxArchiveFiles < 0) maxArchiveFiles = 0;
                     for (int i = maxArchiveFiles; i < archives.Count; i++)
                     {
-                        try { archives[i].Delete(); } catch { }
+                        try { archives[i].Delete(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
     }
 }

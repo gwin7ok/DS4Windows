@@ -48,7 +48,7 @@ namespace DS4Windows.Processing.Services.Slots
             {
                 await Task.Delay(LaunchDelay, _time).ConfigureAwait(false);
                 try { _launcher.LaunchWithWorkingDirectory(programPath); }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             });
         }
     }

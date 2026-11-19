@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Actions
                 var binding = new DS4Windows.Processing.Actions.KeyActionBinding(action);
 
                 // Forward the trigger (established) to the controller and let it decide semantics (press vs toggle)
-                try { ctrl?.Handle(binding, trigger); } catch { }
+                try { ctrl?.Handle(binding, trigger); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction: trigger(established) forwarded to controller name={action?.name} device={device} key={logicalValue}");
             }
             catch (Exception ex)
@@ -117,7 +117,7 @@ namespace DS4Windows.Processing.Actions
                 };
                 var binding = new DS4Windows.Processing.Actions.KeyActionBinding(action);
                 // Forward release edge to controller and let controller instance decide how to handle it.
-                try { ctrl?.Handle(binding, trigger); } catch { }
+                try { ctrl?.Handle(binding, trigger); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             catch (Exception ex)
             {

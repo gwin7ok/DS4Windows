@@ -60,7 +60,7 @@ namespace DS4Windows.Processing.Services.Devices
                         {
                             temp = _factory.Create(device, mode, actionName ?? "<mapping>");
                         }
-                        catch { }
+                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                         inst = temp ?? new KeyButtonActionController(device, mode, _manager, _dispatcher, _time, actionName ?? "<mapping>");
                         _controllers[dictKey] = inst;
@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Services.Devices
                         {
                             temp = _factory.Create(device, sa, name);
                         }
-                        catch { }
+                        catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                         inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, _time, name);
                         _controllers[dictKey] = inst;
@@ -109,7 +109,7 @@ namespace DS4Windows.Processing.Services.Devices
                             if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"KBC DIAGNOSTIC: assignedAction mismatch for dictKey={dictKey} existing={(inst.AssignedActionName ?? "(null)")} requested={name} device={device}");
                         }
                     }
-                    catch { }
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                     return inst;
                 }
             }
@@ -140,16 +140,16 @@ namespace DS4Windows.Processing.Services.Devices
                             try
                             {
                                 var inst = _controllers[k];
-                                try { inst?.Dispose(); } catch { }
-                                try { _controllerRegistry.Unregister(k); } catch { }
+                                try { inst?.Dispose(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
+                                try { _controllerRegistry.Unregister(k); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                                 _controllers.Remove(k);
                             }
-                            catch { }
+                            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                         }
                     }
                 }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

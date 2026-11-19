@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionEntry created: action={(action?.name ?? "(null)")} - initialized ActionInstanceState (IsToggledOn cleared)");
             }
-            catch { }
+            catch { /* 診断の出力の失敗は無視してよい */ }
         }
     }
 }

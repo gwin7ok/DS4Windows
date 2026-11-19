@@ -38,7 +38,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 if (mapping != null)
                     return mapping.GetRealEventKey(kvpKey);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             return kvpKey;
         }
 
@@ -73,7 +73,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                         {
                             kp = new SyntheticState.KeyPresses();
                             ds.keyPresses[kvpKey] = kp;
-                            try { ds.nativeKeyAlias[kvpKey] = nativeKey; } catch { }
+                            try { ds.nativeKeyAlias[kvpKey] = nativeKey; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                         }
                         kp.current.lastSyntheticSendUtcTicks = now;
                         kp.current.repeatCount++;
@@ -91,7 +91,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                         gkp.current.repeatCount++;
                     }
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             catch (Exception ex)
             {
@@ -139,7 +139,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                         gkp.current.toggle = false;
                     }
                 }
-                catch { }
+                catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             catch (Exception ex)
             {
@@ -167,7 +167,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                     gkp.current.repeatCount = 0;
                 }
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
     }
 }

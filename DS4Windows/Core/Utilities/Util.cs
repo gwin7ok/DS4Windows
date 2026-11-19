@@ -248,7 +248,7 @@ namespace DS4Windows.Core.Utilities
                     {
                     }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
             else
             {
@@ -283,7 +283,7 @@ namespace DS4Windows.Core.Utilities
             {
                 using (Process? temp = Process.Start(startInfo)) { }
             }
-            catch { }
+            catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
         public static void LogAssistBackgroundTask(Task task)
@@ -477,7 +477,7 @@ namespace DS4Windows.Core.Utilities
                                                             }
                                                         }
                                                     }
-                                                    catch { }
+                                                    catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                                                 }
                                             }
                                         }
@@ -485,13 +485,13 @@ namespace DS4Windows.Core.Utilities
                                         if (!string.IsNullOrEmpty(result)) break;
                                     }
                                 }
-                                catch { }
+                                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
                                 if (!string.IsNullOrEmpty(result)) break;
                             }
                         }
                     }
-                    catch { }
+                    catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
                     if (!string.IsNullOrEmpty(result)) break;
                 }
@@ -530,14 +530,14 @@ namespace DS4Windows.Core.Utilities
                                         if (File.Exists(candidate86)) { result = candidate86; break; }
                                     }
                                 }
-                                catch { }
+                                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                             }
                         }
 
                         if (!string.IsNullOrEmpty(result)) break;
                     }
                 }
-                catch { }
+                catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
 
             return result;

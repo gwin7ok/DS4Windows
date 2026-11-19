@@ -121,7 +121,7 @@ namespace DS4Windows.UI
                                     Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri);
                                 }
                             }
-                            catch { }
+                            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                         });
                     }
                 }
@@ -129,7 +129,7 @@ namespace DS4Windows.UI
                 {
                     // Updater not present yet: attempt A-plan download->extract->install
                     string tempDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DS4Updater_tmp");
-                    try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { }
+                    try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                     Directory.CreateDirectory(tempDir);
                     AppLogger.LogDebug($"[UpdaterInstall] Temp dir prepared: {tempDir}");
 
@@ -330,13 +330,13 @@ namespace DS4Windows.UI
                     }
                     finally
                     {
-                        try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { }
+                        try { if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true); } catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                     }
                 }
             }
             catch
             {
-                try { Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri); } catch { }
+                try { Util.StartProcessHelper(DS4Windows.Core.Updater.ReleaseSource.LatestReleasePageUri); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             }
             result = MessageBoxResult.Yes;
             Close();

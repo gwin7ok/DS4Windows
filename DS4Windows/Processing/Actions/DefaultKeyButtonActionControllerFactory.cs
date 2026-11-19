@@ -33,7 +33,7 @@ namespace DS4Windows.Processing.Actions
                 var key = device + ":" + (string.IsNullOrEmpty(actionName) ? "<default>" : actionName);
                 _registry.Register(key, inst);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             return inst;
         }
 
@@ -46,7 +46,7 @@ namespace DS4Windows.Processing.Actions
                 var key = device + ":" + (string.IsNullOrEmpty(name) ? "<default>" : name);
                 _registry.Register(key, inst);
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             return inst;
         }
     }

@@ -94,7 +94,7 @@ namespace DS4Windows.Processing.Actions
             int dev = _deviceIndex >= 0 ? _deviceIndex : (ctx != null ? ctx.Device : 0);
 
             _fadeTimer = 0;
-            try { _port.SetForceLight(dev, false); } catch { }
+            try { _port.SetForceLight(dev, false); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
         // 旧経路と同じ: ライトバーを使うとき、空の色と満タンの色の間を電池残量で決め、保存した色から、その色へ、2 ずつ（100 まで）遷移させる
@@ -149,10 +149,10 @@ namespace DS4Windows.Processing.Actions
                 }
 
                 int count = 0;
-                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { }
+                try { count = _actionRepository?.ActionList?.Count ?? 0; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction BatteryCheck: device={dev}, name={_sa.name}, index={_actionIndex}, ActionEntries={count}");
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
     }
 }

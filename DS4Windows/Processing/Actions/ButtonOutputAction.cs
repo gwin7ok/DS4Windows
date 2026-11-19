@@ -109,9 +109,9 @@ namespace DS4Windows.Processing.Actions
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{_sa.name}' output combo: {combo}");
                 }
-                catch { }
+                catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
-            catch { }
+            catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
         private void LogOutputCombo(IOutputContext ctx)

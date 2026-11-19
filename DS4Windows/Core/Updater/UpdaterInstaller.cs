@@ -39,7 +39,7 @@ namespace DS4Windows.Core.Updater
                         Directory.CreateDirectory(targetDir!); // targetPath はファイルのフルパスで、親フォルダーは null にならない
                     }
                     File.Copy(sourcePath, targetPath, true);
-                    try { File.Delete(sourcePath); } catch { }
+                    try { File.Delete(sourcePath); } catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
                     AppLogger.LogInfo($"[UpdaterInstall] Installed without elevation: {targetPath}");
                     return true;
                 }

@@ -181,7 +181,7 @@ namespace DS4Windows.Core.Logging
                 Logger.Debug("LogProfileChanged: Invoking ProfileChanged event");
                 ProfileChanged?.Invoke(null, new ProfileChangedEventArgs(deviceIndex, profileName, isTemp, source, originalMessage, timestamp ?? DateTime.UtcNow));
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
     }
 }

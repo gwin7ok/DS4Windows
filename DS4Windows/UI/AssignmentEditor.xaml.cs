@@ -329,7 +329,7 @@ namespace DS4Windows.UI
                     top = owner.Top + 100;
                 }
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             // Measure content to determine width, then position so dialog is centered
             panel.Measure(new Size(600, 400));
@@ -379,7 +379,7 @@ namespace DS4Windows.UI
                     }
                 }
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             // Create tiny transparent owner window at the computed point
             var ownerWindow = new Window()
@@ -407,7 +407,7 @@ namespace DS4Windows.UI
             }
             finally
             {
-                try { ownerWindow.Close(); } catch { }
+                try { ownerWindow.Close(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
         }
     }

@@ -1189,7 +1189,7 @@ namespace DS4Windows.UI
                         backend.RenameActionInEditedProfile(deviceNum, oldName, newName);
                         profileSettingsVM.RefreshExtraProfileInfo();
                     }
-                    catch { }
+                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
                     // 一覧の差し替えは UI のスレッドで行う
                     Application.Current.Dispatcher.Invoke(() => specialActionsVM.ReplaceEditedAction(item, currentIndex, newName));
@@ -1374,7 +1374,7 @@ namespace DS4Windows.UI
             {
                 profileSettingsVM.RefreshExtraProfileInfo();
             }
-            catch { }
+            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             UnregisterEvents();
         }
 
