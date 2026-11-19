@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Input.Hid;
 
 namespace DS4Windows.Input.Abstractions

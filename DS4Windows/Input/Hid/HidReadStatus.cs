@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Input.Hid
+﻿#nullable enable
+
+namespace DS4Windows.Input.Hid
 {
     /// <summary>HID の入力レポートの読み取りの結果（<see cref="DS4Windows.Input.Abstractions.IHidTransport.ReadFile"/> の戻り値）。</summary>
     public enum HidReadStatus

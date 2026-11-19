@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Input.Abstractions
 {
     /// <summary>XUSB のデバイス インターフェース（Xbox 系の機器 1 台）の情報。</summary>

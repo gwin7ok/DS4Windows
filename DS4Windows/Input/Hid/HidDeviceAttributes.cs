@@ -1,4 +1,6 @@
-﻿using DS4Windows.Core.Platform;
+﻿#nullable enable
+
+using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Input.Hid
 {

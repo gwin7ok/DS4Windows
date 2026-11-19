@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Input.Abstractions
