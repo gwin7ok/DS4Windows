@@ -1,6 +1,6 @@
 {
   "_comment": "Score-CodeReview.py が読む、手で記録する値と、はい／いいえの確認項目。Phase の最終 Step で、根拠を確かめてから answer / value を更新する。答えを変えるときは evidence に、確かめた方法（実行したテスト名・コマンド・日付）を書く。",
-  "snapshot_label": "2026-11-19 RV2 完了",
+  "snapshot_label": "2026-11-20 RV3 完了",
   "manual": {
     "nullable_layers_enabled": {
       "value": 3,
@@ -45,7 +45,7 @@
     "safety_net_green": {
       "text": "ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査が、Debug ALL（0 警告・0 エラー）で通る",
       "answer": true,
-      "evidence": "2026-11-19（RV1 完了）: Debug ALL（Build-Debug.ps1、テストの建て、Execute Test）が、警告 0・エラー 0、xUnit 3,626 件＋StandaloneTests 11 件の合格。全件を続けて 3 回流して、毎回合格した。ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査を含む。Release ビルドも警告 0"
+      "evidence": "2026-11-20（RV3 完了）: Debug ALL（Build-Debug 相当: DS4WinWPF と DS4Windows.Actions.Tests のビルドが警告 0・エラー 0）、xUnit 3,671 件＋StandaloneTests 11 件の合格（--blame-hang 15s）。ArchUnitNET の層の検査・ガードテスト・ラチェットの一致検査（新設の ViewCommandBindingRatchetTests を含む）を含む"
     }
   }
 }
