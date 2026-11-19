@@ -161,6 +161,7 @@ namespace DS4Windows.UI
             this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
             AppLogger.LogDebug($"[ProfileEditor] Opened profile editor for device={deviceNum}, targetDevice={targetDevice}");
 
+            InitCommands();
             InitializeComponent();
             InitVisualizerButtons();
 
@@ -217,7 +218,7 @@ namespace DS4Windows.UI
 
         // ウィンドウサイズ初期化ボタンのクリックイベント
         // すべての初期値は WindowLayoutDefaults から取得される（BackingStore経由）
-        private void WindowSizeResetBtn_Click(object sender, RoutedEventArgs e)
+        private void ResetWindowSize()
         {
             // 初期値にリセット（左右領域・列幅）
             // これらは WindowLayoutDefaults.PROFILE_EDITOR_* の値を参照している
@@ -843,7 +844,7 @@ namespace DS4Windows.UI
             conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.Right.DriftYAxis;
         }
 
-        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        private void CancelEdit()
         {
             backend.StopRumble(profileSettingsVM.FuncDevNum);
 
@@ -1019,14 +1020,14 @@ namespace DS4Windows.UI
             }
         }
 
-        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        private void SaveAndClose()
         {
             if (ExecuteSaveOrApply(isApply: false))
             {
                 Close();
             }
         }
-        private void ApplyBtn_Click(object sender, RoutedEventArgs e)
+        private void ApplyEdit()
         {
             ExecuteSaveOrApply(isApply: true);
         }
@@ -1122,7 +1123,7 @@ namespace DS4Windows.UI
                 mappingListVM.UpdateMappingDevType(selected);
             }
         }
-        private void NewActionBtn_Click(object sender, RoutedEventArgs e)
+        private void NewAction()
         {
             if (leftPaneEditor != null) return;
             ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
@@ -1158,10 +1159,10 @@ namespace DS4Windows.UI
 
             if (!(source is System.Windows.Controls.ListViewItem)) return;
 
-            EditActionBtn_Click(sender, e);
+            EditAction();
         }
 
-        private void EditActionBtn_Click(object sender, RoutedEventArgs e)
+        private void EditAction()
         {
             if (leftPaneEditor != null) return;
             if (specialActionsVM.SpecialActionIndex >= 0)
@@ -1228,7 +1229,7 @@ namespace DS4Windows.UI
         }
 
         // R-1: 選んだ SA を複製する。複製は無効（チェックなし）で一覧に加わる。保存（Actions.xml）は、複製の時点で行われる
-        private void DuplicateActionBtn_Click(object sender, RoutedEventArgs e)
+        private void DuplicateAction()
         {
             if (leftPaneEditor != null) return;
             if (specialActionsVM.SpecialActionIndex < 0) return;
@@ -1238,7 +1239,7 @@ namespace DS4Windows.UI
             SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
         }
 
-        private void RemoveActionBtn_Click(object sender, RoutedEventArgs e)
+        private void RemoveAction()
         {
             if (specialActionsVM.SpecialActionIndex >= 0)
             {
@@ -1250,7 +1251,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void SpecialActionCheckBox_Click(object sender, RoutedEventArgs e)
+        private void CommitEnabledActions()
         {
             // Phase 5 Step 14: ViewModel 側の ProfileActions 文字列を即時再同期
             if (specialActionsVM != null)
@@ -1454,7 +1455,7 @@ namespace DS4Windows.UI
 
         // Phase9 UI 変更: Controls タブの全ての割り当て（L2／R2 Full Pull、スティックの Outer Bind を含む一覧の全項目）を Default に戻す。
         // Extras、マクロも含めて、そのボタンの設定を初期化する（DS4ControlSettings.Reset）。プロファイルは Save するまで保存されない
-        private void ResetAllControlsBtn_Click(object sender, RoutedEventArgs e)
+        private void ResetAllControls()
         {
             MessageBoxResult confirm = MessageBox.Show(
                 DS4Windows.Translations.Strings.ResetAllControlsConfirm,
@@ -1471,7 +1472,7 @@ namespace DS4Windows.UI
             AppLogger.LogUser(AppLogLevel.Info, "Log_Editor_ControlsReset");
         }
 
-        private void MappingListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void EditSelectedControl()
         {
             if (mappingListVM.SelectedIndex >= 0)
             {
@@ -1541,7 +1542,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void PresetBtn_Click(object sender, RoutedEventArgs e)
+        private void OpenPresetOptions()
         {
             sidebarTabControl.SelectedIndex = 0;
 
@@ -1594,7 +1595,7 @@ namespace DS4Windows.UI
             window.ShowDialog();
         }
 
-        private void ExportSpecialActions_OnClick(object sender, RoutedEventArgs e)
+        private void ExportActions()
         {
             specialActionsVM.PickAndExportActions();
         }
@@ -1603,10 +1604,8 @@ namespace DS4Windows.UI
         // CurrentSortAscending が唯一の実体。View 側では保持しない（二重状態の解消）。
 
         // 列ヘッダークリックイベント
-        void SpecialActionsHeader_Click(object sender, RoutedEventArgs e)
+        private void SortByColumn(string col)
         {
-            var btn = sender as Button;
-            var col = btn?.Tag as string;
             if (col != null)
             {
                 string currentCol = specialActionsVM?.CurrentSortColumn ?? "Name";

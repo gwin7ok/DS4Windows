@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (text == null) return;
 
-            string body = SourceText.Method(text, "private void CancelBtn_Click(");
+            string body = SourceText.Method(text, "private void CancelEdit(");
             Assert.DoesNotContain("LoadProfile(", body);
             Assert.DoesNotContain("HaltReportingRunAction", body);
         }
@@ -105,10 +105,10 @@ namespace DS4WindowsTests
             // ProfileEditor のどこからも、コントローラーのスロットへ直接適用しない
             Assert.DoesNotContain("ApplyProfileToSlot(", text);
 
-            string saveBtn = SourceText.Method(text, "private void SaveBtn_Click(");
+            string saveBtn = SourceText.Method(text, "private void SaveAndClose(");
             Assert.Contains("ExecuteSaveOrApply(isApply: false)", saveBtn);
             Assert.Contains("Close()", saveBtn);
-            string applyBtn = SourceText.Method(text, "private void ApplyBtn_Click(");
+            string applyBtn = SourceText.Method(text, "private void ApplyEdit(");
             Assert.Contains("ExecuteSaveOrApply(isApply: true)", applyBtn);
             Assert.DoesNotContain("Close()", applyBtn);
         }
