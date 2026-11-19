@@ -76,3 +76,13 @@
 - `[Diag-Toast]` は削除（例外を記録する 2 か所は `[Toast]` に改めた）。`Console`／`Debug.WriteLine` は AppLogger へ移すか削除した（CLI の結果を標準出力へ返す `App.xaml.cs` の 1 か所は機能のため維持）。Updater の NLog 直接は AppLogger 経由にした。
 - 残る NLog の直接呼び出しは、基盤（`AppLogger`、`LoggerHolder`）の内部だけ。
 - §3 の「利用者向けの文言はリソース化」は、Phase13b では実施していない（GUI の文言を変えない方針。**Phase15-0（2026-11-08）で実施した**: `AppLogger.LogUser`／`UserText`、`Strings.resx` の `Log_*` キー、画面は表示言語・ファイルは英語。一覧は `Phase15-0-Log-Text-List.md`）。当時の記述: (`Phase13b-Log-Change-List.md` §1）。必要になったら別 Phase で扱う。
+
+## 12. 例外の扱い（2026-11-19。PhaseRV2）
+捨てる（握りつぶす）例外は、次の 3 つのどれかで書く。何も書かない空の `catch` は置かない。
+- **(a) 型を限定する**: 後始末・ファイル I/O・レジストリ・プロセスは、想定する例外（`IOException`、`UnauthorizedAccessException`、`Win32Exception` など）だけを捕まえる。想定外は上へ伝える。
+- **(b) 理由のコメントを書く**: 失敗してよい理由（例: 切断済みの機器への書き込み、すでに解放済み）を `//` で 1 行書く。
+- **(c) 診断のログを残す**: 原因を追えないと困る失敗は、`AppLogger.LogDebug`／`LogTrace`（ログファイルだけ。画面・トレイには出さない）で残す。
+- **最上位の安全弁**（読み取りスレッド、毎フレームの経路、タイマーの本体、`GuardedTimerTick`）は、型を絞らず `catch (Exception)` とし、理由のコメントを必ず書く（絞ると、想定外の例外 1 つで全入力が止まる。Phase29 の教訓）。`catch (Exception)` を使ってよいのは、この最上位の安全弁と、ログを出す側（`AppLogger` の入口）だけ。
+- **`when` フィルター**: 「この種類のときだけ捨てる」を表すときに使う（例: `catch (IOException) when (!File.Exists(path))`）。
+- **ログ呼び出しを `try`／`catch` で包まない**: `AppLogger` は呼び出し側へ例外を出さない。
+- **古い保存ファイル**（`Core/Persistence`）の欠けた要素は、既定値のまま続ける 1 つの部品へ畳む（RV5）。
