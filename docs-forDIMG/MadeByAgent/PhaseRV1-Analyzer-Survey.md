@@ -1,7 +1,7 @@
 # PhaseRV1: アナライザーの調査と導入の記録（RV1-0・RV1-2）
 
 作成日: 2026-11-19
-状態: 調査は完了（RV1-0）。**入れるパッケージと規則は、ユーザーの承認待ち**（PhaseRV1-Plan.md D1＝(B)）。導入（RV1-2）の記録欄は、承認後に埋める。
+状態: 調査（RV1-0）と導入（RV1-2）は完了。入れるパッケージと規則は、2026-11-19 にユーザーが承認した（AsyncFixer＋Threading＋Sonar を絞って。Meziantou は入れない）。
 
 ## 1. 目的と方法
 
@@ -13,7 +13,7 @@
 
 | # | 事実 | 影響 |
 |---|---|---|
-| 1 | `DS4WinWPF.csproj` は `EnableNETAnalyzers=false`。標準の CA 規則は、`EnableNETAnalyzers=true` と `AnalysisMode` を足したときだけ動く | 標準のアナライザーを使うなら、csproj の設定が要る |
+| 1 | 調査の時点で、`DS4WinWPF.csproj` は `EnableNETAnalyzers=false`。標準の CA 規則は、`EnableNETAnalyzers=true` と `AnalysisMode` を足したときだけ動く（RV1-2 で `false` を削除した） | 標準のアナライザーを使うなら、csproj の設定が要る |
 | 2 | リポジトリの `.editorconfig` に `dotnet_analyzer_diagnostic.category-Style.severity = none` がある（IDE 系の規則をすべて無効にしている）。globalconfig より `.editorconfig` が優先されるため、IDE0005 などは、個別の ID の指定を `.editorconfig` に足さないと出ない | 未使用の `using` を測るには、一時的に `dotnet_diagnostic.IDE0005.severity = warning` を足す（RV1-1 で実施。恒久化は D3＝(A) のため、しない） |
 | 3 | IDE 系の規則をビルドで出すには、`EnforceCodeStyleInBuild=true` と、IDE0005 は `GenerateDocumentationFile=true` も要る。ドキュメント生成を有効にすると、XML コメントの不整合（CS1573、CS1574 など）が約 140 件出る | D3＝(B)（ビルドで IDE0005 を常時警告）は、`GenerateDocumentationFile` の副作用のため、採らない（D3＝(A) を維持） |
 | 4 | Meziantou.Analyzer **3.x は Roslyn 5.0 以上専用**で、この SDK（Roslyn 4.x）では読み込まれず、**警告 0 件になる**（エラーも出ない。気づきにくい）。2.0.302（最後の 2.x）では動く | Meziantou を使うなら 2.0.302 に固定する。SDK を上げるときに、3.x へ移す |
@@ -24,7 +24,7 @@
 | 候補 | バージョン | 診断の件数（重複を除く） | 規則の種類 | ビルド時間（ベースライン 39 秒） | ノイズ | 本件に効く規則（件数） |
 |---|---|---|---|---|---|---|
 | .NET 標準（組み込み。`AnalysisMode=All`＋スタイル） | SDK 8.0.428 | 4,089 | 93 | 58 秒（＋49%） | 非常に多い（設計・命名・国際化の指摘が大半） | CA1031 一般の例外の捕捉 749、CA1510 `ThrowIfNull` 70 |
-| SonarAnalyzer.CSharp | 10.36.0.15337 | 3,097 | 101 | 66 秒（＋69%） | 多い（S125 コメントアウトされたコード 461、S1104 公開フィールド 468、S1135 TODO 43 など） | S2486 握りつぶした例外 359（計測の「理由なしの空 catch」370 に近い）、S108 空のブロック 386、S3168 `async void` 8、S1481 未使用のローカル 35 |
+| SonarAnalyzer.CSharp | 10.36.0.15337 | 3,097 | 101 | 66 秒（＋69%） | 多い（S125 コメントアウトされたコード 461、S1104 公開フィールド 468、S1135 TODO 43 など） | S2486 握りつぶした例外 359（計測の「理由なしの空 catch」370 に近い）、S108 空のブロック 386、S3168 `async void` 8、S1481 未使用のローカル 36 |
 | Roslynator.Analyzers | 5.0.1 | 29 | 6 | 42 秒（＋8%） | ほぼなし | RCS1075 空の `catch`（`Exception` を捕捉するもの）17 |
 | Microsoft.VisualStudio.Threading.Analyzers | 18.12.1 | 120 | 5 | 47 秒（＋21%） | VSTHRD001 は JoinableTaskFactory 向けで 45 件がノイズ | VSTHRD100 `async void` 14（ハンドラーを含む）、VSTHRD002 ブロッキング待ち 11、VSTHRD110 観測されない `Task` 40 |
 | AsyncFixer | 2.1.0 | 11 | 3 | 41 秒（＋5%） | ほぼなし | AsyncFixer03 `async void` 9（ハンドラー以外の数と**一致**）、AsyncFixer02 ブロッキング 1 |
@@ -48,11 +48,34 @@
 
 **推奨**: AsyncFixer（AsyncFixer03）＋ Microsoft.VisualStudio.Threading.Analyzers（VSTHRD002・VSTHRD110 のみ）。空の `catch` は、Sonar を入れず、RV2 の `CodeHealthRatchetTests`（`catch` の数の凍結）で守る。理由: ビルド時間の増加が小さく（＋5〜21%）、ノイズが少なく、すべての規則を 0 件から始められる（既存の 9・11・40 件は、RV2〜RV3 の是正の対象で、`suggestion` から段階的に `warning` へ上げる）。Sonar の追加（ビルド＋69%）は、S2486 だけが目的なら、費用に見合わない。
 
-## 5. 導入の記録（RV1-2。承認後に埋める）
+**決定（2026-11-19。ユーザー）**: AsyncFixer、Threading（VSTHRD002・VSTHRD110）、Sonar（S2486・S1481 に絞る）を入れる。Meziantou は、SDK が上がるまで入れない（3.x が動かず、2.x の固定が要るため）。推奨案に、Sonar の 2 規則を足した形。
 
-| 規則 | パッケージ | 導入時の件数 | 0 にした日 | `warning` へ上げた日 | メモ |
-|---|---|---|---|---|---|
-| （承認後に記入） | | | | | |
+## 5. 導入の記録（RV1-2）
+
+### 設定の変更
+
+| 場所 | 変更 |
+|---|---|
+| `DS4Windows/DS4WinWPF.csproj` | `EnableNETAnalyzers=false` を削除（標準のアナライザーを有効にした。既定の重大度で出る警告は `CA2200` の 1 件だけで、直した）。`AsyncFixer` 2.1.0、`Microsoft.VisualStudio.Threading.Analyzers` 18.12.1、`SonarAnalyzer.CSharp` 10.36.0.15337 を `PrivateAssets=all`（ビルドだけで使い、配布物に入れない）で追加。`Analyzers.globalconfig` を `GlobalAnalyzerConfigFiles` で読み込む |
+| `.editorconfig` | `dotnet_analyzer_diagnostic.category-Style.severity = none`（スタイル診断の一括無効）を削除。IDE 系の規則は、既定の重大度で使う（エディターの提案。`EnforceCodeStyleInBuild` は無効のままで、ビルドの警告にはならない）。`IDE0090`・`IDE0028`・`IDE0300` の none は残した |
+| `Analyzers.globalconfig`（新規） | 追加のパッケージの規則の設定。段階導入の 5 規則は `suggestion`、今ある違反がある規則は `none` に凍結。違反が 0 件の規則は、既定の重大度（警告）のままで、新しい違反をビルドで止める。運用の規則はファイルの先頭に書いた |
+| `Output/Udp/UdpServer.cs` | `CA2200`: `catch (SocketException ex) { ...; throw ex; }` を `catch (SocketException) { ...; throw; }` にした（同じ例外を投げ直す。スタックの情報が残る） |
+
+ビルド時間: 54 秒（ベースライン 39 秒。`--no-incremental`）。警告 0・エラー 0（本体・CLI・テスト・StandaloneTests）。
+
+### 規則の記録
+
+| 規則 | パッケージ | 導入時の件数 | 今の重大度 | `warning` へ上げる予定 |
+|---|---|---|---|---|
+| CA2200 | 標準 | 1 | warning（既定。0 件にした） | 済み |
+| AsyncFixer03（ハンドラー以外の `async void`） | AsyncFixer | 9 | suggestion | RV2（`async void` の整理）で 0 にして上げる |
+| VSTHRD002（Task の同期的な待ち） | Threading | 11 | suggestion | RV2 で 0 にして上げる |
+| VSTHRD110（観測されない Task） | Threading | 40 | suggestion | RV2 以降で 0 にして上げる |
+| S2486（握りつぶした例外） | Sonar | 359 | suggestion | RV2（空の `catch` の整理）で 0 にして上げる |
+| S1481（未使用のローカル変数） | Sonar | 36 | suggestion | 件数が小さい。RV2 のついでか、次の整理の Phase で 0 にして上げる |
+| そのほかの Sonar 104 規則、VSTHRD001・100・105・200、AsyncFixer01・02 | 各パッケージ | 約 2,800 | none（凍結） | 使うと決めたときに、違反を 0 にしてから none の行を消す |
+
+`Analyzers.globalconfig` の 2 つ目以降の none には、導入時の件数が多い規則（S1104 公開フィールド 468、S125 コメントアウトされたコード 461、S108 空のブロック 386、S2933 169 など）が含まれる。これらは、規則を使うかどうかの判断が要る（RV2 以降で、必要なものだけを選ぶ）。
 
 ## 6. 参考: 未使用の `using`（IDE0005）の測定
 

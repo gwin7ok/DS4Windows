@@ -374,12 +374,12 @@ namespace DS4Windows.Output.Udp
                 }
                 udpSock.Bind(new IPEndPoint(udpListenIPAddress, port));
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 udpSock.Close();
                 udpSock = null;
 
-                throw ex;
+                throw;
             }
 
             byte[] randomBuf = new byte[4];
