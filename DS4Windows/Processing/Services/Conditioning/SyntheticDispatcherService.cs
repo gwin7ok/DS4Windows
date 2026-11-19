@@ -43,13 +43,13 @@ namespace DS4Windows.Processing.Services.Conditioning
         }
 
         // 旧: var h = handler ?? Global.outputKBMHandler; if (h == null) return;
-        private IVirtualKBM ResolveHandler(IVirtualKBM handler)
+        private IVirtualKBM? ResolveHandler(IVirtualKBM? handler)
         {
             if (handler != null) return handler;
             return _handlerOwner.Handler != null ? _handlerOwner : null;
         }
 
-        public void SendPress(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler = null)
+        public void SendPress(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler = null)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             }
         }
 
-        public void SendRelease(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler = null)
+        public void SendRelease(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler = null)
         {
             try
             {

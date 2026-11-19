@@ -61,10 +61,10 @@ namespace DS4Windows.Processing.Services.Conditioning
         // If the macro definition is a macroStr string value then it will be converted as integer array on the fl. If steps are already defined as list or array of integers then there is no need to do type cast conversion.
         // Phase8-Fix-MacroRepeatUnify（D5）: 呼び出しは常に control == DS4Controls.None（SA・Controls タブ・MultiAction のすべて）だったため、control 単位の経路
         // （macrodone、macroDispatchInFlight／TryBeginDispatch）と、未使用の引数 control／macrocontrol を削除した。二重起動の防止は ActionInstanceState.IsMacroRunning が担う。
-        public void Play(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action = null, ActionInstanceState actionDoneState = null)
+        public void Play(int device, string macroStr, List<int>? macroLst, int[]? macroArr, DS4KeyType keyType, SpecialAction? action = null, ActionInstanceState? actionDoneState = null)
         {
             // If caller didn't provide per-action state, obtain it so we can check for running macro.
-            ActionInstanceState st = actionDoneState;
+            ActionInstanceState? st = actionDoneState;
             if (st == null && action != null)
             {
                 try { st = _manager.GetStateFor(action, device); } catch { st = null; }
@@ -92,7 +92,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             if (shouldSync)
             {
                 // Run special action macros in synchronized order (ie. FirstIn-First-Out). The trigger control name string is the execution queue identifier (ie. each unique trigger combination has an own synchronization queue).
-                if (!_macroRuntime.TaskQueue[device].TryGetValue(action.controls, out Task prevTask))
+                if (!_macroRuntime.TaskQueue[device].TryGetValue(action!.controls, out Task? prevTask)) // 実行中は設定済み（null なら従来どおり NullReferenceException）
                     _macroRuntime.TaskQueue[device].Add(action.controls, (Task.Factory.StartNew(() => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState))));
                 else
                     _macroRuntime.TaskQueue[device][action.controls] = prevTask.ContinueWith((x) => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState));
@@ -109,7 +109,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         private readonly TimeProvider _time;
 
         // Play through a macro. The macro steps are defined either as string, List or Array object (always only one of those parameters is set to a valid value)
-        private void PlayMacroTask(int device, string macroStr, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState)
+        private void PlayMacroTask(int device, string macroStr, List<int>? macroLst, int[]? macroArr, DS4KeyType keyType, SpecialAction? action, ActionInstanceState? actionDoneState)
         {
             // Ensure we have the per-action state from ActionManager if not provided by caller
             if (actionDoneState == null && action != null)
@@ -193,7 +193,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         }
 
         /// <summary>R-2: そのアクション・デバイスの、トグルの状態（<c>IsToggledOn</c>）。状態が取れないときは偽（＝繰り返しを止める）。</summary>
-        private bool IsToggledOnNow(SpecialAction action, int device)
+        private bool IsToggledOnNow(SpecialAction? action, int device)
         {
             try { return _manager.GetStateFor(action, device)?.IsToggledOn ?? false; }
             catch { return false; }
@@ -201,9 +201,9 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         // Phase8-Fix-MacroRepeatUnify（D5）: 旧 PlayMacroTask の「最初の 1 回」と「繰り返しの 1 回」は、ほぼ同じコードが 2 つあったため、1 つにまとめた（挙動は同じ）。
         // markRunning: 繰り返しの 1 回は、実行中に IsMacroRunning を立てる（最初の 1 回は、従来どおり立てない）。
-        private void RunMacroOnce(int device, List<int> macroLst, int[] macroArr, DS4KeyType keyType, SpecialAction action, ActionInstanceState actionDoneState, bool markRunning)
+        private void RunMacroOnce(int device, List<int>? macroLst, int[]? macroArr, DS4KeyType keyType, SpecialAction? action, ActionInstanceState? actionDoneState, bool markRunning)
         {
-            IList<int> steps = macroLst != null ? (IList<int>)macroLst : macroArr;
+            IList<int> steps = macroLst != null ? (IList<int>)macroLst : macroArr!; // 手順のリストか配列のどちらかが渡される
 
             // Mark iteration running for this inline repeat
             if (markRunning && actionDoneState != null)

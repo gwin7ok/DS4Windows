@@ -24,10 +24,10 @@ namespace DS4Windows.Processing.Services.Devices
         /// <summary>接続中のコントローラーの数。Phase13-Step5b: 旧 <c>ServiceLifecycle</c> の自動プロパティを、ここへ移した（<c>IDeviceSlotHost</c> の廃止で、<c>DeviceConnector</c> が直接読む）。</summary>
         public int ActiveControllers { get; set; }
 
-        DS4Windows.Core.Abstractions.IConfigurableDevice DS4Windows.Core.Abstractions.IConfigurableDeviceLookup.GetConfigurableDevice(int deviceIndex) => GetController(deviceIndex);
+        DS4Windows.Core.Abstractions.IConfigurableDevice? DS4Windows.Core.Abstractions.IConfigurableDeviceLookup.GetConfigurableDevice(int deviceIndex) => GetController(deviceIndex);
 
         /// <summary>範囲外は null（旧 <c>ControlService.GetController</c> と同じ）。</summary>
-        public InputDeviceCore GetController(int deviceIndex)
+        public InputDeviceCore? GetController(int deviceIndex)
         {
             if (deviceIndex < 0 || deviceIndex >= Controllers.Length) return null;
             return Controllers[deviceIndex];

@@ -22,16 +22,16 @@ namespace DS4Windows.Processing.Abstractions
         // macAddress が null／空（有効なシリアルがない）のときは、従来のスロット単位の動作に落とす。
 
         /// <summary>起動後に、そのコントローラー（MAC）を初めて接続するか。MAC がなければ、スロット単位（<see cref="IsFirstConnection(int)"/>）。</summary>
-        bool IsFirstConnection(int slotIndex, string macAddress);
+        bool IsFirstConnection(int slotIndex, string? macAddress);
 
         /// <summary>初回接続の完了を記録する（スロットのフラグと、MAC のフラグの両方）。</summary>
-        void MarkConnected(int slotIndex, string macAddress);
+        void MarkConnected(int slotIndex, string? macAddress);
 
         /// <summary>そのコントローラー（MAC）に、最後に適用したプロファイルを記憶する（起動後だけ有効。永続化しない）。</summary>
-        void RememberProfile(string macAddress, string profileName);
+        void RememberProfile(string? macAddress, string profileName);
 
         /// <summary>そのコントローラー（MAC）に、最後に適用したプロファイル。記憶がなければ null。</summary>
-        string GetRememberedProfile(string macAddress);
+        string? GetRememberedProfile(string? macAddress);
 
         // ---- Phase6-Step7-1: 起動時に全スロットの「起動後の初回接続」フラグを立て直す（Global への薄い委譲）----
         void ResetConnectionFlags();

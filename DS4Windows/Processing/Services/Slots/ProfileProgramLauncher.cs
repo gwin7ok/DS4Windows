@@ -36,7 +36,7 @@ namespace DS4Windows.Processing.Services.Slots
         {
             if (slot < 0 || slot >= ControllerLimits.TestProfileItemCount) return;
 
-            string programPath = _profileSettings.BasicSlot(slot)?.LaunchProgram;
+            string? programPath = _profileSettings.BasicSlot(slot)?.LaunchProgram;
             if (string.IsNullOrEmpty(programPath)) return;
 
             bool running;

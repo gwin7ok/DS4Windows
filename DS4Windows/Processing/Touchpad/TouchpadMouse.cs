@@ -33,10 +33,11 @@ namespace DS4Windows.Processing.Touchpad
 {
     public class TouchpadMouse : ITouchPadGyroToggles
     {
-        protected Touch firstTouch, secondTouch;
+        protected Touch firstTouch;
+        protected Touch? secondTouch;
         private ControllerState s = new ControllerState();
         protected int deviceNum;
-        private InputDeviceCore dev = null;
+        private InputDeviceCore? dev = null;
         private readonly MouseCursor cursor;
         private readonly MouseWheel wheel;
         private readonly GyroOutputProcessor _gyro;
@@ -209,7 +210,7 @@ namespace DS4Windows.Processing.Touchpad
 
         private void TouchpadMouseStick(int dx, int dy)
         {
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _touchStick.Apply(dx, dy, s.elapsedTime);
         }
 
@@ -239,7 +240,7 @@ namespace DS4Windows.Processing.Touchpad
 
                     if (touchpad.Trackball)
                     {
-                        _trackball.AddSample(arg.Touches[0].DeltaX, arg.Touches[0].DeltaY);
+                        _trackball.AddSample(arg.Touches![0].DeltaX, arg.Touches[0].DeltaY); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                     }
 
                     cursor.touchesMoved(arg, dragging || dragging2, tempBool);
@@ -256,7 +257,7 @@ namespace DS4Windows.Processing.Touchpad
 
         private void ControlsModeMoved(TouchpadEventArgs arg)
         {
-                if (!(swipeUp || swipeDown || swipeLeft || swipeRight) && arg.Touches.Length == 1)
+                if (!(swipeUp || swipeDown || swipeLeft || swipeRight) && arg.Touches!.Length == 1) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 {
                     if (arg.Touches[0].HwX - firstTouch.HwX > 300) swipeRight = true;
                     if (arg.Touches[0].HwX - firstTouch.HwX < -300) swipeLeft = true;
@@ -264,7 +265,7 @@ namespace DS4Windows.Processing.Touchpad
                     if (arg.Touches[0].HwY - firstTouch.HwY < -300) swipeUp = true;
                 }
 
-                swipeUpB = (byte)Math.Min(255, Math.Max(0, (firstTouch.HwY - arg.Touches[0].HwY) * 1.5f));
+                swipeUpB = (byte)Math.Min(255, Math.Max(0, (firstTouch.HwY - arg.Touches![0].HwY) * 1.5f)); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 swipeDownB = (byte)Math.Min(255, Math.Max(0, (arg.Touches[0].HwY - firstTouch.HwY) * 1.5f));
                 swipeLeftB = (byte)Math.Min(255, Math.Max(0, firstTouch.HwX - arg.Touches[0].HwX));
                 swipeRightB = (byte)Math.Min(255, Math.Max(0, arg.Touches[0].HwX - firstTouch.HwX));
@@ -288,10 +289,10 @@ namespace DS4Windows.Processing.Touchpad
                         //if (trackballBufferHead == trackballBufferTail)
                         //    trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
 
-                        touchStickTrackball.AddData(arg.Touches[0].DeltaX, arg.Touches[0].DeltaY);
+                        touchStickTrackball.AddData(arg.Touches![0].DeltaX, arg.Touches[0].DeltaY); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                     }
 
-                    TouchpadMouseStick(arg.Touches[0].DeltaX, arg.Touches[0].DeltaY);
+                    TouchpadMouseStick(arg.Touches![0].DeltaX, arg.Touches[0].DeltaY); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                     previousTouchDX = arg.Touches[0].DeltaX;
                     previousTouchDY = arg.Touches[0].DeltaY;
                 }
@@ -311,7 +312,7 @@ namespace DS4Windows.Processing.Touchpad
         public virtual void touchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
 
             //Trace.WriteLine("TOUCHES_MOVED");
             TouchpadOutMode tempMode = touchpad.OutputMode;
@@ -323,7 +324,7 @@ namespace DS4Windows.Processing.Touchpad
                 StickModeMoved(arg);
 
             // Slide flags needed for possible profile switching from Touchpad swipes
-            if (Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < 50 && arg.Touches.Length == 2)
+            if (Math.Abs(firstTouch.HwY - arg.Touches![0].HwY) < 50 && arg.Touches.Length == 2) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             {
                 if (arg.Touches[0].HwX - firstTouch.HwX > 200 && !slideleft)
                     slideright = true;
@@ -357,7 +358,7 @@ namespace DS4Windows.Processing.Touchpad
             previousUnchangedTouchJoyFrame = false;
             // 調査用 Trace（動作は変えない）: タッチ開始の検出
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
-            firstTouch.populate(arg.Touches[0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID,
+            firstTouch.populate(arg.Touches![0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID, // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 arg.Touches[0].PreviousTouch);
 
             _tap.TouchBegan(arg.TimeStamp, arg.TouchButtonPressed,
@@ -366,7 +367,7 @@ namespace DS4Windows.Processing.Touchpad
 
             _buttons.ResetForNewTouch();
 
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
@@ -376,7 +377,7 @@ namespace DS4Windows.Processing.Touchpad
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             //Trace.WriteLine("TOUCHES ENDED");
 
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.WasTouched = true;
             slideright = slideleft = false;
             swipeUp = swipeDown = swipeLeft = swipeRight = false;
@@ -504,7 +505,7 @@ namespace DS4Windows.Processing.Touchpad
         }
         public void TouchStartedOrEnded(DS4Touchpad sender, TouchpadEventArgs arg)
         {
-            if (arg.Touches.Length < 2)
+            if (arg.Touches!.Length < 2) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             {
 
                 if (arg.TouchActive)
@@ -522,7 +523,7 @@ namespace DS4Windows.Processing.Touchpad
         {
             //Trace.WriteLine("TOUCHES UNCHANGED");
 
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             if (s.Touch1Finger)
             {
                 _buttons.WasTouched = false;
@@ -665,7 +666,7 @@ namespace DS4Windows.Processing.Touchpad
             _buttons.ClearDownFlagsKeepCandidate();
             _buttons.WasTouchButtonClicked = true;
 
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             TouchButtonActivationMode touchButtonMode = touchpad.ButtonMode;
             bool checkedOnUp = s.Touch1 || s.Touch2 ||
                 touchButtonMode == TouchButtonActivationMode.Release;
@@ -694,7 +695,7 @@ namespace DS4Windows.Processing.Touchpad
             }
 
             _buttons.WasTouchButtonClicked = false;
-            s = dev.getCurrentStateRef();
+            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
 

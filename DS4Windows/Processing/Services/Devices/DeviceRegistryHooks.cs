@@ -18,7 +18,7 @@ namespace DS4Windows.Processing.Services.Devices
         private readonly IAppSettingsService _appSettings;
         private readonly IElevatedProcessLauncher _elevatedProcessLauncher;
         private readonly IPathService _pathService;
-        private ControlServiceDeviceOptions _deviceOptions;
+        private ControlServiceDeviceOptions? _deviceOptions;
 
         public DeviceRegistryHooks(IInputDeviceRegistry deviceRegistry, IInputDeviceModuleRegistry deviceModules, IAppSettingsService appSettings,
             IElevatedProcessLauncher elevatedProcessLauncher, IPathService pathService)
@@ -43,7 +43,7 @@ namespace DS4Windows.Processing.Services.Devices
         // 種類ごとの処理（Joy-Con の結合の初期値）は IInputDeviceModule が持つ
         public void PostDS4DeviceInit(InputDeviceCore device)
         {
-            _deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, _deviceOptions);
+            _deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, _deviceOptions!); // 起動時に設定する（null なら従来どおり NullReferenceException）
         }
 
         public void PrepareDS4DeviceInit(InputDeviceCore device)
@@ -54,7 +54,7 @@ namespace DS4Windows.Processing.Services.Devices
         // 種類ごとの有効設定の判定は IInputDeviceModule が持つ（扱う部品がない種類は false）
         public bool CheckForSupportedDevice(IHidTransport device, VidPidInfo metaInfo)
         {
-            return _deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(_deviceOptions);
+            return _deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(_deviceOptions!); // 起動時に設定する（null なら従来どおり NullReferenceException）
         }
 
         private void RequestElevation(RequestElevationArgs args)
@@ -87,8 +87,8 @@ namespace DS4Windows.Processing.Services.Devices
 
                 try
                 {
-                    Process child = Process.Start(startInfo);
-                    if (!child.WaitForExit(30000))
+                    Process? child = Process.Start(startInfo);
+                    if (!child!.WaitForExit(30000)) // 実行中は設定済み（null なら従来どおり NullReferenceException）
                     {
                         child.Kill();
                     }

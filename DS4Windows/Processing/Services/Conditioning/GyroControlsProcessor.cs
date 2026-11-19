@@ -82,7 +82,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             else if (mode == 6)
             {
                 int signSA = Math.Sign(outputAccel);
-                return bezier.arrayBezierLUT[Math.Min(Math.Abs(outputAccel), 128)] * signSA;
+                return bezier.arrayBezierLUT![Math.Min(Math.Abs(outputAccel), 128)] * signSA; // 実行中は設定済み（null なら従来どおり NullReferenceException）
             }
 
             return outputAccel;

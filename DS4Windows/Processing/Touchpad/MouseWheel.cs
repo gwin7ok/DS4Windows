@@ -44,22 +44,22 @@ namespace DS4Windows.Processing.Touchpad
 
         public void touchesBegan(TouchpadEventArgs arg)
         {
-            if (arg.Touches.Length == 2)
+            if (arg.Touches!.Length == 2) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 horizontalRemainder = verticalRemainder = 0.0;
         }
 
         public void touchesMoved(TouchpadEventArgs arg, bool dragging)
         {
-            if (arg.Touches.Length != 2 || dragging)
+            if (arg.Touches!.Length != 2 || dragging) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 return;
 
-            Touch lastT0 = arg.Touches[0].PreviousTouch;
-            Touch lastT1 = arg.Touches[1].PreviousTouch;
+            Touch? lastT0 = arg.Touches[0].PreviousTouch;
+            Touch? lastT1 = arg.Touches[1].PreviousTouch;
             Touch T0 = arg.Touches[0];
             Touch T1 = arg.Touches[1];
 
             //mouse wheel 120 == 1 wheel click according to Windows API
-            double lastMidX = (lastT0.HwX + lastT1.HwX) / 2d, lastMidY = (lastT0.HwY + lastT1.HwY) / 2d,
+            double lastMidX = (lastT0!.HwX + lastT1!.HwX) / 2d, lastMidY = (lastT0.HwY + lastT1.HwY) / 2d, // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                currentMidX = (T0.HwX + T1.HwX) / 2d, currentMidY = (T0.HwY + T1.HwY) / 2d;
 
             // Express coefficient as a ratio

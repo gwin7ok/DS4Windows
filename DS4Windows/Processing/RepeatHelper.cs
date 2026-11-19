@@ -62,7 +62,7 @@ namespace DS4Windows.Processing
         {
         }
 
-        private void TimerCallback(object state)
+        private void TimerCallback(object? state)
         {
             try
             {

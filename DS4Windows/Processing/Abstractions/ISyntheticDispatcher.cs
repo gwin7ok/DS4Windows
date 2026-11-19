@@ -13,10 +13,10 @@ namespace DS4Windows.Processing.Abstractions
         uint ResolveNativeKey(ushort kvpKey);
 
         /// <summary>キーの押下を送り、合成状態の送出時刻・回数を更新する。出力先が無い（ハンドラ未決定）ときは何もしない。</summary>
-        void SendPress(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler = null);
+        void SendPress(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler = null);
 
         /// <summary>キーの解放を送り、合成状態のカウントをクリアする。出力先が無い（ハンドラ未決定）ときは何もしない。</summary>
-        void SendRelease(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler = null);
+        void SendRelease(int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler = null);
 
         /// <summary>キーの送出時刻と連打回数をリセットする。</summary>
         void ResetKeyTiming(int device, ushort kvpKey);

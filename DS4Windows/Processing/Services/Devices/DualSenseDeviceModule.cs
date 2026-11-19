@@ -20,7 +20,7 @@ namespace DS4Windows.Processing.Services.Devices
         public override List<DS4Controls> GetKnownExtraButtons(InputDeviceCore device)
         {
             List<DS4Controls> result = new List<DS4Controls>();
-            DS4Windows.Input.Devices.DualSenseDevice tempDev = device as DS4Windows.Input.Devices.DualSenseDevice;
+            DS4Windows.Input.Devices.DualSenseDevice? tempDev = device as DS4Windows.Input.Devices.DualSenseDevice;
             if (tempDev != null &&
                 tempDev.SubType == DS4Windows.Input.Devices.DualSenseDevice.DeviceSubType.DSEdge)
             {
@@ -34,9 +34,9 @@ namespace DS4Windows.Processing.Services.Devices
 
         public override void HookSettings(InputDeviceCore device, Func<int> activeControllers)
         {
-            DS4Windows.Input.Devices.DualSenseDevice tempDSDev = device as DS4Windows.Input.Devices.DualSenseDevice;
+            DS4Windows.Input.Devices.DualSenseDevice? tempDSDev = device as DS4Windows.Input.Devices.DualSenseDevice;
 
-            DualSenseControllerOptions dSOpts = tempDSDev.NativeOptionsStore;
+            DualSenseControllerOptions dSOpts = tempDSDev!.NativeOptionsStore; // 実行中は設定済み（null なら従来どおり NullReferenceException）
             dSOpts.LedModeChanged += (sender, e) => { tempDSDev.CheckControllerNumDeviceSettings(activeControllers()); };
         }
 

@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Services.Devices
         /// ホストを構築しない昇格した補助プロセス（デバイスの再有効化のみ）用。設定値は使わない（列挙はしない）。
         /// </summary>
         public InputDeviceRegistryAdapter()
-            : this(new InputDeviceRegistry(null, System.Array.Empty<IInputDeviceCartridge>()))
+            : this(new InputDeviceRegistry(null!, System.Array.Empty<IInputDeviceCartridge>())) // 設定値は使わない（列挙しない）
         {
         }
 
@@ -51,12 +51,12 @@ namespace DS4Windows.Processing.Services.Devices
             return true;
         }
 
-        public void OnRemoval(object sender, EventArgs e)
+        public void OnRemoval(object? sender, EventArgs e)
         {
             _devices.On_Removal(sender, e);
         }
 
-        public void UpdateSerial(object sender, EventArgs e)
+        public void UpdateSerial(object? sender, EventArgs e)
         {
             _devices.UpdateSerial(sender, e);
         }
@@ -79,19 +79,19 @@ namespace DS4Windows.Processing.Services.Devices
             remove => _devices.RequestElevation -= value;
         }
 
-        public PrepareInitDelegate PrepareDS4Init
+        public PrepareInitDelegate? PrepareDS4Init
         {
             get => _devices.PrepareDS4Init;
             set => _devices.PrepareDS4Init = value;
         }
 
-        public PrepareInitDelegate PostDS4Init
+        public PrepareInitDelegate? PostDS4Init
         {
             get => _devices.PostDS4Init;
             set => _devices.PostDS4Init = value;
         }
 
-        public CheckPendingDevice PreparePendingDevice
+        public CheckPendingDevice? PreparePendingDevice
         {
             get => _devices.PreparePendingDevice;
             set => _devices.PreparePendingDevice = value;

@@ -15,10 +15,10 @@ namespace DS4Windows.Processing.Abstractions
         int SlotCount { get; }
 
         /// <summary>そのスロットのコントローラー。未接続・範囲外・サービス停止中は null。</summary>
-        IControllerSlotView GetSlot(int slot);
+        IControllerSlotView? GetSlot(int slot);
 
         /// <summary>接続中のコントローラーの一覧。機器の集合のロックの内側で作った複製で、並びは接続の順。</summary>
-        IReadOnlyList<ControllerSlotEntry> Snapshot();
+        IReadOnlyList<ControllerSlotEntry>? Snapshot();
 
         /// <summary>コントローラーが接続されスロットに入ったとき（サービスのスレッドで発生する）。</summary>
         event EventHandler<ControllerSlotChangedEventArgs> SlotChanged;

@@ -12,14 +12,14 @@ namespace DS4Windows.Processing
     /// </summary>
     public readonly struct ProfileUntriggerSnapshot
     {
-        public ProfileUntriggerSnapshot(SpecialAction action, int index)
+        public ProfileUntriggerSnapshot(SpecialAction? action, int index)
         {
             Action = action;
             Index = index;
         }
 
         /// <summary>復帰の合図となるスペシャルアクション。無いときは null。</summary>
-        public SpecialAction Action { get; }
+        public SpecialAction? Action { get; }
 
         public int Index { get; }
     }

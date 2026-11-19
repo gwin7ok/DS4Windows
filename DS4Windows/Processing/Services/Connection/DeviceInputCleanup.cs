@@ -52,7 +52,7 @@ namespace DS4Windows.Processing.Services.Connection
                                 catch { }
                             }
                             try { ds.keyPresses.Clear(); } catch { }
-                            try { ds.nativeKeyAlias.Clear(); } catch { }
+                            try { ds.nativeKeyAlias!.Clear(); } catch { } // 実行中は設定済み（null なら従来どおり NullReferenceException）
                         }
                     }
                 }

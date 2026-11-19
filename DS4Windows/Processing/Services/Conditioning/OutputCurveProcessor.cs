@@ -190,7 +190,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                     byte tempOutY = (byte)(tempRatioY * maxY + 128.0);
 
                     // Perform curve based on byte values from vector
-                    byte tempX = bezier.arrayBezierLUT[tempOutX];
+                    byte tempX = bezier.arrayBezierLUT![tempOutX]; // 実行中は設定済み（null なら従来どおり NullReferenceException）
                     byte tempY = bezier.arrayBezierLUT[tempOutY];
 
                     // Calculate new ratio
@@ -203,7 +203,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 }
                 else if (deadzoneType == StickDeadZoneInfo.DeadZoneType.Axial)
                 {
-                    x = bezier.arrayBezierLUT[x];
+                    x = bezier.arrayBezierLUT![x]; // 実行中は設定済み（null なら従来どおり NullReferenceException）
                     y = bezier.arrayBezierLUT[y];
                 }
             }
@@ -248,7 +248,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             }
             else if (mode == 6)
             {
-                value = bezier.arrayBezierLUT[value];
+                value = bezier.arrayBezierLUT![value]; // 実行中は設定済み（null なら従来どおり NullReferenceException）
             }
         }
     }

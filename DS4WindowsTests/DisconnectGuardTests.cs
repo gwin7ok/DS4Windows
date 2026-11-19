@@ -35,11 +35,11 @@ namespace DS4WindowsTests
                 "_profileSlotApplier.ReleaseSlot(ind);",
                 "AppLogger.LogToTray(removed);",
                 "device.IsRemoved = true;",
-                "host.Controllers[ind] = null;",
+                "host.Controllers[ind] = null!;",
                 "_oscService.ResetDeviceState(ind);",
                 "host.SlotManager.RemoveController(device, ind);",
                 "_oscService.SendPlug(ind, false);",
-                "host.TouchPads[ind] = null;",
+                "host.TouchPads[ind] = null!;",
                 "_latencyMonitor.Reset(ind);",
             };
 

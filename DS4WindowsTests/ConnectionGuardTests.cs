@@ -70,8 +70,8 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Processing/Services/Devices/DeviceRegistryHooks.cs");
             if (text == null) return;
 
-            Assert.Contains("_deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, _deviceOptions);", text);
-            Assert.Contains("_deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(_deviceOptions);", text);
+            Assert.Contains("_deviceModules.Resolve(device.DeviceType).OnDeviceInit(device, _deviceOptions!);", text);
+            Assert.Contains("_deviceModules.Resolve(metaInfo.inputDevType).IsEnabled(_deviceOptions!);", text);
 
             // 接続の組み立て（E-6f1 で DeviceConnector へ移った）が呼ぶもの
             string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");

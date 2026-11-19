@@ -52,10 +52,10 @@ namespace DS4Windows.Processing.Services.Connection
         // ActiveOutDevType の配列参照は再代入されない（要素書込みのみ）。旧 ControlService と同じ配列を指す
         private OutContType[] ActiveOutDevType => _activeOutDevType;
 
-        public void OnRemoval(object sender, EventArgs e)
+        public void OnRemoval(object? sender, EventArgs e)
         {
             IDeviceSlotState host = _host;
-            InputDeviceCore device = (InputDeviceCore)sender;
+            InputDeviceCore device = (InputDeviceCore)sender!; // 購読元が自分自身を渡す
             int ind = -1;
             for (int i = 0, arlength = host.Controllers.Length; ind == -1 && i < arlength; i++)
             {
@@ -120,7 +120,7 @@ namespace DS4Windows.Processing.Services.Connection
 
                     device.IsRemoved = true;
                     device.Synced = false;
-                    host.Controllers[ind] = null;
+                    host.Controllers[ind] = null!; // 空きスロットは null で表す（従来どおり）
                     _oscService.ResetDeviceState(ind);
                     //eventDispatcher.Invoke(() =>
                     //{
@@ -131,7 +131,7 @@ namespace DS4Windows.Processing.Services.Connection
                     }
                     //});
 
-                    host.TouchPads[ind] = null;
+                    host.TouchPads[ind] = null!; // 空きスロットは null で表す（従来どおり）
                     _latencyMonitor.Reset(ind);
                     _profileSettings.UseDInputOnlyArray[ind] = true;
                     ActiveOutDevType[ind] = OutContType.None;
@@ -151,10 +151,10 @@ namespace DS4Windows.Processing.Services.Connection
             }
         }
 
-        public void OnSyncChange(object sender, EventArgs e)
+        public void OnSyncChange(object? sender, EventArgs e)
         {
             IDeviceSlotState host = _host;
-            InputDeviceCore device = (InputDeviceCore)sender;
+            InputDeviceCore device = (InputDeviceCore)sender!; // 購読元が自分自身を渡す
             int ind = -1;
             for (int i = 0, arlength = _controllerSlotLimit; ind == -1 && i < arlength; i++)
             {
@@ -190,10 +190,10 @@ namespace DS4Windows.Processing.Services.Connection
             }
         }
 
-        public void OnSerialChange(object sender, EventArgs e)
+        public void OnSerialChange(object? sender, EventArgs e)
         {
             IDeviceSlotState host = _host;
-            InputDeviceCore device = (InputDeviceCore)sender;
+            InputDeviceCore device = (InputDeviceCore)sender!; // 購読元が自分自身を渡す
             int ind = -1;
             for (int i = 0, arlength = ControllerLimits.MaxControllerCount; ind == -1 && i < arlength; i++)
             {

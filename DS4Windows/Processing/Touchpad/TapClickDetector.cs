@@ -88,10 +88,10 @@ namespace DS4Windows.Processing.Touchpad
             // 調査用 Trace（動作は変えない）: タップ判定の入力値と成否
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} ended sens={tapSensitivity} doubleTap={doubleTap} " +
                 $"elapsedMs={(test - pastTime).TotalMilliseconds:F0} limitMs={tapSensitivity * 2} buttonPressed={arg.TouchButtonPressed} tappedOnce={tappedOnce} " +
-                $"dx={Math.Abs(firstTouch.HwX - arg.Touches[0].HwX)} dy={Math.Abs(firstTouch.HwY - arg.Touches[0].HwY)}");
+                $"dx={Math.Abs(firstTouch.HwX - arg.Touches![0].HwX)} dy={Math.Abs(firstTouch.HwY - arg.Touches[0].HwY)}"); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             if (test <= (pastTime + TimeSpan.FromMilliseconds((double)tapSensitivity * 2)) && !arg.TouchButtonPressed && !tappedOnce)
             {
-                if (Math.Abs(firstTouch.HwX - arg.Touches[0].HwX) < TapMaxMoveHw && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < TapMaxMoveHw)
+                if (Math.Abs(firstTouch.HwX - arg.Touches![0].HwX) < TapMaxMoveHw && Math.Abs(firstTouch.HwY - arg.Touches[0].HwY) < TapMaxMoveHw) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 {
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} tap accepted (doubleTap={doubleTap})");
                     if (doubleTap)

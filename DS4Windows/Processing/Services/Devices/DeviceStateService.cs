@@ -29,7 +29,7 @@ namespace DS4Windows.Processing.Services.Devices
 
         public void MarkConnected(int slotIndex) => _config.firstConnectionAfterStartup[slotIndex] = false;
 
-        public bool IsFirstConnection(int slotIndex, string macAddress)
+        public bool IsFirstConnection(int slotIndex, string? macAddress)
         {
             if (string.IsNullOrEmpty(macAddress))
                 return IsFirstConnection(slotIndex);   // 有効なシリアルがない: 従来のスロット単位
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Services.Devices
             }
         }
 
-        public void MarkConnected(int slotIndex, string macAddress)
+        public void MarkConnected(int slotIndex, string? macAddress)
         {
             MarkConnected(slotIndex);
             if (string.IsNullOrEmpty(macAddress)) return;
@@ -51,7 +51,7 @@ namespace DS4Windows.Processing.Services.Devices
             }
         }
 
-        public void RememberProfile(string macAddress, string profileName)
+        public void RememberProfile(string? macAddress, string profileName)
         {
             if (string.IsNullOrEmpty(macAddress) || string.IsNullOrWhiteSpace(profileName)) return;
 
@@ -61,13 +61,13 @@ namespace DS4Windows.Processing.Services.Devices
             }
         }
 
-        public string GetRememberedProfile(string macAddress)
+        public string? GetRememberedProfile(string? macAddress)
         {
             if (string.IsNullOrEmpty(macAddress)) return null;
 
             lock (_macLock)
             {
-                return _rememberedProfiles.TryGetValue(macAddress, out string profile) ? profile : null;
+                return _rememberedProfiles.TryGetValue(macAddress, out string? profile) ? profile : null;
             }
         }
 
@@ -89,7 +89,7 @@ namespace DS4Windows.Processing.Services.Devices
         // ---- Phase6-Step2-4 (PR-4): デバイスのシリアル変更通知 ----
         // Phase7-Step10d W4: 旧 Global.DeviceSerialChange（static イベント）の実体をこのサービスへ移した（通知の内容は同一）。
         // 本体に購読者はいない（旧 Global のイベントも同様）。
-        public event EventHandler<SerialChangeArgs> DeviceSerialChange;
+        public event EventHandler<SerialChangeArgs>? DeviceSerialChange;
 
         public void OnDeviceSerialChange(object sender, int slotIndex, string serial)
         {

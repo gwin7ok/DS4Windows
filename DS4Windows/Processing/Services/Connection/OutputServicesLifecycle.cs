@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Services.Connection
             }
 
             string logKey = "Log_Svc_VigemConnectFailed";
-            object[] logArgs = null;
+            object[]? logArgs = null;
             if (!_environmentService.IsViGEmBusInstalled())
             {
                 logKey = "Log_Svc_VigemNotInstalled";

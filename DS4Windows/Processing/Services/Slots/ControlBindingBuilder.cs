@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
@@ -26,18 +27,18 @@ namespace DS4Windows.Processing.Services.Slots
     public sealed class ControlBindingBuilder : IControlBindingBuilder
     {
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IMacroPlayer _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
-        private readonly IControlExtrasPort _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
-        private readonly ISpecialActionOutputFactory _outputFactory;   // Phase10-Step4 W4: SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
+        private readonly IMacroPlayer? _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
+        private readonly IControlExtrasPort? _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
+        private readonly ISpecialActionOutputFactory? _outputFactory;   // Phase10-Step4 W4: SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
         private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: Key／Macro／Special の束縛の組み立て（SA タブ側と同じ部品）
-        private readonly ISpecialActionOutputFactory _controlsFactory;   // Phase10-Step6 I4b: Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
+        private readonly ISpecialActionOutputFactory? _controlsFactory;   // Phase10-Step6 I4b: Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
 
         /// <summary>Program の引数に書くと、ウィンドウを隠して起動する語（SA の仕様。大文字小文字不問）。</summary>
         public const string HiddenKeyword = "$hidden";
 
-        public ControlBindingBuilder(IProfileSettingsService profileSettings, IMacroPlayer macroPlayer = null,
-            IControlExtrasPort extrasPort = null, ISpecialActionOutputFactory outputFactory = null,
-            IManagedActionManager manager = null, IKeyButtonControllerRegistry controllers = null)
+        public ControlBindingBuilder(IProfileSettingsService profileSettings, IMacroPlayer? macroPlayer = null,
+            IControlExtrasPort? extrasPort = null, ISpecialActionOutputFactory? outputFactory = null,
+            IManagedActionManager? manager = null, IKeyButtonControllerRegistry? controllers = null)
         {
             _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
             _macroPlayer = macroPlayer;
@@ -78,7 +79,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// <summary>
         /// Phase8-Step7 7.8c: Macro の新経路の条件（Key と同じ形。Macro、手順あり、Extras なし）を満たすか。満たすとき、手順を返す。
         /// </summary>
-        public static bool TryInterpretMacro(DS4ControlSettings dcs, out int[] steps)
+        public static bool TryInterpretMacro(DS4ControlSettings dcs, [NotNullWhen(true)] out int[]? steps)
         {
             steps = null;
             if (dcs == null) return false;
@@ -278,14 +279,14 @@ namespace DS4Windows.Processing.Services.Slots
                         break;
                     }
                 case DS4ControlSettings.ActionType.Key:
-                    if (keys && ControlsAssignmentReader.TryReadKey(device, dcs, out AssignmentDefinition keyDefinition, out SpecialAction keyIdentity))
+                    if (keys && ControlsAssignmentReader.TryReadKey(device, dcs, out AssignmentDefinition? keyDefinition, out SpecialAction? keyIdentity))
                     {
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
                         AddFromDefinition(device, keyDefinition, keyIdentity, result);
                     }
                     break;
                 case DS4ControlSettings.ActionType.Macro:
-                    if (macros && ControlsAssignmentReader.TryReadMacro(device, dcs, out AssignmentDefinition macroDefinition, out SpecialAction macroIdentity))
+                    if (macros && ControlsAssignmentReader.TryReadMacro(device, dcs, out AssignmentDefinition? macroDefinition, out SpecialAction? macroIdentity))
                     {
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
                         AddFromDefinition(device, macroDefinition, macroIdentity, result);
@@ -293,7 +294,7 @@ namespace DS4Windows.Processing.Services.Slots
                     break;
                 case DS4ControlSettings.ActionType.Special:
                     // Phase10-Step6 I3: 定義と、実行時の状態の入れ物（合成の SpecialAction）は、読み込みの部品が作る
-                    if (_outputFactory != null && ControlsAssignmentReader.TryReadSpecial(device, dcs, out AssignmentDefinition special, out SpecialAction identity))
+                    if (_outputFactory != null && ControlsAssignmentReader.TryReadSpecial(device, dcs, out AssignmentDefinition? special, out SpecialAction? identity))
                     {
                         // 出力を作れない種別（窓口が未接続のテスト）は、束縛を 1 つも作らない（Extras も含め、dcs 全体を作らない）
                         TriggerBinding binding = _assignmentBuilder.Build(device, special, identity, -1);
@@ -315,7 +316,7 @@ namespace DS4Windows.Processing.Services.Slots
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
 
                             // Phase9: マウスのボタン等の Toggle も、SA の Button と同じ部品（ボタンごとの状態）で処理する。作れないときは、従来の束縛
-                            if (toggle && ControlsAssignmentReader.TryReadMouseToggle(device, dcs, out AssignmentDefinition mouseToggle, out SpecialAction mouseToggleIdentity))
+                            if (toggle && ControlsAssignmentReader.TryReadMouseToggle(device, dcs, out AssignmentDefinition? mouseToggle, out SpecialAction? mouseToggleIdentity))
                             {
                                 TriggerBinding mouseToggleBinding = _assignmentBuilder.Build(device, mouseToggle, mouseToggleIdentity, -1);
                                 if (mouseToggleBinding != null)
@@ -333,7 +334,7 @@ namespace DS4Windows.Processing.Services.Slots
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
 
                             // Phase9: マウスの移動・アナログのホイールの Toggle も、SA の Button と同じ部品で処理する（以前は、Toggle が移動に効かなかった）。作れないときは、従来の束縛
-                            if (toggle && ControlsAssignmentReader.TryReadAnalogMouseToggle(device, dcs, out AssignmentDefinition analogToggle, out SpecialAction analogToggleIdentity))
+                            if (toggle && ControlsAssignmentReader.TryReadAnalogMouseToggle(device, dcs, out AssignmentDefinition? analogToggle, out SpecialAction? analogToggleIdentity))
                             {
                                 TriggerBinding analogToggleBinding = _assignmentBuilder.Build(device, analogToggle, analogToggleIdentity, -1);
                                 if (analogToggleBinding != null)
@@ -352,7 +353,7 @@ namespace DS4Windows.Processing.Services.Slots
                             // Phase9（Phase9-ControlsPadToggle-Plan.md）: パッドへの Toggle は、SA の Button と同じ部品（ButtonOutputAction）で処理する。
                             // 以前は ControlToggleOutputAction（マウスのボタンの Toggle の仕組み）しかなく、仮想パッドのボタンには Toggle が効かなかった。
                             // 部品を作れない（窓口が未接続のテスト）ときは、従来の束縛にする
-                            if (toggle && ControlsAssignmentReader.TryReadPadToggle(device, dcs, out AssignmentDefinition padToggle, out SpecialAction padToggleIdentity))
+                            if (toggle && ControlsAssignmentReader.TryReadPadToggle(device, dcs, out AssignmentDefinition? padToggle, out SpecialAction? padToggleIdentity))
                             {
                                 TriggerBinding padToggleBinding = _assignmentBuilder.Build(device, padToggle, padToggleIdentity, -1);
                                 if (padToggleBinding != null)
@@ -374,7 +375,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// <summary>
         /// Phase10-Step4 W4: SA 専用の種別の割り当てが、新経路の条件（<see cref="ControlsSpecialTypeTable"/> の種別で、型のある項目を持つ）を満たすか。
         /// </summary>
-        public static bool TryInterpretSpecial(DS4ControlSettings dcs, out ControlSpecialItem item)
+        public static bool TryInterpretSpecial(DS4ControlSettings dcs, [NotNullWhen(true)] out ControlSpecialItem? item)
         {
             item = null;
             if (dcs == null) return false;

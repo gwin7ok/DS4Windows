@@ -396,11 +396,11 @@ namespace DS4Windows.Input
             }
         }
 
-        public void UpdateSerial(object sender, EventArgs e)
+        public void UpdateSerial(object? sender, EventArgs e)
         {
             lock (Devices)
             {
-                InputDeviceCore device = (InputDeviceCore)sender;
+                InputDeviceCore device = (InputDeviceCore)sender!; // 購読元が自分自身を渡す
                 if (device != null)
                 {
                     string devPath = device.HidDevice.DevicePath;

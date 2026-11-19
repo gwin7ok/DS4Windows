@@ -7,8 +7,8 @@ namespace DS4Windows.Processing.Abstractions
 {
     public interface IProfileActionProvider
     {
-        IReadOnlyList<string> GetProfileActionNames(int deviceIndex);
-        SpecialAction GetProfileAction(int deviceIndex, string actionName);
+        IReadOnlyList<string>? GetProfileActionNames(int deviceIndex);
+        SpecialAction? GetProfileAction(int deviceIndex, string actionName);
 
         // ---- Phase6-Step2-5 (PR-5): プロファイルに設定されたスペシャルアクション数（毎レポート評価。割り当てなし）----
         int GetProfileActionCount(int deviceIndex);
@@ -21,7 +21,7 @@ namespace DS4Windows.Processing.Abstractions
         /// （<see cref="GetProfileActionNames"/> は毎回 <c>ToArray()</c> するため、ホットパスでの
         /// 割り当てを避けたい呼び出し元は本メンバを使う）。呼び出し元は返された参照を変更しないこと。
         /// </summary>
-        IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex);
+        IReadOnlyList<string>? GetProfileActionsRaw(int deviceIndex);
 
         /// <summary>定義済みのスペシャルアクションの総数（プロファイルのアクション名から引いた番号の範囲の検査に使う。毎レポート呼ぶため、割り当てなし）。</summary>
         int ActionDefinitionCount { get; }

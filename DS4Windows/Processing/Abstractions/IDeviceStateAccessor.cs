@@ -6,6 +6,6 @@ namespace DS4Windows.Processing.Abstractions
 {
     public interface IDeviceStateAccessor
     {
-        InputDeviceCore GetController(int deviceIndex);
+        InputDeviceCore? GetController(int deviceIndex);
     }
 }

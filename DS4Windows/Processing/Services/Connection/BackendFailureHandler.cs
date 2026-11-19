@@ -29,7 +29,7 @@ namespace DS4Windows.Processing.Services.Connection
             _virtualPad.BackendFailure += OnBackendFailure;
         }
 
-        private void OnBackendFailure(object sender, int errorCode)
+        private void OnBackendFailure(object? sender, int errorCode)
         {
             _eventThread.Queue((Action)(() =>
             {

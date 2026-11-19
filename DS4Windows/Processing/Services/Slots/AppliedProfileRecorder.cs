@@ -30,7 +30,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         // 再接続（同じコントローラー）のとき、切断前のプロファイルを適用するため（Reconnect-Profile-PerController-Fix-Plan.md）。適用のスレッドから呼ばれる。
-        private void RememberAppliedProfile(object sender, SelectedProfileChangedEventArgs e)
+        private void RememberAppliedProfile(object? sender, SelectedProfileChangedEventArgs e)
         {
             try
             {

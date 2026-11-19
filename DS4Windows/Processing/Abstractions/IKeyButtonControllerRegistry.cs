@@ -14,13 +14,13 @@ namespace DS4Windows.Processing.Abstractions
     public interface IKeyButtonControllerRegistry
     {
         /// <summary>モード指定でコントローラーを得る（無ければ生成。アクション名が null のときは "&lt;mapping&gt;"）。</summary>
-        KeyButtonActionController GetOrCreate(int device, KeyButtonActionController.Mode mode, string actionName = null);
+        KeyButtonActionController? GetOrCreate(int device, KeyButtonActionController.Mode mode, string? actionName = null);
 
         /// <summary>SpecialAction 指定でコントローラーを得る（無ければ生成）。</summary>
-        KeyButtonActionController GetOrCreate(int device, SpecialAction sa);
+        KeyButtonActionController? GetOrCreate(int device, SpecialAction sa);
 
         /// <summary>コントローラーを得て、<c>IActionController</c> のアダプターで包んで返す（旧: <c>Mapping.GetOrCreateKeyButtonControllerForAction</c>）。</summary>
-        DS4Windows.Processing.Actions.IActionController GetOrCreateForAction(int device, SpecialAction sa);
+        DS4Windows.Processing.Actions.IActionController? GetOrCreateForAction(int device, SpecialAction sa);
 
         /// <summary>指定デバイスのコントローラーをすべて破棄して登録簿から外す（旧: <c>Mapping.ClearKeyButtonControllersForDevice</c>）。</summary>
         void ClearForDevice(int device);

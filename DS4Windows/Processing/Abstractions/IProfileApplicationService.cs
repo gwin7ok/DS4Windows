@@ -29,7 +29,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <returns>適用の成否（true: 成功, false: 失敗）</returns>
         bool ApplyProfile(int deviceIndex, string profileName, bool isTemp = false, bool launchProgram = false,
                     ProfileChangeSource source = ProfileChangeSource.Manual,
-                    string prolog = null);
+                    string? prolog = null);
 
         /// <summary>
         /// 入力の読み取りを一時停止（Halt）せずにプロファイルを適用します（接続処理中など、呼び出し元がすでに停止している経路用。
@@ -37,7 +37,7 @@ namespace DS4Windows.Processing.Abstractions
         /// </summary>
         bool ApplyProfileWithoutHalt(int deviceIndex, string profileName, bool isTemp = false, bool launchProgram = false,
                     ProfileChangeSource source = ProfileChangeSource.Manual,
-                    string prolog = null);
+                    string? prolog = null);
 
         /// <summary>
         /// Phase8-Step5 W2（Phase8-Step5-Plan.md §3.2。Q6＝A）: そのデバイスのスペシャルアクションから束縛を組み立てて、登録簿へ差し替える。

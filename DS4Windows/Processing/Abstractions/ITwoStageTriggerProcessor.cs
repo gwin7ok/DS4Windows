@@ -17,6 +17,6 @@ namespace DS4Windows.Processing.Abstractions
         /// </summary>
         void Process(int device, byte triggerValue, byte triggerRawValue,
             ref DS4ControlSettings inputSoftPull, ref DS4ControlSettings inputFullPull, TriggerOutputSettings outputSettings,
-            TwoStageTriggerMappingData twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
+            TwoStageTriggerMappingData twoStageData, out DS4ControlSettings? outputSoftPull, out DS4ControlSettings? outputFullPull);
     }
 }

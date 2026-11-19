@@ -41,6 +41,22 @@ namespace DS4WindowsTests
             "Core/Platform/",
             "Input/",
             "Output/",
+            "Processing/Abstractions/",
+            "Processing/Gyro/",
+            "Processing/Macro/",
+            "Processing/Services/",
+            "Processing/Synthetic/",
+            "Processing/Touchpad/",
+            "Processing/ControllerSlotManager.cs",
+            "Processing/ControllerStateFieldMapping.cs",
+            "Processing/DS4TimedStickAxisValue.cs",
+            "Processing/DeviceRuntimeState.cs",
+            "Processing/Mapping.cs",
+            "Processing/MappingDoneEventArgs.cs",
+            "Processing/PostMapStickData.cs",
+            "Processing/ProfileUntriggerSnapshot.cs",
+            "Processing/RepeatHelper.cs",
+            "Processing/StickMotionState.cs",
         };
 
         /// <summary><c>#nullable enable</c> のファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>

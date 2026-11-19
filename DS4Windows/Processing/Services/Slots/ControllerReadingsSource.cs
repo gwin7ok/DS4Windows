@@ -37,7 +37,7 @@ namespace DS4Windows.Processing.Services.Slots
         {
             info = default;
             InputDeviceCore[] controllers = _slotState.Controllers;
-            InputDeviceCore device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
+            InputDeviceCore? device = controllers != null && slot >= 0 && slot < controllers.Length ? controllers[slot] : null;
             if (device == null || !device.IsAlive())
                 return false;
 
