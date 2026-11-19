@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using DS4Windows.Core.Model;
@@ -85,6 +86,8 @@ namespace DS4Windows.UI
             this.rumbleTest = rumbleTest ?? throw new ArgumentNullException(nameof(rumbleTest));
             this.expose = expose;
             bindingVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            DataContext = bindingVM;
+            bindingVM.CloseRequested += (s, e) => Close();
 
             if (bindingVM.Control != DS4Windows.Core.Model.DS4Controls.None)
             {
@@ -100,9 +103,6 @@ namespace DS4Windows.UI
             highlightLb.Visibility = Visibility.Hidden;
 
             // コントローラー／ボタンの割り当ての初期化（SA のモードも Control のモードも同じ）
-            InitButtonBindings();
-
-            InitKeyBindings();
             InitInfoMaps();
 
             InitPickerFace(bindingVM.OutputType);
@@ -164,48 +164,8 @@ namespace DS4Windows.UI
             highlightLb.Visibility = Visibility.Hidden;
         }
 
-        private void OutputKeyBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Button button = sender as Button;
-            OutBinding binding = bindingVM.ActionBinding;
-            binding.outputType = OutBinding.OutType.Key;
-            if (associatedBindings.TryGetValue(button, out BindAssociation bind))
-            {
-                binding.outputType = OutBinding.OutType.Key;
-                binding.outkey = bind.outkey;
-            }
-
-            Close();
-        }
-
-        /// <summary>
-        /// Phase11 W6 K-W6-6: ユーザーが、このピッカーで「Default」を選んだ（Default ボタン、または既定の割り当てと同じ Pad のボタン）か。
-        /// × で何も選ばずに閉じたときは false。割り当てエディターが、種別の一覧を Default へ切り替えるかの判断に使う
-        /// （以前は、Default のボタンで種別を Output Key などに変えてピッカーを開き、× で閉じただけで Default に戻って見えた）。
-        /// </summary>
-        public bool DefaultPicked { get; private set; }
-
-        private void OutputButtonBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OutBinding binding = bindingVM.ActionBinding;
-            DS4Windows.Core.Model.X360Controls defaultControl = bindingVM.DefaultMappingFor(binding.input);
-            Button button = sender as Button;
-            if (associatedBindings.TryGetValue(button, out BindAssociation bind))
-            {
-                if (defaultControl == bind.control)
-                {
-                    DefaultPicked = true;
-                    binding.outputType = OutBinding.OutType.Default;
-                }
-                else
-                {
-                    binding.outputType = OutBinding.OutType.Button;
-                    binding.control = bind.control;
-                }
-            }
-
-            Close();
-        }
+        /// <summary>ユーザーが「Default」を選んだか（× で閉じたときは false）。判断は ViewModel が持つ。</summary>
+        public bool DefaultPicked => bindingVM.DefaultPicked;
 
         private void ChangeForCurrentAction()
         {
@@ -291,8 +251,37 @@ namespace DS4Windows.UI
             }
         }
 
+        /// <summary>
+        /// ボタンと割り当ての対応表を作る。XAML に置いたボタンは、<c>Command</c> のバインディングと <c>CommandParameter</c> から読み、
+        /// コントローラーの図が生成するボタンは、<see cref="BindingWindowVisualizerButtons"/> の表から、コマンドを結ぶ。
+        /// 対応表は、ホバーの表示と、選択中のボタンの強調に使う。
+        /// </summary>
         private void InitInfoMaps()
         {
+            foreach (Button button in LogicalButtons(this))
+            {
+                string path = BindingOperations.GetBinding(button, System.Windows.Controls.Primitives.ButtonBase.CommandProperty)?.Path?.Path;
+                if (path == null || !(button.CommandParameter is string parameter)) continue;
+
+                if (path.EndsWith(nameof(BindingWindowViewModel.SelectKeyCommand), StringComparison.Ordinal))
+                {
+                    associatedBindings.Add(button,
+                        new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = BindingWindowViewModel.ParseKeyCode(parameter) });
+                }
+                else if (path.EndsWith(nameof(BindingWindowViewModel.SelectButtonCommand), StringComparison.Ordinal))
+                {
+                    associatedBindings.Add(button, ButtonAssociation(parameter));
+                }
+            }
+
+            foreach ((string id, string control) in BindingWindowVisualizerButtons.Table)
+            {
+                Button button = conVisualizer[id];
+                button.Command = bindingVM.SelectButtonCommand;
+                button.CommandParameter = control;
+                associatedBindings.Add(button, ButtonAssociation(control));
+            }
+
             foreach (KeyValuePair<Button, BindAssociation> pair in associatedBindings)
             {
                 Button button = pair.Key;
@@ -318,463 +307,23 @@ namespace DS4Windows.UI
             }
         }
 
-        private void InitButtonBindings()
+        private static BindAssociation ButtonAssociation(string controlName)
+            => new BindAssociation()
+            {
+                outputType = BindAssociation.OutType.Button,
+                control = (DS4Windows.Core.Model.X360Controls)Enum.Parse(typeof(DS4Windows.Core.Model.X360Controls), controlName),
+            };
+
+        private static IEnumerable<Button> LogicalButtons(DependencyObject root)
         {
-            associatedBindings.Add(aBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.A });
-            aBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(bBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.B });
-            bBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(xBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.X });
-            xBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(yBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.Y });
-            yBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(lbBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LB });
-            lbBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(ltBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LT });
-            ltBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rbBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RB });
-            rbBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rtBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RT });
-            rtBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(backBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.Back });
-            backBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(startBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.Start });
-            startBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(guideBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.Guide });
-            guideBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(lsbBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LS });
-            lsbBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(lsuBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LYNeg });
-            lsuBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(lsrBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LXPos });
-            lsrBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(lsdBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LYPos });
-            lsdBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(lslBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LXNeg });
-            lslBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(dpadUBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.DpadUp });
-            dpadUBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(dpadRBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.DpadRight });
-            dpadRBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(dpadDBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.DpadDown });
-            dpadDBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(dpadLBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.DpadLeft });
-            dpadLBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rsbBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RS });
-            rsbBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rsuBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RYNeg });
-            rsuBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rsrBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RXPos });
-            rsrBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rsdBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RYPos });
-            rsdBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(rslBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RXNeg });
-            rslBtn.Click += OutputButtonBtn_Click;
-
-            associatedBindings.Add(touchpadClickBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.TouchpadClick });
-            touchpadClickBtn.Click += OutputButtonBtn_Click;
-
-            associatedBindings.Add(mouseUpBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.MouseUp });
-            mouseUpBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseDownBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.MouseDown });
-            mouseDownBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseLeftBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.MouseLeft });
-            mouseLeftBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseRightBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.MouseRight });
-            mouseRightBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseLBBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.LeftMouse });
-            mouseLBBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseMBBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.MiddleMouse });
-            mouseMBBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseRBBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.RightMouse });
-            mouseRBBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouse4Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.FourthMouse });
-            mouse4Btn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouse5Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.FifthMouse });
-            mouse5Btn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseWheelUBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.WUP });
-            mouseWheelUBtn.Click += OutputButtonBtn_Click;
-            associatedBindings.Add(mouseWheelDBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Button, control = DS4Windows.Core.Model.X360Controls.WDOWN });
-            mouseWheelDBtn.Click += OutputButtonBtn_Click;
-        }
-
-        private void InitKeyBindings()
-        {
-            associatedBindings.Add(escBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x1B });
-            escBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f1Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x70 });
-            f1Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f2Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x71 });
-            f2Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f3Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x72 });
-            f3Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f4Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x73 });
-            f4Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f5Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x74 });
-            f5Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f6Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x75 });
-            f6Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f7Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x76 });
-            f7Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f8Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x77 });
-            f8Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f9Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x78 });
-            f9Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f10Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x79 });
-            f10Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f11Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x7A });
-            f11Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(f12Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x7B });
-            f12Btn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(oem3Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xC0 });
-            oem3Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(oneBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x31 });
-            oneBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(twoBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x32 });
-            twoBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(threeBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x33 });
-            threeBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(fourBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x34 });
-            fourBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(fiveBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x35 });
-            fiveBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(sixBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x36 });
-            sixBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(sevenBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x37 });
-            sevenBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(eightBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x38 });
-            eightBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(nineBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x39 });
-            nineBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(zeroBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x30 });
-            zeroBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(minusBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xBD });
-            minusBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(equalBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xBB });
-            equalBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(bsBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x08 });
-            bsBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(tabBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x09 });
-            tabBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(qKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x51 });
-            qKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(wKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x57 });
-            wKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(eKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x45 });
-            eKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(rKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x52 });
-            rKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(tKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x54 });
-            tKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(yKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x59 });
-            yKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(uKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x55 });
-            uKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(iKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x49 });
-            iKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(oKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x4F });
-            oKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(pKey,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x50 });
-            pKey.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(lbracketBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xDB });
-            lbracketBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(rbracketBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xDD });
-            rbracketBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(bSlashBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xDC });
-            bSlashBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(capsLBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x14 });
-            capsLBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(aKeyBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x41 });
-            aKeyBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(sBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x53 });
-            sBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(dBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x44 });
-            dBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(fBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x46 });
-            fBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(gBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x47 });
-            gBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(hBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x48 });
-            hBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(jBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x4A });
-            jBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(kBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x4B });
-            kBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(lBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x4C });
-            lBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(semicolonBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xBA });
-            semicolonBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(aposBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xDE });
-            aposBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(enterBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x0D });
-            enterBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(lshiftBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x10 });
-            lshiftBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(zBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x5A });
-            zBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(xKeyBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x58 });
-            xKeyBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(cBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x43 });
-            cBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(vBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x56 });
-            vBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(bKeyBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x42 });
-            bKeyBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(nBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x4E });
-            nBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(mBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x4D });
-            mBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(commaBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xBC });
-            commaBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(periodBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xBE });
-            periodBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(bslashBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xBF });
-            bslashBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(rshiftBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xA1 });
-            rshiftBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(lctrlBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xA2 });
-            lctrlBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(lWinBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x5B });
-            lWinBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(laltBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x12 });
-            laltBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(spaceBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x20 });
-            spaceBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(raltBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xA5 });
-            raltBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(rwinBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x5C });
-            rwinBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(rctrlBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xA3 });
-            rctrlBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(prtBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x2C });
-            prtBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(sclBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x91 });
-            sclBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(brkBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x13 });
-            brkBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(insBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x2D });
-            insBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(homeBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x24 });
-            homeBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(pgupBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x21 });
-            pgupBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(delBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x2E });
-            delBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(endBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x23 });
-            endBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(pgdwBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x22 });
-            pgdwBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(uarrowBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x26 });
-            uarrowBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(larrowBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x25 });
-            larrowBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(darrowBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x28 });
-            darrowBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(rarrowBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x27 });
-            rarrowBtn.Click += OutputKeyBtn_Click;
-
-            associatedBindings.Add(prevTrackBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xB1 });
-            prevTrackBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(stopBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xB2 });
-            stopBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(playBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xB3 });
-            playBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(nextTrackBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xB0 });
-            nextTrackBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(volupBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xAF });
-            volupBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(numlockBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x90 });
-            numlockBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(numdivideBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x6F });
-            numdivideBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(nummultiBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x6A });
-            nummultiBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(numminusBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x6D });
-            numminusBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(voldownBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xAE });
-            voldownBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num7Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x67 });
-            num7Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num8Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x68 });
-            num8Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num9Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x69 });
-            num9Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(numplusBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x6B });
-            numplusBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(volmuteBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0xAD });
-            volmuteBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num4Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x64 });
-            num4Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num5Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x65 });
-            num5Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num6Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x66 });
-            num6Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num1Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x61 });
-            num1Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num2Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x62 });
-            num2Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num3Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x63 });
-            num3Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(num0Btn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x60 });
-            num0Btn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(numPeriodBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x6E });
-            numPeriodBtn.Click += OutputKeyBtn_Click;
-            associatedBindings.Add(numEnterBtn,
-                new BindAssociation() { outputType = BindAssociation.OutType.Key, outkey = 0x0D });
-            numEnterBtn.Click += OutputKeyBtn_Click;
+            foreach (object child in LogicalTreeHelper.GetChildren(root))
+            {
+                if (child is Button button) yield return button;
+                if (child is DependencyObject node)
+                {
+                    foreach (Button nested in LogicalButtons(node)) yield return nested;
+                }
+            }
         }
 
         private void InitPickerFace(DS4Windows.Core.Model.OutContType type)
@@ -861,25 +410,6 @@ namespace DS4Windows.UI
             dialog.ShowDialog();
             bindingVM.EndForcedColor();
             actBind.UpdateExtrasColor(MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault()));
-        }
-
-        private void DefaultBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OutBinding actBind = bindingVM.ActionBinding;
-
-            DefaultPicked = true;
-            actBind.outputType = OutBinding.OutType.Default;
-            actBind.control =bindingVM.DefaultMappingFor(actBind.input);
-
-            Close();
-        }
-
-        private void UnboundBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OutBinding actBind = bindingVM.ActionBinding;
-            actBind.outputType = OutBinding.OutType.Button;
-            actBind.control = DS4Windows.Core.Model.X360Controls.Unbound;
-            Close();
         }
 
         private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)

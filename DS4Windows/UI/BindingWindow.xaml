@@ -170,12 +170,12 @@
                             Content="{Binding DefaultBtnString,FallbackValue={lex:Loc Default}}"
                             Background="{Binding IsDefaultSelected, Converter={x:Static localConverters:OutputSelectionBrushConverter.Instance}, FallbackValue={StaticResource SecondaryBrush}}"
                             Margin="0,50,0,0"
-                            Click="DefaultBtn_Click"/>
+                            Command="{Binding DataContext.PickDefaultCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     <Button x:Name="unboundBtn"
                             Content="{lex:Loc Unbound}"
                             Background="{Binding IsUnboundSelected, Converter={x:Static localConverters:OutputSelectionBrushConverter.Instance}, FallbackValue={StaticResource SecondaryBrush}}"
                             Margin="0,10,0,0"
-                            Click="UnboundBtn_Click"/>
+                            Command="{Binding DataContext.PickUnboundCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                 </StackPanel>
 
                 <StackPanel x:Name="outConPanel"
@@ -342,53 +342,66 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="escBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x1B"
                                             Content="{lex:Loc BindingWindow_Esc}"
                                             Grid.Column="0"/>
                                     <Button x:Name="f1Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x70"
                                             Content="F1"
                                             Grid.Column="1"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f2Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x71"
                                             Content="F2"
                                             Grid.Column="2"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f3Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x72"
                                             Content="F3"
                                             Grid.Column="3"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f4Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x73"
                                             Content="F4"
                                             Grid.Column="4"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f5Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x74"
                                             Content="F5"
                                             Grid.Column="5"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f6Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x75"
                                             Content="F6"
                                             Grid.Column="6"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f7Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x76"
                                             Content="F7"
                                             Grid.Column="7"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f8Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x77"
                                             Content="F8"
                                             Grid.Column="8"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f9Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x78"
                                             Content="F9"
                                             Grid.Column="9"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f10Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x79"
                                             Content="F10"
                                             Grid.Column="10"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f11Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x7A"
                                             Content="F11"
                                             Grid.Column="11"
                                             Style="{StaticResource midMar}"/>
                                     <Button x:Name="f12Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x7B"
                                             Content="F12"
                                             Grid.Column="12"
                                             Style="{StaticResource midMar}"/>
@@ -425,57 +438,71 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="oem3Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xC0"
                                             Content="`"
                                             Grid.Column="0"/>
                                     <Button x:Name="oneBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x31"
                                             Content="1"
                                             Grid.Column="1"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="twoBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x32"
                                             Content="2"
                                             Grid.Column="2"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="threeBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x33"
                                             Content="3"
                                             Grid.Column="3"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="fourBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x34"
                                             Content="4"
                                             Grid.Column="4"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="fiveBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x35"
                                             Content="5"
                                             Grid.Column="5"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="sixBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x36"
                                             Content="6"
                                             Grid.Column="6"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="sevenBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x37"
                                             Content="7"
                                             Grid.Column="7"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="eightBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x38"
                                             Content="8"
                                             Grid.Column="8"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="nineBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x39"
                                             Content="9"
                                             Grid.Column="9"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="zeroBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x30"
                                             Content="0"
                                             Grid.Column="10"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="minusBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xBD"
                                             Content="-"
                                             Grid.Column="11"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="equalBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xBB"
                                             Content="="
                                             Grid.Column="12"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="bsBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x08"
                                             Content="{lex:Loc BindingWindow_BkSpace}"
                                             Grid.Column="13"
                                             Style="{StaticResource midMargin}"/>
@@ -511,57 +538,71 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="tabBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x09"
                                             Content="{lex:Loc BindingWindow_Tab}"
                                             Grid.Column="0"/>
                                     <Button x:Name="qKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x51"
                                             Content="Q"
                                             Grid.Column="1"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="wKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x57"
                                             Content="W"
                                             Grid.Column="2"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="eKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x45"
                                             Content="E"
                                             Grid.Column="3"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x52"
                                             Content="R"
                                             Grid.Column="4"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="tKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x54"
                                             Content="T"
                                             Grid.Column="5"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="yKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x59"
                                             Content="Y"
                                             Grid.Column="6"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="uKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x55"
                                             Content="U"
                                             Grid.Column="7"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="iKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x49"
                                             Content="I"
                                             Grid.Column="8"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="oKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x4F"
                                             Content="O"
                                             Grid.Column="9"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="pKey"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x50"
                                             Content="P"
                                             Grid.Column="10"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="lbracketBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xDB"
                                             Content="["
                                             Grid.Column="11"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rbracketBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xDD"
                                             Content="]"
                                             Grid.Column="12"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="bSlashBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xDC"
                                             Content="\"
                                             Grid.Column="13"
                                             Style="{StaticResource midMargin}"/>
@@ -597,53 +638,66 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="capsLBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x14"
                                             Content="{lex:Loc BindingWindow_Caps}"
                                             Grid.Column="0"/>
                                     <Button x:Name="aKeyBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x41"
                                             Content="A"
                                             Grid.Column="1"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="sBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x53"
                                             Content="S"
                                             Grid.Column="2"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="dBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x44"
                                             Content="D"
                                             Grid.Column="3"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="fBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x46"
                                             Content="F"
                                             Grid.Column="4"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="gBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x47"
                                             Content="G"
                                             Grid.Column="5"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="hBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x48"
                                             Content="H"
                                             Grid.Column="6"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="jBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x4A"
                                             Content="J"
                                             Grid.Column="7"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="kBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x4B"
                                             Content="K"
                                             Grid.Column="8"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="lBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x4C"
                                             Content="L"
                                             Grid.Column="9"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="semicolonBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xBA"
                                             Content=";"
                                             Grid.Column="10"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="aposBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xDE"
                                             Content="'"
                                             Grid.Column="11"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="enterBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x0D"
                                             Content="{lex:Loc BindingWindow_Enter}"
                                             Grid.Column="12"
                                             Style="{StaticResource midMargin}"/>
@@ -678,49 +732,61 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="lshiftBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x10"
                                             Content="{lex:Loc BindingWindow_LShift}"
                                             Grid.Column="0"/>
                                     <Button x:Name="zBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x5A"
                                             Content="Z"
                                             Grid.Column="1"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="xKeyBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x58"
                                             Content="X"
                                             Grid.Column="2"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="cBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x43"
                                             Content="C"
                                             Grid.Column="3"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="vBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x56"
                                             Content="V"
                                             Grid.Column="4"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="bKeyBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x42"
                                             Content="B"
                                             Grid.Column="5"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="nBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x4E"
                                             Content="N"
                                             Grid.Column="6"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="mBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x4D"
                                             Content="M"
                                             Grid.Column="7"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="commaBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xBC"
                                             Content=","
                                             Grid.Column="8"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="periodBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xBE"
                                             Content="."
                                             Grid.Column="9"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="bslashBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xBF"
                                             Content="/"
                                             Grid.Column="10"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rshiftBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xA1"
                                             Content="{lex:Loc BindingWindow_RShift}"
                                             Grid.Column="11"
                                             Style="{StaticResource midMargin}"/>
@@ -750,29 +816,36 @@
                                     </Grid.Resources>
 
                                     <Button x:Name="lctrlBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xA2"
                                             Content="{lex:Loc BindingWindow_LCtrl}"
                                             Grid.Column="0"/>
                                     <Button x:Name="lWinBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x5B"
                                             Content="{lex:Loc BindingWindow_LWin}"
                                             Grid.Column="1"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="laltBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x12"
                                             Content="{lex:Loc BindingWindow_LAlt}"
                                             Grid.Column="2"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="spaceBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x20"
                                             Content="{lex:Loc BindingWindow_Space}"
                                             Grid.Column="3"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="raltBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xA5"
                                             Content="{lex:Loc BindingWindow_RAlt}"
                                             Grid.Column="4"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rwinBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x5C"
                                             Content="{lex:Loc BindingWindow_RWin}"
                                             Grid.Column="5"
                                             Style="{StaticResource midMargin}"/>
                                     <Button x:Name="rctrlBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xA3"
                                             Content="{lex:Loc BindingWindow_RCtrl}"
                                             Grid.Column="6"
                                             Style="{StaticResource midMargin}"/>
@@ -822,32 +895,41 @@
                                                 </Style>
                                             </UniformGrid.Resources>
                                             <Button x:Name="prtBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x2C"
                                                     Content="{lex:Loc BindingWindow_Prt}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="sclBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x91"
                                                     Content="{lex:Loc BindingWindow_Scl}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="brkBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x13"
                                                     Content="{lex:Loc BindingWindow_Brk}"
                                                     Style="{StaticResource btnMargin}"/>
 
                                             <Button x:Name="insBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x2D"
                                                     Content="{lex:Loc BindingWindow_Ins}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="homeBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x24"
                                                     Content="{lex:Loc BindingWindow_Home}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="pgupBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x21"
                                                     Content="{lex:Loc BindingWindow_PgUp}"
                                                     Style="{StaticResource btnMargin}"/>
 
                                             <Button x:Name="delBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x2E"
                                                     Content="{lex:Loc BindingWindow_Del}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="endBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x23"
                                                     Content="{lex:Loc BindingWindow_End}"
                                                     Style="{StaticResource btnMargin}"/>
                                             <Button x:Name="pgdwBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x22"
                                                     Content="{lex:Loc BindingWindow_PgDown}"
                                                     Style="{StaticResource btnMargin}"/>
                                         </UniformGrid>
@@ -866,21 +948,25 @@
                                             </Grid.ColumnDefinitions>
 
                                             <Button x:Name="uarrowBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x26"
                                                     Content="↑ U"
                                                     Grid.Row="0"
                                                     Grid.Column="1"
                                                     Margin="6,0,0,6"/>
                                             <Button x:Name="larrowBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x25"
                                                     Content="← L"
                                                     Grid.Row="1"
                                                     Grid.Column="0"
                                                     Margin="6,0,0,6"/>
                                             <Button x:Name="darrowBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x28"
                                                     Content="↓ D"
                                                     Grid.Row="1"
                                                     Grid.Column="1"
                                                     Margin="6,0,0,6"/>
                                             <Button x:Name="rarrowBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x27"
                                                     Content="R →"
                                                     Grid.Row="1"
                                                     Grid.Column="2"
@@ -915,96 +1001,118 @@
                                         </Grid.Resources>
 
                                         <Button x:Name="prevTrackBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xB1"
                                                 Content="9"
                                                 FontFamily="Webdings"/>
                                         <Button x:Name="stopBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xB2"
                                                 Content="&lt;"
                                                 FontFamily="Webdings"
                                                 Grid.Column="1"/>
                                         <Button x:Name="playBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xB3"
                                                 Content="4"
                                                 FontFamily="Webdings"
                                                 Grid.Column="2"/>
                                         <Button x:Name="nextTrackBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xB0"
                                                 Content=":"
                                                 FontFamily="Webdings"
                                                 Grid.Column="3"/>
                                         <Button x:Name="volupBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xAF"
                                                 Content="{lex:Loc BindingWindow_Vol}"
                                                 Grid.Column="4"
                                                 FontSize="10"/>
 
                                         <Button x:Name="numlockBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x90"
                                                 Content="{lex:Loc BindingWindow_NumLk}"
                                                 Grid.Row="1"
                                                 Grid.Column="0"/>
                                         <Button x:Name="numdivideBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x6F"
                                                 Content="/"
                                                 Grid.Row="1"
                                                 Grid.Column="1"/>
                                         <Button x:Name="nummultiBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x6A"
                                                 Content="*"
                                                 Grid.Row="1"
                                                 Grid.Column="2"/>
                                         <Button x:Name="numminusBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x6D"
                                                 Content="-"
                                                 Grid.Row="1"
                                                 Grid.Column="3"/>
                                         <Button x:Name="voldownBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xAE"
                                                 Content="{lex:Loc BindingWindow_Vol2}"
                                                 Grid.Row="1"
                                                 Grid.Column="4"
                                                 FontSize="10"/>
 
                                         <Button x:Name="num7Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x67"
                                                 Content="7"
                                                 Grid.Row="2"
                                                 Grid.Column="0"/>
                                         <Button x:Name="num8Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x68"
                                                 Content="8"
                                                 Grid.Row="2"
                                                 Grid.Column="1"/>
                                         <Button x:Name="num9Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x69"
                                                 Content="9"
                                                 Grid.Row="2"
                                                 Grid.Column="2"/>
                                         <Button x:Name="numplusBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x6B"
                                                 Content="+"
                                                 Grid.Row="2"
                                                 Grid.Column="3"
                                                 Grid.RowSpan="2"/>
                                         <Button x:Name="volmuteBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0xAD"
                                                 Content="{lex:Loc Ui_Mute}"
                                                 Grid.Row="2"
                                                 Grid.Column="4"
                                                 FontSize="10"/>
 
                                         <Button x:Name="num4Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x64"
                                                 Content="4"
                                                 Grid.Row="3"
                                                 Grid.Column="0"/>
                                         <Button x:Name="num5Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x65"
                                                 Content="5"
                                                 Grid.Row="3"
                                                 Grid.Column="1"/>
                                         <Button x:Name="num6Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x66"
                                                 Content="6"
                                                 Grid.Row="3"
                                                 Grid.Column="2"/>
 
                                         <Button x:Name="num1Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x61"
                                                 Content="1"
                                                 Grid.Row="4"
                                                 Grid.Column="0"/>
                                         <Button x:Name="num2Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x62"
                                                 Content="2"
                                                 Grid.Row="4"
                                                 Grid.Column="1"/>
                                         <Button x:Name="num3Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x63"
                                                 Content="3"
                                                 Grid.Row="4"
                                                 Grid.Column="2"/>
                                         <Button x:Name="numEnterBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x0D"
                                                 Grid.Row="4"
                                                 Grid.Column="3"
                                                 Grid.RowSpan="2">
@@ -1015,11 +1123,13 @@
                                         </Button>
 
                                         <Button x:Name="num0Btn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x60"
                                                 Content="0"
                                                 Grid.Row="5"
                                                 Grid.Column="0"
                                                 Grid.ColumnSpan="2"/>
                                         <Button x:Name="numPeriodBtn"
+                                            Command="{Binding DataContext.SelectKeyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="0x6E"
                                                 Content="."
                                                 Grid.Row="5"
                                                 Grid.Column="2"/>
@@ -1041,23 +1151,27 @@
                                 </StackPanel>
 
                                 <Button x:Name="mouseUpBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="MouseUp"
                                         Content="↑"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="50"/>
                                 <Button x:Name="mouseDownBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="MouseDown"
                                         Content="↓"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="50"
                                         Canvas.Top="138"/>
                                 <Button x:Name="mouseLeftBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="MouseLeft"
                                         Content="←"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="0"
                                         Canvas.Top="84"/>
                                 <Button x:Name="mouseRightBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="MouseRight"
                                         Content="→"
                                         Width="20"
                                         Height="20"
@@ -1065,18 +1179,21 @@
                                         Canvas.Top="84"/>
 
                                 <Button x:Name="mouseLBBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="LeftMouse"
                                         Content="L"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="18"
                                         Canvas.Top="52"/>
                                 <Button x:Name="mouseMBBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="MiddleMouse"
                                         Content="M"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="50"
                                         Canvas.Top="52"/>
                                 <Button x:Name="mouseRBBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="RightMouse"
                                         Content="R"
                                         Width="20"
                                         Height="20"
@@ -1084,12 +1201,14 @@
                                         Canvas.Top="52"/>
 
                                 <Button x:Name="mouse4Btn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="FourthMouse"
                                         Content="4"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="24"
                                         Canvas.Top="108"/>
                                 <Button x:Name="mouse5Btn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="FifthMouse"
                                         Content="5"
                                         Width="20"
                                         Height="20"
@@ -1097,12 +1216,14 @@
                                         Canvas.Top="108"/>
 
                                 <Button x:Name="mouseWheelUBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="WUP"
                                         Content="↑"
                                         Width="20"
                                         Height="20"
                                         Canvas.Left="50"
                                         Canvas.Top="28"/>
                                 <Button x:Name="mouseWheelDBtn"
+                                            Command="{Binding DataContext.SelectButtonCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="WDOWN"
                                         Content="↓"
                                         Width="20"
                                         Height="20"
