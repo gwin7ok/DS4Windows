@@ -62,7 +62,7 @@ namespace DS4Windows.Output
         private Dictionary<int, OutputDevice> deviceDict = new Dictionary<int, OutputDevice>();
         private Dictionary<OutputDevice, int> revDeviceDict = new Dictionary<OutputDevice, int>();
         // Phase7-Step10e W1: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、コンストラクターで受ける
-        private readonly OutputDevice[] outputDevices;
+        private readonly OutputDevice?[] outputDevices;
 
         private int queuedTasks = 0;
         private ReaderWriterLockSlim queueLocker;
@@ -72,19 +72,19 @@ namespace DS4Windows.Output
 
         public delegate void SlotAssignedDelegate(OutputSlotManager sender,
             int slotNum, OutSlotDevice outSlotDev);
-        public event SlotAssignedDelegate SlotAssigned;
+        public event SlotAssignedDelegate? SlotAssigned;
 
         public delegate void SlotUnassignedDelegate(OutputSlotManager sender,
             int slotNum, OutSlotDevice outSlotDev);
-        public event SlotUnassignedDelegate SlotUnassigned;
+        public event SlotUnassignedDelegate? SlotUnassigned;
 
-        public event EventHandler<int> ViGEmFailure;
+        public event EventHandler<int>? ViGEmFailure;
 
         public OutputSlotManager(int slotLimit)
         {
             if (slotLimit <= 0)
                 throw new System.ArgumentOutOfRangeException(nameof(slotLimit));
-            outputDevices = new OutputDevice[slotLimit];
+            outputDevices = new OutputDevice?[slotLimit];
             outputSlots = new OutSlotDevice[slotLimit];
             for (int i = 0; i < slotLimit; i++)
             {
@@ -123,7 +123,7 @@ namespace DS4Windows.Output
             int result = -1;
             for (int i = 0; i < outputDevices.Length && result == -1; i++)
             {
-                OutputDevice tempdev = outputDevices[i];
+                OutputDevice? tempdev = outputDevices[i];
                 if (tempdev == null)
                 {
                     result = i;
@@ -135,7 +135,7 @@ namespace DS4Windows.Output
 
         /// <param name="preferredSlot">差す先のスロット（0 始まり）。予約したスロットや、利用者が選んだスロットへ差すときに渡す。-1 なら最初の空き</param>
         public void DeferredPlugin(OutputDevice outputDevice, int inIdx, string inDisplayString,
-            OutputDevice[] outdevs, OutContType contType, int preferredSlot = -1)
+            OutputDevice?[] outdevs, OutContType contType, int preferredSlot = -1)
         {
             // releases ReaderWriterLockSlim when locker goes out of scope
             using WriteLocker locker = new WriteLocker(queueLocker);
@@ -176,7 +176,7 @@ namespace DS4Windows.Output
         }
 
         public void DeferredRemoval(OutputDevice outputDevice, int inIdx,
-            OutputDevice[] outdevs, bool immediate = false)
+            OutputDevice?[] outdevs, bool immediate = false)
         {
             _ = immediate;
 
@@ -214,9 +214,9 @@ namespace DS4Windows.Output
             //queuedTasks--;
         }
 
-        public OutSlotDevice FindOpenSlot()
+        public OutSlotDevice? FindOpenSlot()
         {
-            OutSlotDevice temp = null;
+            OutSlotDevice? temp = null;
             for (int i = 0; i < outputSlots.Length; i++)
             {
                 OutSlotDevice tmp = outputSlots[i];
@@ -244,7 +244,7 @@ namespace DS4Windows.Output
             return result;
         }
 
-        public OutSlotDevice GetOutSlotDevice(int slotNum)
+        public OutSlotDevice? GetOutSlotDevice(int slotNum)
         {
             OutSlotDevice temp;
             if (slotNum < 0 && slotNum > lastSlotIndex)
@@ -257,9 +257,9 @@ namespace DS4Windows.Output
             return temp;
         }
 
-        public OutSlotDevice GetOutSlotDevice(OutputDevice outputDevice)
+        public OutSlotDevice? GetOutSlotDevice(OutputDevice outputDevice)
         {
-            OutSlotDevice temp = null;
+            OutSlotDevice? temp = null;
             if (outputDevice != null &&
                 revDeviceDict.TryGetValue(outputDevice, out int slotNum))
             {
@@ -269,9 +269,9 @@ namespace DS4Windows.Output
             return temp;
         }
 
-        public OutSlotDevice FindExistUnboundSlotType(OutContType contType)
+        public OutSlotDevice? FindExistUnboundSlotType(OutContType contType)
         {
-            OutSlotDevice temp = null;
+            OutSlotDevice? temp = null;
             string devtype = contType.ToString();
             for (int i = 0; i < outputSlots.Length; i++)
             {

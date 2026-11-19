@@ -41,8 +41,8 @@ namespace DS4Windows.Output.Backend
 
         private sealed class Subscription : IDisposable
         {
-            private IXbox360Controller _cont;
-            private Xbox360FeedbackReceivedEventHandler _handler;
+            private IXbox360Controller? _cont;
+            private Xbox360FeedbackReceivedEventHandler? _handler;
 
             public Subscription(IXbox360Controller cont, Xbox360FeedbackReceivedEventHandler handler)
             {

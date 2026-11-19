@@ -49,10 +49,10 @@ namespace DS4Windows.Input
         // Keep instance of opened exclusive mode devices not in use (Charging while using BT connection)
         private readonly List<IHidTransport> DisabledDevices = new List<IHidTransport>();
         private readonly Stopwatch sw = new Stopwatch();
-        public event RequestElevationDelegate RequestElevation;
-        public PrepareInitDelegate PrepareDS4Init = null;
-        public PrepareInitDelegate PostDS4Init = null;
-        public CheckPendingDevice PreparePendingDevice = null;
+        public event RequestElevationDelegate? RequestElevation;
+        public PrepareInitDelegate? PrepareDS4Init = null;
+        public PrepareInitDelegate? PostDS4Init = null;
+        public CheckPendingDevice? PreparePendingDevice = null;
         public bool isExclusiveMode = false;
         internal const int SONY_VID = 0x054C;
         internal const int RAZER_VID = 0x1532;
@@ -95,7 +95,7 @@ namespace DS4Windows.Input
         }
 
         // 種類に対応するカートリッジでシリアルを読む（対応するカートリッジがなければ空のシリアル）
-        private string ReadSerial(VidPidInfo info, IHidTransport hidDevice)
+        private string? ReadSerial(VidPidInfo info, IHidTransport hidDevice)
         {
             for (int i = 0; i < cartridges.Length; i++)
             {
@@ -107,7 +107,7 @@ namespace DS4Windows.Input
         }
 
         // 種類に対応するカートリッジでデバイスを作る（対応するカートリッジがなければ null）
-        private InputDeviceCore CreateDevice(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
+        private InputDeviceCore? CreateDevice(InputDeviceType type, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet)
         {
             for (int i = 0; i < cartridges.Length; i++)
             {
@@ -171,7 +171,7 @@ namespace DS4Windows.Input
                 IEnumerable<IHidTransport> hDevices = HidDevices.EnumerateDS4(knownDevices, LayerSettings);
 
                 // HID 以外の通信路の機器は、機器ごとの情報を供給元が持つ（パスで引く）。以降は HID の機器と同じ流れ
-                Dictionary<string, VidPidInfo> sourceInfos = null;
+                Dictionary<string, VidPidInfo>? sourceInfos = null;
                 if (transportSources.Length > 0)
                 {
                     sourceInfos = new Dictionary<string, VidPidInfo>();
@@ -189,11 +189,11 @@ namespace DS4Windows.Input
                 }
 
                 VidPidInfo InfoOf(IHidTransport d) =>
-                    sourceInfos != null && sourceInfos.TryGetValue(d.DevicePath, out VidPidInfo found)
+                    sourceInfos != null && sourceInfos.TryGetValue(d.DevicePath, out VidPidInfo? found)
                         ? found
                         : knownDevices.Single(x => x.vid == d.Attributes.VendorId && x.pid == d.Attributes.ProductId);
 
-                hDevices = hDevices.Where(d => PreparePendingDevice(d, InfoOf(d)));
+                hDevices = hDevices.Where(d => PreparePendingDevice!(d, InfoOf(d))); // 列挙の前に、呼び出し側が設定する
 
                 hDevices = hDevices.Where(IsRealDS4).Select(dev => dev);
                 //hDevices = from dev in hDevices where IsRealDS4(dev) select dev;
@@ -266,14 +266,14 @@ namespace DS4Windows.Input
 
                     if (hDevice.IsOpen)
                     {
-                        string serial = ReadSerial(metainfo, hDevice);
+                        string? serial = ReadSerial(metainfo, hDevice);
 
-                        bool validSerial = !serial.Equals(InputDeviceCore.BLANK_SERIAL);
+                        bool validSerial = !serial!.Equals(InputDeviceCore.BLANK_SERIAL); // 読めた機器だけが来る（null なら従来どおり NullReferenceException）
                         bool newdev = true;
                         if (validSerial && deviceSerials.Contains(serial))
                         {
                             // Check if Quick Charge flag is engaged
-                            if (serialDevices.TryGetValue(serial, out InputDeviceCore tempDev) && tempDev.ReadyQuickChargeDisconnect)
+                            if (serialDevices.TryGetValue(serial, out InputDeviceCore? tempDev) && tempDev.ReadyQuickChargeDisconnect)
                             {
                                 // Need to disconnect callback here to avoid deadlock
                                 tempDev.Removal -= On_Removal;
@@ -301,7 +301,7 @@ namespace DS4Windows.Input
 
                         if (newdev && validSerial)
                         {
-                            InputDeviceCore ds4Device = CreateDevice(metainfo.inputDevType, hDevice, metainfo.name, metainfo.featureSet);
+                            InputDeviceCore? ds4Device = CreateDevice(metainfo.inputDevType, hDevice, metainfo.name, metainfo.featureSet);
                             //InputDeviceCore ds4Device = new InputDeviceCore(hDevice, metainfo.name, metainfo.featureSet);
                             if (ds4Device == null)
                             {
@@ -369,9 +369,9 @@ namespace DS4Windows.Input
         }
 
         // Called when devices is disconnected, timed out or has input reading failure
-        public void On_Removal(object sender, EventArgs e)
+        public void On_Removal(object? sender, EventArgs e)
         {
-            InputDeviceCore device = (InputDeviceCore)sender;
+            InputDeviceCore device = (InputDeviceCore)sender!; // 購読元が自分自身を渡す
             RemoveDevice(device);
         }
 

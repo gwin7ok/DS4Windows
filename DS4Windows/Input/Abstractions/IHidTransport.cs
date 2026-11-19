@@ -15,11 +15,11 @@ namespace DS4Windows.Input.Abstractions
         bool IsOpen { get; }
         bool IsExclusive { get; }
         bool IsConnected { get; }
-        string Description { get; }
+        string? Description { get; }
         HidDeviceCapabilities Capabilities { get; }
         HidDeviceAttributes Attributes { get; }
         string DevicePath { get; }
-        string ParentPath { get; }
+        string? ParentPath { get; }
 
         void OpenDevice(bool exclusive);
         void CloseDevice();

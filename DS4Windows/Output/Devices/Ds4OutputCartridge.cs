@@ -23,20 +23,20 @@ namespace DS4Windows.Output.Devices
 
         public OutContType Type => OutContType.DS4;
 
-        public OutputDevice Create(IVirtualPadBackend backend, Version busVersion)
+        public OutputDevice? Create(IVirtualPadBackend backend, Version busVersion)
         {
             DS4OutDevice device = DS4OutDeviceFactory.CreateDS4OutDevice(backend, busVersion);
             device.TriggerModeProvider = slot => _profileSettings.OutputType(slot).DS4TriggerMode;
             return device;
         }
 
-        public OutputDevice Narrow(OutputDevice device) => device as DS4OutDevice;
+        public OutputDevice? Narrow(OutputDevice device) => device as DS4OutDevice;
 
         public void AttachFeedback(int index, OutputDevice outDevice, IOutputBoundDevice device)
         {
             int devIndex = index;
-                            DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
-                            if (tempDS4.CanUseAwaitOutputBuffer)
+                            DS4OutDevice? tempDS4 = outDevice as DS4OutDevice;
+                            if (tempDS4!.CanUseAwaitOutputBuffer) // 種類を確かめた後で呼ぶ（null なら従来どおり NullReferenceException）
                             {
             #pragma warning disable CS0219 // useRumble assigned but not read; keep variable for possible future use
                                 DS4OutDeviceExt.ReceivedOutBufferHandler processOutBuffAction = (DS4OutDeviceExt sender, byte[] reportData) =>
@@ -160,9 +160,9 @@ namespace DS4Windows.Output.Devices
                                     //*/
                                 };
 
-                                DS4OutDeviceExt tempDS4Ext = tempDS4 as DS4OutDeviceExt;
+                                DS4OutDeviceExt? tempDS4Ext = tempDS4 as DS4OutDeviceExt;
             #pragma warning restore CS0219
-                                tempDS4Ext.ReceivedOutBuffer += processOutBuffAction;
+                                tempDS4Ext!.ReceivedOutBuffer += processOutBuffAction; // 種類を確かめた後で呼ぶ（null なら従来どおり NullReferenceException）
                                 tempDS4Ext.outBufferFeedbacksDict.TryAdd(index, processOutBuffAction);
                                 tempDS4Ext.StartOutputBufferThread();
                             }
@@ -171,8 +171,8 @@ namespace DS4Windows.Output.Devices
         public void RemoveFeedback(OutputDevice outDevice, int inputIndex)
         {
             int inIdx = inputIndex;
-            DS4OutDevice tempDS4 = outDevice as DS4OutDevice;
-            tempDS4.RemoveFeedback(inIdx);
+            DS4OutDevice? tempDS4 = outDevice as DS4OutDevice;
+            tempDS4!.RemoveFeedback(inIdx); // 種類を確かめた後で呼ぶ（null なら従来どおり NullReferenceException）
         }
     }
 }

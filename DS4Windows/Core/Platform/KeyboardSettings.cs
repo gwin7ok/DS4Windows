@@ -35,8 +35,8 @@ namespace DS4Windows.Core.Platform
                         return;
                     }
 
-                    object delayVal = key.GetValue("KeyboardDelay");
-                    object speedVal = key.GetValue("KeyboardSpeed");
+                    object? delayVal = key.GetValue("KeyboardDelay");
+                    object? speedVal = key.GetValue("KeyboardSpeed");
 
                     int delay = 1; // default index
                     int speed = 31; // default fastest

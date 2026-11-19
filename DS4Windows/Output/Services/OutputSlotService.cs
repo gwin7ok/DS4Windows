@@ -25,7 +25,7 @@ namespace DS4Windows.Output.Services
         private readonly object _syncLock = new object();
         public const int MAX_SLOTS = 8;
 
-        public event EventHandler<OutputSlotChangedEventArgs> OutputSlotChanged;
+        public event EventHandler<OutputSlotChangedEventArgs>? OutputSlotChanged;
 
         // Phase6-Step5-2: 孤立配列 _deviceTypes（Global/BackingStore と非連動で常に None を返していた）と、
         // その読み書き API（GetOutputDeviceType／SetOutputDeviceType）は削除した。
@@ -43,7 +43,7 @@ namespace DS4Windows.Output.Services
         /// OutputSlotChanged イベントの発行（Phase6-Step5-2 で SetOutputDeviceType から分離）。
         /// deviceType は、プラグイン／アンプラグ操作で指定された種別であり、永続設定（OutContType）には書き込まない。
         /// </summary>
-        private void RaiseOutputSlotChanged(int slotIndex, OutContType deviceType, OutputDevice outputDevice)
+        private void RaiseOutputSlotChanged(int slotIndex, OutContType deviceType, OutputDevice? outputDevice)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] OutputSlotService.OutputSlotChanged: Slot {slotIndex} = {deviceType}");
@@ -65,8 +65,8 @@ namespace DS4Windows.Output.Services
 
         private readonly System.Runtime.CompilerServices.ConditionalWeakTable<OutSlotDevice, OutputSlotView> _views =
             new System.Runtime.CompilerServices.ConditionalWeakTable<OutSlotDevice, OutputSlotView>();
-        private EventHandler<OutputSlotAssignmentEventArgs> _slotAssigned;
-        private EventHandler<OutputSlotAssignmentEventArgs> _slotUnassigned;
+        private EventHandler<OutputSlotAssignmentEventArgs>? _slotAssigned;
+        private EventHandler<OutputSlotAssignmentEventArgs>? _slotUnassigned;
         private bool _managerHooked;
 
         public IReadOnlyList<IOutputSlotView> SlotViews
@@ -74,12 +74,12 @@ namespace DS4Windows.Output.Services
             get
             {
                 HookManager();
-                OutSlotDevice[] slots = SlotManager?.OutputSlots;
+                OutSlotDevice[]? slots = SlotManager?.OutputSlots;
                 if (slots == null) return Array.Empty<IOutputSlotView>();
 
                 var result = new IOutputSlotView[slots.Length];
                 for (int i = 0; i < slots.Length; i++)
-                    result[i] = ViewOf(slots[i]);
+                    result[i] = ViewOf(slots[i])!; // 空きスロットも、従来どおり ViewOf の結果をそのまま入れる
                 return result;
             }
         }
@@ -112,9 +112,9 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        private OutputSlotView ViewOf(OutSlotDevice slot) => slot == null ? null : _views.GetValue(slot, s => new OutputSlotView(s));
+        private OutputSlotView? ViewOf(OutSlotDevice slot) => slot == null ? null : _views.GetValue(slot, s => new OutputSlotView(s));
 
-        public OutSlotDevice GetOutSlotDevice(int slotNumber)
+        public OutSlotDevice? GetOutSlotDevice(int slotNumber)
         {
             if (slotNumber < 0 || slotNumber >= MAX_SLOTS) return null;
             return SlotManager?.GetOutSlotDevice(slotNumber);

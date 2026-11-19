@@ -23,7 +23,7 @@ namespace DS4Windows.Input.Abstractions
         /// Bluetooth 接続のとき、機器の Bluetooth アドレス（<c>AA:BB:CC:DD:EE:FF</c>）を返す。取れない機種は null（既定。擬似のシリアルを使い、Bluetooth の切断は使えない）。
         /// 切断の手順そのものは、DS4 などと共通の <c>InputDeviceCore.DisconnectBT</c> で、アドレスだけをここで教える。
         /// </summary>
-        string TryGetBluetoothAddress(IHidTransport hidDevice) => null;
+        string? TryGetBluetoothAddress(IHidTransport hidDevice) => null;
 
         /// <summary>
         /// Bluetooth の切断（共通の <c>DisconnectBT</c>）が、この機器で実際に効くか。既定は true。

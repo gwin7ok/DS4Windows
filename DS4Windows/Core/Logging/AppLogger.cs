@@ -48,7 +48,7 @@ namespace DS4Windows.Core.Logging
 
         // 利用者向けの文言をリソースのキーで出す。画面は現在の表示言語、ファイルは常に英語（ニュートラルのリソース）にする。
         // 呼び出し側が文字列を組み立てると、書式の引数の数や順番を取り違えても気づけないため、キーと引数だけを渡させる。
-        public static void LogUser(AppLogLevel level, string key, params object[] args)
+        public static void LogUser(AppLogLevel level, string key, params object?[] args)
         {
             var manager = DS4Windows.Translations.Strings.ResourceManager;
             string screen = UserText(key, args);
@@ -57,12 +57,12 @@ namespace DS4Windows.Core.Logging
         }
 
         // 現在の表示言語での文字列。トレイ通知など、キーと同じ文言を別の出し先へ渡すときに使う。
-        public static string UserText(string key, params object[] args)
+        public static string UserText(string key, params object?[] args)
         {
             return Format(DS4Windows.Translations.Strings.ResourceManager.GetString(key) ?? key, args);
         }
 
-        private static string Format(string format, object[] args)
+        private static string Format(string format, object?[] args)
         {
             return args == null || args.Length == 0 ? format : string.Format(format, args);
         }

@@ -42,7 +42,7 @@ namespace DS4Windows.Output.Devices
             unchecked
             {
                 MapButtons(state, out tempButtons, out tempDPad, out tempSpecial);
-                cont.SetButtonsFull(tempButtons);
+                cont!.SetButtonsFull(tempButtons); // 接続中（cont を作成した後）にだけ呼ぶ
                 cont.SetSpecialButtonsFull((byte)tempSpecial);
                 cont.SetDPadDirection(tempDPad);
                 //report.Buttons = (ushort)tempButtons;
@@ -63,7 +63,7 @@ namespace DS4Windows.Output.Devices
 
         public override void ResetState(bool submit = true)
         {
-            cont.ResetReport();
+            cont!.ResetReport(); // 接続中（cont を作成した後）にだけ呼ぶ
             if (submit)
             {
                 cont.SubmitReport();

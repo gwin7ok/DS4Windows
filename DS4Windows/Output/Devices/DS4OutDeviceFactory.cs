@@ -33,7 +33,7 @@ namespace DS4Windows.Output.Devices
         public static DS4OutDevice CreateDS4OutDevice(IVirtualPadBackend backend,
             Version driverVersion)
         {
-            DS4OutDevice result = null;
+            DS4OutDevice? result = null;
             if (outBuffAPIMinVersion.CompareTo(driverVersion) <= 0)
             {
                 result = new DS4OutDeviceExt(backend, useAwaitOutputBuffer: true);

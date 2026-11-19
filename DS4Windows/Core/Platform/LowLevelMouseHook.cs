@@ -30,8 +30,8 @@ namespace DS4Windows.Core.Platform
         private readonly HookProc _proc;
         private IntPtr _hook = IntPtr.Zero;
 
-        public event Action<int, int> PointerMoved;
-        public event Action<int, bool, int, int> ButtonChanged;
+        public event Action<int, int>? PointerMoved;
+        public event Action<int, bool, int, int>? ButtonChanged;
 
         public LowLevelMouseHook()
         {
@@ -46,7 +46,7 @@ namespace DS4Windows.Core.Platform
             if (_hook != IntPtr.Zero) return true;
 
             using (Process process = Process.GetCurrentProcess())
-            using (ProcessModule module = process.MainModule)
+            using (ProcessModule? module = process.MainModule)
             {
                 _hook = SetWindowsHookEx(WH_MOUSE_LL, _proc, GetModuleHandle(module?.ModuleName), 0);
             }
@@ -157,6 +157,6 @@ namespace DS4Windows.Core.Platform
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
+        private static extern IntPtr GetModuleHandle(string? lpModuleName);
     }
 }

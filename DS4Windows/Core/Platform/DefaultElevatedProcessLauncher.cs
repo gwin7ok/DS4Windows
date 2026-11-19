@@ -21,9 +21,9 @@ namespace DS4Windows.Core.Platform
 
             try
             {
-                Process child = Process.Start(startInfo);
+                Process? child = Process.Start(startInfo);
                 int? result = null;
-                if (!child.WaitForExit(timeoutMs))
+                if (!child!.WaitForExit(timeoutMs)) // 起動できたときだけ来る（null なら従来どおり NullReferenceException）
                 {
                     child.Kill();
                 }

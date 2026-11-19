@@ -64,7 +64,7 @@ namespace DS4Windows.Output.Services
                     int maxPathCheckLength = 512;
                     StringBuilder sb = new StringBuilder(maxPathCheckLength);
 
-                    DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ExePath));
+                    DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ExePath)!); // 実行ファイルのフルパスで、親フォルダーがある
                     // Check if exe is placed in a junction symlink directory (done with Scoop).
                     // Good enough
                     if (dirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint) &&
@@ -75,7 +75,8 @@ namespace DS4Windows.Output.Services
                         ExePath = Path.Combine(dirInfo.LinkTarget, Path.GetFileName(ExePath));
                     }
 
-                    string driveLetter = Path.GetPathRoot(ExePath).Replace("\\", "");
+                    // 実行ファイルのフルパスで、ルートがある
+                    string driveLetter = Path.GetPathRoot(ExePath)!.Replace("\\", "");
                     uint _ = NativeMethods.QueryDosDevice(driveLetter, sb, maxPathCheckLength);
                     //int error = Marshal.GetLastWin32Error();
 

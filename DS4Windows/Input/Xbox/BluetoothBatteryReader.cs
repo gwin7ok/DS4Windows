@@ -20,7 +20,7 @@ namespace DS4Windows.Input.Xbox
             public int? Percent;
             public long NextRefreshTicks;
             public int Refreshing;
-            public volatile Task Pending;
+            public volatile Task? Pending;
         }
 
         private readonly IGattBatteryFetcher fetcher;

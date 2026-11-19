@@ -178,9 +178,9 @@ namespace DS4Windows.Core.Platform
             internal int dbcc_devicetype;
             internal int dbcc_reserved;
             [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)]
-            internal byte[] dbcc_classguid;
+            internal byte[]? dbcc_classguid; // マーシャリングで設定される
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 255)]
-            internal char[] dbcc_name;
+            internal char[]? dbcc_name; // マーシャリングで設定される
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -323,14 +323,14 @@ namespace DS4Windows.Core.Platform
             new DEVPROPKEY { fmtid = new Guid(0x78c34fc8, 0x104a, 0x4aca, 0x9e, 0xa4, 0x52, 0x4d, 0x52, 0x99, 0x6e, 0x57), pid = 256 };
 
         [DllImport("setupapi.dll", CharSet = CharSet.Unicode, EntryPoint = "SetupDiGetDeviceRegistryPropertyW", SetLastError = true)]
-        public static extern bool SetupDiGetDeviceRegistryProperty(IntPtr deviceInfoSet, ref SP_DEVINFO_DATA deviceInfoData, int propertyVal, ref int propertyRegDataType, byte[] propertyBuffer, int propertyBufferSize, ref int requiredSize);
+        public static extern bool SetupDiGetDeviceRegistryProperty(IntPtr deviceInfoSet, ref SP_DEVINFO_DATA deviceInfoData, int propertyVal, ref int propertyRegDataType, byte[]? propertyBuffer, int propertyBufferSize, ref int requiredSize);
 
         [DllImport("setupapi.dll", EntryPoint = "SetupDiGetDevicePropertyW", SetLastError = true)]
-        public static extern bool SetupDiGetDeviceProperty(IntPtr deviceInfo, ref SP_DEVINFO_DATA deviceInfoData, ref DEVPROPKEY propkey, ref ulong propertyDataType, byte[] propertyBuffer, int propertyBufferSize, ref int requiredSize, uint flags);
+        public static extern bool SetupDiGetDeviceProperty(IntPtr deviceInfo, ref SP_DEVINFO_DATA deviceInfoData, ref DEVPROPKEY propkey, ref ulong propertyDataType, byte[]? propertyBuffer, int propertyBufferSize, ref int requiredSize, uint flags);
 
         [DllImport("setupapi.dll", EntryPoint = "SetupDiGetDeviceInterfacePropertyW", SetLastError = true)]
         public static extern bool SetupDiGetDeviceInterfaceProperty(IntPtr deviceInfo, ref SP_DEVICE_INTERFACE_DATA deviceInterfaceData,
-            ref DEVPROPKEY propkey, ref ulong propertyDataType, byte[] propertyBuffer, int propertyBufferSize, ref int requiredSize, uint flags);
+            ref DEVPROPKEY propkey, ref ulong propertyDataType, byte[]? propertyBuffer, int propertyBufferSize, ref int requiredSize, uint flags);
 
         [DllImport("setupapi.dll")]
         static internal extern bool SetupDiEnumDeviceInfo(IntPtr deviceInfoSet, int memberIndex, ref SP_DEVINFO_DATA deviceInfoData);
@@ -357,10 +357,10 @@ namespace DS4Windows.Core.Platform
         static internal extern bool SetupDiEnumDeviceInterfaces(IntPtr deviceInfoSet, IntPtr deviceInfoData, ref Guid interfaceClassGuid, int memberIndex, ref SP_DEVICE_INTERFACE_DATA deviceInterfaceData);
 
         [DllImport("setupapi.dll", CharSet = CharSet.Auto)]
-        static internal extern IntPtr SetupDiGetClassDevs(ref System.Guid classGuid, string enumerator, int hwndParent, int flags);
+        static internal extern IntPtr SetupDiGetClassDevs(ref System.Guid classGuid, string? enumerator, int hwndParent, int flags);
 
         [DllImport("setupapi.dll", CharSet = CharSet.Auto)]
-        static internal extern IntPtr SetupDiGetClassDevs(IntPtr classGuid, string enumerator, int hwndParent, int flags);
+        static internal extern IntPtr SetupDiGetClassDevs(IntPtr classGuid, string? enumerator, int hwndParent, int flags);
 
         [DllImport("setupapi.dll", CharSet = CharSet.Auto, EntryPoint = "SetupDiGetDeviceInterfaceDetail")]
         static internal extern bool SetupDiGetDeviceInterfaceDetailBuffer(IntPtr deviceInfoSet, ref SP_DEVICE_INTERFACE_DATA deviceInterfaceData, IntPtr deviceInterfaceDetailData, int deviceInterfaceDetailDataSize, ref int requiredSize, IntPtr deviceInfoData);
@@ -381,7 +381,7 @@ namespace DS4Windows.Core.Platform
         static internal extern bool SetupDiClassGuidsFromName(string ClassName, ref Guid ClassGuidArray1stItem, UInt32 ClassGuidArraySize, out UInt32 RequiredSize);
 
         [DllImport("cfgmgr32.dll", CharSet = CharSet.Unicode)]
-        static internal extern uint CM_Get_Device_Interface_Property(string pszDeviceInterface, ref DEVPROPKEY PropertyKey, out DEVPROPTYPE PropertyType, byte[] PropertyBuffer, ref uint PropertyBufferSize, uint ulFlags);
+        static internal extern uint CM_Get_Device_Interface_Property(string pszDeviceInterface, ref DEVPROPKEY PropertyKey, out DEVPROPTYPE PropertyType, byte[]? PropertyBuffer, ref uint PropertyBufferSize, uint ulFlags);
 
         [DllImport("cfgmgr32.dll", CharSet = CharSet.Unicode)]
         static internal extern uint CM_Locate_DevNodeW(out uint pdnDevInst, string pDeviceID, uint ulFlags);

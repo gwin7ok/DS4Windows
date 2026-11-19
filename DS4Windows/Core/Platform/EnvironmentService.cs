@@ -45,7 +45,7 @@ namespace DS4Windows.Core.Platform
 
         public bool IsAdministrator() => AdminCheck.IsAdministrator();
 
-        public string ApplicationVersion => PathService.ExecutableVersionState;
+        public string? ApplicationVersion => PathService.ExecutableVersionState;
 
         // ---- Phase7-Step4 W1: 導入状態の保持（旧 Global の static フィールド）----
         // ViGEmBus の既定値は「未導入」。RefreshViGEmBusInfo で更新される。
@@ -64,10 +64,10 @@ namespace DS4Windows.Core.Platform
         private const string HidHideHardwareId = @"root\HidHide";
         private const string BlankDriverVersion = "0.0.0.0";
         private static string s_hidHideVersion = BlankDriverVersion;
-        private static string s_hidHideProductVersion = BlankDriverVersion;
+        private static string? s_hidHideProductVersion = BlankDriverVersion;
         private static bool? s_hidHideInstalled;
         private static bool? s_fakerInputInstalled;
-        private static string s_fakerInputVersion;
+        private static string? s_fakerInputVersion;
 
         /// <summary>HidHide の導入状態（Refresh で更新されるキャッシュ値）。</summary>
         public static bool HidHideInstalledState
@@ -111,7 +111,7 @@ namespace DS4Windows.Core.Platform
 
         public string HidHideVersion => s_hidHideVersion;
 
-        public string HidHideProductVersion => s_hidHideProductVersion;
+        public string? HidHideProductVersion => s_hidHideProductVersion;
 
         public string GetInstanceIdFromDevicePath(string devicePath) =>
             DevicePathProbe.GetInstanceIdFromDevicePath(devicePath);
@@ -202,12 +202,12 @@ namespace DS4Windows.Core.Platform
 
         private class ViGEmBusInfo
         {
-            public string instanceId;
-            public string deviceName;
-            public string deviceVersionStr;
-            public Version deviceVersion;
-            public string manufacturer;
-            public string driverProviderName;
+            public string instanceId = null!; // 列挙の中で必ず設定する
+            public string? deviceName;
+            public string? deviceVersionStr;
+            public Version deviceVersion = null!; // 列挙の中で必ず設定する
+            public string? manufacturer;
+            public string? driverProviderName;
         }
 
         private static void FindViGEmDeviceInfo()
@@ -306,12 +306,12 @@ namespace DS4Windows.Core.Platform
             }
 
             // Get bus info for most recent version found and save info
-            ViGEmBusInfo latestBusInfo =
+            ViGEmBusInfo? latestBusInfo =
                 tempViGEmBusInfoList.SingleOrDefault(item => item.instanceId == deviceInstanceId);
             PopulateFromViGEmBusInfo(latestBusInfo);
         }
 
-        private static void PopulateFromViGEmBusInfo(ViGEmBusInfo busInfo)
+        private static void PopulateFromViGEmBusInfo(ViGEmBusInfo? busInfo)
         {
             if (busInfo != null)
             {
@@ -364,14 +364,14 @@ namespace DS4Windows.Core.Platform
         }
 
         // HidHide 製品のバージョン: 設定画面アプリ（HidHideClient.exe）のファイルバージョン（プログラムと機能の表示と同じ。ドライバーとは別）
-        private static string QueryHidHideProductVersion()
+        private static string? QueryHidHideProductVersion()
         {
             try
             {
                 string path = Util.GetHidHideClientPath();
                 if (!string.IsNullOrEmpty(path) && System.IO.File.Exists(path))
                 {
-                    string version = System.Diagnostics.FileVersionInfo.GetVersionInfo(path).FileVersion;
+                    string? version = System.Diagnostics.FileVersionInfo.GetVersionInfo(path).FileVersion;
                     if (!string.IsNullOrEmpty(version))
                     {
                         return version;
@@ -386,9 +386,9 @@ namespace DS4Windows.Core.Platform
         }
 
         // 指定のハードウェア ID のシステム デバイス（例: root\HidHide）のドライバーのバージョンを返す。見つからないときは null
-        private static string QuerySysDeviceDriverVersion(string searchHardwareId)
+        private static string? QuerySysDeviceDriverVersion(string searchHardwareId)
         {
-            string result = null;
+            string? result = null;
             Guid sysGuid = Guid.Parse("{4d36e97d-e325-11ce-bfc1-08002be10318}");
             NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
             deviceInfoData.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);

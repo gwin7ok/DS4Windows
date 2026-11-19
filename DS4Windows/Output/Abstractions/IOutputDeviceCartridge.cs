@@ -16,10 +16,10 @@ namespace DS4Windows.Output.Abstractions
         OutContType Type { get; }
 
         /// <summary>仮想パッドを作る。<paramref name="busVersion"/> は ViGEmBus のバージョン（機能の有無の判定に使う）。</summary>
-        OutputDevice Create(IVirtualPadBackend backend, Version busVersion);
+        OutputDevice? Create(IVirtualPadBackend backend, Version busVersion);
 
         /// <summary>この種類の型に絞り込む（合わなければ null）。</summary>
-        OutputDevice Narrow(OutputDevice device);
+        OutputDevice? Narrow(OutputDevice device);
 
         /// <summary>ゲームからの振動・ライトバーの戻りを、入力デバイスへつなぐ。</summary>
         void AttachFeedback(int index, OutputDevice outDevice, IOutputBoundDevice device);

@@ -42,8 +42,8 @@ namespace DS4Windows.Output
                 using StreamReader sr = new StreamReader(output_path);
                 try
                 {
-                    OutputSlotPersistDTO dto = serializer.Deserialize(sr) as OutputSlotPersistDTO;
-                    dto.MapTo(slotManager);
+                    OutputSlotPersistDTO? dto = serializer.Deserialize(sr) as OutputSlotPersistDTO;
+                    dto!.MapTo(slotManager); // 読み込んだ設定（null なら従来どおり NullReferenceException）
                     result = true;
                 }
                 catch (InvalidOperationException)

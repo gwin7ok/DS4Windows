@@ -41,7 +41,7 @@ namespace DS4Windows.Output.Devices
         private const int outputResolution = 32767 - (-32768);
         public const string devType = "X360";
         private const int USER_INDEX_WAIT = 250;
-        public IXbox360PadTarget cont;
+        public IXbox360PadTarget? cont;
         //public Xbox360FeedbackReceivedEventHandler forceFeedbackCall;
         // Input index, Xbox360FeedbackReceivedEventHandler instance
         public Dictionary<int, IDisposable> forceFeedbacksDict =
@@ -109,7 +109,7 @@ namespace DS4Windows.Output.Devices
                 if (state.Cross) tempButtons |= Xbox360Buttons.A;
                 if (state.Square) tempButtons |= Xbox360Buttons.X;
                 if (state.PS) tempButtons |= Xbox360Buttons.Guide;
-                cont.SetButtonsFull(tempButtons);
+                cont!.SetButtonsFull(tempButtons); // 接続中（cont を作成した後）にだけ呼ぶ
             }
 
             cont.LeftTrigger = state.L2;
@@ -142,7 +142,7 @@ namespace DS4Windows.Output.Devices
 
         public override void Connect()
         {
-            cont.Connect();
+            cont!.Connect(); // 接続中（cont を作成した後）にだけ呼ぶ
             connected = true;
 
             if (_features.HasFlag(X360Features.XInputSlotNum))
@@ -172,14 +172,14 @@ namespace DS4Windows.Output.Devices
             forceFeedbacksDict.Clear();
 
             connected = false;
-            cont.Disconnect();
+            cont!.Disconnect(); // 接続中（cont を作成した後）にだけ呼ぶ
             cont = null;
         }
         public override string GetDeviceType() => devType;
 
         public override void ResetState(bool submit=true)
         {
-            cont.ResetReport();
+            cont!.ResetReport(); // 接続中（cont を作成した後）にだけ呼ぶ
             if (submit)
             {
                 cont.SubmitReport();
@@ -198,7 +198,7 @@ namespace DS4Windows.Output.Devices
 
         public override void RemoveFeedback(int inIdx)
         {
-            if (forceFeedbacksDict.TryGetValue(inIdx, out IDisposable handler))
+            if (forceFeedbacksDict.TryGetValue(inIdx, out IDisposable? handler))
             {
                 handler.Dispose();
                 forceFeedbacksDict.Remove(inIdx);

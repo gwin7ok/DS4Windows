@@ -30,16 +30,16 @@ namespace DS4Windows.Output.Devices
     {
         private byte[] rawOutReportEx = new byte[63];
         private DS4_REPORT_EX outDS4Report;
-        private Thread awaitOutBuffThread;
+        private Thread? awaitOutBuffThread;
         private bool awaitThreadLoopRunning;
         public delegate void ReceivedOutBufferHandler(DS4OutDeviceExt sender,
             byte[] reportData);
 
-        public event ReceivedOutBufferHandler ReceivedOutBuffer;
+        public event ReceivedOutBufferHandler? ReceivedOutBuffer;
 
         public Dictionary<int, ReceivedOutBufferHandler> outBufferFeedbacksDict =
             new Dictionary<int, ReceivedOutBufferHandler>();
-        private CancellationTokenSource tokenSource;
+        private CancellationTokenSource? tokenSource;
 
         public DS4OutDeviceExt(IVirtualPadBackend backend) : base(backend)
         {
@@ -111,7 +111,7 @@ namespace DS4Windows.Output.Devices
             DS4OutDeviceExtras.CopyBytes(ref outDS4Report, rawOutReportEx);
             //Console.WriteLine("TEST: {0}, {1} {2}", outDS4Report.wGyroX, rawOutReportEx[12], rawOutReportEx[13]);
             //Console.WriteLine("OUTPUT: {0}", string.Join(", ", rawOutReportEx));
-            cont.SubmitRawReport(rawOutReportEx);
+            cont!.SubmitRawReport(rawOutReportEx); // 接続中（cont を作成した後）にだけ呼ぶ
         }
 
         public override void ResetState(bool submit = true)
@@ -127,7 +127,7 @@ namespace DS4Windows.Output.Devices
 
             if (submit)
             {
-                cont.SubmitRawReport(rawOutReportEx);
+                cont!.SubmitRawReport(rawOutReportEx); // 接続中（cont を作成した後）にだけ呼ぶ
             }
         }
 
@@ -158,11 +158,11 @@ namespace DS4Windows.Output.Devices
             {
                 if (!ct.IsCancellationRequested)
                 {
-                    byte[] reportData = null;
+                    byte[]? reportData = null;
                     bool reportGrab = false;
                     try
                     {
-                        reportData = cont.AwaitRawOutputReport(100, out bool timedOut);
+                        reportData = cont!.AwaitRawOutputReport(100, out bool timedOut); // 接続中（cont を作成した後）にだけ呼ぶ
                         if (!timedOut)
                         {
                             reportGrab = true;
@@ -186,7 +186,7 @@ namespace DS4Windows.Output.Devices
 
                     if (reportGrab)
                     {
-                        ReceivedOutBuffer?.Invoke(this, reportData);
+                        ReceivedOutBuffer?.Invoke(this, reportData!); // 受信に成功したときだけ呼ぶ
                     }
                 }
                 else
@@ -223,7 +223,7 @@ namespace DS4Windows.Output.Devices
             }
             else
             {
-                if (outBufferFeedbacksDict.TryGetValue(inIdx, out ReceivedOutBufferHandler handler))
+                if (outBufferFeedbacksDict.TryGetValue(inIdx, out ReceivedOutBufferHandler? handler))
                 {
                     ReceivedOutBuffer -= handler;
                     outBufferFeedbacksDict.Remove(inIdx);

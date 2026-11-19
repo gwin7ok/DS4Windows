@@ -55,8 +55,8 @@ namespace DS4Windows.Output.Services
 
         public string InputDisplayString => _slot.InputDisplayString;
 
-        public event EventHandler PermanentTypeChanged;
+        public event EventHandler? PermanentTypeChanged;
 
-        public event EventHandler InputBoundChanged;
+        public event EventHandler? InputBoundChanged;
     }
 }

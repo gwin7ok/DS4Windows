@@ -29,10 +29,10 @@ namespace DS4Windows.Input
     public class DS4SixAxis
     {
         //public event EventHandler<SixAxisEventArgs> SixAccelMoved = null;
-        public event SixAxisHandler<SixAxisEventArgs> SixAccelMoved = null;
+        public event SixAxisHandler<SixAxisEventArgs>? SixAccelMoved = null;
         // 毎フレーム生成しないための使い回しの引数
         private readonly SixAxisEventArgs sharedArgs = new SixAxisEventArgs();
-        private SixAxis sPrev = null, now = null;
+        private SixAxis sPrev = null!, now = null!; // コンストラクターで設定する
 
         private CalibData[] calibrationData = new CalibData[6] { new CalibData(), new CalibData(),
             new CalibData(), new CalibData(), new CalibData(), new CalibData()
@@ -189,7 +189,7 @@ namespace DS4Windows.Input
                 pitch -= gyro_offset_y;
                 roll -= gyro_offset_z;
 
-                SixAxisEventArgs args = null;
+                SixAxisEventArgs? args = null;
                 if (accelX != 0 || accelY != 0 || accelZ != 0)
                 {
                     if (SixAccelMoved != null)

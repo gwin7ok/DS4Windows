@@ -32,7 +32,7 @@ namespace DS4Windows.Input.Xbox
         private readonly IXusbInterfaceSource interfaces;
         private readonly ManualResetEventSlim cancelled = new ManualResetEventSlim(false);
         private long nextPollTicks;
-        private readonly IBluetoothBatteryReader bluetoothBattery;
+        private readonly IBluetoothBatteryReader? bluetoothBattery;
         private long nextBatteryTicks;
         private bool batteryLogged;
         private XInputBattery battery = new XInputBattery(XInputBattery.TypeUnknown, 0);
@@ -45,7 +45,7 @@ namespace DS4Windows.Input.Xbox
         }
 
         /// <param name="bluetoothBattery">Bluetooth の機器の電池を、GATT のバッテリーサービスから読む窓口（なければ XInput の API だけ）。</param>
-        public XInputTransport(IXInputApi api, IXusbInterfaceSource interfaces, XusbInterfaceInfo info, IBluetoothBatteryReader bluetoothBattery)
+        public XInputTransport(IXInputApi api, IXusbInterfaceSource interfaces, XusbInterfaceInfo info, IBluetoothBatteryReader? bluetoothBattery)
         {
             this.bluetoothBattery = bluetoothBattery;
             this.api = api ?? throw new ArgumentNullException(nameof(api));
@@ -75,7 +75,7 @@ namespace DS4Windows.Input.Xbox
         public HidDeviceCapabilities Capabilities { get; }
         public HidDeviceAttributes Attributes { get; }
         public string DevicePath { get; }
-        public string ParentPath => null;
+        public string? ParentPath => null;
 
         public void OpenDevice(bool exclusive)
         {
@@ -268,7 +268,7 @@ namespace DS4Windows.Input.Xbox
         public string GenerateFakeHwSerial()
         {
             // Bluetooth 接続は、機器の Bluetooth アドレスをそのまま使う（デバイスの識別と同じ値。登録簿が、追加と削除で同じキーを使えるように）
-            string address = XusbConnectionClassifier.TryGetBluetoothAddress(DevicePath);
+            string? address = XusbConnectionClassifier.TryGetBluetoothAddress(DevicePath);
             if (address != null)
             {
                 return address;
@@ -300,7 +300,7 @@ namespace DS4Windows.Input.Xbox
         /// 親のドライバーがつなぎ直すたびに 01、02、03… と番号を進める）は、番号が変わっても同じ機器と分かるよう、USB のポートで決まる親のインスタンス ID を使う。
         /// 個体のシリアルを持つ機器（本物の Xbox など）は、これまでどおりインスタンス ID を使う。
         /// </summary>
-        public static string ChooseIdentitySource(string instanceId, string parentInstanceId, string devicePath)
+        public static string ChooseIdentitySource(string instanceId, string? parentInstanceId, string devicePath)
         {
             if (string.IsNullOrEmpty(instanceId))
             {

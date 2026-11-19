@@ -31,7 +31,7 @@ namespace DS4Windows.Output.Services
         private readonly IDeviceRumbleService _rumble;
 
         private readonly OutputSlotManager outputslotMan;
-        private readonly OutputDevice[] outputDevices = new OutputDevice[ControllerLimits.MaxControllerCount];
+        private readonly OutputDevice?[] outputDevices = new OutputDevice?[ControllerLimits.MaxControllerCount];
         private readonly IVirtualPadBackend _backend;
         // 出力の種類（Xbox 360／DS4）ごとの生成・戻りの接続・型の絞り込み。種類を足すときは、カートリッジを足す
         private readonly Dictionary<OutContType, IOutputDeviceCartridge> _cartridges;
@@ -62,7 +62,7 @@ namespace DS4Windows.Output.Services
         public OutputSlotManager OutputSlotManager => outputslotMan;
 
         // テストが配列を直接調べるため公開している（契約の IVirtualPadService には出さない）
-        public OutputDevice[] OutputDevices => outputDevices;
+        public OutputDevice?[] OutputDevices => outputDevices;
 
         public bool HasOutputDevice(int index) => outputDevices[index] != null;
 
@@ -126,9 +126,9 @@ namespace DS4Windows.Output.Services
                 if (slotDevice.CurrentReserveStatus ==
                     OutputSlotReserveStatus.Permanent)
                 {
-                    OutputDevice outDevice = EstablishOutDevice(0, slotDevice.PermanentType);
+                    OutputDevice? outDevice = EstablishOutDevice(0, slotDevice.PermanentType);
                     // 予約したスロット自身に差す（最初の空きに差すと、予約のないスロットに残ってしまう）
-                    outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, slotDevice.PermanentType, slotDevice.Index);
+                    outputslotMan.DeferredPlugin(outDevice!, -1, "", outputDevices, slotDevice.PermanentType, slotDevice.Index); // 予約の種類は、カートリッジが登録済み
                 }
             }
             /*OutSlotDevice slotDevice =
@@ -157,10 +157,10 @@ namespace DS4Windows.Output.Services
             }*/
         }
 
-        private OutputDevice EstablishOutDevice(int index, OutContType contType)
+        private OutputDevice? EstablishOutDevice(int index, OutContType contType)
         {
-            OutputDevice temp = null;
-            temp = _cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge) ? cartridge.Create(_backend, _environmentService.ViGEmBusVersion) : null;
+            OutputDevice? temp = null;
+            temp = _cartridges.TryGetValue(contType, out IOutputDeviceCartridge? cartridge) ? cartridge.Create(_backend, _environmentService.ViGEmBusVersion) : null;
             return temp;
         }
 
@@ -168,7 +168,7 @@ namespace DS4Windows.Output.Services
             OutputDevice outDevice, IOutputBoundDevice device)
         {
             // 種類ごとの戻り（振動・ライトバー）の接続は、出力のカートリッジが持つ。種類がない（None）ときは何もしない
-            if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge))
+            if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge? cartridge))
             {
                 cartridge.AttachFeedback(index, outDevice, device);
             }
@@ -176,7 +176,7 @@ namespace DS4Windows.Output.Services
 
         public void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
         {
-            if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge cartridge))
+            if (_cartridges.TryGetValue(contType, out IOutputDeviceCartridge? cartridge))
             {
                 cartridge.RemoveFeedback(outDevice, inIdx);
             }
@@ -186,12 +186,12 @@ namespace DS4Windows.Output.Services
         // 使う予定が無ければ、9-F で削除をユーザーへ提案する（規約 2.4）。
         public void AttachNewUnboundOutDev(OutContType contType)
         {
-            OutSlotDevice slotDevice = outputslotMan.FindOpenSlot();
+            OutSlotDevice? slotDevice = outputslotMan.FindOpenSlot();
             if (slotDevice != null &&
                 slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.UnAttached)
             {
-                OutputDevice outDevice = EstablishOutDevice(-1, contType);
-                outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType);
+                OutputDevice? outDevice = EstablishOutDevice(-1, contType);
+                outputslotMan.DeferredPlugin(outDevice!, -1, "", outputDevices, contType); // 種類は、カートリッジが登録済み
             }
         }
 
@@ -200,9 +200,9 @@ namespace DS4Windows.Output.Services
             if (slotDevice.CurrentAttachedStatus == OutputSlotAttachedStatus.UnAttached &&
                 slotDevice.CurrentInputBound == OutputSlotInputBound.Unbound)
             {
-                OutputDevice outDevice = EstablishOutDevice(-1, contType);
+                OutputDevice? outDevice = EstablishOutDevice(-1, contType);
                 // 利用者が選んだスロット自身に差す
-                outputslotMan.DeferredPlugin(outDevice, -1, "", outputDevices, contType, slotDevice.Index);
+                outputslotMan.DeferredPlugin(outDevice!, -1, "", outputDevices, contType, slotDevice.Index); // 種類は、カートリッジが登録済み
             }
         }
 
@@ -210,8 +210,8 @@ namespace DS4Windows.Output.Services
         {
             if (slotDevice.CurrentInputBound == OutputSlotInputBound.Unbound)
             {
-                OutputDevice dev = slotDevice.OutputDevice;
-                string tempType = dev.GetDeviceType();
+                OutputDevice? dev = slotDevice.OutputDevice;
+                string tempType = dev!.GetDeviceType(); // 差してあるスロットだけが来る（null なら従来どおり NullReferenceException）
                 slotDevice.CurrentInputBound = OutputSlotInputBound.Unbound;
                 outputslotMan.DeferredRemoval(dev, -1, outputDevices, false);
             }
@@ -221,7 +221,7 @@ namespace DS4Windows.Output.Services
         {
             OutContType contType = _profileSettings.OutputType(index).ContType;
 
-            OutSlotDevice slotDevice = null;
+            OutSlotDevice? slotDevice = null;
             if (!_profileSettings.GetDInputOnly(index))
             {
                 slotDevice = outputslotMan.FindExistUnboundSlotType(contType);
@@ -240,12 +240,12 @@ namespace DS4Windows.Output.Services
                         slotDevice = outputslotMan.FindOpenSlot();
                         if (slotDevice != null)
                         {
-                            OutputDevice tempOut = _cartridges[contType].Narrow(EstablishOutDevice(index, contType));
+                            OutputDevice? tempOut = _cartridges[contType].Narrow(EstablishOutDevice(index, contType)!); // 種類は、カートリッジが登録済み
 
                             // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-                            EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
+                            EstablishOutFeedbackIfEnabled(index, contType, tempOut!, device);
 
-                            outputslotMan.DeferredPlugin(tempOut, index, $"{device.DisplayName} ({device.MacAddress})", outputDevices, contType);
+                            outputslotMan.DeferredPlugin(tempOut!, index, $"{device.DisplayName} ({device.MacAddress})", outputDevices, contType); // 種類は、カートリッジが登録済み
                             //slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
 
                             success = true;
@@ -262,10 +262,10 @@ namespace DS4Windows.Output.Services
                         // コントローラータブの ID 列と同じ書式
                         slotDevice.InputDisplayString = $"{device.DisplayName} ({device.MacAddress})";
                         slotDevice.CurrentInputBound = OutputSlotInputBound.Bound;
-                        OutputDevice tempOut = _cartridges[contType].Narrow(slotDevice.OutputDevice);
+                        OutputDevice? tempOut = _cartridges[contType].Narrow(slotDevice.OutputDevice!); // 差してあるスロットだけが来る（従来どおり）
 
                         // Enable ViGem feedback callback handler only if lightbar/rumble data output is enabled (if those are disabled then no point enabling ViGem callback handler call)
-                        EstablishOutFeedbackIfEnabled(index, contType, tempOut, device);
+                        EstablishOutFeedbackIfEnabled(index, contType, tempOut!, device);
 
                         outputDevices[index] = tempOut;
                         slotDevice.CurrentType = contType;
@@ -274,7 +274,7 @@ namespace DS4Windows.Output.Services
                 }
 
                 // Need to check for possible ViGEmBus failure here
-                if (success && slotDevice.OutputDevice != null)
+                if (success && slotDevice!.OutputDevice != null) // スロットの出力機器は差した後にだけ読む（null なら従来どおり NullReferenceException）
                 {
                     AppLogger.LogUser(AppLogLevel.Info, slotDevice.PermanentType != OutContType.None ? "Log_Out_AssociatedPermanent" : "Log_Out_Associated", index + 1, device.DisplayName, slotDevice.OutputDevice.GetDeviceType(), slotDevice.Index + 1);
                     _profileSettings.UseDInputOnlyArray[index] = false;
@@ -297,8 +297,8 @@ namespace DS4Windows.Output.Services
             if (!_profileSettings.UseDInputOnlyArray[index])
             {
                 //OutContType contType = Global.OutputType(index).ContType;
-                OutputDevice dev = outputDevices[index];
-                OutSlotDevice slotDevice = outputslotMan.GetOutSlotDevice(dev);
+                OutputDevice? dev = outputDevices[index];
+                OutSlotDevice? slotDevice = outputslotMan.GetOutSlotDevice(dev!); // 差していなければ null のまま渡す（従来どおり）
                 if (dev != null && slotDevice != null)
                 {
                     string tempType = dev.GetDeviceType();

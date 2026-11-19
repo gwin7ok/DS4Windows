@@ -22,7 +22,7 @@ namespace DS4Windows.Input.Hid
             return EnumerateDevices().Any(x => x.Path == devicePath);
         }
 
-        public static HidDevice GetDevice(string devicePath)
+        public static HidDevice? GetDevice(string devicePath)
         {
             return Enumerate(devicePath).FirstOrDefault();
         }
@@ -106,9 +106,9 @@ namespace DS4Windows.Input.Hid
 
         private class DeviceInfo
         {
-            public string Path { get; set; }
-            public string Description { get; set; }
-            public string Parent { get; set; }
+            public string Path { get; set; } = null!; // 列挙の中で必ず設定する
+            public string? Description { get; set; }
+            public string? Parent { get; set; }
         }
 
         private static IEnumerable<DeviceInfo> EnumerateDevices()
@@ -137,7 +137,7 @@ namespace DS4Windows.Input.Hid
                         var description = GetBusReportedDeviceDescription(deviceInfoSet, ref deviceInfoData) ??
                                           GetDeviceDescription(deviceInfoSet, ref deviceInfoData);
                         var parent = GetDeviceParent(deviceInfoSet, ref deviceInfoData);
-                        devices.Add(new DeviceInfo { Path = devicePath, Description = description, Parent = parent });
+                        devices.Add(new DeviceInfo { Path = devicePath!, Description = description, Parent = parent }); // 取得できなかった機器は、あとの処理で扱う（従来どおり）
                     }
                 }
                 NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
@@ -157,7 +157,7 @@ namespace DS4Windows.Input.Hid
             return deviceInfoData;
         }
 
-        private static string GetDevicePath(IntPtr deviceInfoSet, NativeMethods.SP_DEVICE_INTERFACE_DATA deviceInterfaceData)
+        private static string? GetDevicePath(IntPtr deviceInfoSet, NativeMethods.SP_DEVICE_INTERFACE_DATA deviceInterfaceData)
         {
             var bufferSize = 0;
             var interfaceDetail = new NativeMethods.SP_DEVICE_INTERFACE_DETAIL_DATA { Size = IntPtr.Size == 4 ? 4 + Marshal.SystemDefaultCharSize : 8 };
@@ -177,7 +177,7 @@ namespace DS4Windows.Input.Hid
             }
         }
 
-        private static string GetDeviceDescription(IntPtr deviceInfoSet, ref NativeMethods.SP_DEVINFO_DATA devinfoData)
+        private static string? GetDeviceDescription(IntPtr deviceInfoSet, ref NativeMethods.SP_DEVINFO_DATA devinfoData)
         {
             var descriptionBuffer = new byte[1024];
 
@@ -195,7 +195,7 @@ namespace DS4Windows.Input.Hid
             return descriptionBuffer.ToUTF16String();
         }
 
-        private static string GetBusReportedDeviceDescription(IntPtr deviceInfoSet, ref NativeMethods.SP_DEVINFO_DATA devinfoData)
+        private static string? GetBusReportedDeviceDescription(IntPtr deviceInfoSet, ref NativeMethods.SP_DEVINFO_DATA devinfoData)
         {
             var descriptionBuffer = new byte[1024];
 

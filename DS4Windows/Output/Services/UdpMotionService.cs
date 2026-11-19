@@ -43,7 +43,7 @@ namespace DS4Windows.Output.Services
             new byte[UdpServer.DATA_RSP_PACKET_LEN], new byte[UdpServer.DATA_RSP_PACKET_LEN],
         };
 
-        private IUdpMotionServer _udpServer;
+        private IUdpMotionServer? _udpServer;
 
         public UdpMotionService(IAppSettingsService appSettings, IInputDeviceRegistry deviceRegistry,
             IUdpMotionServerFactory serverFactory, IDeviceSlotState slots, IEventThreadDispatcher eventThread)
@@ -193,7 +193,7 @@ namespace DS4Windows.Output.Services
 
             try
             {
-                _udpServer.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS);
+                _udpServer!.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS); // 作成した直後に呼ぶ
                 foreach (IMotionSource dev in devices)
                 {
                     dev.queueEvent(() => dev.ResumeMotionCallback());
@@ -331,7 +331,7 @@ namespace DS4Windows.Output.Services
             }
         }
 
-        private void ChangeUdpSmoothingAttrs(object sender, EventArgs e)
+        private void ChangeUdpSmoothingAttrs(object? sender, EventArgs e)
         {
             for (int i = 0; i < udpEuroPairAccel.Length; i++)
             {

@@ -22,8 +22,8 @@ namespace DS4WindowsTests
             string code = SourceText.ReadNormalized("DS4Windows/Input/InputDeviceCore.cs");
             if (code == null) return;
 
-            Assert.Contains("public event EventHandler BatteryChanged;", code);
-            Assert.Contains("public event EventHandler ChargingChanged;", code);
+            Assert.Contains("public event EventHandler? BatteryChanged;", code);
+            Assert.Contains("public event EventHandler? ChargingChanged;", code);
             Assert.DoesNotContain("virtual event EventHandler BatteryChanged", code);
             Assert.Contains("protected void UpdateBattery(int percent) { if (percent == battery) return; battery = percent; BatteryChanged?.Invoke(this, EventArgs.Empty); }", code);
             Assert.Contains("protected void UpdateCharging(bool isCharging) { if (isCharging == charging) return; charging = isCharging; ChargingChanged?.Invoke(this, EventArgs.Empty); }", code);

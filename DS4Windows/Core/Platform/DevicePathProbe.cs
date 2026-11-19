@@ -156,10 +156,10 @@ namespace DS4Windows.Core.Platform
             }
         }
 
-        internal static string[] GetStringArrayDeviceProperty(string deviceInstanceId,
+        internal static string[]? GetStringArrayDeviceProperty(string deviceInstanceId,
             NativeMethods.DEVPROPKEY prop)
         {
-            string[] result = null;
+            string[]? result = null;
             NativeMethods.SP_DEVINFO_DATA deviceInfoData = new NativeMethods.SP_DEVINFO_DATA();
             deviceInfoData.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(deviceInfoData);
             ulong propertyType = 0;

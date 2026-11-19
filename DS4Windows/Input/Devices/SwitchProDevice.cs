@@ -91,11 +91,11 @@ namespace DS4Windows.Input.Devices
         private const float GYRO_IN_DEG_SEC_FACTOR = 0.070f;
         private new const int WARN_INTERVAL_BT = 40;
         private new const int WARN_INTERVAL_USB = 30;
-        private byte[] inputReportBuffer;
+        private byte[] inputReportBuffer = null!; // 初期化で確保する
         // ボタン・方向キー・ZL/ZR の解析。状態を持たないため共有してよい
         private static readonly IInputReportParser reportParser = new SwitchProReportParser();
-        private byte[] outputReportBuffer;
-        private byte[] rumbleReportBuffer;
+        private byte[] outputReportBuffer = null!; // 初期化で確保する
+        private byte[] rumbleReportBuffer = null!; // 初期化で確保する
 
         public int InputReportLen { get => INPUT_REPORT_LEN; }
         public int OutputReportLen { get => OUTPUT_REPORT_LEN; }
@@ -130,7 +130,7 @@ namespace DS4Windows.Input.Devices
         public bool EnableHomeLED { get => enableHomeLED; set => enableHomeLED = value; }
 
         #pragma warning disable CS0649 // nativeOptionsStore may be set by native/interop code
-        private SwitchProControllerOptions nativeOptionsStore;
+        private SwitchProControllerOptions nativeOptionsStore = null!; // 初期化で設定する
         #pragma warning restore CS0649
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace DS4Windows.Input.Devices
         private bool connectionOpened = false;
 
         #pragma warning disable CS0067 // events declared for compatibility but may be unused
-        public override event EventHandler<EventArgs> Removal = null;
+        public override event EventHandler<EventArgs>? Removal = null;
 
         #pragma warning restore CS0067
 
@@ -171,7 +171,7 @@ namespace DS4Windows.Input.Devices
             Removal += SwitchProDevice_Removal;
         }
 
-        private void SwitchProDevice_Removal(object sender, EventArgs e)
+        private void SwitchProDevice_Removal(object? sender, EventArgs e)
         {
             connectionOpened = false;
         }
@@ -601,11 +601,11 @@ namespace DS4Windows.Input.Devices
             //res = hidDevice.ReadFile(tmpReport);
         }
 
-        public byte[] Subcommand(byte subcommand, byte[] tmpBuffer, uint bufLen,
+        public byte[]? Subcommand(byte subcommand, byte[] tmpBuffer, uint bufLen,
             bool checkResponse = false)
         {
             int retryLimit = 100;
-            byte[] tmpReport;
+            byte[]? tmpReport;
 
             do
             {
@@ -679,7 +679,7 @@ namespace DS4Windows.Input.Devices
         public void CalibrationData()
         {
             byte[] command;
-            byte[] tmpBuffer;
+            byte[]? tmpBuffer;
 
             //command = new byte[] { 0x00, 0x50, 0x00, 0x00, 0x01 };
             //tmpBuffer = Subcommand(SwitchProSubCmd.SPI_FLASH_READ, command, 5, checkResponse: true);

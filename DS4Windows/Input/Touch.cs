@@ -25,12 +25,12 @@ namespace DS4Windows.Input
     {
         private int deltaY;
         private byte touchID;
-        private Touch previousTouch;
+        private Touch? previousTouch;
         private int hwX;
         private int hwY;
         private int deltaX;
 
-        internal Touch(int X, int Y, byte tID, Touch prevTouch = null)
+        internal Touch(int X, int Y, byte tID, Touch? prevTouch = null)
         {
             populate(X, Y, tID, prevTouch);
         }
@@ -40,9 +40,9 @@ namespace DS4Windows.Input
         public int DeltaX { get => deltaX; set => deltaX = value; }
         public int DeltaY { get => deltaY; set => deltaY = value; }
         public byte TouchID { get => touchID; set => touchID = value; }
-        public Touch PreviousTouch { get => previousTouch; set => previousTouch = value; }
+        public Touch? PreviousTouch { get => previousTouch; set => previousTouch = value; }
 
-        internal void populate(int X, int Y, byte tID, Touch prevTouch = null)
+        internal void populate(int X, int Y, byte tID, Touch? prevTouch = null)
         {
             HwX = X;
             HwY = Y;

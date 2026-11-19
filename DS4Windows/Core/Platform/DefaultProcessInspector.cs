@@ -28,7 +28,7 @@ namespace DS4Windows.Core.Platform
             {
                 try
                 {
-                    string temp = localAll[procInd].MainModule.FileName;
+                    string temp = localAll[procInd].MainModule!.FileName; // 読めないプロセスは例外になる（従来どおり）
                     if (temp == exePath)
                     {
                         procFound = true;

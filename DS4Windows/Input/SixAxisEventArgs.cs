@@ -26,7 +26,7 @@ namespace DS4Windows.Input
 
     public class SixAxisEventArgs : EventArgs
     {
-        public SixAxis sixAxis { get; private set; }
+        public SixAxis? sixAxis { get; private set; }
         public DateTime timeStamp { get; private set; }
         public SixAxisEventArgs()
         {

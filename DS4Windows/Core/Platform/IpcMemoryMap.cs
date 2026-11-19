@@ -25,8 +25,8 @@ namespace DS4Windows.Core.Platform
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
-        private MemoryMappedFile classNameMmf;
-        private MemoryMappedFile resultDataMmf;
+        private MemoryMappedFile? classNameMmf;
+        private MemoryMappedFile? resultDataMmf;
 
         // ---- 本体側 ----
 
@@ -61,9 +61,9 @@ namespace DS4Windows.Core.Platform
         /// </summary>
         public void WriteResult(string dataStr)
         {
-            MemoryMappedFile mmf = null;
-            MemoryMappedViewAccessor mma = null;
-            EventWaitHandle ipcNotifyEvent = null;
+            MemoryMappedFile? mmf = null;
+            MemoryMappedViewAccessor? mma = null;
+            EventWaitHandle? ipcNotifyEvent = null;
 
             try
             {
@@ -91,10 +91,10 @@ namespace DS4Windows.Core.Platform
         // ---- クライアント側 ----
 
         /// <summary>動いている本体のメイン画面のウィンドウクラス名を読む。見つからなければ null。</summary>
-        public string ReadWindowClassName()
+        public string? ReadWindowClassName()
         {
-            MemoryMappedFile mmf = null;
-            MemoryMappedViewAccessor mma = null;
+            MemoryMappedFile? mmf = null;
+            MemoryMappedViewAccessor? mma = null;
 
             try
             {

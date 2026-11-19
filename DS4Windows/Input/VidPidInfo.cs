@@ -32,7 +32,7 @@ namespace DS4Windows.Input
         public readonly VidPidFeatureSet featureSet;
         public CheckConnectionDelegate checkConnection;
         public VidPidInfo(int vid, int pid, string name = "Generic DS4", InputDeviceType inputDevType = InputDeviceType.DS4,
-            VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4, CheckConnectionDelegate checkConnection = null)
+            VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4, CheckConnectionDelegate? checkConnection = null)
         {
             this.vid = vid;
             this.pid = pid;

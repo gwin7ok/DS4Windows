@@ -24,8 +24,8 @@ namespace DS4Windows.Output.Services
         private readonly IOscTransportFactory _transportFactory;
         private readonly ControllerState[] _oscState = new ControllerState[ControllerLimits.MaxControllerCount];
 
-        private IOscListenerHandle _listener;
-        private IOscMessageSender _sender;
+        private IOscListenerHandle? _listener;
+        private IOscMessageSender? _sender;
 
         public OscService(IAppSettingsService appSettings, IOscTransportFactory transportFactory)
         {
@@ -56,7 +56,7 @@ namespace DS4Windows.Output.Services
             }
             else
             {
-                _listener.Close();
+                _listener!.Close(); // Start 済みのときだけ呼ぶ（null なら従来どおり NullReferenceException）
                 _listener = null;
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_ListenerStopped");
             }
@@ -73,7 +73,7 @@ namespace DS4Windows.Output.Services
             {
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_SenderStopped");
                 // Phase6-Step9-3c: フィールドを先に null にしてから閉じる（入力スレッドが閉じたソケットへ送らないようにする）
-                IOscMessageSender sender = _sender;
+                IOscMessageSender? sender = _sender;
                 if (sender == null) { return; }
                 _sender = null;
                 sender.Close();
@@ -90,7 +90,7 @@ namespace DS4Windows.Output.Services
         // 送信側が未生成・破棄済みの間は送信しない。フィールドをローカルに取り、取得後に null になっても安全にする。
         private void SendOsc(string address, object value)
         {
-            IOscMessageSender sender = _sender;
+            IOscMessageSender? sender = _sender;
             sender?.Send(address, value);
         }
 
@@ -124,7 +124,7 @@ namespace DS4Windows.Output.Services
 
         public void HandleMessage(string address, IList<object> arguments)
         {
-            string[] command = null;
+            string[]? command = null;
             try
             {
                 command = address.Split("/");

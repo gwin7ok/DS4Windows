@@ -72,19 +72,19 @@ namespace DS4Windows.Input
         protected IHidTransport hDevice;
         // 入力レポートの解析（ボタン・スティック・トリガー・タッチの生値）。状態を持たないため全デバイスで共有してよい
         private static readonly IInputReportParser ReportParser = new Ds4ReportParser();
-        protected string Mac;
+        protected string Mac = null!; // 派生クラスのコンストラクターで設定する
         protected ControllerState cState = new ControllerState();
         protected ControllerState pState = new ControllerState();
         protected ConnectionType conType;
         protected byte[] accel = new byte[6];
         protected byte[] gyro = new byte[6];
-        protected byte[] inputReport;
-        protected byte[] btInputReport = null;
-        protected byte[] outReportBuffer, outputReport;
+        protected byte[] inputReport = null!; // 派生クラスのコンストラクターで設定する
+        protected byte[] btInputReport = null!; // Bluetooth の機種だけ確保する（読むのも Bluetooth のときだけ）
+        protected byte[] outReportBuffer = null!, outputReport = null!; // 派生クラスのコンストラクターで確保する
         protected int inputReportErrorCount = 0; // Num of consequtive input report errors (fex if BT device fails 5 times in crc32 and 0x11 data type check then switch over to handle incoming BT packets as those were usb PC-friendly packets. Some fake DS4 gamepads needs this)
-        protected readonly DS4Touchpad touchpad = null;
-        protected readonly DS4SixAxis sixAxis = null;
-        protected Thread ds4Input, ds4Output;
+        protected readonly DS4Touchpad touchpad;
+        protected readonly DS4SixAxis sixAxis;
+        protected Thread? ds4Input, ds4Output;
         protected int battery;
         public DateTime lastActive = DateTime.UtcNow;
         public DateTime firstActive = DateTime.UtcNow;
@@ -104,7 +104,7 @@ namespace DS4Windows.Input
             set => readyQuickChargeDisconnect = value;
         }
 
-        public ControllerOptionsStore optionsStore;
+        public ControllerOptionsStore optionsStore = null!; // 派生クラスのコンストラクターで設定する
         DS4Windows.Core.Settings.ControllerOptionsStore DS4Windows.Core.Abstractions.IConfigurableDevice.OptionsStore => optionsStore;
 
         // Phase9 Steering 削除 W2: 旧「ステアリング（ジャイロでハンドル操作）の較正の状態」（wheelCenterPoint／wheel90DegPointLeft／Right／wheelCircle…／wheelPrev…／wheelFullTurnCount／WheelRecalibrateActiveState／
@@ -120,11 +120,11 @@ namespace DS4Windows.Input
 
         //public event EventHandler<EventArgs> Report = null;
         public abstract event ReportHandler<EventArgs> Report;
-        public virtual event EventHandler<EventArgs> Removal = null;
-        public event EventHandler<EventArgs> SyncChange = null;
-        public event EventHandler<EventArgs> SerialChange = null;
+        public virtual event EventHandler<EventArgs>? Removal = null;
+        public event EventHandler<EventArgs>? SyncChange = null;
+        public event EventHandler<EventArgs>? SerialChange = null;
         //public EventHandler<EventArgs> MotionEvent = null;
-        public ReportHandler<EventArgs> MotionEvent = null;
+        public ReportHandler<EventArgs>? MotionEvent = null;
 
         public IHidTransport HidDevice => hDevice;
 
@@ -224,7 +224,7 @@ namespace DS4Windows.Input
         public object removeLocker = new object();
 
         public string MacAddress => Mac;
-        public event EventHandler MacAddressChanged;
+        public event EventHandler? MacAddressChanged;
         public string getMacAddress()
         {
             return this.Mac;
@@ -295,7 +295,7 @@ namespace DS4Windows.Input
         public delegate void BatteryUpdateHandler(object sender, EventArgs e);
         // Phase11 電池残量の一本化: 通知用のイベントは基底の 1 組だけ（各機種の override 再宣言は廃止）。
         // 書き込みは UpdateBattery／UpdateCharging を通す（値が変わったときだけ通知する）
-        public event EventHandler BatteryChanged;
+        public event EventHandler? BatteryChanged;
         public int getBattery()
         {
             return battery;
@@ -318,7 +318,7 @@ namespace DS4Windows.Input
         }
 
         public bool Charging => charging;
-        public event EventHandler ChargingChanged;
+        public event EventHandler? ChargingChanged;
         public bool isCharging()
         {
             return charging;
@@ -429,8 +429,8 @@ namespace DS4Windows.Input
 
         // Phase7-Step10d W3（Q4＝A）: デバウンス時間などの設定値。InputDeviceRegistry が、デバイスの生成直後（入力の開始前）に設定する。
         // 未設定のとき（テスト）は、デバウンス 0ms として扱う。
-        private DS4Windows.Input.Abstractions.IDeviceLayerSettings layerSettings;
-        public DS4Windows.Input.Abstractions.IDeviceLayerSettings LayerSettings
+        private DS4Windows.Input.Abstractions.IDeviceLayerSettings? layerSettings;
+        public DS4Windows.Input.Abstractions.IDeviceLayerSettings? LayerSettings
         {
             get => layerSettings;
             set { layerSettings = value; }
@@ -457,7 +457,7 @@ namespace DS4Windows.Input
         protected Queue<Action> eventQueue = new Queue<Action>();
         protected object eventQueueLock = new object();
 
-        protected Thread timeoutCheckThread = null;
+        protected Thread? timeoutCheckThread = null;
         protected bool timeoutExecuted = false;
         protected bool timeoutEvent = false;
         protected bool runCalib;
@@ -483,7 +483,7 @@ namespace DS4Windows.Input
         protected DS4Windows.Core.Model.InputDeviceType deviceType;
         public DS4Windows.Core.Model.InputDeviceType DeviceType { get => deviceType; }
 
-        protected GyroMouseSens gyroMouseSensSettings;
+        protected GyroMouseSens gyroMouseSensSettings = null!; // 派生クラスのコンストラクターで設定する
         public virtual GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
 
         public const int DEFAULT_SLOT_NUMBER = -1;
@@ -498,7 +498,7 @@ namespace DS4Windows.Input
                 DeviceSlotNumberChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        protected event EventHandler DeviceSlotNumberChanged;
+        protected event EventHandler? DeviceSlotNumberChanged;
         protected byte deviceSlotMask = 0x00;
 
 
@@ -700,7 +700,7 @@ namespace DS4Windows.Input
 
         public double Latency = 0.0;
         public long lastInputReportTimestamp = 0; // 実機レポート受信開始タイムスタンプ public string error;public double Latency = 0.0;
-        public string error;
+        public string? error;
         public bool firstReport = true;
         public bool oldCharging = false;
         protected DateTime utcNow = DateTime.UtcNow;

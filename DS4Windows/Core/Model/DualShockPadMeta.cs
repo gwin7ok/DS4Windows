@@ -29,7 +29,7 @@ namespace DS4Windows.Core.Model
         public DsState PadState;
         public DsConnection ConnectionType;
         public DsModel Model;
-        public PhysicalAddress PadMacAddress;
+        public PhysicalAddress? PadMacAddress;
         public DsBattery BatteryStatus;
         public bool IsActive;
     }

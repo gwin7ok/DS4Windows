@@ -82,7 +82,7 @@ namespace DS4Windows.Output.Udp
             rsp.padState = (byte)meta.PadState;
             rsp.model = (byte)meta.Model;
             rsp.connectionType = (byte)meta.ConnectionType;
-            byte[] mac = meta.PadMacAddress.GetAddressBytes();
+            byte[] mac = meta.PadMacAddress!.GetAddressBytes(); // 接続中のパッドだけが来る（null なら従来どおり NullReferenceException）
             for (int i = 0; i < 6; i++)
                 rsp.address[i] = mac[i];
             rsp.batteryStatus = (byte)meta.BatteryStatus;

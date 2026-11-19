@@ -25,15 +25,15 @@ namespace DS4Windows.Input
 
     public class CheckVirtualInfo : EventArgs
     {
-        private string deviceInstanceId;
-        public string DeviceInstanceId
+        private string? deviceInstanceId;
+        public string? DeviceInstanceId
         {
             get => deviceInstanceId;
             set => deviceInstanceId = value;
         }
 
-        private string propertyValue;
-        public string PropertyValue { get => propertyValue; set => propertyValue = value; }
+        private string? propertyValue;
+        public string? PropertyValue { get => propertyValue; set => propertyValue = value; }
 
         public CheckVirtualInfo() : base()
         {

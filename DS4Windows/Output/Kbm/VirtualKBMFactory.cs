@@ -31,7 +31,7 @@ namespace DS4Windows.Output.Kbm
         public static VirtualKBMBase DetermineHandler(string identifier =
             SendInputHandler.IDENTIFIER)
         {
-            VirtualKBMBase handler = null;
+            VirtualKBMBase? handler = null;
             if (identifier == DEFAULT_IDENTIFIER)
             {
                 // Run through event handler discovery routine
@@ -77,7 +77,7 @@ namespace DS4Windows.Output.Kbm
         public static VirtualKBMMapping GetMappingInstance(string identifier =
             SendInputHandler.IDENTIFIER)
         {
-            VirtualKBMMapping temp = null;
+            VirtualKBMMapping? temp = null;
             if (identifier == SendInputHandler.IDENTIFIER)
             {
                 temp = new SendInputMapping();
