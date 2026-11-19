@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
@@ -34,7 +36,7 @@ namespace DS4Windows.Processing.Services.Slots
         {
             if (slot < 0 || slot >= ControllerLimits.TestProfileItemCount) return;
 
-            string programPath = _profileSettings.BasicSlot(slot)?.LaunchProgram;
+            string? programPath = _profileSettings.BasicSlot(slot)?.LaunchProgram;
             if (string.IsNullOrEmpty(programPath)) return;
 
             bool running;

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -56,8 +58,8 @@ namespace DS4Windows.Core.Platform
         /// <param name="programDirectory">プログラムフォルダ（IPathService.ProgramDirectory）</param>
         public void WriteStartProgEntry(string exeLocation, string programDirectory)
         {
-            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
-            dynamic shell = Activator.CreateInstance(t);
+            Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
+            dynamic shell = Activator.CreateInstance(t!)!; // 登録済みの COM クラス（null なら従来どおり NullReferenceException）
             try
             {
                 var lnk = shell.CreateShortcut(lnkpath);
@@ -106,8 +108,8 @@ namespace DS4Windows.Core.Platform
                 {
                     if (act.ActionType == TaskActionType.Execute)
                     {
-                        ExecAction temp = act as ExecAction;
-                        if (temp.Path != taskBatPath)
+                        ExecAction? temp = act as ExecAction;
+                        if (temp!.Path != taskBatPath) // ExecAction のときだけ来る（そうでなければ従来どおり NullReferenceException）
                         {
                             ts.RootFolder.DeleteTask("RunDS4Windows");
                             break;
@@ -165,7 +167,7 @@ namespace DS4Windows.Core.Platform
         /// <param name="exeLocation">実行ファイルのフルパス（IPathService.ExecutablePath）</param>
         public bool CheckStartupExeLocation(string exeLocation)
         {
-            string lnkprogpath = ResolveShortcut(lnkpath);
+            string? lnkprogpath = ResolveShortcut(lnkpath);
             return lnkprogpath != exeLocation;
         }
 
@@ -179,11 +181,11 @@ namespace DS4Windows.Core.Platform
             }
         }
 
-        private static string ResolveShortcut(string filePath)
+        private static string? ResolveShortcut(string filePath)
         {
-            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
-            dynamic shell = Activator.CreateInstance(t);
-            string result;
+            Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
+            dynamic shell = Activator.CreateInstance(t!)!; // 登録済みの COM クラス（null なら従来どおり NullReferenceException）
+            string? result;
 
             try
             {

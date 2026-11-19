@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -20,7 +22,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public int ActionDefinitionCount => _specialActions.ActionList.Count;
 
-        public IReadOnlyList<string> GetProfileActionNames(int deviceIndex)
+        public IReadOnlyList<string>? GetProfileActionNames(int deviceIndex)
         {
             if (deviceIndex < 0 || deviceIndex >= ProfileSettingsService.TEST_PROFILE_ITEM_COUNT || _config == null)
                 return Array.Empty<string>();
@@ -32,13 +34,13 @@ namespace DS4Windows.Processing.Services.Slots
             return result;
         }
 
-        public SpecialAction GetProfileAction(int deviceIndex, string actionName)
+        public SpecialAction? GetProfileAction(int deviceIndex, string actionName)
         {
             if (deviceIndex < 0 || deviceIndex >= ProfileSettingsService.TEST_PROFILE_ITEM_COUNT ||
                 string.IsNullOrEmpty(actionName) || _config == null)
                 return null;
 
-            SpecialAction action = null;
+            SpecialAction? action = null;
             if (_config.profileActionDict[deviceIndex].TryGetValue(actionName, out var act))
             {
                 action = act;
@@ -75,6 +77,6 @@ namespace DS4Windows.Processing.Services.Slots
         // ---- Phase6-Step3-1: アクション名一覧（コピーなし）----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の List<string> を直接返す
         // （従来の Global.getProfileActions と同一。GetProfileActionNames の ToArray() は使わない）。
-        public IReadOnlyList<string> GetProfileActionsRaw(int deviceIndex) => _config?.profileActions[deviceIndex];
+        public IReadOnlyList<string>? GetProfileActionsRaw(int deviceIndex) => _config?.profileActions[deviceIndex];
     }
 }

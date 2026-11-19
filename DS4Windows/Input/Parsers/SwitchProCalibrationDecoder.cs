@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Input.Devices;
 

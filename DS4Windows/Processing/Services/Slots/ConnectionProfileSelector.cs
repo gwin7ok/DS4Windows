@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
@@ -27,31 +29,31 @@ namespace DS4Windows.Processing.Services.Slots
             _profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
         }
 
-        public bool ApplyOnConnect(int index, bool useAutoProfile, bool isValidSerial, string macAddress)
+        public bool ApplyOnConnect(int index, bool useAutoProfile, bool isValidSerial, string? macAddress)
         {
             bool profileLoaded = false;
 
             // 「初回接続か」「直前のプロファイル」は、スロット番号ではなくコントローラー（MAC）ごとに判定する
             // （別のコントローラーが空いたスロットに入っても、そのコントローラーにとっては初回。Reconnect-Profile-PerController-Fix-Plan.md）。
             // 有効なシリアルがない（MAC が使えない）ときは、従来のスロット単位。
-            string connectedMac = isValidSerial ? macAddress : null;
+            string? connectedMac = isValidSerial ? macAddress : null;
 
             if (DS4Windows.Core.Logging.AppLogger.IsDebugEnabled) DS4Windows.Core.Logging.AppLogger.LogDebug($"PrepareConnectedInputController: device={index}, useAutoProfile={useAutoProfile}, isFirstConnection={_deviceStateService.IsFirstConnection(index, connectedMac)}");
 
             if (!useAutoProfile)
             {
                 // ===== プロファイル選択ロジック =====
-                string profileToApply;
+                string? profileToApply;
 
                 if (_deviceStateService.IsFirstConnection(index, connectedMac))
                 {
                     // 初回接続: LinkedProfiles.xmlまたはOlderProfilePathからプロファイルを選択
                     if (DS4Windows.Core.Logging.AppLogger.IsDebugEnabled) DS4Windows.Core.Logging.AppLogger.LogDebug($"FIRST CONNECTION detected for device {index}");
 
-                    if (isValidSerial && _profileRepository.ContainsLinkedProfile(macAddress))
+                    if (isValidSerial && _profileRepository.ContainsLinkedProfile(macAddress!)) // 有効なシリアルのときだけ MAC を使う
                     {
                         // Linked登録済み → Linkedを適用
-                        profileToApply = _profileRepository.GetLinkedProfile(macAddress);
+                        profileToApply = _profileRepository.GetLinkedProfile(macAddress!); // 有効なシリアルのときだけ MAC を使う
                         if (DS4Windows.Core.Logging.AppLogger.IsDebugEnabled) DS4Windows.Core.Logging.AppLogger.LogDebug($"Using LINKED profile: '{profileToApply}' for device {index}");
                     }
                     else
@@ -77,9 +79,9 @@ namespace DS4Windows.Processing.Services.Slots
                 _deviceStateService.RememberProfile(connectedMac, profileToApply);   // このコントローラーの「直前のプロファイル」（適用のたびにも更新する）
 
                 // LinkedProfiles.xmlの状態を確認してLinkedProfileUIとlinkedProfileCheckを設定
-                if (isValidSerial && _profileRepository.ContainsLinkedProfile(macAddress))
+                if (isValidSerial && _profileRepository.ContainsLinkedProfile(macAddress!)) // 有効なシリアルのときだけ MAC を使う
                 {
-                    string linkedProfile = _profileRepository.GetLinkedProfile(macAddress);
+                    string linkedProfile = _profileRepository.GetLinkedProfile(macAddress!); // 有効なシリアルのときだけ MAC を使う
                     _profileRepository.LinkedProfileUI[index] = linkedProfile;
                     _profileSettings.SetLinkedProfileCheck(index, true);
                 }

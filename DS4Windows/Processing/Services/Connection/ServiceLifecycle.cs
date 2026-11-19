@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -56,15 +58,15 @@ namespace DS4Windows.Processing.Services.Connection
             }
         }
 
-        public event EventHandler ServiceStarted;
+        public event EventHandler? ServiceStarted;
 
-        public event EventHandler PreServiceStop;
+        public event EventHandler? PreServiceStop;
 
-        public event EventHandler ServiceStopped;
+        public event EventHandler? ServiceStopped;
 
-        public event EventHandler RunningChanged;
+        public event EventHandler? RunningChanged;
 
-        public event Action<InputDeviceCore, int> HotplugController;
+        public event Action<InputDeviceCore, int>? HotplugController;
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
@@ -219,9 +221,9 @@ namespace DS4Windows.Processing.Services.Connection
                         //useDInputOnly[i] = true;
                         //Global.activeOutDevType[i] = OutContType.None;
                         _profileSettings.UseDInputOnlyArray[i] = true;
-                        slots.Controllers[i] = null;
+                        slots.Controllers[i] = null!; // 空きスロットは null で表す（従来どおり）
                         _outputs.ResetDeviceState(i);
-                        slots.TouchPads[i] = null;
+                        slots.TouchPads[i] = null!; // 空きスロットは null で表す（従来どおり）
                         _latencyMonitor.Reset(i);
                     }
                 }

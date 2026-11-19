@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.IO;
 using System.Text;
@@ -40,8 +42,8 @@ namespace DS4Windows.Output
                 using StreamReader sr = new StreamReader(output_path);
                 try
                 {
-                    OutputSlotPersistDTO dto = serializer.Deserialize(sr) as OutputSlotPersistDTO;
-                    dto.MapTo(slotManager);
+                    OutputSlotPersistDTO? dto = serializer.Deserialize(sr) as OutputSlotPersistDTO;
+                    dto!.MapTo(slotManager); // 読み込んだ設定（null なら従来どおり NullReferenceException）
                     result = true;
                 }
                 catch (InvalidOperationException)

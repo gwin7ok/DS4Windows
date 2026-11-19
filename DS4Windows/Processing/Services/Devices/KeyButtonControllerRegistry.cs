@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Logging;
@@ -44,16 +46,16 @@ namespace DS4Windows.Processing.Services.Devices
             return device + ":" + (string.IsNullOrEmpty(actionName) ? "<default>" : actionName);
         }
 
-        public KeyButtonActionController GetOrCreate(int device, KeyButtonActionController.Mode mode, string actionName = null)
+        public KeyButtonActionController? GetOrCreate(int device, KeyButtonActionController.Mode mode, string? actionName = null)
         {
             try
             {
                 lock (_lock)
                 {
                     string dictKey = MakeKbcDictKey(device, actionName ?? "<mapping>");
-                    if (!_controllers.TryGetValue(dictKey, out KeyButtonActionController inst) || inst == null)
+                    if (!_controllers.TryGetValue(dictKey, out KeyButtonActionController? inst) || inst == null)
                     {
-                        KeyButtonActionController temp = null;
+                        KeyButtonActionController? temp = null;
                         try
                         {
                             temp = _factory.Create(device, mode, actionName ?? "<mapping>");
@@ -74,7 +76,7 @@ namespace DS4Windows.Processing.Services.Devices
             catch { return null; }
         }
 
-        public KeyButtonActionController GetOrCreate(int device, SpecialAction sa)
+        public KeyButtonActionController? GetOrCreate(int device, SpecialAction sa)
         {
             try
             {
@@ -82,9 +84,9 @@ namespace DS4Windows.Processing.Services.Devices
                 {
                     string name = sa?.name ?? "<sa>";
                     string dictKey = MakeKbcDictKey(device, name);
-                    if (!_controllers.TryGetValue(dictKey, out KeyButtonActionController inst) || inst == null)
+                    if (!_controllers.TryGetValue(dictKey, out KeyButtonActionController? inst) || inst == null)
                     {
-                        KeyButtonActionController temp = null;
+                        KeyButtonActionController? temp = null;
                         try
                         {
                             temp = _factory.Create(device, sa, name);
@@ -114,7 +116,7 @@ namespace DS4Windows.Processing.Services.Devices
             catch { return null; }
         }
 
-        public IActionController GetOrCreateForAction(int device, SpecialAction sa)
+        public IActionController? GetOrCreateForAction(int device, SpecialAction sa)
         {
             // Wrap existing KeyButtonActionController in adapter implementing IActionController
             var inner = GetOrCreate(device, sa);

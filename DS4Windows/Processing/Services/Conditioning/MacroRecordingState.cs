@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Model;
@@ -32,16 +34,16 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public bool IsPressed(DS4Controls control)
         {
-            InputDeviceCore device = Device;
+            InputDeviceCore? device = Device;
             if (device == null)
                 return false;
 
             ControllerState state = device.getCurrentStateRef();
             TouchpadMouse touchPad = _slotState.TouchPads[0];
-            return _mapping.GetBoolMappingExternal(0, control, state, null, touchPad);
+            return _mapping.GetBoolMappingExternal(0, control, state, null!, touchPad); // 記録中の判定は、露出した状態を使わない（従来どおり null）
         }
 
-        private InputDeviceCore Device
+        private InputDeviceCore? Device
         {
             get
             {

@@ -1,4 +1,6 @@
-﻿using DS4Windows.Core.Abstractions;
+﻿#nullable enable
+
+using DS4Windows.Core.Abstractions;
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Output.Abstractions;
@@ -25,7 +27,7 @@ namespace DS4Windows.Output.Devices
 
         public OutContType Type => OutContType.X360;
 
-        public OutputDevice Create(IVirtualPadBackend backend, Version busVersion)
+        public OutputDevice? Create(IVirtualPadBackend backend, Version busVersion)
         {
             if (XinputSlotMinVersion.CompareTo(busVersion) <= 0)
             {
@@ -35,13 +37,13 @@ namespace DS4Windows.Output.Devices
             return new Xbox360OutDevice(backend);
         }
 
-        public OutputDevice Narrow(OutputDevice device) => device as Xbox360OutDevice;
+        public OutputDevice? Narrow(OutputDevice device) => device as Xbox360OutDevice;
 
         public void AttachFeedback(int index, OutputDevice outDevice, IOutputBoundDevice device)
         {
             int devIndex = index;
-            Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
-            IDisposable p = tempXbox.cont.SubscribeFeedback((largeMotor, smallMotor) =>
+            Xbox360OutDevice? tempXbox = outDevice as Xbox360OutDevice;
+            IDisposable p = tempXbox!.cont!.SubscribeFeedback((largeMotor, smallMotor) => // 種類を確かめた後で呼ぶ（null なら従来どおり NullReferenceException）
             {
                 //Trace.WriteLine(string.Format("Rumble ({0}, {1}) {2}",
                 //    args.LargeMotor, args.SmallMotor, DateTime.Now.ToString("hh:mm:ss.FFFF")));
@@ -53,8 +55,8 @@ namespace DS4Windows.Output.Devices
         public void RemoveFeedback(OutputDevice outDevice, int inputIndex)
         {
             int inIdx = inputIndex;
-            Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
-            tempXbox.RemoveFeedback(inIdx);
+            Xbox360OutDevice? tempXbox = outDevice as Xbox360OutDevice;
+            tempXbox!.RemoveFeedback(inIdx); // 種類を確かめた後で呼ぶ（null なら従来どおり NullReferenceException）
             //tempXbox.cont.FeedbackReceived -= tempXbox.forceFeedbackCall;
             //tempXbox.forceFeedbackCall = null;
         }

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 using System;
 
@@ -24,7 +26,7 @@ namespace DS4Windows.Input
 
     public class SixAxisEventArgs : EventArgs
     {
-        public SixAxis sixAxis { get; private set; }
+        public SixAxis? sixAxis { get; private set; }
         public DateTime timeStamp { get; private set; }
         public SixAxisEventArgs()
         {

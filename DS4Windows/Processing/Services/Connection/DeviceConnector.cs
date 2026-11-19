@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Abstractions;
@@ -116,10 +118,10 @@ namespace DS4Windows.Processing.Services.Connection
             device.StartUpdate();
         }
 
-        private void OnChargingChanged(object sender, EventArgs e)
+        private void OnChargingChanged(object? sender, EventArgs e)
         {
-            InputDeviceCore device = sender as InputDeviceCore;
-            if (device.ConnectionType == ConnectionType.BT && _appSettings.QuickCharge &&
+            InputDeviceCore? device = sender as InputDeviceCore;
+            if (device!.ConnectionType == ConnectionType.BT && _appSettings.QuickCharge && // 実行中は設定済み（null なら従来どおり NullReferenceException）
                 device.Charging)
             {
                 // Set disconnect flag here. Later Hotplug event will check

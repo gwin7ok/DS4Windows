@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -232,7 +234,7 @@ namespace DS4Windows.Processing.Gyro
 
         public bool IsTriggerActive(GyroOutMode mode)
         {
-            ParsedTriggerList triggers = null;
+            ParsedTriggerList? triggers = null;
             var andCond = false;
             useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.TriggerTurns;
             if (mode == GyroOutMode.Controls)
@@ -322,7 +324,7 @@ namespace DS4Windows.Processing.Gyro
             GyroMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick;
             if (msinfo.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.OneEuro)
             {
-                double currentRate = 1.0 / args.sixAxis.elapsed;
+                double currentRate = 1.0 / args.sixAxis!.elapsed; // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
                 filterPair.axis1Filter.Filter(0.0, currentRate);
                 filterPair.axis2Filter.Filter(0.0, currentRate);
             }
@@ -333,8 +335,8 @@ namespace DS4Windows.Processing.Gyro
             int deltaX = 0, deltaY = 0;
             // Phase7b W2（K4-1）: 旧は GetGyroMouseStickHorizontalAxis(0) の固定で、2 台目以降も 1 台目のプロファイルの水平軸で動いていた
             // （上流の元からの不具合。1 台だけのときは挙動が変わらない）。この Mouse が受け持つ台の設定を読む。
-            deltaX = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis == 0 ? arg.sixAxis.gyroYawFull :
-                arg.sixAxis.gyroRollFull;
+            deltaX = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis == 0 ? arg.sixAxis!.gyroYawFull : // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
+                arg.sixAxis!.gyroRollFull; // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
             deltaY = -arg.sixAxis.gyroPitchFull;
             //int inputX = deltaX, inputY = deltaY;
             int maxDirX = deltaX >= 0 ? 127 : -128;

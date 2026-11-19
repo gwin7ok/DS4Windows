@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
@@ -166,7 +168,7 @@ namespace DS4Windows.Processing.Touchpad
                     }
                     else if (arg.TouchActive)
                     {
-                        if (arg.Touches.Length > 1)
+                        if (arg.Touches!.Length > 1) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                         {
                             candidate = Candidate.Multi;
                         }

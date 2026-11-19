@@ -14,7 +14,7 @@ namespace DS4Windows.Core.Abstractions
     {
         /// <summary>新しい版があるか（結果は 1 回目の問い合わせの後、<paramref name="allowCached"/> が true のとき使い回す）。</summary>
         /// <param name="lastVersionChecked">スキップ済みの版（IAppSettingsService.LastVersionChecked）</param>
-        bool CheckNewerVersionExists(out Version version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true);
+        bool CheckNewerVersionExists(out Version? version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true);
 
         /// <summary>版 → 変更履歴の本文（プレリリースを除く。<paramref name="allVersions"/> が false なら今の版より新しいものだけ）。</summary>
         Task<Dictionary<Version, string>> GetChangelog(bool allVersions = false);

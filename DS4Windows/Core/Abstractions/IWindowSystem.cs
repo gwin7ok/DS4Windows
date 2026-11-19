@@ -52,7 +52,7 @@ namespace DS4Windows.Core.Abstractions
         /// Phase12-Step2 2i: 今のマウスカーソルの位置にあるウィンドウの、最上位の親（トップレベル）。ウィンドウがない・取得できないときは null。
         /// 位置は画面の座標（物理ピクセル）で、カーソルの取得と同じ座標系のため、画面の拡大率の変換は要らない。
         /// </summary>
-        CapturedWindow GetWindowUnderCursor();
+        CapturedWindow? GetWindowUnderCursor();
 
         /// <summary>
         /// Phase12-Step3 3c（R-3）: マウスポインターを、画面（仮想スクリーン）の座標 (<paramref name="x"/>, <paramref name="y"/>) へ移動する（物理ピクセル。

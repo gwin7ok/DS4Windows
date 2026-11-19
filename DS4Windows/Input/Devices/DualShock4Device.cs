@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -20,7 +22,7 @@ namespace DS4Windows.Input.Devices
         private static readonly IInputReportParser ReportParser = new Ds4ReportParser();
 
         private readonly TimestampClock timestampClock = new TimestampClock(ushort.MaxValue, 16u);
-        private DS4ControllerOptions nativeOptionsStore;
+        private DS4ControllerOptions nativeOptionsStore = null!; // 初期化で設定する
         private const byte DEFAULT_BT_REPORT_TYPE = 0x11;
         private byte knownGoodBTOutputReportType = DEFAULT_BT_REPORT_TYPE;
         private int btOutputPayloadLen = BT_OUTPUT_REPORT_LENGTH;

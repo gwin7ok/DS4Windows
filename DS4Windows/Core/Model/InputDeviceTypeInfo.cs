@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace DS4Windows.Core.Model
 {
@@ -18,8 +20,8 @@ namespace DS4Windows.Core.Model
             InputDeviceFamily[] table = new InputDeviceFamily[values.Length];
             foreach (InputDeviceType value in values)
             {
-                InputDeviceFamilyAttribute attr = (InputDeviceFamilyAttribute)Attribute.GetCustomAttribute(
-                    typeof(InputDeviceType).GetField(value.ToString()), typeof(InputDeviceFamilyAttribute));
+                InputDeviceFamilyAttribute? attr = (InputDeviceFamilyAttribute?)Attribute.GetCustomAttribute(
+                    typeof(InputDeviceType).GetField(value.ToString())!, typeof(InputDeviceFamilyAttribute)); // 列挙値の名前のフィールドは必ず存在する
                 if (attr == null)
                 {
                     throw new InvalidOperationException("InputDeviceType." + value + " に [InputDeviceFamily] がない");

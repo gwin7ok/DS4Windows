@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Threading;
 using Nefarius.ViGEm.Client;
 
@@ -10,7 +12,7 @@ namespace DS4Windows.Output.Backend
     /// </summary>
     public sealed class ViGEmVirtualPadBackend : IVirtualPadBackend
     {
-        private ViGEmClient _client;
+        private ViGEmClient? _client;
 
         public bool IsStarted => _client != null;
 

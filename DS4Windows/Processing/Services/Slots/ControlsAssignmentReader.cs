@@ -1,4 +1,7 @@
+#nullable enable
+
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Actions;
@@ -16,11 +19,11 @@ namespace DS4Windows.Processing.Services.Slots
         /// 定義と、実行時の状態の入れ物（合成の <see cref="SpecialAction"/>。名前は <c>Synthetic_Special_{device}_{control}</c>）を作る。
         /// 共通の種別の割り当てでないとき（<see cref="ControlBindingBuilder.TryInterpretSpecial"/> が偽）は偽。
         /// </summary>
-        public static bool TryReadSpecial(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        public static bool TryReadSpecial(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
-            if (!ControlBindingBuilder.TryInterpretSpecial(dcs, out ControlSpecialItem item)) return false;
+            if (!ControlBindingBuilder.TryInterpretSpecial(dcs, out ControlSpecialItem? item)) return false;
 
             string name = $"Synthetic_Special_{device}_{(int)dcs.control}";
             var triggers = new List<DS4Controls> { dcs.control };
@@ -34,7 +37,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// 実行時の状態の入れ物は、旧経路の合成と同じ名前・種別（<c>Synthetic_Key_{device}_{control}</c>。状態は名前で引かれる）。
         /// Key の新経路の条件（<see cref="ControlBindingBuilder.TryInterpretKey"/>）を満たさないときは偽。
         /// </summary>
-        public static bool TryReadKey(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        public static bool TryReadKey(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
@@ -62,7 +65,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// 実行時の状態の入れ物は、これまでのパッドの束縛と同じ名前（<c>Synthetic_Pad_{device}_{control}</c>）。
         /// 条件を満たさないとき（Toggle なし、出力先がマウスなど、出力先なし［Unbound］）は偽。
         /// </summary>
-        public static bool TryReadPadToggle(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        public static bool TryReadPadToggle(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
@@ -76,7 +79,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// Phase9: Toggle つきの Button で、出力先がマウスのボタン・タッチパッドクリック・デジタルのホイールのものを、SA の Button と同じ定義にする（名前は <c>Synthetic_Mouse_...</c>）。
         /// 以前は、デバイスに 1 つだけの toggle フラグ（<c>ControlToggleOutputAction</c>）を使い、Toggle つきのボタンが複数あると、状態が連動した。ボタンごとの状態になる。
         /// </summary>
-        public static bool TryReadMouseToggle(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        public static bool TryReadMouseToggle(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
@@ -90,7 +93,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// Phase9: Toggle つきの Button で、出力先がマウスの移動・アナログのホイール（元がスティック・トリガー・ジャイロ）のものを、SA の Button と同じ定義にする
         /// （名前は <c>Synthetic_AnalogMouse_...</c>）。以前は、Toggle の出力が移動に効かず、Toggle にならなかった。ON の間は、SA と同じ固定量（強さ 100%）で動かす。
         /// </summary>
-        public static bool TryReadAnalogMouseToggle(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        public static bool TryReadAnalogMouseToggle(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
@@ -100,7 +103,7 @@ namespace DS4Windows.Processing.Services.Slots
             return TryBuildButtonToggle(device, dcs, "Synthetic_AnalogMouse", out definition, out source);
         }
 
-        private static bool TryBuildButtonToggle(int device, DS4ControlSettings dcs, string namePrefix, out AssignmentDefinition definition, out SpecialAction source)
+        private static bool TryBuildButtonToggle(int device, DS4ControlSettings dcs, string namePrefix, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             string name = $"{namePrefix}_{device}_{(int)dcs.control}";
             var identity = new SpecialAction(name, "Synthetic", "Button", "Button", 0, string.Empty);
@@ -121,11 +124,11 @@ namespace DS4Windows.Processing.Services.Slots
         /// 実行時の状態の入れ物は、旧経路の合成と同じ名前（<c>Synthetic_Macro_{device}_{control}</c>。再生のキューの識別子は、ボタンごとに別）。
         /// Macro の新経路の条件（<see cref="ControlBindingBuilder.TryInterpretMacro"/>）を満たさないときは偽。
         /// </summary>
-        public static bool TryReadMacro(int device, DS4ControlSettings dcs, out AssignmentDefinition definition, out SpecialAction source)
+        public static bool TryReadMacro(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
-            if (!ControlBindingBuilder.TryInterpretMacro(dcs, out int[] steps)) return false;
+            if (!ControlBindingBuilder.TryInterpretMacro(dcs, out int[]? steps)) return false;
 
             string name = $"Synthetic_Macro_{device}_{(int)dcs.control}";
             var identity = new SpecialAction(name, "Synthetic", "Macro", string.Join("/", steps), 0, string.Empty);
@@ -135,7 +138,7 @@ namespace DS4Windows.Processing.Services.Slots
             identity.controls = name;
 
             // Phase10-Step4 W3: Macro の SA 専用の 3 項目（Run on trigger release／Synchronized Run／Keep key state）。項目がなければ（従来の Macro）、すべて偽
-            ControlSpecialItem options = dcs.special != null && dcs.special.Type == SpecialAction.ActionTypeId.Macro ? dcs.special : null;
+            ControlSpecialItem? options = dcs.special != null && dcs.special.Type == SpecialAction.ActionTypeId.Macro ? dcs.special : null;
             identity.pressRelease = options != null && options.RunOnRelease;
             identity.synchronized = options != null && options.Synchronized;
             identity.keepKeyState = options != null && options.KeepKeyState;

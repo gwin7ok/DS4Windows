@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
@@ -14,7 +16,7 @@ namespace DS4Windows.Processing.Services.Slots
         private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 Func<ControlService>（遅延解決）。プロファイル読込の鎖が使う窓口を直接受ける
         private readonly IProfileRepository _profileRepo;
         // Phase10-Step4d W5c: Load Profile の切り替え先を、実行の直前に ID から現在の名前に引く。省略可（なければ、従来どおり details の名前）
-        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? _profileIdentity;
         // Phase6-Step10-4-2f（K1 是正）: スロット上限は、固定の 4 ではなく、環境（Windows 8 以上は 8）から取得する
         private readonly IEnvironmentService _environmentService;
         // Phase7-Step3c W3: 適用の核（旧 Global.ApplyProfile）に必要な依存
@@ -43,7 +45,7 @@ namespace DS4Windows.Processing.Services.Slots
             DS4Windows.Processing.Actions.IActionRegistry actionRegistry,
             Func<DS4Windows.Processing.Actions.IActionBindingBuilder> bindingBuilderProvider,
             DS4Windows.Processing.Actions.IManagedActionManager actionManager,
-            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
+            DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity = null)
         {
             _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
             _profileIdentity = profileIdentity;
@@ -171,7 +173,7 @@ namespace DS4Windows.Processing.Services.Slots
             if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
                 return false;
 
-            string previousProfile = _profileRepo.OlderProfilePath?[deviceIndex];
+            string? previousProfile = _profileRepo.OlderProfilePath[deviceIndex];
             if (string.IsNullOrWhiteSpace(previousProfile))
             {
                 AppLogger.LogWarn($"[DI] ProfileApplicationService.RestoreFromAction: No OlderProfilePath for device {deviceIndex}");
@@ -183,7 +185,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public bool ApplyProfile(int deviceIndex, string profileName, bool isTemp = false,
                     bool launchProgram = false, ProfileChangeSource source = ProfileChangeSource.Manual,
-                    string prolog = null)
+                    string? prolog = null)
         {
             if (string.IsNullOrWhiteSpace(profileName))
             {
@@ -244,7 +246,7 @@ namespace DS4Windows.Processing.Services.Slots
         // 静的な ActionManager／Mapping の呼び出しは、それぞれ Phase8／Phase7-Step7〜9 で解消するまで残す。
 
         private bool ApplyCore(int device, string profileName, bool isTemp, bool launchProgram,
-            IProfileLoadTarget control, ProfileChangeSource source, string prolog)
+            IProfileLoadTarget control, ProfileChangeSource source, string? prolog)
         {
             // Debug: ApplyProfile呼び出しログ
             string stackTrace = new System.Diagnostics.StackTrace(1, true).ToString();
@@ -295,7 +297,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         private void CompleteProfileApplication(int device, string profileName, bool isTemp,
-            IProfileLoadTarget control, ProfileChangeSource source, string prolog)
+            IProfileLoadTarget control, ProfileChangeSource source, string? prolog)
         {
             if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"ApplyProfile: Profile loaded successfully. Updating state...");
             _profileRepo.SelectedProfile[device] = profileName;
@@ -426,7 +428,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// </summary>
         public bool ApplyProfileWithoutHalt(int deviceIndex, string profileName, bool isTemp = false,
                     bool launchProgram = false, ProfileChangeSource source = ProfileChangeSource.Manual,
-                    string prolog = null)
+                    string? prolog = null)
         {
             if (string.IsNullOrWhiteSpace(profileName))
             {

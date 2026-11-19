@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Processing.Abstractions
+﻿#nullable enable
+
+namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>仮想パッドのバックエンドの失敗（ドライバーの接続の失敗など）の通知を受けて、サービスを止める。</summary>
     public interface IBackendFailureHandler

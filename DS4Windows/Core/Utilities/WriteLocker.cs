@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Threading;
 
@@ -24,7 +26,7 @@ namespace DS4Windows.Core.Utilities
 
     public class WriteLocker : IDisposable
     {
-        private ReaderWriterLockSlim _lockerInstance;
+        private ReaderWriterLockSlim? _lockerInstance;
         private bool IsDisposed => _lockerInstance == null;
 
         public WriteLocker(ReaderWriterLockSlim lockerInstance)
@@ -40,7 +42,7 @@ namespace DS4Windows.Core.Utilities
                 throw new ObjectDisposedException(this.ToString());
             }
 
-            _lockerInstance.ExitWriteLock();
+            _lockerInstance!.ExitWriteLock(); // IsDisposed の検査を通っているため null ではない
             _lockerInstance = null;
         }
     }

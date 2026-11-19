@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Abstractions;
@@ -24,7 +26,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         private DateTime _oldnow = DateTime.UtcNow;
         private int _wheel = 0;
 
-        public SyntheticInputCommitter(SyntheticInputState syntheticInput, IVirtualKBM virtualKbm, Func<DateTime> utcNow = null)
+        public SyntheticInputCommitter(SyntheticInputState syntheticInput, IVirtualKBM virtualKbm, Func<DateTime>? utcNow = null)
         {
             _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
             _virtualKbm = virtualKbm ?? throw new ArgumentNullException(nameof(virtualKbm));

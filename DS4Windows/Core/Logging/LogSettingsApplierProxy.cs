@@ -1,4 +1,6 @@
 
+#nullable enable
+
 using DS4Windows.Core.Abstractions;
 
 namespace DS4Windows.Core.Logging
@@ -12,7 +14,7 @@ namespace DS4Windows.Core.Logging
     /// </summary>
     public class LogSettingsApplierProxy : ILogSettingsApplier
     {
-        private volatile ILogSettingsApplier target;
+        private volatile ILogSettingsApplier? target;
 
         /// <summary>実際に反映を行う実装（LoggerHolder）を接続する。</summary>
         public void Attach(ILogSettingsApplier applier)

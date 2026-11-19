@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -47,7 +49,7 @@ namespace DS4Windows.Core.Platform
                     string title = text.ToString().ToLower();
 
                     GetWindowThreadProcessId(hWnd, out uint processId);
-                    if (!pathByProcess.TryGetValue(processId, out string path))
+                    if (!pathByProcess.TryGetValue(processId, out string? path))
                     {
                         path = GetProcessPath(processId);
                         pathByProcess[processId] = path;
@@ -151,7 +153,7 @@ namespace DS4Windows.Core.Platform
             return true;
         }
 
-        public CapturedWindow GetWindowUnderCursor()
+        public CapturedWindow? GetWindowUnderCursor()
         {
             if (!GetCursorPos(out POINT point)) return null;
 

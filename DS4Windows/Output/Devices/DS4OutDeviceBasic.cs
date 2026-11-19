@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 using DS4Windows.Output.Backend;
 
@@ -40,7 +42,7 @@ namespace DS4Windows.Output.Devices
             unchecked
             {
                 MapButtons(state, out tempButtons, out tempDPad, out tempSpecial);
-                cont.SetButtonsFull(tempButtons);
+                cont!.SetButtonsFull(tempButtons); // 接続中（cont を作成した後）にだけ呼ぶ
                 cont.SetSpecialButtonsFull((byte)tempSpecial);
                 cont.SetDPadDirection(tempDPad);
                 //report.Buttons = (ushort)tempButtons;
@@ -61,7 +63,7 @@ namespace DS4Windows.Output.Devices
 
         public override void ResetState(bool submit = true)
         {
-            cont.ResetReport();
+            cont!.ResetReport(); // 接続中（cont を作成した後）にだけ呼ぶ
             if (submit)
             {
                 cont.SubmitReport();

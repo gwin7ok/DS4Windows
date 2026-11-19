@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 
@@ -6,7 +8,7 @@ namespace DS4Windows.Processing
     // Represents per-device runtime items that previously lived as globals in Mapping (eg. untriggeraction/untriggerindex, macro queues, lightbar state).
     public class DeviceRuntimeState
     {
-        public SpecialAction UntriggerAction = null;
+        public SpecialAction? UntriggerAction = null;
         public int UntriggerIndex = -1;
         // Phase9 9-C（ユーザー判断 Q2・Q3）: 未使用だった MacroControl／MacroCount（デバイスごとの置き場として作られたが未接続）は削除した。
         // デバイスごとのマクロの出力フラグと個数は、MacroRuntimeState（MacroControl[device]／MacroCount[device]）が持つ。

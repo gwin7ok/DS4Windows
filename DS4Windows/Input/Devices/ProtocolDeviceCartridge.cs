@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 

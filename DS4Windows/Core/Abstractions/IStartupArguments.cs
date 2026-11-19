@@ -17,7 +17,7 @@ namespace DS4Windows.Core.Abstractions
     public interface IStartupArguments
     {
         /// <summary>設定済みの起動引数。未設定なら null（起動引数なしのホスト、テストなど）。</summary>
-        ArgumentParser Parser { get; }
+        ArgumentParser? Parser { get; }
 
         /// <summary>起動引数を設定する。<c>AppHost.CreateHost(config, parser)</c> から呼ぶ。</summary>
         void SetParser(ArgumentParser parser);

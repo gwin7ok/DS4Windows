@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Input.Devices;
 
 namespace DS4Windows.Input.Reports

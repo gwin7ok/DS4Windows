@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -22,14 +24,14 @@ namespace DS4Windows.Input.Xbox
         /// Bluetooth 接続のパスから、機器の Bluetooth アドレス（<c>AA:BB:CC:DD:EE:FF</c>）を取り出す。USB、または取り出せないときは null。
         /// 登録簿の識別（シリアル）とデバイスの識別（Mac）が、必ず同じ値になるよう、両方がこれを使う（食い違うと、切断のあとの再接続が拒まれる）。
         /// </summary>
-        public static string TryGetBluetoothAddress(string devicePath)
+        public static string? TryGetBluetoothAddress(string? devicePath)
         {
             if (Classify(devicePath) != ConnectionType.BT)
             {
                 return null;
             }
 
-            Match match = AddressInPath.Match(devicePath);
+            Match match = AddressInPath.Match(devicePath!); // BT と分類された時点で devicePath は null ではない
             if (!match.Success)
             {
                 return null;
@@ -40,18 +42,18 @@ namespace DS4Windows.Input.Xbox
         }
 
         /// <summary>Bluetooth のアドレスを、数値（Windows の Bluetooth の API が使う 48 ビットの値）で返す。</summary>
-        public static bool TryGetBluetoothAddressValue(string devicePath, out ulong address)
+        public static bool TryGetBluetoothAddressValue(string? devicePath, out ulong address)
         {
-            string text = TryGetBluetoothAddress(devicePath);
+            string? text = TryGetBluetoothAddress(devicePath);
             address = 0;
             return text != null && ulong.TryParse(text.Replace(":", string.Empty), System.Globalization.NumberStyles.HexNumber, null, out address);
         }
 
         /// <summary>Bluetooth LE（BLE の HID）の接続か。Windows が切断の手段を出していない。</summary>
-        public static bool IsBluetoothLowEnergy(string devicePath) =>
+        public static bool IsBluetoothLowEnergy(string? devicePath) =>
             !string.IsNullOrEmpty(devicePath) && devicePath.IndexOf(BleHidService, StringComparison.OrdinalIgnoreCase) >= 0;
 
-        public static ConnectionType Classify(string devicePath)
+        public static ConnectionType Classify(string? devicePath)
         {
             if (string.IsNullOrEmpty(devicePath))
             {

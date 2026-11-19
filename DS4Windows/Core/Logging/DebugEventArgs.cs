@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 namespace DS4Windows.Core.Logging
 {
@@ -50,7 +52,7 @@ namespace DS4Windows.Core.Logging
         /// ファイルへ書く文字列。画面（<see cref="Data"/>）は表示言語で出し、ファイルは不具合報告を読みやすくするため英語で書くので、
         /// 両者が異なるときだけ設定する（<see cref="AppLogger.LogUser"/>）。未設定のときは <see cref="Data"/> と同じ。
         /// </summary>
-        public string FileData { get; set; }
+        public string? FileData { get; set; }
 
         public DateTime Time => m_Time;
         public string Data => m_Data;

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using NLog;
 
@@ -24,16 +26,16 @@ namespace DS4Windows.Core.Logging
     public class AppLogger
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public static event EventHandler<DebugEventArgs> GuiLog;
+        public static event EventHandler<DebugEventArgs>? GuiLog;
         // 型付きプロファイル変更イベント
-        public static event EventHandler<ProfileChangedEventArgs> ProfileChanged;
+        public static event EventHandler<ProfileChangedEventArgs>? ProfileChanged;
 
         // GUI表示用ログ（LoggerHolderがGuiLogイベントを受け取ってファイル出力）
         // Phase13b-Step1: 汎用のログ API（Log-Policy.md §1・§7）。レベル名付きの短縮形（LogTrace／LogDebug／LogInfo／LogWarn／LogError）は、
         // この API へ委譲する（決定: 2026-11-04。LogToGui とトレイ用の TrayIconLog イベントは Phase13b-Step9 で削除した）。
         //  - options が利用者向け（IsUserFacing）: GuiLog を発火する。ファイルへの出力は LoggerHolder が行う（一時表示は出さない）。画面の購読者は従来どおり GuiLog を受ける。
         //  - それ以外: ファイル（NLog）のみ。
-        public static void Log(AppLogLevel level, string data, LogOptions options = null)
+        public static void Log(AppLogLevel level, string data, LogOptions? options = null)
         {
             if (options != null && options.IsUserFacing)
             {
@@ -46,7 +48,7 @@ namespace DS4Windows.Core.Logging
 
         // 利用者向けの文言をリソースのキーで出す。画面は現在の表示言語、ファイルは常に英語（ニュートラルのリソース）にする。
         // 呼び出し側が文字列を組み立てると、書式の引数の数や順番を取り違えても気づけないため、キーと引数だけを渡させる。
-        public static void LogUser(AppLogLevel level, string key, params object[] args)
+        public static void LogUser(AppLogLevel level, string key, params object?[]? args)
         {
             var manager = DS4Windows.Translations.Strings.ResourceManager;
             string screen = UserText(key, args);
@@ -55,12 +57,12 @@ namespace DS4Windows.Core.Logging
         }
 
         // 現在の表示言語での文字列。トレイ通知など、キーと同じ文言を別の出し先へ渡すときに使う。
-        public static string UserText(string key, params object[] args)
+        public static string UserText(string key, params object?[]? args)
         {
             return Format(DS4Windows.Translations.Strings.ResourceManager.GetString(key) ?? key, args);
         }
 
-        private static string Format(string format, object[] args)
+        private static string Format(string format, object?[]? args)
         {
             return args == null || args.Length == 0 ? format : string.Format(format, args);
         }
@@ -116,7 +118,7 @@ namespace DS4Windows.Core.Logging
         // DI のシングルトンを設定する。設定前（ホスト構築より前、テスト）は、何もしない実装（NullNotificationService）を返す。
         // Phase14b-Step3（R-03）: 旧フォールバックは new AppNotificationService(new BackingStore(new EnvironmentService())) で、
         // 2 つ目の BackingStore を作っていた（購読者がいないため通知は表示されず、表示の挙動は同じ）。
-        private static DS4Windows.Core.Abstractions.INotificationService _notificationService;
+        private static DS4Windows.Core.Abstractions.INotificationService? _notificationService;
 
         public static DS4Windows.Core.Abstractions.INotificationService NotificationService
         {
@@ -154,7 +156,7 @@ namespace DS4Windows.Core.Logging
         /// UIへの実際の表示可否（トースト／独自ウィンドウのどちらで出すか、あるいは出さないか）は、
         /// 本イベントの購読側（MainWindow.OnProfileChanged）が ProfileChangedNotification 設定を見て別途判定する。
         /// </param>
-        public static void LogProfileChanged(int deviceIndex, string profileName, bool isTemp, ProfileChangeSource source = ProfileChangeSource.Unknown, string originalMessage = null, DateTime? timestamp = null)
+        public static void LogProfileChanged(int deviceIndex, string profileName, bool isTemp, ProfileChangeSource source = ProfileChangeSource.Unknown, string? originalMessage = null, DateTime? timestamp = null)
         {
             Logger.Debug($"LogProfileChanged CALLED: device={deviceIndex}, profile={profileName}, isTemp={isTemp}, source={source}");
 

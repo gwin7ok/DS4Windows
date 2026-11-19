@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Parsers;
@@ -19,7 +21,7 @@ namespace DS4Windows.Input.Xbox
         public ConnectionType DetermineConnectionType(IHidTransport hidDevice) => XusbConnectionClassifier.Classify(hidDevice?.DevicePath);
 
         // Bluetooth のアドレスは、パスから（登録簿のシリアルと同じ値。XusbConnectionClassifier が 1 か所で決める）
-        public string TryGetBluetoothAddress(IHidTransport hidDevice) => XusbConnectionClassifier.TryGetBluetoothAddress(hidDevice?.DevicePath);
+        public string? TryGetBluetoothAddress(IHidTransport hidDevice) => XusbConnectionClassifier.TryGetBluetoothAddress(hidDevice?.DevicePath);
 
         // Bluetooth LE の Xbox は、Windows が切断の手段を出していない（従来の切断の API は無視され、機器のノードの無効化・XInput の電源オフも拒否される）
         public bool SupportsBluetoothDisconnect(IHidTransport hidDevice) => !XusbConnectionClassifier.IsBluetoothLowEnergy(hidDevice?.DevicePath);

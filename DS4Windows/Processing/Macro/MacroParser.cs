@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
@@ -96,15 +98,15 @@ namespace DS4Windows.Processing.Macro
         /// <summary>
         /// マクロ値（256〜288）のボタン名。Emulated Controller の種類の表記（Xbox 360 なら Xbox の表記、DS4 なら DS4 の表記）。種類がない（None）ときは、従来の表（macroInputNames）。
         /// </summary>
-        public static string InputName(int value, OutContType outType = OutContTypeInfo.DefaultType)
+        public static string? InputName(int value, OutContType outType = OutContTypeInfo.DefaultType)
         {
             if (macroValueOutputs.TryGetValue(value, out X360Controls output) &&
-                OutContTypeInfo.ButtonNames(outType) is { } names && names.TryGetValue(output, out string typedName))
+                OutContTypeInfo.ButtonNames(outType) is { } names && names.TryGetValue(output, out string? typedName))
             {
                 return typedName;
             }
 
-            macroInputNames.TryGetValue(value, out string name);
+            macroInputNames.TryGetValue(value, out string? name);
             return name;
         }
 
@@ -147,7 +149,7 @@ namespace DS4Windows.Processing.Macro
             List<string> result = new List<string>();
             foreach (MacroStep step in macroSteps)
             {
-                result.Add(step.Name);
+                result.Add(step.Name!); // 名前は、読み込んだ手順に設定済み（null なら従来どおり null を入れる）
             }
 
             return result;
@@ -155,7 +157,7 @@ namespace DS4Windows.Processing.Macro
 
         private MacroStep ParseStep(int value)
         {
-            string name = string.Empty;
+            string? name = string.Empty;
             MacroStep.StepType type = MacroStep.StepType.ActDown;
             MacroStep.StepOutput outType = MacroStep.StepOutput.Key;
 

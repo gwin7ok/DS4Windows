@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -34,7 +36,7 @@ namespace DS4Windows.Output.Kbm
         public const uint MODIFIER_ENHANCED = 2147483648;
 
         private const int MAX_NORMAL_KEY_PRESSED = 6;
-        private FakerInput fakerInput = null;
+        private FakerInput? fakerInput = null;
         private RelativeMouseReport mouseReport = new RelativeMouseReport();
         private KeyboardReport keyReport = new KeyboardReport();
         private KeyboardEnhancedReport mediaKeyReport = new KeyboardEnhancedReport();
@@ -57,7 +59,7 @@ namespace DS4Windows.Output.Kbm
 
         public override bool Connect()
         {
-            return fakerInput.Connect();
+            return fakerInput!.Connect(); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）
         }
 
         public override bool Disconnect()
@@ -68,14 +70,14 @@ namespace DS4Windows.Output.Kbm
             Thread.Sleep(100);
             try
             {
-                fakerInput.Disconnect();
+                fakerInput!.Disconnect(); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）
             }
             catch (SEHException)
             {
                 // Ignore
             }
 
-            return !fakerInput.IsConnected();
+            return !fakerInput!.IsConnected(); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）
         }
 
         private void Release()
@@ -394,20 +396,20 @@ namespace DS4Windows.Output.Kbm
 
             if (syncRelativeMouse)
             {
-                fakerInput.UpdateRelativeMouse(mouseReport);
+                fakerInput!.UpdateRelativeMouse(mouseReport); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）
                 mouseReport.ResetMousePos();
                 syncRelativeMouse = false;
             }
 
             if (syncKeyboard)
             {
-                fakerInput.UpdateKeyboard(keyReport);
+                fakerInput!.UpdateKeyboard(keyReport); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）
                 syncKeyboard = false;
             }
 
             if (syncEnhancedKeyboard)
             {
-                fakerInput.UpdateKeyboardEnhanced(mediaKeyReport);
+                fakerInput!.UpdateKeyboardEnhanced(mediaKeyReport); // Connect で確保した後に呼ぶ（null なら従来どおり NullReferenceException）
                 syncEnhancedKeyboard = false;
             }
 

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Processing.Abstractions
@@ -11,12 +13,12 @@ namespace DS4Windows.Processing.Abstractions
     public interface IDeviceDisconnectHandler
     {
         /// <summary>デバイスが切断された、またはタイムアウトしたとき（旧 <c>On_DS4Removal</c>）。</summary>
-        void OnRemoval(object sender, EventArgs e);
+        void OnRemoval(object? sender, EventArgs e);
 
         /// <summary>デバイスの同期状態が変わったとき（旧 <c>On_SyncChange</c>）。同期が外れたら仮想パッドを外し、同期したらつなぐ。</summary>
-        void OnSyncChange(object sender, EventArgs e);
+        void OnSyncChange(object? sender, EventArgs e);
 
         /// <summary>デバイスのシリアル（MAC）が変わったとき（旧 <c>On_SerialChange</c>）。</summary>
-        void OnSerialChange(object sender, EventArgs e);
+        void OnSerialChange(object? sender, EventArgs e);
     }
 }

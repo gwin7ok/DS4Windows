@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -28,21 +30,21 @@ namespace DS4Windows.Core.Platform
         // directory (done with Scoop). Use real path when available
         private static readonly string s_executableLocation = ResolveExecutableLocation();
         private static readonly FileVersionInfo s_fileVersion = FileVersionInfo.GetVersionInfo(s_executableLocation);
-        private static readonly string s_executableVersion = s_fileVersion.FileVersion;
+        private static readonly string? s_executableVersion = s_fileVersion.FileVersion;
         private static readonly string s_roamingAppDataPath =
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Windows";
 
         /// <summary>設定の保存先フォルダ（未決定のときは null。<see cref="SaveWhere"/> が決める）。</summary>
-        public static string AppDataPathState { get; set; }
+        public static string? AppDataPathState { get; set; }
 
         /// <summary>実行ファイルのフルパス（ジャンクション解決済み）。</summary>
         public static string ExecutableLocationState => s_executableLocation;
 
         /// <summary>実行ファイルの親フォルダ（ジャンクション解決済み。末尾の区切りなし）。テストが一時フォルダへ向けることがある。</summary>
-        public static string ExecutableDirectoryState { get; set; } = Directory.GetParent(s_executableLocation).FullName;
+        public static string ExecutableDirectoryState { get; set; } = Directory.GetParent(s_executableLocation)!.FullName; // 実行ファイルの場所は必ず親フォルダーを持つ
 
         /// <summary>実行ファイルのバージョン文字列。</summary>
-        public static string ExecutableVersionState => s_executableVersion;
+        public static string? ExecutableVersionState => s_executableVersion;
 
         /// <summary>ローミング AppData 配下の既定の保存先（%APPDATA%\DS4Windows）。</summary>
         public static string RoamingAppDataPathState => s_roamingAppDataPath;
@@ -55,8 +57,8 @@ namespace DS4Windows.Core.Platform
 
         private static string ResolveExecutableLocation()
         {
-            string filePath = Process.GetCurrentProcess().MainModule.FileName;
-            DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(filePath));
+            string filePath = Process.GetCurrentProcess().MainModule!.FileName; // 自プロセスの MainModule は null にならない
+            DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(filePath)!); // フルパスなので親フォルダーがある
             // Check if exe is placed in a junction symlink directory (done with Scoop).
             // Good enough
             if (dirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint) &&
@@ -72,13 +74,13 @@ namespace DS4Windows.Core.Platform
 
         // ---- インスタンス ----
 
-        private string _customAppDataPath;
-        private readonly BackingStore _config;
+        private string? _customAppDataPath;
+        private readonly BackingStore? _config;
 
         // config: SaveWhere が設定ファイルのパス（m_Profile ほか）を更新する先（本番はコンテナの BackingStore。ブートストラップでは起動時に作る BackingStore）。
         // Phase7-Step10d W5: 省略時の Global.store をやめた。省略（null）のインスタンスは、保存場所の決定（SetSaveLocation／FindConfigLocation）
         // だけが使えない（呼ぶと InvalidOperationException）。パスの読み取りは config なしで使える。
-        public PathService(string appDataPath = null, BackingStore config = null)
+        public PathService(string? appDataPath = null, BackingStore? config = null)
         {
             _customAppDataPath = appDataPath;
             _config = config;

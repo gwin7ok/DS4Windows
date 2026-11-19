@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Logging;
@@ -15,14 +17,14 @@ namespace DS4Windows.Input.Xbox
         private readonly IXInputApi api;
         private readonly IXusbInterfaceSource interfaces;
 
-        private readonly IBluetoothBatteryReader bluetoothBattery;
+        private readonly IBluetoothBatteryReader? bluetoothBattery;
 
         public XInputTransportSource(IXInputApi api, IXusbInterfaceSource interfaces)
             : this(api, interfaces, null)
         {
         }
 
-        public XInputTransportSource(IXInputApi api, IXusbInterfaceSource interfaces, IBluetoothBatteryReader bluetoothBattery)
+        public XInputTransportSource(IXInputApi api, IXusbInterfaceSource interfaces, IBluetoothBatteryReader? bluetoothBattery)
         {
             this.bluetoothBattery = bluetoothBattery;
             this.api = api ?? throw new ArgumentNullException(nameof(api));

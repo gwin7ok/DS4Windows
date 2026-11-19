@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Core.Logging
@@ -23,11 +25,11 @@ namespace DS4Windows.Core.Logging
     public class LogItem
     {
         private DateTime datetime;
-        private string message;
+        private string? message;
         private bool warning;
 
         public DateTime Datetime { get => datetime; set => datetime = value; }
-        public string Message { get => message; set => message = value; }
+        public string? Message { get => message; set => message = value; }
         public bool Warning { get => warning; set => warning = value; }
         public string Color
         {

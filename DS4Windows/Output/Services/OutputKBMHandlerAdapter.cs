@@ -1,4 +1,6 @@
 
+#nullable enable
+
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 
@@ -13,7 +15,7 @@ namespace DS4Windows.Output.Services
     public class OutputKBMHandlerAdapter : IVirtualKBM
     {
         /// <summary>現在の出力ハンドラ（未決定、または解放済みのときは null）。</summary>
-        public VirtualKBMBase Handler { get; set; }
+        public VirtualKBMBase? Handler { get; set; }
 
         public bool fakeKeyRepeat
         {

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Input
@@ -23,15 +25,15 @@ namespace DS4Windows.Input
 
     public class CheckVirtualInfo : EventArgs
     {
-        private string deviceInstanceId;
-        public string DeviceInstanceId
+        private string? deviceInstanceId;
+        public string? DeviceInstanceId
         {
             get => deviceInstanceId;
             set => deviceInstanceId = value;
         }
 
-        private string propertyValue;
-        public string PropertyValue { get => propertyValue; set => propertyValue = value; }
+        private string? propertyValue;
+        public string? PropertyValue { get => propertyValue; set => propertyValue = value; }
 
         public CheckVirtualInfo() : base()
         {

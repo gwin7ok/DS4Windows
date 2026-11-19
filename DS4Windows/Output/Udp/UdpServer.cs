@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -33,7 +35,7 @@ namespace DS4Windows.Output.Udp
     class UdpServer
     {
         public const int NUMBER_SLOTS = 4;
-        private Socket udpSock;
+        private Socket? udpSock;
         private uint serverId;
         private bool running;
         private byte[] recvBuffer = new byte[1024];
@@ -44,13 +46,13 @@ namespace DS4Windows.Output.Udp
         private const int ARG_BUFFER_LEN = 80;
 
         [ThreadStatic]
-        private static List<IPEndPoint> _clientsListCache;
+        private static List<IPEndPoint>? _clientsListCache;
 
         public delegate void GetPadDetail(int padIdx, ref DualShockPadMeta meta);
 
         private GetPadDetail portInfoGet;
 
-        public UdpServer(GetPadDetail getPadDetailDel, TimeProvider time = null)
+        public UdpServer(GetPadDetail getPadDetailDel, TimeProvider? time = null)
         {
             portInfoGet = getPadDetailDel;
             _clients = new DsuClientRegistry(time);
@@ -64,7 +66,7 @@ namespace DS4Windows.Output.Udp
             }
         }
 
-        private void SocketEvent_AsyncCompleted(object sender, SocketAsyncEventArgs e)
+        private void SocketEvent_AsyncCompleted(object? sender, SocketAsyncEventArgs e)
         {
             ReturnArgs(e);
         }
@@ -85,8 +87,8 @@ namespace DS4Windows.Output.Udp
         private SocketAsyncEventArgs RentArgs(IPEndPoint clientEP)
         {
             _pool.Wait();
-            _argsPool.TryTake(out SocketAsyncEventArgs args);
-            args.RemoteEndPoint = clientEP;
+            _argsPool.TryTake(out SocketAsyncEventArgs? args);
+            args!.RemoteEndPoint = clientEP; // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
             return args;
         }
 
@@ -114,11 +116,11 @@ namespace DS4Windows.Output.Udp
 
             //try { udpSock.SendTo(packetData, clientEP); }
             SocketAsyncEventArgs args = RentArgs(clientEP);
-            Array.Copy(packetData, args.Buffer, packetData.Length);
+            Array.Copy(packetData, args.Buffer!, packetData.Length); // RentArgs が確保したバッファー
             //args.SetBuffer(packetData, 0, packetData.Length);
             bool sentAsync = false;
             try {
-                sentAsync = udpSock.SendToAsync(args);
+                sentAsync = udpSock!.SendToAsync(args); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
                 //if (!sentAsync) CompletedSynchronousSocketEvent();
             }
             catch (Exception /*e*/) { }
@@ -221,7 +223,7 @@ namespace DS4Windows.Output.Udp
                         outputData[outIdx++] = (byte)padData.Model;
                         outputData[outIdx++] = (byte)padData.ConnectionType;
 
-                        byte[] addressBytes = null;
+                        byte[]? addressBytes = null;
                         if (padData.PadMacAddress != null)
                             addressBytes = padData.PadMacAddress.GetAddressBytes();
 
@@ -254,7 +256,7 @@ namespace DS4Windows.Output.Udp
                 {
                     byte regFlags = localMsg[currIdx++];
                     byte idToReg = localMsg[currIdx++];
-                    PhysicalAddress macToReg = null;
+                    PhysicalAddress? macToReg = null;
                     {
                         byte[] macBytes = new byte[6];
                         Array.Copy(localMsg, currIdx, macBytes, 0, macBytes.Length);
@@ -270,14 +272,14 @@ namespace DS4Windows.Output.Udp
 
         private void ReceiveCallback(IAsyncResult iar)
         {
-            byte[] localMsg = null;
+            byte[]? localMsg = null;
             EndPoint clientEP = new IPEndPoint(IPAddress.Any, 0);
 
             try
             {
                 //Get the received message.
-                Socket recvSock = (Socket)iar.AsyncState;
-                int msgLen = recvSock.EndReceiveFrom(iar, ref clientEP);
+                Socket? recvSock = (Socket?)iar.AsyncState;
+                int msgLen = recvSock!.EndReceiveFrom(iar, ref clientEP); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
 
                 localMsg = new byte[msgLen];
                 Array.Copy(recvBuffer, localMsg, msgLen);
@@ -306,7 +308,7 @@ namespace DS4Windows.Output.Udp
                 {
                     //Start listening for a new message.
                     EndPoint newClientEP = new IPEndPoint(IPAddress.Any, 0);
-                    udpSock.BeginReceiveFrom(recvBuffer, 0, recvBuffer.Length, SocketFlags.None, ref newClientEP, ReceiveCallback, udpSock);
+                    udpSock!.BeginReceiveFrom(recvBuffer, 0, recvBuffer.Length, SocketFlags.None, ref newClientEP, ReceiveCallback, udpSock); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
                 }
             }
             catch (SocketException /*ex*/)
@@ -329,7 +331,7 @@ namespace DS4Windows.Output.Udp
             uint IOC_IN = 0x80000000;
             uint IOC_VENDOR = 0x18000000;
             uint SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
-            udpSock.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null);
+            udpSock!.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
         }
 
         public void Start(int port, string listenAddress = "")
@@ -347,7 +349,7 @@ namespace DS4Windows.Output.Udp
             udpSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
             {
-                IPAddress udpListenIPAddress;
+                IPAddress? udpListenIPAddress;
                 if (listenAddress == "127.0.0.1" || listenAddress == "")
                 {
                     // Listen on local looback interface (default option). Does not allow remote client connections
@@ -407,7 +409,7 @@ namespace DS4Windows.Output.Udp
 
             // 入力のスレッドごとに一覧を使い回し、毎フレームの割り当てを避ける
             var clientsList = _clientsListCache ??= new List<IPEndPoint>();
-            _clients.CollectRecipients(padMeta.PadId, padMeta.PadMacAddress, clientsList);
+            _clients.CollectRecipients(padMeta.PadId, padMeta.PadMacAddress!, clientsList); // 接続中のパッドだけが来る（従来どおり）
 
             if (clientsList.Count <= 0)
                 return;
@@ -432,10 +434,10 @@ namespace DS4Windows.Output.Udp
                     // }
 
                     SocketAsyncEventArgs args = RentArgs(cl);
-                    Array.Copy(outputData, args.Buffer, outputData.Length);
+                    Array.Copy(outputData, args.Buffer!, outputData.Length); // RentArgs が確保したバッファー
                     bool sentAsync = false;
                     try {
-                        sentAsync = udpSock.SendToAsync(args);
+                        sentAsync = udpSock!.SendToAsync(args); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
                     }
                     catch (SocketException /*ex*/) { }
                     finally

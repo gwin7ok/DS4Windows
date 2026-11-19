@@ -18,9 +18,9 @@ namespace DS4Windows.Composition.Startup
     {
         private readonly IRuntimeBootstrapper _bootstrapper;
         private readonly IServiceLifecycle _lifecycle;
-        private readonly Action _saveSettings;
+        private readonly Action? _saveSettings;
         private readonly IDisposable _ipc;
-        private readonly IControllerRegistry _registry;
+        private readonly IControllerRegistry? _registry;
         private readonly int _controllerSlotCount;
         private readonly Action _resetTimerResolution;
         private readonly Action _stopSingleInstance;
@@ -29,8 +29,8 @@ namespace DS4Windows.Composition.Startup
 
         public AppShutdownSequence(
             IRuntimeBootstrapper bootstrapper, IServiceLifecycle lifecycle,
-            Action saveSettings,
-            IDisposable ipc, IControllerRegistry registry, int controllerSlotCount,
+            Action? saveSettings,
+            IDisposable ipc, IControllerRegistry? registry, int controllerSlotCount,
             Action resetTimerResolution, Action stopSingleInstance, Action disposeHost, Action flushLogs)
         {
             _bootstrapper = bootstrapper;

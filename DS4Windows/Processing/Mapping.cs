@@ -1,4 +1,6 @@
-﻿using DS4Windows.Processing.Touchpad;
+﻿#nullable enable
+
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Gyro;
 using DS4Windows.Processing.Macro;
 using DS4Windows.Processing.Synthetic;
@@ -327,7 +329,7 @@ namespace DS4Windows.Processing
             // Phase8-Step4 W4: トリガー判定の入力と、フレームの出力の書き込み口を、このフレームの表に合わせる（割り当て 0）
             // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
             // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
-            ControllerState previousState = null;
+            ControllerState? previousState = null;
             try { previousState = _slots.Controllers[device]?.getPreviousStateRef(); } catch { }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
@@ -525,7 +527,7 @@ namespace DS4Windows.Processing
                 // 呼ぶ前に退避する。退避しないと、離したフレームで割り当てを処理できず、Key が押されたままになる（Phase9-TwoStageStuckKey-Fix-Plan.md）
                 TwoStageTriggerMappingData.ActiveZoneButtons previousButtons = twoStageData.previousActiveButtons;
                 _twoStageTrigger.Process(device, triggerValue, triggerRawValue, ref dcsTemp, ref fullPull,
-                    triggerSettings, twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull);
+                    triggerSettings, twoStageData, out DS4ControlSettings? outputSoftPull, out DS4ControlSettings? outputFullPull);
 
                 TwoStageTriggerMappingData.ActiveZoneButtons tempButtons = TwoStageTriggerMappingData.ActiveZoneButtons.None;
                 // Check for Soft Pull activation
@@ -675,7 +677,7 @@ namespace DS4Windows.Processing
         private readonly string[][] _profileActionBuffers = new string[ControllerLimits.MaxControllerCount][];
 
         /// <summary>アクション名を <paramref name="buffer"/> へ写し（足りなければ広げ）、名前の数を返す。一覧が null なら 0。</summary>
-        private static int CopyProfileActionNames(IReadOnlyList<string> names, ref string[] buffer)
+        private static int CopyProfileActionNames(IReadOnlyList<string>? names, ref string[] buffer)
         {
             if (names == null) return 0;
             int count = names.Count;
@@ -716,7 +718,7 @@ namespace DS4Windows.Processing
                 for (int actionIndex = 0; actionIndex < profileListLen; actionIndex++)
                 {
                     string actionname = actionNames[actionIndex];
-                    SpecialAction action = _profileActionProvider.GetProfileAction(device, actionname);
+                    SpecialAction? action = _profileActionProvider.GetProfileAction(device, actionname);
                     int index = _profileActionProvider.GetProfileActionIndexOf(device, actionname);
 
                     if (index < 0 || index >= totalActionCount)

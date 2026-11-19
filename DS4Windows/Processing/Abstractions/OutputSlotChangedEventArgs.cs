@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Output;
@@ -9,9 +11,9 @@ namespace DS4Windows.Processing.Abstractions
         public int Slot { get; }
         public int SlotIndex => Slot;
         public OutContType DeviceType { get; }
-        public OutputDevice OutputDevice { get; }
+        public OutputDevice? OutputDevice { get; }
 
-        public OutputSlotChangedEventArgs(int slot, OutContType deviceType, OutputDevice outputDevice = null)
+        public OutputSlotChangedEventArgs(int slot, OutContType deviceType, OutputDevice? outputDevice = null)
         {
             Slot = slot;
             DeviceType = deviceType;

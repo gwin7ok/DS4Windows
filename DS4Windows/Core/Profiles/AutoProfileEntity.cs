@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 
@@ -40,7 +42,7 @@ namespace DS4Windows.Core.Profiles
         public ProfileSlotNames ProfileNames { get => profileNames; set => profileNames = value; }
 
         /// <summary>Phase10-Step4d W5d: 登録簿を結ぶ（ID ↔ 名前を引く）。null なら、結びを外す。</summary>
-        public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService identity) => profileNames.AttachIdentity(identity);
+        public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService? identity) => profileNames.AttachIdentity(identity);
 
         public AutoProfileEntity(string pathStr, string titleStr)
         {

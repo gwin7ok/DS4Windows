@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 namespace DS4Windows.Core.Model
 {
 
@@ -34,13 +36,13 @@ namespace DS4Windows.Core.Model
         public int gyroYawFull, gyroPitchFull, gyroRollFull;
         public int accelXFull, accelYFull, accelZFull;
         public double elapsed;
-        public SixAxis previousAxis = null;
+        public SixAxis? previousAxis = null;
 
         private double tempDouble = 0d;
 
         public SixAxis(int X, int Y, int Z,
             int aX, int aY, int aZ,
-            double elapsedDelta, SixAxis prevAxis = null)
+            double elapsedDelta, SixAxis? prevAxis = null)
         {
             populate(X, Y, Z, aX, aY, aZ, elapsedDelta, prevAxis);
         }
@@ -77,7 +79,7 @@ namespace DS4Windows.Core.Model
 
         public void populate(int X, int Y, int Z,
             int aX, int aY, int aZ,
-            double elapsedDelta, SixAxis prevAxis = null)
+            double elapsedDelta, SixAxis? prevAxis = null)
         {
             gyroYaw = -X / 256;
             gyroPitch = Y / 256;

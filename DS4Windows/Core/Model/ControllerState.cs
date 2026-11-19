@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Utilities;
 
@@ -49,7 +51,7 @@ namespace DS4Windows.Core.Model
         public double elapsedTime = 0.0;
         public ulong totalMicroSec = 0;
         public ushort ds4Timestamp = 0;
-        public SixAxis Motion = null;
+        public SixAxis Motion;
         public static readonly int DEFAULT_AXISDIR_VALUE = 127;
 
         public struct TrackPadTouch

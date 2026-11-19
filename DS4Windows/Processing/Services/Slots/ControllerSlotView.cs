@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -53,15 +55,15 @@ namespace DS4Windows.Processing.Services.Slots
 
         public ControllerOptionsStore OptionsStore => Device.optionsStore;
 
-        public event EventHandler BatteryChanged;
+        public event EventHandler? BatteryChanged;
 
-        public event EventHandler ChargingChanged;
+        public event EventHandler? ChargingChanged;
 
-        public event EventHandler MacAddressChanged;
+        public event EventHandler? MacAddressChanged;
 
-        public event EventHandler SyncChange;
+        public event EventHandler? SyncChange;
 
-        public event EventHandler Removal;
+        public event EventHandler? Removal;
 
         public bool DisconnectBluetooth() => Device.DisconnectBT();
 

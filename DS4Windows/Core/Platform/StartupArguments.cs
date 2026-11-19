@@ -1,4 +1,6 @@
 
+#nullable enable
+
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Utilities;
 
@@ -9,9 +11,9 @@ namespace DS4Windows.Core.Platform
     /// </summary>
     public class StartupArguments : IStartupArguments
     {
-        private volatile ArgumentParser _parser;
+        private volatile ArgumentParser? _parser;
 
-        public ArgumentParser Parser => _parser;
+        public ArgumentParser? Parser => _parser;
 
         public void SetParser(ArgumentParser parser)
         {

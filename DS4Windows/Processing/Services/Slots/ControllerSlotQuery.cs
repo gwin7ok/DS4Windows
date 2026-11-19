@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -27,17 +29,17 @@ namespace DS4Windows.Processing.Services.Slots
             // 接続の通知は、サービスの開始時の一括の接続も含めて、スロットへ入れた後にここへ来る
             lifecycle.HotplugController += (device, index) =>
             {
-                IControllerSlotView view = ViewOf(device);
+                IControllerSlotView? view = ViewOf(device);
                 if (view != null)
                     SlotChanged?.Invoke(this, new ControllerSlotChangedEventArgs(view, index));
             };
         }
 
-        public event EventHandler<ControllerSlotChangedEventArgs> SlotChanged;
+        public event EventHandler<ControllerSlotChangedEventArgs>? SlotChanged;
 
         public int SlotCount => _slotState.Controllers?.Length ?? 0;
 
-        public IControllerSlotView GetSlot(int slot)
+        public IControllerSlotView? GetSlot(int slot)
         {
             InputDeviceCore[] controllers = _slotState.Controllers;
             if (controllers == null || slot < 0 || slot >= controllers.Length)
@@ -46,7 +48,7 @@ namespace DS4Windows.Processing.Services.Slots
             return ViewOf(controllers[slot]);
         }
 
-        public IReadOnlyList<ControllerSlotEntry> Snapshot()
+        public IReadOnlyList<ControllerSlotEntry>? Snapshot()
         {
             ControllerSlotManager manager = _slotState.SlotManager;
             var result = new List<ControllerSlotEntry>();
@@ -55,14 +57,14 @@ namespace DS4Windows.Processing.Services.Slots
                 foreach (InputDeviceCore device in manager.ControllerColl)
                 {
                     int slot = manager.ReverseControllerDict.TryGetValue(device, out int index) ? index : -1;
-                    result.Add(new ControllerSlotEntry(slot, ViewOf(device)));
+                    result.Add(new ControllerSlotEntry(slot, ViewOf(device)!)); // 一覧にある機器は null でない
                 }
             }
 
             return result;
         }
 
-        private IControllerSlotView ViewOf(InputDeviceCore device)
+        private IControllerSlotView? ViewOf(InputDeviceCore device)
         {
             if (device == null)
                 return null;

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
@@ -23,8 +25,8 @@ namespace DS4Windows.Core.Platform
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
-        private MemoryMappedFile classNameMmf;
-        private MemoryMappedFile resultDataMmf;
+        private MemoryMappedFile? classNameMmf;
+        private MemoryMappedFile? resultDataMmf;
 
         // ---- 本体側 ----
 
@@ -59,9 +61,9 @@ namespace DS4Windows.Core.Platform
         /// </summary>
         public void WriteResult(string dataStr)
         {
-            MemoryMappedFile mmf = null;
-            MemoryMappedViewAccessor mma = null;
-            EventWaitHandle ipcNotifyEvent = null;
+            MemoryMappedFile? mmf = null;
+            MemoryMappedViewAccessor? mma = null;
+            EventWaitHandle? ipcNotifyEvent = null;
 
             try
             {
@@ -89,10 +91,10 @@ namespace DS4Windows.Core.Platform
         // ---- クライアント側 ----
 
         /// <summary>動いている本体のメイン画面のウィンドウクラス名を読む。見つからなければ null。</summary>
-        public string ReadWindowClassName()
+        public string? ReadWindowClassName()
         {
-            MemoryMappedFile mmf = null;
-            MemoryMappedViewAccessor mma = null;
+            MemoryMappedFile? mmf = null;
+            MemoryMappedViewAccessor? mma = null;
 
             try
             {
@@ -132,7 +134,7 @@ namespace DS4Windows.Core.Platform
         }
 
         /// <summary>結果の通知を待ち（最大 10 秒）、結果の MMF から読む。得られなければ空の文字列。</summary>
-        public string WaitAndReadResult(EventWaitHandle ipcNotifyEvent)
+        public string WaitAndReadResult(EventWaitHandle? ipcNotifyEvent)
         {
             if (resultDataMmf != null)
             {

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
@@ -29,7 +31,7 @@ namespace DS4Windows.Output.Kbm
         public static VirtualKBMBase DetermineHandler(string identifier =
             SendInputHandler.IDENTIFIER)
         {
-            VirtualKBMBase handler = null;
+            VirtualKBMBase? handler = null;
             if (identifier == DEFAULT_IDENTIFIER)
             {
                 // Run through event handler discovery routine
@@ -75,7 +77,7 @@ namespace DS4Windows.Output.Kbm
         public static VirtualKBMMapping GetMappingInstance(string identifier =
             SendInputHandler.IDENTIFIER)
         {
-            VirtualKBMMapping temp = null;
+            VirtualKBMMapping? temp = null;
             if (identifier == SendInputHandler.IDENTIFIER)
             {
                 temp = new SendInputMapping();

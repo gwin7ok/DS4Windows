@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Input
@@ -28,12 +30,12 @@ namespace DS4Windows.Input
     {
         private readonly Touch[] oneTouch = new Touch[1];
         private readonly Touch[] twoTouches = new Touch[2];
-        private Touch[] touches = null;
+        private Touch[]? touches = null;
         private DateTime timeStamp;
         private bool touchButtonPressed;
         private bool touchActive;
 
-        public Touch[] Touches => touches;
+        public Touch[]? Touches => touches;
 
         public DateTime TimeStamp => timeStamp;
 
@@ -45,17 +47,17 @@ namespace DS4Windows.Input
         {
         }
 
-        public TouchpadEventArgs(DateTime utcTimestamp, bool tButtonDown, bool touchActive, Touch t0, Touch t1 = null)
+        public TouchpadEventArgs(DateTime utcTimestamp, bool tButtonDown, bool touchActive, Touch? t0, Touch? t1 = null)
         {
             Set(utcTimestamp, tButtonDown, touchActive, t0, t1);
         }
 
         /// <summary>値を入れ替える。t0 も t1 も null なら <see cref="Touches"/> は null、t1 だけ null なら長さ 1、両方あれば長さ 2。</summary>
-        public void Set(DateTime utcTimestamp, bool tButtonDown, bool touchActive, Touch t0, Touch t1 = null)
+        public void Set(DateTime utcTimestamp, bool tButtonDown, bool touchActive, Touch? t0, Touch? t1 = null)
         {
             if (t1 != null)
             {
-                twoTouches[0] = t0;
+                twoTouches[0] = t0!; // t1 があるときは t0 もある（Set の規約）
                 twoTouches[1] = t1;
                 touches = twoTouches;
             }

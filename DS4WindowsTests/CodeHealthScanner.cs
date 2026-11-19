@@ -68,6 +68,84 @@ namespace DS4WindowsTests
             return unused;
         }
 
+        private static readonly Regex NullableDirective = new Regex(
+            @"^[ \t]*#nullable[ \t]+enable\b", RegexOptions.Multiline | RegexOptions.Compiled);
+
+        private static readonly Regex NullableWarningPragma = new Regex(
+            @"^[ \t]*#pragma[ \t]+warning[ \t]+disable\b[^\r\n]*\b(CS86\d\d|CS87\d\d|nullable)\b", RegexOptions.Multiline | RegexOptions.Compiled);
+
+        // 後置の `!`（null 許容の抑止）。`!=` と、前置の論理否定 `!x` は含まない。
+        private static readonly Regex NullForgiving = new Regex(@"[\w\)\]]!(?!=)", RegexOptions.Compiled);
+
+        private static readonly Regex StringLiteral = new Regex("@?\"(?:[^\"\\\\]|\\\\.|\"\")*\"|'(?:[^'\\\\]|\\\\.)'", RegexOptions.Compiled);
+
+        /// <summary>
+        /// <paramref name="folders"/>（本体からの相対パスの先頭。例 <c>Core/Abstractions/</c>）に属するのに、<c>#nullable enable</c> を持たないファイル。
+        /// 末尾が <c>/</c> でない項目は、そのファイル 1 つを指す。
+        /// </summary>
+        public static IReadOnlyList<string> FilesMissingNullableDirective(IEnumerable<SourceFile> files, IEnumerable<string> folders)
+        {
+            string[] prefixes = folders.Select(f => f.Replace('\\', '/')).ToArray();
+            return files
+                .Where(f => prefixes.Any(p => IsUnder(f.RelativePath, p)))
+                .Where(f => !NullableDirective.IsMatch(f.Text))
+                .Select(f => f.RelativePath.Replace('\\', '/'))
+                .OrderBy(f => f, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        /// <summary>
+        /// <c>#nullable enable</c> を持つファイルの中で、同じ行か直前の行に <c>//</c> の理由コメントがない、後置の <c>!</c>（null 許容の抑止）の数。
+        /// </summary>
+        public static int CountNullForgivingWithoutReason(IEnumerable<SourceFile> files)
+        {
+            int count = 0;
+            foreach (SourceFile file in files)
+            {
+                if (!NullableDirective.IsMatch(file.Text)) continue;
+                string[] lines = file.Text.Split('\n');
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].TrimEnd('\r');
+                    int comment = LineCommentStart(line);
+                    string code = comment < 0 ? line : line.Substring(0, comment);
+                    if (code.TrimStart().StartsWith("#", StringComparison.Ordinal)) continue;
+                    code = StringLiteral.Replace(code, "\"\"");
+                    if (!NullForgiving.IsMatch(code)) continue;
+                    if (comment >= 0) continue;
+                    if (i > 0 && lines[i - 1].TrimStart().StartsWith("//", StringComparison.Ordinal)) continue;
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary><c>#pragma warning disable</c> で、null 許容の警告（CS86xx・CS87xx・nullable）を消している行の数。</summary>
+        public static int CountNullableWarningPragmas(IEnumerable<SourceFile> files)
+        {
+            return files.Sum(f => NullableWarningPragma.Matches(f.Text).Count);
+        }
+
+        private static int LineCommentStart(string line)
+        {
+            bool inString = false;
+            for (int i = 0; i < line.Length - 1; i++)
+            {
+                char c = line[i];
+                if (c == '"' && (i == 0 || line[i - 1] != '\\')) inString = !inString;
+                else if (!inString && c == '/' && line[i + 1] == '/') return i;
+            }
+            return -1;
+        }
+
+        private static bool IsUnder(string relativePath, string prefix)
+        {
+            string path = relativePath.Replace('\\', '/');
+            return prefix.EndsWith("/", StringComparison.Ordinal)
+                ? path.StartsWith(prefix, StringComparison.Ordinal)
+                : string.Equals(path, prefix, StringComparison.Ordinal);
+        }
+
         private static IEnumerable<SourceFile> InLayer(IEnumerable<SourceFile> files, string layer)
         {
             return files.Where(f => string.Equals(LayerOf(f.RelativePath), layer, StringComparison.Ordinal));

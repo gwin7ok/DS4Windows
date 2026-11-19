@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading;
 using DS4Windows.Core.Logging;
@@ -19,7 +21,7 @@ namespace DS4Windows.Processing.Services.Devices
         private readonly IDeviceSlotState _slots;
         private readonly TimeSpan _interval;
         private readonly object _gate = new object();
-        private Timer _timer;
+        private Timer? _timer;
 
         public BatteryStatusLogger(IDeviceSlotState slots)
             : this(slots, DefaultInterval)

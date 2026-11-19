@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -148,7 +150,7 @@ namespace DS4Windows.Input.Devices
         }
         
         private const int BT_REPORT_OFFSET = 2;
-        private InputReportDataBytes dataBytes;
+        private InputReportDataBytes dataBytes = null!; // 初期化（Open）で、接続の種類に合わせて設定する
         protected new const int BT_OUTPUT_REPORT_LENGTH = 78;
         private new const int BT_INPUT_REPORT_LENGTH = 78;
         protected const int TOUCHPAD_DATA_OFFSET = 33;
@@ -169,7 +171,7 @@ namespace DS4Windows.Input.Devices
         private DS4HapticState previousHapticState = new DS4HapticState();
         private byte[] outputBTCrc32Head = new byte[] { 0xA2 };
         //private byte outputPendCount = 0;
-        private new GyroMouseSensDualSense gyroMouseSensSettings;
+        private new GyroMouseSensDualSense gyroMouseSensSettings = null!; // 初期化で設定する
         public override GyroMouseSens GyroMouseSensSettings { get => gyroMouseSensSettings; }
 
         private byte activePlayerLEDMask = 0x00;
@@ -223,7 +225,7 @@ namespace DS4Windows.Input.Devices
         private DeviceSubType subType = DeviceSubType.DualSense;
         public DeviceSubType SubType => subType;
 
-        private DualSenseControllerOptions nativeOptionsStore;
+        private DualSenseControllerOptions nativeOptionsStore = null!; // 初期化で設定する
         public DualSenseControllerOptions NativeOptionsStore { get => nativeOptionsStore; }
 
         public DualSenseDevice(IHidTransport hidDevice, string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
@@ -488,7 +490,7 @@ namespace DS4Windows.Input.Devices
         }
 
         private int reportOffset;
-        private IInputReportParser reportParser;
+        private IInputReportParser reportParser = null!; // 接続の種類が決まる初期化で設定する
 
         protected override void OnLoopStarting()
         {

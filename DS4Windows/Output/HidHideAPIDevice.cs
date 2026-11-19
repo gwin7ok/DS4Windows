@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +40,7 @@ namespace DS4Windows.Output
 
         private const string CONTROL_DEVICE_FILENAME = "\\\\.\\HidHide";
 
-        private SafeHandle hidHideHandle;
+        private SafeHandle? hidHideHandle;
 
         public HidHideAPIDevice()
         {
@@ -57,7 +59,7 @@ namespace DS4Windows.Output
             unsafe
             {
                 int bytesReturned = 0;
-                NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+                NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                     HidHideAPIDevice.IOCTL_GET_ACTIVE,
                     IntPtr.Zero,
                     0,
@@ -79,7 +81,7 @@ namespace DS4Windows.Output
             unsafe
             {
                 int bytesReturned = 0;
-                NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+                NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                     HidHideAPIDevice.IOCTL_SET_ACTIVE,
                     new IntPtr(&state),
                     1,
@@ -99,7 +101,7 @@ namespace DS4Windows.Output
             List<string> instances = new List<string>();
 
             int bytesReturned = 0;
-            bool result = NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+            bool result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                 HidHideAPIDevice.IOCTL_GET_BLACKLIST,
                 IntPtr.Zero,
                 0,
@@ -143,7 +145,7 @@ namespace DS4Windows.Output
             IntPtr inBuffer =
                 StringListToMultiSzPointer(instances, out int inBufferLength);
 
-            result = NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+            result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                 IOCTL_SET_BLACKLIST,
                 inBuffer,
                 inBufferLength,
@@ -164,7 +166,7 @@ namespace DS4Windows.Output
             List<string> instances = new List<string>();
 
             int bytesReturned = 0;
-            bool result = NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+            bool result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                 IOCTL_GET_WHITELIST,
                 IntPtr.Zero,
                 0,
@@ -208,7 +210,7 @@ namespace DS4Windows.Output
             IntPtr inBuffer =
                 StringListToMultiSzPointer(instances, out int inBufferLength);
 
-            result = NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+            result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                 IOCTL_SET_WHITELIST,
                 inBuffer,
                 inBufferLength,
@@ -231,7 +233,7 @@ namespace DS4Windows.Output
             unsafe
             {
                 int bytesReturned = 0;
-                NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+                NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                     HidHideAPIDevice.IOCTL_GET_WL_INVERT,
                     IntPtr.Zero,
                     0,
@@ -253,7 +255,7 @@ namespace DS4Windows.Output
             unsafe
             {
                 int bytesReturned = 0;
-                NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
+                NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                     HidHideAPIDevice.IOCTL_SET_WL_INVERT,
                     new IntPtr(&state),
                     1,
@@ -277,7 +279,7 @@ namespace DS4Windows.Output
         {
             if (IsOpen())
             {
-                hidHideHandle.Close();
+                hidHideHandle!.Close(); // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                 hidHideHandle.Dispose();
                 hidHideHandle = null;
             }

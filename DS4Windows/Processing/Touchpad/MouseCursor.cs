@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
@@ -95,8 +97,8 @@ namespace DS4Windows.Processing.Touchpad
         public virtual void sixaxisMoved(SixAxisEventArgs arg)
         {
             int deltaX = 0, deltaY = 0;
-            deltaX = _profileSettings.ForSlot(deviceNumber).Gyro.MouseHorizontalAxis == 0 ? arg.sixAxis.gyroYawFull :
-                arg.sixAxis.gyroRollFull;
+            deltaX = _profileSettings.ForSlot(deviceNumber).Gyro.MouseHorizontalAxis == 0 ? arg.sixAxis!.gyroYawFull : // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
+                arg.sixAxis!.gyroRollFull; // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
             deltaY = -arg.sixAxis.gyroPitchFull;
             //tempDouble = arg.sixAxis.elapsed * 0.001 * 200.0; // Base default speed on 5 ms
             tempDouble = arg.sixAxis.elapsed * 200.0; // Base default speed on 5 ms
@@ -286,7 +288,7 @@ namespace DS4Windows.Processing.Touchpad
             GyroMouseInfo tempInfo = _profileSettings.ForSlot(deviceNumber).Gyro.Mouse;
             if (tempInfo.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro)
             {
-                double currentRate = 1.0 / arg.sixAxis.elapsed;
+                double currentRate = 1.0 / arg.sixAxis!.elapsed; // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
                 filterPair.axis1Filter.Filter(0.0, currentRate);
                 filterPair.axis2Filter.Filter(0.0, currentRate);
             }
@@ -294,7 +296,7 @@ namespace DS4Windows.Processing.Touchpad
 
         public void touchesBegan(TouchpadEventArgs arg)
         {
-            if (arg.Touches.Length == 1)
+            if (arg.Touches!.Length == 1) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             {
                 horizontalRemainder = verticalRemainder = 0.0;
                 horizontalDirection = verticalDirection = Direction.Neutral;
@@ -305,7 +307,7 @@ namespace DS4Windows.Processing.Touchpad
         private byte lastTouchID;
         public void touchesMoved(TouchpadEventArgs arg, bool dragging, bool disableInvert = false)
         {
-            int touchesLen = arg.Touches.Length;
+            int touchesLen = arg.Touches!.Length; // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             if ((!dragging && touchesLen != 1) || (dragging && touchesLen < 1))
                 return;
 

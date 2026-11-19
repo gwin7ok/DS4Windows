@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
@@ -20,7 +22,7 @@ namespace DS4Windows.Processing.Services.Connection
 
         private readonly bool[] _lag = new bool[ControllerLimits.MaxControllerCount];
         private readonly bool[] _inWarnMonitor = new bool[ControllerLimits.MaxControllerCount];
-        private readonly string[] _tempStrings = new string[ControllerLimits.MaxControllerCount];
+        private readonly string?[] _tempStrings = new string?[ControllerLimits.MaxControllerCount];
 
         // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
@@ -38,7 +40,7 @@ namespace DS4Windows.Processing.Services.Connection
 
         public void OnReport(InputDeviceCore device, int ind)
         {
-            string devError = _tempStrings[ind] = device.error;
+            string? devError = _tempStrings[ind] = device.error;
             if (!string.IsNullOrEmpty(devError))
             {
                 AppLogger.Log(AppLogLevel.Info, devError, LogOptions.UserFacing);

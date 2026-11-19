@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Core.Platform
 {
     /// <summary>
@@ -15,8 +17,8 @@ namespace DS4Windows.Core.Platform
     {
         private string path = string.Empty;
         private string title = string.Empty;
-        private string path_lowercase;
-        private string title_lowercase;
+        private string? path_lowercase;
+        private string? title_lowercase;
 
         public WindowTargetMatcher(string pathStr, string titleStr)
         {

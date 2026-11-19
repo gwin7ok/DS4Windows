@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
@@ -36,7 +38,7 @@ namespace DS4Windows.Core.Platform
 
             try
             {
-                WindowCandidate found = Find(target);
+                WindowCandidate? found = Find(target);
                 if (found == null)
                 {
                     AppLogger.LogWarn($"[WindowFocus] Target window not found: path={target.Path}, title={target.Title}");
@@ -88,7 +90,7 @@ namespace DS4Windows.Core.Platform
             if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[WindowFocus] Cursor moved to window center: moved={moved}, title={found.Title}");
         }
 
-        private WindowCandidate Find(WindowTargetMatcher target)
+        private WindowCandidate? Find(WindowTargetMatcher target)
         {
             foreach (WindowCandidate candidate in windowSystem.EnumerateWindows())
             {

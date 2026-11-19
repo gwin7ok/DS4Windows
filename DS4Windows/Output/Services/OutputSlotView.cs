@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Processing.Abstractions;
@@ -53,8 +55,8 @@ namespace DS4Windows.Output.Services
 
         public string InputDisplayString => _slot.InputDisplayString;
 
-        public event EventHandler PermanentTypeChanged;
+        public event EventHandler? PermanentTypeChanged;
 
-        public event EventHandler InputBoundChanged;
+        public event EventHandler? InputBoundChanged;
     }
 }

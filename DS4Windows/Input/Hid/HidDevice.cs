@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Win32.SafeHandles;
@@ -66,19 +68,19 @@ namespace DS4Windows.Input.Hid
             NativeOverlapped* lpOverlapped);
         #endregion
 
-        private readonly string _description;
+        private readonly string? _description;
         private readonly string _devicePath;
-        private readonly string _parentPath;
+        private readonly string? _parentPath;
         private readonly HidDeviceAttributes _deviceAttributes;
 
         private readonly HidDeviceCapabilities _deviceCapabilities;
-        private string serial = null;
-        private SafeFileHandle safeReadHandle;
+        private string? serial = null;
+        private SafeFileHandle? safeReadHandle;
         private bool isOpen;
         private bool isExclusive;
         private const string BLANK_SERIAL = "00:00:00:00:00:00";
 
-        internal HidDevice(string devicePath, string description = null, string parentPath = null)
+        internal HidDevice(string devicePath, string? description = null, string? parentPath = null)
         {
             _devicePath = devicePath;
             _description = description;
@@ -100,15 +102,15 @@ namespace DS4Windows.Input.Hid
             }
         }
 
-        public SafeFileHandle SafeReadHandle { get => safeReadHandle; private set => safeReadHandle = value; }
+        public SafeFileHandle? SafeReadHandle { get => safeReadHandle; private set => safeReadHandle = value; }
         public bool IsOpen { get => isOpen; private set => isOpen = value; }
         public bool IsExclusive { get => isExclusive; private set => isExclusive = value; }
         public bool IsConnected { get { return HidDevices.IsConnected(_devicePath); } }
-        public string Description { get { return _description; } }
+        public string? Description { get { return _description; } }
         public HidDeviceCapabilities Capabilities { get { return _deviceCapabilities; } }
         public HidDeviceAttributes Attributes { get { return _deviceAttributes; } }
         public string DevicePath { get { return _devicePath; } }
-        public string ParentPath { get => _parentPath; }
+        public string? ParentPath { get => _parentPath; }
 
         public override string ToString()
         {
@@ -152,13 +154,13 @@ namespace DS4Windows.Input.Hid
 
         public void SetNumInputBuffers(int count)
         {
-            NativeMethods.HidD_SetNumInputBuffers(SafeReadHandle.DangerousGetHandle(), count);
+            NativeMethods.HidD_SetNumInputBuffers(SafeReadHandle!.DangerousGetHandle(), count); // 開いた後に呼ぶ（null なら従来どおり NullReferenceException）
         }
 
         public void CancelIO()
         {
             if (IsOpen)
-                NativeMethods.CancelIoEx(SafeReadHandle.DangerousGetHandle(), IntPtr.Zero);
+                NativeMethods.CancelIoEx(SafeReadHandle!.DangerousGetHandle(), IntPtr.Zero); // 開いた後に呼ぶ（null なら従来どおり NullReferenceException）
         }
 
         [Obsolete("Unused.")]
@@ -292,7 +294,7 @@ namespace DS4Windows.Input.Hid
 
         public bool readFeatureData(byte[] inputBuffer)
         {
-            return NativeMethods.HidD_GetFeature(SafeReadHandle.DangerousGetHandle(), inputBuffer, inputBuffer.Length);
+            return NativeMethods.HidD_GetFeature(SafeReadHandle!.DangerousGetHandle(), inputBuffer, inputBuffer.Length); // 開いた後に呼ぶ（null なら従来どおり NullReferenceException）
         }
 
         public void resetSerial()
@@ -321,7 +323,7 @@ namespace DS4Windows.Input.Hid
 #else
                 uint bufferLen = 126;
 #endif
-                if (NativeMethods.HidD_GetSerialNumberString(SafeReadHandle.DangerousGetHandle(), buffer, bufferLen))
+                if (NativeMethods.HidD_GetSerialNumberString(SafeReadHandle!.DangerousGetHandle(), buffer, bufferLen)) // 開いた後に呼ぶ（null なら従来どおり NullReferenceException）
                 {
                     string MACAddr = System.Text.Encoding.Unicode.GetString(buffer).Replace("\0", string.Empty).ToUpper();
                     if (MACAddr.Length == 12)

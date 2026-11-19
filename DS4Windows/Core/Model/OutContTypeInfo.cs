@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Core.Model
+﻿#nullable enable
+
+namespace DS4Windows.Core.Model
 {
     /// <summary>
     /// 出力の種類（<see cref="OutContType"/>）と、保存するキーおよび画面の選択肢の番号との対応の表。
@@ -23,7 +25,7 @@
             { X360ControlTables.xboxDefaultNames, X360ControlTables.ds4DefaultNames };
 
         /// <summary>種類のボタン名の表。None（および未知の種類）は null。</summary>
-        public static System.Collections.Generic.Dictionary<X360Controls, string> ButtonNames(OutContType type)
+        public static System.Collections.Generic.Dictionary<X360Controls, string>? ButtonNames(OutContType type)
         {
             int i = System.Array.IndexOf(ProfileChoices, type);
             return i < 0 ? null : ButtonNameTables[i];

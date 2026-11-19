@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +44,7 @@ namespace DS4Windows.Core.Utilities
 
         private readonly System.Net.Http.HttpClient _httpClient;
         private bool? _newerVersionAvailable = null;
-        private Version _latestVersion;
+        private Version? _latestVersion;
 
         public Changelog(System.Net.Http.HttpClient httpClient)
         {
@@ -55,7 +57,7 @@ namespace DS4Windows.Core.Utilities
         // I wanted to make this method async, but these can't have an out parameter and this is the signature i wanted
         // it to have
         // Phase7-Step10d W4: lastVersionChecked は、旧 Global.LastVersionChecked（スキップ済みの更新バージョン）の値。呼び出し側が IAppSettingsService.LastVersionChecked から渡す。
-        public bool CheckNewerVersionExists(out Version version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)
+        public bool CheckNewerVersionExists(out Version? version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)
         {
             version = Version.Parse("0.0.0");
 
@@ -76,7 +78,7 @@ namespace DS4Windows.Core.Utilities
                 task.Wait();
 
                 // if can't parse the newest version
-                if (!Version.TryParse(task.Result.TagName[1..], out version)) return false;
+                if (!Version.TryParse(task.Result!.TagName[1..], out version)) return false; // 応答は release のオブジェクト（null なら従来どおり NullReferenceException）
 
                 // If user previously skipped this (or a newer) version, treat as no newer version
                 if (respectSkip)
@@ -130,7 +132,7 @@ namespace DS4Windows.Core.Utilities
             var request = await _httpClient.GetAsync(GITHUB_RELEASES_API_URI);
             var releases = await request.Content.ReadFromJsonAsync<GithubRelease[]>();
 
-            foreach (var release in releases)
+            foreach (var release in releases!) // 応答は release の配列（null なら従来どおり NullReferenceException）
             {
                 if (release.PreRelease) continue;
 

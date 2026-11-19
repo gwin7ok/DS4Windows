@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 using System;
 using DS4Windows.Output.Backend;
@@ -30,7 +32,7 @@ namespace DS4Windows.Output
 
         public const string devtype = "DS4";
 
-        public IDs4PadTarget cont;
+        public IDs4PadTarget? cont;
         // 振動の戻りの購読（キーは入力側の番号）。拡張 API（出力バッファ）を使えない旧ドライバー向けの経路で、破棄すると購読をやめる
         public System.Collections.Generic.Dictionary<int, IDisposable> forceFeedbacksDict =
             new System.Collections.Generic.Dictionary<int, IDisposable>();
@@ -45,7 +47,7 @@ namespace DS4Windows.Output
 
         public override void Connect()
         {
-            cont.Connect();
+            cont!.Connect(); // 接続中（cont を作成した後）にだけ呼ぶ
             connected = true;
         }
         public override void Disconnect()
@@ -54,7 +56,7 @@ namespace DS4Windows.Output
             RemoveFeedbacks();
 
             connected = false;
-            cont.Disconnect();
+            cont!.Disconnect(); // 接続中（cont を作成した後）にだけ呼ぶ
             //cont.Dispose();
             cont = null;
         }
@@ -72,7 +74,7 @@ namespace DS4Windows.Output
 
         public override void RemoveFeedback(int inIdx)
         {
-            if (forceFeedbacksDict.TryGetValue(inIdx, out IDisposable handler))
+            if (forceFeedbacksDict.TryGetValue(inIdx, out IDisposable? handler))
             {
                 handler.Dispose();
                 forceFeedbacksDict.Remove(inIdx);
@@ -82,7 +84,7 @@ namespace DS4Windows.Output
         /// <summary>
         /// スロットごとの、仮想 DS4 のトリガーの出力のモードを引く関数。作った側（カートリッジ）が設定する。null のときは、トリガーの後処理をしない。
         /// </summary>
-        public System.Func<int, DS4Windows.Core.Settings.DS4TriggerOutputMode> TriggerModeProvider { get; set; }
+        public System.Func<int, DS4Windows.Core.Settings.DS4TriggerOutputMode>? TriggerModeProvider { get; set; }
 
         /// <summary>
         /// 送出の直前に、トリガーの出力のモードを状態へ反映する。仮想 DS4 は L2／R2 のボタンも持つため、アナログ値からボタンを作る

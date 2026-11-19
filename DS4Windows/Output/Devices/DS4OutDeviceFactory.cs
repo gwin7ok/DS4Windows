@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Output.Backend;
 using System;
 
@@ -31,7 +33,7 @@ namespace DS4Windows.Output.Devices
         public static DS4OutDevice CreateDS4OutDevice(IVirtualPadBackend backend,
             Version driverVersion)
         {
-            DS4OutDevice result = null;
+            DS4OutDevice? result = null;
             if (outBuffAPIMinVersion.CompareTo(driverVersion) <= 0)
             {
                 result = new DS4OutDeviceExt(backend, useAwaitOutputBuffer: true);

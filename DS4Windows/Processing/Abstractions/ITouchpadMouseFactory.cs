@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Touchpad;
 
 namespace DS4Windows.Processing.Abstractions

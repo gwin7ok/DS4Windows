@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -28,8 +30,8 @@ namespace DS4Windows.Core.Profiles
     // 失敗し、アプリが落ちた。NameChanged は、既存の購読先のために残す。
     public class ProfileEntity : INotifyPropertyChanged
     {
-        private string name;
-        public string Name
+        private string? name;
+        public string? Name
         {
             get => name;
             set
@@ -41,8 +43,8 @@ namespace DS4Windows.Core.Profiles
             }
         }
 
-        public event EventHandler NameChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler? NameChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         // Phase6-Step10-4-1: Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
@@ -51,7 +53,7 @@ namespace DS4Windows.Core.Profiles
             this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
-        public event EventHandler ProfileDeleted;
+        public event EventHandler? ProfileDeleted;
 
         public void DeleteFile()
         {

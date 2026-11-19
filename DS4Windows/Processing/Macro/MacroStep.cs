@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Processing.Macro
@@ -43,12 +45,12 @@ namespace DS4Windows.Processing.Macro
             PointerMove,
         }
 
-        private string name;
+        private string? name;
         private int value;
         private StepType actType;
         private StepOutput outputType;
 
-        public string Name
+        public string? Name
         {
             get => name;
             set
@@ -57,7 +59,7 @@ namespace DS4Windows.Processing.Macro
                 NameChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler NameChanged;
+        public event EventHandler? NameChanged;
         public int Value
         {
             get => value;
@@ -71,7 +73,7 @@ namespace DS4Windows.Processing.Macro
         public StepType ActType { get => actType; }
         public StepOutput OutputType { get => outputType; }
 
-        public MacroStep(int value, string name, StepType act, StepOutput output)
+        public MacroStep(int value, string? name, StepType act, StepOutput output)
         {
             this.value = value;
             this.name = name;
@@ -81,7 +83,7 @@ namespace DS4Windows.Processing.Macro
             ValueChanged += MacroStep_ValueChanged;
         }
 
-        private void MacroStep_ValueChanged(object sender, EventArgs e)
+        private void MacroStep_ValueChanged(object? sender, EventArgs e)
         {
             if (actType == StepType.Wait)
             {

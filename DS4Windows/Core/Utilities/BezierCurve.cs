@@ -31,6 +31,8 @@
 *    BezierCurve.GetBezierEasing = Return re-mapped output value for an input axis value (or alternatively directly accessing the lookup table BezierCurve.arrayBezierLUT[inputVal] if even tiny CPU cycles matter)
 * 
 */
+#nullable enable
+
 using System;
 using DS4Windows.Core.Logging;
 
@@ -42,7 +44,7 @@ namespace DS4Windows.Core.Utilities
 
         private static int kSplineTableSize = 11;
         private static double kSampleStepSize = 1.0 / (kSplineTableSize - 1.0);
-        private double[] arraySampleValues;
+        private double[] arraySampleValues = null!; // InitBezierCurve の間だけ配列を持ち、終わると null に戻す（読むのはその間だけ）
 
         // These values are established by empiricism with tests (tradeoff: performance VS precision) (comment by GRE)
         private static int    NEWTON_ITERATIONS = 4;
@@ -88,7 +90,7 @@ namespace DS4Windows.Core.Utilities
         private double axisCenterPosDouble;     // Center pos of axis (LS/RS has 128 as "stick center", other axies has 0 as zero center point)
 
         // Lookup result table is always either in 0..128 or 0..255 range depending on the DS4 analog axis range. LUT table set as public to let DS4Win reading thread to access it directly (every CPU cycle matters)
-        public byte[] arrayBezierLUT = null;  
+        public byte[]? arrayBezierLUT = null;  
 
         public BezierCurve()
         {
@@ -194,7 +196,7 @@ namespace DS4Windows.Core.Utilities
             }
             finally
             {
-                arraySampleValues = null;
+                arraySampleValues = null!; // 同上（使い終えた配列を手放す）
             }
 
             return bRetValue;
@@ -215,7 +217,7 @@ namespace DS4Windows.Core.Utilities
                 else //if (abs > 0.75)
                     output = (abs * 1.72) - 0.72;
 
-                arrayBezierLUT[idx + (byte)axisCenterPosDouble] = (byte)(output * axisMaxDouble + axisCenterPosDouble);
+                arrayBezierLUT![idx + (byte)axisCenterPosDouble] = (byte)(output * axisMaxDouble + axisCenterPosDouble); // InitBezierCurve が確保済み
 
                 // Invert curve from a right side of the center position (128) to the left tilted stick axis (or from up tilt to down tilt)
                 if (this.axisType == AxisType.LSRS)
@@ -233,7 +235,7 @@ namespace DS4Windows.Core.Utilities
             for (byte idx = 0; idx <= axisMaxDouble; idx++)
             {
                 temp = idx / axisMaxDouble;
-                arrayBezierLUT[idx + (byte)axisCenterPosDouble] = (byte)((temp * temp * axisMaxDouble) + axisCenterPosDouble);
+                arrayBezierLUT![idx + (byte)axisCenterPosDouble] = (byte)((temp * temp * axisMaxDouble) + axisCenterPosDouble); // InitBezierCurve が確保済み
 
                 // Invert curve from a right side of the center position (128) to the left tilted stick axis (or from up tilt to down tilt)
                 if (this.axisType == AxisType.LSRS)
@@ -251,7 +253,7 @@ namespace DS4Windows.Core.Utilities
             for (byte idx = 0; idx <= axisMaxDouble; idx++)
             {
                 temp = idx / axisMaxDouble;
-                arrayBezierLUT[idx + (byte)axisCenterPosDouble] = (byte)((temp * temp * temp * axisMaxDouble) + axisCenterPosDouble);
+                arrayBezierLUT![idx + (byte)axisCenterPosDouble] = (byte)((temp * temp * temp * axisMaxDouble) + axisCenterPosDouble); // InitBezierCurve が確保済み
 
                 // Invert curve from a right side of the center position (128) to the left tilted stick axis (or from up tilt to down tilt)
                 if (this.axisType == AxisType.LSRS)
@@ -270,7 +272,7 @@ namespace DS4Windows.Core.Utilities
             {
                 abs = idx / axisMaxDouble;
                 output = abs * (abs - 2.0);
-                arrayBezierLUT[idx + (byte)axisCenterPosDouble] = (byte)((-1.0 * output * axisMaxDouble) + axisCenterPosDouble);
+                arrayBezierLUT![idx + (byte)axisCenterPosDouble] = (byte)((-1.0 * output * axisMaxDouble) + axisCenterPosDouble); // InitBezierCurve が確保済み
 
                 // Invert curve from a right side of the center position (128) to the left tilted stick axis (or from up tilt to down tilt)
                 if (this.axisType == AxisType.LSRS)
@@ -289,7 +291,7 @@ namespace DS4Windows.Core.Utilities
             {
                 inner = (idx / axisMaxDouble) - 1.0;
                 output = (inner * inner * inner) + 1.0;
-                arrayBezierLUT[idx + (byte)axisCenterPosDouble] = (byte)((1.0 * output * axisMaxDouble) + axisCenterPosDouble);
+                arrayBezierLUT![idx + (byte)axisCenterPosDouble] = (byte)((1.0 * output * axisMaxDouble) + axisCenterPosDouble); // InitBezierCurve が確保済み
 
                 // Invert curve from a right side of the center position (128) to the left tilted stick axis (or from up tilt to down tilt)
                 if (this.axisType == AxisType.LSRS)

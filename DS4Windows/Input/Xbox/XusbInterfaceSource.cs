@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -99,7 +101,7 @@ namespace DS4Windows.Input.Xbox
                         yield break;
                     }
 
-                    string path = ReadInterfacePath(set, ref data);
+                    string? path = ReadInterfacePath(set, ref data);
                     if (!string.IsNullOrEmpty(path))
                     {
                         yield return path;
@@ -112,7 +114,7 @@ namespace DS4Windows.Input.Xbox
             }
         }
 
-        private static string ReadInterfacePath(IntPtr set, ref SpDeviceInterfaceData data)
+        private static string? ReadInterfacePath(IntPtr set, ref SpDeviceInterfaceData data)
         {
             SetupDiGetDeviceInterfaceDetail(set, ref data, IntPtr.Zero, 0, out int required, IntPtr.Zero);
             if (required <= 0)

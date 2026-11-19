@@ -1,4 +1,6 @@
-﻿using DS4Windows.Processing.Gyro;
+﻿#nullable enable
+
+using DS4Windows.Processing.Gyro;
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Processing.Macro
@@ -74,7 +76,7 @@ namespace DS4Windows.Processing.Macro
 
         public bool Equals(MacroPointerMove other) => Mode == other.Mode && X == other.X && Y == other.Y;
 
-        public override bool Equals(object obj) => obj is MacroPointerMove other && Equals(other);
+        public override bool Equals(object? obj) => obj is MacroPointerMove other && Equals(other);
 
         public override int GetHashCode() => HashCode.Combine(Mode, X, Y);
 

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
@@ -14,17 +16,17 @@ namespace DS4Windows.Processing.Services.Conditioning
     {
         private readonly Func<DateTime> _now;
 
-        public TwoStageTriggerProcessor(Func<DateTime> now = null)
+        public TwoStageTriggerProcessor(Func<DateTime>? now = null)
         {
             _now = now ?? (() => DateTime.Now);
         }
 
         public void Process(int device, byte triggerValue, byte triggerRawValue,
             ref DS4ControlSettings inputSoftPull, ref DS4ControlSettings inputFullPull, TriggerOutputSettings outputSettings,
-            TwoStageTriggerMappingData twoStageData, out DS4ControlSettings outputSoftPull, out DS4ControlSettings outputFullPull)
+            TwoStageTriggerMappingData twoStageData, out DS4ControlSettings? outputSoftPull, out DS4ControlSettings? outputFullPull)
         {
-            DS4ControlSettings dcsTemp = inputSoftPull;
-            DS4ControlSettings dcsFullPull = null;
+            DS4ControlSettings? dcsTemp = inputSoftPull;
+            DS4ControlSettings? dcsFullPull = null;
             TwoStageTriggerMappingData triggerData = twoStageData;
 
             switch (outputSettings.twoStageMode)

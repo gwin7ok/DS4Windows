@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading;
 using System.Windows.Threading;
@@ -14,8 +16,8 @@ namespace DS4Windows.Processing.Services.Connection
     {
         private readonly object _lock = new object();
         private readonly ManualResetEventSlim _ready = new ManualResetEventSlim(false);
-        private Thread _thread;
-        private Dispatcher _dispatcher;
+        private Thread? _thread;
+        private Dispatcher? _dispatcher;
 
         public EventThreadDispatcher()
         {
@@ -32,9 +34,9 @@ namespace DS4Windows.Processing.Services.Connection
             _thread.Start();
         }
 
-        private Dispatcher Current()
+        private Dispatcher? Current()
         {
-            Thread thread = _thread;
+            Thread? thread = _thread;
             if (thread == null) return null;
             _ready.Wait();
             return _dispatcher;
@@ -42,20 +44,20 @@ namespace DS4Windows.Processing.Services.Connection
 
         public void Queue(Action action)
         {
-            Dispatcher d = Current();
+            Dispatcher? d = Current();
             d?.BeginInvoke(action);
         }
 
         public void Invoke(Action action)
         {
-            Dispatcher d = Current();
+            Dispatcher? d = Current();
             d?.Invoke(action);
         }
 
         public void Shutdown()
         {
-            Thread thread;
-            Dispatcher dispatcher;
+            Thread? thread;
+            Dispatcher? dispatcher;
             lock (_lock)
             {
                 thread = _thread;
@@ -66,7 +68,7 @@ namespace DS4Windows.Processing.Services.Connection
                 _dispatcher = null;
             }
 
-            dispatcher.InvokeShutdown();
+            dispatcher!.InvokeShutdown(); // 実行中は設定済み（null なら従来どおり NullReferenceException）
             thread.Join();
         }
     }

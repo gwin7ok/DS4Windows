@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
@@ -28,7 +30,7 @@ namespace DS4Windows.Output
     public class OutputSlotPersistDTO : IDTO<OutputSlotManager>
     {
         [XmlAttribute("app_version")]
-        public string AppVersion
+        public string? AppVersion
         {
             get => DS4Windows.Core.Platform.PathService.ExecutableVersionState;
             set { }
@@ -66,7 +68,7 @@ namespace DS4Windows.Output
         {
             foreach(OutputSlotSerializer tempSlot in SlotItems)
             {
-                OutSlotDevice tempDev = null;
+                OutSlotDevice? tempDev = null;
                 // Phase8-Step1 W2b（B-1）: 上流は出力スロットが 4 つだった時代の「<= 3」。出力スロットは slotLimit（最大 8）個あり、
                 // 保存側（MapFrom）は全スロットを書くため、読込側もスロット数までを復元する（範囲外は無視する）。
                 if (tempSlot.Index >= 0 && tempSlot.Index < destination.OutputSlots.Length)

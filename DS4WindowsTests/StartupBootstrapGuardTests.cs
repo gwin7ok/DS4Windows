@@ -92,7 +92,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("InputDeviceRegistry.reEnableDevice", text);
             Assert.Contains("new DS4Windows.Processing.Services.Devices.InputDeviceRegistryAdapter()", text);
-            Assert.Contains(".ReEnableDevice(parser.DeviceInstanceId)", text);
+            Assert.Contains(".ReEnableDevice(parser.DeviceInstanceId!)", text);
         }
     }
 }

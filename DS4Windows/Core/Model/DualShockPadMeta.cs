@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Net.NetworkInformation;
 
 namespace DS4Windows.Core.Model
@@ -27,7 +29,7 @@ namespace DS4Windows.Core.Model
         public DsState PadState;
         public DsConnection ConnectionType;
         public DsModel Model;
-        public PhysicalAddress PadMacAddress;
+        public PhysicalAddress? PadMacAddress;
         public DsBattery BatteryStatus;
         public bool IsActive;
     }

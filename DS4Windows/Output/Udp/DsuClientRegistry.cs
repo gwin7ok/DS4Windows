@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -45,9 +47,9 @@ namespace DS4Windows.Output.Udp
 
         private readonly Dictionary<IPEndPoint, ClientRequestTimes> _clients = new Dictionary<IPEndPoint, ClientRequestTimes>();
         private readonly TimeProvider _time;
-        private List<IPEndPoint> _deleteScratch;
+        private List<IPEndPoint>? _deleteScratch;
 
-        public DsuClientRegistry(TimeProvider time = null)
+        public DsuClientRegistry(TimeProvider? time = null)
         {
             _time = time ?? TimeProvider.System;
         }
@@ -64,7 +66,7 @@ namespace DS4Windows.Output.Udp
             DateTime now = _time.GetUtcNow().UtcDateTime;
             lock (_clients)
             {
-                if (!_clients.TryGetValue(client, out ClientRequestTimes times))
+                if (!_clients.TryGetValue(client, out ClientRequestTimes? times))
                 {
                     times = new ClientRequestTimes();
                     _clients[client] = times;
@@ -84,7 +86,7 @@ namespace DS4Windows.Output.Udp
             DateTime now = _time.GetUtcNow().UtcDateTime;
             lock (_clients)
             {
-                List<IPEndPoint> toDelete = _deleteScratch;
+                List<IPEndPoint>? toDelete = _deleteScratch;
                 toDelete?.Clear();
 
                 foreach (var cl in _clients)

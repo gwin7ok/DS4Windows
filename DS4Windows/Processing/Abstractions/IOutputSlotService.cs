@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -32,7 +34,7 @@ namespace DS4Windows.Processing.Abstractions
 
         // === Step 12 拡充: 実体 OutputSlotManager 連動操作 ===
         IReadOnlyList<OutSlotDevice> OutputSlots { get; }
-        OutSlotDevice GetOutSlotDevice(int slotNumber);
+        OutSlotDevice? GetOutSlotDevice(int slotNumber);
 
         /// <summary>
         /// UI が表示と設定に使う、全スロットの面（スロット番号の順。スロットごとに同じ面を返す）。

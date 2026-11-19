@@ -16,15 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Core.Logging
 {
     public class StatusLogMsg
     {
-        private string message;
+        private string? message;
         private bool warning;
-        public string Message
+        public string? Message
         {
             get => message;
             set
@@ -35,7 +37,7 @@ namespace DS4Windows.Core.Logging
             }
         }
 
-        public event EventHandler MessageChanged;
+        public event EventHandler? MessageChanged;
 
         public bool Warning { get => warning;
             set
@@ -47,7 +49,7 @@ namespace DS4Windows.Core.Logging
             }
         }
 
-        public event EventHandler WarningChanged;
+        public event EventHandler? WarningChanged;
 
         public string Color
         {
@@ -57,6 +59,6 @@ namespace DS4Windows.Core.Logging
             }
         }
 
-        public event EventHandler ColorChanged;
+        public event EventHandler? ColorChanged;
     }
 }

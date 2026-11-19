@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -23,7 +25,7 @@ namespace DS4Windows.Cli
         private const uint WmCopyData = 0x004A;
 
         [DllImport("user32.dll", EntryPoint = "FindWindow", CharSet = CharSet.Unicode)]
-        private static extern IntPtr FindWindow(string sClass, string sWindow);
+        private static extern IntPtr FindWindow(string? sClass, string sWindow);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
@@ -45,8 +47,8 @@ namespace DS4Windows.Cli
                 return ExitNotRunning;
 
             bool ownsMutex = false;
-            Mutex mutex = null;
-            EventWaitHandle readyEvent = null;
+            Mutex? mutex = null;
+            EventWaitHandle? readyEvent = null;
             COPYDATASTRUCT cds;
             cds.lpData = IntPtr.Zero;
             cds.dwData = IntPtr.Zero;

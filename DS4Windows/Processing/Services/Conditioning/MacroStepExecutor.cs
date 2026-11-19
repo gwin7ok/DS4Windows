@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Macro;
 using System;
 using DS4Windows.Core.Abstractions;
@@ -103,7 +105,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             else if (macroCodeValue >= 1000000)
             {
                 // Rumble event
-                InputDeviceCore d = null;
+                InputDeviceCore? d = null;
                 try
                 {
                     var accessor = _deviceStateAccessor;
@@ -115,9 +117,9 @@ namespace DS4Windows.Processing.Services.Conditioning
                 byte heavy = (byte)(int.Parse(r[0].ToString()) * 100 + int.Parse(r[1].ToString()) * 10 + int.Parse(r[2].ToString()));
                 byte light = (byte)(int.Parse(r[3].ToString()) * 100 + int.Parse(r[4].ToString()) * 10 + int.Parse(r[5].ToString()));
                 if (_profileSettings.RumbleSlot(device).InverseMotors)
-                    d.setRumble(heavy, light);
+                    d!.setRumble(heavy, light); // 実行中は設定済み（null なら従来どおり NullReferenceException）
                 else
-                    d.setRumble(light, heavy);
+                    d!.setRumble(light, heavy); // 実行中は設定済み（null なら従来どおり NullReferenceException）
             }
             else
             {
