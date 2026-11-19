@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Runtime.InteropServices;
 using DS4Windows.Core.Model;

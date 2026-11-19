@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Output.Backend
+﻿#nullable enable
+
+namespace DS4Windows.Output.Backend
 {
     /// <summary>仮想 DS4 の十字キーの向き。値はドライバー（<c>DualShock4DPadDirection</c>）と同じ（差分テストで固定）。</summary>
     public enum Ds4DPadDirection : byte
