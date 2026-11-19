@@ -20,7 +20,6 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
-using System.Linq;
 using System.Globalization;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Updater;

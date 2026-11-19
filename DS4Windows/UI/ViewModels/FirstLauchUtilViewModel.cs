@@ -16,14 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DS4Windows.Core.Settings;
-
-using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.ViewModels
 {

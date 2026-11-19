@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.ObjectModel;
 using System.Threading;
-using System.Windows.Data;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Utilities;
 

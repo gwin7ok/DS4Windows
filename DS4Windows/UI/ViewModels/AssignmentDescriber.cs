@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 
 namespace DS4Windows.UI.ViewModels
 {

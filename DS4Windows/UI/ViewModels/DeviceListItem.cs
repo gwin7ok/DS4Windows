@@ -16,14 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LEDBarMode = DS4Windows.Core.Settings.DualSenseControllerOptions.LEDBarMode;
-using MuteLEDMode = DS4Windows.Core.Settings.DualSenseControllerOptions.MuteLEDMode;
-
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels

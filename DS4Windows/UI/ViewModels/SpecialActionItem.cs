@@ -17,17 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 

@@ -16,14 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
-using System.Windows;
-using HttpProgress;
-using NonFormTimer = System.Timers.Timer;
-
 namespace DS4Windows.UI
 {
 

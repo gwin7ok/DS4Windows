@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using DS4Windows.Core.Logging;
-using DS4Windows.UI.ViewModels;
-using DS4Windows.Processing.Services.Connection;
 
 namespace DS4Windows.UI
 {

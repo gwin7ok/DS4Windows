@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Threading.Tasks;
-using DS4Windows.Core.Utilities;
 namespace DS4Windows.UI.ViewModels
 {
     public class UpdaterWindowViewModel

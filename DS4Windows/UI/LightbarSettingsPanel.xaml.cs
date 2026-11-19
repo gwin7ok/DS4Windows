@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;

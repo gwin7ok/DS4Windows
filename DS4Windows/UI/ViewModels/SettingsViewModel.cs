@@ -17,19 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.Windows.Media;
-using System.Windows.Interop;
-using System.Windows;
-using System.Windows.Media.Imaging;
 using System.Runtime.InteropServices;
-using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 
