@@ -207,5 +207,46 @@ namespace DS4WindowsTests
             Assert.Empty(navigator.Shown);
             Assert.Single(dialogs.Messages);
         }
+
+        [Fact]
+        public void ProfileListCommands_AreGatedBySelection_ExceptNewAndImport()
+        {
+            var (vm, _, _, _, navigator, _) = CreateAll();
+            Assert.True(vm.NewProfileCommand.CanExecute(null));
+            Assert.True(vm.ImportProfileCommand.CanExecute(null));
+            Assert.False(vm.EditProfileCommand.CanExecute(null));
+            Assert.False(vm.DeleteProfileCommand.CanExecute(null));
+            Assert.False(vm.RenameProfileCommand.CanExecute(null));
+            Assert.False(vm.DuplicateProfileCommand.CanExecute(null));
+            Assert.False(vm.ExportProfileCommand.CanExecute(null));
+
+            int raised = 0;
+            vm.EditProfileCommand.CanExecuteChanged += (_, _) => raised++;
+            vm.SelectedProfileIndex = 2;
+
+            Assert.Equal(1, raised);
+            Assert.True(vm.EditProfileCommand.CanExecute(null));
+            Assert.True(vm.ExportProfileCommand.CanExecute(null));
+
+            vm.NewProfileCommand.Execute(null);
+            vm.EditProfileCommand.Execute(null);
+            vm.DeleteProfileCommand.Execute(null);
+            vm.RenameProfileCommand.Execute(null);
+            vm.DuplicateProfileCommand.Execute(null);
+            vm.ImportProfileCommand.Execute(null);
+            vm.ExportProfileCommand.Execute(null);
+            Assert.Equal(new[] { "NewProfile", "EditProfile", "DeleteProfile", "RenameProfile", "DuplicateProfile", "ImportProfile", "ExportProfile" }, navigator.Shown);
+        }
+
+        [Fact]
+        public void DeviceProfileCommands_PassTheDeviceIndex()
+        {
+            var (vm, _, _, _, navigator, _) = CreateAll();
+
+            vm.EditDeviceProfileCommand.Execute(1);
+            vm.NewDeviceProfileCommand.Execute(3);
+
+            Assert.Equal(new[] { "EditDeviceProfile:1", "NewDeviceProfile:3" }, navigator.Shown);
+        }
     }
 }

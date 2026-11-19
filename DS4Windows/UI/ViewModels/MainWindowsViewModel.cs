@@ -46,6 +46,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly UpdateCheckPolicy _updateCheckPolicy;
 
         private bool _isServiceBusy;
+        private int _selectedProfileIndex = -1;
         private bool _hideDs4ToggleEnabled = true;
         private bool _hideXboxToggleEnabled = true;
 
@@ -94,6 +95,17 @@ namespace DS4Windows.UI.ViewModels
             ShowAboutCommand = CommandGuard.CreateSync(() => Navigator?.ShowAbout(), name: nameof(ShowAboutCommand));
             ShowChangelogCommand = CommandGuard.CreateSync(() => Navigator?.ShowChangelog(), name: nameof(ShowChangelogCommand));
             ShowDeviceOptionsCommand = CommandGuard.CreateSync(() => Navigator?.ShowDeviceOptions(), name: nameof(ShowDeviceOptionsCommand));
+
+            bool HasSelection() => SelectedProfileIndex >= 0;
+            NewProfileCommand = CommandGuard.CreateSync(() => Navigator?.NewProfile(), name: nameof(NewProfileCommand));
+            EditProfileCommand = CommandGuard.CreateSync(() => Navigator?.EditProfile(), HasSelection, nameof(EditProfileCommand));
+            DeleteProfileCommand = CommandGuard.CreateSync(() => Navigator?.DeleteProfile(), HasSelection, nameof(DeleteProfileCommand));
+            RenameProfileCommand = CommandGuard.CreateSync(() => Navigator?.RenameProfile(), HasSelection, nameof(RenameProfileCommand));
+            DuplicateProfileCommand = CommandGuard.CreateSync(() => Navigator?.DuplicateProfile(), HasSelection, nameof(DuplicateProfileCommand));
+            ImportProfileCommand = CommandGuard.CreateSync(() => Navigator?.ImportProfile(), name: nameof(ImportProfileCommand));
+            ExportProfileCommand = CommandGuard.CreateSync(() => Navigator?.ExportProfile(), HasSelection, nameof(ExportProfileCommand));
+            EditDeviceProfileCommand = CommandGuard.CreateSync<int>(index => Navigator?.EditDeviceProfile(index), name: nameof(EditDeviceProfileCommand));
+            NewDeviceProfileCommand = CommandGuard.CreateSync<int>(index => Navigator?.NewDeviceProfile(index), name: nameof(NewDeviceProfileCommand));
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] MainWindowsViewModel: created (IEnvironmentService, IPathService, IServiceLifecycle injected)");
@@ -149,6 +161,43 @@ namespace DS4Windows.UI.ViewModels
         public RelayCommand ShowChangelogCommand { get; }
 
         public RelayCommand ShowDeviceOptionsCommand { get; }
+
+        /// <summary>プロファイル一覧で選ばれている行（なければ -1）。一覧の選択とバインドする。</summary>
+        public int SelectedProfileIndex
+        {
+            get => _selectedProfileIndex;
+            set
+            {
+                if (SetProperty(ref _selectedProfileIndex, value))
+                {
+                    EditProfileCommand.NotifyCanExecuteChanged();
+                    DeleteProfileCommand.NotifyCanExecuteChanged();
+                    RenameProfileCommand.NotifyCanExecuteChanged();
+                    DuplicateProfileCommand.NotifyCanExecuteChanged();
+                    ExportProfileCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        public RelayCommand NewProfileCommand { get; }
+
+        public RelayCommand EditProfileCommand { get; }
+
+        public RelayCommand DeleteProfileCommand { get; }
+
+        public RelayCommand RenameProfileCommand { get; }
+
+        public RelayCommand DuplicateProfileCommand { get; }
+
+        public RelayCommand ImportProfileCommand { get; }
+
+        public RelayCommand ExportProfileCommand { get; }
+
+        /// <summary>機器ごとの「編集」。<c>CommandParameter</c> は機器（スロット）の番号。</summary>
+        public RelayCommand<int> EditDeviceProfileCommand { get; }
+
+        /// <summary>機器ごとの「新しいプロファイル」。<c>CommandParameter</c> は機器（スロット）の番号。</summary>
+        public RelayCommand<int> NewDeviceProfileCommand { get; }
 
         /// <summary>動作中なら停止、止まっていれば開始する。</summary>
         public AsyncRelayCommand ToggleServiceCommand { get; }

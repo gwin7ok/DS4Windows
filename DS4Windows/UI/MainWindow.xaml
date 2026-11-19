@@ -121,9 +121,9 @@
                                         <DataTemplate>
                                             <StackPanel Width="{Binding ElementName=editColumn, Path=Width}">
                                                 <xctk:SplitButton x:Name="ProfEditSBtn" Content="{lex:Loc Edit}" Height="Auto" MinWidth="60"
-                                                                  Tag="{Binding DevIndex, Mode=OneTime}" Click="ProfEditSBtn_Click" HorizontalAlignment="Center">
+                                                                  Command="{Binding DataContext.EditDeviceProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding DevIndex, Mode=OneTime}" HorizontalAlignment="Center">
                                                     <xctk:SplitButton.DropDownContent>
-                                                        <Button x:Name="newProfBtn" Content="{lex:Loc NewProfile}" MinWidth="120" Tag="{Binding DevIndex, Mode=OneTime}" Click="NewProfBtn_Click"  />
+                                                        <Button x:Name="newProfBtn" Content="{lex:Loc NewProfile}" MinWidth="120" Command="{Binding DataContext.NewDeviceProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding DevIndex, Mode=OneTime}"  />
                                                     </xctk:SplitButton.DropDownContent>
                                                 </xctk:SplitButton>
                                             </StackPanel>
@@ -183,7 +183,7 @@
             <TabItem x:Name="profilesTab" Header="{lex:Loc Profiles}">
                 <DockPanel x:Name="profDockPanel">
                     <ToolBar x:Name="profOptsToolbar" Height="30" DockPanel.Dock="Top" Background="{x:Null}">
-                        <Button x:Name="newProfListBtn" Click="NewProfListBtn_Click">
+                        <Button x:Name="newProfListBtn" Command="{Binding NewProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding NewProfile, Source={StaticResource ImgLocPaths}}" />
@@ -191,7 +191,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="editProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="EditProfBtn_Click">
+                        <Button x:Name="editProfBtn" Margin="10,0,0,0" Command="{Binding EditProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding EditProfile, Source={StaticResource ImgLocPaths}}" />
@@ -199,7 +199,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="deleteProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="DeleteProfBtn_Click">
+                        <Button x:Name="deleteProfBtn" Margin="10,0,0,0" Command="{Binding DeleteProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding DeleteProfile, Source={StaticResource ImgLocPaths}}" />
@@ -207,7 +207,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="renameProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="RenameProfBtn_Click">
+                        <Button x:Name="renameProfBtn" Margin="10,0,0,0" Command="{Binding RenameProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding EditProfile, Source={StaticResource ImgLocPaths}}" />
@@ -215,7 +215,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="dupProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="DupProfBtn_Click">
+                        <Button x:Name="dupProfBtn" Margin="10,0,0,0" Command="{Binding DuplicateProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding DuplicateProfile, Source={StaticResource ImgLocPaths}}" />
@@ -223,7 +223,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="importProfBtn" Margin="10,0,0,0" Click="ImportProfBtn_Click">
+                        <Button x:Name="importProfBtn" Margin="10,0,0,0" Command="{Binding ImportProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding ImportProfile, Source={StaticResource ImgLocPaths}}" />
@@ -231,7 +231,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="exportProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="ExportProfBtn_Click">
+                        <Button x:Name="exportProfBtn" Margin="10,0,0,0" Command="{Binding ExportProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding ExportProfile, Source={StaticResource ImgLocPaths}}" />
@@ -244,7 +244,10 @@
                         <local:DupBox x:Name="dupBox" />
                     </ToolBar>
 
-                    <ListBox x:Name="profilesListBox" DockPanel.Dock="Bottom" SelectionChanged="ProfilesListBox_SelectionChanged" MouseDoubleClick="ProfilesListBox_MouseDoubleClick">
+                    <ListBox x:Name="profilesListBox" DockPanel.Dock="Bottom" SelectedIndex="{Binding SelectedProfileIndex, Mode=TwoWay}">
+                        <ListBox.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditProfileCommand}" />
+                        </ListBox.InputBindings>
                         <ListBox.Resources>
                             <localConverters:EscapeAccessKeysConverter x:Key="escapeAccessConvert" />
                         </ListBox.Resources>

@@ -812,17 +812,6 @@ namespace DS4Windows.UI
         // 本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は Settings タブで隠れ、
         // Settings で出る警告が見えなかった。すべてのタブで表示する（ユーザー決定 2026-11-02）。
 
-        private void ProfilesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            newProfListBtn.IsEnabled = true;
-            editProfBtn.IsEnabled = true;
-            deleteProfBtn.IsEnabled = true;
-            renameProfBtn.IsEnabled = true;
-            dupProfBtn.IsEnabled = true;
-            importProfBtn.IsEnabled = true;
-            exportProfBtn.IsEnabled = true;
-        }
-
         private void RunAtStartCk_Click(object sender, RoutedEventArgs e)
         {
             settingsWrapVM.ShowRunStartPanel = runAtStartCk.IsChecked == true;
@@ -1141,10 +1130,8 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProfEditSBtn_Click(object sender, RoutedEventArgs e)
+        internal void EditDeviceProfile(int idx)
         {
-            Control temp = sender as Control;
-            int idx = Convert.ToInt32(temp.Tag);
             controllerLV.SelectedIndex = idx;
             CompositeDeviceModel item = conLvViewModel.CurrentItem;
 
@@ -1156,10 +1143,8 @@ namespace DS4Windows.UI
             }
         }
 
-        private void NewProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void NewDeviceProfile(int idx)
         {
-            Control temp = sender as Control;
-            int idx = Convert.ToInt32(temp.Tag);
             controllerLV.SelectedIndex = idx;
             ShowProfileEditor(idx, null);
             mainTabCon.SelectedIndex = 1;
@@ -1228,17 +1213,17 @@ namespace DS4Windows.UI
             catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
         }
 
-        private void ImportProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void ImportProfile()
         {
             profileSelection.ImportProfile(profileListHolder);
         }
 
-        private void ExportProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void ExportProfile()
         {
             profileSelection.ExportProfile(profileListHolder, profilesListBox.SelectedIndex);
         }
 
-        private void DupProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void DuplicateProfile()
         {
             string filename = "";
             if (profilesListBox.SelectedIndex >= 0)
@@ -1265,7 +1250,7 @@ namespace DS4Windows.UI
             dupBoxBar.Visibility = Visibility.Collapsed;
         }
 
-        private void DeleteProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void DeleteProfile()
         {
             profileSelection.DeleteProfile(profileListHolder, profilesListBox.SelectedIndex);
         }
@@ -1347,7 +1332,7 @@ namespace DS4Windows.UI
             ChangeHotkeysStatus(status);
         }
 
-        private void EditProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void EditProfile()
         {
             if (profilesListBox.SelectedIndex >= 0)
             {
@@ -1394,7 +1379,7 @@ namespace DS4Windows.UI
             //Task.Run(() => GC.Collect(0, GCCollectionMode.Forced, false));
         }
 
-        private void NewProfListBtn_Click(object sender, RoutedEventArgs e)
+        internal void NewProfile()
         {
             ShowProfileEditor(ProfileEditor.NoTargetDevice, null);
         }
@@ -1535,16 +1520,7 @@ namespace DS4Windows.UI
             WindowState = WindowState.Normal;
         }
 
-        private void ProfilesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (profilesListBox.SelectedIndex >= 0)
-            {
-                ProfileEntity entity = profileListHolder.ProfileListCol[profilesListBox.SelectedIndex];
-                ShowProfileEditor(ProfileEditor.NoTargetDevice, entity);
-            }
-        }
-
-        private void RenameProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void RenameProfile()
         {
             if (profilesListBox.SelectedIndex >= 0)
             {

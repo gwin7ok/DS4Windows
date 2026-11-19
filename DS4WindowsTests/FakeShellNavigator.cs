@@ -16,5 +16,23 @@ namespace DS4WindowsTests
         public void ShowDeviceOptions() => Shown.Add("DeviceOptions");
 
         public void ShowUpdater(string version) => Shown.Add("Updater:" + version);
+
+        public void NewProfile() => Shown.Add("NewProfile");
+
+        public void EditProfile() => Shown.Add("EditProfile");
+
+        public void DeleteProfile() => Shown.Add("DeleteProfile");
+
+        public void RenameProfile() => Shown.Add("RenameProfile");
+
+        public void DuplicateProfile() => Shown.Add("DuplicateProfile");
+
+        public void ImportProfile() => Shown.Add("ImportProfile");
+
+        public void ExportProfile() => Shown.Add("ExportProfile");
+
+        public void EditDeviceProfile(int deviceIndex) => Shown.Add("EditDeviceProfile:" + deviceIndex);
+
+        public void NewDeviceProfile(int deviceIndex) => Shown.Add("NewDeviceProfile:" + deviceIndex);
     }
 }

@@ -18,5 +18,32 @@ namespace DS4Windows.UI.Abstractions
 
         /// <summary>更新（インストール）の画面を、モーダルで開く。</summary>
         void ShowUpdater(string version);
+
+        /// <summary>プロファイル一覧で、新しいプロファイルの編集を始める。</summary>
+        void NewProfile();
+
+        /// <summary>選択中のプロファイルを編集する。</summary>
+        void EditProfile();
+
+        /// <summary>選択中のプロファイルを削除する（確認つき）。</summary>
+        void DeleteProfile();
+
+        /// <summary>選択中のプロファイルの名前を変える。</summary>
+        void RenameProfile();
+
+        /// <summary>選択中のプロファイルを複製する（名前の入力欄を出す）。</summary>
+        void DuplicateProfile();
+
+        /// <summary>プロファイルをファイルから取り込む。</summary>
+        void ImportProfile();
+
+        /// <summary>選択中のプロファイルをファイルへ書き出す。</summary>
+        void ExportProfile();
+
+        /// <summary>機器（スロット）に割り当てたプロファイルを編集する。</summary>
+        void EditDeviceProfile(int deviceIndex);
+
+        /// <summary>機器（スロット）用の新しいプロファイルの編集を始める。</summary>
+        void NewDeviceProfile(int deviceIndex);
     }
 }

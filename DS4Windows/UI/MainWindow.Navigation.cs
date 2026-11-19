@@ -44,6 +44,24 @@ namespace DS4Windows.UI
                 var updaterWin = new UpdaterWindow(version, window.environment.IsAdministrator, window._viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
             }
+
+            public void NewProfile() => window.NewProfile();
+
+            public void EditProfile() => window.EditProfile();
+
+            public void DeleteProfile() => window.DeleteProfile();
+
+            public void RenameProfile() => window.RenameProfile();
+
+            public void DuplicateProfile() => window.DuplicateProfile();
+
+            public void ImportProfile() => window.ImportProfile();
+
+            public void ExportProfile() => window.ExportProfile();
+
+            public void EditDeviceProfile(int deviceIndex) => window.EditDeviceProfile(deviceIndex);
+
+            public void NewDeviceProfile(int deviceIndex) => window.NewDeviceProfile(deviceIndex);
         }
     }
 }
