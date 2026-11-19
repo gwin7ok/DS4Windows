@@ -41,7 +41,7 @@
                             Style="{StaticResource NoBGHoverBtn}" Command="{Binding ShowAboutCommand}">
                         <TextBlock Text="{lex:Loc HotkeysAbout}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" x:Uid="hotkeysText" />
                     </Button>
-                    <Button x:Name="StartStopBtn" Margin="10,4,4,4" Command="{Binding ToggleServiceCommand}" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
+                    <Button x:Name="StartStopBtn" Margin="10,4,4,4" Content="{Binding StartStopText}" Command="{Binding ToggleServiceCommand}" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
                 </StackPanel>
                 <Label x:Name="lastMsgLb" Content="{Binding Message}" ToolTip="{Binding Message}" Foreground="{Binding Color}" Margin="4,0,2,0" />
             </DockPanel>
@@ -239,7 +239,7 @@
                             </Button.Content>
                         </Button>
                     </ToolBar>
-                    <ToolBar x:Name="dupBoxBar" Height="40" DockPanel.Dock="Top" Background="{x:Null}" HorizontalAlignment="Center" Visibility="Collapsed">
+                    <ToolBar x:Name="dupBoxBar" Height="40" DockPanel.Dock="Top" Background="{x:Null}" HorizontalAlignment="Center" Visibility="{Binding IsDuplicateBarVisible, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}">
                         <local:DupBox x:Name="dupBox" />
                     </ToolBar>
 

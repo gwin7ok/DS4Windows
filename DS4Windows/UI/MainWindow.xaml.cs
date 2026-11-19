@@ -774,7 +774,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void UpdateStartStopText()
         {
-            StartStopBtn.Content = mainWinVM.ServiceRunning ? Translations.Strings.StopText : Translations.Strings.StartText;
+            mainWinVM.RefreshStartStopText();
         }
 
         private void OnLocalizationCultureChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1162,7 +1162,7 @@ namespace DS4Windows.UI
                 int idx = profilesListBox.SelectedIndex;
                 filename = profileListHolder.ProfileListCol[idx].Name;
                 dupBox.OldFilename = filename;
-                dupBoxBar.Visibility = Visibility.Visible;
+                mainWinVM.IsDuplicateBarVisible = true;
                 dupBox.Save -= DupBox_Save;
                 dupBox.Cancel -= DupBox_Cancel;
                 dupBox.Save += DupBox_Save;
@@ -1172,13 +1172,13 @@ namespace DS4Windows.UI
 
         private void DupBox_Cancel(object sender, EventArgs e)
         {
-            dupBoxBar.Visibility = Visibility.Collapsed;
+            mainWinVM.IsDuplicateBarVisible = false;
         }
 
         private void DupBox_Save(DupBox sender, string profilename)
         {
             profileListHolder.AddProfileSort(profilename);
-            dupBoxBar.Visibility = Visibility.Collapsed;
+            mainWinVM.IsDuplicateBarVisible = false;
         }
 
         internal void DeleteProfile()

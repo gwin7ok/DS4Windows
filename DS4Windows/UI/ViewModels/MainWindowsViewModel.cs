@@ -337,6 +337,24 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>設定（Xbox の USB の親を隠す）の変更を反映するため、サービスを停止して開始し直す。</summary>
         public AsyncRelayCommand RestartForHideXboxCommand { get; }
 
+        /// <summary>
+        /// 開始・停止ボタンの文字。サービスの状態で変わる。XAML の <c>lex:Loc</c> では状態を表せず、
+        /// 言語の切り替えのたびに「開始」へ戻されるため、文字は常にここで決める（<see cref="RefreshStartStopText"/> で再通知する）。
+        /// </summary>
+        public string StartStopText => _lifecycle.Running ? Translations.Strings.StopText : Translations.Strings.StartText;
+
+        /// <summary>サービスの状態・表示言語が変わったあとに、開始・停止ボタンの文字を読み直させる。</summary>
+        public void RefreshStartStopText() => OnPropertyChanged(nameof(StartStopText));
+
+        private bool _isDuplicateBarVisible;
+
+        /// <summary>プロファイルの複製の名前の入力欄（バー）を出しているか。</summary>
+        public bool IsDuplicateBarVisible
+        {
+            get => _isDuplicateBarVisible;
+            set => SetProperty(ref _isDuplicateBarVisible, value);
+        }
+
         /// <summary>サービスの状態が変わったとき（開始・停止の完了）に、画面から呼ぶ。開始・停止ボタンを再び押せるようにする。</summary>
         public void NotifyServiceStateChanged() => IsServiceBusy = false;
 
