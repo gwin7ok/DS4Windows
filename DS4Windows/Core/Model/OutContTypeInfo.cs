@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Core.Model
+﻿#nullable enable
+
+namespace DS4Windows.Core.Model
 {
     /// <summary>
     /// 出力の種類（<see cref="OutContType"/>）と、保存するキーおよび画面の選択肢の番号との対応の表。

@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Core.Logging
 {
     /// <summary>

@@ -31,6 +31,8 @@
 *    BezierCurve.GetBezierEasing = Return re-mapped output value for an input axis value (or alternatively directly accessing the lookup table BezierCurve.arrayBezierLUT[inputVal] if even tiny CPU cycles matter)
 * 
 */
+#nullable enable
+
 using System;
 using DS4Windows.Core.Logging;
 

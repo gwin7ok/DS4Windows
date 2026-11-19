@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Drawing;
 using DS4Windows.Core.Model;
 
