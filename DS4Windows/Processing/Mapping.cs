@@ -1,4 +1,6 @@
-﻿using DS4Windows.Processing.Touchpad;
+﻿#nullable enable
+
+using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Gyro;
 using DS4Windows.Processing.Macro;
 using DS4Windows.Processing.Synthetic;

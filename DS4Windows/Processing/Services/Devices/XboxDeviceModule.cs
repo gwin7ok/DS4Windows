@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;

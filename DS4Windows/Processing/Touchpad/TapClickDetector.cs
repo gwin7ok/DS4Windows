@@ -1,4 +1,6 @@
-﻿﻿/*
+﻿#nullable enable
+
+﻿/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 

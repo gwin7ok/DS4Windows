@@ -17,6 +17,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 //using System.Diagnostics;
+#nullable enable
+
 using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Abstractions;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Threading;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;

@@ -1,4 +1,6 @@
-﻿using DS4Windows.Processing.Synthetic;
+﻿#nullable enable
+
+using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using DS4Windows.Processing.Abstractions;

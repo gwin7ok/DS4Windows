@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Macro;
 using System;
 using System.Collections.Generic;

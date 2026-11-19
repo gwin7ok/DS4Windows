@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Synthetic;
 using System;
