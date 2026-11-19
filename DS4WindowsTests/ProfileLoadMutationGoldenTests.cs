@@ -35,9 +35,14 @@ namespace DS4WindowsTests
             ("huge", "99999"),
         };
 
-        [Fact]
+        // 1 件が長い（約 900 回の読み込み）ため、変え方ごとに 4 つのテストへ分ける（1 つが 15 秒の停止の検出を超えない）
+        [Theory]
         [Trait("Category", "Slow")]
-        public void LeafElementVariants_MatchGolden()
+        [InlineData("missing")]
+        [InlineData("unparsable")]
+        [InlineData("empty")]
+        [InlineData("huge")]
+        public void LeafElementVariants_MatchGolden(string variantName)
         {
             using (var ctx = new PersistenceGoldenContext())
             {
@@ -56,7 +61,7 @@ namespace DS4WindowsTests
                 int index = 0;
                 foreach (string path in leaves)
                 {
-                    foreach ((string name, string? value) in Variants)
+                    foreach ((string name, string? value) in Variants.Where(v => v.Name == variantName))
                     {
                         var variant = new XmlDocument();
                         variant.LoadXml(baseXml);
@@ -81,7 +86,7 @@ namespace DS4WindowsTests
                     }
                 }
 
-                GoldenFile.AssertMatches("profile-load-mutations.txt", output.ToString(), _output);
+                GoldenFile.AssertMatches($"profile-load-mutations.{variantName}.txt", output.ToString(), _output);
             }
         }
 

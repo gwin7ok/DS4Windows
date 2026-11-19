@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Platform;
@@ -53,69 +55,45 @@ namespace DS4Windows.Core.Settings
             SettingChanged?.Invoke(this, settingName);
         }
 
+        /// <summary>
+        /// 値が変わったときだけ、設定を書き換えて <see cref="SettingChanged"/> を出す（設定の後。通知の名前は呼び出したプロパティの名前）。
+        /// 比較は <see cref="EqualityComparer{T}.Default"/>（bool・int・string・列挙型は、元の <c>!=</c> と同じ結果になる）。
+        /// </summary>
+        private void SetIfChanged<T>(ref T field, T value, [CallerMemberName] string settingName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return;
+            field = value;
+            NotifyChanged(settingName);
+        }
+
         public bool StartMinimized
         {
             get => _config.startMinimized;
-            set
-            {
-                if (_config.startMinimized != value)
-                {
-                    _config.startMinimized = value;
-                    NotifyChanged(nameof(StartMinimized));
-                }
-            }
+            set => SetIfChanged(ref _config.startMinimized, value);
         }
 
         public bool MinimizeToTaskbar
         {
             get => _config.minToTaskbar;
-            set
-            {
-                if (_config.minToTaskbar != value)
-                {
-                    _config.minToTaskbar = value;
-                    NotifyChanged(nameof(MinimizeToTaskbar));
-                }
-            }
+            set => SetIfChanged(ref _config.minToTaskbar, value);
         }
 
         public bool CloseMinimizes
         {
             get => _config.closeMini;
-            set
-            {
-                if (_config.closeMini != value)
-                {
-                    _config.closeMini = value;
-                    NotifyChanged(nameof(CloseMinimizes));
-                }
-            }
+            set => SetIfChanged(ref _config.closeMini, value);
         }
 
         public bool UseUdpServer
         {
             get => _config.useUDPServ;
-            set
-            {
-                if (_config.useUDPServ != value)
-                {
-                    _config.useUDPServ = value;
-                    NotifyChanged(nameof(UseUdpServer));
-                }
-            }
+            set => SetIfChanged(ref _config.useUDPServ, value);
         }
 
         public int UdpServerPort
         {
             get => _config.udpServPort;
-            set
-            {
-                if (_config.udpServPort != value)
-                {
-                    _config.udpServPort = value;
-                    NotifyChanged(nameof(UdpServerPort));
-                }
-            }
+            set => SetIfChanged(ref _config.udpServPort, value);
         }
 
         public string UdpServerListenAddress
@@ -134,27 +112,13 @@ namespace DS4Windows.Core.Settings
         public bool UseExclusiveMode
         {
             get => _config.useExclusiveMode;
-            set
-            {
-                if (_config.useExclusiveMode != value)
-                {
-                    _config.useExclusiveMode = value;
-                    NotifyChanged(nameof(UseExclusiveMode));
-                }
-            }
+            set => SetIfChanged(ref _config.useExclusiveMode, value);
         }
 
         public bool AutoProfileRevertDefaultProfile
         {
             get => _config.autoProfileRevertDefaultProfile;
-            set
-            {
-                if (_config.autoProfileRevertDefaultProfile != value)
-                {
-                    _config.autoProfileRevertDefaultProfile = value;
-                    NotifyChanged(nameof(AutoProfileRevertDefaultProfile));
-                }
-            }
+            set => SetIfChanged(ref _config.autoProfileRevertDefaultProfile, value);
         }
 
         // ---- Phase5-Step13-7: ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
@@ -162,152 +126,152 @@ namespace DS4Windows.Core.Settings
         public int FormWidth
         {
             get => _config.formWidth;
-            set { if (_config.formWidth != value) { _config.formWidth = value; NotifyChanged(nameof(FormWidth)); } }
+            set => SetIfChanged(ref _config.formWidth, value);
         }
 
         public int FormHeight
         {
             get => _config.formHeight;
-            set { if (_config.formHeight != value) { _config.formHeight = value; NotifyChanged(nameof(FormHeight)); } }
+            set => SetIfChanged(ref _config.formHeight, value);
         }
 
         public int FormLocationX
         {
             get => _config.formLocationX;
-            set { if (_config.formLocationX != value) { _config.formLocationX = value; NotifyChanged(nameof(FormLocationX)); } }
+            set => SetIfChanged(ref _config.formLocationX, value);
         }
 
         public int FormLocationY
         {
             get => _config.formLocationY;
-            set { if (_config.formLocationY != value) { _config.formLocationY = value; NotifyChanged(nameof(FormLocationY)); } }
+            set => SetIfChanged(ref _config.formLocationY, value);
         }
 
         public int ControllerIndexColWidth
         {
             get => _config.controllerIndexColWidth;
-            set { if (_config.controllerIndexColWidth != value) { _config.controllerIndexColWidth = value; NotifyChanged(nameof(ControllerIndexColWidth)); } }
+            set => SetIfChanged(ref _config.controllerIndexColWidth, value);
         }
 
         public int ControllerIdColWidth
         {
             get => _config.controllerIdColWidth;
-            set { if (_config.controllerIdColWidth != value) { _config.controllerIdColWidth = value; NotifyChanged(nameof(ControllerIdColWidth)); } }
+            set => SetIfChanged(ref _config.controllerIdColWidth, value);
         }
 
         public int ControllerStatusColWidth
         {
             get => _config.controllerStatusColWidth;
-            set { if (_config.controllerStatusColWidth != value) { _config.controllerStatusColWidth = value; NotifyChanged(nameof(ControllerStatusColWidth)); } }
+            set => SetIfChanged(ref _config.controllerStatusColWidth, value);
         }
 
         public int ControllerExclusiveColWidth
         {
             get => _config.controllerExclusiveColWidth;
-            set { if (_config.controllerExclusiveColWidth != value) { _config.controllerExclusiveColWidth = value; NotifyChanged(nameof(ControllerExclusiveColWidth)); } }
+            set => SetIfChanged(ref _config.controllerExclusiveColWidth, value);
         }
 
         public int ControllerBatteryColWidth
         {
             get => _config.controllerBatteryColWidth;
-            set { if (_config.controllerBatteryColWidth != value) { _config.controllerBatteryColWidth = value; NotifyChanged(nameof(ControllerBatteryColWidth)); } }
+            set => SetIfChanged(ref _config.controllerBatteryColWidth, value);
         }
 
         public int ControllerSelectProfileColWidth
         {
             get => _config.controllerSelectProfileColWidth;
-            set { if (_config.controllerSelectProfileColWidth != value) { _config.controllerSelectProfileColWidth = value; NotifyChanged(nameof(ControllerSelectProfileColWidth)); } }
+            set => SetIfChanged(ref _config.controllerSelectProfileColWidth, value);
         }
 
         public int ControllerEditColWidth
         {
             get => _config.controllerEditColWidth;
-            set { if (_config.controllerEditColWidth != value) { _config.controllerEditColWidth = value; NotifyChanged(nameof(ControllerEditColWidth)); } }
+            set => SetIfChanged(ref _config.controllerEditColWidth, value);
         }
 
         public int ControllerLinkedProfileColWidth
         {
             get => _config.controllerLinkedProfileColWidth;
-            set { if (_config.controllerLinkedProfileColWidth != value) { _config.controllerLinkedProfileColWidth = value; NotifyChanged(nameof(ControllerLinkedProfileColWidth)); } }
+            set => SetIfChanged(ref _config.controllerLinkedProfileColWidth, value);
         }
 
         public int ControllerLinkProfIdColWidth
         {
             get => _config.controllerLinkProfIdColWidth;
-            set { if (_config.controllerLinkProfIdColWidth != value) { _config.controllerLinkProfIdColWidth = value; NotifyChanged(nameof(ControllerLinkProfIdColWidth)); } }
+            set => SetIfChanged(ref _config.controllerLinkProfIdColWidth, value);
         }
 
         public int ControllerCustomColorColWidth
         {
             get => _config.controllerCustomColorColWidth;
-            set { if (_config.controllerCustomColorColWidth != value) { _config.controllerCustomColorColWidth = value; NotifyChanged(nameof(ControllerCustomColorColWidth)); } }
+            set => SetIfChanged(ref _config.controllerCustomColorColWidth, value);
         }
 
         public int OutputSlotNumColWidth
         {
             get => _config.outputSlotNumColWidth;
-            set { if (_config.outputSlotNumColWidth != value) { _config.outputSlotNumColWidth = value; NotifyChanged(nameof(OutputSlotNumColWidth)); } }
+            set => SetIfChanged(ref _config.outputSlotNumColWidth, value);
         }
 
         public int OutputSlotInputNumColWidth
         {
             get => _config.outputSlotInputNumColWidth;
-            set { if (_config.outputSlotInputNumColWidth != value) { _config.outputSlotInputNumColWidth = value; NotifyChanged(nameof(OutputSlotInputNumColWidth)); } }
+            set => SetIfChanged(ref _config.outputSlotInputNumColWidth, value);
         }
 
         public int OutputSlotInputIdColWidth
         {
             get => _config.outputSlotInputIdColWidth;
-            set { if (_config.outputSlotInputIdColWidth != value) { _config.outputSlotInputIdColWidth = value; NotifyChanged(nameof(OutputSlotInputIdColWidth)); } }
+            set => SetIfChanged(ref _config.outputSlotInputIdColWidth, value);
         }
 
         public int OutputSlotCurrentTypeColWidth
         {
             get => _config.outputSlotCurrentTypeColWidth;
-            set { if (_config.outputSlotCurrentTypeColWidth != value) { _config.outputSlotCurrentTypeColWidth = value; NotifyChanged(nameof(OutputSlotCurrentTypeColWidth)); } }
+            set => SetIfChanged(ref _config.outputSlotCurrentTypeColWidth, value);
         }
 
         public int OutputSlotReservationColWidth
         {
             get => _config.outputSlotReservationColWidth;
-            set { if (_config.outputSlotReservationColWidth != value) { _config.outputSlotReservationColWidth = value; NotifyChanged(nameof(OutputSlotReservationColWidth)); } }
+            set => SetIfChanged(ref _config.outputSlotReservationColWidth, value);
         }
 
         public int AutoProfileNameColWidth
         {
             get => _config.autoProfileNameColWidth;
-            set { if (_config.autoProfileNameColWidth != value) { _config.autoProfileNameColWidth = value; NotifyChanged(nameof(AutoProfileNameColWidth)); } }
+            set => SetIfChanged(ref _config.autoProfileNameColWidth, value);
         }
 
         public int AutoProfilePathColWidth
         {
             get => _config.autoProfilePathColWidth;
-            set { if (_config.autoProfilePathColWidth != value) { _config.autoProfilePathColWidth = value; NotifyChanged(nameof(AutoProfilePathColWidth)); } }
+            set => SetIfChanged(ref _config.autoProfilePathColWidth, value);
         }
 
         public int AutoProfileTitleColWidth
         {
             get => _config.autoProfileTitleColWidth;
-            set { if (_config.autoProfileTitleColWidth != value) { _config.autoProfileTitleColWidth = value; NotifyChanged(nameof(AutoProfileTitleColWidth)); } }
+            set => SetIfChanged(ref _config.autoProfileTitleColWidth, value);
         }
 
         public int LogTimeColWidth
         {
             get => _config.logTimeColWidth;
-            set { if (_config.logTimeColWidth != value) { _config.logTimeColWidth = value; NotifyChanged(nameof(LogTimeColWidth)); } }
+            set => SetIfChanged(ref _config.logTimeColWidth, value);
         }
 
         public int LogDataColWidth
         {
             get => _config.logDataColWidth;
-            set { if (_config.logDataColWidth != value) { _config.logDataColWidth = value; NotifyChanged(nameof(LogDataColWidth)); } }
+            set => SetIfChanged(ref _config.logDataColWidth, value);
         }
 
         // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
         public int Notifications
         {
             get => _config.notifications;
-            set { if (_config.notifications != value) { _config.notifications = value; NotifyChanged(nameof(Notifications)); } }
+            set => SetIfChanged(ref _config.notifications, value);
         }
 
         public bool ProfileChangedNotification
@@ -323,7 +287,7 @@ namespace DS4Windows.Core.Settings
         public bool SwipeProfiles
         {
             get => _config.swipeProfiles;
-            set { if (_config.swipeProfiles != value) { _config.swipeProfiles = value; NotifyChanged(nameof(SwipeProfiles)); } }
+            set => SetIfChanged(ref _config.swipeProfiles, value);
         }
 
         // ---- Phase5-Step14前クリーンアップ: MainWindow.xaml.cs残存Global参照の解消 ----
@@ -332,31 +296,31 @@ namespace DS4Windows.Core.Settings
         public string LogMinLevel
         {
             get => _config.logMinLevel;
-            set { if (_config.logMinLevel != value) { _config.logMinLevel = value; NotifyChanged(nameof(LogMinLevel)); } }
+            set => SetIfChanged(ref _config.logMinLevel, value);
         }
 
         public bool CheckUpdateStartupEnabled
         {
             get => _config.checkUpdateStartup;
-            set { if (_config.checkUpdateStartup != value) { _config.checkUpdateStartup = value; NotifyChanged(nameof(CheckUpdateStartupEnabled)); } }
+            set => SetIfChanged(ref _config.checkUpdateStartup, value);
         }
 
         public int CheckEveryValue
         {
             get => _config.checkEveryValue;
-            set { if (_config.checkEveryValue != value) { _config.checkEveryValue = value; NotifyChanged(nameof(CheckEveryValue)); } }
+            set => SetIfChanged(ref _config.checkEveryValue, value);
         }
 
         public int CheckEveryUnit
         {
             get => _config.checkEveryUnit;
-            set { if (_config.checkEveryUnit != value) { _config.checkEveryUnit = value; NotifyChanged(nameof(CheckEveryUnit)); } }
+            set => SetIfChanged(ref _config.checkEveryUnit, value);
         }
 
         public DateTime LastChecked
         {
             get => _config.lastChecked;
-            set { if (_config.lastChecked != value) { _config.lastChecked = value; NotifyChanged(nameof(LastChecked)); } }
+            set => SetIfChanged(ref _config.lastChecked, value);
         }
 
         // _config.lastVersionCheckedNum は読み取り専用（LastVersionChecked代入時に自動算出）のため、
@@ -385,13 +349,13 @@ namespace DS4Windows.Core.Settings
         public bool UseMoonlight
         {
             get => _config.useMoonlight;
-            set { if (_config.useMoonlight != value) { _config.useMoonlight = value; NotifyChanged(nameof(UseMoonlight)); } }
+            set => SetIfChanged(ref _config.useMoonlight, value);
         }
 
         public bool UseAdvancedMoonlight
         {
             get => _config.useAdvancedMoonlight;
-            set { if (_config.useAdvancedMoonlight != value) { _config.useAdvancedMoonlight = value; NotifyChanged(nameof(UseAdvancedMoonlight)); } }
+            set => SetIfChanged(ref _config.useAdvancedMoonlight, value);
         }
 
         public bool FirstRun
@@ -406,7 +370,7 @@ namespace DS4Windows.Core.Settings
         public string UseLang
         {
             get => _config.useLang;
-            set { if (_config.useLang != value) { _config.useLang = value; NotifyChanged(nameof(UseLang)); } }
+            set => SetIfChanged(ref _config.useLang, value);
         }
 
         // Phase7-Step4 W3: 旧 Global.runHotPlug（保存しない実行時のフラグ）。このサービス（DI のシングルトン）のインスタンスの状態にした
@@ -415,73 +379,38 @@ namespace DS4Windows.Core.Settings
         public bool RunHotPlug
         {
             get => _runHotPlug;
-            set { if (_runHotPlug != value) { _runHotPlug = value; NotifyChanged(nameof(RunHotPlug)); } }
+            set => SetIfChanged(ref _runHotPlug, value);
         }
 
         // ---- Phase5-Step14: プロファイル編集画面・SpecialAction カラム幅の永続化 ----
         public int ProfileEditorLeftWidth
         {
             get => _config.profileEditorLeftWidth;
-            set
-            {
-                if (_config.profileEditorLeftWidth != value)
-                {
-                    _config.profileEditorLeftWidth = value;
-                    NotifyChanged(nameof(ProfileEditorLeftWidth));
-                }
-            }
+            set => SetIfChanged(ref _config.profileEditorLeftWidth, value);
         }
 
         public int ProfileEditorRightWidth
         {
             get => _config.profileEditorRightWidth;
-            set
-            {
-                if (_config.profileEditorRightWidth != value)
-                {
-                    _config.profileEditorRightWidth = value;
-                    NotifyChanged(nameof(ProfileEditorRightWidth));
-                }
-            }
+            set => SetIfChanged(ref _config.profileEditorRightWidth, value);
         }
 
         public int SpecialActionNameColWidth
         {
             get => _config.specialActionNameColWidth;
-            set
-            {
-                if (_config.specialActionNameColWidth != value)
-                {
-                    _config.specialActionNameColWidth = value;
-                    NotifyChanged(nameof(SpecialActionNameColWidth));
-                }
-            }
+            set => SetIfChanged(ref _config.specialActionNameColWidth, value);
         }
 
         public int SpecialActionTriggerColWidth
         {
             get => _config.specialActionTriggerColWidth;
-            set
-            {
-                if (_config.specialActionTriggerColWidth != value)
-                {
-                    _config.specialActionTriggerColWidth = value;
-                    NotifyChanged(nameof(SpecialActionTriggerColWidth));
-                }
-            }
+            set => SetIfChanged(ref _config.specialActionTriggerColWidth, value);
         }
 
         public int SpecialActionDetailColWidth
         {
             get => _config.specialActionDetailColWidth;
-            set
-            {
-                if (_config.specialActionDetailColWidth != value)
-                {
-                    _config.specialActionDetailColWidth = value;
-                    NotifyChanged(nameof(SpecialActionDetailColWidth));
-                }
-            }
+            set => SetIfChanged(ref _config.specialActionDetailColWidth, value);
         }
 
         // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消（Global への薄い委譲）----
@@ -489,53 +418,25 @@ namespace DS4Windows.Core.Settings
         public bool UseOscServer
         {
             get => _config.useOSCServ;
-            set
-            {
-                if (_config.useOSCServ != value)
-                {
-                    _config.useOSCServ = value;
-                    NotifyChanged(nameof(UseOscServer));
-                }
-            }
+            set => SetIfChanged(ref _config.useOSCServ, value);
         }
 
         public bool UseOscSender
         {
             get => _config.useOSCSend;
-            set
-            {
-                if (_config.useOSCSend != value)
-                {
-                    _config.useOSCSend = value;
-                    NotifyChanged(nameof(UseOscSender));
-                }
-            }
+            set => SetIfChanged(ref _config.useOSCSend, value);
         }
 
         public bool InterpretingOscMonitoring
         {
             get => _config.interpretingOscMonitoring;
-            set
-            {
-                if (_config.interpretingOscMonitoring != value)
-                {
-                    _config.interpretingOscMonitoring = value;
-                    NotifyChanged(nameof(InterpretingOscMonitoring));
-                }
-            }
+            set => SetIfChanged(ref _config.interpretingOscMonitoring, value);
         }
 
         public int OscServerPort
         {
             get => _config.oscServPort;
-            set
-            {
-                if (_config.oscServPort != value)
-                {
-                    _config.oscServPort = value;
-                    NotifyChanged(nameof(OscServerPort));
-                }
-            }
+            set => SetIfChanged(ref _config.oscServPort, value);
         }
 
         public string OscSenderAddress
@@ -554,53 +455,25 @@ namespace DS4Windows.Core.Settings
         public int OscSenderPort
         {
             get => _config.oscSendPort;
-            set
-            {
-                if (_config.oscSendPort != value)
-                {
-                    _config.oscSendPort = value;
-                    NotifyChanged(nameof(OscSenderPort));
-                }
-            }
+            set => SetIfChanged(ref _config.oscSendPort, value);
         }
 
         public bool QuickCharge
         {
             get => _config.quickCharge;
-            set
-            {
-                if (_config.quickCharge != value)
-                {
-                    _config.quickCharge = value;
-                    NotifyChanged(nameof(QuickCharge));
-                }
-            }
+            set => SetIfChanged(ref _config.quickCharge, value);
         }
 
         public bool DCBTatStop
         {
             get => _config.disconnectBTAtStop;
-            set
-            {
-                if (_config.disconnectBTAtStop != value)
-                {
-                    _config.disconnectBTAtStop = value;
-                    NotifyChanged(nameof(DCBTatStop));
-                }
-            }
+            set => SetIfChanged(ref _config.disconnectBTAtStop, value);
         }
 
         public int ProcessPriority
         {
             get => _config.processPriority;
-            set
-            {
-                if (_config.processPriority != value)
-                {
-                    _config.processPriority = value;
-                    NotifyChanged(nameof(ProcessPriority));
-                }
-            }
+            set => SetIfChanged(ref _config.processPriority, value);
         }
 
         public ControlServiceDeviceOptions DeviceOptions => _config.deviceOptions;
@@ -644,14 +517,7 @@ namespace DS4Windows.Core.Settings
         public bool FlashWhenLate
         {
             get => _config.flashWhenLate;
-            set
-            {
-                if (_config.flashWhenLate != value)
-                {
-                    _config.flashWhenLate = value;
-                    NotifyChanged(nameof(FlashWhenLate));
-                }
-            }
+            set => SetIfChanged(ref _config.flashWhenLate, value);
         }
 
         // ---- Phase6-Step2-5 (PR-5): 入力処理ホットパスで参照する設定 ----
@@ -659,54 +525,26 @@ namespace DS4Windows.Core.Settings
         public bool UseUdpServerSmoothing
         {
             get => _config.useUdpSmoothing;
-            set
-            {
-                if (_config.useUdpSmoothing != value)
-                {
-                    _config.useUdpSmoothing = value;
-                    NotifyChanged(nameof(UseUdpServerSmoothing));
-                }
-            }
+            set => SetIfChanged(ref _config.useUdpSmoothing, value);
         }
 
         public int FlashWhenLateAt
         {
             get => _config.flashWhenLateAt;
-            set
-            {
-                if (_config.flashWhenLateAt != value)
-                {
-                    _config.flashWhenLateAt = value;
-                    NotifyChanged(nameof(FlashWhenLateAt));
-                }
-            }
+            set => SetIfChanged(ref _config.flashWhenLateAt, value);
         }
 
         // ---- Phase6-Step9-1: SettingsViewModel の Global 直接参照解消（Global への薄い委譲。独自フィールドは持たない）----
         public bool UseCustomSteamFolder
         {
             get => _config.useCustomSteamFolder;
-            set
-            {
-                if (_config.useCustomSteamFolder != value)
-                {
-                    _config.useCustomSteamFolder = value;
-                    NotifyChanged(nameof(UseCustomSteamFolder));
-                }
-            }
+            set => SetIfChanged(ref _config.useCustomSteamFolder, value);
         }
 
         public string CustomSteamFolder
         {
             get => _config.customSteamFolder;
-            set
-            {
-                if (_config.customSteamFolder != value)
-                {
-                    _config.customSteamFolder = value;
-                    NotifyChanged(nameof(CustomSteamFolder));
-                }
-            }
+            set => SetIfChanged(ref _config.customSteamFolder, value);
         }
 
         // ファイル名に使えない文字を含む値は黙って無視する（従来の Global.FakeExeName の setter の動作。Phase7-Step3 W4 でここへ移した）。
@@ -734,14 +572,7 @@ namespace DS4Windows.Core.Settings
         public int LogMaxArchiveFiles
         {
             get => _config.logMaxArchiveFiles;
-            set
-            {
-                if (_config.logMaxArchiveFiles != value)
-                {
-                    _config.logMaxArchiveFiles = value;
-                    NotifyChanged(nameof(LogMaxArchiveFiles));
-                }
-            }
+            set => SetIfChanged(ref _config.logMaxArchiveFiles, value);
         }
     }
 }
