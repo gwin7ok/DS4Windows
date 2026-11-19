@@ -19,14 +19,28 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Diagnostics;
 using DS4Windows.Core.Abstractions;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using DS4Windows.Core.Logging;
+using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class MainWindowsViewModel
+    /// <summary>
+    /// メイン画面の ViewModel。サービスの開始・停止（<see cref="ToggleServiceCommand"/>）と、設定の変更に伴う再起動のコマンド、
+    /// そのあいだ操作を止める「忙しい」状態を持つ。ボタンの有効・無効は、コマンドの <c>CanExecute</c> と、状態のバインディングで表す。
+    /// 変更通知はツールキットの <c>ObservableObject</c>（同じ名前空間に独自の同名の型があるため、完全修飾で書く）。
+    /// </summary>
+    public class MainWindowsViewModel : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
         private readonly IEnvironmentService _environmentService;
         private readonly IPathService _pathService;
+        private readonly IServiceLifecycle _lifecycle;
+
+        private bool _isServiceBusy;
+        private bool _hideDs4ToggleEnabled = true;
+        private bool _hideXboxToggleEnabled = true;
 
         private bool fullTabsEnabled = true;
 
@@ -45,13 +59,98 @@ namespace DS4Windows.UI.ViewModels
         // 旧 RunUpdaterCheck／DownloadUpstreamVersionInfo／LauchDS4Updater／IsNET8Available と updaterExe は、
         // 呼出元 0 件の上流の更新経路の残骸（2025-12-12 の b55d160b で呼び出しが消え、現行の更新処理は
         // UpdaterWindow が担う）のため、決定6＝D1 により削除した。
-        public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService)
+        public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService, IServiceLifecycle lifecycle)
         {
+            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
 
+            ToggleServiceCommand = CommandGuard.Create(ToggleServiceAsync, () => !IsServiceBusy, nameof(ToggleServiceCommand));
+            RestartForHideDs4Command = CommandGuard.Create(() => RestartServiceAsync(isXbox: false), name: nameof(RestartForHideDs4Command));
+            RestartForHideXboxCommand = CommandGuard.Create(() => RestartServiceAsync(isXbox: true), name: nameof(RestartForHideXboxCommand));
+
             if (AppLogger.IsTraceEnabled)
-                AppLogger.LogTrace("[DI] MainWindowsViewModel: created (IEnvironmentService, IPathService injected)");
+                AppLogger.LogTrace("[DI] MainWindowsViewModel: created (IEnvironmentService, IPathService, IServiceLifecycle injected)");
+        }
+
+        /// <summary>サービスの開始・停止の最中か（次の状態の通知まで、開始・停止ボタンを押せない）。UI スレッドで設定する。</summary>
+        public bool IsServiceBusy
+        {
+            get => _isServiceBusy;
+            set
+            {
+                if (SetProperty(ref _isServiceBusy, value))
+                {
+                    ToggleServiceCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        /// <summary>「DS4 を隠す」のチェックを操作できるか（再起動のあいだは false）。</summary>
+        public bool HideDs4ToggleEnabled
+        {
+            get => _hideDs4ToggleEnabled;
+            private set => SetProperty(ref _hideDs4ToggleEnabled, value);
+        }
+
+        /// <summary>「Xbox を隠す」のチェックを操作できるか（再起動のあいだは false）。</summary>
+        public bool HideXboxToggleEnabled
+        {
+            get => _hideXboxToggleEnabled;
+            private set => SetProperty(ref _hideXboxToggleEnabled, value);
+        }
+
+        /// <summary>動作中なら停止、止まっていれば開始する。</summary>
+        public AsyncRelayCommand ToggleServiceCommand { get; }
+
+        /// <summary>設定（DS4 を隠す）の変更を反映するため、サービスを停止して開始し直す。</summary>
+        public AsyncRelayCommand RestartForHideDs4Command { get; }
+
+        /// <summary>設定（Xbox の USB の親を隠す）の変更を反映するため、サービスを停止して開始し直す。</summary>
+        public AsyncRelayCommand RestartForHideXboxCommand { get; }
+
+        /// <summary>サービスの状態が変わったとき（開始・停止の完了）に、画面から呼ぶ。開始・停止ボタンを再び押せるようにする。</summary>
+        public void NotifyServiceStateChanged() => IsServiceBusy = false;
+
+        private async Task ToggleServiceAsync()
+        {
+            // 開始・停止は、状態の変更の通知（NotifyServiceStateChanged）が来るまで、ボタンを押せなくする
+            IsServiceBusy = true;
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (_lifecycle.Running)
+                        _lifecycle.Stop(immediateUnplug: true);
+                    else
+                        _lifecycle.Start();
+                }).ConfigureAwait(true);
+            }
+            catch
+            {
+                // 失敗しても状態の通知が来ないことがあるため、ボタンを戻して、例外は共通の窓口（CommandGuard）へ渡す
+                IsServiceBusy = false;
+                throw;
+            }
+        }
+
+        private async Task RestartServiceAsync(bool isXbox)
+        {
+            IsServiceBusy = true;
+            if (isXbox) HideXboxToggleEnabled = false; else HideDs4ToggleEnabled = false;
+            try
+            {
+                await Task.Run(() =>
+                {
+                    _lifecycle.Stop();
+                    _lifecycle.Start();
+                }).ConfigureAwait(true);
+            }
+            finally
+            {
+                if (isXbox) HideXboxToggleEnabled = true; else HideDs4ToggleEnabled = true;
+                IsServiceBusy = false;
+            }
         }
 
         public void CheckDrivers()

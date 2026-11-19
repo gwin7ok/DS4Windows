@@ -43,9 +43,9 @@ namespace DS4WindowsTests
             var env = new EnvironmentService();
             var path = new PathService();
 
-            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(null, path));
-            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(env, null));
-            Assert.NotNull(new MainWindowsViewModel(env, path));
+            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(null, path, new FakeServiceLifecycle()));
+            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(env, null, new FakeServiceLifecycle()));
+            Assert.NotNull(new MainWindowsViewModel(env, path, new FakeServiceLifecycle()));
         }
 
         [Fact]

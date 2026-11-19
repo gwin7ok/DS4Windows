@@ -261,7 +261,7 @@ namespace DS4Windows.UI
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        StartStopBtn.IsEnabled = false;
+                        mainWinVM.IsServiceBusy = true;
                     }));
                     Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
                     serviceControl.Start();
@@ -528,7 +528,7 @@ namespace DS4Windows.UI
                             wasrunning = false;
                             Dispatcher.Invoke(() =>
                             {
-                                StartStopBtn.IsEnabled = false;
+                                mainWinVM.IsServiceBusy = true;
                             });
 
                             AppLogger.Log(AppLogLevel.Info, DS4Windows.Translations.Strings.WakeupFromSuspend, LogOptions.UserFacing);
@@ -558,7 +558,7 @@ namespace DS4Windows.UI
                         {
                             //Dispatcher.Invoke(() =>
                             //{
-                            //    StartStopBtn.IsEnabled = false;
+                            //    mainWinVM.IsServiceBusy = true;
                             //});
 
                             serviceControl.Stop(immediateUnplug: true);
@@ -778,7 +778,7 @@ namespace DS4Windows.UI
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 UpdateStartStopText();
-                StartStopBtn.IsEnabled = true;
+                mainWinVM.NotifyServiceStateChanged();
                 slotManControl.IsEnabled = serviceControl.Running;
             }));
         }
@@ -790,27 +790,8 @@ namespace DS4Windows.UI
             aboutWin.ShowDialog();
         }
 
-        private async void StartStopBtn_Click(object sender, RoutedEventArgs e)
-        {
-            await ChangeService();
-        }
-
-        public async Task ChangeService()
-        {
-            StartStopBtn.IsEnabled = false;
-            //Tester service = root.rootHubtest;
-            Task serviceTask = Task.Run(() =>
-            {
-                if (serviceControl.Running)
-                    serviceControl.Stop(immediateUnplug: true);
-                else
-                    serviceControl.Start();
-            });
-
-            // Log exceptions that might occur
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-        }
+        /// <summary>サービスの開始・停止。ボタン・トレイ・IPC のどれから呼んでも、同じコマンドを通す（実行中の再入は拒む）。</summary>
+        public Task ChangeService() => mainWinVM.ToggleServiceCommand.ExecuteAsync(null);
 
         private void LogListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -1191,44 +1172,6 @@ namespace DS4Windows.UI
             //controllerLV.Focus();
         }
 
-        // Ex Mode Re-Enable
-        private async void HideDS4ContCk_Click(object sender, RoutedEventArgs e)
-        {
-            StartStopBtn.IsEnabled = false;
-            //bool checkStatus = hideDS4ContCk.IsChecked == true;
-            hideDS4ContCk.IsEnabled = false;
-            Task serviceTask = Task.Run(() =>
-            {
-                serviceControl.Stop();
-                serviceControl.Start();
-            });
-
-            // Log exceptions that might occur
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-
-            hideDS4ContCk.IsEnabled = true;
-            StartStopBtn.IsEnabled = true;
-        }
-
-        // Xbox の USB の親を隠す設定は、接続のときに適用されるため、サービスを再起動して、検出済みの Xbox すべてへ反映する
-        private async void HideXboxContCk_Click(object sender, RoutedEventArgs e)
-        {
-            StartStopBtn.IsEnabled = false;
-            hideXboxContCk.IsEnabled = false;
-            Task serviceTask = Task.Run(() =>
-            {
-                serviceControl.Stop();
-                serviceControl.Start();
-            });
-
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-
-            hideXboxContCk.IsEnabled = true;
-            StartStopBtn.IsEnabled = true;
-        }
-
         private void UseOscServerCk_Click(object sender, RoutedEventArgs e)
         {
             bool status = useOscServerCk.IsChecked == true;
@@ -1282,14 +1225,14 @@ namespace DS4Windows.UI
 
         private async void DriverSetupBtn_Click(object sender, RoutedEventArgs e)
         {
-            StartStopBtn.IsEnabled = false;
+            mainWinVM.IsServiceBusy = true;
             await Task.Run(() =>
             {
                 if (serviceControl.Running)
                     serviceControl.Stop();
             });
 
-            StartStopBtn.IsEnabled = true;
+            mainWinVM.IsServiceBusy = false;
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = environment.ExecutablePath;
             startInfo.Arguments = "-driverinstall";

@@ -41,7 +41,7 @@
                             Style="{StaticResource NoBGHoverBtn}" Click="AboutBtn_Click">
                         <TextBlock Text="{lex:Loc HotkeysAbout}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" x:Uid="hotkeysText" />
                     </Button>
-                    <Button x:Name="StartStopBtn" Margin="10,4,4,4" Click="StartStopBtn_Click" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
+                    <Button x:Name="StartStopBtn" Margin="10,4,4,4" Command="{Binding ToggleServiceCommand}" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
                 </StackPanel>
                 <Label x:Name="lastMsgLb" Content="{Binding Message}" ToolTip="{Binding Message}" Foreground="{Binding Color}" Margin="4,0,2,0" />
             </DockPanel>
@@ -273,13 +273,13 @@
                             <Thickness x:Key="spaceMargin" Left="4" Right="0" Bottom="8" Top="0" />
                         </WrapPanel.Resources>
                         <CheckBox x:Name="hideDS4ContCk" Content="{lex:Loc HideDS4Controller}" x:Uid="hideDS4Checkbox"
-                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" >
+                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Command="{Binding DataContext.RestartForHideDs4Command, RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding DataContext.HideDs4ToggleEnabled, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" >
                             <CheckBox.ToolTip>
                                 <TextBlock Text="{lex:Loc HideDS4ControllerTip}" TextWrapping="Wrap" MaxWidth="420" />
                             </CheckBox.ToolTip>
                         </CheckBox>
                         <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}"
-                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click">
+                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Command="{Binding DataContext.RestartForHideXboxCommand, RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding DataContext.HideXboxToggleEnabled, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}">
                             <CheckBox.ToolTip>
                                 <TextBlock Text="{lex:Loc HideXboxControllerTip}" TextWrapping="Wrap" MaxWidth="420" />
                             </CheckBox.ToolTip>
