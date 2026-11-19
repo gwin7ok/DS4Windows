@@ -1,7 +1,7 @@
 # PhaseRV3 計画書: MainWindow の MVVM 化（コマンド化と、委譲だけの窓口の解消）
 
 作成日: 2026-11-19
-状態: **未承認（コードは未着手）**。D1〜D4 は 2026-11-19 にユーザーが選択済み（「決定事項」を参照）
+状態: **承認済み・実施中（RV3-0・RV3-1 完了）**。D1〜D4 は 2026-11-19 にユーザーが選択済み（「決定事項」を参照）
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の RV-09〜RV-12（§3.3、§5）
 前提: PhaseRV1 の完了。PhaseX3（日本語化）の XAML の作業の区切り（RV3 は XAML を大きく触るため、競合を避ける）。PhaseRV2 の規則（例外の扱い）を、新しく書くコードに適用する。
 動き: **画面の見た目と操作は変えない**。ボタンの有効・無効、フォーカス、ホットキー、トレイの動きを、実機で確かめる。
@@ -28,8 +28,8 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| RV3-0 | 調査。(1) 対象 4 画面の全ハンドラー（`Click`・その他のイベント属性・`+=`）を、**(a) 業務の呼び出し（コマンドへ）／(b) 状態の更新（バインディングへ）／(c) 見た目だけ（View に残す）** に分け、`PhaseRV3-Handler-Inventory.md` に表にする。これで §5 の④（code-behind のうち View に置いてよい割合）が出る。(2) コマンドの基盤: D1＝(B) CommunityToolkit.Mvvm に決定済み。**最初に採用の関門を通す**。パッケージ（net8 対応の安定版。版は固定）を参照に足し、(i) `[RelayCommand]` などのソース生成が `_wpftmp` の 1 回目のビルドで動き、Debug ALL が警告 0・エラー 0 で通ること、(ii) `AsyncRelayCommand` が、実行中は `CanExecute` が false になること、(iii) 例外の既定の扱い（`FlowExceptionsToTaskScheduler` を付けないと、`async void` と同じく呼び出し側の同期コンテキストへ再スローされ、アプリが落ちる、と理解している。**要確認**）、(iv) キャンセルへの対応、を確かめる。関門を通らないときは、(A) 独自の拡張へ戻す提案をする。比較の記録（規約 §4。独自の拡張、Prism、ReactiveUI との違い）も同じ文書へ。ユーザーの承認を得る | — | 未着手 |
-| RV3-1 | 基盤: CommunityToolkit.Mvvm の導入（D1＝(B)）。(1) パッケージ参照を足す（版は固定）。(2) 使い方の規則を決めて文書化する: コマンドは `AsyncRelayCommand`（実行中は `CanExecute` が false。多重実行の防止を、`IsEnabled = false` の代わりに担う）。例外は、コマンドの本体または共通の包みで受けて `AppLogger`・`IDialogService` へ流し、アプリを落とさない（`async void` を作らない。RV2 の規則）。(3) 独自の `RelayCommand`（使うファイル 0）と `RelayCommandTests` は、置き換えとして削除し、`RemovedApiRuleTests` の表へ足す。(4) 独自の `ObservableObject`（12 型が継承）は、この Step では触らない（RV7 でツールキットの `ObservableObject` へ移す）。新しく作る・大きく変える ViewModel だけ、ツールキットの `ObservableObject` を使う（RV3〜RV7 の間、2 つが共存する） | 新規: コマンドの規則を確かめる単体テスト（実行中の再入の拒否、例外がアプリを落とさず記録されること、`CanExecuteChanged`）。`RelayCommandTests` の観点は新しいテストへ移す | 未着手 |
+| RV3-0 | 調査。(1) 対象 4 画面の全ハンドラー（`Click`・その他のイベント属性・`+=`）を、**(a) 業務の呼び出し（コマンドへ）／(b) 状態の更新（バインディングへ）／(c) 見た目だけ（View に残す）** に分け、`PhaseRV3-Handler-Inventory.md` に表にする。これで §5 の④（code-behind のうち View に置いてよい割合）が出る。(2) コマンドの基盤: D1＝(B) CommunityToolkit.Mvvm に決定済み。**最初に採用の関門を通す**。パッケージ（net8 対応の安定版。版は固定）を参照に足し、(i) `[RelayCommand]` などのソース生成が `_wpftmp` の 1 回目のビルドで動き、Debug ALL が警告 0・エラー 0 で通ること、(ii) `AsyncRelayCommand` が、実行中は `CanExecute` が false になること、(iii) 例外の既定の扱い（`FlowExceptionsToTaskScheduler` を付けないと、`async void` と同じく呼び出し側の同期コンテキストへ再スローされ、アプリが落ちる、と理解している。**要確認**）、(iv) キャンセルへの対応、を確かめる。関門を通らないときは、(A) 独自の拡張へ戻す提案をする。比較の記録（規約 §4。独自の拡張、Prism、ReactiveUI との違い）も同じ文書へ。ユーザーの承認を得る | — | 完了（2026-11-20。分類表と許可リスト 10 件を承認。関門を通過。`PhaseRV3-Handler-Inventory.md`） |
+| RV3-1 | 基盤: CommunityToolkit.Mvvm の導入（D1＝(B)）。(1) パッケージ参照を足す（版は固定）。(2) 使い方の規則を決めて文書化する: コマンドは `AsyncRelayCommand`（実行中は `CanExecute` が false。多重実行の防止を、`IsEnabled = false` の代わりに担う）。例外は、コマンドの本体または共通の包みで受けて `AppLogger`・`IDialogService` へ流し、アプリを落とさない（`async void` を作らない。RV2 の規則）。(3) 独自の `RelayCommand`（使うファイル 0）と `RelayCommandTests` は、置き換えとして削除し、`RemovedApiRuleTests` の表へ足す。(4) 独自の `ObservableObject`（12 型が継承）は、この Step では触らない（RV7 でツールキットの `ObservableObject` へ移す）。新しく作る・大きく変える ViewModel だけ、ツールキットの `ObservableObject` を使う（RV3〜RV7 の間、2 つが共存する） | 新規: コマンドの規則を確かめる単体テスト（実行中の再入の拒否、例外がアプリを落とさず記録されること、`CanExecuteChanged`）。`RelayCommandTests` の観点は新しいテストへ移す | 完了（2026-11-20。`CommandGuard`〔UI/ViewModels/Util〕を新設し、コマンドはここを通して作る規則にした。独自の `RelayCommand` と `RelayCommandTests` を削除し、`RemovedApiRuleTests` へ 1 行足した） |
 | RV3-2 | 開始・停止（`StartStopBtn_Click`、`ChangeService`）と、`Task.Run`＋`IsEnabled = false` の定型（`HideDS4ContCk_Click` ほか）を、`MainWindowsViewModel` のコマンド（非同期）と、「忙しい」状態へ。ボタンの有効・無効は、コマンドの `CanExecute` で表す | 新規: `MainWindowsViewModel` のコマンドの単体テスト（偽のサービスで、開始・停止の分岐、忙しい間の再実行の拒否） | 未着手 |
 | RV3-3 | `MainWindow.xaml` の残りの `Click`（31 のうち RV3-2 の分を除く）と、その他のイベント属性（8）を、分類（RV3-0）に従ってコマンド・バインディングへ。トレイのメニューと同じ操作（開始・停止・プロファイルの切替など）は、コマンドを共有する（D4） | `TrayIconViewModel` のテスト、新規のコマンドのテスト | 未着手 |
 | RV3-4 | 委譲だけの窓口の解消（D3）: `MainWindowServiceControl`・`MainWindowSettings`・`MainWindowEnvironment` を、ViewModel へ直接注入する契約（既存の `Processing/Abstractions`・`UI/Abstractions` のインターフェース）に置き換え、窓口の型を削除する。`MainWindow` のコンストラクターの引数を減らす。`RemovedApiRuleTests` の表へ 3 型を足す | `ViewDirectServiceReferenceRatchetTests`（0 のまま）、`ConstructorArityRuleTests`、`RemovedApiRuleTests`、`LayerDependencyRuleTests` | 未着手 |
@@ -85,3 +85,4 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B) CommunityToolkit.Mvvm、D2＝(B) 見た目だけを除くすべて、D3＝(A) 3 つとも削除、D4＝(A) 共有する、をユーザーが選択。D3 は、全体の構造（画面→窓口→契約→第 2 層 と 画面→ViewModel→契約→第 2 層）との関係を説明して選択された。
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
+- 2026-11-20: RV3-0・RV3-1 を実施。CommunityToolkit.Mvvm 8.4.0 を導入（関門を通過）。コマンドの規則: すべて `CommandGuard.Create`／`CreateSync` で作る（例外は記録して通知し、外へ出さない。実行中の再入は拒む。取り消しは失敗にしない）。ツールキットの `ObservableObject` は、独自の同名の型と衝突するため、完全修飾か別名で書く（RV7 まで）。

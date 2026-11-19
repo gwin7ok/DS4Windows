@@ -8,10 +8,10 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// CommunityToolkit.Mvvm の採用の関門（PhaseRV3-0）。<c>AsyncRelayCommand</c> が、実行中は <c>CanExecute</c> を false にすること、
+    /// CommunityToolkit.Mvvm の振る舞いの記録（採用の根拠。共通の窓口 CommandGuard が必要な理由）。<c>AsyncRelayCommand</c> が、実行中は <c>CanExecute</c> を false にすること、
     /// 例外の既定の扱い（<c>FlowExceptionsToTaskScheduler</c> の有無）、キャンセルを確かめる。
     /// </summary>
-    public class ToolkitAsyncCommandGateTests
+    public class ToolkitAsyncCommandBehaviorTests
     {
         [Fact]
         public async Task CanExecute_IsFalseWhileRunning_AndRaisedOnChange()
