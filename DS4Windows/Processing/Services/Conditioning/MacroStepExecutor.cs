@@ -1,12 +1,10 @@
 using DS4Windows.Processing.Macro;
-using DS4Windows.Processing.Synthetic;
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Services.Conditioning

@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 
 namespace DS4Windows.Processing
 {

@@ -1,11 +1,9 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
-using DS4Windows.Output;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Services.Connection

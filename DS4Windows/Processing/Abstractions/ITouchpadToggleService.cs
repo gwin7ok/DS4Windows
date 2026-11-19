@@ -1,7 +1,5 @@
 using DS4Windows.Processing.Touchpad;
 using DS4Windows.Core.Model;
-using System;
-using DS4Windows.Input;
 
 namespace DS4Windows.Processing.Abstractions
 {

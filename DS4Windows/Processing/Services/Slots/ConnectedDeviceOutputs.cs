@@ -3,7 +3,6 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services.Connection;
 
 namespace DS4Windows.Processing.Services.Slots
 {

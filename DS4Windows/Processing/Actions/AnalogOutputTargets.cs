@@ -1,5 +1,4 @@
 using DS4Windows.Core.Model;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing.Actions
 {

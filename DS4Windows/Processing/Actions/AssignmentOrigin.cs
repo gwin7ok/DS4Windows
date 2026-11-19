@@ -1,5 +1,3 @@
-using DS4Windows.Core.Settings;
-
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>

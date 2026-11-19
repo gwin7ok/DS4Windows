@@ -3,7 +3,6 @@ using System.Diagnostics;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
-using DS4Windows.Input.Hid;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Input.Abstractions;
 

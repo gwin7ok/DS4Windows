@@ -1,8 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace DS4Windows.Processing.Actions
 {
     // Per-action per-device instance state
