@@ -235,6 +235,9 @@ namespace DS4Windows.UI.ViewModels
         public string? CustomSteamFolderIfValid
             => _appSettings.UseCustomSteamFolder && System.IO.Directory.Exists(_appSettings.CustomSteamFolder) ? _appSettings.CustomSteamFolder : null;
 
+        /// <summary>「バージョン情報」画面の ViewModel を作る。</summary>
+        public AboutViewModel CreateAboutViewModel() => new AboutViewModel(_environmentService, _launcher);
+
         /// <summary>機器の登録の設定画面の ViewModel（設定の機器オプションを渡して作る）。</summary>
         public ControllerRegDeviceOptsViewModel CreateDeviceOptionsViewModel(IShellViewModelFactory factory)
             => factory.CreateControllerRegDeviceOptsViewModel(_appSettings.DeviceOptions);

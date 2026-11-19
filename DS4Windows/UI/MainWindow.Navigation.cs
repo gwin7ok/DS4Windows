@@ -20,7 +20,7 @@ namespace DS4Windows.UI
 
             public void ShowAbout()
             {
-                var aboutWin = new About(window.mainWinVM.ApplicationVersion) { Owner = window };
+                var aboutWin = new About(window.mainWinVM.CreateAboutViewModel()) { Owner = window };
                 aboutWin.ShowDialog();
             }
 

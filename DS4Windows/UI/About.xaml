@@ -699,18 +699,18 @@ Public License instead of this License.  But first, please read
                     <StackPanel DockPanel.Dock="Top" Margin="10,0">
                         <StackPanel Orientation="Horizontal">
                             <!-- <TextBlock><Hyperlink x:Name="siteLink" Click="SiteLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Site}"/></Hyperlink></TextBlock> -->
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Click="SourceLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Source}"/></Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink Click="gwin7okLink_Click" Foreground="{DynamicResource LinkAccentBrush}">gwin7ok</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="sourceLink" Command="{Binding OpenLinkCommand}" CommandParameter="{Binding GithubUrl}" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Source}"/></Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/gwin7ok" Foreground="{DynamicResource LinkAccentBrush}">gwin7ok</Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="jays2KingsLink" Click="Jays2KingsLink_Click" Foreground="{DynamicResource LinkAccentBrush}">Jays2Kings</Hyperlink></TextBlock>
-                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Click="InhexSTERLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_InhexSTERStarterOfDS4Tool}"/></Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="jays2KingsLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/Jays2Kings/" Foreground="{DynamicResource LinkAccentBrush}">Jays2Kings</Hyperlink></TextBlock>
+                            <TextBlock Margin="20,0,0,0"><Hyperlink x:Name="inhexSTERLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://code.google.com/p/ds4-tool/" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_InhexSTERStarterOfDS4Tool}"/></Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Click="ElectrobrainsLink_Click" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_ElectrobrainsBranchedOffOf}"/></Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink x:Name="electrobrainsLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://code.google.com/r/brianfundakowskifeldman-ds4windows/" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_ElectrobrainsBranchedOffOf}"/></Hyperlink></TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock><Hyperlink Click="ContributorsLink_OnClick" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Contributors}"/></Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink Command="{Binding OpenLinkCommand}" CommandParameter="{Binding ContributorsUrl}" Foreground="{DynamicResource LinkAccentBrush}"><Run Text="{lex:Loc About_Contributors}"/></Hyperlink></TextBlock>
                         </StackPanel>
                         <Label Content="{lex:Loc About_Translators}" Margin="0,20,0,0" />
                     </StackPanel>
@@ -742,7 +742,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="viGEmBusLink" Click="ViGEmBusLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
+                                    <Hyperlink x:Name="viGEmBusLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nefarius/ViGEmBus" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/ViGEmBus/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="{lex:Loc Description}" Margin="0,8,0,0">
@@ -759,7 +759,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="hidHideLink" Click="HidHideLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/HidHide/</Hyperlink>
+                                    <Hyperlink x:Name="hidHideLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/nefarius/HidHide/" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/nefarius/HidHide/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="{lex:Loc Description}" Margin="0,8,0,0">
@@ -776,7 +776,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="fakerInputLink" Click="FakerInputLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
+                                    <Hyperlink x:Name="fakerInputLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/Ryochan7/FakerInput/" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/Ryochan7/FakerInput/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                                 <Expander Header="{lex:Loc Description}" Margin="0,8,0,0">
@@ -793,7 +793,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="crc32Link" Click="Crc32Link_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/dariogriffo/Crc32</Hyperlink>
+                                    <Hyperlink x:Name="crc32Link" Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/dariogriffo/Crc32" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/dariogriffo/Crc32</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -805,7 +805,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="oneEuroLink" Click="OneEuroLink_Click" Foreground="{DynamicResource LinkAccentBrush}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
+                                    <Hyperlink x:Name="oneEuroLink" Command="{Binding OpenLinkCommand}" CommandParameter="http://cristal.univ-lille.fr/~casiez/1euro/" Foreground="{DynamicResource LinkAccentBrush}">http://cristal.univ-lille.fr/~casiez/1euro/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -817,7 +817,7 @@ dondrakon - Ukranian
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="{lex:Loc About_ProjectURL}" />
                                     <TextBlock Margin="8,0,0,0">
-                                    <Hyperlink x:Name="hNotifyIconLink" Click="HNotifyIconLink_Click" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
+                                    <Hyperlink x:Name="hNotifyIconLink" Command="{Binding OpenLinkCommand}" CommandParameter="https://github.com/HavenDV/H.NotifyIcon/" Foreground="{DynamicResource LinkAccentBrush}">https://github.com/HavenDV/H.NotifyIcon/</Hyperlink>
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>

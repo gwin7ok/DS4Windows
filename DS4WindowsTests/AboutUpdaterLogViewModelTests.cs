@@ -15,13 +15,25 @@ namespace DS4WindowsTests
         [Fact]
         public void AboutViewModel_RequiresEnvironmentService()
         {
-            Assert.Throws<ArgumentNullException>(() => new AboutViewModel(null));
+            Assert.Throws<ArgumentNullException>(() => new AboutViewModel(null, new FakeShellLauncher()));
+        }
+
+        [Fact]
+        public void AboutViewModel_OpenLinkCommand_OpensUrlThroughLauncher()
+        {
+            var launcher = new FakeShellLauncher();
+            var vm = new AboutViewModel(new EnvironmentService(), launcher);
+
+            vm.OpenLinkCommand.Execute("https://example.com/");
+            vm.OpenLinkCommand.Execute(" ");
+
+            Assert.Equal(new[] { "OpenUrl:https://example.com/" }, launcher.Calls);
         }
 
         [Fact]
         public void AboutViewModel_VersionText_MatchesGlobalExeVersion()
         {
-            var vm = new AboutViewModel(new EnvironmentService());
+            var vm = new AboutViewModel(new EnvironmentService(), new FakeShellLauncher());
             Assert.Equal($"v{PathService.ExecutableVersionState}", vm.VersionText);
         }
 

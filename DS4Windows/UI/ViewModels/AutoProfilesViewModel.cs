@@ -28,11 +28,12 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
+using CommunityToolkit.Mvvm.Input;
 using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class AutoProfilesViewModel
+    public class AutoProfilesViewModel : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
         private object _colLockobj = new object();
         private ObservableCollection<ProgramItem> programColl;
@@ -148,13 +149,15 @@ namespace DS4Windows.UI.ViewModels
             IAutoProfileService autoProfileService,
             IRuntimeFeatureSwitch runtimeFeatures,
             IEnvironmentService environmentService,
-            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
+            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher,
+            DS4Windows.UI.Abstractions.IDialogService dialogs)
         {
             if (uiDispatcher == null) throw new ArgumentNullException(nameof(uiDispatcher));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
             _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             programColl = new ObservableCollection<ProgramItem>();
             existingapps = new HashSet<string>();
             this.autoProfileHolder = autoProfileHolder;
@@ -162,6 +165,175 @@ namespace DS4Windows.UI.ViewModels
             PopulateCurrentEntries();
 
             uiDispatcher.EnableCollectionSynchronization(programColl, _colLockobj);
+            CreateCommands();
+        }
+
+        // ---- 画面の操作（コマンド）と、その状態 ----
+
+        private readonly DS4Windows.UI.Abstractions.IDialogService _dialogs;
+        private string autoProfilesFile;
+        private string steamGamesDir;
+        private bool _isBusy;
+        private bool _steamMenuUsed;
+        private bool _startMenuUsed;
+        private bool _autoDebug;
+
+        /// <summary>保存先のファイル、Steam のゲームのフォルダ（なければ null）を受け取る。画面の初期化のときに 1 回呼ぶ。</summary>
+        public void Configure(string autoProfilesFile, string steamGamesDir)
+        {
+            this.autoProfilesFile = autoProfilesFile ?? throw new ArgumentNullException(nameof(autoProfilesFile));
+            this.steamGamesDir = steamGamesDir;
+            OnPropertyChanged(nameof(ShowSteamMenu));
+        }
+
+        /// <summary>プログラムの検索中（一覧の更新と、画面全体の操作を止める）。</summary>
+        public bool IsBusy
+        {
+            get => _isBusy;
+            private set
+            {
+                if (SetProperty(ref _isBusy, value))
+                {
+                    OnPropertyChanged(nameof(IsIdle));
+                }
+            }
+        }
+
+        public bool IsIdle => !_isBusy;
+
+        /// <summary>「Steam のゲームを追加」を出すか。Steam のフォルダがなければ出さず、追加したあとも（一覧を絞り込むまで）出さない。</summary>
+        public bool ShowSteamMenu => steamGamesDir != null && !_steamMenuUsed;
+
+        /// <summary>「スタートメニューのプログラムを追加」を出すか。追加したあとは（一覧を絞り込むまで）出さない。</summary>
+        public bool ShowStartMenu => !_startMenuUsed;
+
+        /// <summary>自動プロファイルの切り替えの診断ログを出すか。</summary>
+        public bool AutoDebug
+        {
+            get => _autoDebug;
+            set => SetProperty(ref _autoDebug, value);
+        }
+
+        public AsyncRelayCommand AddFromSteamCommand { get; private set; }
+
+        public AsyncRelayCommand AddFromStartMenuCommand { get; private set; }
+
+        public AsyncRelayCommand AddFromFolderCommand { get; private set; }
+
+        public AsyncRelayCommand AddProgramFileCommand { get; private set; }
+
+        public RelayCommand HideUncheckedCommand { get; private set; }
+
+        public RelayCommand RemoveAutoCommand { get; private set; }
+
+        public RelayCommand SaveAutoCommand { get; private set; }
+
+        public RelayCommand MoveUpCommand { get; private set; }
+
+        public RelayCommand MoveDownCommand { get; private set; }
+
+        private void CreateCommands()
+        {
+            AddFromSteamCommand = CommandGuard.Create(async () =>
+            {
+                await RunSearchAsync(() => AddProgramsFromSteam(steamGamesDir)).ConfigureAwait(true);
+                _steamMenuUsed = true;
+                OnPropertyChanged(nameof(ShowSteamMenu));
+            }, name: nameof(AddFromSteamCommand));
+            AddFromStartMenuCommand = CommandGuard.Create(async () =>
+            {
+                await RunSearchAsync(AddProgramsFromStartMenu).ConfigureAwait(true);
+                _startMenuUsed = true;
+                OnPropertyChanged(nameof(ShowStartMenu));
+            }, name: nameof(AddFromStartMenuCommand));
+            AddFromFolderCommand = CommandGuard.Create(async () =>
+            {
+                string dir = _dialogs.PickFolder();
+                if (dir != null)
+                {
+                    await RunSearchAsync(() => AddProgramsFromDir(dir)).ConfigureAwait(true);
+                }
+            }, name: nameof(AddFromFolderCommand));
+            AddProgramFileCommand = CommandGuard.Create(async () =>
+            {
+                string file = _dialogs.PickOpenFile(new DS4Windows.UI.Abstractions.FileDialogOptions
+                {
+                    Title = "Select Program",
+                    Filter = "Program (*.exe)|*.exe",
+                    DefaultExtension = ".exe",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                });
+                if (file != null)
+                {
+                    await RunSearchAsync(() => AddProgramExeLocation(file)).ConfigureAwait(true);
+                }
+            }, name: nameof(AddProgramFileCommand));
+            HideUncheckedCommand = CommandGuard.CreateSync(() =>
+            {
+                IsBusy = true;   // 一覧の差し替え中は、画面が一覧を外す
+                try
+                {
+                    RemoveUnchecked();
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+                _steamMenuUsed = false;
+                _startMenuUsed = false;
+                OnPropertyChanged(nameof(ShowSteamMenu));
+                OnPropertyChanged(nameof(ShowStartMenu));
+            }, name: nameof(HideUncheckedCommand));
+            RemoveAutoCommand = CommandGuard.CreateSync(RemoveSelectedAuto, name: nameof(RemoveAutoCommand));
+            SaveAutoCommand = CommandGuard.CreateSync(SaveSelectedAuto, name: nameof(SaveAutoCommand));
+            MoveUpCommand = CommandGuard.CreateSync(() => MoveSelected(-1), name: nameof(MoveUpCommand));
+            MoveDownCommand = CommandGuard.CreateSync(() => MoveSelected(1), name: nameof(MoveDownCommand));
+        }
+
+        private async Task RunSearchAsync(Func<Task> add)
+        {
+            IsBusy = true;
+            try
+            {
+                await add().ConfigureAwait(true);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private void RemoveSelectedAuto()
+        {
+            if (SelectedItem == null) return;
+            AddExeToHIDHideWhenSaving(SelectedItem, false);
+            RemoveAutoProfileEntry(SelectedItem);
+            AutoProfileHolder.Save(autoProfilesFile);
+            SelectedItem = null;
+        }
+
+        private void SaveSelectedAuto()
+        {
+            if (SelectedItem == null) return;
+            if (SelectedItem.MatchedAutoProfile == null)
+            {
+                CreateAutoProfileEntry(SelectedItem);
+            }
+            else
+            {
+                PersistAutoProfileEntry(SelectedItem);
+            }
+
+            AddExeToHIDHideWhenSaving(SelectedItem, SelectedItem.Turnoff);
+            AutoProfileHolder.Save(autoProfilesFile);
+        }
+
+        private void MoveSelected(int direction)
+        {
+            if (SelectedItem != null && MoveItemUpDown(SelectedItem, direction))
+            {
+                AutoProfileHolder.Save(autoProfilesFile);
+            }
         }
 
         private void PopulateCurrentEntries()

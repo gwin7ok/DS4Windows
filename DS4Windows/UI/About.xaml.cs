@@ -17,8 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System.Windows;
-using DS4Windows.Core.Updater;
-using DS4Windows.Core.Utilities;
+using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI
 {
@@ -27,81 +26,15 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class About : Window
     {
-        // バージョン文字列は、サービスを持つ MainWindow が渡す（View はサービスを参照しない）。
-        public About(string applicationVersion)
+        // 開くリンクとバージョンは ViewModel が持つ（View は OS の呼び出しもサービスも参照しない）。
+        public About(AboutViewModel viewModel)
         {
-            if (applicationVersion == null) throw new System.ArgumentNullException(nameof(applicationVersion));
+            if (viewModel == null) throw new System.ArgumentNullException(nameof(viewModel));
 
             InitializeComponent();
+            DataContext = viewModel;
 
-            string version = $"{applicationVersion})";
-            headerLb.Content += version;
-        }
-
-
-        private void SiteLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://ryochan7.github.io/ds4windows-site/");
-        }
-
-        private void SourceLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper(ReleaseSource.RepositoryPageUri);
-        }
-
-        private void gwin7okLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/gwin7ok");
-        }
-
-        private void Jays2KingsLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/Jays2Kings/");
-        }
-
-        private void InhexSTERLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://code.google.com/p/ds4-tool/");
-        }
-
-        private void ElectrobrainsLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://code.google.com/r/brianfundakowskifeldman-ds4windows/");
-        }
-
-        private void ViGEmBusLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/nefarius/ViGEmBus");
-        }
-
-        private void HidHideLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/nefarius/HidHide/");
-        }
-
-        private void Crc32Link_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/dariogriffo/Crc32");
-        }
-
-        private void OneEuroLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("http://cristal.univ-lille.fr/~casiez/1euro/");
-        }
-
-        private void FakerInputLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/Ryochan7/FakerInput/");
-        }
-
-        private void HNotifyIconLink_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://github.com/HavenDV/H.NotifyIcon/");
-        }
-
-        private void ContributorsLink_OnClick(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper(ReleaseSource.ContributorsPageUri);
+            headerLb.Content += $"{viewModel.ApplicationVersion})";
         }
     }
 }

@@ -18,6 +18,7 @@ namespace DS4WindowsTests
         /// <summary>ファイルの選択の答え（取り消しを表すときは null）。</summary>
         public string OpenFileAnswer { get; set; }
         public string SaveFileAnswer { get; set; }
+        public string FolderAnswer { get; set; }
 
         public FileDialogOptions LastOpenOptions { get; private set; }
         public FileDialogOptions LastSaveOptions { get; private set; }
@@ -35,6 +36,8 @@ namespace DS4WindowsTests
             LastOpenOptions = options;
             return OpenFileAnswer;
         }
+
+        public string PickFolder() => FolderAnswer;
 
         public string PickSaveFile(FileDialogOptions options)
         {

@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CommunityToolkit.Mvvm.Input;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels.Util;
@@ -79,6 +80,12 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
             FilepathChanged += LaunchProgramViewModel_FilepathChanged;
         }
+
+        private RelayCommand _browseCommand;
+
+        /// <summary>「参照」ボタン。プログラムの選択の窓を、Program Files から開く。</summary>
+        public RelayCommand BrowseCommand => _browseCommand ??= CommandGuard.CreateSync(
+            () => PickProgram(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)), name: nameof(BrowseCommand));
 
         /// <summary>起動するプログラムを選ばせ、選ばれたら <see cref="Filepath"/> へ入れる（実行ファイル・バッチ・すべて）。</summary>
         public bool PickProgram(string initialDirectory)

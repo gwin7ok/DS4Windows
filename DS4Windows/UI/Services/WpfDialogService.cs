@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using DS4Windows.UI.Abstractions;
 
 namespace DS4Windows.UI.Services
@@ -36,6 +37,15 @@ namespace DS4Windows.UI.Services
                 var dialog = new OpenFileDialog { CheckFileExists = options?.CheckFileExists ?? true };
                 Apply(dialog, options);
                 return dialog.ShowDialog(Owner()) == true ? dialog.FileName : null;
+            });
+        }
+
+        public string PickFolder()
+        {
+            return Run(() =>
+            {
+                var dialog = new VistaFolderBrowserDialog();
+                return dialog.ShowDialog(Owner()) == true ? dialog.SelectedPath : null;
             });
         }
 
