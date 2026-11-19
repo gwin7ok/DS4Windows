@@ -373,7 +373,7 @@ FORECAST = [
     ("RV8", {  # 経緯のコメント・文書・ガードテスト。仮定: 値は計画書に目標がなく、分類のあとに決まる
         "phase_lines": 200, "srctext_tests": 60, "docs_active": 100,
     }),
-    ("RV9（予定）", {  # Nullable の全体有効化。計画書はまだない
+    ("RV9（予定）", {  # Nullable の全体有効化。計画書は PhaseRV9-Plan.md（D4＝(A): 本体と CLI の csproj で TreatWarningsAsErrors=true）
         "manual.nullable_layers_enabled": 6, "cfg_gates_met": 3,
     }),
 ]

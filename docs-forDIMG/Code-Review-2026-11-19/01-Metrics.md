@@ -120,7 +120,7 @@
 | `docs-forDIMG` の Markdown | 474 ファイル（`MadeByAgent` 450 ファイル・約 59,600 行。うち名前に `Plan` を含む 215） |
 | `Core` で `using DS4Windows.(Processing|UI|Output|Composition|Input)…;` を持つファイル | 25（`Processing` 12 行、`Input` 12 行、`Input.Devices` 5 行など。実際の参照は ArchUnitNET が 0 件と確認）。**RV1-1 後（2026-11-19）: 1**（`ProfileGyroMouseLoadSection` が `Processing.Touchpad` の定数 `MouseCursor.GYRO_MOUSE_DEADZONE` を使うため。`CodeHealthBaseline` に凍結） |
 | `Directory.Build.props` | `TreatWarningsAsErrors=false`、`WarningsAsErrors` は空 |
-| `Nullable`・`AnalysisLevel`・`AnalysisMode` | `DS4WinWPF.csproj` に指定なし。**RV1 後（2026-11-19）**: プロジェクト全体の指定は引き続きなし。ファイル単位の `#nullable enable` を `Core/Abstractions`・`Composition` に付けた（試験の記録は `PhaseRV1-Nullable-Trial.md`）。`EnableNETAnalyzers=false` は RV1-2 で外した |
+| `Nullable`・`AnalysisLevel`・`AnalysisMode` | `DS4WinWPF.csproj` に指定なし。**RV1 後（2026-11-19）**: プロジェクト全体の指定は引き続きなし。ファイル単位の `#nullable enable` を `Core/Abstractions`・`Composition` に付けた（試験の記録は `PhaseRV1-Nullable-Trial.md`）。残りの警告は 2,131 件／349 ファイル（RV1 完了後に再計測。フォルダー別は `PhaseRV9-Plan.md`）。`EnableNETAnalyzers=false` は RV1-2 で外した |
 | `Nullable` を全体で有効にした場合の警告（2026-11-19 の実測。`-p:Nullable=enable` を付けた 1 回のビルド。ファイルは変更なし。テストのプロジェクトは除く） | 2,153 件／359 ファイル（ビルドの表示は重複を含む 2,454 件）。層別: Core 920、UI 684、Processing 300、Output 98、Input 84、ルート 38、Composition 24、Cli 5。種類: CS8600 640、CS8625 387、CS8602 349、CS8618 263、CS8622 182、CS8603 153、CS8604 113、CS8601 41 |
 | `.editorconfig` | `dotnet_analyzer_diagnostic.category-Style.severity = none`、`IDE0090`・`IDE0028`・`IDE0300` も `none`。**RV1-2 後（2026-11-19）**: `category-Style` の `none` を外した（`IDE0090`・`IDE0028`・`IDE0300` は `none` のまま）。追加パッケージの規則は `Analyzers.globalconfig` |
 
