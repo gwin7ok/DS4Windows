@@ -1,7 +1,7 @@
 # PhaseRV2 計画書: 例外の握りつぶしと、非同期・待機の作法
 
 作成日: 2026-11-19
-状態: **承認済み（RV2-0 の分類の承認待ち）**。D1〜D4 は 2026-11-19 にユーザーが選択済み（「決定事項」を参照）
+状態: **実施済み（型の限定・診断ログの追加を除く）**。D1〜D4 は 2026-11-19 にユーザーが選択済み（「決定事項」を参照）
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の RV-05〜RV-08（§3.6、§3.7）
 前提: PhaseRV1 の完了（`CodeHealthRatchetTests` の枠、空の `catch` を 2 つに分けた計測）。
 動き: 機能は変えない。**ログの追加・変更は、利用者に見えないファイルのログだけ、承認のうえで**（規則 2.3。D1）。
@@ -27,16 +27,16 @@
 ## Step 一覧
 | Step | 内容 | テスト | 状態 |
 |---|---|---|---|
-| RV2-0 | 分類。空の `catch` 389 件を、`PhaseRV2-Catch-Inventory.md` に表にする（ファイル:行、捕まえる型、`try` の本体の主な呼び出し、分類、推奨の処置）。分類は次の 5 つ: **S1** 後始末・解放・切断済みの機器への書き込みなど、失敗してよい／**S2** 古い保存ファイルとの互換のため、既定値のまま続ける／**S3** 捕まえる型が広すぎる（`Exception`）のに、想定する例外が限られる／**S4** 失敗を診断のログへ残すべき／**S5** 防御が不要（呼び出し先が投げない）。あわせて、同種のアプリでの扱いを比較する（規約 §4。例: 本家 DS4Windows、ViGEm 系のクライアント、`Meziantou.Analyzer` の MA0xxx、`SonarAnalyzer` の S2486・S108 の考え方）。ユーザーの承認を得る | — | 叩き台を作成（2026-11-19。`scripts/audit/Inventory-EmptyCatch.py`）。承認待ち |
-| RV2-1 | 規則の文書化: `Log-Policy.md` に「例外の扱い」の節（G2。D3）を足し、`.github/copilot-instructions.md` §2.3 にその節へのリンク（1 行。承認済み）を足す。内容は、(a)(b)(c) の使い分け、最上位の安全弁の書き方、`catch (Exception)` を使ってよい場所、`when` フィルターの使い方 | — | 未着手 |
-| RV2-2 | ログ呼び出しを包む `try { } catch { }`（41 行）: `AppLogger` が呼び出し側へ例外を出さないことを確かめ（出す経路があれば `AppLogger` の入口で吸収し）、呼び出し側の `try` を消す | 新規: 例外を投げる出力先を渡しても、`AppLogger.LogXxx` が例外を出さない。既存の `AppLogger*Tests` | 未着手 |
-| RV2-3 | `Processing`（213 件）: S1 はコメント、S3 は型を限定、S4 は診断のログ（D1）、S5 は `try` ごと削除。対象の上位: `KeyButtonActionController`、`DefaultActionManager`、`MacroPlayback`、`RepeatHelper`、`KeyButtonControllerRegistry`。毎フレームの経路は、型を絞らない（上の方針） | 既存の `Processing` のテスト一式（特性化テスト、`AntiSnapbackDifferentialTests` など）。型を絞った箇所には、その例外で動きが変わらないことを確かめる単体テスト | 未着手 |
-| RV2-4 | `Core`（106 件。`ProfileSections` を除く）: 設定・永続化・プラットフォームの `catch` | `BackingStore*Tests`、黄金テスト（保存の形が変わらないこと） | 未着手 |
-| RV2-5 | `UI`（36）、ルート（14。`App.xaml.cs`）、`Output`（10）、`Composition`（7）、`Input`（3） | 既存のテスト。`App` の起動・終了は `AppShutdownSequenceTests`、`AppHostStartupShutdownGuardTests` | 未着手 |
-| RV2-6 | 非同期・待機の作法: (1) イベントハンドラー以外の `async void` を `async Task` へ（呼び出し側が `await` か、`_ = …` と理由の明記）。(2) `.Result`・`.Wait()` 21 件を分類し、UI スレッドで待つものは非同期化、専用スレッドの中のものは理由のコメント。(3) `Thread.Sleep` 13 件を分類し、読み取りスレッドの再接続待ちなど専用スレッドの中のものは残して理由を書き、UI スレッドのものは非同期の待ちへ | 既存のテスト。デッドロックが疑われる箇所は、単体テスト（タイムアウトつき）を足す | 未着手 |
-| RV2-7 | 検査: `CodeHealthRatchetTests` に、「何も書かない空の `catch`＝0」「ログを包む `try`＝0」「イベントハンドラー以外の `async void`＝0」を足す。コメントのみの空の `catch` の件数は、基準として凍結して減らす（理由の質は検査できない） | `CodeHealthRatchetTests` | 未着手 |
-| RV2-8 | 実機確認: 型を絞った（S3）箇所と、非同期化した箇所だけを、`Known-Issues-Ledger.md` §3 と `Device-Check-Checklist.md` に 1 件ずつ足す（機器の抜き差し、プロファイルの切替、終了） | 実機（最後にまとめて 1 件ずつ） | 未着手 |
-| RV2-9 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV2.json --label "RV2 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV1.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 冗長処理 C→B。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
+| RV2-0 | 分類。空の `catch` 389 件を、`PhaseRV2-Catch-Inventory.md` に表にする（ファイル:行、捕まえる型、`try` の本体の主な呼び出し、分類、推奨の処置）。分類は次の 5 つ: **S1** 後始末・解放・切断済みの機器への書き込みなど、失敗してよい／**S2** 古い保存ファイルとの互換のため、既定値のまま続ける／**S3** 捕まえる型が広すぎる（`Exception`）のに、想定する例外が限られる／**S4** 失敗を診断のログへ残すべき／**S5** 防御が不要（呼び出し先が投げない）。あわせて、同種のアプリでの扱いを比較する（規約 §4。例: 本家 DS4Windows、ViGEm 系のクライアント、`Meziantou.Analyzer` の MA0xxx、`SonarAnalyzer` の S2486・S108 の考え方）。ユーザーの承認を得る | — | 承認済み・完了（2026-11-19） |
+| RV2-1 | 規則の文書化: `Log-Policy.md` に「例外の扱い」の節（G2。D3）を足し、`.github/copilot-instructions.md` §2.3 にその節へのリンク（1 行。承認済み）を足す。内容は、(a)(b)(c) の使い分け、最上位の安全弁の書き方、`catch (Exception)` を使ってよい場所、`when` フィルターの使い方 | — | 完了（2026-11-19） |
+| RV2-2 | ログ呼び出しを包む `try { } catch { }`（41 行）: `AppLogger` が呼び出し側へ例外を出さないことを確かめ（出す経路があれば `AppLogger` の入口で吸収し）、呼び出し側の `try` を消す | 新規: 例外を投げる出力先を渡しても、`AppLogger.LogXxx` が例外を出さない。既存の `AppLogger*Tests` | 完了（2026-11-19） |
+| RV2-3 | `Processing`（213 件）: S1 はコメント、S3 は型を限定、S4 は診断のログ（D1）、S5 は `try` ごと削除。対象の上位: `KeyButtonActionController`、`DefaultActionManager`、`MacroPlayback`、`RepeatHelper`、`KeyButtonControllerRegistry`。毎フレームの経路は、型を絞らない（上の方針） | 既存の `Processing` のテスト一式（特性化テスト、`AntiSnapbackDifferentialTests` など）。型を絞った箇所には、その例外で動きが変わらないことを確かめる単体テスト | 完了（2026-11-19）。ただし理由のコメントは分類に応じた定型文で、型の限定・診断ログの追加は未実施（別途、一覧で承認） |
+| RV2-4 | `Core`（106 件。`ProfileSections` を除く）: 設定・永続化・プラットフォームの `catch` | `BackingStore*Tests`、黄金テスト（保存の形が変わらないこと） | 完了（2026-11-19）。ただし理由のコメントは分類に応じた定型文で、型の限定・診断ログの追加は未実施（別途、一覧で承認） |
+| RV2-5 | `UI`（36）、ルート（14。`App.xaml.cs`）、`Output`（10）、`Composition`（7）、`Input`（3） | 既存のテスト。`App` の起動・終了は `AppShutdownSequenceTests`、`AppHostStartupShutdownGuardTests` | 完了（2026-11-19）。ただし理由のコメントは分類に応じた定型文で、型の限定・診断ログの追加は未実施（別途、一覧で承認） |
+| RV2-6 | 非同期・待機の作法: (1) イベントハンドラー以外の `async void` を `async Task` へ（呼び出し側が `await` か、`_ = …` と理由の明記）。(2) `.Result`・`.Wait()` 21 件を分類し、UI スレッドで待つものは非同期化、専用スレッドの中のものは理由のコメント。(3) `Thread.Sleep` 13 件を分類し、読み取りスレッドの再接続待ちなど専用スレッドの中のものは残して理由を書き、UI スレッドのものは非同期の待ちへ | 既存のテスト。デッドロックが疑われる箇所は、単体テスト（タイムアウトつき）を足す | 完了（2026-11-19） |
+| RV2-7 | 検査: `CodeHealthRatchetTests` に、「何も書かない空の `catch`＝0」「ログを包む `try`＝0」「イベントハンドラー以外の `async void`＝0」を足す。コメントのみの空の `catch` の件数は、基準として凍結して減らす（理由の質は検査できない） | `CodeHealthRatchetTests` | 完了（2026-11-19） |
+| RV2-8 | 実機確認: 型を絞った（S3）箇所と、非同期化した箇所だけを、`Known-Issues-Ledger.md` §3 と `Device-Check-Checklist.md` に 1 件ずつ足す（機器の抜き差し、プロファイルの切替、終了） | 実機（最後にまとめて 1 件ずつ） | チェックリストへ追記済み（実機はこれから）。型の限定（S3）はまだなので、そちらの確認は未追加 |
+| RV2-9 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV2.json --label "RV2 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV1.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 冗長処理 C→B。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 完了（2026-11-19） |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -82,3 +82,4 @@
 - 2026-11-19: D1＝(A)、D2＝(A)、D3＝(A)＋規約本体へのリンク 1 行、D4＝(A) をユーザーが選択。
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
 - 2026-11-19: RV2 を承認。ブランチ `PhaseRV2`。RV2-0 の叩き台（388 件）を作成。分類の承認待ち。
+- 2026-11-19: RV2-0 承認、RV2-1〜7・9 を実施。型の限定（S3）と診断ログの追加（S4。D1）は、安全弁を壊さないため、一覧を作って別途承認を得る。
