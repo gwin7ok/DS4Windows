@@ -91,3 +91,4 @@
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)、D2＝(B)、D3＝(A)、D4＝(B) をユーザーが選択（D1・D2・D4 は推奨 (A) と異なる）。D3 の判断のため、`BackingStore` を参照するファイルの層別の数を概算で測った。D2 の修正は構造の置き換えと別のコミット（RV5-3b）に、D4 は RV5-5b に置き、関門を付けた。
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
+- 2026-11-20: 承認（5b も含めて進める）。RV5-0（`PhaseRV5-Setting-Touchpoints.md`）、RV5-1（`ProfileLoadMutationGoldenTests`: 全葉要素 ×4 の変え方のゴールデン。実機プロファイル 46 個の走査: 数値の解析失敗は 0 件）、RV5-2（`AppSettingsService` の 61 プロパティを `SetIfChanged` へ。通知名のリフレクションテスト）、RV5-3（22 か所を `ProfileLoadContext` の `ReadInt`／`ReadDouble`／`ReadBool`／`ReadEnum` へ。ゴールデン不変。空の `catch` 58→36）、RV5-3b（解析失敗は代入しない。変わるのは 8 要素。一覧は `PhaseRV5-ParseFailure-Changes.md`）を、ブランチ `PhaseRV5` で完了（master へは未マージ）。残りの非空 `catch`（既定値の代入と `missingSetting`）の置き換え、RV5-4 以降は、承認後。
