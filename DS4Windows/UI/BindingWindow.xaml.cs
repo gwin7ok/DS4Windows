@@ -79,6 +79,7 @@ namespace DS4Windows.UI
             ExposeMode expose)
         {
             this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
+            InitCommands();
             InitializeComponent();
             InitVisualizerButtons();
 
@@ -379,7 +380,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void TestRumbleBtn_Click(object sender, RoutedEventArgs e)
+        private void TestRumbleBtn()
         {
             // 振動させるのは実機（targetDevice）。モーターの左右反転は、編集中の設定（編集スロット DeviceNum）の値を読む。
             // 判断は ActionRumbleTestController が行い、ここはボタンの文字と動作中の印だけを変える
@@ -412,7 +413,7 @@ namespace DS4Windows.UI
             actBind.UpdateExtrasColor(MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault()));
         }
 
-        private void RecordMacroBtn_Click(object sender, RoutedEventArgs e)
+        private void RecordMacroBtn()
         {
             RecordBox box = editorWindowFactory.CreateRecordBox(bindingVM.DeviceNum, bindingVM.Settings,
                 bindingVM.TargetDevice);

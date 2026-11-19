@@ -53,6 +53,7 @@ namespace DS4Windows.UI
 
         public WindowTargetEditor()
         {
+            InitCommands();
             InitializeComponent();
             titleMatchCombo.SelectedIndex = (int)TitleMatchMode;
         }
@@ -95,12 +96,12 @@ namespace DS4Windows.UI
             Mouse.OverrideCursor = null;
         }
 
-        private void ExeNameOnlyBtn_Click(object sender, RoutedEventArgs e)
+        private void ExeNameOnlyBtn()
         {
             Path = WindowTargetText.ToExecutableNameOnly(Path);
         }
 
-        private void BrowseBtn_Click(object sender, RoutedEventArgs e)
+        private void BrowseBtn()
         {
             var dialog = new OpenFileDialog
             {

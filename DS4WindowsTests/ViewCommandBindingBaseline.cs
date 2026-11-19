@@ -13,18 +13,16 @@ namespace DS4WindowsTests
         {
             ["AssignmentEditor.xaml"] = 5,
             ["AutoProfiles.xaml"] = 2,
-            ["BindingWindow.xaml"] = 4,
+            ["BindingWindow.xaml"] = 2,
             ["ChangelogWindow.xaml"] = 1,
             ["ControllerRegisterOptionsWindow.xaml"] = 1,
             ["FirstLaunchUtilWindow.xaml"] = 2,
-            ["GeneralSettingsPanel.xaml"] = 2,
             ["GyroSettingsPanel.xaml"] = 3,
             ["LanguagePackControl.xaml"] = 1,
             ["LanguageSelectDialog.xaml"] = 3,
             ["LightbarSettingsPanel.xaml"] = 5,
             ["LogMessageDisplay.xaml"] = 1,
             ["MainWindow.xaml"] = 10,
-            ["OutputSettingsPanel.xaml"] = 2,
             ["OutputSlotManagerControl.xaml"] = 1,
             ["PresetOptionWindow.xaml"] = 1,
             ["ProfileEditor.xaml"] = 7,
@@ -32,11 +30,11 @@ namespace DS4WindowsTests
             ["RenameProfileWindow.xaml"] = 2,
             ["StickCalibrationWindow.xaml"] = 2,
             ["TouchpadSettingsPanel.xaml"] = 2,
-            ["UpdaterWindow.xaml"] = 4,
-            ["WindowTargetEditor.xaml"] = 5,
+            ["UpdaterWindow.xaml"] = 1,
+            ["WindowTargetEditor.xaml"] = 3,
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 248;
+        public const int CommandBindingFloor = 259;
     }
 }

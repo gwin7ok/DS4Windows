@@ -156,8 +156,7 @@ namespace DS4WindowsTests
                     // チェックの押下は、パネルの外へ知らせる
                     int clicks = 0;
                     panel.UseControllerReadoutClick += (s, e) => clicks++;
-                    var check = (System.Windows.Controls.CheckBox)panel.FindName("useControllerReadoutCk");
-                    check.RaiseEvent(new System.Windows.RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                    panel.UseControllerReadoutCommand.Execute(null);
                     Assert.Equal(1, clicks);
 
                     panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));

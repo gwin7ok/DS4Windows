@@ -12,11 +12,11 @@
     <StackPanel>
         <DockPanel Margin="0,0,0,2">
             <Button x:Name="exeNameOnlyBtn" Content="{lex:Loc SpecialActionEdit.FocusWindowExeNameOnly}" DockPanel.Dock="Right"
-                    Padding="8,0" Click="ExeNameOnlyBtn_Click" />
+                    Padding="8,0" Command="{Binding ExeNameOnlyBtnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             <Label Content="{lex:Loc SpecialActionEdit.FocusWindowPath}" Padding="0,0,0,2" VerticalAlignment="Center" />
         </DockPanel>
         <DockPanel Margin="0,0,0,8">
-            <Button Content="{lex:Loc Browse}" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,0" Click="BrowseBtn_Click" />
+            <Button Content="{lex:Loc Browse}" DockPanel.Dock="Right" Margin="8,0,0,0" Padding="8,0" Command="{Binding BrowseBtnCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
             <TextBox Text="{Binding Path, ElementName=root, UpdateSourceTrigger=PropertyChanged}" ToolTip="{lex:Loc AutoProfPathTip}" />
         </DockPanel>
         <DockPanel Margin="0,0,0,2">
