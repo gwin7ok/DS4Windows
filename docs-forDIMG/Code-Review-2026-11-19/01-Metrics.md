@@ -146,3 +146,24 @@
 | 小文字始まりの公開メソッド | 92 | — | — | — | — | — | — | 0 | — |
 | `Phase<数字>` を含む行 | 1,656 | — | — | — | — | — | — | — | 縮小（目標は RV8 の D） |
 | `Core` の未使用の `using`（上位層・`System.Windows*`） | 75 ファイル | 0 → **達成**（未使用 0。残る 4 ファイルは実際に使う `using` で、基準 1＋3 に凍結） | — | — | — | — | — | — | — |
+
+## 14. RV1 完了時点の再計測（2026-11-19）
+
+`Measure-CodeReview.py`（全項目）と `Score-CodeReview.py` の結果。RV0 の値は 1〜12 章、保存は `scorecard/RV0-baseline.json`・`scorecard/RV1.json`。
+
+| 指標 | RV0 | RV1 完了 |
+|---|---|---|
+| 本体の行数（ファイル数は 965 のまま） | 103,549 | 101,214（未使用の `using` の行を除いたため） |
+| 500 行以上のファイル | 32 | 31 |
+| `Core` で上位層の `using` を持つファイル | 25 | 1（基準に凍結） |
+| UI 以外で `using System.Windows*;` を持つファイル | 58（Core 50／Input 1／Output 3／Processing 4） | 6（Core 3／Output 1／Processing 2） |
+| 別名 `using NonFormTimer = …` の行 | 11 | 5（すべて使用中） |
+| テスト（`[Fact]`／`[Theory]`／行数） | 2,495／246／74,334 | 2,504／246／74,623（xUnit 3,626 件＋StandaloneTests 11 件） |
+| ソースの文字列を読むテスト／名前に `Guard`・`Ratchet`・`Rule`・`Baseline` を持つテスト | 128／114 | 131／118 |
+| `docs-forDIMG` の Markdown（Archive の外） | 482 | 485 |
+| 品質の門の達成数（警告をエラー化・アナライザー有効・スタイル診断を無効化していない） | 0/3 | 2/3 |
+| `Nullable` を有効にした層（全ファイルが有効な層だけを数える） | 0 | 1（`Composition`。`Core` は `Abstractions` のみ） |
+| 追加のアナライザー | なし | AsyncFixer・Threading・Sonar（規則は `Analyzers.globalconfig`。段階導入の 5 規則は `suggestion`） |
+| ビルドの警告・エラー | 0 | 0（Debug・Release） |
+
+変わっていない主な値: 空の `catch`（理由のコメントなし）370、ログを包む `try/catch` 41、`async void`（形が違うもの）9、`Click` 193、手結び 227、`BackingStore` の公開フィールド 107、`Phase<数字>` を含む行 1,656。RV2 以降が動かす。

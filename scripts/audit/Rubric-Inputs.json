@@ -3,8 +3,8 @@
  "snapshot_label": "2026-11-19 現状（PhaseRV 着手前）",
  "manual": {
   "nullable_layers_enabled": {
-   "value": 0,
-   "evidence": "2026-11-19: DS4WinWPF.csproj・Directory.Build.props に Nullable の指定なし。全体を有効にした試算は 2,153 件／359 ファイル（01-Metrics.md §12）。層別の有効化は PhaseRV9。層は Input／Processing／Output／UI／Composition／Core の 6"
+   "value": 1,
+   "evidence": "2026-11-19（RV1 完了）: プロジェクト全体の Nullable の指定はなし（DS4WinWPF.csproj・Directory.Build.props）。ファイル単位の #nullable enable で Composition の全 19 ファイルを有効にした（全ファイルが有効な層は 1）。Core は Abstractions の 37 ファイル（Core 274 ファイル中）だけなので、層としては数えない（部分の有効化。記録は PhaseRV1-Nullable-Trial.md）。全体を有効にした試算は 2,153 件／359 ファイル（01-Metrics.md §12）。層別の有効化は PhaseRV9。"
   },
   "profile_setting_files": {
    "value": 5,
@@ -45,7 +45,7 @@
   "safety_net_green": {
    "text": "ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査が、Debug ALL（0 警告・0 エラー）で通る",
    "answer": true,
-   "evidence": "2026-11-19: 直近の Phase の完了時に Debug ALL が全件通っている（phase-workflow の記録）。各 Phase の最終 Step で、実際に実行してから更新する"
+   "evidence": "2026-11-19（RV1 完了）: Debug ALL（Build-Debug.ps1、テストの建て、Execute Test）が、警告 0・エラー 0、xUnit 3,626 件＋StandaloneTests 11 件の合格。全件を続けて 3 回流して、毎回合格した。ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査を含む。Release ビルドも警告 0"
   }
  }
 }

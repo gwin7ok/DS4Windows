@@ -46,4 +46,4 @@
 - 順序: `Core/Abstractions` ✔（本書）→ `Composition` ✔（本書）→ `Core/Model`・`Core/Logging`・`Core/Utilities`・`Core/Updater`・`Core/Profiles`（件数が少ない）→ `Core/Platform` → `Input` → `Output` → `Core/Settings` → `Processing` → `Core/Persistence` → `UI` → 最後に `<Nullable>enable</Nullable>`。
 - 層ごとにコミット（1 層 1 Step）。各 Step は、`#nullable enable` の追加→警告 0→Debug ALL。
 - 検査: `CodeHealthRatchetTests` に「`#nullable enable` を持つファイルの数」を足し、減らさない（増える方向のラチェット）。最後に、プロジェクトの設定で全体を有効にしたら、この項目は不要になる。
-- 評価（`Score-CodeReview.py`）の指標 `nullable_layers_enabled`（`Rubric-Inputs.json`）は、本書の 2 層を数えて 2 とする。
+- 評価（`Score-CodeReview.py`）の指標 `nullable_layers_enabled`（`Rubric-Inputs.json`）は、全ファイルが有効な層だけを数えるため、1（Composition）とする。Core は Abstractions の 37 ファイル（274 ファイル中）だけなので、層としては数えない。
