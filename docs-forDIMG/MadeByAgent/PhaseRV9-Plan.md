@@ -50,11 +50,11 @@
 |---|---|---|---|---|
 | RV9-0 | 準備。(1) 道具: `scripts/audit/Measure-Nullable.py`（ビルドの記録からフォルダー別の件数表を出す。再実行できる）、`scripts/audit/Add-NullableDirective.py`（指令の追加。BOM・改行・ライセンスのコメントの後・最初の `using` の前を保つ。何度流しても同じ）、機械的な修正（`CS8622` の `object sender`→`object? sender`、`CS8612` のイベントの `?`）を警告の位置から行う `Fix-NullableMechanical.py`。(2) 検査: `CodeHealthRatchetTests` に「`#nullable enable` を持つファイルの数」（下回らない。実数と一致）と「理由コメントのない `!`」「`#pragma warning disable CS86`」の 0 を足す（`CodeHealthRatchet` に「下回らない」の評価を足す）。(3) 台帳 `PhaseRV9-Warning-Ledger.md`（組・フォルダー・件数・待つ Phase・状態）と `PhaseRV9-Guards.md`（空）を作る。(4) 規約: `copilot-instructions.md` §3.3 に「新規ファイルは `#nullable enable`、`!` は理由コメントつきだけ」の 2 行（D2 の承認の範囲） | 新規のテスト自身（偽の入力で、下回る・不一致が失敗すること）。スクリプトは偽のログで確かめる | RV1 | 未着手 |
 | RV9-1 | **A 組** `Core/Model`・`Core/Logging`・`Core/Utilities`・`Core/Updater`・`Core/Profiles`（64 件）。`ProfileList`・`AutoProfileHolder` は、WPF のコレクションの同期のため、`?` の付け方に注意 | Debug ALL | RV9-0 | 未着手 |
-| RV9-2 | A 組 `Core/Platform`（69 件。P/Invoke の構造体の `string`・配列は、マーシャリングが変わらないこと［注釈は型だけ］を、型の検査で確かめる） | Debug ALL | RV9-1 | 未着手 |
-| RV9-3 | A 組 `Input`（84 件。`InputDeviceCore`・`DualSenseDevice`・`SwitchProDevice`。毎フレームの経路は、ガードを足さず、`?` と不変条件の `!` で済ませる。済ませられないときは台帳） | Debug ALL、`Ds4DeviceBehaviorTests` など機種の特性化テスト | RV9-2 | 未着手 |
-| RV9-4 | A 組 `Output`（98 件。`UdpServer`、`Kbm`、`Backend`。ViGEm の型を参照する範囲は `Output/Backend` の中だけ［規約］のまま） | Debug ALL | RV9-3 | 未着手 |
-| RV9-5 | A 組 `Processing`（`Actions` を除く 156 件。`Services`・`Macro`・`Touchpad`・`Gyro`・直下） | Debug ALL | RV9-4 | 未着手 |
-| RV9-6 | A 組 ルート（`App.xaml.cs`。起動・終了の流れはガードを足さない）と `DS4WindowsCli`（5 件） | Debug ALL、`AppShutdownSequenceTests`、`AppHostStartupShutdownGuardTests` | RV9-5 | 未着手 |
+| RV9-2 | A 組 `Core/Platform`（69 件。P/Invoke の構造体の `string`・配列は、マーシャリングが変わらないこと［注釈は型だけ］を、型の検査で確かめる） | Debug ALL | RV9-1 | 完了（2026-11-19） |
+| RV9-3 | A 組 `Input`（84 件。`InputDeviceCore`・`DualSenseDevice`・`SwitchProDevice`。毎フレームの経路は、ガードを足さず、`?` と不変条件の `!` で済ませる。済ませられないときは台帳） | Debug ALL、`Ds4DeviceBehaviorTests` など機種の特性化テスト | RV9-2 | 完了（2026-11-19） |
+| RV9-4 | A 組 `Output`（98 件。`UdpServer`、`Kbm`、`Backend`。ViGEm の型を参照する範囲は `Output/Backend` の中だけ［規約］のまま） | Debug ALL | RV9-3 | 完了（2026-11-19） |
+| RV9-5 | A 組 `Processing`（`Actions` を除く 156 件。`Services`・`Macro`・`Touchpad`・`Gyro`・直下） | Debug ALL | RV9-4 | 完了（2026-11-19） |
+| RV9-6 | A 組 ルート（`App.xaml.cs`。起動・終了の流れはガードを足さない）と `DS4WindowsCli`（5 件） | Debug ALL、`AppShutdownSequenceTests`、`AppHostStartupShutdownGuardTests` | RV9-5 | 完了（2026-11-19） |
 | RV9-7 | **B 組** `Core/Settings`（110 件） | Debug ALL、`BackingStore*Tests`、黄金テスト | RV5・RV6 の完了 | 未着手 |
 | RV9-8 | B 組 `Core/Persistence`（677 件。RV5 の宣言化のあとに残る分。新しい宣言型の部品は、RV5 のなかで `#nullable enable` で書いてある前提） | Debug ALL、黄金テスト（保存の形が変わらないこと） | RV5 の完了 | 未着手 |
 | RV9-9 | B 組 `Processing/Actions`（144 件） | Debug ALL、`TriggerDispatchEngine`・アクションのテスト | RV6 の完了 | 未着手 |
