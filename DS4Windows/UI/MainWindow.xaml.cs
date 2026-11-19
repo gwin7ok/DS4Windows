@@ -162,7 +162,7 @@ namespace DS4Windows.UI
             UpdateStartStopText();
 
             conLvViewModel = viewModelFactory.CreateControllerListViewModel(profileListHolder, uiDispatcher, new WpfImageResourceLookup());
-            ipcHost = new MainWindowIpcHost(ChangeService, CloseApplicationForIpc, conLvViewModel, profileListHolder);
+            ipcHost = new MainWindowIpcHost(() => { _ = ChangeService(); }, CloseApplicationForIpc, conLvViewModel, profileListHolder);
             controllerLV.DataContext = conLvViewModel;
             controllerLV.ItemsSource = conLvViewModel.ControllerCol;
             ChangeControllerPanel();
@@ -450,9 +450,9 @@ namespace DS4Windows.UI
             settingsWrapVM.ViewEnabled = mainWinVM.FullTabsEnabled;
         }
 
-        private void TrayIconVM_RequestServiceChange(object sender, EventArgs e)
+        private async void TrayIconVM_RequestServiceChange(object sender, EventArgs e)
         {
-            ChangeService();
+            await ChangeService();
         }
 
         private void LogItems_CollectionChanged(object sender,
@@ -484,10 +484,8 @@ namespace DS4Windows.UI
         // Phase6-Step10-4-4: 廃止済みの AutoProfileChecker を引数に持つオーバーロードを削除し、1 つに統合した
         private void AutoprofileChecker_RequestServiceChange(bool state)
         {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                ChangeService();
-            }));
+            // ChangeService は、サービスの開始・停止の失敗を自分でログへ出す。ここでは完了を待たない。
+            _ = Dispatcher.InvokeAsync(ChangeService);
         }
 
         private void AutoProfVM_AutoProfileSystemChange(AutoProfilesViewModel sender, bool state)
@@ -792,12 +790,12 @@ namespace DS4Windows.UI
             aboutWin.ShowDialog();
         }
 
-        private void StartStopBtn_Click(object sender, RoutedEventArgs e)
+        private async void StartStopBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChangeService();
+            await ChangeService();
         }
 
-        public async void ChangeService()
+        public async Task ChangeService()
         {
             StartStopBtn.IsEnabled = false;
             //Tester service = root.rootHubtest;

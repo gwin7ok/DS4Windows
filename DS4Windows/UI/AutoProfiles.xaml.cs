@@ -179,16 +179,16 @@ namespace DS4Windows.UI
             IsEnabled = true;
         }
 
-        private void SteamMenuItem_Click(object sender, RoutedEventArgs e)
+        private async void SteamMenuItem_Click(object sender, RoutedEventArgs e)
         {
             this.IsEnabled = false;
             steamMenuItem.Visibility = Visibility.Collapsed;
             programListLV.ItemsSource = null;
             autoProfVM.SearchFinished += AppsSearchFinished;
-            autoProfVM.AddProgramsFromSteam(steamgamesdir);
+            await autoProfVM.AddProgramsFromSteam(steamgamesdir);
         }
 
-        private void BrowseProgsMenuItem_Click(object sender, RoutedEventArgs e)
+        private async void BrowseProgsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             this.IsEnabled = false;
             VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
@@ -197,7 +197,7 @@ namespace DS4Windows.UI
                 //browseProgsMenuItem.Visibility = Visibility.Collapsed;
                 programListLV.ItemsSource = null;
                 autoProfVM.SearchFinished += AppsSearchFinished;
-                autoProfVM.AddProgramsFromDir(dialog.SelectedPath);
+                await autoProfVM.AddProgramsFromDir(dialog.SelectedPath);
             }
             else
             {
@@ -205,13 +205,13 @@ namespace DS4Windows.UI
             }
         }
 
-        private void StartMenuItem_Click(object sender, RoutedEventArgs e)
+        private async void StartMenuItem_Click(object sender, RoutedEventArgs e)
         {
             this.IsEnabled = false;
             startMenuItem.Visibility = Visibility.Collapsed;
             programListLV.ItemsSource = null;
             autoProfVM.SearchFinished += AppsSearchFinished;
-            autoProfVM.AddProgramsFromStartMenu();
+            await autoProfVM.AddProgramsFromStartMenu();
         }
 
         private void AppsSearchFinished(object sender, EventArgs e)
@@ -273,7 +273,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void BrowseAddProgMenuItem_Click(object sender, RoutedEventArgs e)
+        private async void BrowseAddProgMenuItem_Click(object sender, RoutedEventArgs e)
         {
             this.IsEnabled = false;
             OpenFileDialog dialog = new OpenFileDialog();
@@ -288,7 +288,7 @@ namespace DS4Windows.UI
             {
                 programListLV.ItemsSource = null;
                 autoProfVM.SearchFinished += AppsSearchFinished;
-                autoProfVM.AddProgramExeLocation(dialog.FileName);
+                await autoProfVM.AddProgramExeLocation(dialog.FileName);
             }
             else
             {
