@@ -150,7 +150,7 @@ namespace DS4Windows.Output.Devices
             CancellationToken ct = tokenSource.Token;
 
             // Add extra delay. Attempt to wait for ViGEmBus to be ready
-            Thread.Sleep(1000);
+            Thread.Sleep(1000); // 待機の理由: ViGEmBus の準備を待つ（接続処理のスレッドの中）
 
             bool working = true;
             awaitThreadLoopRunning = true;

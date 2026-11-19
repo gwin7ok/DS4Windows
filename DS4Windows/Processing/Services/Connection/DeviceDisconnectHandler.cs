@@ -87,7 +87,7 @@ namespace DS4Windows.Processing.Services.Connection
                     Task.Run(() =>
                     {
                         _mapping.Commit(ind, _profileSettings);
-                    }).Wait();
+                    }).Wait(); // 待機の理由: 合成入力の確定を別スレッドで行い、切断の後始末の順序（確定→次の処理）を守る
 
                     try
                     {

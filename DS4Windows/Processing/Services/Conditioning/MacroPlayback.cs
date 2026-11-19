@@ -173,7 +173,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                         // Phase10-Step3: 手順が空のマクロも、押している間は繰り返す。ただし、1 回の再生に時間がかからず、待ちなしの空回りになるため、
                         // 繰り返しの間に、短い間隔（EmptyMacroRepeatIntervalMs）を置く（手順のあるマクロは、手順そのものの時間が間隔になる）
                         if ((macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0))
-                            Task.Delay(TimeSpan.FromMilliseconds(EmptyMacroRepeatIntervalMs), _time).Wait();
+                            Task.Delay(TimeSpan.FromMilliseconds(EmptyMacroRepeatIntervalMs), _time).Wait(); // 待機の理由: マクロの専用スレッドの中の待機（UI・読み取りスレッドではない）
 
                         // Execute the macro sequence again inline (the iteration is marked as running)
                         RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: true);
@@ -221,7 +221,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 {
                     int macroCodeValue = steps[i];
                     if (_stepExecutor.Execute(device, keyType, macroCodeValue, keydown))
-                        Task.Delay(TimeSpan.FromMilliseconds(macroCodeValue - 300), _time).Wait();
+                        Task.Delay(TimeSpan.FromMilliseconds(macroCodeValue - 300), _time).Wait(); // 待機の理由: マクロの専用スレッドの中の待機（UI・読み取りスレッドではない）
                 }
             }
 

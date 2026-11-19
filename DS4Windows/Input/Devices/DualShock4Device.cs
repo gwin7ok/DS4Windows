@@ -279,7 +279,7 @@ namespace DS4Windows.Input.Devices
             int waited = 0;
             while (!postInitDone && waited < 500)
             {
-                Thread.Sleep(25);
+                Thread.Sleep(25); // 待機の理由: 読み取りスレッドの中。PostInit の完了（出力バッファーの初期化）を、最大 500ms 待つ
                 waited += 25;
             }
 
@@ -511,7 +511,7 @@ namespace DS4Windows.Input.Devices
                     // Defensive: if buffers are not initialized, wait briefly and retry
                     if (outReportBuffer == null || outputReport == null)
                     {
-                        Thread.Sleep(50);
+                        Thread.Sleep(50); // 待機の理由: 出力スレッドの中。バッファーの初期化を短く待って再試行する
                         continue;
                     }
 

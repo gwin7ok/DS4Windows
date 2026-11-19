@@ -207,7 +207,7 @@ namespace DS4Windows.Processing.Services.Connection
                             tempDevice.IsRemoved = true;
                             tempDevice.StopUpdate();
                             _deviceRegistry.RemoveDevice(tempDevice);
-                            Thread.Sleep(50);
+                            Thread.Sleep(50); // 待機の理由: 機器の取り外しの後、次の機器の処理までの間隔（サービスの専用スレッド）
                         }
 
                         slots.CurrentStates[i].Battery = slots.PreviousStates[i].Battery = 0; // Reset for the next connection's initial status change.

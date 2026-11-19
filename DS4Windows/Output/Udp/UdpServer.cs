@@ -123,7 +123,7 @@ namespace DS4Windows.Output.Udp
                 sentAsync = udpSock!.SendToAsync(args); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
                 //if (!sentAsync) CompletedSynchronousSocketEvent();
             }
-            catch (Exception /*e*/) { }
+            catch (Exception /*e*/) { /* UDP の送信・受信の失敗は無視してよい（相手が切れても、サーバーの動作は続ける） */ }
             finally
             {
                 if (!sentAsync) CompletedSynchronousSocketEvent(args);
@@ -267,7 +267,7 @@ namespace DS4Windows.Output.Udp
                     _clients.RegisterRequest(clientEP, regFlags, idToReg, macToReg);
                 }
             }
-            catch (Exception /*e*/) { }
+            catch (Exception /*e*/) { /* UDP の送信・受信の失敗は無視してよい（相手が切れても、サーバーの動作は続ける） */ }
         }
 
         private void ReceiveCallback(IAsyncResult iar)
@@ -291,7 +291,7 @@ namespace DS4Windows.Output.Udp
                     ResetUDPConn();
                 }
             }
-            catch (Exception /*e*/) { }
+            catch (Exception /*e*/) { /* UDP の送信・受信の失敗は無視してよい（相手が切れても、サーバーの動作は続ける） */ }
 
             //Start another receive as soon as we copied the data
             StartReceive();
@@ -439,7 +439,7 @@ namespace DS4Windows.Output.Udp
                     try {
                         sentAsync = udpSock!.SendToAsync(args); // 開始（Start）の後にだけ呼ぶ（null なら従来どおり NullReferenceException）
                     }
-                    catch (SocketException /*ex*/) { }
+                    catch (SocketException /*ex*/) { /* UDP の送信の失敗は無視してよい（相手が切れても、サーバーの動作は続ける） */ }
                     finally
                     {
                         if (!sentAsync) CompletedSynchronousSocketEvent(args);

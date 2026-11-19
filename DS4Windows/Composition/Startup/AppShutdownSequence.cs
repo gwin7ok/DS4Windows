@@ -57,7 +57,7 @@ namespace DS4Windows.Composition.Startup
                         _lifecycle.Stop(immediateUnplug: true);
                         _bootstrapper.Shutdown();
                     }
-                }).Wait();
+                }).Wait(); // 待機の理由: 終了の手順は、サービスの停止が済むまで次へ進めない（別スレッドで実行し、UI の同期コンテキストは使わない）
             }
 
             // 設定の保存が許されるのは、起動が完了したあと（保存を止める印が解除されたあと）だけ。許されないときは null が渡される

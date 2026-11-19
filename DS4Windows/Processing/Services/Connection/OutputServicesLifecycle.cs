@@ -53,7 +53,7 @@ namespace DS4Windows.Processing.Services.Connection
                 if (showlog)
                     AppLogger.Log(AppLogLevel.Info, DS4Windows.Properties.Resources.Starting, LogOptions.UserFacing);
 
-                Thread.Sleep(2000);
+                Thread.Sleep(2000); // 待機の理由: ドライバーの開始の前に、前の停止が落ち着くのを待つ（サービスの開始・停止の専用スレッド）
 
                 bool runningAsAdmin = _environmentService.IsAdministrator();
                 if (_virtualKBM.GetIdentifier() != VirtualKbmHandlerIds.FakerInput && !runningAsAdmin)
@@ -155,7 +155,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             if (anyUnplugged)
             {
-                Thread.Sleep(OutputSlotManager.DELAY_TIME);
+                Thread.Sleep(OutputSlotManager.DELAY_TIME); // 待機の理由: 仮想パッドの取り外しが反映されるのを待つ（サービスの停止の専用スレッド）
             }
 
             _virtualPad.StopViGEm();

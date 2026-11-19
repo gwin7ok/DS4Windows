@@ -263,7 +263,7 @@ namespace DS4Windows.UI
                     {
                         StartStopBtn.IsEnabled = false;
                     }));
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
                     serviceControl.Start();
                     //root.rootHubtest.Start();
                 }
@@ -564,7 +564,7 @@ namespace DS4Windows.UI
                             serviceControl.Stop(immediateUnplug: true);
                             wasrunning = true;
 
-                            Thread.Sleep(1000);
+                            Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
                         }
                     }
 
@@ -1134,7 +1134,7 @@ namespace DS4Windows.UI
             serviceControl.UpdateHidHiddenAttributes();
             while (loopHotplug == true)
             {
-                Thread.Sleep(HOTPLUG_CHECK_DELAY);
+                Thread.Sleep(HOTPLUG_CHECK_DELAY); // 待機の理由: 機器の抜き差しの検出をまとめるための待ち（バックグラウンドのスレッドの中）
                 serviceControl.HotPlug();
 
                 lock (hotplugCounterLock)

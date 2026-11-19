@@ -94,7 +94,7 @@ namespace DS4Windows.Output.Services
                                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Udp_StartFailed", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT, ex.SocketErrorCode);
                                 AppLogger.LogToTray(errMsg, true, true);
                             }
-                        }).Wait();
+                        }).Wait(); // 待機の理由: ポートを開く処理を別スレッドで行い、結果（成功・失敗のログ）が出るまで進めない
                     }
 
                     udpChangeStatus = false;

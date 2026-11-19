@@ -148,7 +148,7 @@ namespace DS4Windows.Output.Devices
             if (_features.HasFlag(X360Features.XInputSlotNum))
             {
                 // Need a delay here
-                Thread.Sleep(USER_INDEX_WAIT);
+                Thread.Sleep(USER_INDEX_WAIT); // 待機の理由: XInput のユーザー番号が割り当たるのを待つ（接続処理のスレッドの中）
                 try
                 {
                     XinputSlotNum = cont.UserIndex;
