@@ -1,6 +1,5 @@
 ﻿using System;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 
 namespace DS4Windows.Input.Abstractions
 {

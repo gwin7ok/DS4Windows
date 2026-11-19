@@ -18,16 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using DS4Windows.Core.Model;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading;
-
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-
-using System.Linq;
-using System.Drawing;
-
 
 namespace DS4Windows.Input
 {

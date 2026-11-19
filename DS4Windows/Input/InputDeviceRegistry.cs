@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,7 +25,6 @@ using System.Security.Principal;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
-using DS4Windows.Input.Devices;
 using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
 

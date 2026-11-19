@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DS4Windows.Core.Model;
-using DS4Windows.Input.Hid;
 
 namespace DS4Windows.Input.Abstractions
 {
