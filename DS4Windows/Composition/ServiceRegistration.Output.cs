@@ -1,7 +1,5 @@
-using DS4Windows.Output.Udp;
 using DS4Windows.Output.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using DS4Windows.Core.Abstractions;
 using DS4Windows.Output.Backend;
 using DS4Windows.Output.Devices;
 using DS4Windows.Output.Services;

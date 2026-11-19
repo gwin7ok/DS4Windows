@@ -2,7 +2,6 @@ using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Composition
