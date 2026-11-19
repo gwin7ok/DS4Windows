@@ -26,87 +26,28 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
             if (lsAxialDeadGroup)
             {
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("DeadZoneX");
-                    int.TryParse(Item.InnerText, out int temp);
-                    temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.stickSlots[device].LSMod.xAxisDeadInfo.deadZone = temp;
-                }
-                catch { }
+                context.ReadInt(lsAxialDeadElement, "DeadZoneX", 0, 127, v => store.stickSlots[device].LSMod.xAxisDeadInfo.deadZone = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("DeadZoneY");
-                    int.TryParse(Item.InnerText, out int temp);
-                    temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.stickSlots[device].LSMod.yAxisDeadInfo.deadZone = temp;
-                }
-                catch { }
+                context.ReadInt(lsAxialDeadElement, "DeadZoneY", 0, 127, v => store.stickSlots[device].LSMod.yAxisDeadInfo.deadZone = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("MaxZoneX");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].LSMod.xAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(lsAxialDeadElement, "MaxZoneX", 0, 100, v => store.stickSlots[device].LSMod.xAxisDeadInfo.maxZone = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("MaxZoneY");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].LSMod.yAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(lsAxialDeadElement, "MaxZoneY", 0, 100, v => store.stickSlots[device].LSMod.yAxisDeadInfo.maxZone = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("AntiDeadZoneX");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].LSMod.xAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(lsAxialDeadElement, "AntiDeadZoneX", 0, 100, v => store.stickSlots[device].LSMod.xAxisDeadInfo.antiDeadZone = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("AntiDeadZoneY");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].LSMod.yAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(lsAxialDeadElement, "AntiDeadZoneY", 0, 100, v => store.stickSlots[device].LSMod.yAxisDeadInfo.antiDeadZone = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("MaxOutputX");
-                    double.TryParse(Item.InnerText, out double temp);
-                    store.stickSlots[device].LSMod.xAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
-                }
-                catch { }
+                context.ReadDouble(lsAxialDeadElement, "MaxOutputX", 0.0, 100.0, v => store.stickSlots[device].LSMod.xAxisDeadInfo.maxOutput = v);
 
-                try
-                {
-                    Item = lsAxialDeadElement.SelectSingleNode("MaxOutputY");
-                    double.TryParse(Item.InnerText, out double temp);
-                    store.stickSlots[device].LSMod.yAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
-                }
-                catch { }
+                context.ReadDouble(lsAxialDeadElement, "MaxOutputY", 0.0, 100.0, v => store.stickSlots[device].LSMod.yAxisDeadInfo.maxOutput = v);
             }
 
             XmlNode lsDeltaAccelElement =
                 m_Xdoc.SelectSingleNode($"/{rootname}/LSDeltaAccelSettings");
             if (lsDeltaAccelElement != null)
             {
-                try
-                {
-                    Item = lsDeltaAccelElement.SelectSingleNode("Enabled");
-                    if (bool.TryParse(Item.InnerText ?? "", out bool temp))
-                    {
-                        store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled
-                            = temp;
-                    }
-                }
-                catch { }
+                context.ReadBool(lsDeltaAccelElement, "Enabled", v => store.stickSlots[device].LSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled = v);
 
                 try
                 {
@@ -164,15 +105,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 catch { }
             }
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSDeadZoneType");
-                if (Enum.TryParse(Item?.InnerText ?? "", out StickDeadZoneInfo.DeadZoneType temp))
-                {
-                    store.stickSlots[device].RSMod.deadzoneType = temp;
-                }
-            }
-            catch { }
+            context.ReadEnum<StickDeadZoneInfo.DeadZoneType>(m_Xdoc, "/" + rootname + "/RSDeadZoneType", v => store.stickSlots[device].RSMod.deadzoneType = v);
 
             bool rsAxialDeadGroup = false;
             XmlNode rsAxialDeadElement =
@@ -181,87 +114,28 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
             if (rsAxialDeadGroup)
             {
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("DeadZoneX");
-                    int.TryParse(Item.InnerText, out int temp);
-                    temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.stickSlots[device].RSMod.xAxisDeadInfo.deadZone = temp;
-                }
-                catch { }
+                context.ReadInt(rsAxialDeadElement, "DeadZoneX", 0, 127, v => store.stickSlots[device].RSMod.xAxisDeadInfo.deadZone = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("DeadZoneY");
-                    int.TryParse(Item.InnerText, out int temp);
-                    temp = Math.Min(Math.Max(temp, 0), 127);
-                    store.stickSlots[device].RSMod.yAxisDeadInfo.deadZone = temp;
-                }
-                catch { }
+                context.ReadInt(rsAxialDeadElement, "DeadZoneY", 0, 127, v => store.stickSlots[device].RSMod.yAxisDeadInfo.deadZone = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("MaxZoneX");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].RSMod.xAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(rsAxialDeadElement, "MaxZoneX", 0, 100, v => store.stickSlots[device].RSMod.xAxisDeadInfo.maxZone = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("MaxZoneY");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].RSMod.yAxisDeadInfo.maxZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(rsAxialDeadElement, "MaxZoneY", 0, 100, v => store.stickSlots[device].RSMod.yAxisDeadInfo.maxZone = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("AntiDeadZoneX");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].RSMod.xAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(rsAxialDeadElement, "AntiDeadZoneX", 0, 100, v => store.stickSlots[device].RSMod.xAxisDeadInfo.antiDeadZone = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("AntiDeadZoneY");
-                    int.TryParse(Item.InnerText, out int temp);
-                    store.stickSlots[device].RSMod.yAxisDeadInfo.antiDeadZone = Math.Min(Math.Max(temp, 0), 100);
-                }
-                catch { }
+                context.ReadInt(rsAxialDeadElement, "AntiDeadZoneY", 0, 100, v => store.stickSlots[device].RSMod.yAxisDeadInfo.antiDeadZone = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("MaxOutputX");
-                    double.TryParse(Item.InnerText, out double temp);
-                    store.stickSlots[device].RSMod.xAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
-                }
-                catch { }
+                context.ReadDouble(rsAxialDeadElement, "MaxOutputX", 0.0, 100.0, v => store.stickSlots[device].RSMod.xAxisDeadInfo.maxOutput = v);
 
-                try
-                {
-                    Item = rsAxialDeadElement.SelectSingleNode("MaxOutputY");
-                    double.TryParse(Item.InnerText, out double temp);
-                    store.stickSlots[device].RSMod.yAxisDeadInfo.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
-                }
-                catch { }
+                context.ReadDouble(rsAxialDeadElement, "MaxOutputY", 0.0, 100.0, v => store.stickSlots[device].RSMod.yAxisDeadInfo.maxOutput = v);
             }
 
             XmlNode rsDeltaAccelElement =
                 m_Xdoc.SelectSingleNode($"/{rootname}/RSDeltaAccelSettings");
             if (lsDeltaAccelElement != null)
             {
-                try
-                {
-                    Item = rsDeltaAccelElement.SelectSingleNode("Enabled");
-                    if (bool.TryParse(Item.InnerText ?? "", out bool temp))
-                    {
-                        store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled
-                            = temp;
-                    }
-                }
-                catch { }
+                context.ReadBool(rsDeltaAccelElement, "Enabled", v => store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled = v);
 
                 try
                 {

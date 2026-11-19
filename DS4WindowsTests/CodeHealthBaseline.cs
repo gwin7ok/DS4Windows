@@ -67,7 +67,7 @@ namespace DS4WindowsTests
         public const int BlankEmptyCatches = 0;
 
         /// <summary><c>Core/Persistence/ProfileSections</c> の何も書かない空の <c>catch</c>。RV5 の宣言化で 1 つの部品へ畳むまで凍結し、畳んだら 0 にする。</summary>
-        public const int BlankEmptyCatchesInProfileSections = 58;
+        public const int BlankEmptyCatchesInProfileSections = 36;
 
         /// <summary>本体がコメントだけの空の <c>catch</c>。理由の質は <c>PhaseRV2-Catch-Inventory.md</c> で人が見る。減らす方向だけ。</summary>
         public const int CommentOnlyEmptyCatches = 252;
