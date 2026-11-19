@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Xml;
+using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
@@ -48,11 +49,31 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         public static ProfileSetting SaveOnly(string xmlName, Func<ProfileSaveContext, string> get)
             => new ProfileSetting(xmlName, get, null, false);
 
-        public void Save(ProfileSaveContext context)
+        /// <summary>保存だけの定義。保存する文字列を、ストア・スロット・保存の文脈から作る。</summary>
+        public static ProfileSetting Text(string xmlName, Func<BackingStore, int, ProfileSaveContext, string> get)
+            => new ProfileSetting(xmlName, c => get(c.Store, c.Device, c), null, false);
+
+        /// <summary>子の要素を持つ要素の定義（保存だけ）。子は並びの順に、この要素の下へ保存する。</summary>
+        public static ProfileSetting Group(string xmlName, params ProfileSetting[] children)
+            => new ProfileSetting(xmlName, null!, null, false) { children = children }; // 子を持つ定義は文字列を作らず、Save が子を保存する
+
+        private ProfileSetting[]? children;
+
+        public void Save(ProfileSaveContext context) => Save(context, context.RootElement);
+
+        private void Save(ProfileSaveContext context, XmlNode parent)
         {
+            if (children != null)
+            {
+                XmlElement group = context.Xdoc.CreateElement(XmlName);
+                foreach (ProfileSetting child in children) child.Save(context, group);
+                parent.AppendChild(group);
+                return;
+            }
+
             XmlNode node = context.Xdoc.CreateNode(XmlNodeType.Element, XmlName, null);
             node.InnerText = read(context);
-            context.RootElement.AppendChild(node);
+            parent.AppendChild(node);
         }
 
         /// <summary>読み込む。欠けた設定として印を付けるべきときは true を返す。</summary>
