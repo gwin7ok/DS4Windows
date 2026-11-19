@@ -83,3 +83,7 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)（`BindingWindow` の実物を確認して推奨を (A) から変更）、D2＝(A)、D3＝(B)（RV3 の D2 と同じ）、D4＝(B) をユーザーが選択。
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
+
+## 実施状況（2026-11-20 追記）
+- 完了: RV4-0〜2、RV4-3a（ProfileEditor の操作）、RV4-4（WelcomeDialog）、RV4-5（RecordBox のボタン）、RV4-6a（小さな画面の確定系）、RV4-8（実機確認 §9e）。イベント属性の凍結値は RV3 完了時より約 100 件減り、`Command` のバインディングの下限は 58→248。
+- 未完（次の Phase または追加 Step）: ProfileEditor のホバーの表のデータ化と `partial` の分割、`UpdaterWindow`・`WindowTargetEditor`・General／Output パネルの転送ボタン、`ControllerReadingsControl` のタイマー、`BindingWindow` の TestRumble・RecordMacro、RV4-9（採点）。
