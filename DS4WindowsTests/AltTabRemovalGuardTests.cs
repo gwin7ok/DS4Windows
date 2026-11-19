@@ -53,8 +53,8 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ContextMenu", xaml);
             Assert.DoesNotContain("loadPresetBtn.ContextMenu", code);
             Assert.DoesNotContain("LoadPresetFromFileMenuItem", xaml + code);
-            int handler = code.IndexOf("private void LoadPresetBtn_Click(", StringComparison.Ordinal);
-            Assert.True(handler >= 0, "LoadPresetBtn_Click が見つからない");
+            int handler = code.IndexOf("private void LoadPreset(", StringComparison.Ordinal);
+            Assert.True(handler >= 0, "LoadPreset が見つからない");
             Assert.Contains("PickAndLoadPreset", code.Substring(handler, Math.Min(900, code.Length - handler)));
         }
 

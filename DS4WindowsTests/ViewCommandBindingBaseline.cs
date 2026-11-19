@@ -30,7 +30,7 @@ namespace DS4WindowsTests
             ["PluginOutDevWindow.xaml"] = 2,
             ["PresetOptionWindow.xaml"] = 5,
             ["ProfileEditor.xaml"] = 7,
-            ["RecordBox.xaml"] = 28,
+            ["RecordBox.xaml"] = 16,
             ["RenameProfileWindow.xaml"] = 3,
             ["SaveWhere.xaml"] = 2,
             ["StickCalibrationWindow.xaml"] = 2,
@@ -40,6 +40,6 @@ namespace DS4WindowsTests
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 222;
+        public const int CommandBindingFloor = 234;
     }
 }
