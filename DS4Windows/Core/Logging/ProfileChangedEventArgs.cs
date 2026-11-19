@@ -32,7 +32,7 @@ namespace DS4Windows.Core.Logging
         public string OriginalMessage { get; }
         public DateTime Timestamp { get; }
 
-        public ProfileChangedEventArgs(int deviceIndex, string profileName, bool isTemp, ProfileChangeSource source = ProfileChangeSource.Unknown, string originalMessage = null, DateTime? timestamp = null)
+        public ProfileChangedEventArgs(int deviceIndex, string profileName, bool isTemp, ProfileChangeSource source = ProfileChangeSource.Unknown, string? originalMessage = null, DateTime? timestamp = null)
         {
             DeviceIndex = deviceIndex;
             ProfileName = profileName ?? string.Empty;

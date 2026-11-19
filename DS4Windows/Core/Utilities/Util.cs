@@ -231,7 +231,7 @@ namespace DS4Windows.Core.Utilities
         /// </summary>
         /// <param name="path">Program path or URL</param>
         /// <param name="argument">Extra arguments to pass to the launching program</param>
-        public static void StartProcessHelper(string path, string arguments = null)
+        public static void StartProcessHelper(string path, string? arguments = null)
         {
             if (!AdminCheck.IsAdministrator())
             {
@@ -244,7 +244,7 @@ namespace DS4Windows.Core.Utilities
 
                 try
                 {
-                    using (Process temp = Process.Start(startInfo))
+                    using (Process? temp = Process.Start(startInfo))
                     {
                     }
                 }
@@ -262,7 +262,7 @@ namespace DS4Windows.Core.Utilities
         /// </summary>
         /// <param name="path">Program path or URL</param>
         /// <param name="argument">Extra arguments to pass to the launching program</param>
-        public static void StartProcessInExplorer(string path, string arguments = null)
+        public static void StartProcessInExplorer(string path, string? arguments = null)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "explorer.exe";
@@ -281,7 +281,7 @@ namespace DS4Windows.Core.Utilities
             startInfo.UseShellExecute = true;
             try
             {
-                using (Process temp = Process.Start(startInfo)) { }
+                using (Process? temp = Process.Start(startInfo)) { }
             }
             catch { }
         }
@@ -300,14 +300,14 @@ namespace DS4Windows.Core.Utilities
         public static string GetOSProductName()
         {
             string productName =
-                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", "").ToString();
+                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName", "")?.ToString() ?? string.Empty;
             return productName;
         }
 
         public static string GetOSReleaseId()
         {
             string releaseId =
-                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "").ToString();
+                Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ReleaseId", "")?.ToString() ?? string.Empty;
             return releaseId;
         }
 
@@ -316,7 +316,7 @@ namespace DS4Windows.Core.Utilities
             bool result = false;
             string archString = Environment.Is64BitProcess ? "x64" : "x86";
 
-            using (RegistryKey subKey =
+            using (RegistryKey? subKey =
                 Registry.LocalMachine.OpenSubKey($@"SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\{archString}\sharedfx\Microsoft.WindowsDesktop.App"))
             {
                 if (subKey != null)
@@ -341,7 +341,7 @@ namespace DS4Windows.Core.Utilities
         public static bool SystemAppsUsingDarkTheme()
         {
             bool result = false;
-            if (int.TryParse(Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", "0").ToString(), out int lightEnabled))
+            if (int.TryParse(Registry.GetValue(@"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", "0")?.ToString(), out int lightEnabled))
             {
                 result = lightEnabled == 0;
             }

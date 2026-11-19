@@ -61,7 +61,7 @@ namespace DS4Windows.Core.Profiles
             // 1. ディスクから削除されたプロファイルのみリストから除去
             for (int i = profileListCol.Count - 1; i >= 0; i--)
             {
-                if (!diskProfileNames.Contains(profileListCol[i].Name))
+                if (!diskProfileNames.Contains(profileListCol[i].Name!)) // HashSet.Contains は null を受け付け、false を返す
                 {
                     profileListCol.RemoveAt(i);
                 }
@@ -89,7 +89,7 @@ namespace DS4Windows.Core.Profiles
             bool inserted = false;
             foreach (ProfileEntity entry in profileListCol)
             {
-                if (entry.Name.CompareTo(profilename) > 0)
+                if (entry.Name!.CompareTo(profilename) > 0) // 一覧のプロファイルは名前つき（null なら従来どおり NullReferenceException）
                 {
                     profileListCol.Insert(idx, new ProfileEntity(pathService) { Name = profilename });
                     inserted = true;

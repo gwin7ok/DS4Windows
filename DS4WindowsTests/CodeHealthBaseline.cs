@@ -33,6 +33,11 @@ namespace DS4WindowsTests
         {
             "Core/Abstractions/",
             "Composition/",
+            "Core/Model/",
+            "Core/Logging/",
+            "Core/Utilities/",
+            "Core/Updater/",
+            "Core/Profiles/",
         };
 
         /// <summary><c>#nullable enable</c> のファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>

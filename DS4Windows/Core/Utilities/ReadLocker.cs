@@ -25,7 +25,7 @@ namespace DS4Windows.Core.Utilities
 {
     public class ReadLocker : IDisposable
     {
-        private ReaderWriterLockSlim _lockerInstance;
+        private ReaderWriterLockSlim? _lockerInstance;
 
         public ReadLocker(ReaderWriterLockSlim lockerInstance)
         {
@@ -35,7 +35,7 @@ namespace DS4Windows.Core.Utilities
 
         public void Dispose()
         {
-            _lockerInstance.ExitReadLock();
+            _lockerInstance!.ExitReadLock(); // 2 回目の Dispose は想定しない（従来どおり NullReferenceException）
             _lockerInstance = null;
         }
     }

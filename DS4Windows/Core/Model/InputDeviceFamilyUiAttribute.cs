@@ -11,7 +11,7 @@ namespace DS4Windows.Core.Model
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public sealed class InputDeviceFamilyUiAttribute : Attribute
     {
-        public InputDeviceFamilyUiAttribute(string supportLabelKey, string firstLaunchLabelKey, string firstLaunchTextKey, string helpUrl = null)
+        public InputDeviceFamilyUiAttribute(string supportLabelKey, string firstLaunchLabelKey, string firstLaunchTextKey, string? helpUrl = null)
         {
             SupportLabelKey = supportLabelKey;
             FirstLaunchLabelKey = firstLaunchLabelKey;
@@ -29,6 +29,6 @@ namespace DS4Windows.Core.Model
         public string FirstLaunchTextKey { get; }
 
         /// <summary>はじめの起動画面に出す補足のリンク（なければ null）。</summary>
-        public string HelpUrl { get; }
+        public string? HelpUrl { get; }
     }
 }

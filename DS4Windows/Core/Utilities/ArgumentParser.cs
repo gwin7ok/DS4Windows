@@ -29,10 +29,10 @@ namespace DS4Windows.Core.Utilities
         private bool stop;
         private bool driverinstall;
         private bool reenableDevice;
-        private string deviceInstanceId;
+        private string? deviceInstanceId;
         private bool runtask;
         private bool command;
-        private string commandArgs;
+        private string? commandArgs;
         private string virtualkbmHandler = VirtualKbmHandlerIds.Default;
 
         private Dictionary<string, string> errors =
@@ -44,8 +44,8 @@ namespace DS4Windows.Core.Utilities
         public bool ReenableDevice { get => reenableDevice; }
         public bool Runtask { get => runtask; }
         public bool Command { get => command; }
-        public string DeviceInstanceId { get => deviceInstanceId; }
-        public string CommandArgs { get => commandArgs; }
+        public string? DeviceInstanceId { get => deviceInstanceId; }
+        public string? CommandArgs { get => commandArgs; }
         public string VirtualkbmHandler { get => virtualkbmHandler; }
         public Dictionary<string, string> Errors { get => errors; }
 

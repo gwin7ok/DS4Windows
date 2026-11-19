@@ -69,20 +69,32 @@ def add(path):
 
 
 def verify():
+    sys.stdout.reconfigure(encoding="utf-8")
     diff = subprocess.run(["git", "diff", "--cached", "-U0", "--no-color"], capture_output=True, text=True, encoding="utf-8").stdout
-    bad = []
+    bom = chr(0xFEFF)
+    files = {}
     cur = None
     for ln in diff.splitlines():
         if ln.startswith("+++ "):
             cur = ln[4:]
-        elif ln.startswith("--- ") or ln.startswith("diff ") or ln.startswith("index ") or ln.startswith("@@"):
+            files.setdefault(cur, ([], []))
+        elif ln.startswith(("--- ", "diff ", "index ", "@@", "new file", "deleted file", "similarity", "rename")):
             continue
         elif ln.startswith("-"):
-            bad.append((cur, ln))
+            files[cur][0].append(ln[1:].replace(bom, ""))
         elif ln.startswith("+"):
-            body = ln[1:].strip()
-            if body not in ("", DIRECTIVE):
-                bad.append((cur, ln))
+            files[cur][1].append(ln[1:].replace(bom, ""))
+    bad = []
+    for f, (minus, plus) in files.items():
+        # BOM が先頭行から指令の行へ移るため、先頭行の「消して同じ内容を足す」は同じ内容とみなす
+        for m in minus:
+            if m in plus:
+                plus.remove(m)
+            else:
+                bad.append((f, "-" + m))
+        for p in plus:
+            if p.strip() not in ("", DIRECTIVE):
+                bad.append((f, "+" + p))
     if bad:
         for f, l in bad[:20]:
             print("NG", f, l)

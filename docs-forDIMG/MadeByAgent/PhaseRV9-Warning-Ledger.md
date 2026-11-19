@@ -4,7 +4,7 @@
 
 | 組 | フォルダー | 警告 | 待つ Phase | Step | 状態 |
 |---|---|---|---|---|---|
-| A | Core/Model・Logging・Utilities・Updater・Profiles | 64 | なし | RV9-1 | 未着手 |
+| A | Core/Model・Logging・Utilities・Updater・Profiles | 64 | なし | RV9-1 | 完了（0 件。ガード 1 件: G1） |
 | A | Core/Platform | 69 | なし | RV9-2 | 未着手 |
 | A | Input | 84 | なし | RV9-3 | 未着手 |
 | A | Output | 98 | なし | RV9-4 | 未着手 |

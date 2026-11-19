@@ -13,7 +13,7 @@ namespace DS4Windows.Core.Updater
         /// <param name="ds4UpdaterDir">DS4Updater のフォルダー。</param>
         /// <param name="ds4WindowsExe">更新の後に起動する DS4Windows.exe。</param>
         /// <param name="launchMode">"admin" または "user"。null のときは、<c>--launch-mode</c> を付けない。</param>
-        public static string Build(string ds4WindowsDir, string ds4UpdaterDir, string ds4WindowsExe, string launchMode = null)
+        public static string Build(string ds4WindowsDir, string ds4UpdaterDir, string ds4WindowsExe, string? launchMode = null)
         {
             string args = $"--ds4windows-path \"{ds4WindowsDir}\" --ds4updater-path \"{ds4UpdaterDir}\" " +
                           $"--ds4windows-repo \"{ReleaseSource.RepositoryPageUri}\" " +

@@ -36,7 +36,7 @@ namespace DS4Windows.Core.Updater
                     if (!Directory.Exists(targetDir))
                     {
                         AppLogger.LogDebug($"[UpdaterInstall] Creating target directory: {targetDir}");
-                        Directory.CreateDirectory(targetDir);
+                        Directory.CreateDirectory(targetDir!); // targetPath はファイルのフルパスで、親フォルダーは null にならない
                     }
                     File.Copy(sourcePath, targetPath, true);
                     try { File.Delete(sourcePath); } catch { }
@@ -56,7 +56,7 @@ namespace DS4Windows.Core.Updater
                 }
 
                 // Build elevated start info
-                string exePath = Process.GetCurrentProcess().MainModule.FileName;
+                string exePath = Process.GetCurrentProcess().MainModule!.FileName; // 自プロセスの MainModule は null にならない
                 string args = $"--complete-install \"{sourcePath}\" --complete-install-target \"{targetPath}\"";
                 var psi = new ProcessStartInfo(exePath)
                 {
@@ -141,7 +141,7 @@ namespace DS4Windows.Core.Updater
                 }
 
                 // Elevation: start elevated process to perform complete install
-                string exePath = Process.GetCurrentProcess().MainModule.FileName;
+                string exePath = Process.GetCurrentProcess().MainModule!.FileName; // 自プロセスの MainModule は null にならない
                 // Pass source directory and target directory as arguments
                 string args = $"--complete-install \"{sourceDir}\" --complete-install-target \"{targetDir}\"";
                 var psi = new ProcessStartInfo(exePath)

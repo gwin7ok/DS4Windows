@@ -26,7 +26,7 @@ namespace DS4Windows.Core.Utilities
 
     public class WriteLocker : IDisposable
     {
-        private ReaderWriterLockSlim _lockerInstance;
+        private ReaderWriterLockSlim? _lockerInstance;
         private bool IsDisposed => _lockerInstance == null;
 
         public WriteLocker(ReaderWriterLockSlim lockerInstance)
@@ -42,7 +42,7 @@ namespace DS4Windows.Core.Utilities
                 throw new ObjectDisposedException(this.ToString());
             }
 
-            _lockerInstance.ExitWriteLock();
+            _lockerInstance!.ExitWriteLock(); // IsDisposed の検査を通っているため null ではない
             _lockerInstance = null;
         }
     }

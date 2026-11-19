@@ -51,7 +51,7 @@ namespace DS4Windows.Core.Model
         public double elapsedTime = 0.0;
         public ulong totalMicroSec = 0;
         public ushort ds4Timestamp = 0;
-        public SixAxis Motion = null;
+        public SixAxis Motion;
         public static readonly int DEFAULT_AXISDIR_VALUE = 127;
 
         public struct TrackPadTouch

@@ -46,7 +46,7 @@ namespace DS4Windows.Core.Logging
                 throw new InvalidOperationException("NLog configuration is not loaded");
 
             // Support both async wrapper target and direct file target.
-            NLog.Targets.FileTarget fileTarget = FindLogFileTarget(configuration);
+            NLog.Targets.FileTarget? fileTarget = FindLogFileTarget(configuration);
 
             if (fileTarget == null)
                 throw new InvalidOperationException("logfile target (FileTarget) not found in NLog configuration");
@@ -208,7 +208,7 @@ namespace DS4Windows.Core.Logging
         /// 名前 "logfile" の FileTarget を探す。非同期ラッパー（WrapperTargetBase）の内側と、
         /// 直接の FileTarget（NLog.config の async="false"）の両方に対応する。見つからなければ null。
         /// </summary>
-        public static NLog.Targets.FileTarget FindLogFileTarget(NLog.Config.LoggingConfiguration configuration)
+        public static NLog.Targets.FileTarget? FindLogFileTarget(NLog.Config.LoggingConfiguration configuration)
         {
             if (configuration == null)
                 return null;
@@ -263,7 +263,7 @@ namespace DS4Windows.Core.Logging
             }
         }
 
-        private void WriteToLog(object sender, DS4Windows.Core.Logging.DebugEventArgs e)
+        private void WriteToLog(object? sender, DS4Windows.Core.Logging.DebugEventArgs e)
         {
             if (e.Temporary)
             {

@@ -46,7 +46,7 @@ namespace DS4Windows.Core.Updater
                 else if (File.Exists(sourcePath))
                 {
                     var targetDir = Path.GetDirectoryName(targetPath);
-                    if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
+                    if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir!); // targetPath はファイルのフルパスで、親フォルダーは null にならない
 
                     // Use copy then delete to allow overwrite semantics
                     File.Copy(sourcePath, targetPath, true);

@@ -25,11 +25,11 @@ namespace DS4Windows.Core.Logging
     public class LogItem
     {
         private DateTime datetime;
-        private string message;
+        private string? message;
         private bool warning;
 
         public DateTime Datetime { get => datetime; set => datetime = value; }
-        public string Message { get => message; set => message = value; }
+        public string? Message { get => message; set => message = value; }
         public bool Warning { get => warning; set => warning = value; }
         public string Color
         {

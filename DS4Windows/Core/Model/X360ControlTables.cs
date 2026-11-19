@@ -166,9 +166,9 @@ namespace DS4Windows.Core.Model
             [X360Controls.Unbound] = "Unbound",
         };
 
-        public static string getX360ControlString(X360Controls key, OutContType conType)
+        public static string? getX360ControlString(X360Controls key, OutContType conType)
         {
-            string result = string.Empty;
+            string? result = string.Empty;
             OutContTypeInfo.ButtonNames(conType)?.TryGetValue(key, out result);
             return result;
         }

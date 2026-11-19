@@ -47,10 +47,10 @@ namespace DS4Windows.Core.Profiles
         public bool UsingMaxControllers => environmentService.UsingMaxControllers;
 
         // Phase10-Step4d W4: 各ルールのプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）。Load が使うため、先に設定する
-        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity;
 
         public AutoProfileHolder(DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
-            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
+            DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity = null)
         {
             this.profileIdentity = profileIdentity;
             this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));
@@ -79,7 +79,7 @@ namespace DS4Windows.Core.Profiles
             using StreamReader sr = new StreamReader(configFile);
             try
             {
-                AutoProfilesDTO dto = serializer.Deserialize(sr) as AutoProfilesDTO;
+                AutoProfilesDTO dto = (serializer.Deserialize(sr) as AutoProfilesDTO)!; // 自分が書いた形式のため null にならない（null なら従来どおり NullReferenceException）
                 if (profileIdentity != null) dto.ProfileNameOf = profileIdentity.GetName;   // Phase10-Step4d W4
                 dto.MapTo(this);
             }
