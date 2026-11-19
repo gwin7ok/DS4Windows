@@ -1,15 +1,15 @@
 # PhaseRV9 計画書: Nullable の層ごとの全体有効化（と、品質の門の最後の 1 つ）
 
 作成日: 2026-11-19
-状態: **未承認（コードは未着手）**。D1〜D4 は、ユーザーの選択を待つ（「決めること」を参照）
+状態: **D1〜D4 は決定済み（2026-11-19。「決定事項」を参照）。着手は未承認（コードは未着手）**。着手には、Phase ごとの承認が要る
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の G5（`Nullable` の範囲。2026-11-19 に (B)＝層ごとに全体を有効化と決定）、`PhaseRV1-Plan.md` の D2、`PhaseRV1-Nullable-Trial.md`（試験の記録。本計画の根拠）
-前提: PhaseRV1 の完了（試験の 2 層、`CodeHealthRatchetTests` の枠）。**進める順（RV2〜RV8 との前後）は D1 で決める**。
+前提: PhaseRV1 の完了（試験の 2 層、`CodeHealthRatchetTests` の枠）。**進める順は D1＝(C)**: A 組（RV9-0〜6）を RV2 の前に、B 組（RV9-7〜12）を待つ Phase の完了後に、切り替え（RV9-13）以降を最後に（「順序」を参照）。
 動き: **機能・保存の形・ログは変えない**。注釈（`?`）が中心。`null` の流れを変える修正（ガード）は、台帳に 1 件ずつ残す。
 
 ## 目的
 1. `DS4Windows`（本体）と `DS4WindowsCli` の全ファイルで `null` 許容の注釈を有効にし、警告 0 にする。最後に、プロジェクトの設定 `<Nullable>enable</Nullable>` に切り替える。
 2. 「`null` かもしれない値」を型で表し、`null` 参照の不具合（NRE を `catch` で握りつぶしていた箇所を含む）を、ビルドで見つけられるようにする。
-3. 品質の門（採点基準の「警告をエラー化・アナライザー有効・スタイル診断を無効化していない」）の最後の 1 つ、`TreatWarningsAsErrors` を、D4 の決定に従って有効にする。
+3. 品質の門（採点基準の「警告をエラー化・アナライザー有効・スタイル診断を無効化していない」）の最後の 1 つ、`TreatWarningsAsErrors` を、D4＝(A) の決定に従って、本体と CLI だけ有効にする（今は 2/3）。
 
 ## 背景（実測。2026-11-19、RV1 完了後に `-p:Nullable=enable` で 1 回ビルドして測った）
 - 残りの警告: **2,131 件・349 ファイル**（本体）。`DS4WindowsCli` は 5 件（`CommandLineClient` 3、`CliArguments` 2）。`#nullable enable` を持つのは 56 ファイル（`Core/Abstractions` 37、`Composition` 19。RV1-3）で、**残る 909 ファイル**に指令を足す。警告のあるのは 349 ファイルで、**残りの約 560 ファイルは、指令を足すだけ**で済む。
@@ -61,13 +61,29 @@
 | RV9-10 | B 組 `UI/Abstractions`・`UI/Converters`・`UI/Services`・`UI/Controls`（125 件） | Debug ALL | RV3 の完了 | 未着手 |
 | RV9-11 | B 組 `UI/ViewModels`（252 件。`CS8622`［ハンドラーの `object? sender`］、`CS8612`［`PropertyChanged` の `?`］は機械的に） | Debug ALL、ViewModel のテスト | RV3・RV4 の完了 | 未着手 |
 | RV9-12 | B 組 `UI` 直下の画面（307 件。code-behind。`FindName`・`DataContext` の取り扱いは、`?` と不変条件の `!`） | Debug ALL、`XamlTestHelper`・画面の読み込みテスト | RV4 の完了 | 未着手 |
-| RV9-13 | 切り替え。(1) `DS4WinWPF.csproj` に `<Nullable>enable</Nullable>`（`DS4WindowsCli` も）。(2) ファイルごとの `#nullable enable` を機械的に消す（D3。1 コミット。差分が「指令の行の削除だけ」であることを、スクリプトで検証する）。(3) `<TreatWarningsAsErrors>`（D4）。(4) `CodeHealthRatchetTests` の「指令を持つファイルの数」は不要になるので外し、「`!`（理由なし）＝0」だけ残す。(5) `Rubric-Inputs.json` の `nullable_layers_enabled` は、設定から自動で 6 になる（`Score-CodeReview.py`） | Debug ALL、Release ビルド（警告 0）、StandaloneTests | RV9-1〜12 のすべて | 未着手 |
+| RV9-13 | 切り替え。(1) `DS4WinWPF.csproj` に `<Nullable>enable</Nullable>`（`DS4WindowsCli` も）。(2) ファイルごとの `#nullable enable` を機械的に消す（D3。1 コミット。差分が「指令の行の削除だけ」であることを、スクリプトで検証する）。(3) `DS4WinWPF.csproj` と `DS4WindowsCli` に `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>`（D4＝(A)。ルートの `Directory.Build.props` は `false` のまま。テスト・`externals` を巻き込まない）。(4) `CodeHealthRatchetTests` の「指令を持つファイルの数」は不要になるので外し、「`!`（理由なし）＝0」だけ残す。(5) `Rubric-Inputs.json` の `nullable_layers_enabled` は、設定から自動で 6 になる（`Score-CodeReview.py`） | Debug ALL、Release ビルド（警告 0）、StandaloneTests | RV9-1〜12 のすべて、RV2〜RV8 の完了（D1＝(C)。切り替えは最後） | 未着手 |
 | RV9-14 | 実機確認。台帳 `PhaseRV9-Guards.md` の、動きを変えうる箇所（機器の抜き差し、プロファイルの切替、保存・読み込み、起動・終了）だけを、`Known-Issues-Ledger.md` §3 と `Device-Check-Checklist.md` に 1 件ずつ足す | 実機（最後にまとめて） | RV9-13 | 未着手 |
 | RV9-15 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV9.json --label "RV9 完了" --diff <直前の保存>` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` の基準を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: メンテナンス性（`Nullable` を有効にした層 6 層［今は 1］、品質の門 3/3［今は 2/3］）。ほかの観点は動かない見込み。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | RV9-14 | 未着手 |
 
-組 B の Step は、待つ Phase が済むまで着手しない。順序は D1 で決める（A 組を先に、B 組を各 Phase のあとに、が推奨）。
+組 B の Step は、待つ Phase が済むまで着手しない。
 
-## 決めること
+## 順序（D1＝(C) の決定）
+```
+RV1 ✔ → RV9-0〜6（A 組。RV2 の前）→ RV2 → RV3 → RV4 → RV5 → RV6 → RV9-7〜12（B 組。待つ Phase の完了ごと）→ RV7 → RV8 → RV9-13〜15（切り替え・実機確認・再算定）
+```
+- B 組の Step ごとの待ち先: RV9-10 は RV3、RV9-11・12 は RV4、RV9-7・8 は RV5・RV6、RV9-9 は RV6。待ち先が済めば、RV7・RV8 を待たずに着手してよい。
+- RV2〜RV8 で新しく作るファイルは、最初から `#nullable enable`（D2）。RV2〜RV8 が、A 組のファイルに手を入れるときは、警告 0 を保つ（A 組は指令が入っているため、`null` の警告が出れば、Debug ALL の「警告 0」で見つかる。`TreatWarningsAsErrors` は、切り替えの RV9-13 まで `false`）。
+- 切り替え（RV9-13）を最後にするのは、ファイルごとの指令の一括削除（約 960 ファイル）が、RV2〜RV8 の差分と衝突しないようにするため。
+
+## 決定事項（2026-11-19。ユーザーの選択）
+| # | 決めたこと | 選択 |
+|---|---|---|
+| D1 | 進める順 | **(C) 組で分ける**。A 組（RV9-0〜6）を RV2 の前に、B 組（RV9-7〜12）を、待つ Phase の完了後に、切り替え（RV9-13）以降を最後に |
+| D2 | `!`・`#pragma` と新規ファイルの規則 | **(A) 理由コメントつきの `!` だけ許可**。`#pragma warning disable CS86xx` は禁止。理由なしの `!` を 0 に凍結（`CodeHealthRatchetTests`）。規約 §3.3 へ 2 行（「新規ファイルは `#nullable enable`」「`!` は理由つきだけ」）。**規約本体の変更は RV9-0 の中で行う**（D2 の承認の範囲。文面は、そのときに確認する） |
+| D3 | 切り替えのあとの、ファイルごとの指令 | **(A) 設定 `<Nullable>enable</Nullable>` に切り替え、指令を機械的に消す**（1 コミット。差分が「指令の行の削除だけ」であることを、スクリプトで検証する） |
+| D4 | `TreatWarningsAsErrors` | **(A) `DS4WinWPF.csproj` と `DS4WindowsCli` だけ `true`**（RV9-13）。品質の門は 2/3→3/3（採点のメンテナンス性が約 +3.3 点）。パッケージの更新で新しい警告が出てビルドが止まるときは、`Analyzers.globalconfig` の 1 行で、その警告だけを一時的に外す。設定全体を戻す必要はない |
+
+## 選択肢の記録（決める前に示したもの）
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
 |---|---|---|---|
 | D1 | 進める順（RV2〜RV8 との前後） | (C) 組で分ける: A 組（RV9-0〜6。他の Phase に書き直されない 516 件）を RV2 の前に、B 組（RV9-7〜12）を、待つ Phase の完了後に、切り替え（RV9-13）以降を最後に／(A) 全部を RV8 のあとに 1 回／(B) 全部を今（RV2 の前）に | (C) 利点: 書き直される前の注釈の無駄がなく（B 組の 76%）、A 組の層（入力・出力・基盤）は RV2〜RV8 の大きな変更のあいだ、型の検査の恩恵を受ける。欠点: Phase が 2 か所に分かれ、切り替えは最後まで待つ。(A) 利点: 最終のコードに 1 回で済む。欠点: RV2〜RV8 の大規模な変更が、`null` の検査なしで進む。(B) 利点: 以降のすべてが型の検査つき。欠点: `Core/Persistence`（677 件）と `UI`（画面の約 4 割）の注釈が、RV5・RV3・RV4 で書き直されて無駄になり、動きを変えるガードも無駄に入る |
@@ -104,3 +120,4 @@
 
 ## 履歴
 - 2026-11-19: 計画書を作成（RV1-3 の試験の結果と、RV1 完了後の再計測 2,131 件／349 ファイルを根拠に）。コードは未着手。D1〜D4 はユーザーの選択待ち。
+- 2026-11-19: D1〜D4 をユーザーが選択（D1＝(C)、D2＝(A)、D3＝(A)、D4＝(A)。D4 は、品質の門の意味［今は 2/3］を説明し直したうえでの選択）。「順序」「決定事項」の節を足し、RV9-13 の前提と内容を決定に合わせた。着手は、Phase ごとの承認待ち。

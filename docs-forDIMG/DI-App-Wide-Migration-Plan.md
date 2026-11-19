@@ -1219,10 +1219,10 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 | RV6 | 共有部品化と、冗長な実装の整理（`Gyro*Info`、`KeyButtonActionController` まわり、未参照の型の削除。規則 2.4） | `PhaseRV6-Plan.md` | 中 | 低〜中 | 未承認 |
 | RV7 | 採用手段の統一（変更通知の基底、命名、タイマーの書き方の規則、テストの枠） | `PhaseRV7-Plan.md` | 中 | 低〜中 | 未承認 |
 | RV8 | 経緯のコメント・文書・ガードテストの整理（コメントのみの変更を機械で検証） | `PhaseRV8-Plan.md` | 中 | 低 | 未承認 |
-| RV9 | `Nullable` の層ごとの全体有効化（A 組＝他の Phase と独立の 516 件、B 組＝RV3〜RV6 のあとの 1,615 件。最後に `TreatWarningsAsErrors`） | `PhaseRV9-Plan.md` | 大 | 中 | 未承認（2026-11-19 作成。D1〜D4 は選択待ち） |
+| RV9 | `Nullable` の層ごとの全体有効化（A 組＝他の Phase と独立の 516 件、B 組＝RV3〜RV6 のあとの 1,615 件。最後に `TreatWarningsAsErrors`） | `PhaseRV9-Plan.md` | 大 | 中 | 未承認（2026-11-19 作成。D1〜D4 は決定済み。着手は Phase ごとの承認待ち） |
 
 - 既決の対象外（再び持ち出さない）: `App.xaml.cs` の行数を目的にした整理、`Mapping`・`TriggerDispatchEngine` の分割、`AppSettingsDTO` の `partial` 分割（37-6 の見送り）、`AppLogger`・`PathService`・`EnvironmentService` の静的な状態、既存の実装 1・偽物なしのインターフェースの撤去、`NoWarn` の撤去。
-- RV9（`PhaseRV9-Plan.md`。2026-11-19 作成、未承認）: `Nullable` の層ごとの全体有効化。RV1 の D2＝(B)（2026-11-19 決定）。試験の結果は `PhaseRV1-Nullable-Trial.md`（2 層で 27 件を 0 にした）。RV1 完了後の再計測は 2,131 件／349 ファイル（A 組 516 件は他の Phase と独立、B 組 1,615 件は RV3〜RV6 のあとが推奨）。決めること D1〜D4（進める順、`!` の規則、切り替え後の指令、`TreatWarningsAsErrors`）はユーザーの選択待ち。
+- RV9（`PhaseRV9-Plan.md`。2026-11-19 作成。D1〜D4 は決定済み、着手は未承認）: `Nullable` の層ごとの全体有効化。RV1 の D2＝(B)（2026-11-19 決定）。試験の結果は `PhaseRV1-Nullable-Trial.md`（2 層で 27 件を 0 にした）。RV1 完了後の再計測は 2,131 件／349 ファイル（A 組 516 件は他の Phase と独立、B 組 1,615 件は RV3〜RV6 のあと）。**2026-11-19 の決定**: D1＝(C)（A 組を RV2 の前、B 組を待つ Phase の後、切り替えを最後）、D2＝(A)（理由コメントつきの `!` だけ許可。規約 §3.3 へ 2 行。RV9-0 で行う）、D3＝(A)（設定に切り替え、ファイルごとの指令を機械的に消す）、D4＝(A)（`DS4WinWPF.csproj`・`DS4WindowsCli` だけ `TreatWarningsAsErrors=true`。品質の門 2/3→3/3）。
 - 前提: RV3・RV4 は、PhaseX3（日本語化）の XAML の作業の区切りのあとに行う（2026-11-19 時点で、PhaseX3 に残るのは X3-5［日本語表示の実機確認］のみ）。PhaseX（KI-7）は、実施する場合は RV のあとの最後のまま。
 - 全体の決定事項（報告書 §8）: G1 規則 V3 の新設、G2 例外の規則の置き場所、G3 ログの追加の扱い（規則 2.3 の例外）、G4 進める順、G5 `Nullable` の範囲。**2026-11-19 にすべて決定**: G1＝(A)（RV3 の完了時に V3 を規約へ足す。文面は承認を得てから）、G2＝(A)＋規約本体へのリンク、G3＝(A)、G4＝(A)（RV3→RV4→RV5→RV6→RV7→RV8）、G5＝(B)（層ごとに全体を有効化。RV9）。RV1〜RV8 の D 項目もすべて決定済み（各計画書の「決定事項」）。着手は、Phase ごとの承認を得てから。
 - 評価の算定（2026-11-19 追記）: 9 観点の A〜D を毎回同じ物差しで出すため、採点基準 `Code-Review-2026-11-19/03-Rubric.md`（v1。2026-11-19 確定）、スクリプト `scripts/audit/Score-CodeReview.py`、手で記録する値 `scripts/audit/Rubric-Inputs.json`、推移の記録 `Code-Review-2026-11-19/02-Scorecard.md` を足した。各 PhaseRV の計画書の最終 Step が「評価の再算定」で、結果をユーザーへ報告する。

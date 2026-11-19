@@ -228,7 +228,7 @@ python -I scripts/audit/Score-CodeReview.py --show-rubric        # §3 の表（
 | RV6 | 同一の重複 2.1→1.4%、構造の重複 11.0→10.4% | **仮定**（計画書に目標がない。対象のファイルの重複が約半分になる想定） |
 | RV7 | `INotifyPropertyChanged` の直接実装 13→1、小文字始まりのメソッド 92→0、タイマーの種類 4→1、別名 0、`?? throw new ArgumentNullException` 666→0、テストの枠 2→1 | 完了の定義（`ProfileEditor` の 1 件は許可リスト） |
 | RV8 | `Phase<数字>` を含む行 1,656→200、ソースの文字列を読むテスト 128→60、Archive の外の文書 482→100 | **仮定**（計画書に目標がなく、RV8-0 の分類のあとに決まる） |
-| RV9（予定） | `Nullable` を有効にした層 0→6、品質の門 2→3 | 計画書は `PhaseRV9-Plan.md`（未承認）。層別の有効化が完了し、`TreatWarningsAsErrors` を有効にした場合（D4＝(A) の場合） |
+| RV9（予定） | `Nullable` を有効にした層 0→6、品質の門 2→3 | 計画書は `PhaseRV9-Plan.md`（D1〜D4 決定済み、着手は未承認）。層別の有効化が完了し、`TreatWarningsAsErrors` を有効にした場合（D4＝(A) に決定。本体と CLI の csproj だけ） |
 
 ### 以前の目分量の予想との違い
 
