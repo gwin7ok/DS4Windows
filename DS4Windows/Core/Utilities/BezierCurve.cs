@@ -32,7 +32,6 @@
 * 
 */
 using System;
-using System.Globalization;
 using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Core.Utilities

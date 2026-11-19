@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
-using DS4Windows.UI;
 
 namespace DS4Windows.Core.Platform
 {

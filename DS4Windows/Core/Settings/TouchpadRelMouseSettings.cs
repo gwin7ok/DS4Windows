@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using Sensorit.Base;
 
 namespace DS4Windows.Core.Settings
 {

@@ -1,5 +1,3 @@
-using System;
-
 namespace DS4Windows.Core.Settings
 {
 

@@ -1,5 +1,4 @@
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows.Core.Model
 {

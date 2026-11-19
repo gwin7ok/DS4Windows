@@ -1,5 +1,3 @@
-using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Model;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Core.Logging;
 

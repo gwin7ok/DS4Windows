@@ -1,6 +1,3 @@
-
-using DS4Windows.Input;
-
 namespace DS4Windows.Core.Abstractions
 {
     public interface IProfileXmlStore

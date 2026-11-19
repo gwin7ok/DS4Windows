@@ -1,5 +1,3 @@
-using DS4Windows.Input;
-
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
