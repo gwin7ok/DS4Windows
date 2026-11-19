@@ -119,6 +119,7 @@
 | `Core` で `using DS4Windows.(Processing|UI|Output|Composition|Input)…;` を持つファイル | 25（`Processing` 12 行、`Input` 12 行、`Input.Devices` 5 行など。実際の参照は ArchUnitNET が 0 件と確認） |
 | `Directory.Build.props` | `TreatWarningsAsErrors=false`、`WarningsAsErrors` は空 |
 | `Nullable`・`AnalysisLevel`・`AnalysisMode` | `DS4WinWPF.csproj` に指定なし |
+| `Nullable` を全体で有効にした場合の警告（2026-11-19 の実測。`-p:Nullable=enable` を付けた 1 回のビルド。ファイルは変更なし。テストのプロジェクトは除く） | 2,153 件／359 ファイル（ビルドの表示は重複を含む 2,454 件）。層別: Core 920、UI 684、Processing 300、Output 98、Input 84、ルート 38、Composition 24、Cli 5。種類: CS8600 640、CS8625 387、CS8602 349、CS8618 263、CS8622 182、CS8603 153、CS8604 113、CS8601 41 |
 | `.editorconfig` | `dotnet_analyzer_diagnostic.category-Style.severity = none`、`IDE0090`・`IDE0028`・`IDE0300` も `none` |
 
 ## 13. PhaseRV ごとの目標値（完了の定義の基準）
