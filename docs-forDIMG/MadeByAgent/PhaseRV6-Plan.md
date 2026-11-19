@@ -36,6 +36,7 @@
 | RV6-5 | 未参照の型の整理（RV6-0 で承認されたものだけ）: 削除は `git rm`（1 型 1 コミット、`RemovedApiRuleTests` の表へ）。「使うべき」と判断したものは、原則4 の TODO（経緯、未接続の理由、接続予定）を付け、接続の作業を適切な計画書へ追加する | `RemovedApiRuleTests`、全テスト | 未着手 |
 | RV6-6 | 公開の可変フィールドの調査（記録のみ）: `SpecialAction`（30）、`TouchMouseStickInfo`（17）、`GyroMouseStickInfo`（16）が、`XmlSerializer`・リフレクション・毎フレームの経路から直接触られているかを調べ、プロパティ化できる範囲を `PhaseRV6-Public-Fields.md` に記録（実施は、効果を見て別に承認） | — | 未着手 |
 | RV6-7 | 検査: `CodeHealthRatchetTests` に、「真に未参照の型（承認済みの削除対象）＝0」に当たる項目は作らず（誤検出が多い）、代わりに `RemovedApiRuleTests` の表を更新する。`Measure-CodeReview.py --only clone,cloneexact` の数字を、`01-Metrics.md` に追記する | — | 未着手 |
+| RV6-8 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV6.json --label "RV6 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV5.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 冗長処理 B→B+。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -69,6 +70,7 @@
 - `Gyro*Info` の二重が解消されている（D3 が (A) のとき）。
 - 同一の重複が、`01-Metrics.md` の基準より減っている（目標は RV6-3 の調査のあとに、この計画書へ書く）。
 - Debug ALL が警告 0・エラー 0。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV1-Plan.md`（RV1-5）、`PhaseRV2-Plan.md`、`PhaseRV4-Plan.md`、`PhaseRV5-Plan.md`。
@@ -78,3 +80,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＋D5＝(A)、D2＝(B)、D3＝(A)、D4＝(B) をユーザーが選択。D2 の判断のため、`IRepeater.Start` の呼び出しを調べた（本番は `tickAction` をいつも `null`、アダプターは 3 つの引数をすべて無視。使うのはテストの偽物だけ）。`PressActionController` の削除は承認済み。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。

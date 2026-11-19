@@ -26,6 +26,9 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SRC = os.path.join(ROOT, "DS4Windows")
 TESTS = os.path.join(ROOT, "DS4WindowsTests")
 SKIP_DIRS = {"obj", "bin", "libs"}
+# 一覧の長さ（既定は報告書の値と同じ）。Score-CodeReview.py は、一覧から個別のファイルの値を拾うために広げて呼ぶ
+CLONE_TOP = int(os.environ.get("MEASURE_CLONE_TOP", "14"))
+FIELDS_MIN = int(os.environ.get("MEASURE_FIELDS_MIN", "15"))
 
 
 def walk(base, exts):
@@ -154,13 +157,21 @@ def m_catch():
             if "AppLogger" in line and re.search(r"catch\s*(?:\([^)]*\))?\s*\{\s*\}", line):
                 wrap += 1
     print(f"- ログ呼び出しを try/catch{{}} で包む行: {wrap}")
-    av = su = th = 0
+    # 中括弧の中が空白だけ（理由のコメントがない）。コメントを除かない生のソースで数える
+    bare = 0
+    for p in src_files():
+        bare += len(ml.findall(read(p)))
+    print(f"- うち、理由のコメントがない空の catch（生のソースで中括弧の中が空白だけ）: {bare} 件")
+    av = su = th = av_other = 0
+    handler_sig = re.compile(r"\basync\s+void\s+\w+\s*\(\s*object\??\s+\w+\s*,\s*[\w\.]+(?:<[^>]*>)?\??\s+\w+\s*\)")
     for p in src_files():
         t = strip_comments(read(p))
-        av += len(re.findall(r"\basync\s+void\b", t))
+        a = len(re.findall(r"\basync\s+void\b", t))
+        av += a
+        av_other += a - len(handler_sig.findall(t))
         su += len(re.findall(r"\.Result\b|\.Wait\(\)|GetAwaiter\(\)\.GetResult\(\)", t))
         th += len(re.findall(r"Thread\.Sleep", t))
-    print(f"- async void {av} / .Result・.Wait() {su} / Thread.Sleep {th}")
+    print(f"- async void {av}（うちイベントハンドラーの形［object, 〜］以外 {av_other}） / .Result・.Wait() {su} / Thread.Sleep {th}")
     nn = sum(len(re.findall(r"\?\?\s*throw\s+new\s+ArgumentNullException", read(p))) for p in src_files())
     print(f"- `?? throw new ArgumentNullException` {nn} 件")
 
@@ -235,7 +246,8 @@ def m_unref():
         if refs or xtoks.get(name, 0):
             continue
         t_refs = sum(1 for c in ttoks.values() if c.get(name, 0) > 0)
-        (testonly if t_refs else none).append((name, kind, rel(next(iter(where[name])))))
+        # 同名の型が複数のファイルにあるときも、毎回同じファイルを示す（set の順序は実行ごとに変わる）
+        (testonly if t_refs else none).append((name, kind, rel(sorted(where[name])[0])))
     interop = re.compile(r"NativeMethods|Win32WindowSystem|LowLevelMouseHook|SendInputHandler|XInputNativeApi|XusbInterfaceSource|Util\.cs|WindowPlacementHelper|DS4_REPORT")
     plain = [x for x in none if not interop.search(x[2]) and x[1] in ("class", "enum", "interface")]
     print(f"- 型 {len(types)} 件のうち、自分のファイル以外から参照されない: {len(none)} 件（うち P/Invoke 構造体などを除く class/enum: {len(plain)} 件）、テストからだけ参照: {len(testonly)} 件")
@@ -280,7 +292,7 @@ def m_clone(exact=False):
     print(f"- 意味のある行 {total} 件のうち、他と同じ形の窓に入る行: {dup} 件（{100.0 * dup / total:.1f}%）。表・宣言の並び（ProfilePresets、DS4ControlNames など）を多く含む")
     rows = sorted(((len(v), len(files[p]), rel(p)) for p, v in marks.items()), reverse=True)
     print("- 重複の多いファイル（重複行/行、%）:")
-    for d, n, p in rows[:14]:
+    for d, n, p in rows[:CLONE_TOP]:
         print(f"    {d:4d}/{n:4d} ({100 * d // max(n, 1):3d}%)  {p}")
 
 
@@ -293,9 +305,9 @@ def m_fields():
         t = strip_comments(read(p))
         n = len(pub_field.findall(t))
         tot += n
-        if n >= 15:
+        if n >= FIELDS_MIN:
             rows.append((n, rel(p)))
-    print(f"- public の可変フィールド 合計 {tot} 件。15 件以上のファイル:")
+    print(f"- public の可変フィールド 合計 {tot} 件。{FIELDS_MIN} 件以上のファイル:")
     for n, p in sorted(rows, reverse=True):
         print(f"    {n:4d}  {p}")
 

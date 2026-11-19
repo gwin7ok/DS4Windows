@@ -35,6 +35,7 @@
 | RV7-5 | テストの枠（D4）: 決定に従う。(A) のとき、`StandaloneTests` の 8 ファイルを、`DS4WindowsTests` へ移し（xUnit へ書き換え）、`StandaloneTests` を削除し、`debug-all.yml` の該当の行を更新する | 移したテストが緑。CI の設定は、`gh workflow` でなく、ファイルの差分を目で確かめる | 未着手 |
 | RV7-6 | 検査: `CodeHealthRatchetTests` に、「小文字始まりの公開メソッド＝0」「`INotifyPropertyChanged` の直接実装＝許可リスト（`ProfileEditor` のみ）」「別名 `using NonFormTimer`＝0」「`?? throw new ArgumentNullException`＝0」「統一した 1 種類以外のタイマーの生成＝許可リスト（理由つき）のみ」を足す。許可リストは空に近く保つ（足さない） | 新テスト | 未着手 |
 | RV7-7 | 文書: 規約（承認後）、`02-Extension-Guide.md`（新しい ViewModel の作り方の 1 行）、`01-Metrics.md` の基準 | `ModelDiagramGuardTests` | 未着手 |
+| RV7-8 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV7.json --label "RV7 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV6.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: オブジェクト指向 B−→B、冗長処理 B+→A−、採用手段の統一 B−→A。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -72,6 +73,7 @@
 - タイマーが 1 種類に揃い（許可リストの例外を除く）、書き方の規則が規約に（承認後）ある。`?? throw new ArgumentNullException` が 0。
 - D4 が (A) のとき、テストの枠が 1 つで、`debug-all.yml` が更新されている。
 - `CodeHealthRatchetTests` に上記の項目がある。Debug ALL が警告 0・エラー 0。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV1-Plan.md`（別名の未使用の整理）、`PhaseRV3-Plan.md`（コマンドの基盤 D1）、`PhaseRV2-Plan.md`（`async void`）。
@@ -81,3 +83,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(C)、D2＝(B)、D3＋D5＝(B)、D4＝(A) をユーザーが選択（D2・D3・D5 は推奨 (A) と異なる）。D1 は RV3 の D1＝(B) を受けて推奨を (A) から (C) へ変更。D2 の判断のため、小文字始まりのメソッドの呼び出し箇所（本体 57 ファイル 268 か所、テスト 54 か所、XAML 0）と、独自の `SetProperty` を呼ぶ箇所（0 件）、`StandaloneTests` の構成（8 ファイル・615 行）を調べた。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。

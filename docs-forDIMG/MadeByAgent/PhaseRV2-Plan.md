@@ -36,6 +36,7 @@
 | RV2-6 | 非同期・待機の作法: (1) イベントハンドラー以外の `async void` を `async Task` へ（呼び出し側が `await` か、`_ = …` と理由の明記）。(2) `.Result`・`.Wait()` 21 件を分類し、UI スレッドで待つものは非同期化、専用スレッドの中のものは理由のコメント。(3) `Thread.Sleep` 13 件を分類し、読み取りスレッドの再接続待ちなど専用スレッドの中のものは残して理由を書き、UI スレッドのものは非同期の待ちへ | 既存のテスト。デッドロックが疑われる箇所は、単体テスト（タイムアウトつき）を足す | 未着手 |
 | RV2-7 | 検査: `CodeHealthRatchetTests` に、「何も書かない空の `catch`＝0」「ログを包む `try`＝0」「イベントハンドラー以外の `async void`＝0」を足す。コメントのみの空の `catch` の件数は、基準として凍結して減らす（理由の質は検査できない） | `CodeHealthRatchetTests` | 未着手 |
 | RV2-8 | 実機確認: 型を絞った（S3）箇所と、非同期化した箇所だけを、`Known-Issues-Ledger.md` §3 と `Device-Check-Checklist.md` に 1 件ずつ足す（機器の抜き差し、プロファイルの切替、終了） | 実機（最後にまとめて 1 件ずつ） | 未着手 |
+| RV2-9 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV2.json --label "RV2 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV1.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 冗長処理 C→B。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -69,6 +70,7 @@
 - `.Result`・`.Wait()`・`Thread.Sleep` の全件に、残す理由か、非同期化の記録がある。
 - `Log-Policy.md` に「例外の扱い」の節がある。
 - Debug ALL が警告 0・エラー 0。実機確認の項目が台帳に足されている。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV1-Plan.md`（検査の枠）、`PhaseRV5-Plan.md`（プロファイルの節の `try { } catch { }`）、`PhaseRV6-Plan.md`（`KeyButtonActionController` の構造）。
@@ -78,3 +80,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(A)、D2＝(A)、D3＝(A)＋規約本体へのリンク 1 行、D4＝(A) をユーザーが選択。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。

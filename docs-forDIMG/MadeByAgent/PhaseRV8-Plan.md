@@ -36,6 +36,7 @@
 | RV8-6 | 文書の整理（D2）。完了した Phase の計画書・完了報告・調査メモを `docs-forDIMG/MadeByAgent/Archive/` へ `git mv` する（移動のみ。内容は変えない。別コミットで、他の文書からのリンクを直す）。`docs-forDIMG/MadeByAgent/00-Index.md` を新設し、現行の文書（規約、モデル図、台帳、未完了の計画書）と、`Archive/` の索引を載せる。規約・モデル図が参照する文書は、移さない（リンク切れ 0 を、スクリプトで検査） | `ModelDiagramGuardTests`、リンク検査スクリプト（`scripts/audit/Check-DocLinks.py`） | 未着手 |
 | RV8-7 | 規約の見出しの変更履歴（D4）: 「最終更新日」の長い行を、`docs-forDIMG/MadeByAgent/Copilot-Instructions-Changelog.md` へ移し、規約には最新の更新日と、変更履歴への参照だけを残す（D4＝(A)。承認済み。移動先は `Archive/` ではなく現行の文書として、`MadeByAgent` の直下に置く） | — | 未着手 |
 | RV8-8 | 基準の取り直し: `Measure-CodeReview.py` の `comments` の数字を `01-Metrics.md` に追記。`CodeHealthRatchetTests` に、`Phase<数字>` を含む行の件数（凍結して減らす）を足し、以後は新しい経緯のコメントが増えないようにする | `CodeHealthRatchetTests` | 未着手 |
+| RV8-9 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV8.json --label "RV8 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV7.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 冗長処理 A−→A、メンテナンス性 B→A−。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -71,6 +72,7 @@
 - テストの XML コメントの Phase 名が減り、文字列を読むテストが、型の検査へ置き換えられる分だけ置き換わっている。負の確認の記録がある。
 - 完了した Phase の文書が `Archive/` にあり、`00-Index.md` がある。リンク切れ 0。
 - Debug ALL が警告 0・エラー 0。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV1-Plan.md`（`CodeHealthRatchetTests`）、`PhaseRV7-Plan.md`（命名の統一のあと）。
@@ -80,3 +82,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＋D5＝(B)、D2＝(A)、D3＝(B)、D4＝(A) をユーザーが選択（D1・D3 は推奨 (A) と異なる）。D2 の判断のため、コード・テストが `docs-forDIMG` を指す箇所（コメントのみ。コード 13 行・テスト 8 行）を数えた。規約の変更履歴の移動は承認済み。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。

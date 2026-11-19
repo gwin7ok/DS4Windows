@@ -37,6 +37,7 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 | RV3-6 | `MainWindow.xaml.cs` の部品への直接代入（`IsEnabled`・`Visibility`・`Content`・`ItemsSource`・`SelectedIndex`）を、分類（RV3-0）の (b) に従ってバインディングへ。残る手結び（`+=`）は、(c) のみにする | `MainWindowsViewModel` のテスト | 未着手 |
 | RV3-7 | 検査: **V3（操作は `ICommand`）**。`ViewCommandBindingRatchetTests`（`ViewCommandBindingBaseline`）を新設し、XAML の `Click`・その他のイベント属性の件数を、画面ごとに凍結して実数と一致を検査する（RV3 の 4 画面は目標の件数。残りは現状の件数）。D2＝(B) のため、4 画面に残してよい `Click`・イベント属性は、分類 (c)（見た目だけ）の許可リスト（画面・ハンドラー名・理由）に載ったものだけとし、リスト外が 1 件でもあれば失敗する。許可リストは RV3-0 の分類表と一緒に承認を得る。規約 §3.1 に V3 の説明を足す（G1＝(A) に決定済み。文面をユーザーに見せて承認を得てから足す）。`CodeHealthRatchetTests` に `Command` バインディングの下限を足す | 新テスト自身 | 未着手 |
 | RV3-8 | 実機確認の項目を `Device-Check-Checklist.md` に足す（開始・停止の連打、トレイ、ホットキー、更新の確認、最小化・復帰、自動プロファイルの一覧の操作、スペシャルアクションの編集）。モデル図 `01-Structure.md` は、型の一覧が変わる場合のみ `ModelDiagramGuardTests` を見ながら更新 | 実機（最後にまとめて 1 件ずつ） | 未着手 |
+| RV3-9 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV3.json --label "RV3 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV2.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: MVVM 原則遵守の割合 C+→B−。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -73,6 +74,7 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 - `ViewModelWpfReferenceBaseline`・`ViewDirectServiceReferenceBaseline` が 0 のまま。
 - V3 の検査と、規約への追記（承認後）がある。
 - Debug ALL が警告 0・エラー 0。実機確認の項目が台帳・チェックリストに足されている。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV1-Plan.md`（検査の枠）、`PhaseRV2-Plan.md`（`async void` の整理）、`PhaseRV4-Plan.md`（残りの画面）、`PhaseRV7-Plan.md`（変更通知の統一。本 Phase の D1＝(B) により、RV7 の D1 は、ツールキットの `ObservableObject` への移行（(C)）を前提に再確認する）。RV4 の D3（目標の件数）は、本 Phase の D2＝(B) と同じ考え方に決定済み（2026-11-19）。
@@ -82,3 +84,4 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B) CommunityToolkit.Mvvm、D2＝(B) 見た目だけを除くすべて、D3＝(A) 3 つとも削除、D4＝(A) 共有する、をユーザーが選択。D3 は、全体の構造（画面→窓口→契約→第 2 層 と 画面→ViewModel→契約→第 2 層）との関係を説明して選択された。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
