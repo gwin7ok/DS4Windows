@@ -31,7 +31,7 @@ namespace DS4WindowsTests
             var features = new FakeRuntimeFeatureSwitch();
             var priority = new FakeProcessPriorityControl();
             var policy = new UpdateCheckPolicy(changelog, TestRepositoryFactory.CreateAppSettingsService());
-            var vm = new MainWindowsViewModel(new EnvironmentService(), new PathService(), lifecycle, launcher, dialogs, policy, features, priority) { Navigator = navigator };
+            var vm = new MainWindowsViewModel(new EnvironmentService(), new PathService(), lifecycle, launcher, dialogs, policy, features, priority, TestRepositoryFactory.CreateAppSettingsService()) { Navigator = navigator };
             return (vm, lifecycle, launcher, dialogs, navigator, changelog, features, priority);
         }
 
@@ -132,7 +132,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_RequiresTheLifecycle()
         {
-            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(new EnvironmentService(), new PathService(), null!, new FakeShellLauncher(), new FakeDialogService(), new UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService()), new FakeRuntimeFeatureSwitch(), new FakeProcessPriorityControl()));
+            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(new EnvironmentService(), new PathService(), null!, new FakeShellLauncher(), new FakeDialogService(), new UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService()), new FakeRuntimeFeatureSwitch(), new FakeProcessPriorityControl(), TestRepositoryFactory.CreateAppSettingsService()));
         }
 
         [Fact]

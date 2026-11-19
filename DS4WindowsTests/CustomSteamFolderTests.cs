@@ -181,11 +181,11 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, @"\s+", " ");
 
             // 使う側が、存在を確かめてから使う（無ければ既定の Steam フォルダーへ）。この確認を外す変更は、保存を許す前提を壊す
-            // 確認は MainWindowSettings.CustomSteamFolderIfValid が持ち、画面は、その値が無いときだけ既定の Steam フォルダーへ進む
-            Assert.Contains("appSettingsService.CustomSteamFolderIfValid ?? (Directory.Exists(AutoProfiles.steamCommx86Loc)", text);
-            string settings = SourceFileLocator.Find("DS4Windows/UI/Services/MainWindowSettings.cs");
+            // 確認は MainWindowsViewModel.CustomSteamFolderIfValid が持ち、画面は、その値が無いときだけ既定の Steam フォルダーへ進む
+            Assert.Contains("mainWinVM.CustomSteamFolderIfValid ?? (Directory.Exists(AutoProfiles.steamCommx86Loc)", text);
+            string settings = SourceFileLocator.Find("DS4Windows/UI/ViewModels/MainWindowsViewModel.cs");
             if (settings == null) return;
-            Assert.Contains("settings.UseCustomSteamFolder && System.IO.Directory.Exists(settings.CustomSteamFolder)", File.ReadAllText(settings));
+            Assert.Contains("_appSettings.UseCustomSteamFolder && System.IO.Directory.Exists(_appSettings.CustomSteamFolder)", File.ReadAllText(settings));
         }
     }
 }

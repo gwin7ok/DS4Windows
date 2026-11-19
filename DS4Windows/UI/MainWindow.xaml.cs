@@ -79,8 +79,7 @@ namespace DS4Windows.UI
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly AutoProfileRunner _autoProfileService;
-        private readonly MainWindowSettings appSettingsService;
-        private readonly MainWindowEnvironment environment;
+        private readonly MainWindowLayoutViewModel layout;
         // トレイ・通知・テーマの切り替えと、プロファイルの選択・編集後の同期は、それぞれの部品が受け持つ
         private readonly TrayAppearanceController trayAppearance;
         private readonly ProfileSelectionCoordinator profileSelection;
@@ -88,7 +87,6 @@ namespace DS4Windows.UI
         private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly IpcCommandDispatcher ipcDispatcher;   // CLI のコマンドの実行
         private MainWindowIpcHost ipcHost;   // コマンドが画面に頼む操作（一覧の ViewModel ができてから作る）
-        private readonly MainWindowServiceControl serviceControl;   // サービスの開始・停止と、OSC／UDP／HidHide／TouchpadSlide の窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -106,9 +104,7 @@ namespace DS4Windows.UI
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
 
         public MainWindow(ArgumentParser parser,
-            MainWindowSettings appSettingsService,
-            MainWindowEnvironment environment,
-            MainWindowServiceControl serviceControl,
+            MainWindowLayoutViewModel layout,
             IpcCommandDispatcher ipcDispatcher,
             MainWindowsViewModel mainWindowsViewModel,
             AutoProfileRunner autoProfileService,
@@ -130,27 +126,25 @@ namespace DS4Windows.UI
             InitializeComponent();
             // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
-            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            profileListHolder = environment.CreateProfileList();
-            this.serviceControl = serviceControl ?? throw new ArgumentNullException(nameof(serviceControl));
+            mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
+            DataContext = mainWinVM;
+            mainWinVM.Navigator = new MainWindowNavigator(this);
+            this.layout = layout ?? throw new ArgumentNullException(nameof(layout));
+            profileListHolder = mainWinVM.CreateProfileList();
             this.ipcDispatcher = ipcDispatcher ?? throw new ArgumentNullException(nameof(ipcDispatcher));
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
-            logMinLevelComboBox.SelectedValue = appSettingsService.LogMinLevel;
+            logMinLevelComboBox.SelectedValue = mainWinVM.LogMinLevel;
 
             // Phase7-Step5 W5: 旧 AppHost 解決の失敗時の new MainWindowsViewModel(...) のフォールバックは削除した（必須引数）
-            mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
-            DataContext = mainWinVM;
-            mainWinVM.Navigator = new MainWindowNavigator(this);
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
-            languagePackControl.Initialize(appSettingsService.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
+            languagePackControl.Initialize(layout.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
             logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
@@ -180,7 +174,7 @@ namespace DS4Windows.UI
             notifyIcon.DataContext = trayIconVM;
             trayIconVM.MenuChanged += TrayIconVM_MenuChanged;
             TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems);
-            notifyIcon.CustomName = environment.ExecutablePath;
+            notifyIcon.CustomName = mainWinVM.ExecutablePath;
 
             // Remove TaskbarIcon from visual tree so Loaded and Unloaded events
             // are not fired for TaskbarIcon instance. Ignores early Dispose calls
@@ -203,39 +197,39 @@ namespace DS4Windows.UI
                 }
             }
 
-            startMinimized = appSettingsService.StartMinimized || parser.Mini;
+            startMinimized = mainWinVM.StartMinimized || parser.Mini;
 
-            bool isElevated = environment.IsAdministrator();
+            bool isElevated = mainWinVM.IsAdministrator();
             if (isElevated)
             {
                 uacImg.Visibility = Visibility.Collapsed;
             }
 
             noContLb.Content = string.Format(Strings.NoControllersConnected,
-                environment.ControllerSlotLimit);
+                mainWinVM.ControllerSlotLimit);
 
             // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
             // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
-            string autoProfilesFile = environment.AppDataPath + "\\Auto Profiles.xml";
+            string autoProfilesFile = mainWinVM.AppDataPath + "\\Auto Profiles.xml";
             _autoProfileService.EnsureFile(autoProfilesFile);
 
-            string steamGamesDir = appSettingsService.CustomSteamFolderIfValid
+            string steamGamesDir = mainWinVM.CustomSteamFolderIfValid
                 ?? (Directory.Exists(AutoProfiles.steamCommx86Loc) ? AutoProfiles.steamCommx86Loc
                     : Directory.Exists(AutoProfiles.steamCommLoc) ? AutoProfiles.steamCommLoc : null);
 
-            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, environment.ControllerSlotLimit,
+            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, mainWinVM.ControllerSlotLimit,
                 _autoProfileService.Holder, viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)),
-                () => appSettingsService.AutoProfileColumnWidths,
-                (name, path, title) => appSettingsService.AutoProfileColumnWidths = (name, path, title));
+                () => layout.AutoProfileColumnWidths,
+                (name, path, title) => layout.AutoProfileColumnWidths = (name, path, title));
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
             slotManControl.SetupDataContext(viewModelFactory.CreateCurrentOutDeviceViewModel());
-            slotManControl.SetColumnWidths(appSettingsService.OutputSlotColumnWidths);
-            slotManControl.ColumnWidthsChanged += (s, e) => appSettingsService.OutputSlotColumnWidths = slotManControl.GetColumnWidths();
+            slotManControl.SetColumnWidths(layout.OutputSlotColumnWidths);
+            slotManControl.ColumnWidthsChanged += (s, e) => layout.OutputSlotColumnWidths = slotManControl.GetColumnWidths();
 
             SetupEvents();
 
@@ -265,7 +259,7 @@ namespace DS4Windows.UI
                         mainWinVM.IsServiceBusy = true;
                     }));
                     Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
-                    serviceControl.Start();
+                    mainWinVM.StartService();
                     //root.rootHubtest.Start();
                 }
             });
@@ -311,7 +305,7 @@ namespace DS4Windows.UI
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version, environment.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
+                var updaterWin = new UpdaterWindow(version, mainWinVM.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -319,10 +313,10 @@ namespace DS4Windows.UI
 
         private void Check_Version(bool showstatus = false)
         {
-            string version = environment.ApplicationVersion;
+            string version = mainWinVM.ApplicationVersion;
             string newversion = string.Empty;
-            string versionFilePath = Path.Combine(environment.AppDataPath, "version.txt");
-            ulong lastVersionNum = appSettingsService.LastVersionCheckedNum;
+            string versionFilePath = Path.Combine(mainWinVM.AppDataPath, "version.txt");
+            ulong lastVersionNum = mainWinVM.LastVersionCheckedNum;
             //ulong lastVersion = Global.CompileVersionNumberFromString("2.1.1");
 
             bool versionFileExists = File.Exists(versionFilePath);
@@ -383,9 +377,9 @@ namespace DS4Windows.UI
         private void SetupEvents()
         {
             WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += OnLocalizationCultureChanged;
-            serviceControl.ServiceStarted += ControlServiceStarted;
-            serviceControl.RunningChanged += ControlServiceChanged;
-            serviceControl.PreServiceStop += PrepareForServiceStop;
+            mainWinVM.ServiceStarted += ControlServiceStarted;
+            mainWinVM.RunningChanged += ControlServiceChanged;
+            mainWinVM.PreServiceStop += PrepareForServiceStop;
             //root.rootHubtest.RunningChanged += ControlServiceChanged;
             conLvViewModel.ControllerCol.CollectionChanged += ControllerCol_CollectionChanged;
             trayAppearance.SubscribeNotifications();
@@ -489,7 +483,7 @@ namespace DS4Windows.UI
 
         private void ControlServiceStarted(object sender, EventArgs e)
         {
-            if (appSettingsService.SwipeProfiles)
+            if (mainWinVM.SwipeProfiles)
             {
                 ChangeHotkeysStatus(true);
             }
@@ -537,7 +531,7 @@ namespace DS4Windows.UI
                 // Wakeup from Suspend
                 case POWER_RESUME:
                     {
-                        serviceControl.Suspending = false;
+                        mainWinVM.Suspending = false;
 
                         if (wasrunning)
                         {
@@ -556,7 +550,7 @@ namespace DS4Windows.UI
                             //Task startupTask = Task.Run(() =>
                             Task startupTask = Task.Delay(5000).ContinueWith(t =>
                             {
-                                serviceControl.Start();
+                                mainWinVM.StartService();
                             });
 
                             // Log exceptions that might occur
@@ -568,16 +562,16 @@ namespace DS4Windows.UI
                 // Entering Suspend
                 case POWER_SUSPEND:
                     {
-                        serviceControl.Suspending = true;
+                        mainWinVM.Suspending = true;
 
-                        if (serviceControl.Running)
+                        if (mainWinVM.ServiceRunning)
                         {
                             //Dispatcher.Invoke(() =>
                             //{
                             //    mainWinVM.IsServiceBusy = true;
                             //});
 
-                            serviceControl.Stop(immediateUnplug: true);
+                            mainWinVM.StopService(immediateUnplug: true);
                             wasrunning = true;
 
                             Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
@@ -621,12 +615,12 @@ namespace DS4Windows.UI
 
         private void SwipeProfileTick()
         {
-            if (!appSettingsService.SwipeProfiles) return;
+            if (!mainWinVM.SwipeProfiles) return;
 
             // 一覧はホットプラグで別のスレッドから変わるため、読み取りロックの下で複製した行を列挙する
             foreach (CompositeDeviceModel item in conLvViewModel.SnapshotRows())
             {
-                string slide = serviceControl.TouchpadSlide(item.DevIndex);
+                string slide = mainWinVM.TouchpadSlide(item.DevIndex);
                 // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
                 if (slide == "left" || slide == "right")
                 {
@@ -700,7 +694,7 @@ namespace DS4Windows.UI
                         prolog = string.Format(Properties.Resources.UsingProfile, (devIndex + 1).ToString(), prof, battery);
 
                     // 修正前:
-                    // if (appSettingsService.ProfileChangedNotification)
+                    // if (mainWinVM.ProfileChangedNotification)
                     // {
                     //     ShowProfileSwitchNotification(message);
                     // }
@@ -749,7 +743,7 @@ namespace DS4Windows.UI
                     }
                 }
 
-                if (serviceControl.Running)
+                if (mainWinVM.ServiceRunning)
                     trayIconVM.PopulateContextMenu();
             }));
         }
@@ -780,7 +774,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void UpdateStartStopText()
         {
-            StartStopBtn.Content = serviceControl.Running ? Translations.Strings.StopText : Translations.Strings.StartText;
+            StartStopBtn.Content = mainWinVM.ServiceRunning ? Translations.Strings.StopText : Translations.Strings.StartText;
         }
 
         private void OnLocalizationCultureChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -795,7 +789,7 @@ namespace DS4Windows.UI
             {
                 UpdateStartStopText();
                 mainWinVM.NotifyServiceStateChanged();
-                slotManControl.IsEnabled = serviceControl.Running;
+                slotManControl.IsEnabled = mainWinVM.ServiceRunning;
             }));
         }
 
@@ -848,7 +842,7 @@ namespace DS4Windows.UI
             dialog.Filter = "Text Documents (*.txt)|*.txt";
             dialog.Title = "Select Export File";
             // TODO: Expose config dir
-            dialog.InitialDirectory = environment.AppDataPath;
+            dialog.InitialDirectory = mainWinVM.AppDataPath;
             if (dialog.ShowDialog() == true)
             {
                 LogWriter logWriter = new LogWriter(dialog.FileName, logvm.LogItems.ToList());
@@ -938,7 +932,7 @@ namespace DS4Windows.UI
             {
                 return;
             }
-            else if (appSettingsService.CloseMinimizes)
+            else if (mainWinVM.CloseMinimizes)
             {
                 WindowState = WindowState.Minimized;
                 e.Cancel = true;
@@ -990,9 +984,9 @@ namespace DS4Windows.UI
         {
             base.OnSourceInitialized(e);
 
-            if (!appSettingsService.FirstRun)
+            if (!mainWinVM.FirstRun)
             {
-                WindowPlacementHelper.ApplyPlacement(this, appSettingsService.FormLocationX, appSettingsService.FormLocationY, appSettingsService.FormWidth, appSettingsService.FormHeight, startMinimized);
+                WindowPlacementHelper.ApplyPlacement(this, layout.FormLocationX, layout.FormLocationY, layout.FormWidth, layout.FormHeight, startMinimized);
 
                 // ApplyPlacement 後に WPF 側でサイズや位置が変更される可能性があるため、
                 // レイアウト完了後に実際のウィンドウ矩形と WPF プロパティをログに残す。
@@ -1060,7 +1054,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void HandleDeviceChange(IntPtr wParam)
         {
-            if (appSettingsService.RunHotPlug)
+            if (mainWinVM.RunHotPlug)
             {
                 Int32 Type = wParam.ToInt32();
                 if (Type == DBT_DEVICEARRIVAL ||
@@ -1094,11 +1088,11 @@ namespace DS4Windows.UI
                 hotplugCounter = 0;
             }
 
-            serviceControl.UpdateHidHiddenAttributes();
+            mainWinVM.UpdateHidHiddenAttributes();
             while (loopHotplug == true)
             {
                 Thread.Sleep(HOTPLUG_CHECK_DELAY); // 待機の理由: 機器の抜き差しの検出をまとめるための待ち（バックグラウンドのスレッドの中）
-                serviceControl.HotPlug();
+                mainWinVM.HotPlug();
 
                 lock (hotplugCounterLock)
                 {
@@ -1112,7 +1106,7 @@ namespace DS4Windows.UI
 
         private void HookWindowMessages(HwndSource source)
         {
-            bool result = Util.RegisterNotify(source.Handle, environment.HidClassGuid, ref regHandle);
+            bool result = Util.RegisterNotify(source.Handle, mainWinVM.HidClassGuid, ref regHandle);
             if (!result)
             {
                 Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
@@ -1121,7 +1115,7 @@ namespace DS4Windows.UI
             // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
             try
             {
-                Util.RegisterNotify(source.Handle, environment.XusbClassGuid, ref regHandleXusb);
+                Util.RegisterNotify(source.Handle, mainWinVM.XusbClassGuid, ref regHandleXusb);
             }
             catch (Exception)
             {
@@ -1204,7 +1198,7 @@ namespace DS4Windows.UI
 
         public void CheckMinStatus()
         {
-            bool minToTask = appSettingsService.MinimizeToTaskbar;
+            bool minToTask = mainWinVM.MinimizeToTaskbar;
             if (WindowState == WindowState.Minimized && !minToTask)
             {
                 Hide();
@@ -1223,17 +1217,17 @@ namespace DS4Windows.UI
             if (WindowState != WindowState.Minimized && editor != null && editor.Keepsize && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormWidth = logical.LogicalWidth;
-                appSettingsService.FormHeight = logical.LogicalHeight;
-                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={appSettingsService.FormWidth} Height={appSettingsService.FormHeight}");
+                layout.FormWidth = logical.LogicalWidth;
+                layout.FormHeight = logical.LogicalHeight;
+                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={layout.FormWidth} Height={layout.FormHeight}");
             }
             // 編集画面が開いていない場合は常に保存
             else if (WindowState != WindowState.Minimized && editor == null && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormWidth = logical.LogicalWidth;
-                appSettingsService.FormHeight = logical.LogicalHeight;
-                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={appSettingsService.FormWidth} Height={appSettingsService.FormHeight}");
+                layout.FormWidth = logical.LogicalWidth;
+                layout.FormHeight = logical.LogicalHeight;
+                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={layout.FormWidth} Height={layout.FormHeight}");
             }
         }
 
@@ -1243,17 +1237,17 @@ namespace DS4Windows.UI
             if (WindowState != WindowState.Minimized && editor != null && editor.Keepsize && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormLocationX = logical.LogicalX;
-                appSettingsService.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={appSettingsService.FormLocationX} Y={appSettingsService.FormLocationY}");
+                layout.FormLocationX = logical.LogicalX;
+                layout.FormLocationY = logical.LogicalY;
+                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={layout.FormLocationX} Y={layout.FormLocationY}");
             }
             // 編集画面が開いていない場合は常に保存
             else if (WindowState != WindowState.Minimized && editor == null && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormLocationX = logical.LogicalX;
-                appSettingsService.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={appSettingsService.FormLocationX} Y={appSettingsService.FormLocationY}");
+                layout.FormLocationX = logical.LogicalX;
+                layout.FormLocationY = logical.LogicalY;
+                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={layout.FormLocationX} Y={layout.FormLocationY}");
             }
         }
 
@@ -1287,11 +1281,11 @@ namespace DS4Windows.UI
             {
                 oldSize = new Size(Width, Height);
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormWidth = logical.LogicalWidth;
-                appSettingsService.FormHeight = logical.LogicalHeight;
-                appSettingsService.FormLocationX = logical.LogicalX;
-                appSettingsService.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.ProfileEditor_Closed: Saved Logical Rect X={appSettingsService.FormLocationX} Y={appSettingsService.FormLocationY} W={appSettingsService.FormWidth} H={appSettingsService.FormHeight}");
+                layout.FormWidth = logical.LogicalWidth;
+                layout.FormHeight = logical.LogicalHeight;
+                layout.FormLocationX = logical.LogicalX;
+                layout.FormLocationY = logical.LogicalY;
+                AppLogger.LogTrace($"MainWindow.ProfileEditor_Closed: Saved Logical Rect X={layout.FormLocationX} Y={layout.FormLocationY} W={layout.FormWidth} H={layout.FormHeight}");
             }
             editor = null;
             // Restore the tab that was active before opening the profile editor
@@ -1405,7 +1399,7 @@ namespace DS4Windows.UI
             var gridView = logListView.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 2)
             {
-                appSettingsService.LogColumnWidths = new[] { (int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width };
+                layout.LogColumnWidths = new[] { (int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width };
             }
         }
 
@@ -1414,7 +1408,7 @@ namespace DS4Windows.UI
             var gridView = logListView.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 2)
             {
-                int[] widths = appSettingsService.LogColumnWidths;
+                int[] widths = layout.LogColumnWidths;
                 gridView.Columns[0].Width = widths[0];
                 gridView.Columns[1].Width = widths[1];
             }
@@ -1427,7 +1421,7 @@ namespace DS4Windows.UI
             {
                 int[] widths = new int[10];
                 for (int i = 0; i < widths.Length; i++) widths[i] = (int)gridView.Columns[i].Width;
-                appSettingsService.ControllerColumnWidths = widths;
+                layout.ControllerColumnWidths = widths;
             }
         }
 
@@ -1436,7 +1430,7 @@ namespace DS4Windows.UI
             var gridView = controllerLV.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 10)
             {
-                int[] widths = appSettingsService.ControllerColumnWidths;
+                int[] widths = layout.ControllerColumnWidths;
                 for (int i = 0; i < widths.Length; i++) gridView.Columns[i].Width = widths[i];
             }
         }
@@ -1457,7 +1451,7 @@ namespace DS4Windows.UI
             {
                 int idx = profilesListBox.SelectedIndex;
                 ProfileEntity entity = profileListHolder.ProfileListCol[idx];
-                string filename = Path.Combine(environment.AppDataPath,
+                string filename = Path.Combine(mainWinVM.AppDataPath,
                     "Profiles", $"{entity.Name}.xml");
 
                 // Disallow renaming Default profile

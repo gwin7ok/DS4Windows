@@ -43,6 +43,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IServiceLifecycle _lifecycle;
         private readonly IShellLauncher _launcher;
         private readonly IProcessPriorityControl _priority;
+        private readonly IAppSettingsService _appSettings;
         private readonly IRuntimeFeatureSwitch _features;
         private readonly IDialogService _dialogs;
         private readonly UpdateCheckPolicy _updateCheckPolicy;
@@ -71,8 +72,10 @@ namespace DS4Windows.UI.ViewModels
         // UpdaterWindow が担う）のため、決定6＝D1 により削除した。
         public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService, IServiceLifecycle lifecycle,
             IShellLauncher launcher, IDialogService dialogs, UpdateCheckPolicy updateCheckPolicy,
-            IRuntimeFeatureSwitch features, IProcessPriorityControl priority)
+            IRuntimeFeatureSwitch features, IProcessPriorityControl priority,
+            IAppSettingsService appSettings)
         {
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _priority = priority ?? throw new ArgumentNullException(nameof(priority));
             _features = features ?? throw new ArgumentNullException(nameof(features));
             _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
@@ -152,6 +155,89 @@ namespace DS4Windows.UI.ViewModels
             get => _hideXboxToggleEnabled;
             private set => SetProperty(ref _hideXboxToggleEnabled, value);
         }
+
+        // ---- サービス（開始・停止・状態）。画面が契約（IServiceLifecycle・IRuntimeFeatureSwitch）を直接参照しないための窓口 ----
+
+        public bool ServiceRunning => _lifecycle.Running;
+
+        public bool Suspending
+        {
+            get => _lifecycle.Suspending;
+            set => _lifecycle.Suspending = value;
+        }
+
+        public event EventHandler ServiceStarted
+        {
+            add => _lifecycle.ServiceStarted += value;
+            remove => _lifecycle.ServiceStarted -= value;
+        }
+
+        public event EventHandler RunningChanged
+        {
+            add => _lifecycle.RunningChanged += value;
+            remove => _lifecycle.RunningChanged -= value;
+        }
+
+        public event EventHandler PreServiceStop
+        {
+            add => _lifecycle.PreServiceStop += value;
+            remove => _lifecycle.PreServiceStop -= value;
+        }
+
+        public bool StartService(bool showlog = true) => _lifecycle.Start(showlog);
+
+        public bool StopService(bool showlog = true, bool immediateUnplug = false) => _lifecycle.Stop(showlog, immediateUnplug);
+
+        public bool HotPlug() => _lifecycle.HotPlug();
+
+        public string TouchpadSlide(int index) => _features.TouchpadSlide(index);
+
+        public void UpdateHidHiddenAttributes() => _features.UpdateHidHiddenAttributes();
+
+        // ---- 保存先・実行環境 ----
+
+        public string AppDataPath => _pathService.AppDataPath;
+
+        public string ExecutablePath => _pathService.ExecutablePath;
+
+        public bool IsAdministrator() => _environmentService.IsAdministrator();
+
+        public int ControllerSlotLimit => _environmentService.ControllerSlotLimit;
+
+        public string? ApplicationVersion => _environmentService.ApplicationVersion;
+
+        public Guid HidClassGuid => _environmentService.HidClassGuid;
+
+        public Guid XusbClassGuid => _environmentService.XusbClassGuid;
+
+        /// <summary>保存先のパスから、プロファイルの一覧の保持の入れ物を作る。</summary>
+        public DS4Windows.Core.Profiles.ProfileList CreateProfileList() => new DS4Windows.Core.Profiles.ProfileList(_pathService);
+
+        // ---- 画面の動きを決める設定 ----
+
+        public string LogMinLevel => _appSettings.LogMinLevel;
+
+        public bool StartMinimized => _appSettings.StartMinimized;
+
+        public bool MinimizeToTaskbar => _appSettings.MinimizeToTaskbar;
+
+        public bool CloseMinimizes => _appSettings.CloseMinimizes;
+
+        public bool FirstRun => _appSettings.FirstRun;
+
+        public bool RunHotPlug => _appSettings.RunHotPlug;
+
+        public bool SwipeProfiles => _appSettings.SwipeProfiles;
+
+        public ulong LastVersionCheckedNum => _appSettings.LastVersionCheckedNum;
+
+        /// <summary>Steam のゲームのフォルダ。カスタムのフォルダが有効で存在するときだけ、その値（それ以外は null）。</summary>
+        public string? CustomSteamFolderIfValid
+            => _appSettings.UseCustomSteamFolder && System.IO.Directory.Exists(_appSettings.CustomSteamFolder) ? _appSettings.CustomSteamFolder : null;
+
+        /// <summary>機器の登録の設定画面の ViewModel（設定の機器オプションを渡して作る）。</summary>
+        public ControllerRegDeviceOptsViewModel CreateDeviceOptionsViewModel(IShellViewModelFactory factory)
+            => factory.CreateControllerRegDeviceOptsViewModel(_appSettings.DeviceOptions);
 
         /// <summary>他の画面を開く窓口。画面（View）ができたあとに、画面が自分で結ぶ。</summary>
         public IShellNavigator? Navigator { get; set; }

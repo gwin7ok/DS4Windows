@@ -27,6 +27,9 @@ namespace DS4WindowsTests
         /// <summary>撤去した型（単純名。どの名前空間にもないこと）。</summary>
         private static readonly string[] RemovedTypeNames =
         {
+            "MainWindowSettings",           // PhaseRV3-4（委譲だけの窓口。配置は MainWindowLayoutViewModel、その他は MainWindowsViewModel へ）
+            "MainWindowEnvironment",        // PhaseRV3-4（パス・実行環境は MainWindowsViewModel へ）
+            "MainWindowServiceControl",     // PhaseRV3-4（サービス操作は MainWindowsViewModel へ）
             "RelayCommand",              // PhaseRV3-1（独自のコマンドは CommunityToolkit.Mvvm ＋ CommandGuard へ。ツールキットの型は別の assembly）
             "ControlService",               // Phase27（取り付けは RuntimeBootstrapper へ。静的なスロット数の上限 CURRENT_DS4_CONTROLLER_LIMIT は Phase7-Step10e W1・W2 で撤去済み）
             "Global",                       // Phase7-Step10d W5（Phase6〜7 の Global の参照の検査はこの 1 行に畳んだ）

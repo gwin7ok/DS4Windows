@@ -20,7 +20,7 @@ namespace DS4Windows.UI
 
             public void ShowAbout()
             {
-                var aboutWin = new About(window.environment.ApplicationVersion) { Owner = window };
+                var aboutWin = new About(window.mainWinVM.ApplicationVersion) { Owner = window };
                 aboutWin.ShowDialog();
             }
 
@@ -32,7 +32,7 @@ namespace DS4Windows.UI
 
             public void ShowDeviceOptions()
             {
-                var optsWindow = new ControllerRegisterOptionsWindow(window.appSettingsService.CreateDeviceOptionsViewModel(window._viewModelFactory))
+                var optsWindow = new ControllerRegisterOptionsWindow(window.mainWinVM.CreateDeviceOptionsViewModel(window._viewModelFactory))
                 {
                     Owner = window,
                 };
@@ -41,7 +41,7 @@ namespace DS4Windows.UI
 
             public void ShowUpdater(string version)
             {
-                var updaterWin = new UpdaterWindow(version, window.environment.IsAdministrator, window._viewModelFactory.CreateUpdaterWindowViewModel(version));
+                var updaterWin = new UpdaterWindow(version, window.mainWinVM.IsAdministrator, window._viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
             }
 
