@@ -15,6 +15,8 @@ namespace DS4WindowsTests
 
         public void RunProgramIfExists(string path) => Calls.Add("RunProgramIfExists:" + path);
 
+        public void RunElevatedAndWait(string fileName, string arguments) => Calls.Add("RunElevatedAndWait:" + fileName + " " + arguments);
+
         public void OpenUrl(string url) => Calls.Add("OpenUrl:" + url);
     }
 }

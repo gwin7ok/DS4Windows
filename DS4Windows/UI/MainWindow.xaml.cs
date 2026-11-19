@@ -800,7 +800,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ClearLogBtn_Click(object sender, RoutedEventArgs e)
+        internal void ClearLog()
         {
             logvm.LogItems.Clear();
             // 最下部の 1 行メッセージ欄（lastMsgLb）も、ログと一緒に消す
@@ -811,11 +811,6 @@ namespace DS4Windows.UI
         // Phase11 W6 K-W6-1: 旧 MainTabCon_SelectionChanged（タブの番号 4 のとき、最下部の 1 行メッセージ欄 lastMsgLb を隠していた）は削除した。
         // 本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は Settings タブで隠れ、
         // Settings で出る警告が見えなかった。すべてのタブで表示する（ユーザー決定 2026-11-02）。
-
-        private void RunAtStartCk_Click(object sender, RoutedEventArgs e)
-        {
-            settingsWrapVM.ShowRunStartPanel = runAtStartCk.IsChecked == true;
-        }
 
         private void ContStatusImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -830,7 +825,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ExportLogBtn_Click(object sender, RoutedEventArgs e)
+        internal void ExportLog()
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.AddExtension = true;
@@ -1151,68 +1146,6 @@ namespace DS4Windows.UI
             //controllerLV.Focus();
         }
 
-        private void UseOscServerCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = useOscServerCk.IsChecked == true;
-            serviceControl.ChangeOscListenerStatus(status);
-        }
-
-        private void UseOscSenderCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = useOscSenderCk.IsChecked == true;
-            serviceControl.ChangeOscSenderStatus(status);
-        }
-
-        private async void UseUdpServerCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = useUdpServerCk.IsChecked == true;
-            if (!status)
-            {
-                serviceControl.ChangeMotionEventStatus(status);
-                await Task.Delay(200).ContinueWith((t) =>
-                {
-                    serviceControl.ChangeUdpStatus(status);
-                });
-            }
-            else
-            {
-                serviceControl.ChangeUdpStatus(status);
-                await Task.Delay(200).ContinueWith((t) =>
-                {
-                    serviceControl.ChangeMotionEventStatus(status);
-                });
-            }
-        }
-
-        private async void DriverSetupBtn_Click(object sender, RoutedEventArgs e)
-        {
-            mainWinVM.IsServiceBusy = true;
-            await Task.Run(() =>
-            {
-                if (serviceControl.Running)
-                    serviceControl.Stop();
-            });
-
-            mainWinVM.IsServiceBusy = false;
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = environment.ExecutablePath;
-            startInfo.Arguments = "-driverinstall";
-            startInfo.Verb = "runas";
-            startInfo.UseShellExecute = true;
-            try
-            {
-                using (Process temp = Process.Start(startInfo))
-                {
-                    temp.WaitForExit();
-                    environment.RefreshHidHideInfo();
-                    environment.RefreshFakerInputInfo();
-
-                    settingsWrapVM.DriverCheckRefresh();
-                }
-            }
-            catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-        }
-
         internal void ImportProfile()
         {
             profileSelection.ImportProfile(profileListHolder);
@@ -1324,12 +1257,6 @@ namespace DS4Windows.UI
         {
             contextclose = true;
             Close();
-        }
-
-        private void SwipeTouchCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = swipeTouchCk.IsChecked == true;
-            ChangeHotkeysStatus(status);
         }
 
         internal void EditProfile()

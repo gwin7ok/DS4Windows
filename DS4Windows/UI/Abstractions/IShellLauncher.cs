@@ -16,6 +16,9 @@ namespace DS4Windows.UI.Abstractions
         /// <summary>ファイルがあるときだけ、プログラムを起動する。</summary>
         void RunProgramIfExists(string path);
 
+        /// <summary>管理者の権限でプログラムを起動し、終わるまで待つ（ドライバーの導入）。</summary>
+        void RunElevatedAndWait(string fileName, string arguments);
+
         /// <summary>既定のブラウザーで Web ページを開く。</summary>
         void OpenUrl(string url);
     }

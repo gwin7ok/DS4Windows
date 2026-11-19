@@ -17,20 +17,21 @@ namespace DS4WindowsTests
     {
         private static (MainWindowsViewModel Vm, FakeServiceLifecycle Lifecycle) Create()
         {
-            var (vm, lifecycle, _, _, _, _) = CreateAll();
+            var (vm, lifecycle, _, _, _, _, _) = CreateAll();
             return (vm, lifecycle);
         }
 
-        private static (MainWindowsViewModel Vm, FakeServiceLifecycle Lifecycle, FakeShellLauncher Launcher, FakeDialogService Dialogs, FakeShellNavigator Navigator, FakeChangelogService Changelog) CreateAll()
+        private static (MainWindowsViewModel Vm, FakeServiceLifecycle Lifecycle, FakeShellLauncher Launcher, FakeDialogService Dialogs, FakeShellNavigator Navigator, FakeChangelogService Changelog, FakeRuntimeFeatureSwitch Features) CreateAll()
         {
             var lifecycle = new FakeServiceLifecycle();
             var launcher = new FakeShellLauncher();
             var dialogs = new FakeDialogService();
             var navigator = new FakeShellNavigator();
             var changelog = new FakeChangelogService();
+            var features = new FakeRuntimeFeatureSwitch();
             var policy = new UpdateCheckPolicy(changelog, TestRepositoryFactory.CreateAppSettingsService());
-            var vm = new MainWindowsViewModel(new EnvironmentService(), new PathService(), lifecycle, launcher, dialogs, policy) { Navigator = navigator };
-            return (vm, lifecycle, launcher, dialogs, navigator, changelog);
+            var vm = new MainWindowsViewModel(new EnvironmentService(), new PathService(), lifecycle, launcher, dialogs, policy, features) { Navigator = navigator };
+            return (vm, lifecycle, launcher, dialogs, navigator, changelog, features);
         }
 
         [Fact]
@@ -130,13 +131,13 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_RequiresTheLifecycle()
         {
-            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(new EnvironmentService(), new PathService(), null!, new FakeShellLauncher(), new FakeDialogService(), new UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService())));
+            Assert.Throws<ArgumentNullException>(() => new MainWindowsViewModel(new EnvironmentService(), new PathService(), null!, new FakeShellLauncher(), new FakeDialogService(), new UpdateCheckPolicy(new FakeChangelogService(), TestRepositoryFactory.CreateAppSettingsService()), new FakeRuntimeFeatureSwitch()));
         }
 
         [Fact]
         public void LauncherCommands_AskTheLauncher_WithTheExpectedTargets()
         {
-            var (vm, _, launcher, dialogs, _, _) = CreateAll();
+            var (vm, _, launcher, dialogs, _, _, _) = CreateAll();
 
             vm.OpenProfilesFolderCommand.Execute(null);
             vm.OpenControlPanelCommand.Execute(null);
@@ -155,7 +156,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NavigationCommands_AskTheNavigator()
         {
-            var (vm, _, _, _, navigator, _) = CreateAll();
+            var (vm, _, _, _, navigator, _, _) = CreateAll();
 
             vm.ShowAboutCommand.Execute(null);
             vm.ShowChangelogCommand.Execute(null);
@@ -167,7 +168,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NavigationCommands_WithoutANavigator_DoNothing()
         {
-            var (vm, _, _, _, _, _) = CreateAll();
+            var (vm, _, _, _, _, _, _) = CreateAll();
             vm.Navigator = null;
             vm.ShowAboutCommand.Execute(null);
         }
@@ -175,7 +176,7 @@ namespace DS4WindowsTests
         [Fact]
         public async Task CheckUpdates_WhenNewerExists_OpensTheUpdater()
         {
-            var (vm, _, _, dialogs, navigator, changelog) = CreateAll();
+            var (vm, _, _, dialogs, navigator, changelog, _) = CreateAll();
             changelog.Newer = true;
             changelog.Latest = new Version(9, 9, 9);
 
@@ -188,7 +189,7 @@ namespace DS4WindowsTests
         [Fact]
         public async Task CheckUpdates_WhenUpToDate_ShowsAMessage()
         {
-            var (vm, _, _, dialogs, navigator, _) = CreateAll();
+            var (vm, _, _, dialogs, navigator, _, _) = CreateAll();
 
             await vm.CheckUpdatesCommand.ExecuteAsync(null);
 
@@ -199,7 +200,7 @@ namespace DS4WindowsTests
         [Fact]
         public async Task CheckUpdates_WhenTheCheckFails_ShowsAFailureMessage_AndDoesNotEscape()
         {
-            var (vm, _, _, dialogs, navigator, changelog) = CreateAll();
+            var (vm, _, _, dialogs, navigator, changelog, _) = CreateAll();
             changelog.Throw = true;
 
             await vm.CheckUpdatesCommand.ExecuteAsync(null);
@@ -211,7 +212,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileListCommands_AreGatedBySelection_ExceptNewAndImport()
         {
-            var (vm, _, _, _, navigator, _) = CreateAll();
+            var (vm, _, _, _, navigator, _, _) = CreateAll();
             Assert.True(vm.NewProfileCommand.CanExecute(null));
             Assert.True(vm.ImportProfileCommand.CanExecute(null));
             Assert.False(vm.EditProfileCommand.CanExecute(null));
@@ -241,12 +242,59 @@ namespace DS4WindowsTests
         [Fact]
         public void DeviceProfileCommands_PassTheDeviceIndex()
         {
-            var (vm, _, _, _, navigator, _) = CreateAll();
+            var (vm, _, _, _, navigator, _, _) = CreateAll();
 
             vm.EditDeviceProfileCommand.Execute(1);
             vm.NewDeviceProfileCommand.Execute(3);
 
             Assert.Equal(new[] { "EditDeviceProfile:1", "NewDeviceProfile:3" }, navigator.Shown);
+        }
+
+        [Fact]
+        public void FeatureToggles_PassTheCheckedState()
+        {
+            var (vm, _, _, _, navigator, _, features) = CreateAll();
+
+            vm.SetOscListenerCommand.Execute(true);
+            vm.SetOscSenderCommand.Execute(false);
+            vm.SetSwipeTouchCommand.Execute(true);
+            vm.SetRunAtStartPanelCommand.Execute(true);
+            vm.ExportLogCommand.Execute(null);
+            vm.ClearLogCommand.Execute(null);
+
+            Assert.Equal(new[] { "OscListener:True", "OscSender:False" }, features.Calls);
+            Assert.Equal(new[] { "Hotkeys:True", "RunStartPanel:True", "ExportLog", "ClearLog" }, navigator.Shown);
+        }
+
+        [Fact]
+        public async Task UdpServer_TurnOn_OpensThePortBeforeTheMotionFeed_AndTurnOffReverses()
+        {
+            var (vm, _, _, _, _, _, features) = CreateAll();
+
+            await vm.SetUdpServerCommand.ExecuteAsync(true);
+            await vm.SetUdpServerCommand.ExecuteAsync(false);
+
+            Assert.Equal(new[] { "Udp:True", "Motion:True", "Motion:False", "Udp:False" }, features.Calls);
+        }
+
+        [Fact]
+        public async Task DriverSetup_StopsTheServiceOnlyWhenRunning_ThenRunsTheInstallerElevated_AndRefreshes()
+        {
+            var (vm, lifecycle, launcher, _, navigator, _, _) = CreateAll();
+            lifecycle.Running = true;
+
+            await vm.DriverSetupCommand.ExecuteAsync(null);
+
+            Assert.Equal(1, lifecycle.StopCalls);
+            Assert.False(vm.IsServiceBusy);
+            Assert.Single(launcher.Calls);
+            Assert.StartsWith("RunElevatedAndWait:", launcher.Calls[0]);
+            Assert.EndsWith("-driverinstall", launcher.Calls[0]);
+            Assert.Equal(new[] { "RefreshDriverCheck" }, navigator.Shown);
+
+            lifecycle.Running = false;
+            await vm.DriverSetupCommand.ExecuteAsync(null);
+            Assert.Equal(1, lifecycle.StopCalls);
         }
     }
 }

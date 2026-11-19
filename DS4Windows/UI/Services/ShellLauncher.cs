@@ -38,6 +38,21 @@ namespace DS4Windows.UI.Services
 
         public void OpenUrl(string url) => Util.StartProcessHelper(url);
 
+        public void RunElevatedAndWait(string fileName, string arguments)
+        {
+            var startInfo = new ProcessStartInfo { FileName = fileName, Arguments = arguments, Verb = "runas", UseShellExecute = true };
+            try
+            {
+                using Process? started = Process.Start(startInfo);
+                started?.WaitForExit();
+            }
+            catch (Exception caught) when (caught is Win32Exception or InvalidOperationException or NotSupportedException)
+            {
+                // 利用者が昇格を拒んだ場合も含め、導入できなくても画面の操作は続ける
+                return;
+            }
+        }
+
         private static void Start(ProcessStartInfo startInfo)
         {
             try

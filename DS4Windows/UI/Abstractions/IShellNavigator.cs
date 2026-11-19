@@ -45,5 +45,20 @@ namespace DS4Windows.UI.Abstractions
 
         /// <summary>機器（スロット）用の新しいプロファイルの編集を始める。</summary>
         void NewDeviceProfile(int deviceIndex);
+
+        /// <summary>タッチパッドのスワイプによるプロファイル切替の、定期の確認を始める・止める。</summary>
+        void SetHotkeysActive(bool active);
+
+        /// <summary>設定画面の「起動時に実行」の詳細（実行の間隔など）を出す・隠す。</summary>
+        void SetRunStartPanelVisible(bool visible);
+
+        /// <summary>ログを、ファイルへ書き出す（保存先を選ばせる）。</summary>
+        void ExportLog();
+
+        /// <summary>ログの一覧と、最下部の 1 行メッセージを消す。</summary>
+        void ClearLog();
+
+        /// <summary>ドライバーの導入のあと、設定画面のドライバーの状態の表示を更新する。</summary>
+        void RefreshDriverCheck();
     }
 }

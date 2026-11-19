@@ -42,6 +42,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IPathService _pathService;
         private readonly IServiceLifecycle _lifecycle;
         private readonly IShellLauncher _launcher;
+        private readonly IRuntimeFeatureSwitch _features;
         private readonly IDialogService _dialogs;
         private readonly UpdateCheckPolicy _updateCheckPolicy;
 
@@ -68,8 +69,10 @@ namespace DS4Windows.UI.ViewModels
         // 呼出元 0 件の上流の更新経路の残骸（2025-12-12 の b55d160b で呼び出しが消え、現行の更新処理は
         // UpdaterWindow が担う）のため、決定6＝D1 により削除した。
         public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService, IServiceLifecycle lifecycle,
-            IShellLauncher launcher, IDialogService dialogs, UpdateCheckPolicy updateCheckPolicy)
+            IShellLauncher launcher, IDialogService dialogs, UpdateCheckPolicy updateCheckPolicy,
+            IRuntimeFeatureSwitch features)
         {
+            _features = features ?? throw new ArgumentNullException(nameof(features));
             _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
             _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             _updateCheckPolicy = updateCheckPolicy ?? throw new ArgumentNullException(nameof(updateCheckPolicy));
@@ -95,6 +98,15 @@ namespace DS4Windows.UI.ViewModels
             ShowAboutCommand = CommandGuard.CreateSync(() => Navigator?.ShowAbout(), name: nameof(ShowAboutCommand));
             ShowChangelogCommand = CommandGuard.CreateSync(() => Navigator?.ShowChangelog(), name: nameof(ShowChangelogCommand));
             ShowDeviceOptionsCommand = CommandGuard.CreateSync(() => Navigator?.ShowDeviceOptions(), name: nameof(ShowDeviceOptionsCommand));
+
+            SetOscListenerCommand = CommandGuard.CreateSync<bool>(on => _features.ChangeOscListenerStatus(on), name: nameof(SetOscListenerCommand));
+            SetOscSenderCommand = CommandGuard.CreateSync<bool>(on => _features.ChangeOscSenderStatus(on), name: nameof(SetOscSenderCommand));
+            SetUdpServerCommand = CommandGuard.Create<bool>(SetUdpServerAsync, name: nameof(SetUdpServerCommand));
+            SetSwipeTouchCommand = CommandGuard.CreateSync<bool>(on => Navigator?.SetHotkeysActive(on), name: nameof(SetSwipeTouchCommand));
+            SetRunAtStartPanelCommand = CommandGuard.CreateSync<bool>(on => Navigator?.SetRunStartPanelVisible(on), name: nameof(SetRunAtStartPanelCommand));
+            ExportLogCommand = CommandGuard.CreateSync(() => Navigator?.ExportLog(), name: nameof(ExportLogCommand));
+            ClearLogCommand = CommandGuard.CreateSync(() => Navigator?.ClearLog(), name: nameof(ClearLogCommand));
+            DriverSetupCommand = CommandGuard.Create(DriverSetupAsync, name: nameof(DriverSetupCommand));
 
             bool HasSelection() => SelectedProfileIndex >= 0;
             NewProfileCommand = CommandGuard.CreateSync(() => Navigator?.NewProfile(), name: nameof(NewProfileCommand));
@@ -181,6 +193,28 @@ namespace DS4Windows.UI.ViewModels
 
         public RelayCommand NewProfileCommand { get; }
 
+        /// <summary>OSC の受信の入・切（<c>CommandParameter</c> はチェックの状態）。</summary>
+        public RelayCommand<bool> SetOscListenerCommand { get; }
+
+        /// <summary>OSC の送信の入・切。</summary>
+        public RelayCommand<bool> SetOscSenderCommand { get; }
+
+        /// <summary>UDP サーバー（Cemuhook）の入・切。ポートの開閉とモーション送出の順序は、入れるときと切るときで逆にする。</summary>
+        public AsyncRelayCommand<bool> SetUdpServerCommand { get; }
+
+        /// <summary>タッチパッドのスワイプによるプロファイル切替の入・切。</summary>
+        public RelayCommand<bool> SetSwipeTouchCommand { get; }
+
+        /// <summary>「起動時に実行」の詳細の表示・非表示。</summary>
+        public RelayCommand<bool> SetRunAtStartPanelCommand { get; }
+
+        public RelayCommand ExportLogCommand { get; }
+
+        public RelayCommand ClearLogCommand { get; }
+
+        /// <summary>ドライバーの導入。サービスを止めてから、導入のプログラムを管理者で実行し、終わったらドライバーの状態を調べ直す。</summary>
+        public AsyncRelayCommand DriverSetupCommand { get; }
+
         public RelayCommand EditProfileCommand { get; }
 
         public RelayCommand DeleteProfileCommand { get; }
@@ -210,6 +244,45 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>サービスの状態が変わったとき（開始・停止の完了）に、画面から呼ぶ。開始・停止ボタンを再び押せるようにする。</summary>
         public void NotifyServiceStateChanged() => IsServiceBusy = false;
+
+        private async Task SetUdpServerAsync(bool on)
+        {
+            // 切るときはモーション送出を先に止めてからポートを閉じ、入れるときはポートを開いてからモーション送出を始める
+            if (!on)
+            {
+                _features.ChangeMotionEventStatus(on);
+                await Task.Delay(200).ConfigureAwait(true);
+                _features.ChangeUdpStatus(on);
+            }
+            else
+            {
+                _features.ChangeUdpStatus(on);
+                await Task.Delay(200).ConfigureAwait(true);
+                _features.ChangeMotionEventStatus(on);
+            }
+        }
+
+        private async Task DriverSetupAsync()
+        {
+            IsServiceBusy = true;
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (_lifecycle.Running)
+                        _lifecycle.Stop();
+                }).ConfigureAwait(true);
+            }
+            finally
+            {
+                IsServiceBusy = false;
+            }
+
+            await Task.Run(() => _launcher.RunElevatedAndWait(_pathService.ExecutablePath, "-driverinstall")).ConfigureAwait(true);
+            _environmentService.RefreshHidHideInfo();
+            _environmentService.RefreshFakerInputInfo();
+            Navigator?.RefreshDriverCheck();
+        }
 
         private void OpenHidHideClient()
         {

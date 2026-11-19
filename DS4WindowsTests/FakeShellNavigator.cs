@@ -34,5 +34,15 @@ namespace DS4WindowsTests
         public void EditDeviceProfile(int deviceIndex) => Shown.Add("EditDeviceProfile:" + deviceIndex);
 
         public void NewDeviceProfile(int deviceIndex) => Shown.Add("NewDeviceProfile:" + deviceIndex);
+
+        public void SetHotkeysActive(bool active) => Shown.Add("Hotkeys:" + active);
+
+        public void SetRunStartPanelVisible(bool visible) => Shown.Add("RunStartPanel:" + visible);
+
+        public void ExportLog() => Shown.Add("ExportLog");
+
+        public void ClearLog() => Shown.Add("ClearLog");
+
+        public void RefreshDriverCheck() => Shown.Add("RefreshDriverCheck");
     }
 }

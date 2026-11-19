@@ -62,6 +62,16 @@ namespace DS4Windows.UI
             public void EditDeviceProfile(int deviceIndex) => window.EditDeviceProfile(deviceIndex);
 
             public void NewDeviceProfile(int deviceIndex) => window.NewDeviceProfile(deviceIndex);
+
+            public void SetHotkeysActive(bool active) => window.ChangeHotkeysStatus(active);
+
+            public void SetRunStartPanelVisible(bool visible) => window.settingsWrapVM.ShowRunStartPanel = visible;
+
+            public void ExportLog() => window.ExportLog();
+
+            public void ClearLog() => window.ClearLog();
+
+            public void RefreshDriverCheck() => window.settingsWrapVM.DriverCheckRefresh();
         }
     }
 }
