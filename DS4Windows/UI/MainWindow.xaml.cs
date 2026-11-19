@@ -401,6 +401,7 @@ namespace DS4Windows.UI
             trayIconVM.RequestOpen += TrayIconVM_RequestOpen;
             trayIconVM.RequestServiceChange += TrayIconVM_RequestServiceChange;
             settingsWrapVM.PropertyChanged += SettingsWrapVM_PropertyChanged;
+            ApplyProcessPriorityFromSettings();
 
             autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
             _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
@@ -444,6 +445,20 @@ namespace DS4Windows.UI
         private void SettingsWrapVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             trayAppearance.OnSettingsPropertyChanged(e.PropertyName, trayIconVM);
+            if (e.PropertyName == nameof(SettingsViewModel.ProcessPriorityIndex))
+            {
+                ApplyProcessPriorityFromSettings();
+            }
+        }
+
+        /// <summary>設定の優先度を、プロセスへ反映する。管理者でなく RealTime を選んだときは、High へ戻した番号を設定へ書き戻す。</summary>
+        private void ApplyProcessPriorityFromSettings()
+        {
+            int effective = mainWinVM.ApplyProcessPriority(settingsWrapVM.ProcessPriorityIndex);
+            if (effective != settingsWrapVM.ProcessPriorityIndex)
+            {
+                settingsWrapVM.ProcessPriorityIndex = effective;
+            }
         }
 
         private void MainWinVM_FullTabsEnabledChanged(object sender, EventArgs e)
@@ -787,7 +802,7 @@ namespace DS4Windows.UI
         /// <summary>サービスの開始・停止。ボタン・トレイ・IPC のどれから呼んでも、同じコマンドを通す（実行中の再入は拒む）。</summary>
         public Task ChangeService() => mainWinVM.ToggleServiceCommand.ExecuteAsync(null);
 
-        private void LogListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        internal void ShowSelectedLogMessage()
         {
             int idx = logListView.SelectedIndex;
             if (idx > -1)
@@ -882,17 +897,6 @@ namespace DS4Windows.UI
         /// <summary>
         /// Change linked profile based on selection
         /// </summary>
-        private void LinkedProfCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox box = sender as ComboBox;
-            int idx = Convert.ToInt32(box.Tag);
-            if (idx > -1 && conLvViewModel.ControllerDict.ContainsKey(idx))
-            {
-                // LinkedProfileNameプロパティのsetterで処理される
-                // Link ON時のみLinkedProfiles.xmlに反映
-            }
-        }
-
         private void CustomColorPick_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
 
@@ -1482,18 +1486,5 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProcessPriorityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            using var process = Process.GetCurrentProcess();
-            var s = (ComboBox)sender;
-            var selectedPriority = (ProcessPriorityClass)s.SelectedItem;
-            if (!environment.IsAdministrator() && selectedPriority == ProcessPriorityClass.RealTime)
-            {
-                MessageBox.Show(Strings.RealTimeNoAdmin);
-                selectedPriority = ProcessPriorityClass.High;
-                settingsWrapVM.ProcessPriorityIndex = DS4Windows.Core.Platform.ProcessPriorityOptions.IndexOf(ProcessPriorityClass.High);
-            }
-            process.PriorityClass = selectedPriority;
-        }
     }
 }

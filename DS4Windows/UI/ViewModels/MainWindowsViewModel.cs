@@ -42,6 +42,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IPathService _pathService;
         private readonly IServiceLifecycle _lifecycle;
         private readonly IShellLauncher _launcher;
+        private readonly IProcessPriorityControl _priority;
         private readonly IRuntimeFeatureSwitch _features;
         private readonly IDialogService _dialogs;
         private readonly UpdateCheckPolicy _updateCheckPolicy;
@@ -70,8 +71,9 @@ namespace DS4Windows.UI.ViewModels
         // UpdaterWindow が担う）のため、決定6＝D1 により削除した。
         public MainWindowsViewModel(IEnvironmentService environmentService, IPathService pathService, IServiceLifecycle lifecycle,
             IShellLauncher launcher, IDialogService dialogs, UpdateCheckPolicy updateCheckPolicy,
-            IRuntimeFeatureSwitch features)
+            IRuntimeFeatureSwitch features, IProcessPriorityControl priority)
         {
+            _priority = priority ?? throw new ArgumentNullException(nameof(priority));
             _features = features ?? throw new ArgumentNullException(nameof(features));
             _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
             _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -97,6 +99,7 @@ namespace DS4Windows.UI.ViewModels
             CheckUpdatesCommand = CommandGuard.Create(CheckUpdatesAsync, name: nameof(CheckUpdatesCommand));
             ShowAboutCommand = CommandGuard.CreateSync(() => Navigator?.ShowAbout(), name: nameof(ShowAboutCommand));
             ShowChangelogCommand = CommandGuard.CreateSync(() => Navigator?.ShowChangelog(), name: nameof(ShowChangelogCommand));
+            ShowLogMessageCommand = CommandGuard.CreateSync(() => Navigator?.ShowLogMessage(), name: nameof(ShowLogMessageCommand));
             ShowDeviceOptionsCommand = CommandGuard.CreateSync(() => Navigator?.ShowDeviceOptions(), name: nameof(ShowDeviceOptionsCommand));
 
             SetOscListenerCommand = CommandGuard.CreateSync<bool>(on => _features.ChangeOscListenerStatus(on), name: nameof(SetOscListenerCommand));
@@ -173,6 +176,9 @@ namespace DS4Windows.UI.ViewModels
         public RelayCommand ShowChangelogCommand { get; }
 
         public RelayCommand ShowDeviceOptionsCommand { get; }
+
+        /// <summary>ログ一覧で選んだ行の全文を、別の窓で見せる。</summary>
+        public RelayCommand ShowLogMessageCommand { get; }
 
         /// <summary>プロファイル一覧で選ばれている行（なければ -1）。一覧の選択とバインドする。</summary>
         public int SelectedProfileIndex
@@ -282,6 +288,27 @@ namespace DS4Windows.UI.ViewModels
             _environmentService.RefreshHidHideInfo();
             _environmentService.RefreshFakerInputInfo();
             Navigator?.RefreshDriverCheck();
+        }
+
+        /// <summary>
+        /// 設定の優先度の番号を、このアプリのプロセスへ反映する。管理者でなければ RealTime は使えないため、通知して High にする。
+        /// 戻り値は、実際に反映した番号（設定の表示を合わせるために、呼び出し側が設定へ書き戻す）。
+        /// </summary>
+        public int ApplyProcessPriority(int index)
+        {
+            var classes = DS4Windows.Core.Platform.ProcessPriorityOptions.Classes;
+            if (index < 0 || index >= classes.Count) return index;
+
+            System.Diagnostics.ProcessPriorityClass selected = classes[index];
+            if (!_environmentService.IsAdministrator() && selected == System.Diagnostics.ProcessPriorityClass.RealTime)
+            {
+                _dialogs.ShowMessage(DS4Windows.Translations.Strings.RealTimeNoAdmin);
+                selected = System.Diagnostics.ProcessPriorityClass.High;
+                index = DS4Windows.Core.Platform.ProcessPriorityOptions.IndexOf(selected);
+            }
+
+            _priority.Apply(selected);
+            return index;
         }
 
         private void OpenHidHideClient()

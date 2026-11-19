@@ -44,5 +44,7 @@ namespace DS4WindowsTests
         public void ClearLog() => Shown.Add("ClearLog");
 
         public void RefreshDriverCheck() => Shown.Add("RefreshDriverCheck");
+
+        public void ShowLogMessage() => Shown.Add("LogMessage");
     }
 }

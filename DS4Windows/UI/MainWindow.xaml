@@ -135,8 +135,7 @@
                                         <DataTemplate>
                                             <StackPanel Width="{Binding Path=Width, ElementName=linkedProfileColumn, Mode=OneWay}" HorizontalAlignment="Center">
                                                 <ComboBox x:Name="linkedProfCombo" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay}"
-                                                          ItemsSource="{Binding ProfileListCol}" SelectedItem="{Binding LinkedProfileName, Mode=TwoWay}" Height="Auto" Tag="{Binding DevIndex, Mode=OneTime}" Margin="0"
-                                                          SelectionChanged="LinkedProfCombo_SelectionChanged">
+                                                          ItemsSource="{Binding ProfileListCol}" SelectedItem="{Binding LinkedProfileName, Mode=TwoWay}" Height="Auto" Tag="{Binding DevIndex, Mode=OneTime}" Margin="0">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding Name,Mode=OneWay,FallbackValue=''}" />
@@ -447,7 +446,7 @@
 
                         <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                             <Label Content="{lex:Loc ProcessPriority}" ContentStringFormat="{}{0}:"/>
-                            <ComboBox x:Name="ProcessPriorityComboBox" Margin="10,0,0,0" SelectedIndex="{Binding ProcessPriorityIndex}" SelectionChanged="ProcessPriorityComboBox_OnSelectionChanged" />
+                            <ComboBox x:Name="ProcessPriorityComboBox" Margin="10,0,0,0" SelectedIndex="{Binding ProcessPriorityIndex}" />
                         </StackPanel>
 
                         <GroupBox Header="{lex:Loc Utils}" BorderThickness="2" Margin="{StaticResource spaceMargin}"
@@ -517,7 +516,10 @@
                         <Button x:Name="exportLogBtn" Content="{lex:Loc Export}" HorizontalAlignment="Left" Padding="20,1" Command="{Binding DataContext.ExportLogCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                         <Button x:Name="clearLogBtn" Content="{lex:Loc Clear}" DockPanel.Dock="Right" Padding="20,1" Margin="100,0,0,0" Command="{Binding DataContext.ClearLogCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </DockPanel>
-                    <ListView x:Name="logListView" PreviewMouseUp="LogListView_PreviewMouseUp" DockPanel.Dock="Top" ItemsSource="{Binding LogItems}" MouseDoubleClick="LogListView_MouseDoubleClick" Margin="0">
+                    <ListView x:Name="logListView" PreviewMouseUp="LogListView_PreviewMouseUp" DockPanel.Dock="Top" ItemsSource="{Binding LogItems}" Margin="0">
+                        <ListView.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.ShowLogMessageCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        </ListView.InputBindings>
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
                                 <GridViewColumn Header="{lex:Loc MainWindow_Time}" Width="190">

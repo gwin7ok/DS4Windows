@@ -60,5 +60,8 @@ namespace DS4Windows.UI.Abstractions
 
         /// <summary>ドライバーの導入のあと、設定画面のドライバーの状態の表示を更新する。</summary>
         void RefreshDriverCheck();
+
+        /// <summary>ログ一覧で選んだ行の全文を、別の窓で見せる。</summary>
+        void ShowLogMessage();
     }
 }

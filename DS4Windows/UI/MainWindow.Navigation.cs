@@ -72,6 +72,8 @@ namespace DS4Windows.UI
             public void ClearLog() => window.ClearLog();
 
             public void RefreshDriverCheck() => window.settingsWrapVM.DriverCheckRefresh();
+
+            public void ShowLogMessage() => window.ShowSelectedLogMessage();
         }
     }
 }
