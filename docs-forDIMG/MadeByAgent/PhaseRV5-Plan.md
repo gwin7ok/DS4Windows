@@ -42,6 +42,7 @@
 | RV5-7 | `BackingStore` の公開フィールド（107）: RV5-0 の参照数を見て、D3 に従う（調査のみ／段階的に窓口へ） | `SettingsSlotWindowUsageTests`、`LayerDependencyRuleTests` | 未着手 |
 | RV5-8 | 文書: `Model-Diagram/02-Extension-Guide.md` に「アプリ・プロファイルの設定の項目を足す手順」の節を足す。`ModelDiagramGuardTests` が見る型の一覧に変更があるときは、`01-Structure.md` も同じ Step で更新 | `ModelDiagramGuardTests` | 未着手 |
 | RV5-9 | 実機確認: 既存のプロファイル（実機のユーザーデータ。旧い版のものを含む）を読み込んで保存し、前後の XML が同じこと。設定画面の保存・再読み込み | 実機（最後にまとめて 1 件ずつ） | 未着手 |
+| RV5-10 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV5.json --label "RV5 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV4.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 機能追加の容易化 B→A。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -79,6 +80,7 @@
 - 黄金テスト一式が緑。実機のプロファイルの読み込み→保存の前後で、XML が同じ。
 - `02-Extension-Guide.md` に、設定の項目を足す手順がある。
 - Debug ALL が警告 0・エラー 0。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV2-Plan.md`（空の `catch` の規則）、`PhaseRV4-Plan.md`（画面側）、`PhaseRV6-Plan.md`（`Gyro*Info`）。
@@ -88,3 +90,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)、D2＝(B)、D3＝(A)、D4＝(B) をユーザーが選択（D1・D2・D4 は推奨 (A) と異なる）。D3 の判断のため、`BackingStore` を参照するファイルの層別の数を概算で測った。D2 の修正は構造の置き換えと別のコミット（RV5-3b）に、D4 は RV5-5b に置き、関門を付けた。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。

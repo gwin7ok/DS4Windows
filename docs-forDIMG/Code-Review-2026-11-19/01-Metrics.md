@@ -3,6 +3,7 @@
 作成日: 2026-11-19
 対象: ブランチ `master`（コミット `35f12b0a`）
 計測: `python -I scripts/audit/Measure-CodeReview.py`（全項目）。項目を選ぶときは `--only size,mvvm,catch,comments,iface,unref,clone,cloneexact,fields,naming,tests,di`。
+採点: `python -I scripts/audit/Score-CodeReview.py`（基準は `03-Rubric.md`、記録は `02-Scorecard.md`。2026-11-19 追記）。9 観点の A〜D を、同じ物差しで算定する。
 注意: 数字は正規表現による概算（コンパイラーの解析ではない）。Phase の完了の基準に使うときは、**同じスクリプトを同じ引数で**再実行して比べる。スクリプトを直したら、基準値も同じコミットで取り直す。
 
 ## 1. 規模（`size`）
@@ -42,10 +43,11 @@
 |---|---|
 | `catch` 全体 | 811 |
 | 本体が空（コメントのみを含む） | **389（48%）** |
+| うち、理由のコメントがない（生のソースで中括弧の中が空白だけ） | **370**（2026-11-19 の採点基準の整備で、項目を追加。RV2 の完了の定義の「何も書かない空の `catch`」の基準） |
 | 空の `catch` の層別 | Processing 213／Core 106／UI 36／ルート 14／Output 10／Composition 7／Input 3 |
 | 上位のファイル | `KeyButtonActionController.cs` 59／`ProfileStickAxialLoadSection.cs` 29／`DefaultActionManager.cs` 21／`ProfileTouchpadMouseLoadSection.cs` 15／`App.xaml.cs` 14／`MacroPlayback.cs` 12／`RepeatHelper.cs` 11／`KeyButtonControllerRegistry.cs` 11 |
 | ログ呼び出しを `try { } catch { }` で包む行 | 41 |
-| `async void` | 14（`MainWindow` 5、`AutoProfilesViewModel` 4、`WelcomeDialog` 3、`UdpMotionService`・`Mapping`・`UpdaterWindow` 各 1） |
+| `async void` | 14（`MainWindow` 5、`AutoProfilesViewModel` 4、`WelcomeDialog` 3、`UdpMotionService`・`Mapping`・`UpdaterWindow` 各 1）。うち、イベントハンドラーの形（`object`, 〜）以外 **9**（2026-11-19 に項目を追加。RV2 の基準） |
 | `.Result`・`.Wait()` | 21 |
 | `Thread.Sleep` | 13 |
 | `?? throw new ArgumentNullException` | 666 |
@@ -128,9 +130,9 @@
 
 | 指標 | 現在 | RV1 | RV2 | RV3 | RV4 | RV5 | RV6 | RV7 | RV8 |
 |---|---|---|---|---|---|---|---|---|---|
-| 空の `catch`（本体が空で、理由のコメントもない） | 389 | — | 0 | — | — | — | — | — | — |
+| 空の `catch`（本体が空で、理由のコメントもない） | 370（本体が空の 389 のうち、コメントなしのもの） | — | 0 | — | — | — | — | — | — |
 | ログを包む `try/catch` | 41 | — | 0 | — | — | — | — | — | — |
-| `async void`（イベントハンドラー以外） | 要確認 | — | 0 | — | — | — | — | — | — |
+| `async void`（イベントハンドラー以外） | 9 | — | 0 | — | — | — | — | — | — |
 | XAML の `Command` バインディング | 0 | — | — | 増加 | **コマンド率 70% 以上** | — | — | — | — |
 | XAML の `Click` 属性 | 193 | — | — | 減少 | 100 以下 | — | — | — | — |
 | code-behind の `+= メソッド名;` | 227 | — | — | 減少 | 100 以下 | — | — | — | — |

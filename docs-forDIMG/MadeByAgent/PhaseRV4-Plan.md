@@ -38,6 +38,7 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 | RV4-6 | 残りの画面（`WindowTargetEditor`、`ControllerReadingsControl`、4 件以下の画面）の `Click`・イベント属性とタイマーを、分類（RV4-0）に従って整理。`ControllerReadingsControl` のタイマーは、`GuardedTimerTick` を使う形に揃える | 既存のテスト | 未着手 |
 | RV4-7 | 検査: `ViewCommandBindingBaseline` を、全画面で、(c)（見た目だけ）の許可リスト（理由つき）に載ったもの以外の `Click`・イベント属性・`+=` が 0 になるよう更新（D3＝(B)。RV3 と同じ形）。`CodeHealthRatchetTests` の `Command` バインディングの下限を更新 | 新テストの更新 | 未着手 |
 | RV4-8 | 実機確認の項目を `Device-Check-Checklist.md` に足す（出力ピッカーの全ボタン、プロファイルの編集のホバー、ジャイロ・タッチパッド・ライトバーの設定、はじめの起動画面の導入、マクロの記録）。画面の名前は、利用者の呼び方に合わせる（割り当て編集画面＝`SpecialActionEditor`、出力ピッカー＝`BindingWindow`） | 実機（最後にまとめて 1 件ずつ） | 未着手 |
+| RV4-9 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV4.json --label "RV4 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV3.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: MVVM 原則遵守の割合 B−→A、共有部品化 B→A。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
 | # | 決めること | 選択肢（先頭が推奨） | 利点／欠点 |
@@ -71,6 +72,7 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 - `WelcomeDialog` の取得・導入の流れが 1 つの部品に畳まれ、`async void` が 0。
 - `ViewModelWpfReferenceBaseline`・`ViewDirectServiceReferenceBaseline` が 0 のまま。
 - Debug ALL が警告 0・エラー 0。実機確認の項目が台帳・チェックリストに足されている。
+- 評価の再算定（最終 Step）が済み、`02-Scorecard.md` に記録され、ユーザーへ報告されている（予想とのずれの理由つき）。
 
 ## 関連計画
 - `PhaseRV3-Plan.md`（基盤）、`PhaseRV2-Plan.md`（`async void`）、`PhaseRV6-Plan.md`（共有部品化の残り）。
@@ -80,3 +82,4 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)（`BindingWindow` の実物を確認して推奨を (A) から変更）、D2＝(A)、D3＝(B)（RV3 の D2 と同じ）、D4＝(B) をユーザーが選択。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
