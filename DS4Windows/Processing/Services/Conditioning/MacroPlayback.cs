@@ -120,7 +120,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             bool latch = action != null && keyType.HasFlag(DS4KeyType.RepeatLatchMacro);
             if (latch && !IsToggledOnNow(action, device))
             {
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask SKIP: action={action?.name} device={device} (toggle is OFF)"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask SKIP: action={action?.name} device={device} (toggle is OFF)");
                 return;
             }
 
@@ -138,7 +138,7 @@ namespace DS4Windows.Processing.Services.Conditioning
 
             try
             {
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)} keyType={keyType}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)} keyType={keyType}");
 
                 // Phase8-Step7-3a（機能廃止。ユーザー承認済み）: Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
                 // この並びのマクロも、他のマクロと同じく、手順どおりに再生する（Phase8-Step7-3a-AltTab-Removal-Plan.md）。
@@ -189,7 +189,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                     try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
                 }
             }
-            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}");
         }
 
         /// <summary>R-2: そのアクション・デバイスの、トグルの状態（<c>IsToggledOn</c>）。状態が取れないときは偽（＝繰り返しを止める）。</summary>
@@ -248,7 +248,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             {
                 try { lock (actionDoneState) { actionDoneState.IsMacroRunning = false; } } catch { }
             }
-            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}"); } catch { }
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask MACRO EXECUTE END: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)}");
         }
     }
 }

@@ -37,23 +37,38 @@ namespace DS4Windows.Core.Logging
         //  - それ以外: ファイル（NLog）のみ。
         public static void Log(AppLogLevel level, string data, LogOptions? options = null)
         {
-            if (options != null && options.IsUserFacing)
+            // ログの出力は呼び出し側へ例外を出さない（購読者や出力先の失敗で、呼び出し側の処理を止めない）。
+            try
             {
-                GuiLog?.Invoke(null, new DebugEventArgs(data, level, options.IsTemporary));
-                return;
-            }
+                if (options != null && options.IsUserFacing)
+                {
+                    GuiLog?.Invoke(null, new DebugEventArgs(data, level, options.IsTemporary));
+                    return;
+                }
 
-            Logger.Log(ToNLogLevel(level), data);
+                Logger.Log(ToNLogLevel(level), data);
+            }
+            catch (Exception)
+            {
+                // 最上位の安全弁: ログの失敗は、ほかに出し先がないため捨てる。
+            }
         }
 
         // 利用者向けの文言をリソースのキーで出す。画面は現在の表示言語、ファイルは常に英語（ニュートラルのリソース）にする。
         // 呼び出し側が文字列を組み立てると、書式の引数の数や順番を取り違えても気づけないため、キーと引数だけを渡させる。
         public static void LogUser(AppLogLevel level, string key, params object?[]? args)
         {
-            var manager = DS4Windows.Translations.Strings.ResourceManager;
-            string screen = UserText(key, args);
-            string file = Format(manager.GetString(key, System.Globalization.CultureInfo.InvariantCulture) ?? key, args);
-            GuiLog?.Invoke(null, new DebugEventArgs(screen, level, false) { FileData = file == screen ? null : file });
+            try
+            {
+                var manager = DS4Windows.Translations.Strings.ResourceManager;
+                string screen = UserText(key, args);
+                string file = Format(manager.GetString(key, System.Globalization.CultureInfo.InvariantCulture) ?? key, args);
+                GuiLog?.Invoke(null, new DebugEventArgs(screen, level, false) { FileData = file == screen ? null : file });
+            }
+            catch (Exception)
+            {
+                // 最上位の安全弁: ログの失敗は、ほかに出し先がないため捨てる。
+            }
         }
 
         // 現在の表示言語での文字列。トレイ通知など、キーと同じ文言を別の出し先へ渡すときに使う。

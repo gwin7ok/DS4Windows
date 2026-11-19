@@ -509,9 +509,15 @@ namespace DS4Windows
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             string? version = _environmentService.ApplicationVersion;
             // Log process and path information at INFO level now that logger is configured
-            try { AppLogger.LogInfo($"Process exe: {Process.GetCurrentProcess().MainModule?.FileName}"); } catch { }
-            try { AppLogger.LogInfo($"AppDomain BaseDirectory: {AppContext.BaseDirectory}"); } catch { }
-            try { AppLogger.LogInfo($"Current working directory: {Environment.CurrentDirectory}"); } catch { }
+            string? processExe = null;
+            try { processExe = Process.GetCurrentProcess().MainModule?.FileName; }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception || ex is InvalidOperationException || ex is NotSupportedException)
+            {
+                // モジュールを読めない環境（権限など）では、ファイル名なしでログを出す。
+            }
+            AppLogger.LogInfo($"Process exe: {processExe}");
+            AppLogger.LogInfo($"AppDomain BaseDirectory: {AppContext.BaseDirectory}");
+            AppLogger.LogInfo($"Current working directory: {Environment.CurrentDirectory}");
             // Phase9 9-F F-1a: 文言は StartupDiagnostics（文言と順序は変えない）
             foreach (string environmentMessage in StartupDiagnostics.EnvironmentMessages(version, _pathService.ExecutablePath,
                 DS4Windows.Core.Utilities.Util.GetOSProductName(), DS4Windows.Core.Utilities.Util.GetOSReleaseId()))
@@ -532,7 +538,7 @@ namespace DS4Windows
                 }
                 else
                 {
-                    try { AppLogger.LogInfo("Build summary not found in the executable"); } catch { }
+                    AppLogger.LogInfo("Build summary not found in the executable");
                 }
             }
             catch (Exception ex)

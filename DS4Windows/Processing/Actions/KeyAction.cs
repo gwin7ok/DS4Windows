@@ -74,9 +74,9 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 var state = manager.GetStateFor(action, device);
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger ENTER: name={action?.name} device={device} logical={logicalValue} native={nativeValue} useScan={useScan} isToggledOn={(state?.IsToggledOn ?? false)}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger ENTER: name={action?.name} device={device} logical={logicalValue} native={nativeValue} useScan={useScan} isToggledOn={(state?.IsToggledOn ?? false)}");
                 var ctrl = GetController(device);
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyAction.OnTrigger: obtained controller={(ctrl==null?"<null>":ctrl.ControllerId.ToString())} for name={action?.name} device={device}");
 
                 var trigger = new DS4Windows.Processing.Actions.TriggerContextImpl
                 {

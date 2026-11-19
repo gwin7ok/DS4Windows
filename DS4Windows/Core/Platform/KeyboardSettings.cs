@@ -31,7 +31,7 @@ namespace DS4Windows.Core.Platform
                 {
                     if (key == null)
                     {
-                        try { AppLogger.LogInfo("KeyboardSettings.LoadFromRegistry: registry key not found: HKCU\\Control Panel\\Keyboard"); } catch { }
+                        AppLogger.LogInfo("KeyboardSettings.LoadFromRegistry: registry key not found: HKCU\\Control Panel\\Keyboard");
                         return;
                     }
 
@@ -54,12 +54,12 @@ namespace DS4Windows.Core.Platform
                     int interval = (int)Math.Round(1000.0 / Math.Max(1.0, RepeatCharsPerSec));
                     // clamp to reasonable bounds
                     RepeatIntervalMs = Math.Max(30, Math.Min(400, interval));
-                    try { AppLogger.LogInfo($"Keyboard settings loaded: KeyboardDelay[{DelayIndex}:{InitialRepeatDelayMs}ms], KeyboardSpeed[{SpeedValue}:{RepeatIntervalMs}ms interval]"); } catch { }
+                    AppLogger.LogInfo($"Keyboard settings loaded: KeyboardDelay[{DelayIndex}:{InitialRepeatDelayMs}ms], KeyboardSpeed[{SpeedValue}:{RepeatIntervalMs}ms interval]");
                 }
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogError($"KeyboardSettings.LoadFromRegistry failed: {ex}"); } catch { }
+                AppLogger.LogError($"KeyboardSettings.LoadFromRegistry failed: {ex}");
             }
         }
     }

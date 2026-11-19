@@ -195,7 +195,7 @@ namespace DS4Windows.Processing.Actions
                                 {
                                     if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                                     e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
-                                    try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}"); } catch { }
+                                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}");
                                     try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { }
                                 }
                                 else
@@ -229,7 +229,7 @@ namespace DS4Windows.Processing.Actions
                     try
                     {
                         try { e.repeater.Stop(); } catch { }
-                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnToggleOff: controllerId={controllerId} kvpKey={kvpKey} device={device} repeater stopped"); } catch { }
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnToggleOff: controllerId={controllerId} kvpKey={kvpKey} device={device} repeater stopped");
                         try
                         {
                             // Ensure toggled-on flag is cleared by the same component that set it true.
@@ -484,7 +484,7 @@ namespace DS4Windows.Processing.Actions
             catch { }
             // Phase13-Step4: 静的イベントでは購読が残り続けていた。破棄後は反応しないよう、注入された管理役の購読を解除する
             try { _manager.ToggledOnChanged -= toggledOnHandler; } catch { }
-            try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}"); } catch { }
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}");
         }
 
         public void Destroy()

@@ -71,7 +71,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DisconnectBTAction.ApplyFrame failed: {ex}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DisconnectBTAction.ApplyFrame failed: {ex}");
             }
         }
 
@@ -99,7 +99,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogWarn($"DisconnectBTAction.Execute failed: {ex}"); } catch { }
+                AppLogger.LogWarn($"DisconnectBTAction.Execute failed: {ex}");
             }
         }
 

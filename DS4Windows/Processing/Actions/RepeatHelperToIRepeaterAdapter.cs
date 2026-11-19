@@ -37,7 +37,7 @@ namespace DS4Windows.Processing.Actions
             {
                 if (tickAction != null)
                 {
-                    try { DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior"); } catch { }
+                    DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior");
                 }
 
                 // 差し替えの工場が渡されていれば、IRepeater の包みを優先して作る

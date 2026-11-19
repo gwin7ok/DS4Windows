@@ -99,11 +99,11 @@ namespace DS4Windows.Processing.Actions
                 }
 
                 _launcher.Launch(targetPath, arguments, true, hidden);
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"LaunchProcessAction.Execute: id={Id} target={targetPath} hidden={hidden}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"LaunchProcessAction.Execute: id={Id} target={targetPath} hidden={hidden}");
             }
             catch (Exception ex)
             {
-                try { AppLogger.LogWarn($"LaunchProcessAction.Execute failed: {ex}"); } catch { }
+                AppLogger.LogWarn($"LaunchProcessAction.Execute failed: {ex}");
             }
         }
 

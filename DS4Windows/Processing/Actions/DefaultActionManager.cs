@@ -30,13 +30,13 @@ namespace DS4Windows.Processing.Actions
             // Phase13-Step4: 旧 静的 ActionManager の静的コンストラクターが購読していたログ（文言は同じ）。静的イベントの廃止に伴い、本クラスが持つ
             ToggledOnChanged += (sa, dev, oldv, newv) =>
             {
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}");
             };
 
             // 旧 Mapping のコンストラクターが購読していたトレースログ（文言は同じ。動作の確認用）
             ToggledOnChanged += (sa, dev, oldv, newv) =>
             {
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Mapping: ToggledOnChanged name={sa?.name} device={dev} old={oldv} new={newv}");
             };
         }
 
@@ -170,7 +170,7 @@ namespace DS4Windows.Processing.Actions
                                 {
                                     bool old = ent.States[device]?.IsToggledOn ?? false;
                                     ent.States[device] = new ActionInstanceState();
-                                    try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.ClearDeviceState: reset ActionInstanceState for action={(ent?.ActionDef?.name ?? "(null)")} device={device} (IsToggledOn cleared)"); } catch { }
+                                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.ClearDeviceState: reset ActionInstanceState for action={(ent?.ActionDef?.name ?? "(null)")} device={device} (IsToggledOn cleared)");
                                     if (old != false)
                                     {
                                         try { ToggledOnChanged?.Invoke(ent.ActionDef, device, old, false); } catch { }

@@ -64,11 +64,11 @@ namespace DS4Windows.Processing.Services.Devices
 
                         inst = temp ?? new KeyButtonActionController(device, mode, _manager, _dispatcher, _time, actionName ?? "<mapping>");
                         _controllers[dictKey] = inst;
-                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}");
                     }
                     else
                     {
-                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}"); } catch { }
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} mode={mode} device={device}");
                     }
                     return inst;
                 }
@@ -95,11 +95,11 @@ namespace DS4Windows.Processing.Services.Devices
 
                         inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, _time, name);
                         _controllers[dictKey] = inst;
-                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}");
                     }
                     else
                     {
-                        try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}"); } catch { }
+                        if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Reusing existing controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}");
                     }
                     // additional check: if existing assignedAction differs from requested, log warning
                     try

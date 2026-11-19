@@ -86,7 +86,7 @@ namespace DS4Windows.Processing.Services.Slots
                     catch { }
                 }
 
-                try { if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}"); } catch { }
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.PreallocateForProfileApply: preallocated actions/controllers for device {device}");
             }
             catch { }
         }
