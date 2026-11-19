@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Settings;
 
@@ -21,7 +23,7 @@ namespace DS4Windows.Composition
         // Phase7-Step10d W5（Q3＝A）: existingStore は、コンテナの構築より前に作った BackingStore（本体の起動のブートストラップ。起動直後の設定の読み取りが使う）。
         // 省略（null）のときは、コンテナが BackingStore を作る（テストなど）。どちらも、IProcessInspector の設定と ActionsLoaded の購読は、この登録が行う
         // （Phase14c-Step6: ServiceRegistration.Wiring.cs の AddWiredServices）。
-        public static IServiceCollection RegisterServices(this IServiceCollection services, BackingStore existingStore = null)
+        public static IServiceCollection RegisterServices(this IServiceCollection services, BackingStore? existingStore = null)
         {
             AddWiredServices(services, existingStore);
             AddCoreServices(services);

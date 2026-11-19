@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             }
 
             string text = SourceText.StripComments(File.ReadAllText(path));
-            foreach (string signature in new[] { "public static T GetService<T>()", "public static object GetService(Type serviceType)" })
+            foreach (string signature in new[] { "public static T? GetService<T>()", "public static object? GetService(Type serviceType)" })
             {
                 int start = text.IndexOf(signature, System.StringComparison.Ordinal);
                 Assert.True(start >= 0, "メソッドが見つからない: " + signature);
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("StackTrace", text);
             Assert.DoesNotContain("implicit CreateHost", text);
             // プロパティ自体は維持する（App.xaml.cs が起動ログに出す。copilot-instructions §2.3）
-            Assert.Contains("public static string CreationNote", text);
+            Assert.Contains("public static string? CreationNote", text);
         }
 
         [Fact]

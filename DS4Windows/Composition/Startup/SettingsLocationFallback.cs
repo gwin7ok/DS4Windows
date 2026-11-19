@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO;
 using DS4Windows.Core.Abstractions;
@@ -32,7 +34,8 @@ namespace DS4Windows.Composition.Startup
                     string roamingAppDataPath = _pathService.RoamingAppDataPath;
                     // Global.exedirpath と同じ値（ジャンクション解決済みの実行ファイルの親フォルダ）。
                     // IPathService.ExecutableDirectory（AppContext.BaseDirectory）とは値が異なりうるため使わない。
-                    string exeDirPath = Path.GetDirectoryName(_pathService.ExecutablePath);
+                    // ExecutablePath は実行ファイルのフルパスで、ルートではないため、親フォルダーは null にならない
+                    string exeDirPath = Path.GetDirectoryName(_pathService.ExecutablePath)!;
                     Directory.CreateDirectory(roamingAppDataPath);
                     File.Copy(Path.Combine(exeDirPath, "Profiles.xml"),
                         Path.Combine(roamingAppDataPath, "Profiles.xml"));

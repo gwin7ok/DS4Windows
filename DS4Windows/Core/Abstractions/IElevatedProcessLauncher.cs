@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Core.Abstractions
+﻿#nullable enable
+
+namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// 自プロセスをUAC昇格(runas)で子プロセス再起動し、終了を待ち合わせる抽象化。

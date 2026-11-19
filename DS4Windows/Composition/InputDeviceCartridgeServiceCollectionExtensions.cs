@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#nullable enable
+
+using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Processing.Abstractions;
 

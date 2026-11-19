@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Composition.Startup
 {
     /// <summary>起動引数から決まる、起動の種類（<see cref="StartupModeSelector"/> が決める）。</summary>

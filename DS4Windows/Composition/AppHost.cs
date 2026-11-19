@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,10 +11,10 @@ namespace DS4Windows.Composition
     public static class AppHost
     {
         private static readonly System.Collections.Generic.HashSet<System.Type> _loggedResolvedTypes = new System.Collections.Generic.HashSet<System.Type>();
-        private static IHost _host;
+        private static IHost? _host;
         private static readonly object _syncLock = new object();
 
-        public static IHost Host => _host;
+        public static IHost? Host => _host;
 
         /// <summary>
         /// Phase6-Step12（K7-1 の原因特定用）: ホストがどの経路で作られたかの記録。
@@ -22,7 +24,7 @@ namespace DS4Windows.Composition
         /// 「explicit CreateHost(...) created the host」か「host already existed」の 2 種類だけになる
         /// （呼び出し元スタックの組み立ては削除した。プロパティとログは、ユーザー決定により維持する）。
         /// </summary>
-        public static string CreationNote { get; private set; }
+        public static string? CreationNote { get; private set; }
 
         // Phase7-Step4 W2: 未使用だった configuration 引数を削除した（テストはすべて引数なしで呼ぶ）。
         // 本体の起動は CreateHost(configuration, parser) を使う。引数なしの本メソッドはテストが明示的に呼ぶ
@@ -56,9 +58,9 @@ namespace DS4Windows.Composition
         /// （Pre-Host の起動処理と、コンテナから解決するサービスが同じインスタンスになる）。ホストが構築済みのときは、登録は変えられない。
         /// </summary>
         public static IHost CreateHost(IConfiguration configuration, DS4Windows.Core.Utilities.ArgumentParser parser,
-            DS4Windows.Core.Abstractions.IPathService bootstrapPathService = null,
-            DS4Windows.Core.Abstractions.IEnvironmentService bootstrapEnvironmentService = null,
-            DS4Windows.Core.Settings.BackingStore bootstrapBackingStore = null)
+            DS4Windows.Core.Abstractions.IPathService? bootstrapPathService = null,
+            DS4Windows.Core.Abstractions.IEnvironmentService? bootstrapEnvironmentService = null,
+            DS4Windows.Core.Settings.BackingStore? bootstrapBackingStore = null)
         {
             lock (_loggedResolvedTypes) { _loggedResolvedTypes.Clear(); }
             lock (_syncLock)
@@ -133,7 +135,7 @@ namespace DS4Windows.Composition
 
         // Phase7-Step10e W3（Q3＝A）: ホストが未構築（または Dispose 済み）のときは、暗黙にホストを作らず null を返す。
         // 旧: 未構築のときに引数なしの CreateHost() で暗黙に作っていた（K7-1 の残存経路。Phase7-Step4 W2 で Dispose 後だけ止めた）。
-        public static T GetService<T>() where T : class
+        public static T? GetService<T>() where T : class
         {
             if (_host == null)
             {
@@ -155,7 +157,7 @@ namespace DS4Windows.Composition
             return service;
         }
 
-        public static object GetService(Type serviceType)
+        public static object? GetService(Type serviceType)
         {
             if (_host == null)
             {

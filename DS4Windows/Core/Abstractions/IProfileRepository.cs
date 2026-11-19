@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 
@@ -61,7 +63,7 @@ namespace DS4Windows.Core.Abstractions
         bool LoadTempProfile(int deviceIndex, string profileName, IProfileLoadTarget control, bool xinputChange = true);
 
         // ---- Phase5-Step13-7 Tier4: プロファイル未定義アクションの警告ログ出力 ----
-        void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string overrideProfileName = null);
+        void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string? overrideProfileName = null);
 
 
         // ---- Phase6-Step2-2 (PR-2): リンクプロファイル解決（Global への薄い委譲）----

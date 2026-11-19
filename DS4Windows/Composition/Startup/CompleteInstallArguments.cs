@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Composition.Startup
 {
     /// <summary>
@@ -9,7 +11,7 @@ namespace DS4Windows.Composition.Startup
         /// <summary>
         /// 2 つの引数が、どちらも値つきで指定されているときだけ真。<paramref name="source"/>／<paramref name="target"/> は、最後に指定された値。
         /// </summary>
-        public static bool TryParse(string[] args, out string source, out string target)
+        public static bool TryParse(string[]? args, out string? source, out string? target)
         {
             source = null;
             target = null;

@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Output.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Output.Backend;

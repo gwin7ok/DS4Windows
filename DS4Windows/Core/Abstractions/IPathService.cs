@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Core.Abstractions
+﻿#nullable enable
+
+namespace DS4Windows.Core.Abstractions
 {
     public interface IPathService
     {

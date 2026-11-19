@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Core.Abstractions
