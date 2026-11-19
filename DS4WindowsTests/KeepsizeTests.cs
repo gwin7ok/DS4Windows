@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Xml.Linq;
@@ -110,22 +109,10 @@ namespace DS4WindowsTests
             Assert.Equal(3, Regex.Matches(main, @"editor\.Keepsize").Count);
         }
 
+        // 画面部品は、共有の STA スレッドで作る（自前のスレッドで作ると、終わったスレッドの部品が、他のテストの読み込みを止める）
         private static void RunOnSta(Action action)
         {
-            Exception failure = null;
-            var thread = new Thread(() =>
-            {
-                try { action(); }
-                catch (Exception ex) { failure = ex; }
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            thread.Join();
-            if (failure != null)
-            {
-                if (failure is Xunit.Sdk.XunitException) throw failure;
-                throw new InvalidOperationException("STA スレッドで失敗: " + failure.Message, failure);
-            }
+            WpfPanelTestRunner.Run(action);
         }
     }
 }
