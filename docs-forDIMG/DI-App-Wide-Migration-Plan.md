@@ -1205,13 +1205,13 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 
 2026-11-15 の数値: 自動テスト 3,567 件、ビルドの警告・エラー 0。行数の多いファイルは、画面の code-behind（`MainWindow.xaml.cs` 1,884、`ProfileEditor.xaml.cs` 1,737、`BindingWindow` 943、`App` 937、`RecordBox` 901、`AssignmentEditor` 702）が最大の残り（Phase34）。`Mapping.cs` は 895 行（2026-09 の 8,827 行から約 1/10）。
 
-### 6.18 PhaseRV1〜RV8（2026-11-19 新設。コードレビュー 2026-11-19 から作った実施計画。すべて未承認）
+### 6.18 PhaseRV1〜RV8（2026-11-19 新設。コードレビュー 2026-11-19 から作った実施計画。RV1 は承認・実施済み、RV2 以降は未承認）
 
 リポジトリ全体のコードレビュー（`docs-forDIMG/Code-Review-2026-11-19/00-Report.md`。数字は `01-Metrics.md`。計測は `scripts/audit/Measure-CodeReview.py`）の結果、前回のレビュー（2026-11）の弱点（DI・層・引数・重複）はほぼ是正済みで、構造の骨格は健全と確認した。新しい弱点は、構造の外側にある（MVVM の操作の流れ、例外の握りつぶし、設定の項目の追加の手数、採用手段のばらつき、経緯のコメント・文書の蓄積、品質の門の緩さ）。これらを 8 つの Phase に分けた。各計画書の「決めること」（D 項目）を、ユーザーが確認して承認した Phase から着手する。進める順は、下の番号の順を目安とする（RV5 は RV3・RV4 と入れ替え可。報告書 §7、G4）。
 
 | Phase | 主題 | 計画書 | 規模 | リスク | 状態 |
 |---|---|---|---|---|---|
-| RV1 | 品質の門と土台の整理（未使用の `using`、アナライザー、`Nullable` の試験、検査の枠 `CodeHealthRatchetTests`、未参照の型の調査） | `PhaseRV1-Plan.md` | 中 | 低 | 未承認 |
+| RV1 | 品質の門と土台の整理（未使用の `using`、アナライザー、`Nullable` の試験、検査の枠 `CodeHealthRatchetTests`、未参照の型の調査） | `PhaseRV1-Plan.md` | 中 | 低 | **実施済み**（2026-11-19。ブランチ `PhaseRV1`。結果は同計画書の「実施の結果」） |
 | RV2 | 例外の握りつぶし（空の `catch` 389 件）と、`async void`・`.Result`・`Thread.Sleep` の作法 | `PhaseRV2-Plan.md` | 大 | 中 | 未承認 |
 | RV3 | MainWindow の MVVM 化（コマンド化。委譲だけの窓口の解消。V3 の検査） | `PhaseRV3-Plan.md` | 大 | 中〜高 | 未承認 |
 | RV4 | ProfileEditor・BindingWindow・RecordBox・WelcomeDialog などの MVVM 化と表駆動化 | `PhaseRV4-Plan.md` | 大 | 中〜高 | 未承認 |
@@ -1221,7 +1221,7 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 | RV8 | 経緯のコメント・文書・ガードテストの整理（コメントのみの変更を機械で検証） | `PhaseRV8-Plan.md` | 中 | 低 | 未承認 |
 
 - 既決の対象外（再び持ち出さない）: `App.xaml.cs` の行数を目的にした整理、`Mapping`・`TriggerDispatchEngine` の分割、`AppSettingsDTO` の `partial` 分割（37-6 の見送り）、`AppLogger`・`PathService`・`EnvironmentService` の静的な状態、既存の実装 1・偽物なしのインターフェースの撤去、`NoWarn` の撤去。
-- RV9（予定。計画書は未作成）: `Nullable` の層ごとの全体有効化。RV1 の D2＝(B)（2026-11-19 決定）。実測の警告は 2,153 件／359 ファイル。計画書は、RV1-3 の試験の結果を見てから作る。
+- RV9（予定。計画書は未作成）: `Nullable` の層ごとの全体有効化。RV1 の D2＝(B)（2026-11-19 決定）。実測の警告は 2,153 件／359 ファイル。試験の結果は `PhaseRV1-Nullable-Trial.md`（2026-11-19。2 層で 27 件を 0 にした）に記録した。計画書は未作成。
 - 前提: RV3・RV4 は、PhaseX3（日本語化）の XAML の作業の区切りのあとに行う（2026-11-19 時点で、PhaseX3 に残るのは X3-5［日本語表示の実機確認］のみ）。PhaseX（KI-7）は、実施する場合は RV のあとの最後のまま。
 - 全体の決定事項（報告書 §8）: G1 規則 V3 の新設、G2 例外の規則の置き場所、G3 ログの追加の扱い（規則 2.3 の例外）、G4 進める順、G5 `Nullable` の範囲。**2026-11-19 にすべて決定**: G1＝(A)（RV3 の完了時に V3 を規約へ足す。文面は承認を得てから）、G2＝(A)＋規約本体へのリンク、G3＝(A)、G4＝(A)（RV3→RV4→RV5→RV6→RV7→RV8）、G5＝(B)（層ごとに全体を有効化。RV9）。RV1〜RV8 の D 項目もすべて決定済み（各計画書の「決定事項」）。着手は、Phase ごとの承認を得てから。
 - 評価の算定（2026-11-19 追記）: 9 観点の A〜D を毎回同じ物差しで出すため、採点基準 `Code-Review-2026-11-19/03-Rubric.md`（v1。2026-11-19 確定）、スクリプト `scripts/audit/Score-CodeReview.py`、手で記録する値 `scripts/audit/Rubric-Inputs.json`、推移の記録 `Code-Review-2026-11-19/02-Scorecard.md` を足した。各 PhaseRV の計画書の最終 Step が「評価の再算定」で、結果をユーザーへ報告する。
