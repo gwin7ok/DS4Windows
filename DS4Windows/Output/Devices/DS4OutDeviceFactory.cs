@@ -18,10 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using DS4Windows.Output.Backend;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DS4Windows.Output.Devices
 {

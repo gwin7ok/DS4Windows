@@ -23,9 +23,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.ComponentModel;
 using System.Threading;
-using System.Runtime.InteropServices;
 using DS4Windows.Input;
 using DS4Windows.Core.Model;
 

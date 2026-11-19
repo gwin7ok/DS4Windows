@@ -20,10 +20,7 @@ using DS4Windows.Core.Model;
 using DS4Windows.Output.Backend;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using DS4Windows.Input;
 
 namespace DS4Windows.Output.Devices
 {

@@ -1,6 +1,5 @@
 using System;
 using DS4Windows.Core.Model;
-using DS4Windows.Output.Devices;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Output.Services
