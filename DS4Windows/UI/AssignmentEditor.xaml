@@ -77,7 +77,7 @@
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <Button x:Name="recordMacroBtn" Content="{lex:Loc SpecialActionEdit.RecordMacro}"
                                         Tag="{Binding MacroElements,Mode=OneWay,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}"
-                                        Click="RecordMacroBtn_Click" />
+                                        Command="{Binding Session.RecordMacroCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <!-- Phase10-Step1 W3: Execute Mode（Play Once／Repeat While Held／Repeat (Toggle)）と Scan Code は、共通部品 -->
                                 <local:MacroPlaybackOptionsPanel DataContext="{Binding PlaybackOptions}" ScanCodeAlignment="Left"
                                                                  HorizontalAlignment="Left" Width="200" Margin="{StaticResource spaceMargin}" />
@@ -97,7 +97,7 @@
                                 <!-- Phase10-Step4c W3: 必須の値がないエラー（パスが空）は、赤い枠で示す（名前欄・トリガー欄と同じ仕組み）。ファイルが存在しない警告も、同じ枠で示す（保存は止めない） -->
                                 <Button x:Name="launchProgBrowseBtn" Content="{lex:Loc Browse}" Margin="{StaticResource spaceMargin}"
                                         Tag="{Binding Filepath,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
-                                        Click="LaunchProgBrowseBtn_Click" />
+                                        Command="{Binding BrowseCommand}" />
                                 <!-- 参照ボタンと同じ幅（親の StackPanel の幅いっぱい）を使い、アイコンは右端に固定する。
                                      固定幅 150 では長いファイル名が切れていたため、残りの幅をプログラム名に割り当てる -->
                                 <Grid Margin="{StaticResource spaceMargin}">
@@ -215,13 +215,13 @@
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc SpecialActionEdit.TapTrigger}" Margin="{StaticResource spaceMargin}" />
                                 <Button x:Name="multiTapTrigBtn" Content="{Binding TapMacroText,FallbackValue={lex:Loc SpecialActionEdit.SelectMacro}}"
-                                        Margin="{StaticResource spaceMargin}" Click="MultiTapTrigBtn_Click" />
+                                        Margin="{StaticResource spaceMargin}" Command="{Binding Session.RecordMultiTapCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <Label Content="{lex:Loc SpecialActionEdit.HoldTrigger}" Margin="{StaticResource spaceMargin}" />
                                 <Button x:Name="multiHoldTapTrigBtn" Content="{Binding HoldMacroText,FallbackValue={lex:Loc SpecialActionEdit.SelectMacro}}"
-                                        Margin="{StaticResource spaceMargin}" Click="MultiHoldTapTrigBtn_Click" />
+                                        Margin="{StaticResource spaceMargin}" Command="{Binding Session.RecordMultiHoldCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                 <Label Content="{lex:Loc SpecialActionEdit.DoubleTapTrigger}" Margin="{StaticResource spaceMargin}" />
                                 <Button x:Name="multiDoubleTapTrigBtn" Content="{Binding DoubleTapMacroText,FallbackValue={lex:Loc SpecialActionEdit.SelectMacro}}"
-                                        Margin="{StaticResource spaceMargin}" Click="MultiDoubleTapTrigBtn_Click" />
+                                        Margin="{StaticResource spaceMargin}" Command="{Binding Session.RecordMultiDoubleTapCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                             </StackPanel>
                         </TabItem>
                         <TabItem x:Name="gyroCalibrateTab" Header="{lex:Loc SpecialActionEdit.CalibrateGyro}">

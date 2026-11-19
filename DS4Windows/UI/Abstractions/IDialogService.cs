@@ -16,6 +16,9 @@ namespace DS4Windows.UI.Abstractions
         /// <summary>開くファイルを選ばせる。取り消したら null。</summary>
         string PickOpenFile(FileDialogOptions options);
 
+        /// <summary>フォルダーを選ばせる。取り消したら null。</summary>
+        string PickFolder();
+
         /// <summary>保存先のファイルを選ばせる。取り消したら null。</summary>
         string PickSaveFile(FileDialogOptions options);
     }

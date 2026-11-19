@@ -167,3 +167,19 @@
 | ビルドの警告・エラー | 0 | 0（Debug・Release） |
 
 変わっていない主な値: 空の `catch`（理由のコメントなし）370、ログを包む `try/catch` 41、`async void`（形が違うもの）9、`Click` 193、手結び 227、`BackingStore` の公開フィールド 107、`Phase<数字>` を含む行 1,656。RV2 以降が動かす。
+
+## 15. RV3 完了時点の再計測（2026-11-20）
+
+`Measure-CodeReview.py` の実測。保存は `scorecard/RV3.json`。
+
+| 指標 | RV2 | RV3 完了 |
+|---|---|---|
+| XAML の `Command` バインディング | 0 | 58 |
+| XAML の `Click` 属性 | 193 | 136 |
+| XAML のその他のイベント属性 | — | 41 |
+| コマンド率 | 0.000 | 0.247 |
+| code-behind の `+= メソッド名;` | 227 | 222 |
+| code-behind の部品への直接代入 | 290 | 248 |
+| 500 行以上のファイル | 31 | 33 |
+| 委譲だけの窓口 | 3 | 0（`MainWindowServiceControl`・`MainWindowSettings`・`MainWindowEnvironment` を削除） |
+| テスト（xUnit／StandaloneTests） | 3,626／11 | 3,671／11 |

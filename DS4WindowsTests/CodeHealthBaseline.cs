@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         public const int BlankEmptyCatchesInProfileSections = 58;
 
         /// <summary>本体がコメントだけの空の <c>catch</c>。理由の質は <c>PhaseRV2-Catch-Inventory.md</c> で人が見る。減らす方向だけ。</summary>
-        public const int CommentOnlyEmptyCatches = 256;
+        public const int CommentOnlyEmptyCatches = 252;
 
         /// <summary><c>try { ログ } catch { }</c> のように、ログ呼び出しを包む行。<c>AppLogger</c> が例外を出さないため、0 を保つ。</summary>
         public const int LogWrappingTryLines = 0;

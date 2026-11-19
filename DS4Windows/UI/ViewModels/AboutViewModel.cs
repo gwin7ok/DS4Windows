@@ -1,34 +1,49 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿#nullable enable
+using System;
+using CommunityToolkit.Mvvm.Input;
 using DS4Windows.Core.Abstractions;
+using DS4Windows.Core.Updater;
+using DS4Windows.UI.Abstractions;
+using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class AboutViewModel : INotifyPropertyChanged
+    /// <summary>
+    /// 「バージョン情報」画面の ViewModel。画面のリンクはすべて <see cref="OpenLinkCommand"/>（<c>CommandParameter</c> は URL）で開く。
+    /// </summary>
+    public sealed class AboutViewModel
     {
-        // TODO(技術的負債・Phase6-Step10-1-3 の判断［§2.4］): 本クラスは Phase4-Step7 で「全画面の MVVM 統一」のために新設されたが、
-        // About 画面（About.xaml／About.xaml.cs）は本クラスへ切り替えられておらず、呼出元は DI 登録（ServiceRegistration）と
-        // PatternAViewModelTests のみ（Phase4-Step7-Completion-Report.md）。本来使うべきものと判断して削除しない。
-        // About 画面の DataContext への接続は、Phase6-Step12 で判断する（UI の変更を伴うため、本 Step の範囲に混ぜない）。
-        // 本 Step では、Global.exeversion の直接参照と AppHost のフォールバック（未使用の IPathService）のみ是正した。
         private readonly IEnvironmentService _environmentService;
+        private readonly IShellLauncher _launcher;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public string VersionText => $"v{_environmentService.ApplicationVersion}";
-        public string AppTitle => "DS4Windows";
-        public string GithubUrl => DS4Windows.Core.Updater.ReleaseSource.RepositoryPageUri;
-        public string ChangelogUrl => DS4Windows.Core.Updater.ReleaseSource.RepositoryPageUri + "/releases";
-
-        public AboutViewModel(IEnvironmentService environmentService)
+        public AboutViewModel(IEnvironmentService environmentService, IShellLauncher launcher)
         {
             _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
+            OpenLinkCommand = CommandGuard.CreateSync<string>(OpenLink, name: nameof(OpenLinkCommand));
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public string? ApplicationVersion => _environmentService.ApplicationVersion;
+
+        public string VersionText => $"v{_environmentService.ApplicationVersion}";
+
+        public string AppTitle => "DS4Windows";
+
+        public string GithubUrl => ReleaseSource.RepositoryPageUri;
+
+        public string ChangelogUrl => ReleaseSource.RepositoryPageUri + "/releases";
+
+        public string ContributorsUrl => ReleaseSource.ContributorsPageUri;
+
+        /// <summary>URL を、既定のブラウザーで開く。</summary>
+        public RelayCommand<string> OpenLinkCommand { get; }
+
+        private void OpenLink(string? url)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                _launcher.OpenUrl(url);
+            }
         }
     }
 }

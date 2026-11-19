@@ -205,8 +205,8 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             string[] calls = ExtractCallArguments(text, "ShowProfileEditor(");
-            // 宣言 1 件＋呼び出し 5 件（Edit、New Profile、一覧の Edit・New・ダブルクリック）
-            Assert.True(calls.Length >= 6, $"ShowProfileEditor( の出現が想定より少ない（{calls.Length} 件）");
+            // 宣言 1 件＋呼び出し 4 件（機器の Edit・New Profile、一覧の Edit・New。ダブルクリックは EditProfile のコマンドを通る）
+            Assert.True(calls.Length >= 5, $"ShowProfileEditor( の出現が想定より少ない（{calls.Length} 件）");
             foreach (string a in calls)
             {
                 Assert.False(a.Contains("TEST_PROFILE_INDEX"),

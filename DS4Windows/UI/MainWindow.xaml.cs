@@ -79,8 +79,7 @@ namespace DS4Windows.UI
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
         // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly AutoProfileRunner _autoProfileService;
-        private readonly MainWindowSettings appSettingsService;
-        private readonly MainWindowEnvironment environment;
+        private readonly MainWindowLayoutViewModel layout;
         // トレイ・通知・テーマの切り替えと、プロファイルの選択・編集後の同期は、それぞれの部品が受け持つ
         private readonly TrayAppearanceController trayAppearance;
         private readonly ProfileSelectionCoordinator profileSelection;
@@ -88,7 +87,6 @@ namespace DS4Windows.UI
         private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly IpcCommandDispatcher ipcDispatcher;   // CLI のコマンドの実行
         private MainWindowIpcHost ipcHost;   // コマンドが画面に頼む操作（一覧の ViewModel ができてから作る）
-        private readonly MainWindowServiceControl serviceControl;   // サービスの開始・停止と、OSC／UDP／HidHide／TouchpadSlide の窓口
         private ProfileEditor editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
@@ -106,9 +104,7 @@ namespace DS4Windows.UI
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
 
         public MainWindow(ArgumentParser parser,
-            MainWindowSettings appSettingsService,
-            MainWindowEnvironment environment,
-            MainWindowServiceControl serviceControl,
+            MainWindowLayoutViewModel layout,
             IpcCommandDispatcher ipcDispatcher,
             MainWindowsViewModel mainWindowsViewModel,
             AutoProfileRunner autoProfileService,
@@ -130,26 +126,25 @@ namespace DS4Windows.UI
             InitializeComponent();
             // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
-            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            this.environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            profileListHolder = environment.CreateProfileList();
-            this.serviceControl = serviceControl ?? throw new ArgumentNullException(nameof(serviceControl));
+            mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
+            DataContext = mainWinVM;
+            mainWinVM.Navigator = new MainWindowNavigator(this);
+            this.layout = layout ?? throw new ArgumentNullException(nameof(layout));
+            profileListHolder = mainWinVM.CreateProfileList();
             this.ipcDispatcher = ipcDispatcher ?? throw new ArgumentNullException(nameof(ipcDispatcher));
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
-            logMinLevelComboBox.SelectedValue = appSettingsService.LogMinLevel;
+            logMinLevelComboBox.SelectedValue = mainWinVM.LogMinLevel;
 
             // Phase7-Step5 W5: 旧 AppHost 解決の失敗時の new MainWindowsViewModel(...) のフォールバックは削除した（必須引数）
-            mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
-            DataContext = mainWinVM;
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
             _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
-            languagePackControl.Initialize(appSettingsService.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
+            languagePackControl.Initialize(layout.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
             logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
@@ -179,7 +174,7 @@ namespace DS4Windows.UI
             notifyIcon.DataContext = trayIconVM;
             trayIconVM.MenuChanged += TrayIconVM_MenuChanged;
             TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems);
-            notifyIcon.CustomName = environment.ExecutablePath;
+            notifyIcon.CustomName = mainWinVM.ExecutablePath;
 
             // Remove TaskbarIcon from visual tree so Loaded and Unloaded events
             // are not fired for TaskbarIcon instance. Ignores early Dispose calls
@@ -202,39 +197,39 @@ namespace DS4Windows.UI
                 }
             }
 
-            startMinimized = appSettingsService.StartMinimized || parser.Mini;
+            startMinimized = mainWinVM.StartMinimized || parser.Mini;
 
-            bool isElevated = environment.IsAdministrator();
+            bool isElevated = mainWinVM.IsAdministrator();
             if (isElevated)
             {
                 uacImg.Visibility = Visibility.Collapsed;
             }
 
             noContLb.Content = string.Format(Strings.NoControllersConnected,
-                environment.ControllerSlotLimit);
+                mainWinVM.ControllerSlotLimit);
 
             // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
             // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
             _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
-            string autoProfilesFile = environment.AppDataPath + "\\Auto Profiles.xml";
+            string autoProfilesFile = mainWinVM.AppDataPath + "\\Auto Profiles.xml";
             _autoProfileService.EnsureFile(autoProfilesFile);
 
-            string steamGamesDir = appSettingsService.CustomSteamFolderIfValid
+            string steamGamesDir = mainWinVM.CustomSteamFolderIfValid
                 ?? (Directory.Exists(AutoProfiles.steamCommx86Loc) ? AutoProfiles.steamCommx86Loc
                     : Directory.Exists(AutoProfiles.steamCommLoc) ? AutoProfiles.steamCommLoc : null);
 
-            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, environment.ControllerSlotLimit,
+            autoProfControl.Initialize(autoProfilesFile, steamGamesDir, mainWinVM.ControllerSlotLimit,
                 _autoProfileService.Holder, viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory)),
-                () => appSettingsService.AutoProfileColumnWidths,
-                (name, path, title) => appSettingsService.AutoProfileColumnWidths = (name, path, title));
+                () => layout.AutoProfileColumnWidths,
+                (name, path, title) => layout.AutoProfileColumnWidths = (name, path, title));
             autoProfileHolder = autoProfControl.AutoProfileHolder;
             autoProfControl.SetupDataContext(profileListHolder);
 
             slotManControl.SetupDataContext(viewModelFactory.CreateCurrentOutDeviceViewModel());
-            slotManControl.SetColumnWidths(appSettingsService.OutputSlotColumnWidths);
-            slotManControl.ColumnWidthsChanged += (s, e) => appSettingsService.OutputSlotColumnWidths = slotManControl.GetColumnWidths();
+            slotManControl.SetColumnWidths(layout.OutputSlotColumnWidths);
+            slotManControl.ColumnWidthsChanged += (s, e) => layout.OutputSlotColumnWidths = slotManControl.GetColumnWidths();
 
             SetupEvents();
 
@@ -261,10 +256,10 @@ namespace DS4Windows.UI
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        StartStopBtn.IsEnabled = false;
+                        mainWinVM.IsServiceBusy = true;
                     }));
                     Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
-                    serviceControl.Start();
+                    mainWinVM.StartService();
                     //root.rootHubtest.Start();
                 }
             });
@@ -310,7 +305,7 @@ namespace DS4Windows.UI
             MessageBoxResult result = MessageBoxResult.No;
             Dispatcher.Invoke(() =>
             {
-                var updaterWin = new UpdaterWindow(version, environment.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
+                var updaterWin = new UpdaterWindow(version, mainWinVM.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
                 updaterWin.ShowDialog();
                 result = updaterWin.Result;
             });
@@ -318,10 +313,10 @@ namespace DS4Windows.UI
 
         private void Check_Version(bool showstatus = false)
         {
-            string version = environment.ApplicationVersion;
+            string version = mainWinVM.ApplicationVersion;
             string newversion = string.Empty;
-            string versionFilePath = Path.Combine(environment.AppDataPath, "version.txt");
-            ulong lastVersionNum = appSettingsService.LastVersionCheckedNum;
+            string versionFilePath = Path.Combine(mainWinVM.AppDataPath, "version.txt");
+            ulong lastVersionNum = mainWinVM.LastVersionCheckedNum;
             //ulong lastVersion = Global.CompileVersionNumberFromString("2.1.1");
 
             bool versionFileExists = File.Exists(versionFilePath);
@@ -382,9 +377,9 @@ namespace DS4Windows.UI
         private void SetupEvents()
         {
             WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += OnLocalizationCultureChanged;
-            serviceControl.ServiceStarted += ControlServiceStarted;
-            serviceControl.RunningChanged += ControlServiceChanged;
-            serviceControl.PreServiceStop += PrepareForServiceStop;
+            mainWinVM.ServiceStarted += ControlServiceStarted;
+            mainWinVM.RunningChanged += ControlServiceChanged;
+            mainWinVM.PreServiceStop += PrepareForServiceStop;
             //root.rootHubtest.RunningChanged += ControlServiceChanged;
             conLvViewModel.ControllerCol.CollectionChanged += ControllerCol_CollectionChanged;
             trayAppearance.SubscribeNotifications();
@@ -400,6 +395,7 @@ namespace DS4Windows.UI
             trayIconVM.RequestOpen += TrayIconVM_RequestOpen;
             trayIconVM.RequestServiceChange += TrayIconVM_RequestServiceChange;
             settingsWrapVM.PropertyChanged += SettingsWrapVM_PropertyChanged;
+            ApplyProcessPriorityFromSettings();
 
             autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
             _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
@@ -443,6 +439,20 @@ namespace DS4Windows.UI
         private void SettingsWrapVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             trayAppearance.OnSettingsPropertyChanged(e.PropertyName, trayIconVM);
+            if (e.PropertyName == nameof(SettingsViewModel.ProcessPriorityIndex))
+            {
+                ApplyProcessPriorityFromSettings();
+            }
+        }
+
+        /// <summary>設定の優先度を、プロセスへ反映する。管理者でなく RealTime を選んだときは、High へ戻した番号を設定へ書き戻す。</summary>
+        private void ApplyProcessPriorityFromSettings()
+        {
+            int effective = mainWinVM.ApplyProcessPriority(settingsWrapVM.ProcessPriorityIndex);
+            if (effective != settingsWrapVM.ProcessPriorityIndex)
+            {
+                settingsWrapVM.ProcessPriorityIndex = effective;
+            }
         }
 
         private void MainWinVM_FullTabsEnabledChanged(object sender, EventArgs e)
@@ -473,7 +483,7 @@ namespace DS4Windows.UI
 
         private void ControlServiceStarted(object sender, EventArgs e)
         {
-            if (appSettingsService.SwipeProfiles)
+            if (mainWinVM.SwipeProfiles)
             {
                 ChangeHotkeysStatus(true);
             }
@@ -521,14 +531,14 @@ namespace DS4Windows.UI
                 // Wakeup from Suspend
                 case POWER_RESUME:
                     {
-                        serviceControl.Suspending = false;
+                        mainWinVM.Suspending = false;
 
                         if (wasrunning)
                         {
                             wasrunning = false;
                             Dispatcher.Invoke(() =>
                             {
-                                StartStopBtn.IsEnabled = false;
+                                mainWinVM.IsServiceBusy = true;
                             });
 
                             AppLogger.Log(AppLogLevel.Info, DS4Windows.Translations.Strings.WakeupFromSuspend, LogOptions.UserFacing);
@@ -540,7 +550,7 @@ namespace DS4Windows.UI
                             //Task startupTask = Task.Run(() =>
                             Task startupTask = Task.Delay(5000).ContinueWith(t =>
                             {
-                                serviceControl.Start();
+                                mainWinVM.StartService();
                             });
 
                             // Log exceptions that might occur
@@ -552,16 +562,16 @@ namespace DS4Windows.UI
                 // Entering Suspend
                 case POWER_SUSPEND:
                     {
-                        serviceControl.Suspending = true;
+                        mainWinVM.Suspending = true;
 
-                        if (serviceControl.Running)
+                        if (mainWinVM.ServiceRunning)
                         {
                             //Dispatcher.Invoke(() =>
                             //{
-                            //    StartStopBtn.IsEnabled = false;
+                            //    mainWinVM.IsServiceBusy = true;
                             //});
 
-                            serviceControl.Stop(immediateUnplug: true);
+                            mainWinVM.StopService(immediateUnplug: true);
                             wasrunning = true;
 
                             Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
@@ -605,12 +615,12 @@ namespace DS4Windows.UI
 
         private void SwipeProfileTick()
         {
-            if (!appSettingsService.SwipeProfiles) return;
+            if (!mainWinVM.SwipeProfiles) return;
 
             // 一覧はホットプラグで別のスレッドから変わるため、読み取りロックの下で複製した行を列挙する
             foreach (CompositeDeviceModel item in conLvViewModel.SnapshotRows())
             {
-                string slide = serviceControl.TouchpadSlide(item.DevIndex);
+                string slide = mainWinVM.TouchpadSlide(item.DevIndex);
                 // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
                 if (slide == "left" || slide == "right")
                 {
@@ -684,7 +694,7 @@ namespace DS4Windows.UI
                         prolog = string.Format(Properties.Resources.UsingProfile, (devIndex + 1).ToString(), prof, battery);
 
                     // 修正前:
-                    // if (appSettingsService.ProfileChangedNotification)
+                    // if (mainWinVM.ProfileChangedNotification)
                     // {
                     //     ShowProfileSwitchNotification(message);
                     // }
@@ -733,7 +743,7 @@ namespace DS4Windows.UI
                     }
                 }
 
-                if (serviceControl.Running)
+                if (mainWinVM.ServiceRunning)
                     trayIconVM.PopulateContextMenu();
             }));
         }
@@ -764,7 +774,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void UpdateStartStopText()
         {
-            StartStopBtn.Content = serviceControl.Running ? Translations.Strings.StopText : Translations.Strings.StartText;
+            mainWinVM.RefreshStartStopText();
         }
 
         private void OnLocalizationCultureChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -778,41 +788,15 @@ namespace DS4Windows.UI
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 UpdateStartStopText();
-                StartStopBtn.IsEnabled = true;
-                slotManControl.IsEnabled = serviceControl.Running;
+                mainWinVM.NotifyServiceStateChanged();
+                slotManControl.IsEnabled = mainWinVM.ServiceRunning;
             }));
         }
 
-        private void AboutBtn_Click(object sender, RoutedEventArgs e)
-        {
-            About aboutWin = new About(environment.ApplicationVersion);
-            aboutWin.Owner = this;
-            aboutWin.ShowDialog();
-        }
+        /// <summary>サービスの開始・停止。ボタン・トレイ・IPC のどれから呼んでも、同じコマンドを通す（実行中の再入は拒む）。</summary>
+        public Task ChangeService() => mainWinVM.ToggleServiceCommand.ExecuteAsync(null);
 
-        private async void StartStopBtn_Click(object sender, RoutedEventArgs e)
-        {
-            await ChangeService();
-        }
-
-        public async Task ChangeService()
-        {
-            StartStopBtn.IsEnabled = false;
-            //Tester service = root.rootHubtest;
-            Task serviceTask = Task.Run(() =>
-            {
-                if (serviceControl.Running)
-                    serviceControl.Stop(immediateUnplug: true);
-                else
-                    serviceControl.Start();
-            });
-
-            // Log exceptions that might occur
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-        }
-
-        private void LogListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        internal void ShowSelectedLogMessage()
         {
             int idx = logListView.SelectedIndex;
             if (idx > -1)
@@ -825,7 +809,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ClearLogBtn_Click(object sender, RoutedEventArgs e)
+        internal void ClearLog()
         {
             logvm.LogItems.Clear();
             // 最下部の 1 行メッセージ欄（lastMsgLb）も、ログと一緒に消す
@@ -836,22 +820,6 @@ namespace DS4Windows.UI
         // Phase11 W6 K-W6-1: 旧 MainTabCon_SelectionChanged（タブの番号 4 のとき、最下部の 1 行メッセージ欄 lastMsgLb を隠していた）は削除した。
         // 本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は Settings タブで隠れ、
         // Settings で出る警告が見えなかった。すべてのタブで表示する（ユーザー決定 2026-11-02）。
-
-        private void ProfilesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            newProfListBtn.IsEnabled = true;
-            editProfBtn.IsEnabled = true;
-            deleteProfBtn.IsEnabled = true;
-            renameProfBtn.IsEnabled = true;
-            dupProfBtn.IsEnabled = true;
-            importProfBtn.IsEnabled = true;
-            exportProfBtn.IsEnabled = true;
-        }
-
-        private void RunAtStartCk_Click(object sender, RoutedEventArgs e)
-        {
-            settingsWrapVM.ShowRunStartPanel = runAtStartCk.IsChecked == true;
-        }
 
         private void ContStatusImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -866,7 +834,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ExportLogBtn_Click(object sender, RoutedEventArgs e)
+        internal void ExportLog()
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.AddExtension = true;
@@ -874,7 +842,7 @@ namespace DS4Windows.UI
             dialog.Filter = "Text Documents (*.txt)|*.txt";
             dialog.Title = "Select Export File";
             // TODO: Expose config dir
-            dialog.InitialDirectory = environment.AppDataPath;
+            dialog.InitialDirectory = mainWinVM.AppDataPath;
             if (dialog.ShowDialog() == true)
             {
                 LogWriter logWriter = new LogWriter(dialog.FileName, logvm.LogItems.ToList());
@@ -923,17 +891,6 @@ namespace DS4Windows.UI
         /// <summary>
         /// Change linked profile based on selection
         /// </summary>
-        private void LinkedProfCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox box = sender as ComboBox;
-            int idx = Convert.ToInt32(box.Tag);
-            if (idx > -1 && conLvViewModel.ControllerDict.ContainsKey(idx))
-            {
-                // LinkedProfileNameプロパティのsetterで処理される
-                // Link ON時のみLinkedProfiles.xmlに反映
-            }
-        }
-
         private void CustomColorPick_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
 
@@ -975,7 +932,7 @@ namespace DS4Windows.UI
             {
                 return;
             }
-            else if (appSettingsService.CloseMinimizes)
+            else if (mainWinVM.CloseMinimizes)
             {
                 WindowState = WindowState.Minimized;
                 e.Cancel = true;
@@ -1027,9 +984,9 @@ namespace DS4Windows.UI
         {
             base.OnSourceInitialized(e);
 
-            if (!appSettingsService.FirstRun)
+            if (!mainWinVM.FirstRun)
             {
-                WindowPlacementHelper.ApplyPlacement(this, appSettingsService.FormLocationX, appSettingsService.FormLocationY, appSettingsService.FormWidth, appSettingsService.FormHeight, startMinimized);
+                WindowPlacementHelper.ApplyPlacement(this, layout.FormLocationX, layout.FormLocationY, layout.FormWidth, layout.FormHeight, startMinimized);
 
                 // ApplyPlacement 後に WPF 側でサイズや位置が変更される可能性があるため、
                 // レイアウト完了後に実際のウィンドウ矩形と WPF プロパティをログに残す。
@@ -1097,7 +1054,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void HandleDeviceChange(IntPtr wParam)
         {
-            if (appSettingsService.RunHotPlug)
+            if (mainWinVM.RunHotPlug)
             {
                 Int32 Type = wParam.ToInt32();
                 if (Type == DBT_DEVICEARRIVAL ||
@@ -1131,11 +1088,11 @@ namespace DS4Windows.UI
                 hotplugCounter = 0;
             }
 
-            serviceControl.UpdateHidHiddenAttributes();
+            mainWinVM.UpdateHidHiddenAttributes();
             while (loopHotplug == true)
             {
                 Thread.Sleep(HOTPLUG_CHECK_DELAY); // 待機の理由: 機器の抜き差しの検出をまとめるための待ち（バックグラウンドのスレッドの中）
-                serviceControl.HotPlug();
+                mainWinVM.HotPlug();
 
                 lock (hotplugCounterLock)
                 {
@@ -1149,7 +1106,7 @@ namespace DS4Windows.UI
 
         private void HookWindowMessages(HwndSource source)
         {
-            bool result = Util.RegisterNotify(source.Handle, environment.HidClassGuid, ref regHandle);
+            bool result = Util.RegisterNotify(source.Handle, mainWinVM.HidClassGuid, ref regHandle);
             if (!result)
             {
                 Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
@@ -1158,7 +1115,7 @@ namespace DS4Windows.UI
             // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
             try
             {
-                Util.RegisterNotify(source.Handle, environment.XusbClassGuid, ref regHandleXusb);
+                Util.RegisterNotify(source.Handle, mainWinVM.XusbClassGuid, ref regHandleXusb);
             }
             catch (Exception)
             {
@@ -1166,10 +1123,8 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProfEditSBtn_Click(object sender, RoutedEventArgs e)
+        internal void EditDeviceProfile(int idx)
         {
-            Control temp = sender as Control;
-            int idx = Convert.ToInt32(temp.Tag);
             controllerLV.SelectedIndex = idx;
             CompositeDeviceModel item = conLvViewModel.CurrentItem;
 
@@ -1181,166 +1136,25 @@ namespace DS4Windows.UI
             }
         }
 
-        private void NewProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void NewDeviceProfile(int idx)
         {
-            Control temp = sender as Control;
-            int idx = Convert.ToInt32(temp.Tag);
             controllerLV.SelectedIndex = idx;
             ShowProfileEditor(idx, null);
             mainTabCon.SelectedIndex = 1;
             //controllerLV.Focus();
         }
 
-        // Ex Mode Re-Enable
-        private async void HideDS4ContCk_Click(object sender, RoutedEventArgs e)
-        {
-            StartStopBtn.IsEnabled = false;
-            //bool checkStatus = hideDS4ContCk.IsChecked == true;
-            hideDS4ContCk.IsEnabled = false;
-            Task serviceTask = Task.Run(() =>
-            {
-                serviceControl.Stop();
-                serviceControl.Start();
-            });
-
-            // Log exceptions that might occur
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-
-            hideDS4ContCk.IsEnabled = true;
-            StartStopBtn.IsEnabled = true;
-        }
-
-        // Xbox の USB の親を隠す設定は、接続のときに適用されるため、サービスを再起動して、検出済みの Xbox すべてへ反映する
-        private async void HideXboxContCk_Click(object sender, RoutedEventArgs e)
-        {
-            StartStopBtn.IsEnabled = false;
-            hideXboxContCk.IsEnabled = false;
-            Task serviceTask = Task.Run(() =>
-            {
-                serviceControl.Stop();
-                serviceControl.Start();
-            });
-
-            Util.LogAssistBackgroundTask(serviceTask);
-            await serviceTask;
-
-            hideXboxContCk.IsEnabled = true;
-            StartStopBtn.IsEnabled = true;
-        }
-
-        private void UseOscServerCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = useOscServerCk.IsChecked == true;
-            serviceControl.ChangeOscListenerStatus(status);
-        }
-
-        private void UseOscSenderCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = useOscSenderCk.IsChecked == true;
-            serviceControl.ChangeOscSenderStatus(status);
-        }
-
-        private async void UseUdpServerCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = useUdpServerCk.IsChecked == true;
-            if (!status)
-            {
-                serviceControl.ChangeMotionEventStatus(status);
-                await Task.Delay(200).ContinueWith((t) =>
-                {
-                    serviceControl.ChangeUdpStatus(status);
-                });
-            }
-            else
-            {
-                serviceControl.ChangeUdpStatus(status);
-                await Task.Delay(200).ContinueWith((t) =>
-                {
-                    serviceControl.ChangeMotionEventStatus(status);
-                });
-            }
-        }
-
-        private void ProfFolderBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo(environment.AppDataPath + "\\Profiles");
-            startInfo.UseShellExecute = true;
-            try
-            {
-                using (Process temp = Process.Start(startInfo))
-                {
-                }
-            }
-            catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-        }
-
-        private void ControlPanelBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("control", "joy.cpl");
-        }
-
-        private async void DriverSetupBtn_Click(object sender, RoutedEventArgs e)
-        {
-            StartStopBtn.IsEnabled = false;
-            await Task.Run(() =>
-            {
-                if (serviceControl.Running)
-                    serviceControl.Stop();
-            });
-
-            StartStopBtn.IsEnabled = true;
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = environment.ExecutablePath;
-            startInfo.Arguments = "-driverinstall";
-            startInfo.Verb = "runas";
-            startInfo.UseShellExecute = true;
-            try
-            {
-                using (Process temp = Process.Start(startInfo))
-                {
-                    temp.WaitForExit();
-                    environment.RefreshHidHideInfo();
-                    environment.RefreshFakerInputInfo();
-
-                    settingsWrapVM.DriverCheckRefresh();
-                }
-            }
-            catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-        }
-
-        private void CheckUpdatesBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Task.Run(() =>
-            {
-                try
-                {
-                    // Manual check should ignore any previously skipped version
-                    if (updateCheckPolicy.TryFindNewerVersion(startup: false, out var version))
-                        DisplayUpdaterWindow(version.ToString());
-                    else
-                        Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
-                }
-                catch
-                {
-                    Dispatcher.Invoke(() => MessageBox.Show(Strings.FailedToRetrieveLatestVersion, "DS4Windows Updater"));
-                    // bubble the exception up to allow to see what's wrong in the log
-                    throw;
-                }
-            });
-        }
-
-        private void ImportProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void ImportProfile()
         {
             profileSelection.ImportProfile(profileListHolder);
         }
 
-        private void ExportProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void ExportProfile()
         {
             profileSelection.ExportProfile(profileListHolder, profilesListBox.SelectedIndex);
         }
 
-        private void DupProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void DuplicateProfile()
         {
             string filename = "";
             if (profilesListBox.SelectedIndex >= 0)
@@ -1348,7 +1162,7 @@ namespace DS4Windows.UI
                 int idx = profilesListBox.SelectedIndex;
                 filename = profileListHolder.ProfileListCol[idx].Name;
                 dupBox.OldFilename = filename;
-                dupBoxBar.Visibility = Visibility.Visible;
+                mainWinVM.IsDuplicateBarVisible = true;
                 dupBox.Save -= DupBox_Save;
                 dupBox.Cancel -= DupBox_Cancel;
                 dupBox.Save += DupBox_Save;
@@ -1358,16 +1172,16 @@ namespace DS4Windows.UI
 
         private void DupBox_Cancel(object sender, EventArgs e)
         {
-            dupBoxBar.Visibility = Visibility.Collapsed;
+            mainWinVM.IsDuplicateBarVisible = false;
         }
 
         private void DupBox_Save(DupBox sender, string profilename)
         {
             profileListHolder.AddProfileSort(profilename);
-            dupBoxBar.Visibility = Visibility.Collapsed;
+            mainWinVM.IsDuplicateBarVisible = false;
         }
 
-        private void DeleteProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void DeleteProfile()
         {
             profileSelection.DeleteProfile(profileListHolder, profilesListBox.SelectedIndex);
         }
@@ -1384,7 +1198,7 @@ namespace DS4Windows.UI
 
         public void CheckMinStatus()
         {
-            bool minToTask = appSettingsService.MinimizeToTaskbar;
+            bool minToTask = mainWinVM.MinimizeToTaskbar;
             if (WindowState == WindowState.Minimized && !minToTask)
             {
                 Hide();
@@ -1403,17 +1217,17 @@ namespace DS4Windows.UI
             if (WindowState != WindowState.Minimized && editor != null && editor.Keepsize && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormWidth = logical.LogicalWidth;
-                appSettingsService.FormHeight = logical.LogicalHeight;
-                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={appSettingsService.FormWidth} Height={appSettingsService.FormHeight}");
+                layout.FormWidth = logical.LogicalWidth;
+                layout.FormHeight = logical.LogicalHeight;
+                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={layout.FormWidth} Height={layout.FormHeight}");
             }
             // 編集画面が開いていない場合は常に保存
             else if (WindowState != WindowState.Minimized && editor == null && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormWidth = logical.LogicalWidth;
-                appSettingsService.FormHeight = logical.LogicalHeight;
-                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={appSettingsService.FormWidth} Height={appSettingsService.FormHeight}");
+                layout.FormWidth = logical.LogicalWidth;
+                layout.FormHeight = logical.LogicalHeight;
+                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={layout.FormWidth} Height={layout.FormHeight}");
             }
         }
 
@@ -1423,17 +1237,17 @@ namespace DS4Windows.UI
             if (WindowState != WindowState.Minimized && editor != null && editor.Keepsize && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormLocationX = logical.LogicalX;
-                appSettingsService.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={appSettingsService.FormLocationX} Y={appSettingsService.FormLocationY}");
+                layout.FormLocationX = logical.LogicalX;
+                layout.FormLocationY = logical.LogicalY;
+                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={layout.FormLocationX} Y={layout.FormLocationY}");
             }
             // 編集画面が開いていない場合は常に保存
             else if (WindowState != WindowState.Minimized && editor == null && !IsInitialShow)
             {
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormLocationX = logical.LogicalX;
-                appSettingsService.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={appSettingsService.FormLocationX} Y={appSettingsService.FormLocationY}");
+                layout.FormLocationX = logical.LogicalX;
+                layout.FormLocationY = logical.LogicalY;
+                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={layout.FormLocationX} Y={layout.FormLocationY}");
             }
         }
 
@@ -1443,13 +1257,7 @@ namespace DS4Windows.UI
             Close();
         }
 
-        private void SwipeTouchCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool status = swipeTouchCk.IsChecked == true;
-            ChangeHotkeysStatus(status);
-        }
-
-        private void EditProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void EditProfile()
         {
             if (profilesListBox.SelectedIndex >= 0)
             {
@@ -1473,11 +1281,11 @@ namespace DS4Windows.UI
             {
                 oldSize = new Size(Width, Height);
                 var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                appSettingsService.FormWidth = logical.LogicalWidth;
-                appSettingsService.FormHeight = logical.LogicalHeight;
-                appSettingsService.FormLocationX = logical.LogicalX;
-                appSettingsService.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.ProfileEditor_Closed: Saved Logical Rect X={appSettingsService.FormLocationX} Y={appSettingsService.FormLocationY} W={appSettingsService.FormWidth} H={appSettingsService.FormHeight}");
+                layout.FormWidth = logical.LogicalWidth;
+                layout.FormHeight = logical.LogicalHeight;
+                layout.FormLocationX = logical.LogicalX;
+                layout.FormLocationY = logical.LogicalY;
+                AppLogger.LogTrace($"MainWindow.ProfileEditor_Closed: Saved Logical Rect X={layout.FormLocationX} Y={layout.FormLocationY} W={layout.FormWidth} H={layout.FormHeight}");
             }
             editor = null;
             // Restore the tab that was active before opening the profile editor
@@ -1496,7 +1304,7 @@ namespace DS4Windows.UI
             //Task.Run(() => GC.Collect(0, GCCollectionMode.Forced, false));
         }
 
-        private void NewProfListBtn_Click(object sender, RoutedEventArgs e)
+        internal void NewProfile()
         {
             ShowProfileEditor(ProfileEditor.NoTargetDevice, null);
         }
@@ -1591,7 +1399,7 @@ namespace DS4Windows.UI
             var gridView = logListView.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 2)
             {
-                appSettingsService.LogColumnWidths = new[] { (int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width };
+                layout.LogColumnWidths = new[] { (int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width };
             }
         }
 
@@ -1600,7 +1408,7 @@ namespace DS4Windows.UI
             var gridView = logListView.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 2)
             {
-                int[] widths = appSettingsService.LogColumnWidths;
+                int[] widths = layout.LogColumnWidths;
                 gridView.Columns[0].Width = widths[0];
                 gridView.Columns[1].Width = widths[1];
             }
@@ -1613,7 +1421,7 @@ namespace DS4Windows.UI
             {
                 int[] widths = new int[10];
                 for (int i = 0; i < widths.Length; i++) widths[i] = (int)gridView.Columns[i].Width;
-                appSettingsService.ControllerColumnWidths = widths;
+                layout.ControllerColumnWidths = widths;
             }
         }
 
@@ -1622,7 +1430,7 @@ namespace DS4Windows.UI
             var gridView = controllerLV.View as GridView;
             if (gridView != null && gridView.Columns.Count >= 10)
             {
-                int[] widths = appSettingsService.ControllerColumnWidths;
+                int[] widths = layout.ControllerColumnWidths;
                 for (int i = 0; i < widths.Length; i++) gridView.Columns[i].Width = widths[i];
             }
         }
@@ -1637,79 +1445,13 @@ namespace DS4Windows.UI
             WindowState = WindowState.Normal;
         }
 
-        private void ProfilesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (profilesListBox.SelectedIndex >= 0)
-            {
-                ProfileEntity entity = profileListHolder.ProfileListCol[profilesListBox.SelectedIndex];
-                ShowProfileEditor(ProfileEditor.NoTargetDevice, entity);
-            }
-        }
-
-        private void Html5GameBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Util.StartProcessHelper("https://gamepad-tester.com/");
-        }
-
-        private void HidHideBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string path = Util.GetHidHideClientPath();
-            if (!string.IsNullOrEmpty(path))
-            {
-                try
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo(path);
-                    startInfo.UseShellExecute = true;
-                    using (Process proc = Process.Start(startInfo)) { }
-                }
-                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-            }
-        }
-
-        private void FakeExeNameExplainBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string message = Translations.Strings.CustomExeNameInfo;
-            MessageBox.Show(message, "Custom Exe Name Info", MessageBoxButton.OK,
-                MessageBoxImage.Information);
-        }
-
-        private void XinputCheckerBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string path = System.IO.Path.Combine(environment.ExecutableDirectory, "Tools",
-                "XInputChecker", "XInputChecker.exe");
-
-            if (File.Exists(path))
-            {
-                try
-                {
-                    using (Process proc = Process.Start(path)) { }
-                }
-                catch (Exception caught) when (caught is System.ComponentModel.Win32Exception or System.InvalidOperationException or System.NotSupportedException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
-            }
-        }
-
-        private void ChecklogViewBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ChangelogWindow changelogWin = new ChangelogWindow(_viewModelFactory.CreateChangelogViewModel());
-            changelogWin.ShowDialog();
-        }
-
-        private void DeviceOptionSettingsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ControllerRegisterOptionsWindow optsWindow =
-                new ControllerRegisterOptionsWindow(appSettingsService.CreateDeviceOptionsViewModel(_viewModelFactory));
-
-            optsWindow.Owner = this;
-            optsWindow.Show();
-        }
-
-        private void RenameProfBtn_Click(object sender, RoutedEventArgs e)
+        internal void RenameProfile()
         {
             if (profilesListBox.SelectedIndex >= 0)
             {
                 int idx = profilesListBox.SelectedIndex;
                 ProfileEntity entity = profileListHolder.ProfileListCol[idx];
-                string filename = Path.Combine(environment.AppDataPath,
+                string filename = Path.Combine(mainWinVM.AppDataPath,
                     "Profiles", $"{entity.Name}.xml");
 
                 // Disallow renaming Default profile
@@ -1738,18 +1480,5 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProcessPriorityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            using var process = Process.GetCurrentProcess();
-            var s = (ComboBox)sender;
-            var selectedPriority = (ProcessPriorityClass)s.SelectedItem;
-            if (!environment.IsAdministrator() && selectedPriority == ProcessPriorityClass.RealTime)
-            {
-                MessageBox.Show(Strings.RealTimeNoAdmin);
-                selectedPriority = ProcessPriorityClass.High;
-                settingsWrapVM.ProcessPriorityIndex = DS4Windows.Core.Platform.ProcessPriorityOptions.IndexOf(ProcessPriorityClass.High);
-            }
-            process.PriorityClass = selectedPriority;
-        }
     }
 }

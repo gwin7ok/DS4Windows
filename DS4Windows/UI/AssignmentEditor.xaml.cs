@@ -58,6 +58,9 @@ namespace DS4Windows.UI
         public delegate void SaveHandler(object sender, string actionName);
         public event SaveHandler Saved;
 
+        /// <summary>記録の画面を開くコマンドなど、編集の操作の窓口（XAML の Command が結ぶ）。</summary>
+        public AssignmentEditorSession Session => session;
+
         private bool HasTargetDevice => session.HasTargetDevice;
         private int targetDevice => session.TargetDevice;
 
@@ -209,8 +212,6 @@ namespace DS4Windows.UI
             }
         }
 
-        private void RecordMacroBtn_Click(object sender, RoutedEventArgs e) => session.RecordMacro();
-
         // Unload trigger toggle buttons and handlers removed: Key-type SpecialActions use single-trigger toggle mode.
 
         private void BatteryEmptyColorBtn_Click(object sender, RoutedEventArgs e)
@@ -245,17 +246,6 @@ namespace DS4Windows.UI
             dialog.ShowDialog();
             if (HasTargetDevice) checkBatteryVM.EndForcedColor(targetDevice);
             checkBatteryVM.FullColor = MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault());
-        }
-
-        private void MultiTapTrigBtn_Click(object sender, RoutedEventArgs e) => session.RecordMultiTap();
-
-        private void MultiHoldTapTrigBtn_Click(object sender, RoutedEventArgs e) => session.RecordMultiHold();
-
-        private void MultiDoubleTapTrigBtn_Click(object sender, RoutedEventArgs e) => session.RecordMultiDoubleTap();
-
-        private void LaunchProgBrowseBtn_Click(object sender, RoutedEventArgs e)
-        {
-            launchProgVM.PickProgram(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
         }
 
         private void PressKeySelectBtn_Click(object sender, RoutedEventArgs e)

@@ -53,8 +53,8 @@ namespace DS4WindowsTests
             // 依存の null 検査は、AutoProfileHolder を使う処理より前に行われる（holder／list は null で検証できる）
             var app = TestRepositoryFactory.CreateAppSettingsService();
 
-            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, null, null, null, null, new ImmediateUiDispatcher()));
-            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, app, null, null, new EnvironmentService(), new ImmediateUiDispatcher()));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, null, null, null, null, new ImmediateUiDispatcher(), new FakeDialogService()));
+            Assert.Throws<ArgumentNullException>(() => new AutoProfilesViewModel(null, null, app, null, null, new EnvironmentService(), new ImmediateUiDispatcher(), new FakeDialogService()));
         }
 
         [Fact]

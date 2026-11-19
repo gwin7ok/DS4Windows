@@ -38,10 +38,10 @@
             <DockPanel MinHeight="30">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                     <Button x:Name="aboutBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{DynamicResource LinkBrush}"
-                            Style="{StaticResource NoBGHoverBtn}" Click="AboutBtn_Click">
+                            Style="{StaticResource NoBGHoverBtn}" Command="{Binding ShowAboutCommand}">
                         <TextBlock Text="{lex:Loc HotkeysAbout}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" x:Uid="hotkeysText" />
                     </Button>
-                    <Button x:Name="StartStopBtn" Margin="10,4,4,4" Click="StartStopBtn_Click" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
+                    <Button x:Name="StartStopBtn" Margin="10,4,4,4" Content="{Binding StartStopText}" Command="{Binding ToggleServiceCommand}" Width="60" Padding="5,2" Foreground="{DynamicResource ForegroundBrush}" />
                 </StackPanel>
                 <Label x:Name="lastMsgLb" Content="{Binding Message}" ToolTip="{Binding Message}" Foreground="{Binding Color}" Margin="4,0,2,0" />
             </DockPanel>
@@ -121,9 +121,9 @@
                                         <DataTemplate>
                                             <StackPanel Width="{Binding ElementName=editColumn, Path=Width}">
                                                 <xctk:SplitButton x:Name="ProfEditSBtn" Content="{lex:Loc Edit}" Height="Auto" MinWidth="60"
-                                                                  Tag="{Binding DevIndex, Mode=OneTime}" Click="ProfEditSBtn_Click" HorizontalAlignment="Center">
+                                                                  Command="{Binding DataContext.EditDeviceProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding DevIndex, Mode=OneTime}" HorizontalAlignment="Center">
                                                     <xctk:SplitButton.DropDownContent>
-                                                        <Button x:Name="newProfBtn" Content="{lex:Loc NewProfile}" MinWidth="120" Tag="{Binding DevIndex, Mode=OneTime}" Click="NewProfBtn_Click"  />
+                                                        <Button x:Name="newProfBtn" Content="{lex:Loc NewProfile}" MinWidth="120" Command="{Binding DataContext.NewDeviceProfileCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding DevIndex, Mode=OneTime}"  />
                                                     </xctk:SplitButton.DropDownContent>
                                                 </xctk:SplitButton>
                                             </StackPanel>
@@ -135,8 +135,7 @@
                                         <DataTemplate>
                                             <StackPanel Width="{Binding Path=Width, ElementName=linkedProfileColumn, Mode=OneWay}" HorizontalAlignment="Center">
                                                 <ComboBox x:Name="linkedProfCombo" Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay}"
-                                                          ItemsSource="{Binding ProfileListCol}" SelectedItem="{Binding LinkedProfileName, Mode=TwoWay}" Height="Auto" Tag="{Binding DevIndex, Mode=OneTime}" Margin="0"
-                                                          SelectionChanged="LinkedProfCombo_SelectionChanged">
+                                                          ItemsSource="{Binding ProfileListCol}" SelectedItem="{Binding LinkedProfileName, Mode=TwoWay}" Height="Auto" Tag="{Binding DevIndex, Mode=OneTime}" Margin="0">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding Name,Mode=OneWay,FallbackValue=''}" />
@@ -183,7 +182,7 @@
             <TabItem x:Name="profilesTab" Header="{lex:Loc Profiles}">
                 <DockPanel x:Name="profDockPanel">
                     <ToolBar x:Name="profOptsToolbar" Height="30" DockPanel.Dock="Top" Background="{x:Null}">
-                        <Button x:Name="newProfListBtn" Click="NewProfListBtn_Click">
+                        <Button x:Name="newProfListBtn" Command="{Binding NewProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding NewProfile, Source={StaticResource ImgLocPaths}}" />
@@ -191,7 +190,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="editProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="EditProfBtn_Click">
+                        <Button x:Name="editProfBtn" Margin="10,0,0,0" Command="{Binding EditProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding EditProfile, Source={StaticResource ImgLocPaths}}" />
@@ -199,7 +198,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="deleteProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="DeleteProfBtn_Click">
+                        <Button x:Name="deleteProfBtn" Margin="10,0,0,0" Command="{Binding DeleteProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding DeleteProfile, Source={StaticResource ImgLocPaths}}" />
@@ -207,7 +206,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="renameProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="RenameProfBtn_Click">
+                        <Button x:Name="renameProfBtn" Margin="10,0,0,0" Command="{Binding RenameProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding EditProfile, Source={StaticResource ImgLocPaths}}" />
@@ -215,7 +214,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="dupProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="DupProfBtn_Click">
+                        <Button x:Name="dupProfBtn" Margin="10,0,0,0" Command="{Binding DuplicateProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding DuplicateProfile, Source={StaticResource ImgLocPaths}}" />
@@ -223,7 +222,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="importProfBtn" Margin="10,0,0,0" Click="ImportProfBtn_Click">
+                        <Button x:Name="importProfBtn" Margin="10,0,0,0" Command="{Binding ImportProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding ImportProfile, Source={StaticResource ImgLocPaths}}" />
@@ -231,7 +230,7 @@
                                 </StackPanel>
                             </Button.Content>
                         </Button>
-                        <Button x:Name="exportProfBtn" Margin="10,0,0,0" IsEnabled="False" Click="ExportProfBtn_Click">
+                        <Button x:Name="exportProfBtn" Margin="10,0,0,0" Command="{Binding ExportProfileCommand}">
                             <Button.Content>
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="{Binding ExportProfile, Source={StaticResource ImgLocPaths}}" />
@@ -240,11 +239,14 @@
                             </Button.Content>
                         </Button>
                     </ToolBar>
-                    <ToolBar x:Name="dupBoxBar" Height="40" DockPanel.Dock="Top" Background="{x:Null}" HorizontalAlignment="Center" Visibility="Collapsed">
+                    <ToolBar x:Name="dupBoxBar" Height="40" DockPanel.Dock="Top" Background="{x:Null}" HorizontalAlignment="Center" Visibility="{Binding IsDuplicateBarVisible, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}">
                         <local:DupBox x:Name="dupBox" />
                     </ToolBar>
 
-                    <ListBox x:Name="profilesListBox" DockPanel.Dock="Bottom" SelectionChanged="ProfilesListBox_SelectionChanged" MouseDoubleClick="ProfilesListBox_MouseDoubleClick">
+                    <ListBox x:Name="profilesListBox" DockPanel.Dock="Bottom" SelectedIndex="{Binding SelectedProfileIndex, Mode=TwoWay}">
+                        <ListBox.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditProfileCommand}" />
+                        </ListBox.InputBindings>
                         <ListBox.Resources>
                             <localConverters:EscapeAccessKeysConverter x:Key="escapeAccessConvert" />
                         </ListBox.Resources>
@@ -273,13 +275,13 @@
                             <Thickness x:Key="spaceMargin" Left="4" Right="0" Bottom="8" Top="0" />
                         </WrapPanel.Resources>
                         <CheckBox x:Name="hideDS4ContCk" Content="{lex:Loc HideDS4Controller}" x:Uid="hideDS4Checkbox"
-                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Click="HideDS4ContCk_Click" >
+                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideDS4Controller}" Command="{Binding DataContext.RestartForHideDs4Command, RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding DataContext.HideDs4ToggleEnabled, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}" >
                             <CheckBox.ToolTip>
                                 <TextBlock Text="{lex:Loc HideDS4ControllerTip}" TextWrapping="Wrap" MaxWidth="420" />
                             </CheckBox.ToolTip>
                         </CheckBox>
                         <CheckBox x:Name="hideXboxContCk" Content="{lex:Loc HideXboxController}"
-                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Click="HideXboxContCk_Click">
+                              Margin="{StaticResource spaceMargin}" IsChecked="{Binding HideXboxController}" Command="{Binding DataContext.RestartForHideXboxCommand, RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding DataContext.HideXboxToggleEnabled, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}">
                             <CheckBox.ToolTip>
                                 <TextBlock Text="{lex:Loc HideXboxControllerTip}" TextWrapping="Wrap" MaxWidth="420" />
                             </CheckBox.ToolTip>
@@ -288,10 +290,10 @@
                               Margin="{StaticResource spaceMargin}" Visibility="{Binding ShowHidHideMissingNotice, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
                         <CheckBox x:Name="swipeTouchCk" Content="{lex:Loc SwipeTouchpadToSwitchProfiles}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding SwipeTouchSwitchProfile}"
-                              ToolTip="{lex:Loc Resources:TwoFingerSwipe}" Click="SwipeTouchCk_Click" />
+                              ToolTip="{lex:Loc Resources:TwoFingerSwipe}" Command="{Binding DataContext.SetSwipeTouchCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" />
                         <CheckBox x:Name="runAtStartCk" Content="{lex:Loc RunAtStartup}" Margin="{StaticResource spaceMargin}"
                               IsChecked="{Binding RunAtStartup}"
-                              ToolTip="{lex:Loc Resources:RunAtStartup}" Click="RunAtStartCk_Click" />
+                              ToolTip="{lex:Loc Resources:RunAtStartup}" Command="{Binding DataContext.SetRunAtStartPanelCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" />
                         <GroupBox x:Name="runAsGroupBox" Header="{lex:Loc RunAs}" BorderThickness="2" Visibility="{Binding ShowRunStartPanel, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"
                               Margin="{StaticResource spaceMargin}">
                             <StackPanel Orientation="Horizontal">
@@ -373,7 +375,7 @@
                         <GroupBox Header="{lex:Loc OscServerHeading}" Padding="0,10,0,0" Margin="{StaticResource spaceMargin}">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" MinHeight="20">
-                                    <CheckBox x:Name="useOscServerCk" Content="{lex:Loc EnableOscServer}" IsChecked="{Binding UseOSCServer}" Click="UseOscServerCk_Click" VerticalAlignment="Center" />
+                                    <CheckBox x:Name="useOscServerCk" Content="{lex:Loc EnableOscServer}" IsChecked="{Binding UseOSCServer}" Command="{Binding DataContext.SetOscListenerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" VerticalAlignment="Center" />
                                     <Label Content="{lex:Loc Port}" Padding="0" VerticalAlignment="Center" Margin="20,0,0,0" />
                                     <xctk:IntegerUpDown d:IsHidden="False" x:Name="oscPortNum" IsEnabled="{Binding UseOSCServer}" MinWidth="20" Margin="8,0,0,0"
                                         Value="{Binding OscPort, UpdateSourceTrigger=LostFocus,FallbackValue='9000'}" ButtonSpinnerLocation="Right" Increment="1" Maximum="65535" Minimum="0" />
@@ -382,7 +384,7 @@
                                 <CheckBox x:Name="interpretingOscMonitoringCk" Content="{lex:Loc EnableInterpretingOscMonitoring}" Margin="0,4,0,10" IsChecked="{Binding InterpretingOscMonitoring}" IsEnabled="{Binding UseOSCServer}" />
 
                                 <StackPanel Orientation="Horizontal" MinHeight="20">
-                                    <CheckBox x:Name="useOscSenderCk" Content="{lex:Loc EnableOscSender}" IsChecked="{Binding UseOSCSender}" Click="UseOscSenderCk_Click" VerticalAlignment="Center" />
+                                    <CheckBox x:Name="useOscSenderCk" Content="{lex:Loc EnableOscSender}" IsChecked="{Binding UseOSCSender}" Command="{Binding DataContext.SetOscSenderCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" VerticalAlignment="Center" />
                                     <TextBox x:Name="oscSenderTxt" IsEnabled="{Binding UseOSCSender,Mode=OneWay}" Text="{Binding OscSenderAddress, UpdateSourceTrigger=LostFocus,FallbackValue='127.0.0.1'}"
                                  Margin="8,0,0,0" />
                                     <Label Content="{lex:Loc Port}" Padding="0" Margin="20,0,0,0" VerticalAlignment="Center"/>
@@ -394,7 +396,7 @@
                         <GroupBox Header="{lex:Loc UDPServer}" Padding="0,10,0,0" Margin="{StaticResource spaceMargin}">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" MinHeight="20">
-                                    <CheckBox x:Name="useUdpServerCk" Content="{lex:Loc MainWin.EnableServer}" IsChecked="{Binding UseUDPServer}" Click="UseUdpServerCk_Click" VerticalAlignment="Center" />
+                                    <CheckBox x:Name="useUdpServerCk" Content="{lex:Loc MainWin.EnableServer}" IsChecked="{Binding UseUDPServer}" Command="{Binding DataContext.SetUdpServerCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" VerticalAlignment="Center" />
                                     <TextBox x:Name="udpServerTxt" IsEnabled="{Binding UseUDPServer,Mode=OneWay}" Text="{Binding UdpIpAddress, UpdateSourceTrigger=LostFocus,FallbackValue='127.0.0.1'}"
                                  Margin="8,0,0,0" />
                                     <Label Content="{lex:Loc Port}" Padding="0" Margin="20,0,0,0" VerticalAlignment="Center" />
@@ -435,7 +437,7 @@
                         </StackPanel>
                         <DockPanel Margin="{StaticResource spaceMargin}">
                             <Label Content="{lex:Loc CustomExeName}" />
-                            <Button x:Name="fakeExeNameExplainBtn" DockPanel.Dock="Right" Margin="8,0,0,0" Click="FakeExeNameExplainBtn_Click">
+                            <Button x:Name="fakeExeNameExplainBtn" DockPanel.Dock="Right" Margin="8,0,0,0" Command="{Binding DataContext.ExplainCustomExeNameCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                 <Image Source="{localConverters:SystemIcon Question}"
                                    Width="20" Height="20" Stretch="UniformToFill" />
                             </Button>
@@ -444,43 +446,43 @@
 
                         <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                             <Label Content="{lex:Loc ProcessPriority}" ContentStringFormat="{}{0}:"/>
-                            <ComboBox x:Name="ProcessPriorityComboBox" Margin="10,0,0,0" SelectedIndex="{Binding ProcessPriorityIndex}" SelectionChanged="ProcessPriorityComboBox_OnSelectionChanged" />
+                            <ComboBox x:Name="ProcessPriorityComboBox" Margin="10,0,0,0" SelectedIndex="{Binding ProcessPriorityIndex}" />
                         </StackPanel>
 
                         <GroupBox Header="{lex:Loc Utils}" BorderThickness="2" Margin="{StaticResource spaceMargin}"
                               Padding="8" HorizontalAlignment="Left">
                             <WrapPanel HorizontalAlignment="Left" Orientation="Vertical">
                                 <Button x:Name="profFolderBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="ProfFolderBtn_Click">
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenProfilesFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                     <TextBlock Text="{lex:Loc ProfileFolder}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="controlPanelBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="ControlPanelBtn_Click" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenControlPanelCommand, RelativeSource={RelativeSource AncestorType=Window}}" >
                                     <TextBlock Text="{lex:Loc ControlPanel}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="html5GameBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="Html5GameBtn_Click" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenGamepadTesterCommand, RelativeSource={RelativeSource AncestorType=Window}}" >
                                     <TextBlock Text="{lex:Loc GamepadTest}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="xinputCheckerBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="XinputCheckerBtn_Click" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenXInputCheckerCommand, RelativeSource={RelativeSource AncestorType=Window}}" >
                                     <TextBlock Text="{lex:Loc XInputChecker}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="hidHideBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="HidHideBtn_Click" Visibility="{Binding HidHideClientFound, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" >
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.OpenHidHideClientCommand, RelativeSource={RelativeSource AncestorType=Window}}" Visibility="{Binding HidHideClientFound, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" >
                                     <TextBlock Text="{lex:Loc HidHideConfigClient}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="driverSetupBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                   Style="{StaticResource NoBGHoverBtn}"  Click="DriverSetupBtn_Click">
+                                   Style="{StaticResource NoBGHoverBtn}"  Command="{Binding DataContext.DriverSetupCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                     <TextBlock Text="{lex:Loc DriverSetup}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="checkUpdatesBtn" BorderThickness="0" Margin="0,0,4,4" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="CheckUpdatesBtn_Click">
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.CheckUpdatesCommand, RelativeSource={RelativeSource AncestorType=Window}}">
                                     <!--="CheckUpdatesBtn_Click">-->
                                     <TextBlock Text="{lex:Loc CheckUpdateNow}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
                                 <Button x:Name="checklogViewBtn" BorderThickness="0" Background="{x:Null}" BorderBrush="{x:Null}"
-                                    Style="{StaticResource NoBGHoverBtn}" Click="ChecklogViewBtn_Click" Margin="0,0,4,4">
+                                    Style="{StaticResource NoBGHoverBtn}" Command="{Binding DataContext.ShowChangelogCommand, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,0,4,4">
                                     <!--="CheckUpdatesBtn_Click">-->
                                     <TextBlock Text="{lex:Loc Changelog}" TextDecorations="Underline" Foreground="{DynamicResource LinkAccentBrush}" Cursor="Hand" />
                                 </Button>
@@ -503,7 +505,7 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <Button x:Name="deviceOptionSettingsBtn" MaxWidth="140" HorizontalAlignment="Center" Content="{lex:Loc DeviceOptions}" Click="DeviceOptionSettingsBtn_Click" />
+                        <Button x:Name="deviceOptionSettingsBtn" MaxWidth="140" HorizontalAlignment="Center" Content="{lex:Loc DeviceOptions}" Command="{Binding DataContext.ShowDeviceOptionsCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </WrapPanel>
                 </ScrollViewer>
 
@@ -511,10 +513,13 @@
             <TabItem Header="{lex:Loc Log}">
                 <DockPanel>
                     <DockPanel Height="20" DockPanel.Dock="Bottom" Margin="4,8">
-                        <Button x:Name="exportLogBtn" Content="{lex:Loc Export}" HorizontalAlignment="Left" Padding="20,1" Click="ExportLogBtn_Click" />
-                        <Button x:Name="clearLogBtn" Content="{lex:Loc Clear}" DockPanel.Dock="Right" Padding="20,1" Margin="100,0,0,0" Click="ClearLogBtn_Click" />
+                        <Button x:Name="exportLogBtn" Content="{lex:Loc Export}" HorizontalAlignment="Left" Padding="20,1" Command="{Binding DataContext.ExportLogCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <Button x:Name="clearLogBtn" Content="{lex:Loc Clear}" DockPanel.Dock="Right" Padding="20,1" Margin="100,0,0,0" Command="{Binding DataContext.ClearLogCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </DockPanel>
-                    <ListView x:Name="logListView" PreviewMouseUp="LogListView_PreviewMouseUp" DockPanel.Dock="Top" ItemsSource="{Binding LogItems}" MouseDoubleClick="LogListView_MouseDoubleClick" Margin="0">
+                    <ListView x:Name="logListView" PreviewMouseUp="LogListView_PreviewMouseUp" DockPanel.Dock="Top" ItemsSource="{Binding LogItems}" Margin="0">
+                        <ListView.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.ShowLogMessageCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        </ListView.InputBindings>
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
                                 <GridViewColumn Header="{lex:Loc MainWindow_Time}" Width="190">

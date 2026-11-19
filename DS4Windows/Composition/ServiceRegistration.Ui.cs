@@ -18,6 +18,8 @@ namespace DS4Windows.Composition
         {
             services.AddSingleton<INotificationService, AppNotificationService>();
             services.AddSingleton<IUiDispatcher, WpfUiDispatcher>();   // 画面のスレッドへの受け渡し（ViewModel が Dispatcher を直接使わない）
+            services.AddSingleton<IProcessPriorityControl, ProcessPriorityControl>();   // 自分のプロセスの優先度の設定
+            services.AddSingleton<IShellLauncher, ShellLauncher>();   // フォルダー・プログラム・Web ページを OS に開かせる窓口
             services.AddSingleton<IDialogService, WpfDialogService>();   // 確認・通知・ファイル選択の窓の窓口
 
             // Phase 4: UI層 ViewModel ファクトリの登録
@@ -37,9 +39,7 @@ namespace DS4Windows.Composition
             // Phase7-Step5 W5（Q4＝A）: メイン画面の生成の窓口。MainWindow のコンストラクターで AppHost.GetService を使わないための窓口
             services.AddSingleton<IMainWindowFactory, MainWindowFactory>();
             services.AddSingleton<AutoProfileRunner>();
-            services.AddSingleton<MainWindowSettings>();   // メイン画面の設定の窓口
-            services.AddSingleton<MainWindowEnvironment>();   // メイン画面のパス・実行環境の窓口
-            services.AddSingleton<MainWindowServiceControl>();   // メイン画面のサービス操作の窓口
+            services.AddSingleton<MainWindowLayoutViewModel>();   // メイン画面の配置（位置・大きさ・列幅）
             services.AddSingleton<UpdateCheckPolicy>();   // 更新の確認の判断
             services.AddSingleton<IpcCommandDispatcher>();   // CLI のコマンドの実行の窓口
             services.AddSingleton<TrayAppearanceController>();   // メイン画面のトレイ・通知・テーマの切り替え

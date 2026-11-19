@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using CommunityToolkit.Mvvm.Input;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
@@ -192,6 +193,20 @@ namespace DS4Windows.UI.Services
             savedName = tempAct.name;
             return SaveOutcome.Saved;
         }
+
+        // 記録の画面を開く操作。画面は Command で結ぶ（クリックのハンドラーを持たない）
+        private RelayCommand _recordMacroCommand;
+        private RelayCommand _recordMultiTapCommand;
+        private RelayCommand _recordMultiHoldCommand;
+        private RelayCommand _recordMultiDoubleTapCommand;
+
+        public RelayCommand RecordMacroCommand => _recordMacroCommand ??= DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(RecordMacro, name: nameof(RecordMacroCommand));
+
+        public RelayCommand RecordMultiTapCommand => _recordMultiTapCommand ??= DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(RecordMultiTap, name: nameof(RecordMultiTapCommand));
+
+        public RelayCommand RecordMultiHoldCommand => _recordMultiHoldCommand ??= DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(RecordMultiHold, name: nameof(RecordMultiHoldCommand));
+
+        public RelayCommand RecordMultiDoubleTapCommand => _recordMultiDoubleTapCommand ??= DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(RecordMultiDoubleTap, name: nameof(RecordMultiDoubleTapCommand));
 
         /// <summary>Macro タブの記録画面を開く。</summary>
         public void RecordMacro()

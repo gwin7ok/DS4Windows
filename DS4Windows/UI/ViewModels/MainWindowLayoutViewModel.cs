@@ -1,44 +1,26 @@
+﻿#nullable enable
 using System;
 using DS4Windows.Core.Abstractions;
-using DS4Windows.UI.Abstractions;
-using DS4Windows.UI.ViewModels;
 
-namespace DS4Windows.UI.Services
+namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// メイン画面（<see cref="MainWindow"/>）が読み書きする設定の窓口。画面が設定サービスの型を直接参照しない（V2）ようにする。
-    /// 列幅は、画面の列の並びと同じ順の配列で受け渡し、設定の項目名との対応はここに 1 か所で持つ。
+    /// メイン画面の配置（ウィンドウの位置・大きさ、各一覧の列幅）の ViewModel。設定の項目名との対応は、ここに 1 か所で持つ。
+    /// 列幅は、画面の列の並びと同じ順の配列で受け渡す。
     /// </summary>
-    public sealed class MainWindowSettings
+    public sealed class MainWindowLayoutViewModel
     {
         private readonly IAppSettingsService settings;
 
-        public MainWindowSettings(IAppSettingsService settings)
+        public MainWindowLayoutViewModel(IAppSettingsService settings)
             => this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         public bool Save() => settings.Save();
-
-        public string LogMinLevel => settings.LogMinLevel;
-        public bool StartMinimized => settings.StartMinimized;
-        public bool MinimizeToTaskbar => settings.MinimizeToTaskbar;
-        public bool CloseMinimizes => settings.CloseMinimizes;
-        public bool FirstRun => settings.FirstRun;
-        public bool RunHotPlug => settings.RunHotPlug;
-        public bool SwipeProfiles => settings.SwipeProfiles;
-        public ulong LastVersionCheckedNum => settings.LastVersionCheckedNum;
-
-        /// <summary>Steam のゲームのフォルダ。カスタムのフォルダが有効で存在するときだけ、その値（それ以外は null）。</summary>
-        public string CustomSteamFolderIfValid
-            => settings.UseCustomSteamFolder && System.IO.Directory.Exists(settings.CustomSteamFolder) ? settings.CustomSteamFolder : null;
 
         public int FormLocationX { get => settings.FormLocationX; set => settings.FormLocationX = value; }
         public int FormLocationY { get => settings.FormLocationY; set => settings.FormLocationY = value; }
         public int FormWidth { get => settings.FormWidth; set => settings.FormWidth = value; }
         public int FormHeight { get => settings.FormHeight; set => settings.FormHeight = value; }
-
-        /// <summary>機器の登録の設定画面の ViewModel（設定の機器オプションを渡して作る）。</summary>
-        public ControllerRegDeviceOptsViewModel CreateDeviceOptionsViewModel(IShellViewModelFactory factory)
-            => factory.CreateControllerRegDeviceOptsViewModel(settings.DeviceOptions);
 
         /// <summary>自動プロファイルの一覧の列幅（名前、パス、タイトル）。</summary>
         public (int Name, int Path, int Title) AutoProfileColumnWidths

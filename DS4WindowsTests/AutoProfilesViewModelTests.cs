@@ -44,5 +44,26 @@ namespace DS4WindowsTests
 
             Assert.NotNull(vm);
         }
+
+        [Fact]
+        public void HideUncheckedCommand_TogglesBusyAroundRefresh_AndSteamMenuFollowsFolder()
+        {
+            DS4Windows.Composition.AppHost.CreateHost();
+            var factory = TestHost.GetService<IShellViewModelFactory>();
+            var profileList = new ProfileList(TestHost.GetService<DS4Windows.Core.Abstractions.IPathService>());
+            var vm = factory.CreateAutoProfilesViewModel(TestRepositoryFactory.CreateAutoProfileHolder(), profileList);
+            var busy = new System.Collections.Generic.List<bool>();
+            vm.PropertyChanged += (s, e) => { if (e.PropertyName == nameof(vm.IsBusy)) busy.Add(vm.IsBusy); };
+
+            vm.Configure("auto.xml", null);
+            Assert.False(vm.ShowSteamMenu);
+            vm.Configure("auto.xml", "steam-dir");
+            Assert.True(vm.ShowSteamMenu);
+
+            vm.HideUncheckedCommand.Execute(null);
+
+            Assert.Equal(new[] { true, false }, busy);
+            Assert.True(vm.IsIdle);
+        }
     }
 }

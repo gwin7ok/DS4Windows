@@ -22,8 +22,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.ComponentModel;
-using Ookii.Dialogs.Wpf;
-using Microsoft.Win32;
 using DS4Windows.Core.Profiles;
 using DS4Windows.UI.ViewModels;
 
@@ -40,14 +38,13 @@ namespace DS4Windows.UI
         private Func<(int name, int path, int title)> loadColumnWidths;
         private Action<int, int, int> saveColumnWidths;
         private DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory;
-        protected String m_Profile;
+        private string autoProfilesFile;
         public const string steamCommx86Loc = @"C:\Program Files (x86)\Steam\steamapps\common";
         public const string steamCommLoc = @"C:\Program Files\Steam\steamapps\common";
         private string steamgamesdir;
         private AutoProfilesViewModel autoProfVM;
         private AutoProfileHolder autoProfileHolder;
         private ProfileList profileList;
-        private bool autoDebug;
 
         public AutoProfileHolder AutoProfileHolder
         {
@@ -55,7 +52,7 @@ namespace DS4Windows.UI
             set => autoProfileHolder = value;
         }
         public AutoProfilesViewModel AutoProfVM { get => autoProfVM; }
-        public bool AutoDebug { get => autoDebug; }
+        public bool AutoDebug { get => autoProfVM != null && autoProfVM.AutoDebug; }
         public event EventHandler AutoDebugChanged;
 
         public AutoProfiles()
@@ -77,12 +74,10 @@ namespace DS4Windows.UI
             this.loadColumnWidths = loadColumnWidths ?? throw new ArgumentNullException(nameof(loadColumnWidths));
             this.saveColumnWidths = saveColumnWidths ?? throw new ArgumentNullException(nameof(saveColumnWidths));
 
-            m_Profile = autoProfilesFile ?? throw new ArgumentNullException(nameof(autoProfilesFile));
+            this.autoProfilesFile = autoProfilesFile ?? throw new ArgumentNullException(nameof(autoProfilesFile));
 
-            // Steam のゲームのフォルダが無い（null）ときは、メニューの項目を外す
+            // Steam のゲームのフォルダが無い（null）ときは、ViewModel がメニューの項目を出さない
             steamgamesdir = steamGamesDir;
-            if (steamgamesdir == null)
-                addProgramsBtn.ContextMenu.Items.Remove(steamMenuItem);
 
             // 監視に使われている唯一の Holder を共有する。独自に作ると、この画面での編集・保存が
             // バックグラウンドの監視（AutoProfileService.CheckProfiles）に反映されない二重インスタンスになる。
@@ -126,12 +121,14 @@ namespace DS4Windows.UI
         {
             RestoreColumnWidths();
             autoProfVM = viewModelFactory.CreateAutoProfilesViewModel(autoProfileHolder, profileList);
+            autoProfVM.Configure(autoProfilesFile, steamgamesdir);
+            DataContext = autoProfVM;
             programListLV.DataContext = autoProfVM;
             programListLV.ItemsSource = autoProfVM.ProgramColl;
 
             revertDefaultProfileOnUnknownCk.DataContext = autoProfVM;
 
-            autoProfVM.SearchFinished += AutoProfVM_SearchFinished;
+            autoProfVM.PropertyChanged += AutoProfVM_PropertyChanged;
             autoProfVM.CurrentItemChange += AutoProfVM_CurrentItemChange;
 
             //autoProfilesGrid.DataContext = autoProfVM;
@@ -146,6 +143,19 @@ namespace DS4Windows.UI
             view.Refresh();
 
             sidebarScrollViewer.ScrollToTop();
+        }
+
+        // 検索中・一覧の差し替え中は、一覧を外す（1 件ずつの追加で、画面の更新が重なるのを避ける）
+        private void AutoProfVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AutoProfilesViewModel.IsBusy))
+            {
+                programListLV.ItemsSource = autoProfVM.IsBusy ? null : autoProfVM.ProgramColl;
+            }
+            else if (e.PropertyName == nameof(AutoProfilesViewModel.AutoDebug))
+            {
+                AutoDebugChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private void AutoProfVM_CurrentItemChange(AutoProfilesViewModel sender, ProgramItem item)
@@ -174,135 +184,11 @@ namespace DS4Windows.UI
             }
         }
 
-        private void AutoProfVM_SearchFinished(object sender, EventArgs e)
-        {
-            IsEnabled = true;
-        }
-
-        private async void SteamMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            this.IsEnabled = false;
-            steamMenuItem.Visibility = Visibility.Collapsed;
-            programListLV.ItemsSource = null;
-            autoProfVM.SearchFinished += AppsSearchFinished;
-            await autoProfVM.AddProgramsFromSteam(steamgamesdir);
-        }
-
-        private async void BrowseProgsMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            this.IsEnabled = false;
-            VistaFolderBrowserDialog dialog = new VistaFolderBrowserDialog();
-            if (dialog.ShowDialog() == true)
-            {
-                //browseProgsMenuItem.Visibility = Visibility.Collapsed;
-                programListLV.ItemsSource = null;
-                autoProfVM.SearchFinished += AppsSearchFinished;
-                await autoProfVM.AddProgramsFromDir(dialog.SelectedPath);
-            }
-            else
-            {
-                this.IsEnabled = true;
-            }
-        }
-
-        private async void StartMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            this.IsEnabled = false;
-            startMenuItem.Visibility = Visibility.Collapsed;
-            programListLV.ItemsSource = null;
-            autoProfVM.SearchFinished += AppsSearchFinished;
-            await autoProfVM.AddProgramsFromStartMenu();
-        }
-
-        private void AppsSearchFinished(object sender, EventArgs e)
-        {
-            autoProfVM.SearchFinished -= AppsSearchFinished;
-            programListLV.ItemsSource = autoProfVM.ProgramColl;
-        }
-
         private void AddProgramsBtn_Click(object sender, RoutedEventArgs e)
         {
             addProgramsBtn.ContextMenu.IsOpen = true;
             e.Handled = true;
         }
 
-        private void HideUncheckedBtn_Click(object sender, RoutedEventArgs e)
-        {
-            programListLV.ItemsSource = null;
-            autoProfVM.RemoveUnchecked();
-            steamMenuItem.Visibility = Visibility.Visible;
-            startMenuItem.Visibility = Visibility.Visible;
-            browseProgsMenuItem.Visibility = Visibility.Visible;
-            programListLV.ItemsSource = autoProfVM.ProgramColl;
-        }
-
-        private void ShowAutoDebugCk_Click(object sender, RoutedEventArgs e)
-        {
-            bool state = showAutoDebugCk.IsChecked == true;
-            autoDebug = state;
-            AutoDebugChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void RemoveAutoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (autoProfVM.SelectedItem != null)
-            {
-                editControlsPanel.DataContext = null;
-                autoProfVM.AddExeToHIDHideWhenSaving(autoProfVM.SelectedItem, false);
-                autoProfVM.RemoveAutoProfileEntry(autoProfVM.SelectedItem);
-                autoProfVM.AutoProfileHolder.Save(m_Profile);
-                autoProfVM.SelectedItem = null;
-            }
-        }
-
-        private void SaveAutoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (autoProfVM.SelectedItem != null)
-            {
-                if (autoProfVM.SelectedItem.MatchedAutoProfile == null)
-                {
-                    autoProfVM.CreateAutoProfileEntry(autoProfVM.SelectedItem);
-                }
-                else
-                {
-                    autoProfVM.PersistAutoProfileEntry(autoProfVM.SelectedItem);
-                }
-
-                autoProfVM.AddExeToHIDHideWhenSaving(autoProfVM.SelectedItem, autoProfVM.SelectedItem.Turnoff);
-                autoProfVM.AutoProfileHolder.Save(m_Profile);
-            }
-        }
-
-        private async void BrowseAddProgMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            this.IsEnabled = false;
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Multiselect = false;
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".exe";
-            dialog.Filter = "Program (*.exe)|*.exe";
-            dialog.Title = "Select Program";
-
-            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            if (dialog.ShowDialog() == true)
-            {
-                programListLV.ItemsSource = null;
-                autoProfVM.SearchFinished += AppsSearchFinished;
-                await autoProfVM.AddProgramExeLocation(dialog.FileName);
-            }
-            else
-            {
-                this.IsEnabled = true;
-            }
-        }
-
-        private void MoveUpDownAutoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (autoProfVM.SelectedItem != null && sender != null)
-            {
-                if (autoProfVM.MoveItemUpDown(autoProfVM.SelectedItem, ((sender as MenuItem).Name == "MoveUp") ? -1 : 1))
-                    autoProfVM.AutoProfileHolder.Save(m_Profile);
-            }
-        }
     }
 }
