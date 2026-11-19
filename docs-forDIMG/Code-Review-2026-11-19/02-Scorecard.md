@@ -1,7 +1,7 @@
 # スコアカード: 9 観点の評価の推移
 
 作成日: 2026-11-19
-基準: `03-Rubric.md`（採点基準 v1。**承認待ち**）
+基準: `03-Rubric.md`（採点基準 v1。**2026-11-19 確定**）
 採点: `python -I scripts/audit/Score-CodeReview.py`。保存は `scorecard/*.json`（各 Phase の最終 Step で追加する）。手で記録する値と確認項目は `scripts/audit/Rubric-Inputs.json`。
 
 ## 1. 推移（実測。「等級（点数）」）

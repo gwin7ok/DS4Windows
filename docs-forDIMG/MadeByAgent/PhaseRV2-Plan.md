@@ -80,4 +80,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(A)、D2＝(A)、D3＝(A)＋規約本体へのリンク 1 行、D4＝(A) をユーザーが選択。
-- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。

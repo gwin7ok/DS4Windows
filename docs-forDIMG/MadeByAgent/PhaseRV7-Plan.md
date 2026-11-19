@@ -83,4 +83,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(C)、D2＝(B)、D3＋D5＝(B)、D4＝(A) をユーザーが選択（D2・D3・D5 は推奨 (A) と異なる）。D1 は RV3 の D1＝(B) を受けて推奨を (A) から (C) へ変更。D2 の判断のため、小文字始まりのメソッドの呼び出し箇所（本体 57 ファイル 268 か所、テスト 54 か所、XAML 0）と、独自の `SetProperty` を呼ぶ箇所（0 件）、`StandaloneTests` の構成（8 ファイル・615 行）を調べた。
-- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。

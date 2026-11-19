@@ -81,4 +81,4 @@
 ## 履歴
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(B)、D2＝(B)、D3＝(A) をユーザーが選択。D2 の判断のため、`Nullable` を全体で有効にした警告数を実測して背景へ追記（2,153 件）。全体の有効化は PhaseRV9（予定）へ切り出す。
-- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準は承認待ち。
+- 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
