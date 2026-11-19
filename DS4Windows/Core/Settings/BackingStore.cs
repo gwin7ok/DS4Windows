@@ -16,38 +16,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using DS4Windows.Processing.Touchpad;
-using Sensorit.Base;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Json;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Xml;
-using System.Xml.Serialization;
-using WpfScreenHelper;
-using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
-using DS4Windows.Input.Devices;
-using DS4Windows.Output;
-using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Core.Settings
 {
 

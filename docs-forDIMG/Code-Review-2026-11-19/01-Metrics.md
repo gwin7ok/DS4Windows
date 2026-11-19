@@ -68,7 +68,7 @@
 ## 6. 参照されない型（`unref`）
 
 型 1,041 件のうち、自分のファイル以外から参照されない型は 55 件（P/Invoke の構造体などを除く class・enum は 28 件）、テストからだけ参照される型は 5 件。
-**誤検出に注意**: 拡張メソッドの静的クラス（`InputDeviceCartridgeServiceCollectionExtensions`）、XAML のマークアップ拡張（`SystemIconExtension`。XAML では `SystemIcon`）、入れ子の型（`Entry`、`Candidate`、`DeviceRuntime`、`EngineContext` など。自分のファイルの中で使うのが正しい）は、未参照ではない。名前の検索（`.cs`・`.xaml`・テスト）で、ほかに 1 件もないと確認できたもの: `PressActionController`、`TriggerType`、`MappingDoneEventArgs`、`ViGEmBusInfo`。そのほかは、規則 2.4 の手順で 1 件ずつ調べる（RV6）。
+**誤検出に注意**: 拡張メソッドの静的クラス（`InputDeviceCartridgeServiceCollectionExtensions`）、XAML のマークアップ拡張（`SystemIconExtension`。XAML では `SystemIcon`）、入れ子の型（`Entry`、`Candidate`、`DeviceRuntime`、`EngineContext` など。自分のファイルの中で使うのが正しい）は、未参照ではない。名前の検索（`.cs`・`.xaml`・テスト）で、ほかに 1 件もないと確認できたもの: `PressActionController`、`TriggerType`、`MappingDoneEventArgs`。`ViGEmBusInfo` は、同じファイル（`EnvironmentService.cs`）の中だけで使う private の入れ子型で、未参照ではない（計測の誤検出。PhaseRV1-5 で確認。**private の入れ子型**は、自分のファイルの中で使うのが正しい）。そのほかは、規則 2.4 の手順で 1 件ずつ調べる（RV6。同じ誤検出が混じっているおそれがあるため、1 件ずつ確かめる）。
 
 ## 7. 重複（`clone`、`cloneexact`）
 
@@ -90,7 +90,7 @@
 | 指標 | 値 |
 |---|---|
 | 小文字始まりの公開・保護・内部メソッド | 92（`InputDeviceCore.cs` 32、`ControllerStateExposed.cs` 9、`TouchpadMouse.cs` 9、`Mapping.cs` 5、`DS4SixAxis.cs` 4） |
-| タイマーの生成（`new` の数） | `System.Timers.Timer`（別名 `NonFormTimer` を含む）7／`System.Threading.Timer` 4／`DispatcherTimer` 1／`TimeProvider.CreateTimer` 1。別名 `using NonFormTimer = System.Timers.Timer;` の行は 11（`NonFormTimer` は別種のタイマーではない） |
+| タイマーの生成（`new` の数） | `System.Timers.Timer`（別名 `NonFormTimer` を含む）7／`System.Threading.Timer` 4／`DispatcherTimer` 1／`TimeProvider.CreateTimer` 1。別名 `using NonFormTimer = System.Timers.Timer;` の行は 11（`NonFormTimer` は別種のタイマーではない）。**RV1-1 後（2026-11-19）: 5**（すべて使用中） |
 
 ## 10. テストの構成（`tests`）
 
@@ -111,18 +111,18 @@
 | `Composition`・`App` 以外での Service Locator 呼び出し | 0 |
 | `App.xaml.cs` | 928 行／`ResolvePostHostService` 23／`AppHost.CreateHost` 3／`new 型名` 27 |
 | static の可変フィールド・自動プロパティ | 85（多くは表・キャッシュ。状態を持つ主なものは `AppLogger`・`PathService`・`EnvironmentService`） |
-| UI 以外で `using System.Windows*;` を持つファイル | Core 50／Input 1／Output 3／Processing 4 |
+| UI 以外で `using System.Windows*;` を持つファイル | Core 50／Input 1／Output 3／Processing 4。**RV1-1 後（2026-11-19）: Core 3／Output 1／Processing 2／Input 0**（残りは実際に使う型。`Core` の 3 件は `CodeHealthBaseline` に凍結） |
 
 ## 12. そのほか（手で確認した数字）
 
 | 指標 | 値 |
 |---|---|
 | `docs-forDIMG` の Markdown | 474 ファイル（`MadeByAgent` 450 ファイル・約 59,600 行。うち名前に `Plan` を含む 215） |
-| `Core` で `using DS4Windows.(Processing|UI|Output|Composition|Input)…;` を持つファイル | 25（`Processing` 12 行、`Input` 12 行、`Input.Devices` 5 行など。実際の参照は ArchUnitNET が 0 件と確認） |
+| `Core` で `using DS4Windows.(Processing|UI|Output|Composition|Input)…;` を持つファイル | 25（`Processing` 12 行、`Input` 12 行、`Input.Devices` 5 行など。実際の参照は ArchUnitNET が 0 件と確認）。**RV1-1 後（2026-11-19）: 1**（`ProfileGyroMouseLoadSection` が `Processing.Touchpad` の定数 `MouseCursor.GYRO_MOUSE_DEADZONE` を使うため。`CodeHealthBaseline` に凍結） |
 | `Directory.Build.props` | `TreatWarningsAsErrors=false`、`WarningsAsErrors` は空 |
-| `Nullable`・`AnalysisLevel`・`AnalysisMode` | `DS4WinWPF.csproj` に指定なし |
+| `Nullable`・`AnalysisLevel`・`AnalysisMode` | `DS4WinWPF.csproj` に指定なし。**RV1 後（2026-11-19）**: プロジェクト全体の指定は引き続きなし。ファイル単位の `#nullable enable` を `Core/Abstractions`・`Composition` に付けた（試験の記録は `PhaseRV1-Nullable-Trial.md`）。`EnableNETAnalyzers=false` は RV1-2 で外した |
 | `Nullable` を全体で有効にした場合の警告（2026-11-19 の実測。`-p:Nullable=enable` を付けた 1 回のビルド。ファイルは変更なし。テストのプロジェクトは除く） | 2,153 件／359 ファイル（ビルドの表示は重複を含む 2,454 件）。層別: Core 920、UI 684、Processing 300、Output 98、Input 84、ルート 38、Composition 24、Cli 5。種類: CS8600 640、CS8625 387、CS8602 349、CS8618 263、CS8622 182、CS8603 153、CS8604 113、CS8601 41 |
-| `.editorconfig` | `dotnet_analyzer_diagnostic.category-Style.severity = none`、`IDE0090`・`IDE0028`・`IDE0300` も `none` |
+| `.editorconfig` | `dotnet_analyzer_diagnostic.category-Style.severity = none`、`IDE0090`・`IDE0028`・`IDE0300` も `none`。**RV1-2 後（2026-11-19）**: `category-Style` の `none` を外した（`IDE0090`・`IDE0028`・`IDE0300` は `none` のまま）。追加パッケージの規則は `Analyzers.globalconfig` |
 
 ## 13. PhaseRV ごとの目標値（完了の定義の基準）
 
@@ -139,10 +139,31 @@
 | 委譲だけの窓口 | 3 | — | — | 0 | — | — | — | — | — |
 | `BackingStore` の公開フィールド | 107 | — | — | — | — | 減少（目標は RV5 の D） | — | — | — |
 | `AppSettingsService` の構造の重複 | 68% | — | — | — | — | 20% 以下 | — | — | — |
-| 真に未参照の型（規則 2.4 の承認済みのもの） | 4 以上 | 調査 | — | — | — | — | 0 | — | — |
+| 真に未参照の型（規則 2.4 の承認済みのもの） | 4 以上 | 調査済み（3 件を記録。`ViGEmBusInfo` は誤検出） | — | — | — | — | 0 | — | — |
 | 変更通知の実装の種類 | 2 | — | — | — | — | — | — | 1 | — |
-| 別名 `using NonFormTimer = …` の行 | 11 | 0（未使用の別名を除く） | — | — | — | — | — | — | — |
+| 別名 `using NonFormTimer = …` の行 | 11 | 0（未使用の別名を除く）→ **達成**（未使用 0。残る 5 行は使用中） | — | — | — | — | — | — | — |
 | タイマーの生成の種類 | 4（13 か所） | — | — | — | — | — | — | 規則を決める（寄せるかは D） | — |
 | 小文字始まりの公開メソッド | 92 | — | — | — | — | — | — | 0 | — |
 | `Phase<数字>` を含む行 | 1,656 | — | — | — | — | — | — | — | 縮小（目標は RV8 の D） |
-| `Core` の未使用の `using`（上位層・`System.Windows*`） | 75 ファイル | 0 | — | — | — | — | — | — | — |
+| `Core` の未使用の `using`（上位層・`System.Windows*`） | 75 ファイル | 0 → **達成**（未使用 0。残る 4 ファイルは実際に使う `using` で、基準 1＋3 に凍結） | — | — | — | — | — | — | — |
+
+## 14. RV1 完了時点の再計測（2026-11-19）
+
+`Measure-CodeReview.py`（全項目）と `Score-CodeReview.py` の結果。RV0 の値は 1〜12 章、保存は `scorecard/RV0-baseline.json`・`scorecard/RV1.json`。
+
+| 指標 | RV0 | RV1 完了 |
+|---|---|---|
+| 本体の行数（ファイル数は 965 のまま） | 103,549 | 101,214（未使用の `using` の行を除いたため） |
+| 500 行以上のファイル | 32 | 31 |
+| `Core` で上位層の `using` を持つファイル | 25 | 1（基準に凍結） |
+| UI 以外で `using System.Windows*;` を持つファイル | 58（Core 50／Input 1／Output 3／Processing 4） | 6（Core 3／Output 1／Processing 2） |
+| 別名 `using NonFormTimer = …` の行 | 11 | 5（すべて使用中） |
+| テスト（`[Fact]`／`[Theory]`／行数） | 2,495／246／74,334 | 2,504／246／74,623（xUnit 3,626 件＋StandaloneTests 11 件） |
+| ソースの文字列を読むテスト／名前に `Guard`・`Ratchet`・`Rule`・`Baseline` を持つテスト | 128／114 | 131／118 |
+| `docs-forDIMG` の Markdown（Archive の外） | 482 | 485 |
+| 品質の門の達成数（警告をエラー化・アナライザー有効・スタイル診断を無効化していない） | 0/3 | 2/3 |
+| `Nullable` を有効にした層（全ファイルが有効な層だけを数える） | 0 | 1（`Composition`。`Core` は `Abstractions` のみ） |
+| 追加のアナライザー | なし | AsyncFixer・Threading・Sonar（規則は `Analyzers.globalconfig`。段階導入の 5 規則は `suggestion`） |
+| ビルドの警告・エラー | 0 | 0（Debug・Release） |
+
+変わっていない主な値: 空の `catch`（理由のコメントなし）370、ログを包む `try/catch` 41、`async void`（形が違うもの）9、`Click` 193、手結び 227、`BackingStore` の公開フィールド 107、`Phase<数字>` を含む行 1,656。RV2 以降が動かす。

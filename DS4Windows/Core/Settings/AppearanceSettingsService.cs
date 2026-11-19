@@ -1,5 +1,3 @@
-using DS4Windows.Core.Abstractions;
-
 namespace DS4Windows.Core.Settings
 {
     /// <summary>

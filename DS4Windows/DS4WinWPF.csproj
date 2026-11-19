@@ -17,7 +17,6 @@
 		<StartupObject>DS4Windows.App</StartupObject>
 		<NeutralLanguage>en</NeutralLanguage>
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-		<EnableNETAnalyzers>false</EnableNETAnalyzers>
 		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<!-- Version, FileVersion and AssemblyVersion are provided by Directory.Build.props -->
 		<Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
@@ -152,6 +151,11 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="NLog" Version="5.1.1" />
+		<!-- アナライザー（ビルドだけで使う。配布物には入らない）。使う規則と段階導入は、リポジトリ直下の Analyzers.globalconfig と docs-forDIMG/MadeByAgent/PhaseRV1-Analyzer-Survey.md -->
+		<PackageReference Include="AsyncFixer" Version="2.1.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.12.1" PrivateAssets="all" />
+		<PackageReference Include="SonarAnalyzer.CSharp" Version="10.36.0.15337" PrivateAssets="all" />
+		<GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)..\Analyzers.globalconfig" />
 		<PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<!--<PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.230" />-->

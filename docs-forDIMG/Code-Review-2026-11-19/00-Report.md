@@ -136,7 +136,7 @@
   - `?? throw new ArgumentNullException(nameof(...))` が 666 件（害はない。前回の 3-2 と同じ判断。RV7 の D で再確認）。
   - 経緯のコメント（§3.8）、ガード系のテスト 114 ファイル、ソースの文字列を読むテスト 128 ファイル。
   - 構造の冗長: 中身が委譲だけの窓口（`MainWindowServiceControl`・`MainWindowSettings`・`MainWindowEnvironment`）、`PressActionController`（空の `[Obsolete]` の置き物）、漏れのある `RepeatHelperToIRepeaterAdapter`、`KeyButtonActionControllerAdapter`。
-- **未参照の型**: 計測では 1,041 型のうち、自分のファイル以外から参照されない型が 55 件（P/Invoke の構造体などを除くと class・enum が 28 件）。ただし、**拡張メソッドの静的クラス**（`InputDeviceCartridgeServiceCollectionExtensions`）と、**XAML のマークアップ拡張**（`SystemIconExtension`）は、名前でなく構文で使われるため、誤検出（確認済み）。入れ子の型（`Entry`、`Candidate` など）も、自分のファイルの中だけで使うのが正しい。名前を検索して、ほかのどこにもない（テストにもない）と確認できたのは、`PressActionController`、`TriggerType`、`MappingDoneEventArgs`、`ViGEmBusInfo`（`EnvironmentService.cs` 内の宣言のみ）。これらは規則 2.4 の手順（経緯の調査 → 使うべきかの判断 → 承認）に従って扱う（RV6）。
+- **未参照の型**: 計測では 1,041 型のうち、自分のファイル以外から参照されない型が 55 件（P/Invoke の構造体などを除くと class・enum が 28 件）。ただし、**拡張メソッドの静的クラス**（`InputDeviceCartridgeServiceCollectionExtensions`）と、**XAML のマークアップ拡張**（`SystemIconExtension`）は、名前でなく構文で使われるため、誤検出（確認済み）。入れ子の型（`Entry`、`Candidate` など）も、自分のファイルの中だけで使うのが正しい。名前を検索して、ほかのどこにもない（テストにもない）と確認できたのは、`PressActionController`、`TriggerType`、`MappingDoneEventArgs`、`ViGEmBusInfo`（`EnvironmentService.cs` 内の宣言のみ。**のちに PhaseRV1-5 で、同じファイルの中で使う private の入れ子型と分かり、誤検出として候補から外した**）。これらは規則 2.4 の手順（経緯の調査 → 使うべきかの判断 → 承認）に従って扱う（RV6）。
 
 ### 3.7 採用手段の統一（C+）
 
@@ -188,7 +188,7 @@
 | RV-01 | メンテナンス性 | 中 | アナライザー・`Nullable` が未導入。`TreatWarningsAsErrors=false`、スタイル診断は `none` | `Directory.Build.props`、`.editorconfig` | RV1 |
 | RV-02 | 層の役割 | 低 | `Core` に、未使用と見られる上位層の `using` が 25 ファイル。`using System.Windows*;` が 50 ファイル | `01-Metrics.md` di | RV1 |
 | RV-03 | メンテナンス性 | 低 | 計測スクリプトが手動。数字の悪化を検知する仕組みがない | `scripts/audit/Measure-CodeReview.py` | RV1 |
-| RV-04 | 冗長 | 低 | 真に未参照の型の候補（`TriggerType`、`MappingDoneEventArgs`、`ViGEmBusInfo`）の扱いが未決（`PressActionController` は RV6） | §3.6 | RV1（調査）／RV6（実施） |
+| RV-04 | 冗長 | 低 | 真に未参照の型の候補（`TriggerType`、`MappingDoneEventArgs`。`ViGEmBusInfo` は PhaseRV1-5 で誤検出と判明）の扱いが未決（`PressActionController` は RV6） | §3.6 | RV1（調査）／RV6（実施） |
 | RV-05 | 冗長・採用手段 | 高 | 空の `catch` 389 件（48%）。意図の有無が区別できない | §3.6 | RV2 |
 | RV-06 | 冗長 | 中 | ログ呼び出しを `try { } catch { }` で包む行 41 | §3.6 | RV2 |
 | RV-07 | 採用手段 | 中 | `async void` 14、`.Result`・`.Wait()` 21、`Thread.Sleep` 13 | §3.7 | RV2 |

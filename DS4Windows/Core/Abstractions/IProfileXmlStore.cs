@@ -1,5 +1,4 @@
-
-using DS4Windows.Input;
+#nullable enable
 
 namespace DS4Windows.Core.Abstractions
 {

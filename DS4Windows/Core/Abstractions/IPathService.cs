@@ -1,4 +1,4 @@
-﻿using System;
+﻿#nullable enable
 
 namespace DS4Windows.Core.Abstractions
 {

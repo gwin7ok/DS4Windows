@@ -1,4 +1,4 @@
-using DS4Windows.Processing.Services.Slots;
+#nullable enable
 
 namespace DS4Windows.Core.Abstractions
 {

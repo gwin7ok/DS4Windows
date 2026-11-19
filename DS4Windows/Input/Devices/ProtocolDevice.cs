@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;

@@ -2,7 +2,6 @@
 using static DS4Windows.Input.InputDeviceRegistry;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
-using DS4Windows.Input.Hid;
 
 namespace DS4Windows.Input.Devices
 {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Globalization;
 using System.Linq;
@@ -17,13 +19,13 @@ namespace DS4Windows.Composition.Startup
         /// BuildTimestamp／BuildCommit）から、<see cref="BuildLogMessage"/> に渡す形の文字列（「日時 commit=ハッシュ」）を返す。
         /// 埋め込みがなければ null。
         /// </summary>
-        public static string FromAssembly(Assembly assembly)
+        public static string? FromAssembly(Assembly assembly)
         {
             if (assembly == null) return null;
             var metadata = assembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToList();
-            string timestamp = metadata.FirstOrDefault(m => m.Key == "BuildTimestamp")?.Value;
+            string? timestamp = metadata.FirstOrDefault(m => m.Key == "BuildTimestamp")?.Value;
             if (string.IsNullOrWhiteSpace(timestamp)) return null;
-            string commit = metadata.FirstOrDefault(m => m.Key == "BuildCommit")?.Value;
+            string? commit = metadata.FirstOrDefault(m => m.Key == "BuildCommit")?.Value;
             // 埋め込まれた値は UTC（例: 2026-11-04T12:54:01Z）。実行している環境のタイムゾーンへ直し、オフセットつきで表示する（例: 2026-11-04 21:54:01 +09:00）
             timestamp = ToLocalTimeText(timestamp, TimeZoneInfo.Local);
             return string.IsNullOrWhiteSpace(commit) ? timestamp : $"{timestamp} commit={commit}";
@@ -41,7 +43,7 @@ namespace DS4Windows.Composition.Startup
         /// （commit は、あれば。未コミットの変更があれば「-dirty」つき。古い形式のファイルにはない）、読めなければ「This binary was built: 内容（1 行にしたもの）」。
         /// 解釈中の例外は、旧コードと同じく握りつぶして null を返す（ログを出さない）。
         /// </summary>
-        public static string BuildLogMessage(string fileContent)
+        public static string? BuildLogMessage(string? fileContent)
         {
             try
             {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using DS4Windows.Processing.Services.Connection;
 
 namespace DS4Windows.Core.Platform
 {

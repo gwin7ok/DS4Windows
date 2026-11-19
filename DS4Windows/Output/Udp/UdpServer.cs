@@ -23,9 +23,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.ComponentModel;
 using System.Threading;
-using System.Runtime.InteropServices;
 using DS4Windows.Input;
 using DS4Windows.Core.Model;
 
@@ -376,12 +374,12 @@ namespace DS4Windows.Output.Udp
                 }
                 udpSock.Bind(new IPEndPoint(udpListenIPAddress, port));
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 udpSock.Close();
                 udpSock = null;
 
-                throw ex;
+                throw;
             }
 
             byte[] randomBuf = new byte[4];

@@ -1,0 +1,134 @@
+# 追加のアナライザー（Sonar・Threading・AsyncFixer）の規則の設定（PhaseRV1-2。経緯と件数は docs-forDIMG/MadeByAgent/PhaseRV1-Analyzer-Survey.md）。
+# DS4Windows/DS4WinWPF.csproj の GlobalAnalyzerConfigFiles から読み込む。.editorconfig の設定は、この設定より優先される。
+#
+# 運用の規則:
+# - 件数が 0 の規則は、既定の重大度（警告）のまま使う。新しい違反は、ビルドの警告になる（是正すること。ここへ none を足さない）。
+# - 今ある違反がある規則は、段階導入の対象なら suggestion、そうでなければ none にして、凍結する。
+# - 段階導入の規則は、違反が 0 になった Phase で warning へ上げ、PhaseRV1-Analyzer-Survey.md の表に記録する。
+# - 上の none の規則は、使うと決めたときに、違反を 0 にしてから、この行を消す（消すと既定の重大度＝警告になる）。
+# - パッケージを上げたときに新しい警告が出たら、同じ手順で扱う。
+
+is_global = true
+
+# ---- 段階導入の対象（suggestion） ----
+# AsyncFixer03: ハンドラー以外の async void（導入時 9 件）
+dotnet_diagnostic.AsyncFixer03.severity = suggestion
+# VSTHRD002: Task の同期的な待ち（デッドロックの危険）（導入時 11 件）
+dotnet_diagnostic.VSTHRD002.severity = suggestion
+# VSTHRD110: 待たれない（観測されない）Task（導入時 40 件）
+dotnet_diagnostic.VSTHRD110.severity = suggestion
+# S2486: 握りつぶした例外（理由のコメントがない catch）（導入時 359 件）
+dotnet_diagnostic.S2486.severity = suggestion
+# S1481: 未使用のローカル変数（導入時 36 件）
+dotnet_diagnostic.S1481.severity = suggestion
+
+# ---- Sonar（SonarAnalyzer.CSharp）: 今は使わない規則（none。導入時の件数は PhaseRV1-Analyzer-Survey.md） ----
+dotnet_diagnostic.S101.severity = none
+dotnet_diagnostic.S108.severity = none
+dotnet_diagnostic.S112.severity = none
+dotnet_diagnostic.S125.severity = none
+dotnet_diagnostic.S127.severity = none
+dotnet_diagnostic.S907.severity = none
+dotnet_diagnostic.S927.severity = none
+dotnet_diagnostic.S1066.severity = none
+dotnet_diagnostic.S1075.severity = none
+dotnet_diagnostic.S1104.severity = none
+dotnet_diagnostic.S1110.severity = none
+dotnet_diagnostic.S1116.severity = none
+dotnet_diagnostic.S1117.severity = none
+dotnet_diagnostic.S1118.severity = none
+dotnet_diagnostic.S1121.severity = none
+dotnet_diagnostic.S1125.severity = none
+dotnet_diagnostic.S1133.severity = none
+dotnet_diagnostic.S1135.severity = none
+dotnet_diagnostic.S1144.severity = none
+dotnet_diagnostic.S1155.severity = none
+dotnet_diagnostic.S1168.severity = none
+dotnet_diagnostic.S1172.severity = none
+dotnet_diagnostic.S1186.severity = none
+dotnet_diagnostic.S1199.severity = none
+dotnet_diagnostic.S1215.severity = none
+dotnet_diagnostic.S1244.severity = none
+dotnet_diagnostic.S1450.severity = none
+dotnet_diagnostic.S1699.severity = none
+dotnet_diagnostic.S1751.severity = none
+dotnet_diagnostic.S1854.severity = none
+dotnet_diagnostic.S1871.severity = none
+dotnet_diagnostic.S1905.severity = none
+dotnet_diagnostic.S1939.severity = none
+dotnet_diagnostic.S1940.severity = none
+dotnet_diagnostic.S1994.severity = none
+dotnet_diagnostic.S2183.severity = none
+dotnet_diagnostic.S2184.severity = none
+dotnet_diagnostic.S2223.severity = none
+dotnet_diagnostic.S2245.severity = none
+dotnet_diagnostic.S2257.severity = none
+dotnet_diagnostic.S2290.severity = none
+dotnet_diagnostic.S2292.severity = none
+dotnet_diagnostic.S2325.severity = none
+dotnet_diagnostic.S2344.severity = none
+dotnet_diagnostic.S2346.severity = none
+dotnet_diagnostic.S2365.severity = none
+dotnet_diagnostic.S2376.severity = none
+dotnet_diagnostic.S2386.severity = none
+dotnet_diagnostic.S2445.severity = none
+dotnet_diagnostic.S2681.severity = none
+dotnet_diagnostic.S2696.severity = none
+dotnet_diagnostic.S2930.severity = none
+dotnet_diagnostic.S2933.severity = none
+dotnet_diagnostic.S2971.severity = none
+dotnet_diagnostic.S3168.severity = none
+dotnet_diagnostic.S3237.severity = none
+dotnet_diagnostic.S3241.severity = none
+dotnet_diagnostic.S3246.severity = none
+dotnet_diagnostic.S3247.severity = none
+dotnet_diagnostic.S3260.severity = none
+dotnet_diagnostic.S3261.severity = none
+dotnet_diagnostic.S3267.severity = none
+dotnet_diagnostic.S3358.severity = none
+dotnet_diagnostic.S3376.severity = none
+dotnet_diagnostic.S3398.severity = none
+dotnet_diagnostic.S3440.severity = none
+dotnet_diagnostic.S3442.severity = none
+dotnet_diagnostic.S3445.severity = none
+dotnet_diagnostic.S3458.severity = none
+dotnet_diagnostic.S3459.severity = none
+dotnet_diagnostic.S3604.severity = none
+dotnet_diagnostic.S3626.severity = none
+dotnet_diagnostic.S3869.severity = none
+dotnet_diagnostic.S3877.severity = none
+dotnet_diagnostic.S3878.severity = none
+dotnet_diagnostic.S3881.severity = none
+dotnet_diagnostic.S3923.severity = none
+dotnet_diagnostic.S3928.severity = none
+dotnet_diagnostic.S3973.severity = none
+dotnet_diagnostic.S4036.severity = none
+dotnet_diagnostic.S4070.severity = none
+dotnet_diagnostic.S4136.severity = none
+dotnet_diagnostic.S4144.severity = none
+dotnet_diagnostic.S4200.severity = none
+dotnet_diagnostic.S4201.severity = none
+dotnet_diagnostic.S4275.severity = none
+dotnet_diagnostic.S4487.severity = none
+dotnet_diagnostic.S4581.severity = none
+dotnet_diagnostic.S4790.severity = none
+dotnet_diagnostic.S5332.severity = none
+dotnet_diagnostic.S6444.severity = none
+dotnet_diagnostic.S6580.severity = none
+dotnet_diagnostic.S6608.severity = none
+dotnet_diagnostic.S6610.severity = none
+dotnet_diagnostic.S6640.severity = none
+dotnet_diagnostic.S6667.severity = none
+dotnet_diagnostic.S6966.severity = none
+dotnet_diagnostic.S9414.severity = none
+dotnet_diagnostic.S9415.severity = none
+
+# ---- Threading（Microsoft.VisualStudio.Threading.Analyzers）: 今は使わない規則（none。導入時の件数は PhaseRV1-Analyzer-Survey.md） ----
+dotnet_diagnostic.VSTHRD001.severity = none
+dotnet_diagnostic.VSTHRD100.severity = none
+dotnet_diagnostic.VSTHRD105.severity = none
+dotnet_diagnostic.VSTHRD200.severity = none
+
+# ---- AsyncFixer: 今は使わない規則（none。導入時の件数は PhaseRV1-Analyzer-Survey.md） ----
+dotnet_diagnostic.AsyncFixer01.severity = none
+dotnet_diagnostic.AsyncFixer02.severity = none

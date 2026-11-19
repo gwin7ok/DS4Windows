@@ -4,8 +4,6 @@ using System.IO;
 using System.Text;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
-using DS4Windows.Input;
-using DS4Windows.Input.Hid;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;

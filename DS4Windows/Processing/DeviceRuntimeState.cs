@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 

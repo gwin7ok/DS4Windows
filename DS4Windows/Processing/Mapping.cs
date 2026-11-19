@@ -23,30 +23,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
 // Phase6-Step3-7 で削除可否を判定: 見送り。getTransitionedColor（純粋計算、Step3対象外の除外51件の1つ、
 // Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
 // これ以外の Global 実利用箇所はすべて Global. 明示修飾（温存3件: ProfileSettingsServiceInstance／outputKBMHandler／ApplyProfile。
 // いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（Phase6-Step3-Plan.md §6 完了判定チェックリスト）。
 // 【Phase7c W3 追記】上記は Phase6 時点の記録。Phase7-Step10d で Global 型は削除済み（Global への参照は存在しない）。
-using System.Drawing; // Point struct
-using Sensorit.Base;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Core.Utilities;
 using DS4Windows.Input;
-using DS4Windows.Processing.Abstractions;
-using ThreadState = System.Threading.ThreadState;
-using DS4Windows.Processing.Services.Conditioning;
-using DS4Windows.Processing.Services.Devices;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing
 {

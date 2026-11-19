@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Persistence;
@@ -23,7 +25,7 @@ namespace DS4Windows.Composition
         /// </list>
         /// 新しい後付けの配線を足すときは、このメソッドへ足し、上の一覧も更新する。
         /// </summary>
-        private static void AddWiredServices(IServiceCollection services, BackingStore existingStore)
+        private static void AddWiredServices(IServiceCollection services, BackingStore? existingStore)
         {
             // Phase7-Step3 W1: BackingStore（設定の唯一の実体）を登録する。
             // Phase7-Step10d W5: 旧 Global.store（静的）をやめた。ブートストラップの BackingStore があればそれを、なければコンテナが作る。

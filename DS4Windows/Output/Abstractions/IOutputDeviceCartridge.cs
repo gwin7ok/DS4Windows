@@ -1,9 +1,7 @@
 ﻿using DS4Windows.Core.Abstractions;
 using System;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 using DS4Windows.Output.Backend;
-using DS4Windows.Output.Devices;
 
 namespace DS4Windows.Output.Abstractions
 {

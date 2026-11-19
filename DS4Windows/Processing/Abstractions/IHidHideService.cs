@@ -1,6 +1,4 @@
 using DS4Windows.Core.Abstractions;
-using System;
-using DS4Windows.Input;
 
 namespace DS4Windows.Processing.Abstractions
 {

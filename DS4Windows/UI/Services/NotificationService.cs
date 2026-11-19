@@ -1,5 +1,3 @@
-using System;
-
 namespace DS4Windows.UI.Services
 {
     // Simple facade kept for compatibility. Use AppLogger.LogToTray to route

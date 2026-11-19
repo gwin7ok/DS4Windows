@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows.Processing.Actions
 {

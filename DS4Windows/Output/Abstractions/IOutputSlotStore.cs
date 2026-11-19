@@ -1,6 +1,3 @@
-
-using DS4Windows.Output;
-
 namespace DS4Windows.Output.Abstractions
 {
     /// <summary>

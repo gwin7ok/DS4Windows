@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 
@@ -57,7 +59,7 @@ namespace DS4Windows.Core.Abstractions
         /// <c>Actions.xml</c> の <c>CenterCursor</c> 要素（true のときだけ）に保存される。他の種別では使わない。
         /// </param>
         void SaveAction(string name, string controls, int mode, string details, bool edit,
-            double delayTime = 0.0, string extras = "", string actionId = null,
+            double delayTime = 0.0, string extras = "", string? actionId = null,
             MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false);
 
         /// <summary>

@@ -2,11 +2,9 @@ using DS4Windows.Output.Udp;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sensorit.Base;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Core.Model;
 

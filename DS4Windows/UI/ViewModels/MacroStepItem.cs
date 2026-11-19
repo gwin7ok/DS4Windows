@@ -19,17 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using DS4Windows.Core.Model;
 using DS4Windows.Processing.Macro;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using DS4Windows.Processing;
 
 namespace DS4Windows.UI.ViewModels
 {

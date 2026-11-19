@@ -10,8 +10,7 @@ insert_final_newline = false
 trim_trailing_whitespace = true
 
 
-# Roslyn コードスタイル推奨 (IDExxxx) を問題タブから一括非表示にする
-dotnet_analyzer_diagnostic.category-Style.severity = none
+# Roslyn コードスタイル推奨 (IDExxxx) は、既定の重大度（ビルドの警告にはならない）で使う。邪魔な規則は、次のように個別に none にする
 dotnet_diagnostic.IDE0090.severity = none
 dotnet_diagnostic.IDE0028.severity = none
 dotnet_diagnostic.IDE0300.severity = none

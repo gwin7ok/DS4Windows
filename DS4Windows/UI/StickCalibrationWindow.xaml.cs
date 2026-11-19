@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using DS4Windows.Processing;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
 

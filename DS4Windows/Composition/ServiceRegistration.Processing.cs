@@ -1,9 +1,10 @@
+#nullable enable
+
 using DS4Windows.Processing.Macro;
 using DS4Windows.Processing.Synthetic;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;

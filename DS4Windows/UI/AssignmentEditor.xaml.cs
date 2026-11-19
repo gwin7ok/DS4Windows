@@ -16,14 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using DS4Windows.Core.Logging;
-using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;

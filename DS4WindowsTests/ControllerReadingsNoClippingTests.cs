@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -215,23 +214,10 @@ namespace DS4WindowsTests
             return $"(この PC の既定: {probe.FontFamily.Source} {probe.FontSize})";
         }
 
+        // 画面部品は、共有の STA スレッドで作る（自前のスレッドで作ると、終わったスレッドの部品が、他のテストの読み込みを止める）
         private static void RunOnSta(Action action)
         {
-            Exception failure = null;
-            var thread = new Thread(() =>
-            {
-                try { action(); }
-                catch (Exception ex) { failure = ex; }
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            thread.Join();
-            if (failure != null)
-            {
-                // Assert の失敗は、そのままの型で伝える（メッセージを読みやすくする）
-                if (failure is Xunit.Sdk.XunitException) throw failure;
-                throw new InvalidOperationException("STA スレッドで失敗: " + failure.Message, failure);
-            }
+            WpfPanelTestRunner.Run(action);
         }
     }
 }

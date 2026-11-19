@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Core.Abstractions
 {
     // Marker interface for runtime instances that expose a stable InstanceId for logging/diagnostics

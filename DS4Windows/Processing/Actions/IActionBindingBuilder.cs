@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4Windows.Processing.Actions
 {

@@ -131,10 +131,20 @@ namespace DS4WindowsTests
         {
             using var scope = new ActionsScope("NoSuchAction_F");
             string target = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ExpAct_" + System.Guid.NewGuid().ToString("N") + ".xml");
+            string source = null;
+            bool createdSource = false;
             try
             {
                 var dialogs = new FakeDialogService { SaveFileAnswer = target };
                 var vm = CreateVm(dialogs);
+
+                // コピー元（リポジトリが指す Actions.xml）は、ほかのテストが残したファイルに頼らず、自分で用意する（なければ作り、終わりに消す）
+                source = vm.ActionsFilePath;
+                if (!System.IO.File.Exists(source))
+                {
+                    System.IO.File.WriteAllText(source, "<Actions />");
+                    createdSource = true;
+                }
 
                 Assert.True(vm.PickAndExportActions());
                 Assert.True(System.IO.File.Exists(target));
@@ -143,6 +153,10 @@ namespace DS4WindowsTests
             finally
             {
                 try { System.IO.File.Delete(target); } catch { }
+                if (createdSource)
+                {
+                    try { System.IO.File.Delete(source); } catch { }
+                }
             }
         }
 

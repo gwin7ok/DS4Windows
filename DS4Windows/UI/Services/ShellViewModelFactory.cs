@@ -3,12 +3,9 @@ using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.ViewModels;
-using DS4Windows.Core.Model;
-using DS4Windows.UI.ViewModels.SpecialActions;
 
 namespace DS4Windows.UI.Services
 {

@@ -18,22 +18,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using NLog;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.IO.MemoryMappedFiles;
-using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using WPFLocalizeExtension.Engine;
-using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Composition;
 using DS4Windows.Composition.Startup;
 using DS4Windows.Core.Abstractions;
@@ -43,7 +35,6 @@ using DS4Windows.Core.Utilities;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows
 {

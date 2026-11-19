@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows;
-
-namespace DS4Windows.UI;
+﻿namespace DS4Windows.UI;
 
 public enum Stick
 {

@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -35,18 +34,13 @@ using System.Management;
 using NonFormTimer = System.Timers.Timer;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
-using HttpProgress;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
-using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Processing;
-using DS4Windows.Processing.Abstractions;
 using DS4Windows.Translations;
 using DS4Windows.UI.Abstractions;
 using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
-
 
 namespace DS4Windows.UI
 {

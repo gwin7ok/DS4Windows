@@ -1,6 +1,3 @@
-
-using DS4Windows.Processing.Services.Conditioning;
-
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>

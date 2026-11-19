@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
-using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {

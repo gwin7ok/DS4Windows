@@ -1,7 +1,6 @@
 ﻿using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
-using DS4Windows.Input.Hid;
 using DS4Windows.Input.Parsers;
 
 namespace DS4Windows.Input.Xbox

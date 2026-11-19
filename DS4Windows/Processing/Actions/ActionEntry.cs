@@ -1,7 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 

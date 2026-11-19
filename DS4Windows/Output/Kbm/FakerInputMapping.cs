@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using DS4Windows.Core.Model;
-using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using FakerInputWrapper;

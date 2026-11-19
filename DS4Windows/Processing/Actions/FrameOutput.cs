@@ -1,8 +1,6 @@
 using DS4Windows.Processing.Synthetic;
-using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 
 namespace DS4Windows.Processing.Actions
 {

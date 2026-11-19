@@ -144,7 +144,23 @@ namespace DS4WindowsTests
             output.WriteLine(result.Writes);
             output.WriteLine("Battery=" + result.Battery + " Removed=" + result.Removed);
             Assert.True(result.Removed);
-            Assert.Equal(DongleExpected, (result.Reports + "--\n" + result.Writes + $"Battery={result.Battery}\n").Replace("\r\n", "\n"));
+            // ドングルは、同期の判定と出力の更新が別の流れのため、時間しだいで同じ内容の書き込みが続けて増える（1〜3 回）。
+            // 見たいのは書き込みの内容なので、同じ行の繰り返しは 1 回にまとめて比べる
+            Assert.Equal(DongleExpected, (result.Reports + "--\n" + CollapseRepeatedLines(result.Writes) + $"Battery={result.Battery}\n").Replace("\r\n", "\n"));
+        }
+
+        private static string CollapseRepeatedLines(string text)
+        {
+            var collapsed = new StringBuilder();
+            string previous = null;
+            foreach (string line in text.Replace("\r\n", "\n").Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (line == previous) continue;
+                collapsed.Append(line).Append('\n');
+                previous = line;
+            }
+
+            return collapsed.ToString();
         }
 
         private const string BtExpected =

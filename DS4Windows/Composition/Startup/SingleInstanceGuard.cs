@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading;
 
@@ -11,10 +13,10 @@ namespace DS4Windows.Composition.Startup
     {
         private const string SingleAppComEventName = "{a52b5b20-d9ee-4f32-8518-307fa14aa0c6}";
 
-        private EventWaitHandle _comEvent;
-        private Thread _listenerThread;
+        private EventWaitHandle? _comEvent;
+        private Thread? _listenerThread;
         private volatile bool _exit;
-        private Action _onSecondLaunch;
+        private Action? _onSecondLaunch;
 
         /// <summary>別のインスタンスが動いていれば、そちらへ知らせて true を返す（このインスタンスは終了する）。</summary>
         public bool TryNotifyExistingInstance()
@@ -25,7 +27,7 @@ namespace DS4Windows.Composition.Startup
                 if (EventWaitHandleAcl.TryOpenExisting(SingleAppComEventName,
                     System.Security.AccessControl.EventWaitHandleRights.Synchronize |
                     System.Security.AccessControl.EventWaitHandleRights.Modify,
-                    out EventWaitHandle tempComEvent))
+                    out EventWaitHandle? tempComEvent))
                 {
                     tempComEvent.Set();  // signal the other instance.
                     tempComEvent.Close();
@@ -58,17 +60,22 @@ namespace DS4Windows.Composition.Startup
 
         private void ListenerWork()
         {
+            // StartListening が両方を設定してからスレッドを始める（待ち受けの途中で差し替わらないよう、手元へ写して使う）
+            EventWaitHandle? comEvent = _comEvent;
+            Action? onSecondLaunch = _onSecondLaunch;
+            if (comEvent == null || onSecondLaunch == null) return;
+
             while (!_exit)
             {
                 // check for a signal.
-                if (_comEvent.WaitOne())
+                if (comEvent.WaitOne())
                 {
-                    _comEvent.Reset();
+                    comEvent.Reset();
                     // The user tried to start another instance. We can't allow that,
                     // so bring the other instance back into view and enable that one.
                     if (!_exit)
                     {
-                        _onSecondLaunch();
+                        onSecondLaunch();
                     }
                 }
             }
@@ -81,7 +88,7 @@ namespace DS4Windows.Composition.Startup
             if (_comEvent != null)
             {
                 _comEvent.Set();  // wake the listener so that it can exit
-                while (_listenerThread.IsAlive)
+                while (_listenerThread?.IsAlive == true)
                     Thread.SpinWait(500);
                 _comEvent.Close();
             }

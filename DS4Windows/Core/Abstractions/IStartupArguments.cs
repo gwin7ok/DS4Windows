@@ -1,6 +1,6 @@
+#nullable enable
 
 using DS4Windows.Core.Utilities;
-using DS4Windows.Processing;
 
 namespace DS4Windows.Core.Abstractions
 {
