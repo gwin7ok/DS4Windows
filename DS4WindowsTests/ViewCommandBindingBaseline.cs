@@ -36,11 +36,10 @@ namespace DS4WindowsTests
             ["StickCalibrationWindow.xaml"] = 2,
             ["TouchpadSettingsPanel.xaml"] = 2,
             ["UpdaterWindow.xaml"] = 4,
-            ["WelcomeDialog.xaml"] = 6,
             ["WindowTargetEditor.xaml"] = 5,
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 216;
+        public const int CommandBindingFloor = 222;
     }
 }
