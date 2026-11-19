@@ -67,7 +67,7 @@
                         <Button x:Name="testRumbleBtn"
                                 Width="60"
                                 Content="{lex:Loc Test}"
-                                Click="TestRumbleBtn_Click"/>
+                                Command="{Binding TestRumbleBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal"
@@ -286,7 +286,7 @@
                                         VerticalAlignment="Center">
                                 <Button x:Name="recordMacroBtn"
                                         Content="{lex:Loc BindingWin.RecordAMacro}"
-                                        Click="RecordMacroBtn_Click"/>
+                                        Command="{Binding RecordMacroBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                             </StackPanel>
                         </Grid>
                         <Grid x:Name="mainBindGrid"

@@ -14,8 +14,13 @@ namespace DS4Windows.UI
         /// <summary>振動のテストのボタン（「強」「弱」）が押された。sender はボタン（<see cref="HeavyRumbleTestBtn"/> か <see cref="LightRumbleTestBtn"/>）。</summary>
         public event RoutedEventHandler RumbleTestClick;
 
+        /// <summary>振動のテストのボタン（規則 V3）。パラメーターは押されたボタン。<see cref="RumbleTestClick"/> の sender にそのボタンを渡す。</summary>
+        public System.Windows.Input.ICommand RumbleTestCommand { get; }
+
         public OutputSettingsPanel()
         {
+            RumbleTestCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(
+                button => RumbleTestClick?.Invoke(button, new RoutedEventArgs()), name: nameof(RumbleTestCommand));
             InitializeComponent();
         }
 
@@ -26,9 +31,5 @@ namespace DS4Windows.UI
 
         public Button LightRumbleTestBtn => lightRumbleTestBtn;
 
-        private void RumbleTestBtn_Click(object sender, RoutedEventArgs e)
-        {
-            RumbleTestClick?.Invoke(sender, e);
-        }
     }
 }

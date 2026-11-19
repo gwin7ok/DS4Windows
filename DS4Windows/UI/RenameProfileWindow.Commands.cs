@@ -11,9 +11,12 @@ namespace DS4Windows.UI
     {
         public ICommand CancelBtnCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
+        public ICommand ConfirmBtnCommand { get; private set; } = null!; // InitCommands で必ず設定する
+
         private void InitCommands()
         {
             CancelBtnCommand = CommandGuard.CreateSync(CancelBtn, name: nameof(CancelBtnCommand));
+            ConfirmBtnCommand = CommandGuard.CreateSync(ConfirmBtn, name: nameof(ConfirmBtnCommand));
         }
     }
 }

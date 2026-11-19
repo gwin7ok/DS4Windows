@@ -183,3 +183,15 @@
 | 500 行以上のファイル | 31 | 33 |
 | 委譲だけの窓口 | 3 | 0（`MainWindowServiceControl`・`MainWindowSettings`・`MainWindowEnvironment` を削除） |
 | テスト（xUnit／StandaloneTests） | 3,626／11 | 3,671／11 |
+
+## 16. RV4 完了時点の再計測（2026-11-20。一部完了）
+
+`Score-CodeReview.py` の実測。保存は `scorecard/RV4.json`。
+
+| 指標 | RV3 完了 | RV4 |
+|---|---|---|
+| コマンド率 | 0.247 | 0.790 |
+| code-behind の `+= メソッド名;` | 222 | 75 |
+| 500 行以上のファイル | 33 | 32 |
+| `BindingWindow.xaml.cs` の構造の重複 | 69% | 11% |
+| テスト（xUnit） | 3,671 | 3,682 |

@@ -57,7 +57,7 @@ namespace DS4Windows.UI
             DialogResult = false;
         }
 
-        private void ConfirmBtn_Click(object sender, RoutedEventArgs e)
+        private void ConfirmBtn()
         {
             if (!string.IsNullOrEmpty(renameProfileVM.ProfileName))
             {
@@ -67,7 +67,6 @@ namespace DS4Windows.UI
                     bool existingFile = renameProfileVM.ProfileFileExists();
                     if (existingFile)
                     {
-                        e.Handled = true;
                         MessageBox.Show("Profile with name already exists. Please try again.");
                     }
                     else
@@ -78,7 +77,6 @@ namespace DS4Windows.UI
                 }
                 else
                 {
-                    e.Handled = true;
                     MessageBox.Show("Invalid characters used in filename. Please change text.");
                 }
             }

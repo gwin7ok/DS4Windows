@@ -47,6 +47,7 @@ namespace DS4Windows.UI
             _isAdministrator = isAdministrator ?? throw new ArgumentNullException(nameof(isAdministrator));
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
 
+            InitCommands();
             InitializeComponent();
 
             // Keep window title localized via Properties.Resources (preserve existing Japanese title)
@@ -75,7 +76,7 @@ namespace DS4Windows.UI
             noBtn.Content = closeLabel;
         }
 
-        private async void YesBtn_Click(object sender, RoutedEventArgs e)
+        private async Task YesBtn()
         {
             // Install / Launch latest updater
             try
@@ -347,13 +348,13 @@ namespace DS4Windows.UI
             Close();
         }
 
-        private void NoBtn_Click(object sender, RoutedEventArgs e)
+        private void NoBtn()
         {
             result = MessageBoxResult.No;
             Close();
         }
 
-        private void SkipVersionBtn_Click(object sender, RoutedEventArgs e)
+        private void SkipVersionBtn()
         {
             result = MessageBoxResult.No;
             updaterWinVM.SetSkippedVersion();

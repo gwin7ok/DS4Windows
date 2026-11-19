@@ -92,11 +92,11 @@
                         <Button x:Name="heavyRumbleTestBtn"
                                 Content="{lex:Loc TestHeavy}"
                                 Margin="10,0,0,0"
-                                Click="RumbleTestBtn_Click"/>
+                                Command="{Binding RumbleTestCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding ElementName=heavyRumbleTestBtn}"/>
                         <Button x:Name="lightRumbleTestBtn"
                                 Content="{lex:Loc TestLight}"
                                 Margin="10,0,0,0"
-                                Click="RumbleTestBtn_Click"/>
+                                Command="{Binding RumbleTestCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding ElementName=lightRumbleTestBtn}"/>
                     </UniformGrid>
                     <CheckBox Content="{lex:Loc InverseMotors}"
                               IsChecked="{Binding InverseRumbleMotors}"/>

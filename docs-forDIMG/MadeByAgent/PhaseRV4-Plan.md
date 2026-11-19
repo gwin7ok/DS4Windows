@@ -87,3 +87,4 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 ## 実施状況（2026-11-20 追記）
 - 完了: RV4-0〜2、RV4-3a（ProfileEditor の操作）、RV4-4（WelcomeDialog）、RV4-5（RecordBox のボタン）、RV4-6a（小さな画面の確定系）、RV4-8（実機確認 §9e）。イベント属性の凍結値は RV3 完了時より約 100 件減り、`Command` のバインディングの下限は 58→248。
 - 未完（次の Phase または追加 Step）: ProfileEditor のホバーの表のデータ化と `partial` の分割、`UpdaterWindow`・`WindowTargetEditor`・General／Output パネルの転送ボタン、`ControllerReadingsControl` のタイマー、`BindingWindow` の TestRumble・RecordMacro、RV4-9（採点）。
+- 追記（同日）: RV4-3b（ホバーの表を `HoverRow` の表へ）、RV4-6b・6c（UpdaterWindow・WindowTargetEditor・BindingWindow・General／Output パネル・RenameProfile Confirm）、RV4-9（採点: MVVM B−→A−、共有部品化 B→B+）を完了。見送り: `partial` 分割（ガードテストが文字列を読む）、`ControllerReadingsControl` のタイマー、`WelcomeDialog` の部品化。

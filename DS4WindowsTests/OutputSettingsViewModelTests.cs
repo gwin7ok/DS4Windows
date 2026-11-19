@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             var missing = new List<string>();
             foreach (string value in XamlTestHelper.AllAttributeValues(xaml.Root))
             {
-                if (value.Contains("Source=")) continue;
+                if (value.Contains("Source=") || value.Contains("ElementName=")) continue;
                 foreach (Match m in BindingPath.Matches(value))
                 {
                     if (!properties.Contains(m.Groups["path"].Value)) missing.Add(m.Groups["path"].Value);
@@ -163,7 +163,7 @@ namespace DS4WindowsTests
                     // 振動のテストのボタンが押されたことは、パネルの外へ知らせる
                     object sender = null;
                     panel.RumbleTestClick += (s, e) => sender = s;
-                    panel.HeavyRumbleTestBtn.RaiseEvent(new System.Windows.RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                    panel.RumbleTestCommand.Execute(panel.HeavyRumbleTestBtn);
                     Assert.Same(panel.HeavyRumbleTestBtn, sender);
 
                     panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));

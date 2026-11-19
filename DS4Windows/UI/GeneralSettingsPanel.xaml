@@ -33,7 +33,7 @@
                           Margin="8,0,0,0"
                           IsChecked="{Binding UseControllerReadout}"
                           ToolTip="{lex:Loc Resources:UseControllerForMapping}"
-                          Click="UseControllerReadoutCk_Click">
+                          Command="{Binding UseControllerReadoutCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <CheckBox.Resources>
                         <Style TargetType="{x:Type Path}">
                             <Setter Property="FlowDirection"
@@ -111,7 +111,7 @@
                           IsChecked="{Binding LaunchProgramExists}"
                           IsEnabled="{Binding LaunchProgramExists}"/>
                 <Button x:Name="launchProgBrowseBtn"
-                        Click="LaunchProgBrowseBtn_Click"
+                        Command="{Binding LaunchProgramBrowseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Width="80"
                         Height="30"
                         Margin="20,0,0,0">
