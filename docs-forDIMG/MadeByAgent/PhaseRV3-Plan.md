@@ -75,7 +75,7 @@ Phase34 は、画面の「型の規則」（V1・V2）を満たした。この P
 - Debug ALL が警告 0・エラー 0。実機確認の項目が台帳・チェックリストに足されている。
 
 ## 関連計画
-- `PhaseRV1-Plan.md`（検査の枠）、`PhaseRV2-Plan.md`（`async void` の整理）、`PhaseRV4-Plan.md`（残りの画面）、`PhaseRV7-Plan.md`（変更通知の統一。本 Phase の D1＝(B) により、RV7 の D1 は、ツールキットの `ObservableObject` への移行（(C)）を前提に再確認する）。RV4 の D3（目標の件数）は、本 Phase の D2＝(B) と同じ考え方で再確認する。
+- `PhaseRV1-Plan.md`（検査の枠）、`PhaseRV2-Plan.md`（`async void` の整理）、`PhaseRV4-Plan.md`（残りの画面）、`PhaseRV7-Plan.md`（変更通知の統一。本 Phase の D1＝(B) により、RV7 の D1 は、ツールキットの `ObservableObject` への移行（(C)）を前提に再確認する）。RV4 の D3（目標の件数）は、本 Phase の D2＝(B) と同じ考え方に決定済み（2026-11-19）。
 - 過去: `Phase34-Plan.md`・`Phase34-V2-MainWindow-Plan.md`（型の規則）、`Phase35-Plan.md`、`Phase29-Plan.md`（`GuardedTimerTick`）。`PhaseX3-Localization-Plan.md`（文言の規則）。
 - 規約: §3.1（画面の MVVM の規則 V1・V2）、§4（マイクロステップ）。
 
