@@ -175,15 +175,9 @@
 + $.stickSlots[8].LSMod.yAxisDeadInfo.DeadZone = 0
 + $.stickSlots[8].LSMod.yAxisDeadInfo.deadZone = 0
 ## /DS4Windows/LSAxialDeadOptions/MaxZoneX [unparsable]
-- $.stickSlots[8].LSMod.xAxisDeadInfo.MaxZone = 100
-- $.stickSlots[8].LSMod.xAxisDeadInfo.maxZone = 100
-+ $.stickSlots[8].LSMod.xAxisDeadInfo.MaxZone = 0
-+ $.stickSlots[8].LSMod.xAxisDeadInfo.maxZone = 0
+(same)
 ## /DS4Windows/LSAxialDeadOptions/MaxZoneY [unparsable]
-- $.stickSlots[8].LSMod.yAxisDeadInfo.MaxZone = 100
-- $.stickSlots[8].LSMod.yAxisDeadInfo.maxZone = 100
-+ $.stickSlots[8].LSMod.yAxisDeadInfo.MaxZone = 0
-+ $.stickSlots[8].LSMod.yAxisDeadInfo.maxZone = 0
+(same)
 ## /DS4Windows/LSAxialDeadOptions/AntiDeadZoneX [unparsable]
 - $.stickSlots[8].LSMod.xAxisDeadInfo.AntiDeadZone = 2
 - $.stickSlots[8].LSMod.xAxisDeadInfo.antiDeadZone = 2
@@ -195,15 +189,9 @@
 + $.stickSlots[8].LSMod.yAxisDeadInfo.AntiDeadZone = 0
 + $.stickSlots[8].LSMod.yAxisDeadInfo.antiDeadZone = 0
 ## /DS4Windows/LSAxialDeadOptions/MaxOutputX [unparsable]
-- $.stickSlots[8].LSMod.xAxisDeadInfo.MaxOutput = 100
-- $.stickSlots[8].LSMod.xAxisDeadInfo.maxOutput = 100
-+ $.stickSlots[8].LSMod.xAxisDeadInfo.MaxOutput = 0
-+ $.stickSlots[8].LSMod.xAxisDeadInfo.maxOutput = 0
+(same)
 ## /DS4Windows/LSAxialDeadOptions/MaxOutputY [unparsable]
-- $.stickSlots[8].LSMod.yAxisDeadInfo.MaxOutput = 100
-- $.stickSlots[8].LSMod.yAxisDeadInfo.maxOutput = 100
-+ $.stickSlots[8].LSMod.yAxisDeadInfo.MaxOutput = 0
-+ $.stickSlots[8].LSMod.yAxisDeadInfo.maxOutput = 0
+(same)
 ## /DS4Windows/RSAxialDeadOptions/DeadZoneX [unparsable]
 - $.stickSlots[8].RSMod.xAxisDeadInfo.DeadZone = 2
 - $.stickSlots[8].RSMod.xAxisDeadInfo.deadZone = 2
@@ -215,15 +203,9 @@
 + $.stickSlots[8].RSMod.yAxisDeadInfo.DeadZone = 0
 + $.stickSlots[8].RSMod.yAxisDeadInfo.deadZone = 0
 ## /DS4Windows/RSAxialDeadOptions/MaxZoneX [unparsable]
-- $.stickSlots[8].RSMod.xAxisDeadInfo.MaxZone = 100
-- $.stickSlots[8].RSMod.xAxisDeadInfo.maxZone = 100
-+ $.stickSlots[8].RSMod.xAxisDeadInfo.MaxZone = 0
-+ $.stickSlots[8].RSMod.xAxisDeadInfo.maxZone = 0
+(same)
 ## /DS4Windows/RSAxialDeadOptions/MaxZoneY [unparsable]
-- $.stickSlots[8].RSMod.yAxisDeadInfo.MaxZone = 100
-- $.stickSlots[8].RSMod.yAxisDeadInfo.maxZone = 100
-+ $.stickSlots[8].RSMod.yAxisDeadInfo.MaxZone = 0
-+ $.stickSlots[8].RSMod.yAxisDeadInfo.maxZone = 0
+(same)
 ## /DS4Windows/RSAxialDeadOptions/AntiDeadZoneX [unparsable]
 - $.stickSlots[8].RSMod.xAxisDeadInfo.AntiDeadZone = 2
 - $.stickSlots[8].RSMod.xAxisDeadInfo.antiDeadZone = 2
@@ -235,15 +217,9 @@
 + $.stickSlots[8].RSMod.yAxisDeadInfo.AntiDeadZone = 0
 + $.stickSlots[8].RSMod.yAxisDeadInfo.antiDeadZone = 0
 ## /DS4Windows/RSAxialDeadOptions/MaxOutputX [unparsable]
-- $.stickSlots[8].RSMod.xAxisDeadInfo.MaxOutput = 100
-- $.stickSlots[8].RSMod.xAxisDeadInfo.maxOutput = 100
-+ $.stickSlots[8].RSMod.xAxisDeadInfo.MaxOutput = 0
-+ $.stickSlots[8].RSMod.xAxisDeadInfo.maxOutput = 0
+(same)
 ## /DS4Windows/RSAxialDeadOptions/MaxOutputY [unparsable]
-- $.stickSlots[8].RSMod.yAxisDeadInfo.MaxOutput = 100
-- $.stickSlots[8].RSMod.yAxisDeadInfo.maxOutput = 100
-+ $.stickSlots[8].RSMod.yAxisDeadInfo.MaxOutput = 0
-+ $.stickSlots[8].RSMod.yAxisDeadInfo.maxOutput = 0
+(same)
 ## /DS4Windows/LSRotation [unparsable]
 - $.stickSlots[8].LSRotation = 0.24434609527920614
 + $.stickSlots[8].LSRotation = 0

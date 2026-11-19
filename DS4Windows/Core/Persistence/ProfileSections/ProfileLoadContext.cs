@@ -57,14 +57,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         // 節の読み込みを、要素ごとの try/catch ではなく、この補助で書く（変異ゴールデン ProfileLoadMutationGoldenTests が動きを固定している）。
 
         /// <summary>
-        /// 整数の要素を読む。要素があって解析に失敗したときは 0 を丸めて代入する（従来の動き。<see cref="int.TryParse(string, out int)"/> の結果をそのまま使う）。
+        /// 整数の要素を読む。要素がない、または解析に失敗したとき（空の要素を含む）は何もしない（既定値のまま）。
+        /// 解析に成功した値が範囲の外のときは、範囲へ丸めて代入する。
         /// </summary>
         public void ReadInt(XmlNode source, string xpath, int min, int max, Action<int> assign)
         {
             XmlNode node = source.SelectSingleNode(xpath);
             if (node == null) return;
-            int.TryParse(node.InnerText, out int value);
-            assign(Math.Min(Math.Max(value, min), max));
+            if (int.TryParse(node.InnerText, out int value)) assign(Math.Min(Math.Max(value, min), max));
         }
 
         /// <summary><see cref="ReadInt"/> の実数版。</summary>
@@ -72,8 +72,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         {
             XmlNode node = source.SelectSingleNode(xpath);
             if (node == null) return;
-            double.TryParse(node.InnerText, out double value);
-            assign(Math.Min(Math.Max(value, min), max));
+            if (double.TryParse(node.InnerText, out double value)) assign(Math.Min(Math.Max(value, min), max));
         }
 
         /// <summary>真偽値の要素を読む。要素がない、または解析に失敗したときは何もしない。</summary>
