@@ -21,21 +21,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchToggle"); { Boolean.TryParse(Item.InnerText, out bool touchToggle); store.basicSlots[device].EnableTouchToggle = touchToggle; } }
-            catch { missingSetting = true; }
-
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/idleDisconnectTimeout");
-                if (int.TryParse(Item?.InnerText ?? "", out int temp))
-                {
-                    store.basicSlots[device].IdleDisconnectTimeout = temp;
-                }
-            }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/outputDataToDS4"); { Boolean.TryParse(Item.InnerText, out bool outputData); store.basicSlots[device].EnableOutputDataToDS4 = outputData; } }
-            catch { missingSetting = true; }
+            missingSetting |= ProfileGeneralSettings.LoadAll(context);
 
             try
             {
@@ -72,24 +58,6 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Blue"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.blue); }
                 catch { missingSetting = true; }
             }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleBoost"); { Byte.TryParse(Item.InnerText, out byte boost); store.rumbleSlots[device].Boost = boost; } }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RumbleAutostopTime"); { Int32.TryParse(Item.InnerText, out int autostop); store.rumbleSlots[device].AutostopTime = autostop; } }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ledAsBatteryIndicator"); Boolean.TryParse(Item.InnerText, out lightInfo.ledAsBattery); }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/FlashType"); Byte.TryParse(Item.InnerText, out lightInfo.flashType); }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/flashBatteryAt"); Int32.TryParse(Item.InnerText, out lightInfo.flashAt); }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchSensitivity"); { Byte.TryParse(Item.InnerText, out byte parsedValue); store.touchpadSlots[device].TouchSensitivity = parsedValue; }; }
-            catch { missingSetting = true; }
 
             //New method for saving color
             try
@@ -156,9 +124,6 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 lightInfo.m_FlashLed.green = byte.Parse(colors[1]);
                 lightInfo.m_FlashLed.blue = byte.Parse(colors[2]);
             }
-            catch { missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/touchpadJitterCompensation"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].JitterCompensation = parsedValue; }; }
             catch { missingSetting = true; }
 
             context.MissingSetting = missingSetting;

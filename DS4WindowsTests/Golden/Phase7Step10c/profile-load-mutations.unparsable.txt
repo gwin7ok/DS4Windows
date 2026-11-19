@@ -1,15 +1,17 @@
 ## /DS4Windows/touchToggle [unparsable]
-(same)
+- $.basicSlots[8].EnableTouchToggle = false
++ $.basicSlots[8].EnableTouchToggle = true
 ## /DS4Windows/idleDisconnectTimeout [unparsable]
 - $.basicSlots[8].IdleDisconnectTimeout = 1
 + $.basicSlots[8].IdleDisconnectTimeout = 0
 ## /DS4Windows/outputDataToDS4 [unparsable]
-(same)
+- $.basicSlots[8].EnableOutputDataToDS4 = false
++ $.basicSlots[8].EnableOutputDataToDS4 = true
 ## /DS4Windows/Color [unparsable]
 (same)
 ## /DS4Windows/RumbleBoost [unparsable]
 - $.rumbleSlots[8].Boost = 101
-+ $.rumbleSlots[8].Boost = 0
++ $.rumbleSlots[8].Boost = 100
 ## /DS4Windows/RumbleAutostopTime [unparsable]
 - $.rumbleSlots[8].AutostopTime = 1
 + $.rumbleSlots[8].AutostopTime = 0
@@ -29,7 +31,7 @@
 + $.lightbarSlots[8].Info.ds4winSettings.flashAt = 0
 ## /DS4Windows/touchSensitivity [unparsable]
 - $.touchpadSlots[8].TouchSensitivity = 101
-+ $.touchpadSlots[8].TouchSensitivity = 0
++ $.touchpadSlots[8].TouchSensitivity = 100
 ## /DS4Windows/LowColor [unparsable]
 (same)
 ## /DS4Windows/ChargingColor [unparsable]
@@ -37,7 +39,8 @@
 ## /DS4Windows/FlashColor [unparsable]
 (same)
 ## /DS4Windows/touchpadJitterCompensation [unparsable]
-(same)
+- $.touchpadSlots[8].JitterCompensation = false
++ $.touchpadSlots[8].JitterCompensation = true
 ## /DS4Windows/InverseRumbleMotors [unparsable]
 - $.rumbleSlots[8].InverseMotors = true
 + $.rumbleSlots[8].InverseMotors = false

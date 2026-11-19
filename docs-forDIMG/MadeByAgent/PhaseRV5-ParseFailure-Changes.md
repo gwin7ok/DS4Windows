@@ -35,3 +35,14 @@ D2＝(B): 数値（整数・実数）の要素が、解析に失敗したとき�
 ## 実機のプロファイルの走査（読み取りのみ。46 個）
 
 空の要素は `LaunchProgram`・`*OutputCurveCustom`・`ShiftControl`・`Control`・`ProfileActions` の文字列型だけで、数値の要素の解析失敗は 0 件。したがって、実機のプロファイルの読み込み結果は変わらない。
+
+## 追記: RV5-4（General 領域を定義の並びへ）で変わる要素
+
+`ProfileGeneralSettings`（`ProfileSetting` の並び）へ移した、真偽値・byte の要素も、解析に失敗したときは何もしない（既定値のまま）になる。変わるのは次の 5 要素（解析できない・空・範囲外［byte の 99999］の 3 通りで、計 15 件）。
+
+| 要素 | 変更前 | 変更後 |
+|---|---|---|
+| `touchToggle`、`outputDataToDS4`、`touchpadJitterCompensation` | 解析に失敗すると `false` を代入 | 既定値のまま |
+| `RumbleBoost`、`touchSensitivity`（byte） | 解析に失敗（範囲外の 99999 を含む）すると `0` を代入 | 既定値のまま |
+
+実機のプロファイル 46 個には、これらの要素の解析失敗は 0 件（上の走査のとおり）。
