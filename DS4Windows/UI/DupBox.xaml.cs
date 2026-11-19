@@ -52,6 +52,7 @@ namespace DS4Windows.UI
 
         public DupBox()
         {
+            InitCommands();
             InitializeComponent();
         }
 
@@ -61,7 +62,7 @@ namespace DS4Windows.UI
             this.duplicateProfile = duplicateProfile ?? throw new ArgumentNullException(nameof(duplicateProfile));
         }
 
-        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        private void SaveBtn()
         {
             string profile = profileTxt.Text;
             // 初期値が複製元の名前になったため、変えずに保存すると自分自身へのコピーになる（File.Copy が失敗する）。無効な名前として扱う
@@ -79,7 +80,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void CancelBtn_Click(object sender, RoutedEventArgs e)
+        private void CancelBtn()
         {
             Cancel?.Invoke(this, EventArgs.Empty);
         }

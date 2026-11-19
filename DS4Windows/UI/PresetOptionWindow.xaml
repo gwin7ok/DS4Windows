@@ -20,8 +20,8 @@
             <TabItem x:Name="IntroTab" Header="{lex:Loc Intro}">
                 <DockPanel Margin="4,0,4,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-                        <Button x:Name="noPresetBtn" Content="{lex:Loc No}" MinWidth="60" Margin="0,0,20,0" TabIndex="0" Click="NoPresetBtn_Click" />
-                        <Button x:Name="yesPresetBtn" Content="{lex:Loc Yes}" MinWidth="60" TabIndex="1" Click="YesPresetBtn_Click" />
+                        <Button x:Name="noPresetBtn" Content="{lex:Loc No}" MinWidth="60" Margin="0,0,20,0" TabIndex="0" Command="{Binding NoPresetBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <Button x:Name="yesPresetBtn" Content="{lex:Loc Yes}" MinWidth="60" TabIndex="1" Command="{Binding YesPresetBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="{lex:Loc PresetIntroText}" TextWrapping="Wrap" />
@@ -45,8 +45,8 @@
                         <ComboBox ItemsSource="{Binding OutputChoices}" DisplayMemberPath="DisplayName" SelectedValuePath="ChoiceValue" SelectedValue="{Binding ControllerChoice}" Margin="8,0,0,0" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-                        <Button x:Name="presetCancelBtn" Content="{lex:Loc Cancel}" MinWidth="60" Margin="0,0,20,0" Click="PresetCancelBtn_Click" />
-                        <Button x:Name="presetApplyBtn" Content="{lex:Loc Apply}" MinWidth="60" Click="PresetApplyBtn_Click" />
+                        <Button x:Name="presetCancelBtn" Content="{lex:Loc Cancel}" MinWidth="60" Margin="0,0,20,0" Command="{Binding PresetCancelBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <Button x:Name="presetApplyBtn" Content="{lex:Loc Apply}" MinWidth="60" Command="{Binding PresetApplyBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </StackPanel>
                     <Label Content="{lex:Loc Description}" FontSize="10" FontWeight="Bold" DockPanel.Dock="Top" />
                     <TextBlock Text="{Binding PresetDescription, Mode=OneWay}" DockPanel.Dock="Bottom" TextWrapping="Wrap" />
