@@ -13,11 +13,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheInterval_Is60Seconds()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
-            if (code == null) return;
-
-            Assert.Contains("public const int BatteryRefreshIntervalMs = 60000;", code);
-            Assert.Contains("TimeProvider.System.CreateTimer(_ => RefreshBatteryState(), null, TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs), TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs));", code);
+            Assert.Equal(60000, DS4Windows.UI.ViewModels.CompositeDeviceModel.BatteryRefreshIntervalMs);
         }
 
         [Fact]

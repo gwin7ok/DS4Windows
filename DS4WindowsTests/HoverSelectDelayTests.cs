@@ -13,10 +13,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheDelay_Is500ms()
         {
-            string code = SourceText.ReadNormalized("DS4Windows/UI/ProfileEditor.xaml.cs");
-            if (code == null) return;
-
-            Assert.Contains("private const int HoverSelectDelayMs = 500;", code);
+            Assert.Equal(500, ConstantValueReader.Get<int>(typeof(DS4Windows.UI.ProfileEditor), "HoverSelectDelayMs"));
         }
 
         [Fact]
