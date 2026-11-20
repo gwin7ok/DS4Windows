@@ -89,7 +89,7 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (path == null) return;
 
-            string body = SourceText.Method(File.ReadAllText(path), "public bool ApplyOnConnect(");
+            string body = SourceText.Method(SourceText.ReadFileWithPartials(path), "public bool ApplyOnConnect(");
             int first = body.IndexOf("IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
             int older = body.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
             int selected = body.IndexOf("profileToApply = _profileRepository.SelectedProfile[index];", StringComparison.Ordinal);
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
             var callers = Sources(root)
                 .Where(f => File.ReadAllText(f).Contains(".ResetConnectionFlags();"))
                 .Select(f => Rel(root, f)).OrderBy(x => x).ToArray();
-            Assert.Equal(new[] { "DS4Windows/App.xaml.cs" }, callers);
+            Assert.Equal(new[] { "DS4Windows/App.Bootstrap.cs" }, callers);
         }
 
         [Fact]
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
 
             Assert.Equal(new[]
             {
-                "DS4Windows/App.xaml.cs",                                        // 起動時の既定の設定
+                "DS4Windows/App.Bootstrap.cs",                                    // 起動時の既定の設定
                 "DS4Windows/Core/Abstractions/IProfileRepository.cs",
                 "DS4Windows/Core/Settings/BackingStore.cs",
                 "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.Mapping.cs",        // アプリ設定の読込
@@ -169,13 +169,13 @@ namespace DS4WindowsTests
             // 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
             string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
-            string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
+            string removal = SourceText.Method(SourceText.ReadFileWithPartials(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
             // Stop の本体は ServiceLifecycle へ移った
             string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
-            string stop = SourceText.Method(File.ReadAllText(lifecyclePath), "public bool Stop(");
+            string stop = SourceText.Method(SourceText.ReadFileWithPartials(lifecyclePath), "public bool Stop(");
             Assert.DoesNotContain("HandleDeviceDisconnect", stop);
             Assert.DoesNotContain("On_DS4Removal", stop);
         }

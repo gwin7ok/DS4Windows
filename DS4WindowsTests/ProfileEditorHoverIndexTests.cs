@@ -17,7 +17,7 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             string tablesPath = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.HoverTables.cs");
             if (path == null || tablesPath == null) return null;
-            string text = File.ReadAllText(path) + File.ReadAllText(tablesPath);
+            string text = SourceText.ReadFileWithPartials(path);   // HoverTables を含む、同じ部分クラスの別ファイルがすべて続く
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
             return text;

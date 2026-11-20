@@ -32,7 +32,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = SourceText.StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(SourceText.ReadFileWithPartials(path));
             foreach (string signature in new[] { "public static T? GetService<T>()", "public static object? GetService(Type serviceType)" })
             {
                 int start = text.IndexOf(signature, System.StringComparison.Ordinal);
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
                 string name = Path.GetFileName(file);
                 if (name == "TestHost.cs" || name == "AppHostNoImplicitHostGuardTests.cs") continue;
 
-                string code = SourceText.StripComments(File.ReadAllText(file));
+                string code = SourceText.StripComments(SourceText.ReadFileWithPartials(file));
                 // 文字列の中の記述（ガードの期待値など）は対象外とするため、引用符で囲まれていない呼び出しだけを数える
                 foreach (string line in code.Split('\n'))
                 {

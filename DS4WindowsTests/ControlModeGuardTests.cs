@@ -30,7 +30,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            Assert.Contains("IsReadOnly=\"{Binding ActionNameReadOnly}\"", File.ReadAllText(path));
+            Assert.Contains("IsReadOnly=\"{Binding ActionNameReadOnly}\"", SourceText.ReadFileWithPartials(path));
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace DS4WindowsTests
                 .ToArray();
 
             // 宣言（インターフェース）と実装（窓口）と、呼び出し元の ProfileEditor だけ
-            Assert.Equal(new[] { "AssignmentWindowFactory.cs", "EditorWindowFactory.cs", "IEditorWindowFactory.cs", "ProfileEditor.xaml.cs" }, callers);
+            Assert.Equal(new[] { "AssignmentWindowFactory.cs", "EditorWindowFactory.cs", "IEditorWindowFactory.cs", "ProfileEditor.Presets.cs" }, callers);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace DS4WindowsTests
                 return null;
             }
 
-            string text = File.ReadAllText(path);
+            string text = SourceText.ReadFileWithPartials(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
             return text;

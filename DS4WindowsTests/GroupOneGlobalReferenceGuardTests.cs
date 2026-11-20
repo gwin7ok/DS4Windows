@@ -83,7 +83,7 @@ namespace DS4WindowsTests
             string code = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             if (xaml == null || code == null) return;
 
-            Assert.Contains("x:Name=\"languagePackControl\"", File.ReadAllText(xaml));
+            Assert.Contains("x:Name=\"languagePackControl\"", SourceText.ReadFileWithPartials(xaml));
             Assert.Contains("languagePackControl.Initialize(layout.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);", code);   // テーマ・言語の契約も渡す
         }
     }

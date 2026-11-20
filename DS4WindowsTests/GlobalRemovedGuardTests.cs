@@ -123,7 +123,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = File.ReadAllText(path);
+            string text = SourceText.ReadFileWithPartials(path);
             int store = text.IndexOf("_bootstrapBackingStore = new DS4Windows.Core.Settings.BackingStore(", StringComparison.Ordinal);
             int pathService = text.IndexOf("_bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);", StringComparison.Ordinal);
             int rotation = text.IndexOf("PerformStartupRotation(", StringComparison.Ordinal);

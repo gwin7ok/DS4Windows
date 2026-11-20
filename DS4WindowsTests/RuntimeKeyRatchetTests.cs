@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, (int Path, int Actions)> Baseline = new Dictionary<string, (int, int)>
         {
             ["DS4Windows/Processing/Actions/ActionBindingBuilder.cs"] = (0, 3),
-            ["DS4Windows/App.xaml.cs"] = (6, 0),
+            ["DS4Windows/App.Bootstrap.cs"] = (6, 0),
             ["DS4Windows/Core/Abstractions/IProfileRepository.cs"] = (2, 1),
             ["DS4Windows/Core/Abstractions/IProfileSettingsService.cs"] = (0, 1),
             ["DS4Windows/Core/Settings/BackingStore.cs"] = (7, 5),

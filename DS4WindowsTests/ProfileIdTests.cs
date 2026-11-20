@@ -290,7 +290,7 @@ namespace DS4WindowsTests
             string app = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
             if (app == null) return;
 
-            string source = File.ReadAllText(app);
+            string source = SourceText.ReadFileWithPartials(app);
             int ensure = source.IndexOf("_profileIdentityService.EnsureAllPersisted()", StringComparison.Ordinal);
             int window = source.IndexOf("ResolvePostHostService<IMainWindowFactory>().Create(parser)", StringComparison.Ordinal);
             Assert.True(ensure > 0 && window > ensure, "プロファイルの ID の割り当てが、メイン画面の生成より前にない");
