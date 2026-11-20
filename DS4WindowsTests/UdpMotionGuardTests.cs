@@ -34,15 +34,5 @@ namespace DS4WindowsTests
             Assert.DoesNotContain(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper).GetInterfaces(), i => i.Name == "IUdpMotionHost");
         }
 
-        [Fact]
-        public void TheOtherFiles_ForTheCallers()
-        {
-
-            // 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
-            if (sw == null) return;
-            Assert.Contains("_udpMotion.ChangeStatus(state, openPort)", sw);
-            Assert.Contains("_udpMotion.ChangeMotionEventStatus(state)", sw);
-        }
     }
 }

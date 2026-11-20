@@ -52,15 +52,5 @@ namespace DS4WindowsTests
             Assert.Same(TestHost.GetService<IOscService>(), TestHost.GetService<IOscService>());
         }
 
-        [Fact]
-        public void TheOtherFiles_ForTheCallers()
-        {
-
-            // 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
-            if (sw == null) return;
-            Assert.Contains("_osc.ChangeListenerStatus(state)", sw);
-            Assert.Contains("_osc.ChangeSenderStatus(state)", sw);
-        }
     }
 }

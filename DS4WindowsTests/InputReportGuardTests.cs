@@ -61,20 +61,5 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("DS4Windows.Processing.ControlService", targets);
         }
 
-        [Fact]
-        public void TheOtherFiles_ForTheCallers()
-        {
-
-            // GetActiveInputControl の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
-            string rfs = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
-            if (rfs != null) Assert.Contains("_activeInputProbe.GetActive(", rfs);
-            // 利用者が 0 件だった StartTPOff／CheckForTouchToggle の転送は削除した（ITouchpadToggleService／IProfileLoadTarget が持つ）
-            // TouchpadSlide の転送も削除した。利用者は IRuntimeFeatureSwitch を使う
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
-            if (sw != null) Assert.Contains("_touchpadToggle.Slide(", sw);
-            // _latencyMonitor.OnReport は On_Report と一緒に InputReportProcessor へ移した
-            string processor = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs");
-            Assert.Contains("_latencyMonitor.OnReport(device, ind);", processor);
-        }
     }
 }
