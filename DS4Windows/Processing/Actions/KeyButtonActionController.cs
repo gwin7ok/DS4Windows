@@ -59,9 +59,9 @@ namespace DS4Windows.Processing.Actions
             // Create concrete implementation based on mode. These implementations are lightweight wrappers
             // around the existing static controllers for now; this allows per-device instance semantics later.
             if (mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef!, _manager, _dispatcher, _time, _repeaterFactory);   // Toggle の生成は、SpecialAction を渡された場合だけ
+                impl = new KeyToggleController(device, this.GetHashCode(), this.assignedActionDef!, _manager, _dispatcher, _time, _repeaterFactory);   // Toggle の生成は、SpecialAction を渡された場合だけ
             else
-                impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
+                impl = new KeyPressController(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
 
             // Subscribe to toggled-on changes so controllers react to Action-level state changes.
             toggledOnHandler = (sa, dev, oldv, newv) =>
@@ -109,9 +109,9 @@ namespace DS4Windows.Processing.Actions
             catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             if (this.mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef!, _manager, _dispatcher, _time, _repeaterFactory);   // Toggle の生成は、SpecialAction を渡された場合だけ
+                impl = new KeyToggleController(device, this.GetHashCode(), this.assignedActionDef!, _manager, _dispatcher, _time, _repeaterFactory);   // Toggle の生成は、SpecialAction を渡された場合だけ
             else
-                impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
+                impl = new KeyPressController(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
 
             // Subscribe to toggled-on changes so controllers react to Action-level state changes.
             toggledOnHandler = (sa, dev, oldv, newv) =>
