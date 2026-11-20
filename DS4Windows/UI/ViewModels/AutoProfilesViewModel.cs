@@ -186,7 +186,7 @@ namespace DS4Windows.UI.ViewModels
         private bool _autoDebug;
 
         /// <summary>保存先のファイル、Steam のゲームのフォルダ（なければ null）を受け取る。画面の初期化のときに 1 回呼ぶ。</summary>
-        public void Configure(string autoProfilesFile, string steamGamesDir)
+        public void Configure(string autoProfilesFile, string? steamGamesDir)
         {
             ArgumentNullException.ThrowIfNull(autoProfilesFile);
             this.autoProfilesFile = autoProfilesFile;

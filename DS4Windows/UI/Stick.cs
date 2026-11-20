@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.UI;
+﻿#nullable enable
+
+namespace DS4Windows.UI;
 
 public enum Stick
 {

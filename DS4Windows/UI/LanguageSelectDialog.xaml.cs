@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,7 +37,7 @@ namespace DS4Windows.UI
     public partial class LanguageSelectDialog : Window
     {
         public bool ChoiceMade { get; set; }
-        public string SelectedCulture { get; private set; }
+        public string? SelectedCulture { get; private set; }
 
         // 選んだ言語の保存と適用。サービスを持つ呼び出し側（App）が関数で渡す（View はサービスを参照しない）。
         private readonly Action<string> _applyCulture;
@@ -61,8 +63,8 @@ namespace DS4Windows.UI
             });
 
             // Scan for available language assemblies
-            string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string langDir = Path.Combine(exeDir, "Lang");
+            string? exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string langDir = Path.Combine(exeDir ?? string.Empty, "Lang");
 
             if (Directory.Exists(langDir))
             {
@@ -135,7 +137,7 @@ namespace DS4Windows.UI
 
                 // Apply the selected culture immediately
                 AppLogger.LogDebug($"LanguageSelectDialog: user selected culture '{SelectedCulture}'");
-                _applyCulture(SelectedCulture);
+                if (SelectedCulture != null) _applyCulture(SelectedCulture);
 
                 Close();
             }

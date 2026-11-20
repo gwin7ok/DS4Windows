@@ -105,7 +105,7 @@ namespace DS4WindowsTests
 
             // メインウィンドウ: サイズ・位置の保存（SizeChanged・LocationChanged）と、閉じたときの復元の分岐
             Assert.Equal(2, Regex.Matches(main, @"editor != null && editor\.Keepsize && !IsInitialShow").Count);
-            Assert.Single(Regex.Matches(main, @"if \(!editor\.Keepsize\) \{ this\.Width = oldSize\.Width; this\.Height = oldSize\.Height; \}"));
+            Assert.Single(Regex.Matches(main, @"if \(editor == null \|\| !editor\.Keepsize\) \{ this\.Width = oldSize\.Width; this\.Height = oldSize\.Height; \}"));
             Assert.Equal(3, Regex.Matches(main, @"editor\.Keepsize").Count);
         }
 

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +11,9 @@ namespace DS4Windows.UI
     public partial class ProfileNotificationWindow : Window
     {
         // 画面上に表示中の単一通知ウィンドウを保持（重複生成・アニメーション衝突を防止）
-        private static ProfileNotificationWindow currentWindow = null;
+        private static ProfileNotificationWindow? currentWindow = null;
         private static readonly object lockObject = new object();
-        private static CancellationTokenSource closeCts = null;
+        private static CancellationTokenSource? closeCts = null;
 
         /// <summary>
         /// 通知ウィンドウが維持される最小時間（ミリ秒）。

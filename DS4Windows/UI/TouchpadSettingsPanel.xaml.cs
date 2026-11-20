@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.Core.Model;
@@ -14,7 +16,7 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class TouchpadSettingsPanel : UserControl
     {
-        private ContentControl activeTouchButtonDisplayControl;
+        private ContentControl? activeTouchButtonDisplayControl;
 
         public System.Windows.Input.ICommand SwipeControlCommand { get; }
 
@@ -25,7 +27,7 @@ namespace DS4Windows.UI
         }
 
         /// <summary>スワイプ（上下左右）のボタンが押された。引数は対象のコントロール。</summary>
-        public event EventHandler<DS4Controls> SwipeControlClicked;
+        public event EventHandler<DS4Controls>? SwipeControlClicked;
 
         // 同時ホバー表示の対応表（編集画面のホバー表）が使う
         public Button SwipeUpButton => swipeUpBtn;

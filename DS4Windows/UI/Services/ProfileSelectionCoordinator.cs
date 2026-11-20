@@ -135,9 +135,9 @@ namespace DS4Windows.UI.Services
         }
 
         /// <summary>トレイのメニューで選ばれたプロファイルを、接続中のコントローラーへ適用する。</summary>
-        public void ApplyFromTray(int idx, string profile, CompositeDeviceModel devitem)
+        public void ApplyFromTray(int idx, string? profile, CompositeDeviceModel devitem)
         {
-            if (devitem != null && devitem.Device != null)
+            if (devitem != null && devitem.Device != null && profile != null)
             {
                 string prolog = string.Format(Properties.Resources.UsingProfile,
                     (idx + 1).ToString(), profile, $"{devitem.Device.Battery}");
@@ -149,7 +149,7 @@ namespace DS4Windows.UI.Services
         public ProfileEditor CreateEditor(int targetDevice) => _editorWindowFactory.CreateProfileEditor(targetDevice);
 
         /// <summary>編集画面を開いたとき、アクションが見つからないログを 1 回出す（開くたびに出す）。</summary>
-        public void EmitMissingActionLogsForEditor(ProfileEntity entity)
+        public void EmitMissingActionLogsForEditor(ProfileEntity? entity)
         {
             try
             {

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿#nullable enable
+
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DS4Windows.UI
@@ -11,13 +13,13 @@ namespace DS4Windows.UI
     public partial class SixAxisSettingsPanel : UserControl
     {
         /// <summary>カスタム曲線の編集が求められた。引数は対象（"SX" か "SZ"）。</summary>
-        public event System.EventHandler<string> CustomCurveEditorRequested;
+        public event System.EventHandler<string>? CustomCurveEditorRequested;
 
         public System.Windows.Input.ICommand CustomEditorCommand { get; }
 
         public SixAxisSettingsPanel()
         {
-            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => CustomCurveEditorRequested?.Invoke(this, parameter as string), name: nameof(CustomEditorCommand));
+            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => CustomCurveEditorRequested?.Invoke(this, parameter as string ?? string.Empty), name: nameof(CustomEditorCommand));
             InitializeComponent();
         }
 

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Windows.Controls;
 using DS4Windows.UI.ViewModels;
 
@@ -26,10 +28,10 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class AxialStickUserControl : UserControl
     {
-        private AxialStickControlViewModel axialVM;
+        private AxialStickControlViewModel? axialVM;
         public AxialStickControlViewModel AxialVM
         {
-            get => axialVM;
+            get => axialVM!;   // 画面を作ったときに、必ず作られる
         }
 
         public AxialStickUserControl()

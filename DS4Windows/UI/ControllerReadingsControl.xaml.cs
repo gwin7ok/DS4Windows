@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 using System;
 using System.Windows;
@@ -130,7 +132,7 @@ namespace DS4Windows.UI
                 L2DeadChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler L2DeadChanged;
+        public event EventHandler? L2DeadChanged;
 
         public double R2Dead
         {
@@ -141,7 +143,7 @@ namespace DS4Windows.UI
                 R2DeadChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler R2DeadChanged;
+        public event EventHandler? R2DeadChanged;
 
 
         public sbyte LsDriftX
@@ -192,7 +194,7 @@ namespace DS4Windows.UI
         private ControllerState baseState = new ControllerState();
         private ControllerState interState = new ControllerState();
         private ControllerStateExposed exposeState;
-        private Label outputDelayLabel; // XAMLコントロール参照キャッシュ
+        private Label? outputDelayLabel; // XAMLコントロール参照キャッシュ
         private const int CANVAS_WIDTH = 130;
         private const int CANVAS_MIDPOINT = CANVAS_WIDTH / 2;
         private const double TRIG_LB_TRANSFORM_OFFSETY = 66.0;
@@ -213,7 +215,7 @@ namespace DS4Windows.UI
 
         // XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
         // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
-        private DS4Windows.UI.Abstractions.IControllerReadingsFeed readingsSource;
+        private DS4Windows.UI.Abstractions.IControllerReadingsFeed? readingsSource;
 
         /// <summary>現在のテーマの文字色（テーマの ForegroundColor。見つからなければ SystemColors.WindowTextColor）。</summary>
         private static Color ThemeForegroundColor()
@@ -277,12 +279,12 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ControllerReadingsControl_DeviceNumChanged(object sender, EventArgs e)
+        private void ControllerReadingsControl_DeviceNumChanged(object? sender, EventArgs e)
         {
             inputContNum.Content = $"#{deviceNum + 1}";
         }
 
-        private void ChangeSixAxisDeadControls(object sender, EventArgs e)
+        private void ChangeSixAxisDeadControls(object? sender, EventArgs e)
         {
             sixAxisDeadEllipse.Width = sixAxisXDead * CANVAS_WIDTH;
             sixAxisDeadEllipse.Height = sixAxisZDead * CANVAS_WIDTH;
@@ -290,7 +292,7 @@ namespace DS4Windows.UI
             Canvas.SetTop(sixAxisDeadEllipse, CANVAS_MIDPOINT - (sixAxisZDead * CANVAS_WIDTH / 2.0));
         }
 
-        private void ChangeRsDriftControls(object sender, EventArgs e)
+        private void ChangeRsDriftControls(object? sender, EventArgs e)
         {
             Shape shape = rsDeadAxial ? rsDriftRect : (Shape)rsDriftEllipse;
             rsDriftEllipse.Visibility = rsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
@@ -301,7 +303,7 @@ namespace DS4Windows.UI
             Canvas.SetTop(shape, (1 + (RsDriftY / 127.0) - rsDeadY) * CANVAS_MIDPOINT);
         }
 
-        private void ChangeLsDriftControls(object sender, EventArgs e)
+        private void ChangeLsDriftControls(object? sender, EventArgs e)
         {
             Shape shape = lsDeadAxial ? lsDriftRect : (Shape)lsDriftEllipse;
             lsDriftEllipse.Visibility = lsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
@@ -328,7 +330,7 @@ namespace DS4Windows.UI
         }
         private bool rsDeadAxial;
 
-        private void ChangeRsDeadControls(object sender, EventArgs e)
+        private void ChangeRsDeadControls(object? sender, EventArgs e)
         {
             Shape shape = rsDeadAxial ? rsDeadRect : (Shape)rsDeadEllipse;
             rsDeadEllipse.Visibility = rsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
@@ -339,7 +341,7 @@ namespace DS4Windows.UI
             Canvas.SetTop(shape, CANVAS_MIDPOINT - (rsDeadY * CANVAS_WIDTH / 2.0));
         }
 
-        private void ChangeLsDeadControls(object sender, EventArgs e)
+        private void ChangeLsDeadControls(object? sender, EventArgs e)
         {
             Shape shape = lsDeadAxial ? lsDeadRect : (Shape)lsDeadEllipse;
             lsDeadEllipse.Visibility = lsDeadAxial ? Visibility.Collapsed : Visibility.Visible;
@@ -386,7 +388,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ControllerReadingTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void ControllerReadingTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             readingTimer.Stop();
 

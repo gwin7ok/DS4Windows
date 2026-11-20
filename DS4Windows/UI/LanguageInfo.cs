@@ -16,12 +16,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 namespace DS4Windows.UI
 {
     public class LanguageInfo
     {
-        public string CultureCode { get; set; }
-        public string DisplayName { get; set; }
-        public string NativeName { get; set; }
+        public string? CultureCode { get; set; }
+        public string? DisplayName { get; set; }
+        public string? NativeName { get; set; }
     }
 }

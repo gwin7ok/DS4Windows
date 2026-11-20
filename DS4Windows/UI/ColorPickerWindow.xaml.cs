@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Windows;
 using System.Windows.Media;
 
@@ -27,7 +29,7 @@ namespace DS4Windows.UI
     public partial class ColorPickerWindow : Window
     {
         public delegate void ColorChangedHandler(ColorPickerWindow sender, Color color);
-        public event ColorChangedHandler ColorChanged;
+        public event ColorChangedHandler? ColorChanged;
 
         public ColorPickerWindow()
         {

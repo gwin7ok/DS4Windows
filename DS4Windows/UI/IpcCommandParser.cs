@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Text;
 
 namespace DS4Windows.UI

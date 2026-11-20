@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -46,7 +48,7 @@ namespace DS4Windows.UI
         }
 
         // 選んだコントローラーの設定パネルを作り直す
-        private void ChangeActiveDeviceTab(object sender, EventArgs e)
+        private void ChangeActiveDeviceTab(object? sender, EventArgs e)
         {
             deviceSettingsHost.Content = deviceOptsVM.BuildCurrentPanel();
         }

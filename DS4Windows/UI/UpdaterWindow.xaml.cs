@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -100,7 +102,7 @@ namespace DS4Windows.UI
                         AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                     }
 
-                    string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                    string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty;
                     bool runningAsAdmin = _isAdministrator();
                     string launchMode = runningAsAdmin ? "admin" : "user";
                     var psi = new System.Diagnostics.ProcessStartInfo(ds4UpdaterExe)
@@ -151,7 +153,7 @@ namespace DS4Windows.UI
                             var root = doc.RootElement;
                             if (!root.TryGetProperty("assets", out var assets)) throw new Exception("No assets in latest release");
 
-                            string downloadUrl = null;
+                            string? downloadUrl = null;
                             long expectedSize = -1;
                             foreach (var asset in assets.EnumerateArray())
                             {
@@ -240,7 +242,7 @@ namespace DS4Windows.UI
                                     {
                                         AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                                     }
-                                    string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                                    string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty;
                                     bool runningAsAdmin2 = _isAdministrator();
                                     string launchMode2 = runningAsAdmin2 ? "admin" : "user";
                                     var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
@@ -290,7 +292,7 @@ namespace DS4Windows.UI
                             {
                                 AppLogger.LogToTray(DS4Windows.Translations.Strings.InstallSuccess_Notification);
                             }
-                            string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                            string ds4WindowsExe = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty;
                             var psi2 = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(ds4UpdaterDir, "DS4Updater.exe"))
                             {
                                 UseShellExecute = false,

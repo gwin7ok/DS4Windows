@@ -386,7 +386,7 @@ namespace DS4Windows
 
                 // Store selected language and apply it immediately for dialogs
                 selectedLanguage = langDialog.SelectedCulture;
-                _themeCulture.ApplyLanguageSetting(selectedLanguage);
+                if (selectedLanguage != null) _themeCulture.ApplyLanguageSetting(selectedLanguage);
             }
             return true;
         }

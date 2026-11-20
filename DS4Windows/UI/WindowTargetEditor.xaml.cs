@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -64,7 +66,7 @@ namespace DS4Windows.UI
         }
 
         /// <summary>ドロップした位置のウィンドウの取得。表示側（<c>AssignmentEditor</c>）が設定する。未設定のときは、ターゲットマークは動かない。</summary>
-        public WindowTargetPicker Picker { get; set; }
+        public WindowTargetPicker? Picker { get; set; }
 
         private void TargetMark_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -38,7 +40,7 @@ namespace DS4Windows.UI
         /// </summary>
         private readonly struct HoverRow
         {
-            public HoverRow(Button button, int index, string image, Button shapeFrom = null, Rect? fixedRect = null)
+            public HoverRow(Button button, int index, string? image, Button? shapeFrom = null, Rect? fixedRect = null)
             {
                 Button = button;
                 Index = index;
@@ -51,9 +53,9 @@ namespace DS4Windows.UI
 
             public int Index { get; }
 
-            public string Image { get; }
+            public string? Image { get; }
 
-            public Button ShapeFrom { get; }
+            public Button? ShapeFrom { get; }
 
             public Rect? FixedRect { get; }
         }
@@ -162,9 +164,9 @@ namespace DS4Windows.UI
             foreach (HoverRow row in BuildHoverRows())
             {
                 if (row.Image == null) continue;
-                if (!brushes.TryGetValue(row.Image, out ImageBrush brush))
+                if (!brushes.TryGetValue(row.Image, out ImageBrush? brush))
                 {
-                    ImageSource source = sourceConverter.ConvertFromString(
+                    ImageSource? source = sourceConverter.ConvertFromString(
                         $"{ResourcePaths.AssemblyResourcePrefix}component/Resources/DS4-Config_{row.Image}.png") as ImageSource;
                     brush = new ImageBrush(source);
                     brushes[row.Image] = brush;

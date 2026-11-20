@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 
@@ -26,7 +28,7 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class RecordBoxWindow : Window
     {
-        public event EventHandler Saved;
+        public event EventHandler? Saved;
 
         /// <param name="box">記録の本体。ViewModel とともに、窓口（工場）が作って渡す。</param>
         public RecordBoxWindow(RecordBox box)
@@ -39,12 +41,12 @@ namespace DS4Windows.UI
             box.Cancel += Box_Cancel;
         }
 
-        private void Box_Cancel(object sender, EventArgs e)
+        private void Box_Cancel(object? sender, EventArgs e)
         {
             Close();
         }
 
-        private void RecordBox_Save(object sender, EventArgs e)
+        private void RecordBox_Save(object? sender, EventArgs e)
         {
             Saved?.Invoke(this, EventArgs.Empty);
             Close();

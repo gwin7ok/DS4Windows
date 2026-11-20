@@ -1,5 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,7 +33,7 @@ namespace DS4Windows.UI
     {
         // ...既存フィールド...
 
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
@@ -74,21 +77,21 @@ namespace DS4Windows.UI
 
             return holder.ProfileListCol.Any(x => string.Equals(x.Name, name, StringComparison.CurrentCultureIgnoreCase));
         }
-        private ProfileEntity currentProfile;
+        private ProfileEntity? currentProfile;
         private SpecialActionsListViewModel specialActionsVM;
         // スペシャルアクション一覧を最初に表示したときに、一度だけ並べ替えを適用する
         private bool specialActionsSorted = false;
 
-        public event EventHandler Closed;
+        public event EventHandler? Closed;
 
         public delegate void ProfileSavedHandler(ProfileEditor sender, string profile);
-        public event ProfileSavedHandler ProfileSaved;
+        public event ProfileSavedHandler? ProfileSaved;
 
         /// <summary>
         /// アクションの除去・名前変更により、編集中以外も含むプロファイルの XML を書き換えたときに、
         /// 書き換えたプロファイル名の一覧を通知する。MainWindow が、保存時と同じ再適用の経路（SyncProfileListAndControllers）を呼ぶ。
         /// </summary>
-        public event Action<IReadOnlyList<string>> ProfilesUpdatedExternally;
+        public event Action<IReadOnlyList<string>>? ProfilesUpdatedExternally;
 
         private Dictionary<Button, ImageBrush> hoverImages =
             new Dictionary<Button, ImageBrush>();
@@ -107,7 +110,7 @@ namespace DS4Windows.UI
             get => keepsize;
         }
 
-        private System.Timers.Timer inputTimer;
+        private System.Timers.Timer? inputTimer;
 
         private TouchButtonUserControl touchButtonUC;
 
@@ -358,7 +361,7 @@ namespace DS4Windows.UI
         /// <summary>
         /// 6 軸の設定の値が変わったとき、試験表示（デッドゾーン）へ反映する。
         /// </summary>
-        private void ProfileSettingsVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ProfileSettingsVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -370,7 +373,7 @@ namespace DS4Windows.UI
         /// <summary>
         /// 左右のスティックの軸ごとのデッドゾーンが変わったとき、試験表示へ反映する。
         /// </summary>
-        private void AxialStick_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void AxialStick_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             bool left = ReferenceEquals(sender, sticksPanel.AxialLeft.AxialVM);
             switch (e.PropertyName)
@@ -388,21 +391,21 @@ namespace DS4Windows.UI
         private void ApplyReadingsDeadZoneShape()
         {
             var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
-            if (dead.LsDeadX.HasValue)
+            if (dead.LsDeadX is { } lsDeadX && dead.LsDeadY is { } lsDeadY)
             {
-                conReadingsUserCon.LsDeadX = dead.LsDeadX.Value;
-                conReadingsUserCon.LsDeadY = dead.LsDeadY.Value;
+                conReadingsUserCon.LsDeadX = lsDeadX;
+                conReadingsUserCon.LsDeadY = lsDeadY;
             }
-            if (dead.RsDeadX.HasValue)
+            if (dead.RsDeadX is { } rsDeadX && dead.RsDeadY is { } rsDeadY)
             {
-                conReadingsUserCon.RsDeadX = dead.RsDeadX.Value;
-                conReadingsUserCon.RsDeadY = dead.RsDeadY.Value;
+                conReadingsUserCon.RsDeadX = rsDeadX;
+                conReadingsUserCon.RsDeadY = rsDeadY;
             }
             conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.Left.IsAxialDeadZone;
             conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.Right.IsAxialDeadZone;
         }
 
-        private void SticksVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void SticksVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             // デッドゾーンを変えたら、コントローラーの読み取り値の表示（試験表示）へ反映する。左右は、通知の送り手で見分ける
             bool left = ReferenceEquals(sender, profileSettingsVM.Sticks.Left);
@@ -420,13 +423,13 @@ namespace DS4Windows.UI
             }
         }
 
-        private void SticksPanel_CustomCurveEditorRequested(object sender, string target)
+        private void SticksPanel_CustomCurveEditorRequested(object? sender, string target)
         {
             if (target == "LS") LaunchCurveEditor(profileSettingsVM.Sticks.Left.CustomCurve);
             else if (target == "RS") LaunchCurveEditor(profileSettingsVM.Sticks.Right.CustomCurve);
         }
 
-        private void TriggersVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void TriggersVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             // デッドゾーンを変えたら、コントローラーの読み取り値の表示（試験表示）へ反映する
             switch (e.PropertyName)
@@ -436,24 +439,24 @@ namespace DS4Windows.UI
             }
         }
 
-        private void TriggersPanel_CustomCurveEditorRequested(object sender, string target)
+        private void TriggersPanel_CustomCurveEditorRequested(object? sender, string target)
         {
             if (target == "L2") LaunchCurveEditor(profileSettingsVM.Triggers.L2CustomCurve);
             else if (target == "R2") LaunchCurveEditor(profileSettingsVM.Triggers.R2CustomCurve);
         }
 
-        private void TouchpadVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void TouchpadVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             // 出力モードを変えたら、「ボタンの有効化方式」の部品を、そのモードのタブへ移す
             if (e.PropertyName == nameof(TouchpadSettingsViewModel.TouchpadOutputIndex)) TouchpadButtonControlDisplaySetup();
         }
 
-        private void TouchpadPanel_SwipeControlClicked(object sender, DS4Controls control)
+        private void TouchpadPanel_SwipeControlClicked(object? sender, DS4Controls control)
         {
             ShowControlAssignmentEditor(mappingListVM.ControlMap[control], updateHighlight: true);
         }
 
-        private void GyroPanel_TiltControlClicked(object sender, DS4Controls control)
+        private void GyroPanel_TiltControlClicked(object? sender, DS4Controls control)
         {
             ShowControlAssignmentEditor(mappingListVM.ControlMap[control], updateHighlight: true);
         }
@@ -483,8 +486,8 @@ namespace DS4Windows.UI
             sticksPanel.AxialRight.AxialVM.PropertyChanged -= AxialStick_PropertyChanged;
 
 
-            inputTimer.Stop();
-            inputTimer.Elapsed -= InputDS4;
+            inputTimer?.Stop();
+            if (inputTimer != null) inputTimer.Elapsed -= InputDS4;
             inputTimer = null;
 
             StopEditorBindings();
@@ -500,65 +503,65 @@ namespace DS4Windows.UI
             touchpadPanel.PlaceTouchButtonControl(touchButtonUC, profileSettingsVM.Touchpad.TouchpadOutputIndex);
         }
 
-        private void UpdateReadingsSZDeadZone(object sender, EventArgs e)
+        private void UpdateReadingsSZDeadZone(object? sender, EventArgs e)
         {
             conReadingsUserCon.SixAxisZDead = profileSettingsVM.SixAxis.SZDeadZone;
         }
 
-        private void UpdateReadingsSXDeadZone(object sender, EventArgs e)
+        private void UpdateReadingsSXDeadZone(object? sender, EventArgs e)
         {
             conReadingsUserCon.SixAxisXDead = profileSettingsVM.SixAxis.SXDeadZone;
         }
 
-        private void UpdateReadingsR2DeadZone(object sender, EventArgs e)
+        private void UpdateReadingsR2DeadZone(object? sender, EventArgs e)
         {
             conReadingsUserCon.R2Dead = profileSettingsVM.Triggers.R2DeadZone;
         }
 
-        private void UpdateReadingsL2DeadZone(object sender, EventArgs e)
+        private void UpdateReadingsL2DeadZone(object? sender, EventArgs e)
         {
             conReadingsUserCon.L2Dead = profileSettingsVM.Triggers.L2DeadZone;
         }
 
-        private void UpdateReadingsLsDeadZone(object sender, EventArgs e)
+        private void UpdateReadingsLsDeadZone(object? sender, EventArgs e)
         {
             conReadingsUserCon.LsDeadX = profileSettingsVM.Sticks.Left.DeadZone;
             conReadingsUserCon.LsDeadY = profileSettingsVM.Sticks.Left.DeadZone;
         }
 
-        private void UpdateReadingsLsDeadZoneX(object sender, EventArgs e)
+        private void UpdateReadingsLsDeadZoneX(object? sender, EventArgs e)
         {
             conReadingsUserCon.LsDeadX = sticksPanel.AxialLeft.AxialVM.DeadZoneX;
         }
 
-        private void UpdateReadingsLsDeadZoneY(object sender, EventArgs e)
+        private void UpdateReadingsLsDeadZoneY(object? sender, EventArgs e)
         {
             conReadingsUserCon.LsDeadY = sticksPanel.AxialLeft.AxialVM.DeadZoneY;
         }
 
-        private void UpdateReadingsRsDeadZone(object sender, EventArgs e)
+        private void UpdateReadingsRsDeadZone(object? sender, EventArgs e)
         {
             conReadingsUserCon.RsDeadX = profileSettingsVM.Sticks.Right.DeadZone;
             conReadingsUserCon.RsDeadY = profileSettingsVM.Sticks.Right.DeadZone;
         }
 
-        private void UpdateReadingsRsDeadZoneX(object sender, EventArgs e)
+        private void UpdateReadingsRsDeadZoneX(object? sender, EventArgs e)
         {
             conReadingsUserCon.RsDeadX = sticksPanel.AxialRight.AxialVM.DeadZoneX;
         }
 
-        private void UpdateReadingsRsDeadZoneY(object sender, EventArgs e)
+        private void UpdateReadingsRsDeadZoneY(object? sender, EventArgs e)
         {
             conReadingsUserCon.RsDeadY = sticksPanel.AxialRight.AxialVM.DeadZoneY;
         }
 
-        private void UpdateReadingsLSDrift(object sender, EventArgs e)
+        private void UpdateReadingsLSDrift(object? sender, EventArgs e)
         {
             conReadingsUserCon.LsDriftX = profileSettingsVM.Sticks.Left.DriftXAxis;
             conReadingsUserCon.LsDriftY = profileSettingsVM.Sticks.Left.DriftYAxis;
         }
 
-        private void UpdateReadingsRSDrift(object sender, EventArgs e)
+        private void UpdateReadingsRSDrift(object? sender, EventArgs e)
         {
             conReadingsUserCon.RsDriftX = profileSettingsVM.Sticks.Right.DriftXAxis;
             conReadingsUserCon.RsDriftY = profileSettingsVM.Sticks.Right.DriftYAxis;
@@ -583,7 +586,7 @@ namespace DS4Windows.UI
         {
             if (mappingListVM.SelectedIndex >= 0)
             {
-                if (reverseHoverIndexes.TryGetValue(mappingListVM.SelectedIndex, out Button tempBtn))
+                if (reverseHoverIndexes.TryGetValue(mappingListVM.SelectedIndex, out Button? tempBtn))
                 {
                     InputControlHighlight(tempBtn);
                 }
@@ -595,6 +598,7 @@ namespace DS4Windows.UI
         private Button crossConBtn, circleConBtn, squareConBtn, triangleConBtn, l1ConBtn, r1ConBtn, l2ConBtn, r2ConBtn, shareConBtn, optionsConBtn, guideConBtn, muteConBtn, fnlConBtn, fnrConBtn, blpConBtn, brpConBtn, leftTouchConBtn, multiTouchConBtn, rightTouchConBtn, topTouchConBtn, l3ConBtn, lsuConBtn, lsrConBtn, lsdConBtn, lslConBtn, r3ConBtn, rsuConBtn, rsrConBtn, rsdConBtn, rslConBtn, upConBtn, rightConBtn, downConBtn, leftConBtn;
 
         /// <summary>配置表から生成されたボタンを元の名前のフィールドに持ち、クリック・ホバー・右クリックの処理を結び付ける</summary>
+        [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(crossConBtn), nameof(circleConBtn), nameof(squareConBtn), nameof(triangleConBtn), nameof(l1ConBtn), nameof(r1ConBtn), nameof(l2ConBtn), nameof(r2ConBtn), nameof(shareConBtn), nameof(optionsConBtn), nameof(guideConBtn), nameof(muteConBtn), nameof(fnlConBtn), nameof(fnrConBtn), nameof(blpConBtn), nameof(brpConBtn), nameof(leftTouchConBtn), nameof(multiTouchConBtn), nameof(rightTouchConBtn), nameof(topTouchConBtn), nameof(l3ConBtn), nameof(lsuConBtn), nameof(lsrConBtn), nameof(lsdConBtn), nameof(lslConBtn), nameof(r3ConBtn), nameof(rsuConBtn), nameof(rsrConBtn), nameof(rsdConBtn), nameof(rslConBtn), nameof(upConBtn), nameof(rightConBtn), nameof(downConBtn), nameof(leftConBtn))]
         private void InitVisualizerButtons()
         {
             crossConBtn = conCanvas["crossConBtn"];
@@ -696,7 +700,7 @@ namespace DS4Windows.UI
         /// 実機（targetDevice）はコンストラクタで確定しているため、引数では受け取らない。
         /// </summary>
         /// <param name="profile">編集するプロファイル。null は新規作成（プリセット選択から始める）</param>
-        public void Reload(ProfileEntity profile = null)
+        public void Reload(ProfileEntity? profile = null)
         {
             ClearEditorDataContexts();
 
@@ -705,9 +709,9 @@ namespace DS4Windows.UI
             if (profile != null)
             {
                 currentProfile = profile;
-                backend.LoadProfileForEditing(deviceNum, profile.Name);
+                backend.LoadProfileForEditing(deviceNum, profile.Name ?? string.Empty);
                 // 廃止された「シフト」「ジャイロスワイプ」の設定が残っていれば、警告して、削除するか残すかを選ばせる（ViewModel が判断する）
-                profileSettingsVM.ApplyRemovedSettingNotices(profile.Name);
+                profileSettingsVM.ApplyRemovedSettingNotices(profile.Name ?? string.Empty);
                 profileNameTxt.Text = profile.Name;
                 profileNameTxt.IsEnabled = false;
             }
@@ -754,8 +758,8 @@ namespace DS4Windows.UI
 
             // 入力の表示へ渡す値の判断は ReadingsDeadZoneSnapshot が行い、ここは値を渡すだけにする
             var dead = ReadingsDeadZoneSnapshot.Create(profileSettingsVM, sticksPanel.AxialLeft.AxialVM, sticksPanel.AxialRight.AxialVM);
-            if (dead.LsDeadX.HasValue) { conReadingsUserCon.LsDeadX = dead.LsDeadX.Value; conReadingsUserCon.LsDeadY = dead.LsDeadY.Value; }
-            if (dead.RsDeadX.HasValue) { conReadingsUserCon.RsDeadX = dead.RsDeadX.Value; conReadingsUserCon.RsDeadY = dead.RsDeadY.Value; }
+            if (dead.LsDeadX is { } lsDeadX && dead.LsDeadY is { } lsDeadY) { conReadingsUserCon.LsDeadX = lsDeadX; conReadingsUserCon.LsDeadY = lsDeadY; }
+            if (dead.RsDeadX is { } rsDeadX && dead.RsDeadY is { } rsDeadY) { conReadingsUserCon.RsDeadX = rsDeadX; conReadingsUserCon.RsDeadY = rsDeadY; }
             conReadingsUserCon.LsDeadAxial = profileSettingsVM.Sticks.Left.IsAxialDeadZone;
             conReadingsUserCon.RsDeadAxial = profileSettingsVM.Sticks.Right.IsAxialDeadZone;
             conReadingsUserCon.L2Dead = dead.L2Dead;
@@ -777,7 +781,7 @@ namespace DS4Windows.UI
 
             if (profileSettingsVM.General.UseControllerReadout)
             {
-                inputTimer.Start();
+                inputTimer?.Start();
             }
         }
 
@@ -872,8 +876,8 @@ namespace DS4Windows.UI
         // S9 の追加要望: コントローラー図のマウスオーバーでボタン一覧の選択を切り替える処理に、500ms の遅延を入れる
         // （通過しただけの意図しないマウスオーバーで、選択が切り替わらないようにする）。ホバー画像の表示は即時のまま
         private const int HoverSelectDelayMs = 500;
-        private System.Windows.Threading.DispatcherTimer hoverSelectTimer;
-        private Button hoverSelectPending;
+        private System.Windows.Threading.DispatcherTimer? hoverSelectTimer;
+        private Button? hoverSelectPending;
 
         private void CancelHoverSelect()
         {
@@ -892,7 +896,7 @@ namespace DS4Windows.UI
                 hoverSelectTimer.Tick += (s, e) =>
                 {
                     hoverSelectTimer.Stop();
-                    Button pending = hoverSelectPending;
+                    Button? pending = hoverSelectPending;
                     hoverSelectPending = null;
                     if (pending != null) SelectHoveredControl(pending);
                 };
@@ -911,7 +915,7 @@ namespace DS4Windows.UI
 
         private void HighlightHoverImage(Button control)
         {
-            if (hoverImages.TryGetValue(control, out ImageBrush tempBrush))
+            if (hoverImages.TryGetValue(control, out ImageBrush? tempBrush))
             {
                 picBoxHover.Source = tempBrush.ImageSource;
                 //picBoxHover.Width = tempBrush.ImageSource.Width * .8;
@@ -922,7 +926,7 @@ namespace DS4Windows.UI
                 //control.Height = tempBrush.ImageSource.Height;
             }
 
-            if (hoverLocations.TryGetValue(control, out HoverImageInfo tempInfo))
+            if (hoverLocations.TryGetValue(control, out HoverImageInfo? tempInfo))
             {
                 Canvas.SetLeft(picBoxHover, tempInfo.point.X);
                 Canvas.SetTop(picBoxHover, tempInfo.point.Y);
@@ -953,7 +957,7 @@ namespace DS4Windows.UI
 
         private void ContBtn_MouseEnter(object sender, MouseEventArgs e)
         {
-            Button control = sender as Button;
+            if (sender is not Button control) return;
             InputControlHighlight(control, selectNow: false);
             StartHoverSelect(control);
         }
@@ -1060,7 +1064,7 @@ namespace DS4Windows.UI
             // 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // モーターの左右反転は、編集中の設定（作業スロット deviceNum）の値を読む。判断は RumbleTestController が行い、
             // ここは押したボタンの文字だけを変える
-            var btn = sender as Button;
+            if (sender is not Button btn) return;
             bool heavyButton = btn.Name == "heavyRumbleTestBtn";
             var outcome = rumbleTest.Toggle(profileSettingsVM.Output, profileSettingsVM.FuncDevNum, heavyButton);
             if (outcome == RumbleTestOutcome.None) return;
@@ -1072,7 +1076,7 @@ namespace DS4Windows.UI
                 outputPanel.LightRumbleTestBtn.Content = started ? Properties.Resources.StopLText : Properties.Resources.TestLText;
         }
 
-        private void SixAxisPanel_CustomCurveEditorRequested(object sender, string target)
+        private void SixAxisPanel_CustomCurveEditorRequested(object? sender, string target)
         {
             if (target == "SX") LaunchCurveEditor(profileSettingsVM.SixAxis.SXCustomCurve);
             else if (target == "SZ") LaunchCurveEditor(profileSettingsVM.SixAxis.SZCustomCurve);
@@ -1122,7 +1126,7 @@ namespace DS4Windows.UI
         private void NewAction()
         {
             if (leftPaneEditor != null) return;
-            ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
+            ProfileList profList = (Application.Current.MainWindow as MainWindow)!.ProfileListHolder;   // 画面が開いているあいだ、メイン画面は必ずある
             AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditor(deviceNum, profList, targetDevice);
             OpenLeftPaneEditor(actEditor);
             actEditor.Cancel += (sender2, args) =>
@@ -1145,7 +1149,7 @@ namespace DS4Windows.UI
         // ヘッダー、空きの領域、「有効」のチェックボックスのダブルクリックは対象外
         private void SpecialActionsLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            DependencyObject source = e.OriginalSource as DependencyObject;
+            DependencyObject? source = e.OriginalSource as DependencyObject;
             while (source != null && !(source is System.Windows.Controls.ListViewItem) && !(source is System.Windows.Controls.Primitives.ButtonBase))
             {
                 source = source is Visual || source is System.Windows.Media.Media3D.Visual3D
@@ -1163,12 +1167,12 @@ namespace DS4Windows.UI
             if (leftPaneEditor != null) return;
             if (specialActionsVM.SpecialActionIndex >= 0)
             {
-                SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem;
+                SpecialActionItem item = specialActionsVM.CurrentSpecialActionItem!;   // 選択があるときは、必ず項目がある
                 int currentIndex = item.Index;
                 //int viewIndex = specialActionsVM.SpecialActionIndex;
                 //int currentIndex = specialActionsVM.ActionCol[viewIndex].Index;
                 //SpecialActionItem item = specialActionsVM.ActionCol[currentIndex];
-                ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
+                ProfileList profList = (Application.Current.MainWindow as MainWindow)!.ProfileListHolder;   // 画面が開いているあいだ、メイン画面は必ずある
                 AssignmentEditor actEditor = editorWindowFactory.CreateAssignmentEditorFor(deviceNum, profList, targetDevice, item);
                 OpenLeftPaneEditor(actEditor);
                 actEditor.Cancel += (sender2, args) =>
@@ -1177,7 +1181,7 @@ namespace DS4Windows.UI
                 };
                 actEditor.Saved += (sender2, actionName) =>
                 {
-                    string oldName = item.OriginalName;
+                    string? oldName = item.OriginalName;
                     string newName = actionName;
 
                     // Update current profile's references from oldName -> newName
@@ -1240,7 +1244,7 @@ namespace DS4Windows.UI
             if (specialActionsVM.SpecialActionIndex >= 0)
             {
                 // 確認のうえ、Actions.xml と、すべてのプロファイルの XML から取り除く
-                string removedName = specialActionsVM.RemoveSelectedWithConfirm();
+                string? removedName = specialActionsVM.RemoveSelectedWithConfirm();
                 if (removedName == null) return;
 
                 NotifyProfilesUpdated(backend.RemoveActionReference(removedName));
@@ -1281,9 +1285,9 @@ namespace DS4Windows.UI
             profileSettingsVM.Lightbar.UpdateMainColor(MediaColors.ToDS4(dialog.colorPicker.SelectedColor.GetValueOrDefault()));
         }
 
-        private void InputDS4(object sender, System.Timers.ElapsedEventArgs e)
+        private void InputDS4(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            inputTimer.Stop();
+            inputTimer?.Stop();
 
             bool activeWin = false;
             int tempDeviceNum = 0;
@@ -1351,10 +1355,10 @@ namespace DS4Windows.UI
 
             if (profileSettingsVM.General.UseControllerReadout)
             {
-                inputTimer.Start();
+                inputTimer?.Start();
             }
         }
-        private void ProfileEditor_Closed(object sender, EventArgs e)
+        private void ProfileEditor_Closed(object? sender, EventArgs e)
         {
             // 画面サイズ保持チェックが有効な場合のみレイアウト保存
             if (keepsize)
@@ -1362,7 +1366,7 @@ namespace DS4Windows.UI
                 SaveSplitterAndColumnWidths();
             }
             profileSettingsVM.General.UseControllerReadout = false;
-            inputTimer.Stop();
+            inputTimer?.Stop();
             conReadingsUserCon.EnableControl(false);
             // Rebuild cached profile info for this device. CalculateProfileActionDicts
             // no longer emits missing-action logs directly; callers should invoke
@@ -1380,11 +1384,11 @@ namespace DS4Windows.UI
             // 判定は編集スロット（常に 8）ではなく実機の有無で行う（一覧経由では従来どおり開始しない）
             if (profileSettingsVM.General.UseControllerReadout && HasTargetDevice)
             {
-                inputTimer.Start();
+                inputTimer?.Start();
             }
             else
             {
-                inputTimer.Stop();
+                inputTimer?.Stop();
             }
         }
 
@@ -1392,7 +1396,7 @@ namespace DS4Windows.UI
         // 表示されているあいだは null でない。開いているあいだは、新しく開かない（コントローラーの入力［タイマー］と、右ペインに残る入口からの二重起動を防ぐ）。
         // TODO(Phase10-Step3b): 入口をすべて左ペインのタブのボタンにする（Axis Config の 4 つの入口は、Controls タブへボタンとして追加）。
         //   そのあとも、この判定は、コントローラーの入力（タイマー）経由の安全装置として残す
-        private UserControl leftPaneEditor;
+        private UserControl? leftPaneEditor;
 
         /// <summary>編集画面を、左ペイン全体に重ねて表示する（タブを隠すため、編集中は、左ペインのタブを切り替えられない）。</summary>
         private void OpenLeftPaneEditor(UserControl editor)
@@ -1425,7 +1429,7 @@ namespace DS4Windows.UI
         {
             if (mpControl == null || leftPaneEditor != null) return;
 
-            ProfileList profList = (Application.Current.MainWindow as MainWindow).ProfileListHolder;
+            ProfileList profList = (Application.Current.MainWindow as MainWindow)!.ProfileListHolder;   // 画面が開いているあいだ、メイン画面は必ずある
             AssignmentEditor editor = editorWindowFactory.CreateControlActionEditor(deviceNum, mpControl, profList, targetDevice);
             editor.ControlSaved += (sender2, args) =>
             {
@@ -1504,12 +1508,11 @@ namespace DS4Windows.UI
 
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Button btn = sender as Button;
+            Button? btn = sender as Button;
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
             profileSettingsVM.PresetMenuUtil.SetHighlightControl(mpControl.Control);
-            ContextMenu cm = conCanvas.FindResource("presetMenu") as ContextMenu;
-            MenuItem temp = cm.Items[0] as MenuItem;
-            temp.Header = profileSettingsVM.PresetMenuUtil.PresetInputLabel;
+            if (conCanvas.FindResource("presetMenu") is not ContextMenu cm) return;
+            if (cm.Items[0] is MenuItem temp) temp.Header = profileSettingsVM.PresetMenuUtil.PresetInputLabel;
             cm.PlacementTarget = btn;
             cm.IsOpen = true;
         }
@@ -1518,7 +1521,7 @@ namespace DS4Windows.UI
         {
             // 項目ごとの Click ではなく、ContextMenu で受ける（MenuItem.Click は上へ伝わる）。
             // 項目を ContextMenu のリソースに置くと、コンパイル時の接続番号と読み込み時の順序がずれて、画面を開く時に落ちるため。
-            MenuItem item = e.OriginalSource as MenuItem;
+            MenuItem? item = e.OriginalSource as MenuItem;
             if (item == null || item.HasItems)
                 return;
             int baseTag = Convert.ToInt32(item.Tag);
@@ -1556,7 +1559,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void GyroCalibration_Click(object sender, EventArgs e)
+        private void GyroCalibration_Click(object? sender, EventArgs e)
         {
             // 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // 編集スロットのフィールド deviceNum と区別するため、ローカル変数名を分けた
@@ -1565,7 +1568,7 @@ namespace DS4Windows.UI
             backend.ResetGyroCalibration(calibrationDevice);
         }
 
-        private void CalibrateStick_OnClick(object sender, int tag)
+        private void CalibrateStick_OnClick(object? sender, int tag)
         {
             // 校正には実機が必要。旧判定 deviceNum == 8（一覧経由）は、編集スロットが常に 8 になったため
             // 実機の有無（targetDevice）の判定に置き換えた。メッセージの文言は維持
@@ -1600,7 +1603,7 @@ namespace DS4Windows.UI
         // CurrentSortAscending が唯一の実体。View 側では保持しない（二重状態の解消）。
 
         // 列ヘッダークリックイベント
-        private void SortByColumn(string col)
+        private void SortByColumn(string? col)
         {
             if (col != null)
             {

@@ -78,7 +78,7 @@ namespace DS4Windows.UI.Services
         }
 
         /// <summary>編集中のプロファイル（メモリ上）の、スペシャルアクションの参照を、旧名から新名へ差し替える。</summary>
-        public void RenameActionInEditedProfile(int editSlot, string oldName, string newName)
+        public void RenameActionInEditedProfile(int editSlot, string? oldName, string newName)
         {
             var actions = profileRepository.ProfileActions;
             if (actions != null && actions.Length > editSlot && actions[editSlot] is { } list)

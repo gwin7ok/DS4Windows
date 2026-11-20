@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,16 +49,16 @@ namespace DS4Windows.UI
         private readonly SpecialActionViewModel calibrateGyroVM;
         private readonly FocusWindowViewModel focusWindowVM;
 
-        public event EventHandler Cancel;
+        public event EventHandler? Cancel;
 
         /// <summary>Controls のモードか。</summary>
         public bool IsControlMode => controlMode;
 
         /// <summary>Controls のモードで「保存」が押され、入力が有効なときに発生する（受け手は、ProfileEditor の ShowControlAssignmentEditor）。</summary>
-        public event EventHandler ControlSaved;
+        public event EventHandler? ControlSaved;
 
         public delegate void SaveHandler(object sender, string actionName);
-        public event SaveHandler Saved;
+        public event SaveHandler? Saved;
 
         /// <summary>記録の画面を開くコマンドなど、編集の操作の窓口（XAML の Command が結ぶ）。</summary>
         public AssignmentEditorSession Session => session;
@@ -194,7 +196,7 @@ namespace DS4Windows.UI
             }
 
             // 入力が無効なときに先にデータの結びつきを外すと、エラーが表示される前に編集画面が空になる。無効なときは結びつきを保つ
-            AssignmentEditorSession.SaveOutcome outcome = session.TrySaveSpecialAction(UnregisterDataContext, out string savedName);
+            AssignmentEditorSession.SaveOutcome? outcome = session.TrySaveSpecialAction(UnregisterDataContext, out string? savedName);
             if (outcome == AssignmentEditorSession.SaveOutcome.ExistingName)
             {
                 // 保存ボタンの近くへメッセージを出し、結びつきを保ったまま戻る（名前を直せるように）
@@ -209,7 +211,7 @@ namespace DS4Windows.UI
             }
             else if (outcome == AssignmentEditorSession.SaveOutcome.Saved)
             {
-                Saved?.Invoke(this, savedName);
+                Saved?.Invoke(this, savedName ?? string.Empty);
             }
         }
 
@@ -262,7 +264,7 @@ namespace DS4Windows.UI
         private void ShowMessageWindowAt(string message, FrameworkElement anchor)
         {
             // Keep the existing custom window implementation as a fallback.
-            Window owner = Application.Current?.MainWindow;
+            Window? owner = Application.Current?.MainWindow;
 
             Window msgWin = new Window()
             {
