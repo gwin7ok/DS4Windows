@@ -1,11 +1,11 @@
 {
  "rubric": "v1",
- "label": "RV6 完了（一部）",
+ "label": "RV6 完了",
  "date": "2026-11-20",
  "metrics": {
-  "files_total": 986,
-  "lines_total": 102012,
-  "big_files": 32,
+  "files_total": 987,
+  "lines_total": 101769,
+  "big_files": 31,
   "xaml_command": 260,
   "xaml_click": 29,
   "xaml_other_events": 40,
@@ -32,8 +32,8 @@
   "iface_total": 190,
   "iface_lonely": 76,
   "unref_plain": 22,
-  "clone_struct_pct": 11.4,
-  "clone_exact_pct": 2.1,
+  "clone_struct_pct": 11.0,
+  "clone_exact_pct": 1.6,
   "pub_fields_total": 700,
   "backingstore_fields": 107,
   "lower_camel": 95,
@@ -228,7 +228,7 @@
   },
   {
    "name": "オブジェクト指向",
-   "score": 0.6626,
+   "score": 0.6644,
    "grade": "B−",
    "indicators": [
     {
@@ -261,8 +261,8 @@
     {
      "id": "oo_big_files",
      "label": "500 行以上のファイル",
-     "value": 32,
-     "score": 0.6857,
+     "value": 31,
+     "score": 0.7,
      "weight": 1,
      "unit": "件",
      "kind": "metric"
@@ -280,8 +280,8 @@
   },
   {
    "name": "共有部品化",
-   "score": 0.8299,
-   "grade": "B+",
+   "score": 0.8456,
+   "grade": "A−",
    "indicators": [
     {
      "id": "sh_input_path",
@@ -322,8 +322,8 @@
     {
      "id": "sh_clone_struct",
      "label": "構造の重複（正規化した 14 行の窓）",
-     "value": 11.4,
-     "score": 0.744,
+     "value": 11.0,
+     "score": 0.76,
      "weight": 1,
      "unit": "%",
      "kind": "metric"
@@ -331,8 +331,8 @@
     {
      "id": "sh_clone_exact",
      "label": "同一の重複（10 行の窓）",
-     "value": 2.1,
-     "score": 0.725,
+     "value": 1.6,
+     "score": 0.85,
      "weight": 1,
      "unit": "%",
      "kind": "metric"
@@ -350,7 +350,7 @@
   },
   {
    "name": "冗長処理",
-   "score": 0.6958,
+   "score": 0.7349,
    "grade": "B",
    "indicators": [
     {
@@ -401,8 +401,8 @@
     {
      "id": "rd_clone_exact",
      "label": "同一の重複（10 行の窓）",
-     "value": 2.1,
-     "score": 0.725,
+     "value": 1.6,
+     "score": 0.85,
      "weight": 3,
      "unit": "%",
      "kind": "metric"
@@ -410,8 +410,8 @@
     {
      "id": "rd_clone_struct",
      "label": "構造の重複（正規化した 14 行の窓）",
-     "value": 11.4,
-     "score": 0.744,
+     "value": 11.0,
+     "score": 0.76,
      "weight": 1,
      "unit": "%",
      "kind": "metric"
@@ -499,7 +499,7 @@
   },
   {
    "name": "メンテナンス性",
-   "score": 0.7528,
+   "score": 0.7542,
    "grade": "B",
    "indicators": [
     {
@@ -523,8 +523,8 @@
     {
      "id": "mt_big_files",
      "label": "500 行以上のファイル",
-     "value": 32,
-     "score": 0.6857,
+     "value": 31,
+     "score": 0.7,
      "weight": 1,
      "unit": "件",
      "kind": "metric"

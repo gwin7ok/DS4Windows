@@ -42,34 +42,9 @@ namespace DS4Windows.Core.Persistence
             string output_path = store.m_Actions;
             string testStr = string.Empty;
             XmlSerializer serializer = new XmlSerializer(typeof(ActionsDTO));
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = true,
-                    });
-
-                // Write header explicitly
-                //xmlWriter.WriteStartDocument();
-                xmlWriter.WriteComment(String.Format(" Special Actions Configuration Data. {0} ", DateTime.Now));
-                xmlWriter.WriteWhitespace("\r\n");
-                xmlWriter.WriteWhitespace("\r\n");
-
-                // Write root element and children
-                ActionsDTO dto = new ActionsDTO();
-                dto.MapFrom(store);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
+            ActionsDTO dto = new ActionsDTO();
+            dto.MapFrom(store);
+            testStr = XmlDtoText.Serialize(serializer, dto, String.Format(" Special Actions Configuration Data. {0} ", DateTime.Now));
 
             try
             {

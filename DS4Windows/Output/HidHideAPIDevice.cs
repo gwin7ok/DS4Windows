@@ -96,13 +96,15 @@ namespace DS4Windows.Output
             return result;
         }
 
-        public List<string> GetBlacklist()
+        public List<string> GetBlacklist() => GetMultiSzList(IOCTL_GET_BLACKLIST);
+
+        private List<string> GetMultiSzList(uint ioctl)
         {
             List<string> instances = new List<string>();
 
             int bytesReturned = 0;
             bool result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
-                HidHideAPIDevice.IOCTL_GET_BLACKLIST,
+                ioctl,
                 IntPtr.Zero,
                 0,
                 IntPtr.Zero,
@@ -119,7 +121,7 @@ namespace DS4Windows.Output
                 IntPtr buffer = Marshal.AllocHGlobal(requiredBytes);
 
                 result = NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
-                    HidHideAPIDevice.IOCTL_GET_BLACKLIST,
+                    ioctl,
                     IntPtr.Zero,
                     0,
                     buffer,
@@ -138,7 +140,9 @@ namespace DS4Windows.Output
             return instances;
         }
 
-        public bool SetBlacklist(List<string> instances)
+        public bool SetBlacklist(List<string> instances) => SetMultiSzList(IOCTL_SET_BLACKLIST, instances);
+
+        private bool SetMultiSzList(uint ioctl, List<string> instances)
         {
             bool result = false;
             int bytesReturned = 0;
@@ -146,7 +150,7 @@ namespace DS4Windows.Output
                 StringListToMultiSzPointer(instances, out int inBufferLength);
 
             result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
-                IOCTL_SET_BLACKLIST,
+                ioctl,
                 inBuffer,
                 inBufferLength,
                 IntPtr.Zero,
@@ -161,70 +165,9 @@ namespace DS4Windows.Output
             return result;
         }
 
-        public List<string> GetWhitelist()
-        {
-            List<string> instances = new List<string>();
+        public List<string> GetWhitelist() => GetMultiSzList(IOCTL_GET_WHITELIST);
 
-            int bytesReturned = 0;
-            bool result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
-                IOCTL_GET_WHITELIST,
-                IntPtr.Zero,
-                0,
-                IntPtr.Zero,
-                0,
-                ref bytesReturned,
-                IntPtr.Zero);
-
-            if (bytesReturned > 0)
-            {
-                byte[] dataBuffer = new byte[bytesReturned];
-                int requiredBytes = bytesReturned;
-                bytesReturned = 0;
-
-                IntPtr buffer = Marshal.AllocHGlobal(requiredBytes);
-
-                result = NativeMethods.DeviceIoControl(hidHideHandle.DangerousGetHandle(),
-                    IOCTL_GET_WHITELIST,
-                    IntPtr.Zero,
-                    0,
-                    buffer,
-                    requiredBytes,
-                    ref bytesReturned,
-                    IntPtr.Zero);
-
-                //int error = Marshal.GetLastWin32Error();
-                Marshal.Copy(buffer, dataBuffer, 0, requiredBytes);
-                string tempstring = Encoding.Unicode.GetString(dataBuffer).TrimEnd(char.MinValue);
-                instances = tempstring.Split(char.MinValue).ToList();
-
-                Marshal.FreeHGlobal(buffer);
-            }
-
-            return instances;
-        }
-
-        public bool SetWhitelist(List<string> instances)
-        {
-            bool result = false;
-            int bytesReturned = 0;
-            IntPtr inBuffer =
-                StringListToMultiSzPointer(instances, out int inBufferLength);
-
-            result = NativeMethods.DeviceIoControl(hidHideHandle!.DangerousGetHandle(), // ドライバーを開いた後に呼ぶ（null なら従来どおり NullReferenceException）
-                IOCTL_SET_WHITELIST,
-                inBuffer,
-                inBufferLength,
-                IntPtr.Zero,
-                0,
-                ref bytesReturned,
-                IntPtr.Zero);
-
-            //int error = Marshal.GetLastWin32Error();
-            // Free buffer returned from StringListToMultiSzPointer
-            Marshal.FreeHGlobal(inBuffer);
-
-            return result;
-        }
+        public bool SetWhitelist(List<string> instances) => SetMultiSzList(IOCTL_SET_WHITELIST, instances);
 
         public bool GetWhiteListInverseState()
         {

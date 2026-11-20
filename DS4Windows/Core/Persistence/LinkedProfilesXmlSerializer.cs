@@ -33,35 +33,10 @@ namespace DS4Windows.Core.Persistence
             string output_path = store.m_linkedProfiles;
             string testStr = string.Empty;
             XmlSerializer serializer = new XmlSerializer(typeof(LinkedProfilesDTO));
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = true,
-                    });
-
-                // Write header explicitly
-                //xmlWriter.WriteStartDocument();
-                xmlWriter.WriteComment(string.Format(" Mac Address and Profile Linking Data. {0} ", DateTime.Now));
-                xmlWriter.WriteWhitespace("\r\n");
-                xmlWriter.WriteWhitespace("\r\n");
-
-                // Write root element and children
-                LinkedProfilesDTO dto = new LinkedProfilesDTO();
-                if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
-                dto.MapFrom(store);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
+            LinkedProfilesDTO dto = new LinkedProfilesDTO();
+            if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
+            dto.MapFrom(store);
+            testStr = XmlDtoText.Serialize(serializer, dto, string.Format(" Mac Address and Profile Linking Data. {0} ", DateTime.Now));
 
             try
             {

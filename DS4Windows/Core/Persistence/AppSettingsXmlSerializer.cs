@@ -442,31 +442,10 @@ namespace DS4Windows.Core.Persistence
             string testStr = string.Empty;
 
             XmlSerializer serializer = new XmlSerializer(typeof(AppSettingsDTO), new XmlRootAttribute("Profile"));
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = true,
-                    });
-
-                // Write header comments
-                xmlWriter.WriteComment(String.Format(" Profile Configuration Data. {0} ", DateTime.Now));
-                xmlWriter.WriteWhitespace("\r\n");
-                xmlWriter.WriteWhitespace("\r\n");
-
-                // Serialize DTO with root <Profile>
-                AppSettingsDTO dto = new AppSettingsDTO();
-                if (_profileIdentity != null) dto.ProfileIdOf = _profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
-                dto.MapFrom(store);
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-            }
+            AppSettingsDTO dto = new AppSettingsDTO();
+            if (_profileIdentity != null) dto.ProfileIdOf = _profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
+            dto.MapFrom(store);
+            testStr = XmlDtoText.Serialize(serializer, dto, String.Format(" Profile Configuration Data. {0} ", DateTime.Now));
 
             try
             {
