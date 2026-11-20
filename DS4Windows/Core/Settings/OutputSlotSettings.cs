@@ -1,4 +1,6 @@
-﻿using DS4Windows.Core.Abstractions;
+﻿#nullable enable
+
+using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
