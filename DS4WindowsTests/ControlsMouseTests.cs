@@ -53,42 +53,42 @@ namespace DS4WindowsTests
                 X360Controls.TouchpadClick,
             })
             {
-                Assert.True(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.Cross, target), out X360Controls got));
+                Assert.True(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.Cross, target), out X360Controls got));
                 Assert.Equal(target, got);
             }
 
-            Assert.True(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.Cross, X360Controls.WUP), out _));
-            Assert.True(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.L1, X360Controls.WDOWN, DS4KeyType.Toggle), out _));   // Toggle の有無は見ない
+            Assert.True(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.Cross, X360Controls.WUP), out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.L1, X360Controls.WDOWN, DS4KeyType.Toggle), out _));   // Toggle の有無は見ない
         }
 
         [Fact]
         public void TryInterpretMouse_RejectsTheAnalogWheelTheMouseMovementAndEverythingElse()
         {
             // 元がスティック・トリガー・ジャイロのホイールは、アナログ（7.8f-3）
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.LXPos, X360Controls.WUP), out _));
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.RYNeg, X360Controls.WDOWN), out _));
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.L2, X360Controls.WUP), out _));
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.R2, X360Controls.WDOWN), out _));
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.GyroXPos, X360Controls.WUP), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.LXPos, X360Controls.WUP), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.RYNeg, X360Controls.WDOWN), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.L2, X360Controls.WUP), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.R2, X360Controls.WDOWN), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.GyroXPos, X360Controls.WUP), out _));
 
             foreach (X360Controls other in new[] { X360Controls.MouseUp, X360Controls.MouseDown, X360Controls.MouseLeft, X360Controls.MouseRight, X360Controls.A, X360Controls.LXPos, X360Controls.Unbound, X360Controls.None })
-                Assert.False(ControlBindingBuilder.TryInterpretMouse(Button(DS4Controls.Cross, other), out _), $"{other}");
+                Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(Button(DS4Controls.Cross, other), out _), $"{other}");
 
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(null, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(null, out _));
             var key = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Key };
-            Assert.False(ControlBindingBuilder.TryInterpretMouse(key, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMouse(key, out _));
         }
 
         [Fact]
         public void TryInterpretPadTarget_IgnoresToggle_ButTryInterpretPadStillRejectsIt()
         {
             DS4ControlSettings toggled = Button(DS4Controls.Cross, X360Controls.B, DS4KeyType.Toggle);
-            Assert.False(ControlBindingBuilder.TryInterpretPad(toggled, out _, out _));
-            Assert.True(ControlBindingBuilder.TryInterpretPadTarget(toggled, out PadBindingValues values, out bool eraseOnly));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretPad(toggled, out _, out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPadTarget(toggled, out PadBindingValues values, out bool eraseOnly));
             Assert.False(eraseOnly);
             Assert.Equal(DS4Controls.Circle, values.Output);
 
-            Assert.True(ControlBindingBuilder.TryInterpretPadTarget(Button(DS4Controls.Cross, X360Controls.Unbound, DS4KeyType.Toggle), out _, out eraseOnly));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPadTarget(Button(DS4Controls.Cross, X360Controls.Unbound, DS4KeyType.Toggle), out _, out eraseOnly));
             Assert.True(eraseOnly);
         }
 

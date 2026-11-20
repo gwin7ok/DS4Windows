@@ -136,7 +136,7 @@ namespace DS4WindowsTests
             Assert.Empty(NewBuilder(new RecordingSwitcher()).Build(Device));
 
             var dcs = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Profile(name) };
-            Assert.False(ControlBindingBuilder.TryInterpretSpecial(dcs, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretSpecial(dcs, out _));
         }
 
         // ---- 実行 ----

@@ -145,6 +145,12 @@
 - 無操作での自動切断（`InputDeviceCore.Idle`）と、スロットの割り当て。
 - 画面: プロファイル編集（ホバー選択、スペシャルアクション、プリセット、分割線の幅の保存）、メイン画面（ログ、コントローラー一覧、更新の確認）、マクロの記録（キー・マウス・ドラッグ）、初回の案内画面。
 
+## 9j. 第 2 層の型の分割（PhaseRV12）
+コードの移動だけで挙動は変えていない（全テスト通過）。次を 1 項目ずつ確認する。
+- ボタンからのマウス移動（Controls タブの Mouse 割り当て）と、スペシャルアクションの Mouse 移動（`ButtonMouseSampler`）。
+- スペシャルアクション（Key・Macro・Profile 切替・Multi-action）の成立・離したときの復帰・プロファイル適用直後の押しっぱなし（`SpecialActionFrameRunner`、`DeviceRuntimeLifecycle`）。
+- Key の割り当て（押す・トグル・リピート）と、コントローラーの切断時のキー解放（`KeyPressController`・`KeyToggleController`）。
+
 ## 10. 実機がなく、未確認のまま残す項目
 - DualSense: 出力レポート（ライトバー、プレイヤー LED、トリガーの効果、振動、触覚の強さ。USB・Bluetooth）、振動エミュレーションの方式の切替。
 - Switch Pro: スティック・加速度・ジャイロの校正、振動。

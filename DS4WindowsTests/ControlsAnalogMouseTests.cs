@@ -48,28 +48,28 @@ namespace DS4WindowsTests
         {
             foreach (X360Controls target in new[] { X360Controls.MouseUp, X360Controls.MouseDown, X360Controls.MouseLeft, X360Controls.MouseRight })
             {
-                Assert.True(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.Cross, target), out X360Controls got));
+                Assert.True(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.Cross, target), out X360Controls got));
                 Assert.Equal(target, got);
             }
 
-            Assert.True(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.LXPos, X360Controls.WUP), out _));
-            Assert.True(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.L2, X360Controls.WDOWN, DS4KeyType.Toggle), out _));
-            Assert.True(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.GyroXPos, X360Controls.WUP), out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.LXPos, X360Controls.WUP), out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.L2, X360Controls.WDOWN, DS4KeyType.Toggle), out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.GyroXPos, X360Controls.WUP), out _));
         }
 
         [Fact]
         public void TryInterpretAnalogMouse_RejectsTheDigitalWheelAndEverythingElse()
         {
             // 元がボタンのホイールは、デジタル（7.8f-2 の TryInterpretMouse）
-            Assert.False(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.Cross, X360Controls.WUP), out _));
-            Assert.False(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.L1, X360Controls.WDOWN), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.Cross, X360Controls.WUP), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.L1, X360Controls.WDOWN), out _));
 
             foreach (X360Controls other in new[] { X360Controls.LeftMouse, X360Controls.TouchpadClick, X360Controls.A, X360Controls.LXPos, X360Controls.Unbound, X360Controls.None })
-                Assert.False(ControlBindingBuilder.TryInterpretAnalogMouse(Button(DS4Controls.Cross, other), out _), $"{other}");
+                Assert.False(ControlAssignmentInterpreter.TryInterpretAnalogMouse(Button(DS4Controls.Cross, other), out _), $"{other}");
 
-            Assert.False(ControlBindingBuilder.TryInterpretAnalogMouse(null, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretAnalogMouse(null, out _));
             var key = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Key };
-            Assert.False(ControlBindingBuilder.TryInterpretAnalogMouse(key, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretAnalogMouse(key, out _));
         }
 
         // ---- ビルダー ----

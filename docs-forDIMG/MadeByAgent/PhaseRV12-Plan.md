@@ -61,3 +61,4 @@
 ## 変更履歴
 - 2026-11-21: 作成（D1〜D4 の決定待ち）。
 - 2026-11-21: D1＝(A)、D2＝(A)、D3＝(B)、D4＝(A) を、ユーザーが選択。D3 は推奨の (A) と異なり、層ごとに 1 コミット（RV12-1〜3 を第 2 層、RV12-4 を設定・永続化で、それぞれ 1 コミット）。
+- 2026-11-21: RV12-1〜3 を実施（`PhaseRV12` ブランチ）。`Mapping` から `ButtonMouseSampler`・`SpecialActionFrameRunner`（938→833）、`TriggerDispatchEngine` から入れ子の `DeviceRuntime`・`EngineContext` と後始末の `DeviceRuntimeLifecycle`（781→563）、`ControlBindingBuilder` から `ControlAssignmentInterpreter`（静的。呼び出し 13 ファイルを直した）、`KeyButtonActionController` から `IKeyController`・`KeyToggleController`・`KeyPressController`（入れ子を別の型へ）を切り出した。500 行以上の型は 33→31（束ねた計測）。全 3,662 テスト合格・警告 0。**見送り**: `TouchpadMouse`・`GyroOutputProcessor`（状態が密に絡み、切り出しの効果が 500 行を割るほど大きくない）、RV12-4 の `BackingStore`・`AppSettingsService`・`ProfilePresets`（公開 API の呼び出しが広く、小さな静的ヘルパーしか切れないため、費用に見合わない）。`Mapping.MapCustom`（約 250 行の 1 メソッド）の分解も未実施。実機確認は §9j。

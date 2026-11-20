@@ -210,7 +210,7 @@ namespace DS4WindowsTests
                 special = new ControlSpecialItem { Type = SpecialAction.ActionTypeId.FocusWindow, WindowPath = path, WindowTitle = title },
             };
 
-            Assert.Equal(expected, DS4Windows.Processing.Services.Slots.ControlBindingBuilder.TryInterpretSpecial(dcs, out _));
+            Assert.Equal(expected, DS4Windows.Processing.Services.Slots.ControlAssignmentInterpreter.TryInterpretSpecial(dcs, out _));
         }
     }
 }

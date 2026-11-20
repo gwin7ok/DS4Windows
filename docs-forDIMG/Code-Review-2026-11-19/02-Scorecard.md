@@ -156,6 +156,13 @@
 - 読み方: RV11 の `partial` 分割は、型の単位では **500 行以上 33→33、実質の改善はない**（機能追加 +0.4 点は `AppSettingsService` の構造の重複 48%→45%、MVVM −0.3 点は ViewModel の行の割合が型の束ねで測り直されたため）。ファイルが小さくなり、読みやすさと差分の局所性は上がったが、責務を分ける整理ではない。RV11 の「32→1」は、ファイル単位の見かけの値として扱う。
 - 次の Phase で動かす指標: 型そのものの分割（D2＝(A)。`BackingStore`・`InputDeviceCore`・`Mapping`・`ProfileEditor`・`MainWindow` など）。
 
+### RV12（2026-11-21。型の分割）
+- 保存: `scorecard/RV12.json`。基準の版: v1（束ねた計測）。直前の保存: `scorecard/RV11b.json`。
+- 等級の変化はない。点数: オブジェクト指向 87.1%→87.5%、メンテナンス性 96.3%→96.6%（いずれも「500 行以上の型」33→31 による）。そのほかは変化なし。
+- 切り出し: `Mapping`（→`ButtonMouseSampler`・`SpecialActionFrameRunner`）、`TriggerDispatchEngine`（→`DeviceRuntime`・`EngineContext`・`DeviceRuntimeLifecycle`）、`ControlBindingBuilder`（→`ControlAssignmentInterpreter`）、`KeyButtonActionController`（→`KeyToggleController`・`KeyPressController`・`IKeyController`）。
+- 予想とのずれ: 目標（33→25 前後）に届かなかった。`TouchpadMouse`・`GyroOutputProcessor`・設定の 3 型は、状態の絡みや呼び出しの広さに対し、切り出しの効果が小さく見送った。`Mapping.MapCustom`（約 250 行の 1 メソッド）の分解が、型の大きさに最も効く残りの課題。
+- 実機確認: `Device-Check-Checklist.md` §9j（未実施）。
+
 ### RVn（完了日）
 - 保存: scorecard/RVn.json。基準の版: v1。直前の保存: …
 - 等級が変わった観点: 観点名 X→Y（点数 a%→b%）。…

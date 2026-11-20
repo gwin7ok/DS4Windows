@@ -26,7 +26,6 @@ namespace DS4Windows.Processing.Actions
         private readonly IManagedActionManager _manager;
         private readonly IVirtualKBM _virtualKbm;
         private readonly DeviceRuntime[] _devices = new DeviceRuntime[ControllerLimits.MaxControllerCount];
-        private static readonly int ControlTableSize = (int)Enum.GetValues(typeof(DS4Controls)).Cast<DS4Controls>().Max() + 1;
 
         public TriggerDispatchEngine(IActionRegistry registry, IManagedActionManager manager, IVirtualKBM virtualKbm)
         {
@@ -131,7 +130,7 @@ namespace DS4Windows.Processing.Actions
             lock (rt.Lock)
             {
                 Prepare(rt, device, input);
-                ReleaseSuppressedCore(rt, input);
+                DeviceRuntimeLifecycle.ReleaseSuppressed(rt, input);
 
                 IReadOnlyList<IActionBinding> bindings = rt.Bindings;
                 for (int i = 0; i < bindings.Count; i++)
@@ -173,13 +172,13 @@ namespace DS4Windows.Processing.Actions
                         if (outputs[o] is IFrameOutputAction frameOutput)
                         {
                             try { frameOutput.ApplyFrame(ctx, established, rising); }
-                            catch (Exception ex) { LogException(ex); }
+                            catch (Exception ex) { DeviceRuntimeLifecycle.LogException(ex); }
                         }
                         else if (rt.Stamp[i] == rt.Frame && outputs[o] is IEvaluatedFrameOutputAction evaluatedOutput)
                         {
                             // このフレームで評価された束縛だけ
                             try { evaluatedOutput.ApplyEvaluatedFrame(ctx, established); }
-                            catch (Exception ex) { LogException(ex); }
+                            catch (Exception ex) { DeviceRuntimeLifecycle.LogException(ex); }
                         }
                     }
 
@@ -241,7 +240,7 @@ namespace DS4Windows.Processing.Actions
                 }
                 catch (Exception ex)
                 {
-                    LogException(ex);
+                    DeviceRuntimeLifecycle.LogException(ex);
                     return;
                 }
             }
@@ -257,7 +256,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                LogException(ex);
+                DeviceRuntimeLifecycle.LogException(ex);
             }
         }
 
@@ -317,7 +316,7 @@ namespace DS4Windows.Processing.Actions
                         EngineContext gestureContext = rt.Context;
                         gestureContext.Begin(frame, input);
                         try { routed[routedIndex].Execute(gestureContext); }
-                        catch (Exception ex) { LogException(ex); }
+                        catch (Exception ex) { DeviceRuntimeLifecycle.LogException(ex); }
                     }
                 }
 
@@ -419,7 +418,7 @@ namespace DS4Windows.Processing.Actions
             }
             catch (Exception ex)
             {
-                LogException(ex);
+                DeviceRuntimeLifecycle.LogException(ex);
             }
 
             return FrameResult.Continue;
@@ -472,15 +471,6 @@ namespace DS4Windows.Processing.Actions
             {
                 state.UntriggeredTimestampTicks = 0;
             }
-        }
-
-        private static void LogException(Exception ex)
-        {
-            try
-            {
-                AppLogger.Log(AppLogLevel.Error, $"MapCustomAction exception: {ex}", LogOptions.UserFacing);
-            }
-            catch { /* 診断の出力の失敗は無視してよい */ }
         }
     }
 }

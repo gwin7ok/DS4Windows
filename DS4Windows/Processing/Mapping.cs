@@ -136,6 +136,7 @@ namespace DS4Windows.Processing
             ArgumentNullException.ThrowIfNull(twoStageTrigger);
             _twoStageTrigger = twoStageTrigger;
 
+            _mouseSampler = new ButtonMouseSampler(profileSettings, slots, mouseConversion, stickMotion.DeltaAccelProcessors);
             _triggerInputs = new DS4Windows.Processing.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Processing.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
             for (int device = 0; device < _triggerInputs.Length; device++)
@@ -145,8 +146,8 @@ namespace DS4Windows.Processing
 
                 // 新経路のマウスの移動が、生の量の計算（getMouseMapping）を借りる。デバイスごとに 1 回だけ作る（フレームごとの割り当てなし）
                 int sampleDevice = device;
-                _triggerInputs[device].MouseSampler = (control, direction) => SampleMouseMovement(sampleDevice, control, direction);
-                _triggerInputs[device].FixedMouseSampler = (direction, fraction) => SampleFixedMouseMovement(sampleDevice, direction, fraction);   // SA のマウス移動（強さの固定値）
+                _triggerInputs[device].MouseSampler = (control, direction) => _mouseSampler.SampleMouseMovement(sampleDevice, control, direction);
+                _triggerInputs[device].FixedMouseSampler = (direction, fraction) => _mouseSampler.SampleFixedMouseMovement(sampleDevice, direction, fraction);   // SA のマウス移動（強さの固定値）
             }
 
             syncStateLock = syntheticInput.SyncStateLock;
@@ -158,6 +159,7 @@ namespace DS4Windows.Processing
             l2TwoStageMappingData = stickMotion.L2TwoStageMappingData;
             r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
             deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
+            _specialActions = new SpecialActionFrameRunner(profileActionProvider, triggerEngine, _triggerInputs, _frameOutputs);
         }
 
         // デバイス × アクション名ごとの KeyButtonActionController の登録簿（旧: keyButtonControllers／
@@ -239,10 +241,8 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Processing.Actions.TriggerInput[] _triggerInputs;
         private readonly DS4Windows.Processing.Actions.FrameOutput[] _frameOutputs;
 
-        // 今のフレームの入力（getMouseMapping を新経路から借りるために、MapCustom が設定する）
-        private readonly ControllerState[] _sampleState = new ControllerState[ControllerLimits.MaxControllerCount];
-        private readonly ControllerStateExposed[] _sampleExposed = new ControllerStateExposed[ControllerLimits.MaxControllerCount];
-        private readonly ControllerStateFieldMapping[] _sampleFields = new ControllerStateFieldMapping[ControllerLimits.MaxControllerCount];
+        private readonly ButtonMouseSampler _mouseSampler;   // 新経路のマウスの移動が借りる、ボタンからのマウス移動量の計算
+        private readonly SpecialActionFrameRunner _specialActions;   // 1 フレームぶんのスペシャルアクションの評価
         // 旧 _sampleControl（MapCustom が毎フレーム受け取る ControlService の保持）は削除した。必要なものはコンストラクターで受ける（逆依存の解消）
 
         // IsToggledOn lifecycle is managed by Action implementations (e.g., KeyAction).
@@ -322,7 +322,6 @@ namespace DS4Windows.Processing
         // GyroCalibrate／MultiAction の実行、押し続けの解除、uTrigger の復帰）を削除した。移行済みの束縛をエンジンが処理する。束縛を持たない SA は、何もしない。
         // 以前は async void だったが、初期化待ちは完了済みの Task で、実際の await はタップ判定の遅延だけだったため、同期の void にした。
         // デバイスごとのアクション名の写し。そのデバイスの入力のスレッドだけが読み書きする
-        private readonly string[][] _profileActionBuffers = new string[ControllerLimits.MaxControllerCount][];
 
         /// <summary>
         /// MultiAction の新経路（汎用の出力 <c>MacroStringAction</c>）用。マクロを文字列で直接指定して実行する。

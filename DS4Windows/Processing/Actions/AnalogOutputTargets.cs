@@ -5,7 +5,7 @@ namespace DS4Windows.Processing.Actions
     /// <summary>
     /// Button の出力先（<see cref="X360Controls"/>）から、アナログな出力の種類（<see cref="AnalogOutputKind"/>）を決める 1 か所の規則。
     /// 割り当て編集画面（強さの入力を出すか）と、SA の出力の組み立て（強さを使う出力にするか）が、同じ規則を使う。
-    /// 分類は、Controls の <c>ControlBindingBuilder.TryInterpretPadTarget</c>／<c>TryInterpretAnalogMouse</c> と同じ（Controls 側は、そのまま残す）。
+    /// 分類は、Controls の <c>ControlAssignmentInterpreter.TryInterpretPadTarget</c>／<c>TryInterpretAnalogMouse</c> と同じ（Controls 側は、そのまま残す）。
     /// </summary>
     public static class AnalogOutputTargets
     {
