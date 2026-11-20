@@ -174,3 +174,25 @@ K4 の 47 件のうち、次の 10 件を、挙動・リフレクション・表
 `CreateStandardActions` は、実行すると利用者の Profiles フォルダーを書き換えるため、委譲の検査のまま残した（OS の状態に触れない規則）。
 
 結果: ソースの文字列を読むテストは 121 → 119 ファイル。全 3,664 件合格。残りの K4 は、画面（`MainWindow`・`ProfileEditor`）・`App.xaml.cs` の起動・`Mapping` などの組み立てが必要で、準備が大きいか、実プロセスの OS 状態に触れるため、書き換えていない。
+
+## K4 の書き換え（RV8g）
+
+残りの K4 のうち、次を書き換えた（すべて、本体へ違反を一時的に注入して失敗を確かめ、元へ戻した）。
+
+- `IpcQueryResultGuardTests`: 実際の名前付き MMF とイベントで、クライアント（結果の領域を作って待つ側）とサーバー（書く側）を動かし、結果が読めることを確かめる。
+- `ControlServiceOscSenderRaceTests`: ソースの `_sender.Send(` の有無の検査を撤去。既存の挙動テスト（送信側が未生成でも例外にならない）が、注入した違反を検出する。
+- `IpcCommandTests`: コマンドの順序の文字列検査と、旧 WndProc の本体が消えたことの検査を撤去（`IpcCommandProcessorTests` が挙動で覆う）。
+- `MainWindowUdpOutContTypeGuardTests`: 削除。`outconttype` の問い合わせは `IpcCommandProcessorTests` の挙動の検査へ、撤去した `GetOutputDeviceType`／`SetOutputDeviceType` は `RemovedApiRuleTests` の表へ。
+- `MainWindowsAndTrayViewModelGlobalReferenceGuardTests`: トレイの電池の購読は、電池の変化を起こして `IconSource` が変わることの挙動の検査へ。`trayTitle` がインスタンスのフィールドであることは反射へ。
+- `ServiceLocatorGuardTests`（`AppLogger`）: `NotificationServiceInstance` の撤去を `RemovedApiRuleTests` の表へ、通知の窓口は反射へ（App が差す行の検査は残した）。
+- `OutputTypeOwnershipGuardTests`: `BackingStore.ActiveOutDevType` の宣言を反射へ（読み込みの数の検査は残した）。
+- `MouseTapClickHoldTests`: タップの左クリックが 50ms 保持されること（即時のタップとダブルタップの確定の 2 経路）を、`TapClickDetector` に仮想の時間を与えて確かめる。
+
+結果: ソースの文字列を読むテストは 119 → 115 ファイル。全 3,662 件合格。
+
+### 書き換えていない K4（理由）
+
+- `App.xaml.cs`・`MainWindow`・`ProfileEditor`・`ProfileSelectionCoordinator` の呼び出しの形を見るもの（`ServiceLocatorGuardTests` の残り、`GroupOne`・`GroupThree`・`ProfileEditorGlobalReferenceGuardTests`、`AppPostHostContractTests`）: 画面と起動の組み立てが必要で、挙動のテストにするには、WPF の画面か `App` の起動を単体で動かす必要がある。
+- `AppHostNoImplicitHostGuardTests`: 共有のホストを破棄すると他のテストを壊すため。リポジトリ全体の走査の半分は K3。
+- `Mapping` の内部（`ControlsAnalogMouseTests`・`KeyButtonOutputFoundationTests`・`Stage3ProfileActionsSnapshotGuardTests`・`SmallFixesGuardTests`）と `TouchpadMouse` の内部（`MouseReleaseButtonHoldTests`、`MouseTapClickHoldTests` の 2 つ目）: 式の形を固定している。挙動にするには、`Mapping`・`TouchpadMouse` の全体を動かす必要がある。
+- `ProfileMappingContractTests`（プリセット 10 件の委譲）・`ProfileLegacyXmlRoundTripTests`・`RuntimeSwitchTests`: 保存・読み込みと、適用の経路の全体を実ファイルで動かす必要がある。
