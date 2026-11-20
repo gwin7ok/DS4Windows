@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingProfileActionSnapshotTests
     {
-        private static readonly MethodInfo Copy = typeof(Mapping).GetMethod("CopyProfileActionNames", BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly MethodInfo Copy = typeof(SpecialActionFrameRunner).GetMethod("CopyProfileActionNames", BindingFlags.Static | BindingFlags.NonPublic);
 
         private static int Invoke(IReadOnlyList<string> names, ref string[] buffer)
         {

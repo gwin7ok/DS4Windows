@@ -14,9 +14,9 @@ namespace DS4WindowsTests
     public class Stage3ProfileActionsSnapshotGuardTests
     {
         [Fact]
-        public void Mapping_EveryGetProfileActionsRawCall_CopiesTheList()
+        public void SpecialActionFrameRunner_EveryGetProfileActionsRawCall_CopiesTheList()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/SpecialActionFrameRunner.cs");
             if (path == null) return;
             string text = SourceText.ReadFileWithPartials(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
