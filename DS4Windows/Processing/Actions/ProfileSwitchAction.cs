@@ -21,10 +21,10 @@ namespace DS4Windows.Processing.Actions
     {
         private readonly bool _engineMode;
         private readonly int _actionIndex;
-        private readonly ISpecialActionRepository _actionRepository;
-        private readonly IProfileSettingsService _settings;
-        private readonly IMapping _mapping;   // 旧 遅延取得デリゲート。省略可（テスト）
-        private readonly TriggerButtonKeyReleaser _keyReleaser;
+        private readonly ISpecialActionRepository? _actionRepository;
+        private readonly IProfileSettingsService? _settings;
+        private readonly IMapping? _mapping;   // 旧 遅延取得デリゲート。省略可（テスト）
+        private readonly TriggerButtonKeyReleaser? _keyReleaser;
 
         public SpecialAction sa { get; }
         public int deviceIndex { get; }
@@ -35,7 +35,7 @@ namespace DS4Windows.Processing.Actions
 
         /// <summary>エンジン用。<paramref name="actionIndex"/>・<paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。<paramref name="mapping"/> は、連鎖の防止（復帰の合図の参照）用。</summary>
         public ProfileSwitchAction(SpecialAction sa, int deviceIndex, IProfileSwitcher profileSwitcher, int actionIndex,
-            ISpecialActionRepository actionRepository, IProfileSettingsService settings, IMapping mapping)
+            ISpecialActionRepository? actionRepository, IProfileSettingsService settings, IMapping? mapping)
             : this(sa, deviceIndex, profileSwitcher)
         {
             _engineMode = true;
@@ -91,9 +91,9 @@ namespace DS4Windows.Processing.Actions
             if (!_engineMode || ctx == null) return true;
 
             int dev = (deviceIndex >= 0) ? deviceIndex : ctx.Device;
-            if (!_settings.GetUseTempProfile(dev)) return true;
+            if (!_settings!.GetUseTempProfile(dev)) return true;   // _engineMode のときは、必ず設定されている
 
-            SpecialAction pending = (ctx as IPendingUntriggerQuery)?.PendingUntriggerAction;
+            SpecialAction? pending = (ctx as IPendingUntriggerQuery)?.PendingUntriggerAction;
             if (pending != null && pending.typeID == SpecialAction.ActionTypeId.Profile) return false;
 
             pending = _mapping?.CaptureProfileUntrigger(dev).Action;
@@ -101,7 +101,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 旧 MapCustomAction の Profile の分岐と同じ順序: LogSpecialActionTrace（立ち上がり）→ PROFILE ×2 → LogActionDoneCountOnTrigger
-        private void LogRising(IOutputContext ctx, int dev)
+        private void LogRising(IOutputContext? ctx, int dev)
         {
             try
             {
@@ -112,12 +112,12 @@ namespace DS4Windows.Processing.Actions
                     // 旧経路は、状態を渡さずに getBoolSpecialActionMapping を呼ぶため例外（握りつぶし）となり、常に "<none>" を記録している（既存の挙動）
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"Trigger keys for SA '{sa.name}': <none>");
                     var parts = new List<string>();
-                    (ctx.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
+                    (ctx?.Frame as IFrameOutputTrace)?.AppendOutputCombo(parts);
                     string combo = parts.Count > 0 ? string.Join(", ", parts) : "<none>";
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SA '{sa.name}' output combo: {combo}");
                 }
 
-                bool useTemp = _settings.GetUseTempProfile(dev);
+                bool useTemp = _settings!.GetUseTempProfile(dev);   // 同上
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction PROFILE: Triggered for device {dev}, action={sa.name}, target={sa.details}");
                 AppLogger.LogDebug($"SpecialAction PROFILE: beingTriggered={false}, useTempProfile={useTemp}");   // 旧経路は、立ち上がりのとき、常に False
                 int count = 0;
@@ -131,7 +131,7 @@ namespace DS4Windows.Processing.Actions
         // 7.6b（Q5＝A）: DisconnectBT と共有する部品（TriggerButtonKeyReleaser）へ移した。処理は同じ
         private void ReleaseTheTriggerButtonKeys(IOutputContext ctx, int dev)
         {
-            _keyReleaser.Release(sa, dev, ctx.OutputHandler);
+            _keyReleaser!.Release(sa, dev, ctx.OutputHandler);   // 同上
         }
 
         public void Stop(IOutputContext ctx)

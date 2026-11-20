@@ -19,6 +19,6 @@ namespace DS4Windows.Processing.Actions
         /// 実行時の状態の入れ物（出力アクションとエンジンが受け取る <see cref="SpecialAction"/>）。SA 由来は、プロファイルの実物。Controls 由来は、
         /// <see cref="SpecialActionItemMapper.ToSpecialAction"/> などが作る合成のもの。
         /// </param>
-        SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index);
+        SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index);
     }
 }

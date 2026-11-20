@@ -49,7 +49,7 @@ namespace DS4Windows.Processing.Services.Slots
             _controlsFactory = outputFactory == null
                 ? SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, manager, controllers, macroPlayer)
                 : null;
-            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory);   // 束縛の組み立ては、SA タブ側と同じ部品
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory!);   // _outputFactory がなければ _controlsFactory を作ってある。束縛の組み立ては、SA タブ側と同じ部品
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -298,7 +298,7 @@ namespace DS4Windows.Processing.Services.Slots
                     if (_outputFactory != null && ControlsAssignmentReader.TryReadSpecial(device, dcs, out AssignmentDefinition? special, out SpecialAction? identity))
                     {
                         // 出力を作れない種別（窓口が未接続のテスト）は、束縛を 1 つも作らない（Extras も含め、dcs 全体を作らない）
-                        TriggerBinding binding = _assignmentBuilder.Build(device, special, identity, -1);
+                        TriggerBinding? binding = _assignmentBuilder.Build(device, special, identity, -1);
                         if (binding == null) break;
 
                         if (hasExtras) AddExtras(device, dcs, extrasValues, result);
@@ -319,7 +319,7 @@ namespace DS4Windows.Processing.Services.Slots
                             // マウスのボタン等の Toggle も、SA の Button と同じ部品（ボタンごとの状態）で処理する。作れないときは、従来の束縛
                             if (toggle && ControlsAssignmentReader.TryReadMouseToggle(device, dcs, out AssignmentDefinition? mouseToggle, out SpecialAction? mouseToggleIdentity))
                             {
-                                TriggerBinding mouseToggleBinding = _assignmentBuilder.Build(device, mouseToggle, mouseToggleIdentity, -1);
+                                TriggerBinding? mouseToggleBinding = _assignmentBuilder.Build(device, mouseToggle, mouseToggleIdentity, -1);
                                 if (mouseToggleBinding != null)
                                 {
                                     result.Add(mouseToggleBinding);
@@ -337,7 +337,7 @@ namespace DS4Windows.Processing.Services.Slots
                             // マウスの移動・アナログのホイールの Toggle も、SA の Button と同じ部品で処理する（以前は、Toggle が移動に効かなかった）。作れないときは、従来の束縛
                             if (toggle && ControlsAssignmentReader.TryReadAnalogMouseToggle(device, dcs, out AssignmentDefinition? analogToggle, out SpecialAction? analogToggleIdentity))
                             {
-                                TriggerBinding analogToggleBinding = _assignmentBuilder.Build(device, analogToggle, analogToggleIdentity, -1);
+                                TriggerBinding? analogToggleBinding = _assignmentBuilder.Build(device, analogToggle, analogToggleIdentity, -1);
                                 if (analogToggleBinding != null)
                                 {
                                     result.Add(analogToggleBinding);
@@ -356,7 +356,7 @@ namespace DS4Windows.Processing.Services.Slots
                             // 部品を作れない（窓口が未接続のテスト）ときは、従来の束縛にする
                             if (toggle && ControlsAssignmentReader.TryReadPadToggle(device, dcs, out AssignmentDefinition? padToggle, out SpecialAction? padToggleIdentity))
                             {
-                                TriggerBinding padToggleBinding = _assignmentBuilder.Build(device, padToggle, padToggleIdentity, -1);
+                                TriggerBinding? padToggleBinding = _assignmentBuilder.Build(device, padToggle, padToggleIdentity, -1);
                                 if (padToggleBinding != null)
                                 {
                                     result.Add(padToggleBinding);
@@ -487,7 +487,7 @@ namespace DS4Windows.Processing.Services.Slots
                 erasesOutputEveryFrame: false, logsRisingEdge: true);
             // Extras（振動・ライトバー・感度。オン／オフの出力）は、SA と同じ閾値で判定する
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Extras, ControlOutputNatureTable.ForKind(ControlBindingKind.Extras)),
-                new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort) }, policy, identity, -1));
+                new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort!) }, policy, identity, -1));   // Extras の束縛を作るのは、窓口を渡された生成だけ
         }
 
         // Key と Macro は、読み込みの部品（定義と、実行時の状態の入れ物）と、出力の部品（種別 × 由来の方針）を通して作る。
@@ -497,7 +497,7 @@ namespace DS4Windows.Processing.Services.Slots
         {
             // Key・Macro（デジタルな出力）は、SA と同じ閾値で判定する。Macro の「Run on trigger release」は、離したときに成立する入力にする
             // 入力の組み立て（区分、判定の性質、離したとき成立）は AssignmentBindingBuilder が行う
-            TriggerBinding binding = _assignmentBuilder.Build(device, definition, identity, -1);
+            TriggerBinding? binding = _assignmentBuilder.Build(device, definition, identity, -1);
             if (binding != null) result.Add(binding);
         }
     }

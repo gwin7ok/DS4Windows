@@ -26,16 +26,16 @@ namespace DS4Windows.Processing.Actions
         private readonly Func<long> _tickCount64;
         private readonly ControllerStateFieldMapping _previousFields = new ControllerStateFieldMapping();
 
-        private ControllerState _current;
-        private ControllerState _previous;
-        private ControllerStateExposed _exposed;
-        private TouchpadMouse _mouse;
-        private ControllerStateFieldMapping _fields;
+        private ControllerState? _current;
+        private ControllerState? _previous;
+        private ControllerStateExposed? _exposed;
+        private TouchpadMouse? _mouse;
+        private ControllerStateFieldMapping? _fields;
         private bool _previousPopulated;
 
         /// <param name="utcNow">現在時刻の提供元（省略時は <c>DateTime.UtcNow</c>）。テストで固定できる。</param>
         /// <param name="tickCount64">起動からの経過ミリ秒の提供元（省略時は <c>Environment.TickCount64</c>）。</param>
-        public TriggerInput(int device, IProfileSettingsService profileSettings, Func<DateTime> utcNow = null, Func<long> tickCount64 = null)
+        public TriggerInput(int device, IProfileSettingsService profileSettings, Func<DateTime>? utcNow = null, Func<long>? tickCount64 = null)
         {
             _device = device;
             ArgumentNullException.ThrowIfNull(profileSettings);
@@ -57,7 +57,7 @@ namespace DS4Windows.Processing.Actions
         /// 1 フレームの入力を設定する。<paramref name="fields"/> は、<c>Mapping</c> が展開済みの表（<c>PopulateFieldMapping</c> 済み）。
         /// <paramref name="previous"/>／<paramref name="exposed"/>／<paramref name="mouse"/> は、前フレームの表を遅延して作るときだけ使う（null でもよい）。
         /// </summary>
-        public void Update(ControllerState current, ControllerState previous, ControllerStateExposed exposed, TouchpadMouse mouse, ControllerStateFieldMapping fields)
+        public void Update(ControllerState current, ControllerState? previous, ControllerStateExposed exposed, TouchpadMouse? mouse, ControllerStateFieldMapping fields)
         {
             _current = current;
             _previous = previous;
@@ -71,11 +71,11 @@ namespace DS4Windows.Processing.Actions
         /// マウスの移動の生の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。引数は（コントロール、向き）。
         /// 計算が感度・加速・デッドゾーン・経過時間を使うため、<c>Mapping.getMouseMapping</c> を呼ぶ。
         /// </summary>
-        public Func<DS4Controls, int, double> MouseSampler { get; set; }
+        public Func<DS4Controls, int, double>? MouseSampler { get; set; }
 
         public double GetMouseMovement(DS4Controls control, int direction)
         {
-            Func<DS4Controls, int, double> sampler = MouseSampler;
+            Func<DS4Controls, int, double>? sampler = MouseSampler;
             return sampler == null ? 0.0 : sampler(control, direction);
         }
 
@@ -83,11 +83,11 @@ namespace DS4Windows.Processing.Actions
         /// SA のマウス移動（強さの固定値）の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。
         /// 引数は、方向（0＝Up、1＝Down、2＝Left、3＝Right）と強さ（0〜1）。
         /// </summary>
-        public Func<int, double, double> FixedMouseSampler { get; set; }
+        public Func<int, double, double>? FixedMouseSampler { get; set; }
 
         public double GetFixedMouseMovement(int direction, double fraction)
         {
-            Func<int, double, double> sampler = FixedMouseSampler;
+            Func<int, double, double>? sampler = FixedMouseSampler;
             return sampler == null ? 0.0 : sampler(direction, fraction);
         }
 

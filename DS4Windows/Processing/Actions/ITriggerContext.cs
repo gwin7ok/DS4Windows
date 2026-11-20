@@ -15,6 +15,6 @@ namespace DS4Windows.Processing.Actions
         ushort LogicalValue { get; }
         uint NativeValue { get; }
         DateTime Timestamp { get; }
-        IVirtualKBM OutputHandler { get; }
+        IVirtualKBM? OutputHandler { get; }
     }
 }

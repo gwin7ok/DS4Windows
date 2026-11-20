@@ -11,11 +11,11 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
     public sealed class ProfileOutputBuilder : ISpecialActionOutputBuilder
     {
         private readonly IProfileSwitcher _profileSwitcher;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IMapping _mapping;
+        private readonly IMapping? _mapping;
 
-        public ProfileOutputBuilder(IProfileSwitcher profileSwitcher, IProfileSettingsService profileSettings, ISpecialActionRepository actionRepository = null, IMapping mapping = null)
+        public ProfileOutputBuilder(IProfileSwitcher profileSwitcher, IProfileSettingsService profileSettings, ISpecialActionRepository? actionRepository = null, IMapping? mapping = null)
         {
             ArgumentNullException.ThrowIfNull(profileSwitcher);
             _profileSwitcher = profileSwitcher;
@@ -27,11 +27,11 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.Profile;
 
-        public SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
+        public SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             AssignmentOrigin origin = definition.Origin;
             SpecialAction sa = source;
-            ControlSpecialItem item = definition.Item;
+            ControlSpecialItem? item = definition.Item;
             // 解除トリガー（uTrigger）のボタンによる復帰は、機能廃止（規約 2.2。ユーザー承認済み）。UI から作れず、旧データ（Actions.xml）にだけ残っていた。
             // uTrigger を持つ Profile も束縛を作り、切替は行う。復帰は、自動（AutomaticUntrigger）のときだけ。uTrigger の値は読み込みも保存もそのまま（ファイルは変えない）。
             UntriggerPolicy untrigger = item != null && item.AutomaticUntrigger ? UntriggerPolicy.Automatic : UntriggerPolicy.None;

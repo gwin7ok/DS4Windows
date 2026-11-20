@@ -31,7 +31,7 @@ namespace DS4Windows.Processing.Actions
             _batteryText = batteryText;
         }
 
-        private InputDeviceCore Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
+        private InputDeviceCore? Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);
 
         private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;   // 旧 DS4LightBar.forcelight.Length（同じ値）
 

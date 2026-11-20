@@ -20,7 +20,7 @@ namespace DS4Windows.Core.Platform
         private string? path_lowercase;
         private string? title_lowercase;
 
-        public WindowTargetMatcher(string pathStr, string titleStr)
+        public WindowTargetMatcher(string? pathStr, string? titleStr)
         {
             SetSearchPath(pathStr);
             SetSearchTitle(titleStr);
@@ -62,7 +62,7 @@ namespace DS4Windows.Core.Platform
             return bPathMatched && bTitleMwatched;
         }
 
-        private void SetSearchPath(string pathStr)
+        private void SetSearchPath(string? pathStr)
         {
             if (!string.IsNullOrEmpty(pathStr))
             {
@@ -79,7 +79,7 @@ namespace DS4Windows.Core.Platform
             else path = path_lowercase = string.Empty;
         }
 
-        private void SetSearchTitle(string titleStr)
+        private void SetSearchTitle(string? titleStr)
         {
             if (!string.IsNullOrEmpty(titleStr))
             {

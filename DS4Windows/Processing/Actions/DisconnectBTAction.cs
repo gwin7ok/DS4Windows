@@ -108,7 +108,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 旧 MapCustomAction の DisconnectBT の分岐と同じ: LogSpecialActionTrace（Trace の 4 行）。Debug のログはない
-        private void LogAttempt(IOutputContext ctx, int dev)
+        private void LogAttempt(IOutputContext? ctx, int dev)
         {
             try
             {

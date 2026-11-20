@@ -199,7 +199,7 @@ namespace DS4Windows.Processing.Actions
         {
             if (!_toggle) return triggered;
 
-            ActionInstanceState state = _manager.GetStateFor(_sa, device);
+            ActionInstanceState? state = _manager.GetStateFor(_sa, device);
             if (state == null) return triggered;
 
             // プロファイル適用・接続の直後の押しっぱなしでは反転しない（Fresh-press ガード）

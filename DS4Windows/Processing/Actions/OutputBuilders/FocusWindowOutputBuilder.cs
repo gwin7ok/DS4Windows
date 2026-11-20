@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.FocusWindow;
 
-        public SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
+        public SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             AssignmentOrigin origin = definition.Origin;
             SpecialAction sa = source;

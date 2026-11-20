@@ -13,8 +13,8 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public sealed class FrameOutput : IPadFrameOutput, IToggleFrameOutput, IMouseMoveFrameOutput, IFrameOutputTrace
     {
-        private ControllerStateFieldMapping _outputFields;
-        private SyntheticState _deviceState;
+        private ControllerStateFieldMapping? _outputFields;
+        private SyntheticState? _deviceState;
 
         /// <summary>このフレームの出力の表と、デバイスの合成状態（マウスのクリックのカウンター）を設定する。</summary>
         public void Bind(ControllerStateFieldMapping outputFields, SyntheticState deviceState)
@@ -43,7 +43,7 @@ namespace DS4Windows.Processing.Actions
         // 現行の Mapping.ResetToDefaultValue と同じ
         public void ResetTriggerControl(DS4Controls control)
         {
-            ControllerStateFieldMapping fieldMap = _outputFields;
+            ControllerStateFieldMapping? fieldMap = _outputFields;
             if (fieldMap == null) return;
 
             int controlNum = (int)control;
@@ -71,7 +71,7 @@ namespace DS4Windows.Processing.Actions
         // 旧 customMapQueue の処理（Mapping の全 dcs のあと）が出力の表へ書いていたものと同じ
         public void SetAxisPair(DS4Controls outControl, byte value)
         {
-            ControllerStateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping? fields = _outputFields;
             if (fields == null) return;
 
             int tempOutControl = (int)outControl;
@@ -82,7 +82,7 @@ namespace DS4Windows.Processing.Actions
 
         public void SetTrigger(DS4Controls outControl, byte value)
         {
-            ControllerStateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping? fields = _outputFields;
             if (fields == null) return;
 
             fields.triggers[(int)outControl] = value;
@@ -90,7 +90,7 @@ namespace DS4Windows.Processing.Actions
 
         public void SetButton(DS4Controls outControl)
         {
-            ControllerStateFieldMapping fields = _outputFields;
+            ControllerStateFieldMapping? fields = _outputFields;
             if (fields == null) return;
 
             fields.buttons[(int)outControl] = true;
@@ -99,7 +99,7 @@ namespace DS4Windows.Processing.Actions
         // 旧経路の Controls の Toggle が、デバイスの合成状態へ書いていたものと同じ
         public void FlipToggle()
         {
-            SyntheticState deviceState = _deviceState;
+            SyntheticState? deviceState = _deviceState;
             if (deviceState == null) return;
 
             deviceState.currentClicks.toggle = !deviceState.currentClicks.toggle;
@@ -107,7 +107,7 @@ namespace DS4Windows.Processing.Actions
 
         public void CountToggle()
         {
-            SyntheticState deviceState = _deviceState;
+            SyntheticState? deviceState = _deviceState;
             if (deviceState == null) return;
 
             deviceState.currentClicks.toggleCount++;
@@ -116,8 +116,8 @@ namespace DS4Windows.Processing.Actions
         // 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式
         public void AppendOutputCombo(List<string> parts)
         {
-            ControllerStateFieldMapping fields = _outputFields;
-            SyntheticState ds = _deviceState;
+            ControllerStateFieldMapping? fields = _outputFields;
+            SyntheticState? ds = _deviceState;
             if (fields == null) return;
 
             if (fields.outputTouchButton) parts.Add("TouchpadClick");
@@ -141,8 +141,8 @@ namespace DS4Windows.Processing.Actions
         // 現行の Stage3 の出力の分岐と同じ
         public void PressX360(X360Controls xboxControl)
         {
-            ControllerStateFieldMapping fields = _outputFields;
-            SyntheticState deviceState = _deviceState;
+            ControllerStateFieldMapping? fields = _outputFields;
+            SyntheticState? deviceState = _deviceState;
             if (fields == null || deviceState == null) return;
 
             if (xboxControl == X360Controls.TouchpadClick)

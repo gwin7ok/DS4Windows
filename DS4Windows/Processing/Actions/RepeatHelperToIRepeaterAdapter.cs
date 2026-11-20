@@ -12,13 +12,13 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public class RepeatHelperToIRepeaterAdapter : IRepeater
     {
-        private RepeatHelper helper;
-        private IRepeater helperIRepeater;
-        private readonly Func<RepeatHelper> helperFactory;
+        private RepeatHelper? helper;
+        private IRepeater? helperIRepeater;
+        private readonly Func<RepeatHelper>? helperFactory;
 
         // 差し替え用の工場（主にテスト）。null でなければ、元の RepeatHelper の代わりにこれが IRepeater を作る。
         // 引数は、元の RepeatHelper を作る工場。
-        private readonly Func<Func<RepeatHelper>, IRepeater> repeaterFactoryOverride;
+        private readonly Func<Func<RepeatHelper>, IRepeater>? repeaterFactoryOverride;
 
         public RepeatHelperToIRepeaterAdapter(RepeatHelper existing)
         {
@@ -26,7 +26,7 @@ namespace DS4Windows.Processing.Actions
             helper = existing;
         }
 
-        public RepeatHelperToIRepeaterAdapter(Func<RepeatHelper> factory, Func<Func<RepeatHelper>, IRepeater> repeaterFactoryOverride = null)
+        public RepeatHelperToIRepeaterAdapter(Func<RepeatHelper> factory, Func<Func<RepeatHelper>, IRepeater>? repeaterFactoryOverride = null)
         {
             ArgumentNullException.ThrowIfNull(factory);
             helperFactory = factory;
@@ -42,7 +42,7 @@ namespace DS4Windows.Processing.Actions
                 {
                     try
                     {
-                        helperIRepeater ??= repeaterFactoryOverride(helperFactory);
+                        helperIRepeater ??= repeaterFactoryOverride(helperFactory!);   // 工場を渡す生成では、必ず設定されている
                         helperIRepeater?.Start();
                         return;
                     }

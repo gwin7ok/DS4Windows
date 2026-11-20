@@ -15,10 +15,10 @@ namespace DS4Windows.Processing.Actions
         private readonly IControllerRegistry _registry;
         private readonly IManagedActionManager _manager;
         private readonly TimeProvider _time;
-        private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;   // 繰り返しの部品の差し替え（null なら RepeatHelper。主にテスト）
+        private readonly Func<Func<RepeatHelper>, IRepeater>? _repeaterFactory;   // 繰り返しの部品の差し替え（null なら RepeatHelper。主にテスト）
 
         public DefaultKeyButtonActionControllerFactory(IControllerRegistry registry, IManagedActionManager manager, DS4Windows.Processing.Abstractions.ISyntheticDispatcher dispatcher, TimeProvider timeProvider,
-            Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
+            Func<Func<RepeatHelper>, IRepeater>? repeaterFactory = null)
         {
             _repeaterFactory = repeaterFactory;
             ArgumentNullException.ThrowIfNull(timeProvider);
@@ -31,7 +31,7 @@ namespace DS4Windows.Processing.Actions
             _manager = manager;
         }
 
-        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.Actions.KeyButtonActionController.Mode mode, string actionName = null)
+        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.Actions.KeyButtonActionController.Mode mode, string? actionName = null)
         {
             var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, mode, _manager, _dispatcher, _time, actionName, _repeaterFactory);
             try
@@ -43,7 +43,7 @@ namespace DS4Windows.Processing.Actions
             return inst;
         }
 
-        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Core.Settings.SpecialAction sa, string actionName = null)
+        public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Core.Settings.SpecialAction sa, string? actionName = null)
         {
             var inst = new DS4Windows.Processing.Actions.KeyButtonActionController(device, sa, _manager, _dispatcher, _time, actionName, _repeaterFactory);
             try

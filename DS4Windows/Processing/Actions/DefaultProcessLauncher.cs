@@ -23,7 +23,7 @@ namespace DS4Windows.Processing.Actions
             using var process = Process.Start(new ProcessStartInfo
             {
                 FileName = filePath,
-                WorkingDirectory = new FileInfo(filePath).Directory.ToString(),
+                WorkingDirectory = new FileInfo(filePath).Directory?.ToString(),
             });
         }
 

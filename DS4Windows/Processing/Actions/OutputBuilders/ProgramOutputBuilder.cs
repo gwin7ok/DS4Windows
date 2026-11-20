@@ -10,9 +10,9 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
     public sealed class ProgramOutputBuilder : ISpecialActionOutputBuilder
     {
         private readonly IProcessLauncher _processLauncher;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
 
-        public ProgramOutputBuilder(IProcessLauncher processLauncher, ISpecialActionRepository actionRepository = null)
+        public ProgramOutputBuilder(IProcessLauncher processLauncher, ISpecialActionRepository? actionRepository = null)
         {
             ArgumentNullException.ThrowIfNull(processLauncher);
             _processLauncher = processLauncher;
@@ -21,7 +21,7 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.Program;
 
-        public SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
+        public SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             AssignmentOrigin origin = definition.Origin;
             SpecialAction sa = source;

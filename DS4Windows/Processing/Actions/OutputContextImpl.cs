@@ -6,7 +6,7 @@ namespace DS4Windows.Processing.Actions
 {
     public class OutputContextImpl : IOutputContext
     {
-        public OutputContextImpl(int device, IVirtualKBM handler, IFrameOutput frame = null)
+        public OutputContextImpl(int device, IVirtualKBM handler, IFrameOutput? frame = null)
         {
             Device = device;
             OutputHandler = handler;
@@ -15,7 +15,7 @@ namespace DS4Windows.Processing.Actions
 
         public int Device { get; }
         public IVirtualKBM OutputHandler { get; }
-        public IFrameOutput Frame { get; }
+        public IFrameOutput? Frame { get; }
 
         /// <summary><see cref="RequestEndFrame"/> が呼ばれたか。</summary>
         public bool EndFrameRequested { get; private set; }

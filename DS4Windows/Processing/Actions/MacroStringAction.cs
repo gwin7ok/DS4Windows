@@ -47,7 +47,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 旧 MapCustomAction の MultiAction の枝と同じ: LogSpecialActionTrace（Trace の 4 行）
-        private void LogExecution(IOutputContext ctx, int dev)
+        private void LogExecution(IOutputContext? ctx, int dev)
         {
             try
             {

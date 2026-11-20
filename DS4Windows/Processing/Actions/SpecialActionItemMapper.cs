@@ -27,7 +27,7 @@ namespace DS4Windows.Processing.Actions
         /// SA を、型のある項目にする。対象外の種別（Key、Button、None）は null。
         /// 値が壊れているときは、その項目だけ既定の値にする（例外にしない）。SA の <c>uTrigger</c>（解除トリガー）は、機能廃止済みのため扱わない。
         /// </summary>
-        public static ControlSpecialItem ToItem(SpecialAction sa)
+        public static ControlSpecialItem? ToItem(SpecialAction sa)
         {
             if (sa == null) return null;
 
@@ -137,7 +137,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // details は「秒数,通知,ライトバー,空の R,G,B,満の R,G,B」（SA のコンストラクターが「|」を「,」に直す）。足りない・壊れているときは、既定の値
-        private static void ReadBattery(string details, ControlSpecialItem item)
+        private static void ReadBattery(string? details, ControlSpecialItem item)
         {
             string[] parts = (details ?? string.Empty).Split(',');
             if (parts.Length < 9) return;
@@ -170,7 +170,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 「/」区切りの整数。1 つでも整数でなければ、空（壊れたマクロは、使わない。ControlSpecialItemXml と同じ規則）
-        private static List<int> ParseSteps(string text)
+        private static List<int> ParseSteps(string? text)
         {
             var steps = new List<int>();
             if (string.IsNullOrEmpty(text)) return steps;

@@ -9,7 +9,7 @@ namespace DS4Windows.Processing.Actions
     // Adapter that wraps existing KeyButtonActionController and exposes IActionController
     public class KeyButtonActionControllerAdapter : IActionController
     {
-        private readonly KeyButtonActionController inner;
+        private readonly KeyButtonActionController? inner;
         private readonly bool isToggle;
 
         public int ControllerId => inner?.InstanceId ?? -1;
@@ -41,7 +41,7 @@ namespace DS4Windows.Processing.Actions
             inner = existing;
             // Query inner controller for its configured mode to avoid mismatches with registry timing
             try { isToggle = inner.IsToggleMode; } catch { isToggle = false; }
-            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter wrap ctor created adapter ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle}");
+            if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter wrap ctor created adapter ControllerId={ControllerId} assigned={(inner.AssignedActionName??"(null)")} isToggle={isToggle}");
         }
 
         public void Start(IActionBinding binding, ITriggerContext trigger)
@@ -49,7 +49,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 if (inner == null || trigger == null) return;
-                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Start: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Start: ControllerId={ControllerId} assigned={(inner.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}");
                 // Delegate to existing controller entry point
                 inner.OnSATriggerEstablished(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler, true);
             }
@@ -61,7 +61,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 if (inner == null || trigger == null) return;
-                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Handle: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} isEstablished={trigger.IsEdgeEstablished} triggerVal={trigger.LogicalValue}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Handle: ControllerId={ControllerId} assigned={(inner.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} isEstablished={trigger.IsEdgeEstablished} triggerVal={trigger.LogicalValue}");
                 if (trigger.IsEdgeEstablished)
                 {
                     inner.OnSATriggerEstablished(trigger.LogicalValue, trigger.NativeValue, false, trigger.OutputHandler, true);
@@ -80,7 +80,7 @@ namespace DS4Windows.Processing.Actions
             try
             {
                 if (inner == null || trigger == null) return;
-                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Stop: ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}");
+                if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter Stop: ControllerId={ControllerId} assigned={(inner.AssignedActionName??"(null)")} isToggle={isToggle} binding={(binding!=null?binding.ToString():"(null)")} triggerVal={trigger.LogicalValue}");
                 // Preserve Stop for backward compatibility: treat as explicit toggle-off for toggle-mode
                 if (isToggle)
                 {

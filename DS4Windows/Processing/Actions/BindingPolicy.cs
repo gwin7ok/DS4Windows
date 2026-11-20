@@ -20,7 +20,7 @@ namespace DS4Windows.Processing.Actions
             bool suppressesTriggerButtons = true,
             bool resetsTriggerOutput = true,
             bool stopOnRelease = true,
-            string exclusionGroup = null,
+            string? exclusionGroup = null,
             bool routesOutputsByGesture = false,
             bool erasesOutputEveryFrame = false,
             bool logsRisingEdge = false,
@@ -58,7 +58,7 @@ namespace DS4Windows.Processing.Actions
         public bool StopOnRelease { get; }
 
         /// <summary>シフト（Q6）: 同じグループで先に成立した束縛だけが実行される。null ＝ なし。</summary>
-        public string ExclusionGroup { get; }
+        public string? ExclusionGroup { get; }
 
         /// <summary>
         /// 出力を**ジェスチャーで選ぶ**束縛か。真のとき、エンジンは、通常の立ち上がり・保持・離したときの出力の実行をせず

@@ -15,7 +15,7 @@ namespace DS4Windows.Processing.Actions
         public int InstanceId => this.GetHashCode();
         private readonly Dictionary<string, ActionEntry> actions = new Dictionary<string, ActionEntry>(StringComparer.OrdinalIgnoreCase);
         // Button state table: device x controlIndex
-        private bool[,] buttonStates = null;
+        private bool[,]? buttonStates = null;
         private const int ToggleReleaseHoldMsLocal = 200;
         // 切断時の後始末。ホスト構築時（PreallocateEntries）に Mapping とその依存を
         // 作らないよう、遅延（Func）で受ける。
@@ -43,12 +43,12 @@ namespace DS4Windows.Processing.Actions
             };
         }
 
-        private static ActionEntry GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action)
+        private static ActionEntry? GetOrCreateEntryInternal(Dictionary<string, ActionEntry> actionsDict, SpecialAction action)
         {
             if (action == null) return null;
             lock (actionsDict)
             {
-                if (!actionsDict.TryGetValue(action.name, out ActionEntry ent) || ent == null)
+                if (!actionsDict.TryGetValue(action.name, out ActionEntry? ent) || ent == null)
                 {
                     ent = new ActionEntry(action);
                     actionsDict[action.name] = ent;
@@ -88,7 +88,7 @@ namespace DS4Windows.Processing.Actions
             return false;
         }
 
-        public ActionInstanceState GetStateFor(SpecialAction action, int device)
+        public ActionInstanceState? GetStateFor(SpecialAction action, int device)
         {
             try
             {
@@ -172,7 +172,7 @@ namespace DS4Windows.Processing.Actions
                                 {
                                     bool old = ent.States[device]?.IsToggledOn ?? false;
                                     ent.States[device] = new ActionInstanceState();
-                                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.ClearDeviceState: reset ActionInstanceState for action={(ent?.ActionDef?.name ?? "(null)")} device={device} (IsToggledOn cleared)");
+                                    if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"DefaultActionManager.ClearDeviceState: reset ActionInstanceState for action={ent.ActionDef.name} device={device} (IsToggledOn cleared)");
                                     if (old != false)
                                     {
                                         try { ToggledOnChanged?.Invoke(ent.ActionDef, device, old, false); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
@@ -232,7 +232,7 @@ namespace DS4Windows.Processing.Actions
                         for (int i = 0; i < trace.FrameCount; i++)
                         {
                             var fr = trace.GetFrame(i);
-                            var method = fr.GetMethod();
+                            var method = fr?.GetMethod();
                             if (method == null) continue;
                             var declaring = method.DeclaringType;
                             if (declaring == null) continue;

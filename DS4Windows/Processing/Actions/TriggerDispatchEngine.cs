@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Actions
             {
                 Prepare(rt, device, null);
                 int c = (int)control;
-                if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex.Length) return false;
+                if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex!.Length) return false;   // ControlCount > 0 なら、ControlIndex は作ってある
 
                 int i = rt.ControlIndex[c];
                 return i >= 0 && IsOwnedBinding(rt.Bindings[i]);
@@ -84,7 +84,7 @@ namespace DS4Windows.Processing.Actions
             {
                 Prepare(rt, device, input);
                 int c = (int)control;
-                if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex.Length) return;
+                if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex!.Length) return;   // ControlCount > 0 なら、ControlIndex は作ってある
 
                 // 1 つのボタンに複数の束縛（Extras → 通常の割り当て）を持てる。ビルダーが並べた順に、鎖をたどって処理する
                 for (int i = rt.ControlIndex[c]; i >= 0; i = rt.ControlNext[i])
@@ -112,7 +112,7 @@ namespace DS4Windows.Processing.Actions
                 // SA に付随する束縛（SA の Extras）は、SA 本体の直前に処理する（本体が途中で終了を要求しても、必ず処理する）
                 if (rt.CompanionHead != null)
                 {
-                    for (int j = rt.CompanionHead[i]; j >= 0; j = rt.CompanionNext[j])
+                    for (int j = rt.CompanionHead[i]; j >= 0; j = rt.CompanionNext![j])   // CompanionHead と同時に作る
                     {
                         IActionBinding companion = rt.Bindings[j];
                         if (IsOwnedBinding(companion)) ProcessBinding(device, rt, j, companion, input, frame);
@@ -203,7 +203,7 @@ namespace DS4Windows.Processing.Actions
             DeviceRuntime rt = _devices[device];
             if (rt.Pending == null) return;   // 合図なし: ロックも割り当てもなし
 
-            IActionBinding binding = null;
+            IActionBinding? binding = null;
             lock (rt.Lock)
             {
                 binding = rt.Pending;
@@ -211,12 +211,12 @@ namespace DS4Windows.Processing.Actions
 
                 try
                 {
-                    SpecialAction action = binding.Source;
+                    SpecialAction? action = binding.Source;
                     if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction UNTRIGGER check: device={device}, untriggeraction={(action != null ? action.name : "null")}, untriggerindex={binding.Index}");
 
                     // 自動（Unload on trigger release）: トリガーのうち、どれか 1 つでも離れたら成立
                     bool activated = false;
-                    var triggers = action.trigger;
+                    var triggers = action!.trigger;   // null のときは NullReferenceException を、下の catch が拾う（従来どおり）
                     for (int i = 0, count = triggers.Count; i < count; i++)
                     {
                         if (!input.IsDigitalActive(triggers[i]))   // R-5: SA の割り当ての判定（閾値なし）に合わせる
@@ -229,7 +229,7 @@ namespace DS4Windows.Processing.Actions
                     if (!activated)
                     {
                         // 復帰待ちの間: 切替アクションの BeingTriggered を下げ続ける（Intent 項目 6）
-                        ActionInstanceState state = _manager.GetStateFor(action, device);
+                        ActionInstanceState? state = _manager.GetStateFor(action, device);
                         if (state != null)
                         {
                             lock (state) { state.SetBeingTriggeredInternal(false); }
@@ -333,7 +333,7 @@ namespace DS4Windows.Processing.Actions
                 ResetState(rt, null);
                 rt.Pending = null;   // 物理切断では、復帰の合図も消す（適用では消さない。ResetState は触らない）
                 rt.ResetRequested = false;
-                rt.Bindings = null; // 次の処理で、空の一覧から作り直す
+                rt.Bindings = null!; // 次の Prepare が必ず作り直す。 次の処理で、空の一覧から作り直す
             }
         }
 
@@ -345,7 +345,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 登録簿の一覧が差し替わっていたら実行時の配列を作り直し、リセットの要求があれば状態を初期化する
-        private void Prepare(DeviceRuntime rt, int device, ITriggerInput input)
+        private void Prepare(DeviceRuntime rt, int device, ITriggerInput? input)
         {
             IReadOnlyList<IActionBinding> snapshot = _registry.GetBindings(device);
             if (!ReferenceEquals(snapshot, rt.Bindings))
@@ -364,13 +364,13 @@ namespace DS4Windows.Processing.Actions
 
         // 束縛の差し替え・適用・切断のときに、IResettableOutputAction を実装する出力へ後始末を知らせる。
         // 有効にしていない出力は何もしない。割り当てが起きるのは、差し替えの瞬間だけ（毎フレームではない）
-        private static void ResetOutputs(DeviceRuntime rt, IReadOnlyList<IActionBinding> bindings, ITriggerInput input)
+        private static void ResetOutputs(DeviceRuntime rt, IReadOnlyList<IActionBinding>? bindings, ITriggerInput? input)
         {
             if (bindings == null) return;
 
             for (int i = 0; i < bindings.Count; i++)
             {
-                IReadOnlyList<IOutputAction> outputs = bindings[i]?.Outputs;
+                IReadOnlyList<IOutputAction>? outputs = bindings[i]?.Outputs;
                 if (outputs == null) continue;
 
                 for (int o = 0; o < outputs.Count; o++)
@@ -406,7 +406,7 @@ namespace DS4Windows.Processing.Actions
             rt.CompanionNext = null;
             for (int i = 0; i < count; i++)
             {
-                SpecialAction source = snapshot[i]?.Source;
+                SpecialAction? source = snapshot[i]?.Source;
                 if (source != null && !rt.Index.ContainsKey(source))
                     rt.Index.Add(source, i);
 
@@ -426,8 +426,8 @@ namespace DS4Windows.Processing.Actions
                     {
                         // 7.8e: 同じボタンの束縛は、一覧の順に鎖でつなぐ（先頭が ControlIndex、次が ControlNext）
                         if (rt.ControlIndex[control] < 0) rt.ControlIndex[control] = i;
-                        else rt.ControlNext[rt.ControlTail[control]] = i;
-                        rt.ControlTail[control] = i;
+                        else rt.ControlNext[rt.ControlTail![control]] = i;   // ControlIndex と同時に作る
+                        rt.ControlTail![control] = i;   // 同上
                         rt.ControlCount++;
                     }
                 }
@@ -436,7 +436,7 @@ namespace DS4Windows.Processing.Actions
             // SA に付随する束縛（SA の Extras）を、SA 本体の添字につなぐ（SA 本体の ProcessOwned が、一緒に処理する）
             for (int j = 0; j < count; j++)
             {
-                SpecialAction primary = (snapshot[j] as TriggerBinding)?.PrimarySource;
+                SpecialAction? primary = (snapshot[j] as TriggerBinding)?.PrimarySource;
                 if (primary == null || !rt.Index.TryGetValue(primary, out int main) || main == j) continue;
 
                 if (rt.CompanionHead == null)
@@ -447,7 +447,7 @@ namespace DS4Windows.Processing.Actions
                     Array.Fill(rt.CompanionNext, -1);
                 }
 
-                rt.CompanionNext[j] = rt.CompanionHead[main];
+                rt.CompanionNext![j] = rt.CompanionHead[main];   // CompanionHead と同時に作った
                 rt.CompanionHead[main] = j;
             }
 
@@ -455,7 +455,7 @@ namespace DS4Windows.Processing.Actions
             rt.GroupFired.Clear();
         }
 
-        private static void ResetState(DeviceRuntime rt, ITriggerInput input)
+        private static void ResetState(DeviceRuntime rt, ITriggerInput? input)
         {
             rt.Suppressed.Clear();
             rt.GroupFired.Clear();
@@ -482,14 +482,14 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                SpecialAction source = binding.Source;
-                ActionInstanceState state = _manager.GetStateFor(source, device);
+                SpecialAction? source = binding.Source;
+                ActionInstanceState? state = _manager.GetStateFor(source!, device);   // null のときは例外を、下の catch が拾う（従来どおり）
                 if (state == null) return FrameResult.Continue;
 
-                IInputAction inputAction = binding.Input;
+                IInputAction? inputAction = binding.Input;
                 BindingPolicy policy = binding.Policy;
 
-                TriggerState result = inputAction.Evaluate(input);
+                TriggerState result = inputAction!.Evaluate(input);   // エンジンに載る束縛（TriggerBinding）は、必ず入力アクションを持つ
                 bool established = result.IsEstablished;
                 rt.Established[i] = established;
                 rt.Stamp[i] = rt.Frame;
@@ -541,7 +541,7 @@ namespace DS4Windows.Processing.Actions
                         return FrameResult.Continue;
 
                     // 排他グループ（シフト）: 同じグループで先に成立した束縛だけが、以降の処理に進む
-                    string group = policy.ExclusionGroup;
+                    string? group = policy.ExclusionGroup;
                     if (group != null && !rt.GroupFired.Add(group))
                         return FrameResult.Continue;
 
@@ -567,7 +567,7 @@ namespace DS4Windows.Processing.Actions
                                 return FrameResult.Continue;
                         }
 
-                        if (policy.LogsRisingEdge) LogRisingEdge(device, source);
+                        if (policy.LogsRisingEdge) LogRisingEdge(device, source!);   // null のときの例外は、上の catch が拾う（従来どおり）
 
                         if (policy.BlocksWhileExecuting) state.IsExecuting = true;
                         try
@@ -603,7 +603,7 @@ namespace DS4Windows.Processing.Actions
                 {
                     // 離したエッジ
                     lock (state) { state.SetBeingTriggeredInternal(false); }
-                    if (policy.LogsReleaseEdge) LogReleaseEdge(device, source);
+                    if (policy.LogsReleaseEdge) LogReleaseEdge(device, source!);   // 同上
                     if (policy.StopOnRelease)
                     {
                         EngineContext ctx = rt.Context;
@@ -691,26 +691,27 @@ namespace DS4Windows.Processing.Actions
             public readonly EngineContext Context;
             public readonly Predicate<DS4Controls> ReleasePredicate;
 
-            public IReadOnlyList<IActionBinding> Bindings;
-            public bool[] Prev;
-            public bool[] Established;
-            public int[] Stamp;
-            public Dictionary<SpecialAction, int> Index;
-            public int[] ControlIndex;   // Controls タブの束縛（7.8b）: DS4Controls → Bindings の先頭の添字（なしは -1）
-            public int[] ControlTail;    // 7.8e: DS4Controls → 鎖の最後の添字（Rebuild の間だけ使う）
-            public int[] ControlNext;    // 7.8e: 束縛の添字 → 同じボタンの次の束縛の添字（なしは -1）
+            public IReadOnlyList<IActionBinding> Bindings = null!;   // 最初の Prepare（Rebuild）が、使う前に必ず設定する
+            public bool[] Prev = null!;   // 最初の Prepare（Rebuild）が、使う前に必ず設定する（それまでは null）
+            public bool[] Established = null!;   // 最初の Prepare（Rebuild）が、使う前に必ず設定する
+            public int[] Stamp = null!;   // 最初の Prepare（Rebuild）が、使う前に必ず設定する
+            public Dictionary<SpecialAction, int> Index = null!;   // 最初の Prepare（Rebuild）が、使う前に必ず設定する
+            public int[]? ControlIndex;   // Controls タブの束縛（7.8b）: DS4Controls → Bindings の先頭の添字（なしは -1）
+            public int[]? ControlTail;    // 7.8e: DS4Controls → 鎖の最後の添字（Rebuild の間だけ使う）
+            public int[] ControlNext = null!;   // 最初の Prepare（Rebuild）が、使う前に必ず設定する。    // 7.8e: 束縛の添字 → 同じボタンの次の束縛の添字（なしは -1）
             public volatile int ControlCount;
-            public int[] CompanionHead;  // SA 本体の添字 → 付随する束縛（SA の Extras）の先頭の添字（なしは -1。付随する束縛がなければ null）
-            public int[] CompanionNext;  // 付随する束縛の添字 → 同じ SA 本体の次の付随する束縛の添字（なしは -1）
+            public int[]? CompanionHead;  // SA 本体の添字 → 付随する束縛（SA の Extras）の先頭の添字（なしは -1。付随する束縛がなければ null）
+            public int[]? CompanionNext;  // 付随する束縛の添字 → 同じ SA 本体の次の付随する束縛の添字（なしは -1）
             public int Frame = 1;
-            public ITriggerInput ReleaseInput;
-            public volatile IActionBinding Pending;   // 復帰の合図（切替前の束縛）。適用では消えず、物理切断で消える
+            public ITriggerInput? ReleaseInput;
+            public volatile IActionBinding? Pending;   // 復帰の合図（切替前の束縛）。適用では消えず、物理切断で消える
             public volatile bool ResetRequested;
 
             public DeviceRuntime(int device, IVirtualKBM virtualKbm)
             {
                 Context = new EngineContext(device, virtualKbm, this);
-                ReleasePredicate = control => !ReleaseInput.IsDigitalActive(control);   // R-5: 成立の判定（閾値なし）に合わせる
+                ReleasePredicate = control => !ReleaseInput!.IsDigitalActive(control);   // 述語は ReleaseSuppressedCore の間だけ呼ばれ、そのとき ReleaseInput は設定済み
+                  // R-5: 成立の判定（閾値なし）に合わせる
             }
         }
 
@@ -726,16 +727,16 @@ namespace DS4Windows.Processing.Actions
                 _owner = owner;
             }
 
-            public SpecialAction PendingUntriggerAction => _owner.Pending?.Source;
+            public SpecialAction? PendingUntriggerAction => _owner.Pending?.Source;
 
             public int Device { get; }
             public IVirtualKBM OutputHandler { get; }
-            public IFrameOutput Frame { get; private set; }
+            public IFrameOutput? Frame { get; private set; }
             public bool EndFrameRequested { get; private set; }
 
-            public ITriggerInput Input { get; private set; }
+            public ITriggerInput? Input { get; private set; }
 
-            public void Begin(IFrameOutput frame, ITriggerInput input)
+            public void Begin(IFrameOutput? frame, ITriggerInput? input)
             {
                 Frame = frame;
                 Input = input;

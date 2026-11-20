@@ -162,7 +162,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                     {
                         bool curBeing = false;
                         // トグルの状態は、毎回取り直す（切断・プロファイル適用の ClearDeviceState／ClearAllEntries で、状態が新しいものに替わり、OFF に戻るため）
-                        try { curBeing = latch ? IsToggledOnNow(action, device) : _manager.IsBeingTriggered(action, device); keepRunning = curBeing; } catch { keepRunning = false; curBeing = false; }
+                        try { curBeing = latch ? IsToggledOnNow(action, device) : _manager.IsBeingTriggered(action!, device); keepRunning = curBeing; } catch { keepRunning = false; curBeing = false; }
 
                         // Log the recheck result and the decision whether we'll rerun this macro
                         try
@@ -199,7 +199,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         /// <summary>R-2: そのアクション・デバイスの、トグルの状態（<c>IsToggledOn</c>）。状態が取れないときは偽（＝繰り返しを止める）。</summary>
         private bool IsToggledOnNow(SpecialAction? action, int device)
         {
-            try { return _manager.GetStateFor(action, device)?.IsToggledOn ?? false; }
+            try { return _manager.GetStateFor(action!, device)?.IsToggledOn ?? false; }   // null のときの例外は、直後の catch が拾う（従来どおり）
             catch { return false; }
         }
 

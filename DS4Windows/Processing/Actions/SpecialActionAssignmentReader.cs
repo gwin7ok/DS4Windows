@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Actions
         /// 定義にする。SA が null、種別が不明（None）、トリガーのボタンがない SA は null。
         /// <paramref name="origin"/> が Controls のとき、トリガーは 1 つ目だけを使う（Controls の合成の SA は、トリガーがそのボタン 1 つ）。
         /// </summary>
-        public static AssignmentDefinition Read(SpecialAction sa, AssignmentOrigin origin = AssignmentOrigin.SpecialAction)
+        public static AssignmentDefinition? Read(SpecialAction sa, AssignmentOrigin origin = AssignmentOrigin.SpecialAction)
         {
             if (sa == null || sa.typeID == SpecialAction.ActionTypeId.None) return null;
             if (sa.trigger == null || sa.trigger.Count == 0) return null;

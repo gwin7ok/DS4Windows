@@ -97,12 +97,12 @@ namespace DS4Windows.Processing
         {
         }
 
-        public ControllerStateFieldMapping(ControllerState cState, ControllerStateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
+        public ControllerStateFieldMapping(ControllerState cState, ControllerStateExposed exposeState, TouchpadMouse? tp, bool priorMouse = false)
         {
             PopulateFieldMapping(cState, exposeState, tp, priorMouse);
         }
 
-        public void PopulateFieldMapping(ControllerState cState, ControllerStateExposed exposeState, TouchpadMouse tp, bool priorMouse = false)
+        public void PopulateFieldMapping(ControllerState cState, ControllerStateExposed exposeState, TouchpadMouse? tp, bool priorMouse = false)
         {
             unchecked
             {
