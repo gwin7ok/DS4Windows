@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.4-W1（Phase8-Step7-4-Plan.md §3 W1）: Program 種別の「旧経路（<c>MapCustomAction</c> の Program の分岐）」と「新経路（エンジン）」の特性化。
+    /// Phase8-Step7 7.4-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-4-Plan.md §3 W1）: Program 種別の「旧経路（<c>MapCustomAction</c> の Program の分岐）」と「新経路（エンジン）」の特性化。
     /// 実際のプログラムを起動しないよう、存在しない実行ファイルのパスを使う。<c>DefaultProcessLauncher</c> は、起動に失敗すると
     /// <c>AppLogger.LogToGui("Process launch failed for '&lt;パス&gt;': …")</c> を出すため、<c>AppLogger.GuiLog</c> を購読して、パスごとの起動の試行を数える
     /// （旧・新とも同じ部品を通るため、回数を比べられる）。

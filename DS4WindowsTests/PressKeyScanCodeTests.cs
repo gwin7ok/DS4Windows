@@ -14,7 +14,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step1 W4（Phase10-Step1-Plan.md §3.3・§5）: SA の Press Key タブが、Scan Code を自分で持つこと
+    /// Phase10-Step1 W4（docs-forDIMG/MadeByAgent/Archive/Phase10-Step1-Plan.md §3.3・§5）: SA の Press Key タブが、Scan Code を自分で持つこと
     /// （選択ダイアログのチェックボックスは廃止）。値は、タブ → 設定の箱（<c>PrepareSettings</c>）→ 選択ダイアログ
     /// （<c>BindingWindowViewModel.WriteBinds</c>）→ タブ（<c>ReadSettings</c>）と通っても、保たれる。
     /// </summary>

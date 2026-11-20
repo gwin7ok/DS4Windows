@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5a-W3（Phase8-Step7-5-Plan.md §3 7.5a の W3）: Profile（切替のみ）をスイッチに入れた状態の、ロールバック・復帰つきの扱い・割り当て・性能の確認。
+    /// Phase8-Step7 7.5a-W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5-Plan.md §3 7.5a の W3）: Profile（切替のみ）をスイッチに入れた状態の、ロールバック・復帰つきの扱い・割り当て・性能の確認。
     /// プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

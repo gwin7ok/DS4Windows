@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8c-W2/W3（Phase8-Step7-8c-Plan.md §3〜§5）: Controls タブの Macro の新経路（SA の Macro の仕様に合わせた）。
+    /// Phase8-Step7 7.8c-W2/W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8c-Plan.md §3〜§5）: Controls タブの Macro の新経路（SA の Macro の仕様に合わせた）。
     /// 所有の条件、ビルダー、押下の判定の種類、ロールバック、割り当て。動作の旧・新の比べは <c>ControlsMacroCharacterizationTests</c>。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>

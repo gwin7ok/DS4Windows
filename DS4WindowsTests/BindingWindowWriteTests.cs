@@ -10,7 +10,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W0（Phase10-Step3-Plan.md §3.2・§3.3・§5）: 出力ピッカー（<c>BindingWindowViewModel</c>）の、Default／Unbound／Key／Button の書き込みと、
+    /// Phase10-Step3 W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3-Plan.md §3.2・§3.3・§5）: 出力ピッカー（<c>BindingWindowViewModel</c>）の、Default／Unbound／Key／Button の書き込みと、
     /// Key・Button 選択時に Extras が保たれることの特性化。既存の癖（Button の Toggle を書かない。C-5）も、そのまま固定する。製品コードは変えない。
     /// </summary>
     public class BindingWindowWriteTests

@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step3 W1（Phase8-Step3-Plan.md §2.1）: 判定と束縛の契約・値型のテスト。
+    /// Phase8-Step3 W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step3-Plan.md §2.1）: 判定と束縛の契約・値型のテスト。
     /// 対象: <see cref="TriggerState"/>、<see cref="DelayClock"/>、<see cref="BindingPolicy"/>、<see cref="TriggerBinding"/>、
     /// 改訂した <see cref="IActionBinding"/>／<see cref="IInputAction"/>（<c>KeyActionBinding</c> の追従を含む）。
     /// 本番の挙動には配線されていない新しい型の、契約の形（不変性、既定値、削除したメンバー）を固定する。

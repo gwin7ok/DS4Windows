@@ -19,7 +19,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7b-W2（Phase8-Step7-7-Plan.md §3.2。Q2＝B: 独立した入力アクション）: <see cref="MultiTapInputAction"/>、<see cref="MultiActionOutput"/>、
+    /// Phase8-Step7 7.7b-W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-7-Plan.md §3.2。Q2＝B: 独立した入力アクション）: <see cref="MultiTapInputAction"/>、<see cref="MultiActionOutput"/>、
     /// ビルダー、ログ、割り当ての確認。旧・新の両経路の比べは <c>MultiActionDualPathTests</c>。
     /// 入力アクションは、時刻と押下を差し込める偽の入力（待たない）で確かめる。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>

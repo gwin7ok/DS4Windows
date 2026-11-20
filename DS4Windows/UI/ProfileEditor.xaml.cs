@@ -821,7 +821,7 @@ namespace DS4Windows.UI
             // （同一インスタンスの再代入）だけではWPFのバインディングは更新されない。本メソッドの
             // 呼び出し元（PresetBtn_Click）が必ず先にStopEditorBindings()（DataContext=null）を
             // 呼んでいることが、UI反映を成立させる前提条件になっている。詳細はUpdateLateProperties()の
-            // コメント、および Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1 を参照。
+            // コメント、および docs-forDIMG/MadeByAgent/Archive/Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1 を参照。
             specialActionsVM.LoadActions(currentProfile == null);
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();

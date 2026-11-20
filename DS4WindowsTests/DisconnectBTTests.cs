@@ -15,7 +15,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.6b（Phase8-Step7-6-Plan.md §3.3。Q3＝B: 切断の成功／失敗と再試行）: DisconnectBT の新経路の確認。
+    /// Phase8-Step7 7.6b（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-6-Plan.md §3.3。Q3＝B: 切断の成功／失敗と再試行）: DisconnectBT の新経路の確認。
     /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>

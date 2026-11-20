@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// - コンテナの構築より前に作った <see cref="PathService"/>／<see cref="EnvironmentService"/> を、<c>CreateHost</c> が同じインスタンスとして登録する。
     /// - App の Pre-Host は、ブートストラップのインスタンスを使う（個別の <c>new</c> や <c>Global</c> 経由の保存場所の参照をしない）。
     /// - <c>-reenableDevice</c> 分岐は、<c>InputDeviceRegistry</c> を静的に呼ばず、<see cref="IInputDeviceRegistry"/> を通す。
-    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
+    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step4-Plan.md</c>。
     /// </summary>
     public class StartupBootstrapGuardTests
     {

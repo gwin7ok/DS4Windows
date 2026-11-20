@@ -8,7 +8,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="GyroMouseStickBlender"/>（旧 <c>Mapping.TempMouseJoystick</c> の内側）の値の特性化。
+    /// Phase9 9-B（docs-forDIMG/MadeByAgent/Archive/Phase9-B-Plan.md）: <see cref="GyroMouseStickBlender"/>（旧 <c>Mapping.TempMouseJoystick</c> の内側）の値の特性化。
     /// 出力スティック（左／右）と軸（XY／X／Y）ごとに、ジャイロ由来の値と通常のスティックの値のうち、中心（128）から遠い方を採ることを調べる。
     /// </summary>
     public class GyroMouseStickBlenderTests

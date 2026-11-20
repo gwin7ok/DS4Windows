@@ -122,7 +122,7 @@ namespace DS4Windows.UI.ViewModels
 
         // 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
         // 記録中のタッチパッド Passthru で実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」。
-        // 詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
+        //
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 

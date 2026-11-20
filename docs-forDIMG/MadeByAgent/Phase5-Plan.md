@@ -3,9 +3,9 @@
 作成日: 2026-09-02
 最終更新日: 2026-09-03（A案ドメイン集約型順序および各Stepガードレール注記を反映）
 対象ブランチ: `For-DI-migration-work`
-前フェーズ: `Phase4-Plan.md`
+前フェーズ: `Archive/Phase4-Plan.md`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
-Step1監査レポート: `docs-forDIMG/MadeByAgent/Phase5-Step1-legacy-delegation-audit-report.md`
+Step1監査レポート: `docs-forDIMG/MadeByAgent/Archive/Phase5-Step1-legacy-delegation-audit-report.md`
 
 ---
 
@@ -62,7 +62,7 @@ Phase5-Step1: 詳細監査と優先度付け【完了】
 ## 4. 各ステップの詳細内容
 
 ### Phase5-Step1: 詳細監査と優先度付け【完了】
-DI登録済み23サービスおよびコード全体を精査し、全残存Legacy経路を特定・分類した。成果物: `Phase5-Step1-legacy-delegation-audit-report.md`。
+DI登録済み23サービスおよびコード全体を精査し、全残存Legacy経路を特定・分類した。成果物: `Archive/Phase5-Step1-legacy-delegation-audit-report.md`。
 
 ---
 
@@ -151,7 +151,7 @@ DI登録済み23サービスおよびコード全体を精査し、全残存Lega
 
 #### Phase5-Step15: Legacy shim の削除判断・第一次神クラスダウンサイズ
 * **主目的**:
-  Step 13 で UI 層からの旧静的アクセスが DI サービスへ移行したことを受け、`Phase5-Watchpoints-Investigation-Report.md` の **推奨案 1-B（プロファイル判定移譲）** および **推奨案 3-A ＋ 3-C（SSOT 透過委譲 ＆ Obsolete 化）** を実施し、呼出元が途絶えた不要シムを物理削除して **神クラスの第一次ダウンサイズ** を達成する。
+  Step 13 で UI 層からの旧静的アクセスが DI サービスへ移行したことを受け、`Archive/Phase5-Watchpoints-Investigation-Report.md` の **推奨案 1-B（プロファイル判定移譲）** および **推奨案 3-A ＋ 3-C（SSOT 透過委譲 ＆ Obsolete 化）** を実施し、呼出元が途絶えた不要シムを物理削除して **神クラスの第一次ダウンサイズ** を達成する。
 
 * **対象ファイル・クラス**:
   * `DS4Windows/DS4Forms/MainWindow.xaml.cs`

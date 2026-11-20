@@ -150,7 +150,7 @@ namespace DS4WindowsTests
                 var store = new OutputSlotStore(new PathService(dir));
                 var manager = TestRepositoryFactory.CreateOutputSlotManager();
 
-                Assert.True(store.Save(manager)); // 書き込み成功時は true を返す（Phase6-Step10-4-Plan.md §26 で是正）
+                Assert.True(store.Save(manager)); // 書き込み成功時は true を返す（docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-4-Plan.md §26 で是正）
                 Assert.True(System.IO.File.Exists(System.IO.Path.Combine(dir, "OutputSlots.xml")));
             }
             finally

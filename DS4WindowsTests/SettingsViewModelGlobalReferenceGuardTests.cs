@@ -11,7 +11,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase6-Step9-3: <c>SettingsViewModel</c> の Global 直接参照解消の回帰ガード
-    /// （<c>Phase6-Step9-Plan.md</c> §0A.2 表A、決定1＝S9-A、決定6＝D1）。
+    /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step9-Plan.md</c> §0A.2 表A、決定1＝S9-A、決定6＝D1）。
     /// - Step9-3a・3b で DI サービス経由へ置換した 89 件のメンバーが、<c>Global.</c> として再混入していないこと。
     /// - コンストラクタの依存が必須であり、Service Locator（<c>AppHost</c>）を持たないこと。
     /// - 削除した呼出元 0 件のハンドラが戻っていないこと。

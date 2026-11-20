@@ -17,7 +17,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W2（Phase10-Step4c-Plan.md §2 項目 4・§4 W2、ユーザー承認 2026-10-21）: 立ち上がり（トリガー成立）と離したときのログを、
+    /// Phase10-Step4c W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4c-Plan.md §2 項目 4・§4 W2、ユーザー承認 2026-10-21）: 立ち上がり（トリガー成立）と離したときのログを、
     /// Controls／SA の全種別で出す。立ち上がりのログは、出力アクションが出す種別（SA の全種別、Controls の Key／Macro／Special）と、
     /// エンジンが出す種別（Controls の Pad／Mouse／AnalogMouse／Extras。<see cref="BindingPolicy.LogsRisingEdge"/>）がある。離したときのログは、エンジンが全種別で出す
     /// （<see cref="BindingPolicy.LogsReleaseEdge"/>。素通しと Unbound の消すだけの束縛を除く）。既存のログの文言・順序は変えない（増やすだけ）。

@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8a（Phase8-Step7-8a-Plan.md W1〜W4）: Key／Button の出力の値渡し化（解釈は変換層、出力は実行だけ）と、Controls タブの土台（空の配線）のテスト。
+    /// Phase8-Step7 7.8a（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8a-Plan.md W1〜W4）: Key／Button の出力の値渡し化（解釈は変換層、出力は実行だけ）と、Controls タブの土台（空の配線）のテスト。
     /// 動作・ログは変えない（既存の 7.1・7.2 のテストが期待値を変えずに成功することが、不変の証拠）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

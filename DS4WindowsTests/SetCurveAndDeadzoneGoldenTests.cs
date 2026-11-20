@@ -15,7 +15,7 @@ using DS4Windows.UI;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-A(1) (a)（Phase9-A1-Plan.md §3）: <c>Mapping.SetCurveAndDeadzone</c> のスティックとトリガーの補正の<b>値の特性化テスト</b>（ゴールデン方式）。
+    /// Phase9 9-A(1) (a)（docs-forDIMG/MadeByAgent/Archive/Phase9-A1-Plan.md §3）: <c>Mapping.SetCurveAndDeadzone</c> のスティックとトリガーの補正の<b>値の特性化テスト</b>（ゴールデン方式）。
     /// 格子の入力（スティックは X・Y を 12 点ずつの 144 点、トリガーは 10 点）と、設定の場面（デッドゾーンの種類・値、アンチデッドゾーン、最大ゾーン、最大出力、
     /// 感度、スクエアスティック、出力カーブ、回転、ファズ、トリガーの補正）を組み合わせ、<b>今のコードの出力</b>をそのままゴールデンに記録する。
     /// 左右のスティックが同じ設定のときの値の違い（左右の非対称）は、別のゴールデンに記録する（共通化の前に、差があるかが分かる。差があれば、そのまま保つ）。

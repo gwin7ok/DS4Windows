@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3・§5）: 共通の編集画面の、Controls のモードの ViewModel
+    /// Phase10-Step2 W3（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §3.3・§5）: 共通の編集画面の、Controls のモードの ViewModel
     /// （<see cref="ControlActionEditorViewModel"/>）。名前は、ボタンの表示名で編集不可、トリガーは、そのボタンだけで変更不可、
     /// 種別の一覧は、Controls で現在保存できる種別（Key・Button・Macro）だけ選べる。SA のモードの ViewModel は、従来どおり。
     /// </summary>

@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8e-W1（Phase8-Step7-8e-Plan.md §5）: Controls タブの Extras（<c>ProcessControlSettingAction</c> の Extras の枝）の特性化。Lightbar マクロは廃止した（Q8＝B）ため、対象外。
+    /// Phase8-Step7 7.8e-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8e-Plan.md §5）: Controls タブの Extras（<c>ProcessControlSettingAction</c> の Extras の枝）の特性化。Lightbar マクロは廃止した（Q8＝B）ため、対象外。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。W1 の時点では新経路が未実装のため、どちらでも旧経路が処理する。
     /// W2 で新経路が入るとき、承認済みの動作の変更（Q3＝B: 2 つ同時のとき、ボタンごとに元に戻す。Q6＝B: 押したままの適用・切断で元に戻す）の
     /// （Phase8-Step8 8d: 旧経路は削除した。期待値は、新経路のもの）。
@@ -277,7 +277,7 @@ namespace DS4WindowsTests
 
             t.Run(State());
             t.Run(State(cross: true));
-            // Phase8-Step8 8a: 9 個未満の Extras は束縛を作らない＝何もしない（旧経路の「途中まで適用」は削除した。Phase8-Step8-Plan.md Q2）
+            // Phase8-Step8 8a: 9 個未満の Extras は束縛を作らない＝何もしない（旧経路の「途中まで適用」は削除した。docs-forDIMG/MadeByAgent/Archive/Phase8-Step8-Plan.md Q2）
             Assert.False(t.RumbleActive);
             Assert.False(t.ForceLight);
 

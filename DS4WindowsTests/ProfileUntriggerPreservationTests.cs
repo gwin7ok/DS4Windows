@@ -7,7 +7,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7b W1（Phase7b-Plan.md §2 項目 1、Q1＝A、Q2＝B）: 「Unload on trigger release」で元のプロファイルに戻らない不具合の回帰ガード。
+    /// Phase7b W1（docs-forDIMG/MadeByAgent/Archive/Phase7b-Plan.md §2 項目 1、Q1＝A、Q2＝B）: 「Unload on trigger release」で元のプロファイルに戻らない不具合の回帰ガード。
     /// 原因: プロファイル切替の適用が <c>ActionManager.ClearDeviceState</c> を呼び、内部の <c>Mapping.HandleDeviceDisconnect</c> が
     /// <c>deviceRuntime[device]</c> を作り直して、復帰の合図（<c>UntriggerAction</c>）も消していた。
     /// 是正: <c>ClearDeviceState</c> は合図を退避して戻す。実際の切断（<c>Mapping.HandleDeviceDisconnect</c> の直接呼び出し）では消える。

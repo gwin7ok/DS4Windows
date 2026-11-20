@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I3（Phase10-Step6-Plan.md §4）: 読み込みの部品 2 つ（<see cref="SpecialActionAssignmentReader"/>、<see cref="ControlsAssignmentReader"/>）と、
+    /// Phase10-Step6 I3（docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Plan.md §4）: 読み込みの部品 2 つ（<see cref="SpecialActionAssignmentReader"/>、<see cref="ControlsAssignmentReader"/>）と、
     /// 定義を受ける <see cref="ISpecialActionOutputFactory.Create(int, AssignmentDefinition, SpecialAction, int)"/> の検査。
     /// 全種別 × 由来の出力・方針が、旧 <c>Create(device, sa, index, forControls)</c> と同じであることは、<c>SpecialActionOutputFactoryTests</c> ほか既存のテストが守る。
     /// </summary>

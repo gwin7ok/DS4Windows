@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6（Phase9-E6-Plan.md）: ライフサイクルの切り出しの守り（段階ごとに検査を足していく）。
+    /// Phase9 9-E E-6（docs-forDIMG/MadeByAgent/Archive/Phase9-E6-Plan.md）: ライフサイクルの切り出しの守り（段階ごとに検査を足していく）。
     /// E-6a: 接続時のプロファイルの選択と適用が <c>ConnectionProfileSelector</c> へ移り、<c>ControlService</c> は委譲だけを持つこと。
     /// E-6b: 設定の反映とイベントの配線が <c>DeviceConnectionSetup</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。
     /// E-6c: デバイスの種類ごとの分岐が <c>IInputDeviceModule</c>（カートリッジ）へ移り、<c>ControlService</c> には種類ごとの分岐が残らないこと。

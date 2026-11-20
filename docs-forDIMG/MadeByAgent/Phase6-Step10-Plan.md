@@ -4,18 +4,18 @@
 改訂日: 2026-09-18（Phase6-Step1 再監査エビデンスおよびStep9引き継ぎ合意に基づく推奨案［機能ドメイン別3グループ分割・View/ViewModelペアPure DI化］採用・全面拡充改訂）  
 状態: 計画書改訂・承認待ち（実装未着手）  
 対象ブランチ: `For-DI-migration-work`  
-上位計画書: `docs-forDIMG/MadeByAgent/Phase6-Plan.md`  
+上位計画書: `docs-forDIMG/MadeByAgent/Archive/Phase6-Plan.md`  
 準拠指針: `.github/copilot-instructions.md`, `docs-forDIMG/DI-App-Wide-Migration-Plan.md`, `docs-forDIMG/Model-Diagram/02-Layer-Architecture-Diagram.md`  
 参照エビデンス:  
-  - `Phase6-Step1-UI-Reference-Evidence.md` §2〜§4（UI層・小型ViewModel層 実地監査記録）  
-  - `Phase6-Step1-ABC-Classification.md`（a/b/c分類台帳）  
-  - `Phase6-Step1-Unique-ID-Manifest.md`（一意ID台帳）  
-  - `Phase6-Step9-Plan.md`（主要ViewModel移行計画・残存小型ViewModel引き継ぎ台帳）  
+  - `Archive/Phase6-Step1-UI-Reference-Evidence.md` §2〜§4（UI層・小型ViewModel層 実地監査記録）  
+  - `Archive/Phase6-Step1-ABC-Classification.md`（a/b/c分類台帳）  
+  - `Archive/Phase6-Step1-Unique-ID-Manifest.md`（一意ID台帳）  
+  - `Archive/Phase6-Step9-Plan.md`（主要ViewModel移行計画・残存小型ViewModel引き継ぎ台帳）  
 
 ---
 
 > **Step9 からの申し送り（2026-10-14 追記。Step10-0 で必ず確認すること）**
-> - **台帳は作り直しが必要**: 本書の行番号・件数は 2026-09-18 版。Step9 の変更（下記）で変わった箇所がある。Step10-0 で、現行コードから再集計すること（Step9 のやり方は `Phase6-Step9-Plan.md` §0A）。
+> - **台帳は作り直しが必要**: 本書の行番号・件数は 2026-09-18 版。Step9 の変更（下記）で変わった箇所がある。Step10-0 で、現行コードから再集計すること（Step9 のやり方は `Archive/Phase6-Step9-Plan.md` §0A）。
 > - **Step9 で追加した契約（Step10 の置換先として使う）**:
 >   - `IPathService.ProgramDirectory`（`Global.exedirpath` と同じ値）: `SaveWhere.xaml.cs`（5 件）、`Util.cs`（2 件、`Global.exedirpath`）、`StartupMethods`（4 件、静的クラス）の置換先。`IPathService.ExecutableDirectory`（`AppContext.BaseDirectory`）は値が異なるため、`exedirpath` の置換には使わない。
 >   - `IProfileSettingsService.RefreshActionAlias(DS4ControlSettings, bool)`: `BindingWindowViewModel.cs` の `Global.RefreshActionAlias`（706、770 行）の置換先。
@@ -28,13 +28,13 @@
 > - **Step9 で触れていない静的結合（Step10 の台帳）**: `SettingsViewModel` の `App.logHolder`（5 箇所）・`StartupMethods.*`（静的クラス、16 行）・`Util.GetHidHideClientPath()`、`TrayIconViewModel` の `App.Current.Dispatcher`。
 > - **維持が必要なソース走査ガード**: `SettingsViewModelGlobalReferenceGuardTests`、`MainWindowsAndTrayViewModelGlobalReferenceGuardTests`、`ProfileSettingsViewModelGlobalReferenceGuardTests`（`ViewModelFactory` のコンストラクタに `AppHost` と `= null` が無いことを検査）。`ViewModelFactory` に引数を足すときは、ガードの `Func<ControlService>` の検査（コンストラクタの文字列範囲）を確認すること。
 > - **持ち越し**: K9-3（プリセットメニューのサブメニュー）。`ProfileEditor.xaml`／`MainWindow.xaml` を Step10 で触るときに、単一モニター・同一 DPI の環境で再現するかを確認する案（`Phase6-Status.md` §6.5）。
-> - 詳細は `Phase6-Step9-Plan.md` §0A、`Phase6-Step9-Completion-Report.md`。
+> - 詳細は `Archive/Phase6-Step9-Plan.md` §0A、`Archive/Phase6-Step9-Completion-Report.md`。
 
 > **Step9b（PR #1 の Copilot レビュー）からの申し送り（2026-10-14 追記。Step10-0 で台帳に組み込むこと）**
 > - **F09**: `ControllersViewModel` のコンストラクタが任意引数（`= null`）＋ `AppHost.GetService` のフォールバック（`ControllersViewModel.cs:18〜23`）。Step9 の決定1＝S9-A と同じ方針（依存を必須引数にし、null を拒否する）で解消する。DI には Singleton で登録済み。
 > - **F08**: サービス実装のコンストラクタにも同じフォールバックがある。`ProfileActionChainService.cs:15`（`?? AppHost.GetService<IMappingActionDispatcher>() ?? new MappingActionDispatcher()`）、`ProfileApplicationService`（`_deviceState`／`_control`／`_profileRepo` など）。Step10-0 で、サービス実装のコンストラクタの `AppHost.GetService`／`new` フォールバックを洗い出し、グループとして台帳に載せる（`copilot-instructions.md` §3.1 は「ViewModel やサービス」の両方を対象にしている）。
 > - **付随の整理項目（Step9b で判明。Step10-0 の台帳へ）**: (1) `SpecialActionsListViewModel` の `actionManager` フィールドは代入のみで未使用（`IManagedActionManager` を `AppHost.GetService` で任意引数のフォールバック取得。F09 と同じ Pure DI の整理対象）。(2) `ProfileApplicationService` の `deviceIndex >= 4` の拒否（既知の K1。F05 と同じ「4 スロット固定」の前提で、8 スロット拡張時に影響）。(3) `IManagedActionManager`／`IControllerRegistry` は Step9b-2 で再登録済み（`ServiceRegistration`）。F08 の洗い出しでは、`DefaultActionManager` のコンストラクタの `AppHost.GetService<IActionFactory>() ?? new DefaultActionFactory()` も対象に含めること。
-> - 詳細は `Phase6-Step9b-Plan.md` §1。
+> - 詳細は `Archive/Phase6-Step9b-Plan.md` §1。
 
 ## 0A. Step10-0 台帳（2026-10-14 作成。現行コードの grep による再集計。§2 の旧台帳［72箇所］は参考扱いとし、本節を正とする）
 
@@ -113,7 +113,7 @@
 
 ### 0.1 旧計画書からの精査とStep9からの引き継ぎ合意
 旧計画書（2026-09-11）では、「`WelcomeDialog`, `PresetOption`, `SaveWhere`, `BindingWindow` の4ファイル・暫定29件のみ」をスコープとしていた。  
-しかし、2026-09-18の Step1 精密再監査（`Phase6-Step1-UI-Reference-Evidence.md` §2〜§4）および Step9 計画策定における重要合意により、**Phase6 の最終実装ステップである本 Step10 の真の全容**が以下の通り確定した：
+しかし、2026-09-18の Step1 精密再監査（`Archive/Phase6-Step1-UI-Reference-Evidence.md` §2〜§4）および Step9 計画策定における重要合意により、**Phase6 の最終実装ステップである本 Step10 の真の全容**が以下の通り確定した：
 
 1. **Step9 から正式に引き継がれた残存小型 ViewModel 群（12ファイル・実参照約30箇所）**:  
    `AboutViewModel`, `AutoProfilesViewModel`, `BindingWindowViewModel`, `ControllerListViewModel`, `ControllerRegDeviceOptsViewModel`, `LanguagePackViewModel`, `LogViewModel`, `MappingListViewModel`, `RecordBoxViewModel`, `RenameProfileViewModel`, `TouchButtonUserControlViewModel`, `UpdaterWindowViewModel`
@@ -333,7 +333,7 @@ public partial class SaveWhere : Window
 - **作業内容**:
   1. 静的コード解析を実行し、除外リスト（const定数・Pre-Host等）以外の `Global.` 直接参照がソリューション全体から完全にゼロになったことを確認。
   2. `DS4WindowsTests` および `StandaloneTests` の全自動テストを実行。
-  3. 完了報告書（`Phase6-Step10-Completion-Report.md`）を作成。
+  3. 完了報告書（`Archive/Phase6-Step10-Completion-Report.md`）を作成。
 - **検証**:
   - 全自動テスト 100% 合格を確認。
 
@@ -389,7 +389,7 @@ public partial class SaveWhere : Window
 - 実際の呼び出し側は、`ControlService.AttachUnboundOutDev`／`DetachUnboundOutDev` を直接呼んでいる:
   - 出力スロット管理画面: `DS4Forms/ViewModels/CurrentOutDeviceViewModel.cs`（`OutSlot_PluginRequest`／`OutSlot_UnplugRequest`）と、それに生の `ControlService`／`OutputSlotManager` を渡す `OutputSlotManagerControl.xaml.cs`（`SetupDataContext`）。
   - UDP コマンド: `DS4Forms/MainWindow.xaml.cs` の `outputslot.<n>.unplug／plugds4／plugx360`（1403〜1407 行付近）。
-- 詳細な差分（スレッド、事前条件と種別、依存の取り方、イベント）は `Phase6-Step6-Plan.md` §3.1 を参照。
+- 詳細な差分（スレッド、事前条件と種別、依存の取り方、イベント）は `Archive/Phase6-Step6-Plan.md` §3.1 を参照。
 
 ### 8.2 作業内容（着手時に現行コードと突き合わせて詳細化する）
 1. `OutputSlotService.PluginSlot`／`UnplugSlot` を、画面側の現行の挙動と同等にする: `ControlService.EventDispatcher` へのディスパッチ、事前条件（接続状態・入力割り当て）の確認、プラグイン時の種別の決め方。
@@ -403,14 +403,14 @@ public partial class SaveWhere : Window
 ---
 
 ## 進捗の記録（2026-10-14 時点）
-- **完了**: Step10-0（台帳の作り直しと決定）、Step10-1（グループ1。`Phase6-Step10-1-Plan.md`）、Step10-2（グループ2。`Phase6-Step10-2-Plan.md` §10）、Step10-3（グループ3。`Phase6-Step10-3-Plan.md` §14）。付随: Vader 4 Pro のデバイスサポート削除（`Phase6-Step10-V4P-Removal-Plan.md`）、Step10-3b（アクションの名前変更・削除の全プロファイル反映。`Phase6-Step10-3b-Plan.md` §9）。
+- **完了**: Step10-0（台帳の作り直しと決定）、Step10-1（グループ1。`Archive/Phase6-Step10-1-Plan.md`）、Step10-2（グループ2。`Archive/Phase6-Step10-2-Plan.md` §10）、Step10-3（グループ3。`Archive/Phase6-Step10-3-Plan.md` §14）。付随: Vader 4 Pro のデバイスサポート削除（`Archive/Phase6-Step10-V4P-Removal-Plan.md`）、Step10-3b（アクションの名前変更・削除の全プロファイル反映。`Archive/Phase6-Step10-3b-Plan.md` §9）。
 - **残り**:
-  - **Step10-3c**: SA の「キー押下」でコントローラーのボタンを割り当てられない件の調査（計画書は `Phase6-Step10-3c-Plan.md`）。
+  - **Step10-3c**: SA の「キー押下」でコントローラーのボタンを割り当てられない件の調査（計画書は `Archive/Phase6-Step10-3c-Plan.md`）。
   - **Step10-4**: F08（サービス実装のコンストラクタのフォールバック 12 クラス）と、全域の再走査・分類・ガードテスト。あわせて、`ISpecialActionRepository.RemoveAction`（メモリのみ）の呼び出し元の有無と、Step10-2／10-3 で `ProfileEditor` 本体に残る `AppHost`／`Program.rootHub` の解決（`profileRepository`、`profileSwitcher`、`controlService`、`vmFactory`）の分類。
   - **Step10-5**: §8（`PluginSlot`／`UnplugSlot` の接続）。
-  - **完了報告書**: `Phase6-Step10-Completion-Report.md`、`Phase6-Step10b-Plan.md`・`Phase6-Step11-Plan.md` への引き継ぎ（複数型ファイルの分割は Step10b。`PresetOption.cs`、`MappingListViewModel.cs` など）。
-- **先送り台帳**: `Phase6-Step11-Plan.md` §3.3（Step10-1-3 の更新通知、Step10-3-2 の SA キー押下のボタン割り当て）。
-- **追記（2026-10-15）**: Step10-3c の調査で、SA の「キー押下」のボタンの割り当ては動作していることを確認し、表示の更新と SwitchMode の保存・読込の不具合を是正した（`Phase6-Step10-3c-Plan.md` §5〜6、実機確認済み）。実行時の Toggle の未実装（`Phase6-Step10-3c-Plan.md` §7）は、**Step10-4・10-5 の後に、KBM の Toggle と共通化した形で実装する**ことに決定した（§8。計画書は実施時に作成）。
-- **追記（2026-10-15、Step10-4 の完了）**: Step10-4（10-4-0〜10-4-6）が完了した。内容: 小さな置換（`WindowPlacementHelper`、`ProfileList`、`ProfileEntity`）、クラスタ 1（プロファイル系 6 クラスと `ProfileActionProvider`、`AutoProfileHolder` の依存の必須化）、K1 の是正（スロット 5〜8 の拒否、戻り値の破棄）、アクション連鎖の廃止、Fresh-press ガードの全型への適用（`Mapping.cs`）、クラスタ 2（出力スロット系）、クラスタ 3（`Actions/*`。`AutoProfileChecker`／`IMappingActionDispatcher` の削除）、`MainWindow`／`ControlService` の置換、名前変更時のリンクプロファイル・自動プロファイルの旧名の置換、全域の退行ガード（`Step10FourGlobalRatchetGuardTests`）。詳細・決定・実機確認は `Phase6-Step10-4-Plan.md` §8〜34。**残り: Step10-5（§8）、SA の Button の Toggle の実行時の実装（Step10-3c-Plan §7〜8）、完了報告書。**
-- **追記（2026-10-15、Step10 の完了）**: Step10-5（出力スロットの抜き差しを `IOutputSlotService` 経由に。画面・UDP）、Step10-3d（ボタン種別 SA の Press／Toggle を Stage3 に一本化）、名前変更時のプロファイル切替 SA の切替先の置換（10-4-5d）が完了した。あわせて、実機確認で見つかった上流由来の不具合（Release モードの比較反転、タップ判定のずれ許容、タップクリックの保持、Left Touch のホバー表示）を、承認のうえ是正した。完了報告書: `Phase6-Step10-Completion-Report.md`。残る作業は、Step10b・Step11 への引き継ぎ（同報告書 §8）。
-- **先送り台帳への追加（`Phase6-Step11-Plan.md` §3.3）**: Step10-4-2c（振動・自動停止時間の反映）、Step10-4-2f（スロット 5〜8 の切替・自動プロファイル）。
+  - **完了報告書**: `Archive/Phase6-Step10-Completion-Report.md`、`Phase6-Step10b-Plan.md`・`Archive/Phase6-Step11-Plan.md` への引き継ぎ（複数型ファイルの分割は Step10b。`PresetOption.cs`、`MappingListViewModel.cs` など）。
+- **先送り台帳**: `Archive/Phase6-Step11-Plan.md` §3.3（Step10-1-3 の更新通知、Step10-3-2 の SA キー押下のボタン割り当て）。
+- **追記（2026-10-15）**: Step10-3c の調査で、SA の「キー押下」のボタンの割り当ては動作していることを確認し、表示の更新と SwitchMode の保存・読込の不具合を是正した（`Archive/Phase6-Step10-3c-Plan.md` §5〜6、実機確認済み）。実行時の Toggle の未実装（`Archive/Phase6-Step10-3c-Plan.md` §7）は、**Step10-4・10-5 の後に、KBM の Toggle と共通化した形で実装する**ことに決定した（§8。計画書は実施時に作成）。
+- **追記（2026-10-15、Step10-4 の完了）**: Step10-4（10-4-0〜10-4-6）が完了した。内容: 小さな置換（`WindowPlacementHelper`、`ProfileList`、`ProfileEntity`）、クラスタ 1（プロファイル系 6 クラスと `ProfileActionProvider`、`AutoProfileHolder` の依存の必須化）、K1 の是正（スロット 5〜8 の拒否、戻り値の破棄）、アクション連鎖の廃止、Fresh-press ガードの全型への適用（`Mapping.cs`）、クラスタ 2（出力スロット系）、クラスタ 3（`Actions/*`。`AutoProfileChecker`／`IMappingActionDispatcher` の削除）、`MainWindow`／`ControlService` の置換、名前変更時のリンクプロファイル・自動プロファイルの旧名の置換、全域の退行ガード（`Step10FourGlobalRatchetGuardTests`）。詳細・決定・実機確認は `Archive/Phase6-Step10-4-Plan.md` §8〜34。**残り: Step10-5（§8）、SA の Button の Toggle の実行時の実装（Step10-3c-Plan §7〜8）、完了報告書。**
+- **追記（2026-10-15、Step10 の完了）**: Step10-5（出力スロットの抜き差しを `IOutputSlotService` 経由に。画面・UDP）、Step10-3d（ボタン種別 SA の Press／Toggle を Stage3 に一本化）、名前変更時のプロファイル切替 SA の切替先の置換（10-4-5d）が完了した。あわせて、実機確認で見つかった上流由来の不具合（Release モードの比較反転、タップ判定のずれ許容、タップクリックの保持、Left Touch のホバー表示）を、承認のうえ是正した。完了報告書: `Archive/Phase6-Step10-Completion-Report.md`。残る作業は、Step10b・Step11 への引き継ぎ（同報告書 §8）。
+- **先送り台帳への追加（`Archive/Phase6-Step11-Plan.md` §3.3）**: Step10-4-2c（振動・自動停止時間の反映）、Step10-4-2f（スロット 5〜8 の切替・自動プロファイル）。

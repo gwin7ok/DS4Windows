@@ -20,7 +20,7 @@ namespace DS4WindowsTests
     /// Phase7-Step8 W2: <c>Mapping</c> を DI の Singleton（<c>IMapping</c>）の instance にしたこと、サービスへの静的な束縛
     /// （<c>AppHost</c>／<c>ServiceProviderHolder</c>／<c>Global</c> のフォールバック）をコンストラクター注入に替えたこと、
     /// キー／ボタンのコントローラー登録簿を <c>KeyButtonControllerRegistry</c> に切り出したことの回帰ガード。
-    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q1〜Q4・Q8）。
+    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q1〜Q4・Q8）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class MappingInstanceGuardTests
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         {
             ConstructorInfo ctor = typeof(Mapping).GetConstructors().Single();
             ParameterInfo[] parameters = ctor.GetParameters();
-            Assert.Equal(15, parameters.Length); // 設計の経緯は git の履歴と Phase16-Plan.md（16-1: 28 → 25。16-10: 25 → 20。16-13a: 20 → 17）。Phase18 後の整理: ログだけに使っていた IManagedActionManager と、個数の取得だけに使っていた ISpecialActionRepository を外し 17 → 15
+            Assert.Equal(15, parameters.Length); // 設計の経緯は git の履歴と docs-forDIMG/MadeByAgent/Archive/Phase16-Plan.md（16-1: 28 → 25。16-10: 25 → 20。16-13a: 20 → 17）。Phase18 後の整理: ログだけに使っていた IManagedActionManager と、個数の取得だけに使っていた ISpecialActionRepository を外し 17 → 15
 
             // 実 DI ホストの部品で 1 つずつ null にして、ArgumentNullException になることを確認する
             var valid = new object[]

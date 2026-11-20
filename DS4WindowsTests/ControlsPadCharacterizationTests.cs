@@ -7,7 +7,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-1 W1（Phase8-Step7-8f-Plan.md §5）: Controls タブの Button のうち、パッド（X360 のボタン・軸・トリガー）への割り当てと、
+    /// Phase8-Step7 7.8f-1 W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8f-Plan.md §5）: Controls タブの Button のうち、パッド（X360 のボタン・軸・トリガー）への割り当てと、
     /// Default の軸の素通しの特性化。旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。
     /// W1 の時点では、新経路が未実装のため、どちらでも旧経路が処理する。W2 で新経路が入るとき、承認済みの変更（Q3＝A: ボタン・トリガー・スティックの
     /// 「押した」判定を SA と同じにする。差はジャイロの閾値だけ）以外は、同じ期待値で通ること。

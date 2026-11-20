@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-F F-2（Phase9-F-Plan.md §6）: <c>MainWindow.WndProc</c> の分割。F-2a: コマンドの読み取りの値、F-2b: 分岐の順序とコマンド名の集合（ソースの照合）。
+    /// Phase9 9-F F-2（docs-forDIMG/MadeByAgent/Archive/Phase9-F-Plan.md §6）: <c>MainWindow.WndProc</c> の分割。F-2a: コマンドの読み取りの値、F-2b: 分岐の順序とコマンド名の集合（ソースの照合）。
     /// </summary>
     public class IpcCommandTests
     {

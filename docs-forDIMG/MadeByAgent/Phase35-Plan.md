@@ -3,7 +3,7 @@
 作成日: 2026-11-11
 状態: **完了（2026-11-16。35-0〜35-6 をすべて実施。終了・起動の実機確認も 2026-11-16 に OK）**
 出典: `docs-forDIMG/Code-Review-2026-11/01-DI.md`
-関連: `Structure-Review-2026-11.md` の C（Phase24 で `App.xaml.cs` を 1,323 → 約 940 行にした続き）、`Phase27-Plan.md`（`RuntimeBootstrapper`）
+関連: `Structure-Review-2026-11.md` の C（Phase24 で `App.xaml.cs` を 1,323 → 約 940 行にした続き）、`Archive/Phase27-Plan.md`（`RuntimeBootstrapper`）
 
 ## 目的
 1. アプリの終了の手順（破棄の順序）を、`App` の 1 メソッドの行の並びではなく、1 つの型と、順序を確かめるテストで守る。

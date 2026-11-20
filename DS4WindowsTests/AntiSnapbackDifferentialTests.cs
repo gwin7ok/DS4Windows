@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-A(2)-B（Phase9-A2-Plan.md）: アンチスナップバック（<c>StickInputConditioner.AntiSnapback</c>）を、旧実装（<c>Mapping.CalcAntiSnapbackStick</c> を逐語的に写したもの。
+    /// Phase9 9-A(2)-B（docs-forDIMG/MadeByAgent/Archive/Phase9-A2-Plan.md）: アンチスナップバック（<c>StickInputConditioner.AntiSnapback</c>）を、旧実装（<c>Mapping.CalcAntiSnapbackStick</c> を逐語的に写したもの。
     /// 時刻だけ引数にした）と<b>突き合わせる差分テスト</b>。旧実装は時刻（<c>DateTimeOffset.Now</c>）を直接読むため、切り出しの前の挙動をゴールデンで固定できない。
     /// 固定の列と、決まった種の疑似乱数の列で、出力の値と履歴（キュー）の中身が、1 フレームごとに一致することを調べる。
     /// 旧実装の写しは、Phase9 の後のテスト整理まで残す（整理では、ゴールデンへの置き換えを検討する）。

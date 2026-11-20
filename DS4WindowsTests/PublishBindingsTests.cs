@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step5 W3（Phase8-Step5-Plan.md §3.3・§4）: プロファイルの適用 → 束縛の組み立て → 登録簿への差し替えの結合を確かめる。
+    /// Phase8-Step5 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step5-Plan.md §3.3・§4）: プロファイルの適用 → 束縛の組み立て → 登録簿への差し替えの結合を確かめる。
     /// 適用サービスには偽の登録簿・偽のビルダーを渡して呼び出しを数え、実ホストでは、移行対象が空／一部のときの登録簿の中身を確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>

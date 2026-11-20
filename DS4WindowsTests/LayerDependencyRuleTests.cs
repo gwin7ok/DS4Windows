@@ -10,7 +10,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase14b-Step1（R-01）: 層の依存の向き（規約 §1、§3.4 R2・R3・R5）を、本体のアセンブリの実際の型参照で検査する
-    /// （計画書 `docs-forDIMG/MadeByAgent/Phase14b-Plan.md` §4 Step 14b-1）。
+    /// 。
     /// 禁止の規則（L1〜L7）は、今ある違反を <see cref="LayerDependencyBaseline"/> で凍結し、実数との一致を検査する。
     /// 記録のみの規則は、Phase16-Step6a で L2 が 0 件になり、なくなった（すべて禁止の規則）。
     /// </summary>

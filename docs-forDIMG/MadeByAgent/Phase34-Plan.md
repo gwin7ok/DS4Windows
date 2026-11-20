@@ -2,7 +2,7 @@
 
 作成日: 2026-11-12
 状態: **完了（2026-11-16）。土台（34-1）、5 画面の判断の移動（34-2〜34-6）、ViewModel の WPF 非依存化（34-6a。規則 V1 の基準値 87 → 0）、残りの画面（34-6b。規則 V2 の基準値 72 → 0）、検査（34-7）、規則書（34-8）をすべて実施。`ViewModelWpfReferenceBaseline`・`ViewDirectServiceReferenceBaseline` は空**（D4 は (A) で確定。2026-11-13）
-出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 2 と「MVVM パターンの形骸化」）、`Structure-Review-2026-11.md` の B、`Phase26-Plan.md`（一部完了。残りを本 Phase が引き継ぐ）
+出典: `docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md`（外部レビューのカテゴリ 2 と「MVVM パターンの形骸化」）、`Structure-Review-2026-11.md` の B、`Archive/Phase26-Plan.md`（一部完了。残りを本 Phase が引き継ぐ）
 前提: Phase29（29-10 が `MainWindow` のタイマーに触れる）と Phase33（スティックのパネルを作り直す）のあとに行う。PhaseX（入力側の図とボタン名）より前に行う。
 
 ## 目的

@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// - 配列の実体は OutputSlotService の readonly フィールド（参照は再代入されない。ControlService のキャッシュの前提）。
     /// - BackingStore への配列の受け渡しは IOutputSlotService の登録内で行い、BackingStore の登録内で IOutputSlotService を解決しない
     ///   （IOutputSlotStore → IPathService → BackingStore と循環し、スタックオーバーフローになる）。
-    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は Phase7-Step6-Plan.md。
+    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step6-Plan.md。
     /// </summary>
     public class OutputTypeOwnershipGuardTests
     {

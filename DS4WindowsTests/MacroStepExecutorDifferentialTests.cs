@@ -18,7 +18,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="MacroStepExecutor"/> を、旧実装（<c>Mapping.PlayMacroCodeValue</c> を逐語的に写したもの）と<b>突き合わせる差分テスト</b>。
+    /// Phase9 9-C（docs-forDIMG/MadeByAgent/Archive/Phase9-C-Plan.md）: <see cref="MacroStepExecutor"/> を、旧実装（<c>Mapping.PlayMacroCodeValue</c> を逐語的に写したもの）と<b>突き合わせる差分テスト</b>。
     /// 仮想キーボード・マウスへの送出を、呼び出しの名前と引数で記録して比べる。ゲームパッドのボタンの出力フラグ（<c>MacroControl</c>）と個数（<c>MacroCount</c>）、
     /// ライトバーの強制色（<c>DS4LightBar</c> の静的な配列）、待ちの要否の戻り値、押下の表（<c>keydown</c>）も比べる。
     /// 旧実装は private で、切り出しの後は <c>Mapping</c> から消えるため、写しをこのファイルに残す（Phase9 の後のテスト整理まで）。

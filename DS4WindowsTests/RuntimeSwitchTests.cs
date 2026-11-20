@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W5c（Phase10-Step4d-Plan.md §4 W5、ユーザー決定: 案 1 の範囲 1・2）: 実行時の切り替え・復帰の経路を ID に。
+    /// Phase10-Step4d W5c（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4d-Plan.md §4 W5、ユーザー決定: 案 1 の範囲 1・2）: 実行時の切り替え・復帰の経路を ID に。
     /// (1) 一時プロファイルの名前の保管は、プロファイルの固定 ID（名前を読み書きする窓口）。名前を変えても、読み出す名前は現在の名前になる。
     /// (2) SA／Controls の Load Profile は、実行の直前に、切り替え先の ID から現在の名前を引く（SA の定義・束縛を作り直さなくても、名前変更に追従する）。
     /// ID がない・引けないときは、従来どおり名前（<c>details</c>）。

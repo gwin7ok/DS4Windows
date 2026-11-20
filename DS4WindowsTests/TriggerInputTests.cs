@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step3 W2（Phase8-Step3-Plan.md §2.2、Q3＝A・Q4＝A）: <see cref="TriggerInput"/> のテスト。
+    /// Phase8-Step3 W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step3-Plan.md §2.2、Q3＝A・Q4＝A）: <see cref="TriggerInput"/> のテスト。
     /// 最重要は、<c>IsActive</c> が現行の <c>Mapping.getBoolSpecialActionMapping</c>（private）と、全コントロール・多数の入力で同じ結果になること
     /// （テスト専用のリフレクションで直接比較する。Step8 で <c>Mapping</c> の元のメソッドを消すときは、境界値の表に切り替える）。
     /// </summary>

@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W3（Phase10-Step3-Plan.md §3.5）→ Phase10-Step4 W3 で更新: Macro タブの SA 専用の項目
+    /// Phase10-Step3 W3（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3-Plan.md §3.5）→ Phase10-Step4 W3 で更新: Macro タブの SA 専用の項目
     /// （Run on trigger release／Synchronized Run／Keep key state）は、Step3 W3 では Controls のモードで隠していた（保存する場所がないため）。
     /// Step4 W3 で、Controls にも保存できるようになったため、どちらのモードでも出す（隠すコードがないことを検査する）。
     /// ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。ソースファイルが見つからない環境では、検査を行わず合格とする。

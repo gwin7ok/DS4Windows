@@ -76,7 +76,7 @@
 
 ## 関連計画
 - `PhaseRV1-Plan.md`（`CodeHealthRatchetTests`）、`PhaseRV7-Plan.md`（命名の統一のあと）。
-- 過去: `Phase14c-Plan.md`（原則5 の導入）、`Phase14d-Plan.md`（テストの整理。`RemovedApiRuleTests` への統合）、`Phase15-0-Plan.md`（303 件のテストの改名。`Phase15-0-Test-Rename-Map.md`）、`Phase36-Plan.md`（36-A5: 文書の更新）。
+- 過去: `Archive/Phase14c-Plan.md`（原則5 の導入）、`Archive/Phase14d-Plan.md`（テストの整理。`RemovedApiRuleTests` への統合）、`Archive/Phase15-0-Plan.md`（303 件のテストの改名。`Phase15-0-Test-Rename-Map.md`）、`Phase36-Plan.md`（36-A5: 文書の更新）。
 - 規約: §3.3 原則4・原則5、§4（テストの命名、型の検査）。
 
 ## 履歴

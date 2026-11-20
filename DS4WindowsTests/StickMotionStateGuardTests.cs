@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase7-Step7 W4: スティック・ジャイロ・トリガーの処理状態を <c>StickMotionState</c> へ切り出したことと、
     /// 外から使われる入れ子の型（<c>PostMapStickData</c> ほか）をトップレベルへ出したことの回帰ガード。
-    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2・Q3・Q5）。
+    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step7-Plan.md（Q2・Q3・Q5）。
     /// </summary>
     public class StickMotionStateGuardTests
     {

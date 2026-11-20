@@ -8,7 +8,7 @@ namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// DisconnectBT（コントローラーの無線接続の切断）の出力。
-    /// 旧 <c>MapCustomAction</c> の DisconnectBT の分岐と比べた違い（Phase8-Step7-6-Plan.md Q3＝B。承認済み）:
+    /// 旧 <c>MapCustomAction</c> の DisconnectBT の分岐と比べた違い（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-6-Plan.md Q3＝B。承認済み）:
     ///  - 旧経路は、押している間、切断が完了するまで毎フレーム <c>DisconnectBT()</c> とトレースログを繰り返していた。新経路は、切断の要求が**成功した**ら繰り返さない
     ///    （成功のあとも、切断が完了するまでの間、フレームの打ち切りだけは毎フレーム続ける＝旧経路の <c>return</c> と同じ）。**失敗した**ら、押している間、次のフレームで再試行する。
     /// 同じ点: 同期済み・非充電の Bluetooth だけが対象。トレースログ（立ち上がりの 4 行）→ 切断 → トリガーのボタンのキーを離す → フレームの打ち切り（Intent-Decisions 項目 5）の順。

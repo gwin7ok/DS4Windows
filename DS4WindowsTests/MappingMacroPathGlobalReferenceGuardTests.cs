@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Phase6-Step3-6c（決定 P2）: `Mapping.cs` の非同期マクロ再生経路（グループ C、19件）が、
     /// `using static DS4Windows.Global;` 経由の非修飾参照（または `Global.` 修飾参照）の `outputKBMMapping` へ戻っていないことを固定する回帰ガード。
     /// マクロ再生は別スレッドで動き、入口が `ctrl` を持たない `DefaultMacroPlayer` 経由（`PlayMacroDirect`）にもあるため、
-    /// 引数渡しは行わず、`Mapping` の静的 `profileSettings` から読む（Phase7 の instance 化で解消する。`Phase6-Step3-Plan.md` §3.4.1）。
+    /// 引数渡しは行わず、`Mapping` の静的 `profileSettings` から読む（Phase7 の instance 化で解消する。`docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md` §3.4.1）。
     /// あわせて、Step3-6c の完了により `Mapping.cs` 全体から `outputKBMMapping` への Global 参照がなくなったことも固定する。
     /// マクロ再生自体は実際のキー・マウス入力を送出するため、挙動テストは行わず、本ガードと実機確認で担保する。
     /// ソースファイルが見つからない環境（ソースなしで実行される場合）では、検査を行わず合格とする。

@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W5d（Phase10-Step4d-Plan.md §4 W5、ユーザー決定: 案 1）: 自動プロファイルのルール（<c>AutoProfileEntity.ProfileNames</c>）と、
+    /// Phase10-Step4d W5d（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4d-Plan.md §4 W5、ユーザー決定: 案 1）: 自動プロファイルのルール（<c>AutoProfileEntity.ProfileNames</c>）と、
     /// リンクプロファイル（<c>BackingStore.linkedProfiles</c>、画面表示用の <c>linkedProfileUI</c>）の、実行時の保持を ID に。名前を読み書きする窓口で、保管は固定 ID と名前の控え。
     /// プロファイルの名前を変えても、読み出す名前は現在の名前になる。登録簿がなければ、従来の配列・辞書と同じに動く。
     /// </summary>

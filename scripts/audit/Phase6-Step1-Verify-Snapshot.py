@@ -56,8 +56,8 @@ def main():
     checks, skipped = [], []
     core_files = {name: "DS4Windows/DS4Control/" + name for name in (
         "ControlService.cs", "Mapping.cs", "DS4LightBar.cs", "Mouse.cs", "MouseCursor.cs")}
-    for kind, filename in (("Core", "Phase6-Step1-Core-Reference-Evidence.md"),
-                           ("UI", "Phase6-Step1-UI-Reference-Evidence.md")):
+    for kind, filename in (("Core", "docs-forDIMG/MadeByAgent/Archive/Phase6-Step1-Core-Reference-Evidence.md"),
+                           ("UI", "docs-forDIMG/MadeByAgent/Archive/Phase6-Step1-UI-Reference-Evidence.md")):
         document = text(DOCUMENTS, DOCROOT + filename)
         active = None
         schema = None

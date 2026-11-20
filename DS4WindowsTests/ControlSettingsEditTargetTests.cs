@@ -10,7 +10,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W4（Phase10-Step2-Plan.md §3.3・§5）: Controls のモードの、設定（<see cref="DS4ControlSettings"/>）との変換と、編集用のコピー
+    /// Phase10-Step2 W4（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §3.3・§5）: Controls のモードの、設定（<see cref="DS4ControlSettings"/>）との変換と、編集用のコピー
     /// （<see cref="ControlSettingsEditTarget"/>）。Default／Key／Button／Macro の、読み込み・書き出し・往復、Toggle・Scan Code・Repeat、
     /// <c>extras</c> の保持、Save（Apply）／Cancel（Discard）で、元が変わる・変わらないこと。持ち越し C-5（Button の Toggle）の是正の土台。
     /// </summary>

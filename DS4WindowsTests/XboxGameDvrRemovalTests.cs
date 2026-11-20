@@ -8,7 +8,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7a（Phase8-Step7-7-Plan.md Q1＝A。ユーザーの決定）: XboxGameDVR 種別の削除の確認。
+    /// Phase8-Step7 7.7a（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-7-Plan.md Q1＝A。ユーザーの決定）: XboxGameDVR 種別の削除の確認。
     /// 実行時にマクロが実行されず、編集画面から新しく作れず、保存でも書き出されない機能だったため、機能ごと削除した。
     /// </summary>
     public class XboxGameDvrRemovalTests

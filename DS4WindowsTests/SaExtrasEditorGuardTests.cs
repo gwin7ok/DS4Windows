@@ -4,7 +4,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I5c（Phase10-Step6-Plan.md §4）: SA のモードでも、Controls のモードと同じ出力ピッカー（<c>BindingWindow</c>）で Extras を編集する画面の接続の検査
+    /// Phase10-Step6 I5c（docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Plan.md §4）: SA のモードでも、Controls のモードと同じ出力ピッカー（<c>BindingWindow</c>）で Extras を編集する画面の接続の検査
     /// （WPF の画面は単体テストで開けないため、ソースの接続を確かめる）。2 つのモードの違いは、Default／Unbound（modePanel）の表示だけ。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>

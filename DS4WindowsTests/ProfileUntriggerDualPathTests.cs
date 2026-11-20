@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5b-W1（Phase8-Step7-5b-Plan.md §3 の W1）: Profile 種別の復帰（「Unload on trigger release」＝<c>AutomaticUntrigger</c>）の特性化。
+    /// Phase8-Step7 7.5b-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5b-Plan.md §3 の W1）: Profile 種別の復帰（「Unload on trigger release」＝<c>AutomaticUntrigger</c>）の特性化。
     /// コードは変えない。復帰の合図の置き場所（旧 <c>Mapping</c>／新 エンジン）に依存しない、外から見える動き（復帰の回数）を、旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で比べる。
     /// W1 の時点では、ビルダーが復帰つきの Profile の束縛を作らないため、新経路の指定でも旧経路が処理する。W2 で新経路が復帰を持つと、同じ検査が新経路を確かめる。
     /// 観察は <see cref="RecordingProfileApplicationService"/>（<c>InstallProfileRecorder</c>）で、実際のプロファイルの読込・適用は走らせない。

@@ -209,7 +209,7 @@ namespace DS4Windows.Core.Settings
             }
             // XboxGameDVR 種別は、機能ごと削除した（ユーザーの決定。実行時にマクロが実行されず、新しく作れない機能だったため）。
             // 古い Actions.xml に Type が XboxGameDVR の項目が残っていても、種別が不明（None）の項目になり、何も実行されない。
-            // SASteeringWheelEmulationCalibrate 種別は、機能ごと削除した（ユーザーの承認。Phase9-SteeringWheel-Removal-Plan.md）。
+            // SASteeringWheelEmulationCalibrate 種別は、機能ごと削除した（ユーザーの承認。docs-forDIMG/MadeByAgent/Archive/Phase9-SteeringWheel-Removal-Plan.md）。
             // 古い Actions.xml・プロファイルに残っていても、読み込み時に取り除かれる（ActionsDTO／ControlSpecialItemXml が [DI] ログで通知する）。直接この型で作ると、種別が不明（None）の項目になる
             else if (type == "GyroCalibration")
             {

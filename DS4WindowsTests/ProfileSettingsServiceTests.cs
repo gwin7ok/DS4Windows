@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutContType_ShouldShareBackingStoreWithGlobalShim()
         {
-            // Issue7是正（Phase5-Step14-Issue7-Fix-Plan.md タスク7）の回帰防止テスト。
+            // Issue7是正（docs-forDIMG/MadeByAgent/Archive/Phase5-Step14-Issue7-Fix-Plan.md タスク7）の回帰防止テスト。
             // IOutputSlotService.GetOutputDeviceType が参照していた孤立配列（Global非連動）に
             // 起因するバグの再発を検知するため、ProfileSettingsService.OutContType が
             // Global.OutContType（m_Config.outputDevType）と同一の実体を参照していることを

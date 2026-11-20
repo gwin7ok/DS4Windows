@@ -14,7 +14,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step6 W1（Phase8-Step6-Plan.md §3.1。Q6＝A）: 切断・再接続まわりの<b>現行の挙動</b>を固定する（コードは変えない）。
+    /// Phase8-Step6 W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step6-Plan.md §3.1。Q6＝A）: 切断・再接続まわりの<b>現行の挙動</b>を固定する（コードは変えない）。
     /// Step6 の根拠になる事実:
     /// 1. <c>Mapping.HandleDeviceDisconnect</c> はスロットのプロファイル選択の状態（<c>OlderProfilePath</c> ほか）に触れない。
     /// 2. プロファイル適用の後始末（<c>ClearDeviceState</c>）も、同じ切断の後始末を通る（だから、ここにエンジンの切断を足せない）。

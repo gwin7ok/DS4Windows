@@ -8,7 +8,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M3 の後の挙動修正（Phase9-TwoStageStuckKey-Fix-Plan.md）:
+    /// Phase9 MapCustom の分割 M3 の後の挙動修正（docs-forDIMG/MadeByAgent/Archive/Phase9-TwoStageStuckKey-Fix-Plan.md）:
     /// 2 段階トリガーの状態機械が、トリガーを離したフレームで <c>previousActiveButtons</c> を Reset() してしまい、
     /// 「前のフレームで出力していた」ことが分からなくなるため、Key の割り当てに離した値（0）が渡らず、キーが押されたままになる不具合の再現と固定。
     /// </summary>

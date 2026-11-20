@@ -90,7 +90,7 @@ namespace DS4WindowsTests
 
         /// <summary>
         /// Phase8-Step7 7.1-W2: プロファイルの適用の後始末を再現する（<c>ProfileApplicationService</c> の掃除と同じ順序: <c>ClearDeviceState</c> → <c>PreallocateForProfileApply</c> →
-        /// 新経路のときは <c>PublishBindings</c>）。<c>OnProfileApplied</c> は、判断が済むまで呼ばない（Phase8-Step7-Plan.md Q5）。
+        /// 新経路のときは <c>PublishBindings</c>）。<c>OnProfileApplied</c> は、判断が済むまで呼ばない（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-Plan.md Q5）。
         /// </summary>
         public void SimulateProfileApply()
         {

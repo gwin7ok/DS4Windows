@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3b W0（Phase10-Step3b-Plan.md §2・§5）: <c>ProfileEditor.xaml</c> の画面構成の特性化（ソース走査）。製品コードは変えない。
+    /// Phase10-Step3b W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3b-Plan.md §2・§5）: <c>ProfileEditor.xaml</c> の画面構成の特性化（ソース走査）。製品コードは変えない。
     /// 左ペイン（<c>sidebarTabControl</c>）と右ペイン（<c>profileSettingsTabCon</c>）のタブの構成、右ペインのタブが依存するリソース、
     /// 右ペインのタブの番号・選択に依存するコードがないこと、Axis Config の 4 つの入口（Outer Bind／Full Pull）の構成、Controls タブの行の構成を固定する。
     /// W1（Touchpad・ジャイロのタブの移動。実施済み）で、左右のタブの構成、リソース、DataContext の検査を、移動後の構成へ更新した。

@@ -28,9 +28,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 // 見送り。getTransitionedColor（純粋計算、Step3対象外の除外51件の1つ、
-// Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
+// docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
 // これ以外の Global 実利用箇所はすべて Global. 明示修飾（温存3件: ProfileSettingsServiceInstance／outputKBMHandler／ApplyProfile。
-// いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（Phase6-Step3-Plan.md §6 完了判定チェックリスト）。
+// いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §6 完了判定チェックリスト）。
 // 【Phase7c W3 追記】上記は Phase6 時点の記録。Phase7-Step10d で Global 型は削除済み（Global への参照は存在しない）。
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
@@ -230,7 +230,7 @@ namespace DS4Windows.Processing
 
         // 抑制の集合（旧 suppressedTriggerButtons。Issue8-1(3)是正: トリガー成立時に抑制対象となった物理ボタンのうち、まだ「離される」ことを
         // 観測していないものの集合）の所有を、エンジン（ITriggerDispatchEngine）に一本化した。ここに含まれる間は、当該ボタン自身の通常出力を抑制し続ける
-        // （トリガー全体の成立/解除とは独立に、ボタン単位で管理する。詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.1）。
+        // （トリガー全体の成立/解除とは独立に、ボタン単位で管理する）。
         // 新旧の経路が別々の集合を持つと、通常の割り当ての抑制が食い違うため。
         private readonly DS4Windows.Processing.Actions.ITriggerDispatchEngine _engine;
         private readonly DS4Windows.Processing.Abstractions.IDeviceInputCleanup _inputCleanup;   // 切断時の合成キーの解放・マクロのキュー・ボタンのコントローラーの後始末
@@ -714,7 +714,6 @@ namespace DS4Windows.Processing
                 _profileActionBuffers[device] = actionNames;
 
                 // Issue8-1(3)是正: 抑制中のボタンのうち、実際に離されたものを解除する（デバイスにつき 1 回）。
-                // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.3
                 try
                 {
                     _engine.ReleaseSuppressed(device, _triggerInputs[device]);
@@ -832,7 +831,6 @@ namespace DS4Windows.Processing
             // 判定に必要な状態は、エンジンが所有する抑制の集合（MapCustomAction内で更新。Phase8-Step4 W4 で Mapping から移した）で管理される。
             // これにより、トリガー成立中にPS等の一部ボタンだけ先に離されても、
             // まだ押され続けているボタン（例: L2）自身の通常出力は、L2が実際に離されるまで抑制され続ける。
-            // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md §2.4
             return _engine.IsSuppressed(device, control);
         }
 
@@ -881,7 +879,7 @@ namespace DS4Windows.Processing
             }
         }
 
-        // Phase9 Steering 削除 W2（2026-10-22。Phase9-SteeringWheel-Removal-Plan.md）: 旧「SA steering wheel emulation mapping」（Scale360degreeGyroAxis／SAWheelEmulationCalibration／CalculateControllerAngle／CalcWheelFuzz ほか。
+        // Phase9 Steering 削除 W2（2026-10-22。docs-forDIMG/MadeByAgent/Archive/Phase9-SteeringWheel-Removal-Plan.md）: 旧「SA steering wheel emulation mapping」（Scale360degreeGyroAxis／SAWheelEmulationCalibration／CalculateControllerAngle／CalcWheelFuzz ほか。
         // ジャイロでハンドル操作をする機能）は、機能ごと削除した（ユーザーの承認）。
     }
 }

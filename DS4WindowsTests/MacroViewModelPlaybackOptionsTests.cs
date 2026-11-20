@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step1 W3（Phase10-Step1-Plan.md §5）: SA の Macro タブの ViewModel（<see cref="MacroViewModel"/>）が、
+    /// Phase10-Step1 W3（docs-forDIMG/MadeByAgent/Archive/Phase10-Step1-Plan.md §5）: SA の Macro タブの ViewModel（<see cref="MacroViewModel"/>）が、
     /// 繰り返し（Execute Mode）と Scan Code を共通の <c>MacroPlaybackOptions</c> で持つこと。
     /// 読み込み（<c>Actions.xml</c> の extras）、記録画面へ渡す設定（<c>PrepareSettings</c>）、保存（extras の文字列）が、従来と同じ。
     /// </summary>

@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8b-W1（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
+    /// Phase8-Step7 7.8b-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字に対して、ボタンの割り当てを「キー」に変える（終了時に既定へ戻す）。
     /// Phase8-Step8 8d: 常に新経路で処理する（旧経路と移行のスイッチは削除した）。
     /// </summary>

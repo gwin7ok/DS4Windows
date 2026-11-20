@@ -1,7 +1,7 @@
 # CLI 確認コマンド一覧（リリース前の回帰確認用）
 
 作成日: 2026-11-04
-目的: `-command ChangeLedColor`／`LoadProfile` が反応しない件（`Phase9-Deferred-Ledger.md` の Phase13b-1）が、以前からの不具合か、Phase13 以降の回帰かを切り分ける。
+目的: `-command ChangeLedColor`／`LoadProfile` が反応しない件（`Archive/Phase9-Deferred-Ledger.md` の Phase13b-1）が、以前からの不具合か、Phase13 以降の回帰かを切り分ける。
 実装の根拠: `DS4Windows/Core/Utilities/ArgumentParser.cs`（`-command` の受け取り）、`DS4Windows/Processing/Services/IpcCommandProcessor.cs`（コマンドの実行）。
 
 ## 0. 前提

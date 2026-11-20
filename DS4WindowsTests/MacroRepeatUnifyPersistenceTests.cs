@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Fix-MacroRepeatUnify W1（Phase8-Fix-MacroRepeatUnify-Plan.md §3.1。D1・D3）: Controls タブのマクロの「押している間繰り返す」は、
+    /// Phase8-Fix-MacroRepeatUnify W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Fix-MacroRepeatUnify-Plan.md §3.1。D1・D3）: Controls タブのマクロの「押している間繰り返す」は、
     /// プロファイル XML の KeyType に <c>RepeatMacro</c> と書く（SA と同じ値）。旧版が書いた <c>HoldMacro</c> は、読込だけ受け付けて RepeatMacro として読み、保存時に RepeatMacro へ置き換える。
     /// R-2 W2: 保存は、Execute Mode を独立した <c>Control/MacroExecuteMode</c> ノード（<c>Held</c>）へ書き、KeyType には <c>Macro</c> だけを書く。旧形式（KeyType の <c>RepeatMacro</c>／<c>HoldMacro</c>）の読込は、そのまま受け付ける。
     /// </summary>

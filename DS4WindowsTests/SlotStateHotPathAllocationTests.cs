@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step5（Phase13-Step5-Plan.md §6 計測①）: 入力ループ（On_Report）が毎レポート読むスロット状態の取得が、
+    /// Phase13-Step5（docs-forDIMG/MadeByAgent/Archive/Phase13-Step5-Plan.md §6 計測①）: 入力ループ（On_Report）が毎レポート読むスロット状態の取得が、
     /// ヒープ割り当て（GC Alloc）を行わないこと（ゼロアロケーション方針）。<c>ControlServiceHotPathAllocationTests</c> と同じ形式。
     /// </summary>
     public class SlotStateHotPathAllocationTests

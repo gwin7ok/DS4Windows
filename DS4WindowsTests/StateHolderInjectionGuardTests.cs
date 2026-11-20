@@ -17,7 +17,7 @@ namespace DS4WindowsTests
     /// Phase7-Step8 W1: <c>Mouse</c>／<c>ControlService</c> が保持クラスをコンストラクターで受けること、
     /// <c>MapClick</c>／<c>ResetRuntimeStateForKey</c> を <c>SyntheticInputState</c> へ移したこと、
     /// 本体の呼び出しが 0 件だった <c>Mapping</c> の 4 メンバーを削除したことの回帰ガード。
-    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q5・Q7・Q9）。
+    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q5・Q7・Q9）。
     /// </summary>
     public class StateHolderInjectionGuardTests
     {

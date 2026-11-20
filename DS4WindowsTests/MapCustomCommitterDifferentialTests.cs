@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M1（Phase9-MapCustom-Plan.md §3）: <see cref="SyntheticInputCommitter"/>（旧 <c>Mapping.Commit</c>）の差分テスト。
+    /// Phase9 MapCustom の分割 M1（docs-forDIMG/MadeByAgent/Archive/Phase9-MapCustom-Plan.md §3）: <see cref="SyntheticInputCommitter"/>（旧 <c>Mapping.Commit</c>）の差分テスト。
     /// 旧 <c>Commit</c> の逐語コピー（<c>pressagain</c> の判定を除く。常に false だった）と、同じクリックの列で、記録された出力（ボタン、拡張ボタン、ホイール、Sync）が一致することを確かめる。
     /// 時刻は、両方に同じ偽の時計を渡して決定的にする（ホイールの繰り返しは 150ms）。
     /// </summary>

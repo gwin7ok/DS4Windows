@@ -11,7 +11,6 @@ namespace DS4Windows.Processing.Abstractions
         // GetDeviceMacAddress／GetConnectionType／GetBatteryLevel／SetDevice／DeviceStateChanged）は削除した。
         // 実装の内部配列は本体で一度も設定されず、常に「未接続」を返す孤立実装だった。接続中のデバイスの実体は
         // ControlService.Controllers（IDeviceStateAccessor.GetController で参照する）。
-        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.2
 
         // ---- 起動後の初回接続判定（Global への薄い委譲）----
         bool IsFirstConnection(int slotIndex);

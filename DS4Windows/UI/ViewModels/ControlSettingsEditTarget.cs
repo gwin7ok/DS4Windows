@@ -20,7 +20,7 @@ namespace DS4Windows.UI.ViewModels
     /// 保存形式（<c>keyType</c> の <c>Toggle</c> フラグ）は、Button でも、すでに読み書きでき、実行側も対応済みのため、変更は要らない。
     /// </para>
     /// <para>
-    /// TODO(Phase10-Step3 W4): ProfileEditor からの呼び出しは、W4 で接続する（Phase10-Step3-Plan.md §3.4。順序の改訂で、旧 Step4 を繰り上げた）。
+    /// TODO(Phase10-Step3 W4): ProfileEditor からの呼び出しは、W4 で接続する（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3-Plan.md §3.4。順序の改訂で、旧 Step4 を繰り上げた）。
     /// </para>
     /// </summary>
     public sealed class ControlSettingsEditTarget : IActionEditTarget

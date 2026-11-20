@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.1-W2（Phase8-Step7-Plan.md §5.2・Q5＝A）: (1) プロファイル適用の前後で、新旧の出力・抑制の集合に差が出るかの特性化
+    /// Phase8-Step7 7.1-W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-Plan.md §5.2・Q5＝A）: (1) プロファイル適用の前後で、新旧の出力・抑制の集合に差が出るかの特性化
     /// （差が出なければ <c>OnProfileApplied</c> は接続しない）、(2) 複数の Button の実行順序と二重ディスパッチの検出。
     /// 適用は <see cref="SpecialActionTestScope.SimulateProfileApply"/> で再現する（本番の掃除と同じ順序）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。

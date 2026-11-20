@@ -48,7 +48,7 @@ namespace DS4Windows.UI.ViewModels
 
         // 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ランブルテスト・ライトバーの
         // プレビューで実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」
-        // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
+        // （プロファイル一覧から開いた場合）
         // Global.RefreshActionAlias の置換先（必須引数）
         private readonly IProfileSettingsService profileSettingsService;
         // スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む

@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: マクロ再生の切り出しの守り。
+    /// Phase9 9-C（docs-forDIMG/MadeByAgent/Archive/Phase9-C-Plan.md）: マクロ再生の切り出しの守り。
     /// (1) <c>Mapping</c> から、移したメソッド・状態が無くなっていること（ソースの走査。コメントは除く）。
     /// (2) 新しい部品が DI の Singleton として登録され、静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// (3) 未使用だった <c>DeviceRuntimeState.MacroControl</c>／<c>MacroCount</c> が削除されていること（Q3）。

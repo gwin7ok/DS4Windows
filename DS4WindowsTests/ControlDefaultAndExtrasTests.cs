@@ -12,7 +12,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W2（Phase10-Step3-Plan.md §3.1・§3.3・§5）: Controls のモードの割り当てエディターと、出力ピッカーとの受け渡し。
+    /// Phase10-Step3 W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3-Plan.md §3.1・§3.3・§5）: Controls のモードの割り当てエディターと、出力ピッカーとの受け渡し。
     /// <see cref="PressKeyViewModel"/> の「Default」の状態、ピッカーへ渡す一時設定（ボタン・Extras・いまの割り当て）、
     /// <see cref="ControlSettingsEditTarget"/> の Default の書き出し・読み込みと、Extras の取り込み（Save で反映、Cancel で破棄）。
     /// SA のモード（<c>allowDefault</c> が既定の <c>false</c>、<c>PrepareSettings()</c> が引数なし）は、従来どおりであること。

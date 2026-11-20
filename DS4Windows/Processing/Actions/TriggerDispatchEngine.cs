@@ -475,7 +475,7 @@ namespace DS4Windows.Processing.Actions
             input?.Delay?.Reset();
         }
 
-        // Phase8-Step2-Design.md §15.2 の 1 束縛の処理
+        // docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Design.md §15.2 の 1 束縛の処理
         private FrameResult ProcessBinding(int device, DeviceRuntime rt, int i, IActionBinding binding, ITriggerInput input, IFrameOutput frame)
         {
             try

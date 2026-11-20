@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// - 実機に触れるサブ画面・ViewModel の生成には targetDevice を渡す（省略可能な引数の渡し忘れの検出）。
     /// - 到達しなくなった即時フック（決定7＝H1）と ProfileEditor.DeviceNum（決定5＝D1）が再混入しない。
     /// `ProfileEditor` は WPF の UserControl で単体駆動が困難なため、ソース走査で担保する
-    /// （Phase6-Step7b-Plan.md §3 Step7b-3）。ソースファイルが見つからない環境では、検査を行わず合格とする。
+    /// （docs-forDIMG/MadeByAgent/Archive/Phase6-Step7b-Plan.md §3 Step7b-3）。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class ProfileEditorTargetDeviceGuardTests
     {
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
         /// 決定8: Save と Apply の違いは画面を閉じるかどうかだけで、どちらも ProfileSaved を通知し、
         /// 再適用は MainWindow.SyncProfileListAndControllers（そのプロファイルを使っているスロットだけ）に任せる。
         /// 編集画面が特定のコントローラーへ直接 ApplyProfileToSlot すると、新規作成したプロファイルで
-        /// そのコントローラーが切り替わってしまう（Phase6-Step7b-Plan.md §2A 決定8）。
+        /// そのコントローラーが切り替わってしまう（docs-forDIMG/MadeByAgent/Archive/Phase6-Step7b-Plan.md §2A 決定8）。
         /// </summary>
         [Fact]
         public void ProfileEditor_SaveAndApplyBothDelegateReapplyToMainWindow()

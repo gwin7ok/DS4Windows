@@ -16,7 +16,6 @@ namespace DS4Windows.Core.Abstractions
 
         // LoadDefaultProfile／LoadProfileToSlot／GetProfileNames／ProfileExists は削除した（本体の呼び出しが 0 件。
         // 読み込みは LoadProfile、プリセットは ProfilePresetLoader、一覧は UI の ProfileList が担う重複）。
-        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.4
 
         bool ApplyProfileDirect(int deviceIndex, string profileName);
         bool RestoreProfileDirect(int deviceIndex);
@@ -82,11 +81,10 @@ namespace DS4Windows.Core.Abstractions
 
         // LoadBlankProfile は削除した（IProfilePresetLoader.LoadBlank と同じ処理の重複。呼び出し元の
         // ProfileSettingsViewModel は IProfilePresetLoader を使う）。
-        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step3c-Plan.md Q4
 
         // ---- アクションの名前変更・削除の、全プロファイルへの反映（機能追加）----
         // TODO(Step10-3b-3/3b-4 で接続予定): 画面（ProfileEditor の「除去」ボタン、アクションの名前変更）からの呼び出しは
-        // 未接続。Phase6-Step10-3b-Plan.md §7 のとおり、書き換えたプロファイルの一覧を MainWindow へ通知し、
+        // 未接続。docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-3b-Plan.md §7 のとおり、書き換えたプロファイルの一覧を MainWindow へ通知し、
         // 既存の SyncProfileListAndControllers（保存時と同じ再適用）を 1 回呼ぶ。
 
         /// <summary>

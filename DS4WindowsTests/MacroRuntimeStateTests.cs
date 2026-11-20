@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="MacroRuntimeState"/> のデバイスごとの形と、<see cref="MacroRuntimeState.ApplyHeldControls"/>
+    /// Phase9 9-C（docs-forDIMG/MadeByAgent/Archive/Phase9-C-Plan.md）: <see cref="MacroRuntimeState"/> のデバイスごとの形と、<see cref="MacroRuntimeState.ApplyHeldControls"/>
     /// （旧 <c>Mapping.MapCustom</c> の末尾の「マクロが押しているボタンを出力へ重ねる」ブロック）の値の特性化。
     /// </summary>
     public class MacroRuntimeStateTests

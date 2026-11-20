@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step6 W3（Phase8-Step6-Plan.md §3.3・§4）: 切断（<c>ReleaseSlot</c>）と接続（<c>PublishSlot</c>）の口を確かめる。
+    /// Phase8-Step6 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step6-Plan.md §3.3・§4）: 切断（<c>ReleaseSlot</c>）と接続（<c>PublishSlot</c>）の口を確かめる。
     /// 偽のエンジンで呼び出しを数え、実ホストで、登録簿とエンジンの状態が消えること、スロットのプロファイル選択が不変であること、再接続で束縛が戻ることを確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>

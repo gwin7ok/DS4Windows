@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: 接続の組み立て（旧 <c>PrepareConnectedInputControllerSettingEvents</c> ほか）の切り出しの守り。
+    /// Phase9 9-E E-6f1（docs-forDIMG/MadeByAgent/Archive/Phase9-E6-Plan.md §9.2）: 接続の組み立て（旧 <c>PrepareConnectedInputControllerSettingEvents</c> ほか）の切り出しの守り。
     /// 本体が <c>DeviceConnector</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。組み立ての順序が変わっていないこと。
     /// </summary>
     public class ConnectorGuardTests

@@ -12,7 +12,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase6-Step7: `App.xaml.cs` の Global 直接参照を、領域（メソッド、および Application_Startup の
-    /// Pre-Host／Post-Host）ごとに固定する回帰ガード（`Phase6-Step7-Plan.md` §2・§5）。
+    /// Pre-Host／Post-Host）ごとに固定する回帰ガード（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step7-Plan.md` §2・§5）。
     /// - Pre-Host 領域（Application_Startup の CreateControlService より前、CheckOptions）と共用ヘルパー
     ///   ApplyLanguageSetting は温存（決定4）なので、参照が変わっていないことを確認する。
     /// - Post-Host 領域は、置き換え済みの参照が再混入していないこと、残っているのが計画どおりの箇所だけであることを確認する。

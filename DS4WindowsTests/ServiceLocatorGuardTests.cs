@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     /// Phase7-Step5 W3 以降: Service Locator の解消（Q4〜Q9）の回帰ガード。Wave ごとに追記する。
     /// - W3: 出力スロットの契約（<c>LoadOutputSlots</c>／<c>SaveOutputSlots</c>）の接続、<c>Global.ProfileXmlStoreInstance</c> と
     ///   <c>Global.NotificationServiceInstance</c> の削除（<c>AppLogger.NotificationService</c> への置き換え）。
-    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step5-Plan.md</c>。
+    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step5-Plan.md</c>。
     /// </summary>
     public class ServiceLocatorGuardTests
     {

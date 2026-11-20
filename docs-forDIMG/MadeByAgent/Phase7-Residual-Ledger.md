@@ -1,7 +1,7 @@
 # Phase7 残存台帳: Service Locator と静的アクセス
 
 作成日: 2026-10-17（Phase7-Step1 W4）  
-基準: 現行コードの走査（コメントを除く）。`Phase6-Step11-Global-Residual-Ledger.md` の続き。  
+基準: 現行コードの走査（コメントを除く）。`Archive/Phase6-Step11-Global-Residual-Ledger.md` の続き。  
 ガード: `Step10FourGlobalRatchetGuardTests`（`Global.*`／`AppHost`／`Program.rootHub`）、`Phase7Step1ServiceLocatorRatchetGuardTests`（`ServiceProviderHolder`）。減る変更だけ許可。基準値を更新して固定する。
 
 ## 1. 集計（2026-10-17、Phase7-Step1 W3 まで）
@@ -28,14 +28,14 @@
 - 設定側の `SetProvider`（`DI/AppHost.cs` 3）は Composition Root の正規の使い方で、数えない。
 
 ## 3. 参照
-- 調査: `Phase7-0-Survey.md` §1.5（F-A）。計画: `Phase7-Step1-Plan.md` W4。
+- 調査: `Archive/Phase7-0-Survey.md` §1.5（F-A）。計画: `Archive/Phase7-Step1-Plan.md` W4。
 
 ## 4. Phase7-Step2 で追加した台帳（2026-10-17）
 
-- 削除した DI 契約のメンバー: 51（`Phase7-Step2-Plan.md` §2・§8。ガード: `Phase7Step2RemovedContractMembersGuardTests`）。
+- 削除した DI 契約のメンバー: 51（`Archive/Phase7-Step2-Plan.md` §2・§8。ガード: `Phase7Step2RemovedContractMembersGuardTests`）。
 - 「使うべきだが未接続」として TODO 付きで残した契約: `IEnvironmentService.UsingMaxControllers`（接続予定 Step10）、`IDs4DeviceRegistry.ReEnableDevice`（Step4）、`IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`（Step5）。温存: `IOutputSlotService.OutputSlotChanged`（Step6 で再判断）。
 - 承認待ちの追加候補（Step2 計画書 §8 W6）: `IUdpServerService` 契約全体（未接続。接続を推奨）、`ISpecialActionRepository.GetAction`／`ActionExists`／`SaveActions`、`IPathService.ActionsPath`、`IDs4DeviceRegistry.IsHidHideInstalled`、`IProfileSettingsService.RumbleAutostopTime`、`IVirtualKBM.Version`（削除を推奨）。
-- Phase8 へ移管: `Actions/` の未配線の抽象 12 メンバー（`Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
+- Phase8 へ移管: `Actions/` の未配線の抽象 12 メンバー（`Archive/Phase8-Unified-Trigger-Dispatch-Plan.md` に追記済み）。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Archive/Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
 - Step10 で再判断: `ProfileSubSettingBase.OnSubPropertyChanged`（購読者がいなくなった）、`ProfileApplicationService` の未使用の依存 `IDeviceStateService`。
 
 ## 5. Phase7-Step3 で更新した台帳（2026-10-17）
@@ -81,7 +81,7 @@
 - 残る `ServiceProviderHolder`（22）: `Actions/` 17（→ Phase8）、`Mapping.cs` 5（→ Step7〜9）。
 - 新設: `IMainWindowFactory`／`MainWindowFactory`（`MainWindow` の 17 件の Locator を引数化）、`IEditorWindowFactory.CreateProfileEditor`（`ProfileEditor` の 4 件を引数化）、`AppLogger.NotificationService`（静的ロガーへ通知サービスを設定）、`BackingStore.ProcessInspector`（プロパティ注入）、`ControlService` のコンストラクター引数 `IElevatedProcessLauncher`、`DS4SixAxis.GyroControlsTriggerActive`。
 - 削除: `Program.rootHub`、`Global.SaveControllerConfigs`／`LoadControllerConfigs`、`Global.ProfileXmlStoreInstance`／`NotificationServiceInstance`、`ControlService.LoadPermanentSlotsConfig`。接続: `IOutputSlotService.LoadOutputSlots`／`SaveOutputSlots`（Step2 の「接続」の判断を完了）。
-- 不具合の是正: DS3 コントローラーのジャイロトリガー経路（`DS4SixAxis._controlService` が常に null。コミット `78ae8687` からの DI 移行による回帰）。移行前と同じ結果を返す形に直した（`Phase7-Step5-Plan.md` §1.6、Q3＝A）。DS3 の機材での実機確認は難しい可能性がある（U-15 の注記）。
+- 不具合の是正: DS3 コントローラーのジャイロトリガー経路（`DS4SixAxis._controlService` が常に null。コミット `78ae8687` からの DI 移行による回帰）。移行前と同じ結果を返す形に直した（`Archive/Phase7-Step5-Plan.md` §1.6、Q3＝A）。DS3 の機材での実機確認は難しい可能性がある（U-15 の注記）。
 - 持ち越し: `Global.ProfileSettingsServiceInstance` とそのフォールバック（→ Step7〜9／Step10）。`AppHost.CreationNote` と暗黙構築の経路（→ Step9 で互換 `AppHost` と同時に判断）。`MainWindow` のコンストラクター引数は 18 個と多い（→ Step10 で、画面ごとの責務の整理とあわせて見直す）。
 - 実機確認: U-15（未）。
 
@@ -123,7 +123,7 @@
 - K3 の判断（Q3＝A）: 暫定フラグの実体を `MacroRuntimeState` に包んだだけで、仕組みは変えていない。恒久の再設計（トリガー判定層とマクロ実行層の分離、実行層の一本化）は **Phase8** へ持ち越し（TODO を `MacroRuntimeState.cs` と `Mapping.cs` に明記）。
 - 持ち越し（Step10）: `Global` の定数の利用箇所（約 250 件。`BackingStore` 135 が最大）と `Global.Clamp` の残り 10 件（`DS4State` 4、`BezierCurve` 2、`Mouse` 2、`MouseCursor` 2）を `ControllerLimits`／`NumericUtil` へ移し、別名とシムを削除する。静的な純粋関数（`getBool*Mapping`、`DS4ControltoInt`、`remainderCutoff` ほか）の置き場所（Q4＝`Mapping` に残す）。`AppHost` の暗黙構築と `CreationNote`（Q5＝触らない）。`BackingStore` のコンストラクター注入。`Mapping` の依存 11 個の整理。
 - 持ち越し（Phase8）: K3 の恒久対応、静的な `SyntheticDispatcher`、`Actions/` の `ServiceProviderHolder` 17。
-- **K3 の解消（2026-10-21。`Phase8-Fix-MacroRepeatUnify-Plan.md` D5）**: `PlayMacro` の呼び出しがすべて `control == DS4Controls.None` になり（Controls タブのマクロが SA と同じ経路に移った Phase8-Step7-8c 以降）、control 単位の二重実行防止の暫定対策（`macroDispatchInFlight`／`TryBeginDispatch`／`EndDispatch`）は本番で到達しなくなっていたため、`macrodone`、`MacroRuntimeState.MacroDone`／`DispatchInFlight`、`DS4ControltoInt` とともに削除した。二重実行の防止は `ActionInstanceState.IsMacroRunning` が担う。
+- **K3 の解消（2026-10-21。`Archive/Phase8-Fix-MacroRepeatUnify-Plan.md` D5）**: `PlayMacro` の呼び出しがすべて `control == DS4Controls.None` になり（Controls タブのマクロが SA と同じ経路に移った Phase8-Step7-8c 以降）、control 単位の二重実行防止の暫定対策（`macroDispatchInFlight`／`TryBeginDispatch`／`EndDispatch`）は本番で到達しなくなっていたため、`macrodone`、`MacroRuntimeState.MacroDone`／`DispatchInFlight`、`DS4ControltoInt` とともに削除した。二重実行の防止は `ActionInstanceState.IsMacroRunning` が担う。
 - 実機確認: U-19（未。先送り）。
 
 ## 13. Phase7-Step10a で更新した台帳（2026-10-18）
@@ -193,7 +193,7 @@
 ### 17.1 実施した内容
 - **W1・W2**: 静的な `ControlService.CURRENT_DS4_CONTROLLER_LIMIT` を削除し、スロット数の上限を注入された `IEnvironmentService.ControllerSlotLimit` に替えた（サービス・シリアライザー・DTO・画面・ViewModel）。`OutputSlotManager` は上限をコンストラクターの整数で受ける。`EnvironmentService.ProcessControllerSlotLimit`（OS 判定の純粋な計算）は残した。
 - **W3**: `AppHost.GetService` の暗黙のホスト構築を廃止した（未構築・Dispose 後は `null`）。K7-1 の残存経路を閉じた。`CreationNote`（プロパティと起動ログ）は維持し、呼び出し元スタックの組み立てだけを削除した。テストは `TestHost`（共有のホストを必要なときに明示的に作る入口）に替えた。
-- **W4（承認済み）**: 呼び出し 0 件のメンバーを決着した（`Phase7-Step10e-Plan.md` §4.1）。
+- **W4（承認済み）**: 呼び出し 0 件のメンバーを決着した（`Archive/Phase7-Step10e-Plan.md` §4.1）。
   - 削除: `ColorUtil.applyRatio(Color, Color, uint)`／`HuetoRGB(float, float, float)`、`IAppSettingsService.CheckWhen`、`IProfileSettingsService.SATriggerCond`（配列）、`IAutoProfileService.ClearState`、`IProfileRepository.GetProfilePath`（実装クラスは残す）。
   - 維持（TODO 付き。接続は Phase8）: `IAppSettingsService.SettingChanged`、`ISpecialActionRepository.ActionsChanged`、`IProfileSettingsService.UseTempProfileArray`。
   - 維持（変更なし）: `IDeviceStateService.DeviceSerialChange`（10d で決定済み）、`IUdpServerService.Port`、`IKeyButtonControllerRegistry.GetOrCreate`、`IPathService.GetProfilePath`。

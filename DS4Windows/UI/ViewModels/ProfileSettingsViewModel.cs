@@ -69,7 +69,7 @@ namespace DS4Windows.UI.ViewModels
 
         // 設定の読み書き先（Device＝編集スロット）とは別に、ランブルテスト・ライトバーの
         // プレビュー・校正などで実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」
-        // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
+        // （プロファイル一覧から開いた場合）
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 
@@ -303,7 +303,6 @@ namespace DS4Windows.UI.ViewModels
         // （Reload()、およびStopEditorBindings()+RefreshEditorBindings()のペア）という規約を
         // 守っているためである。将来、本メソッドを新たな呼び出し元から呼ぶ場合、このDataContext
         // 再設定の規約を守らないと、値は正しく更新されてもUI上には反映されない不具合が再発する。
-        // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1
         public void UpdateLateProperties()
         {
             // 読み取り側は保存された種類（OutContType）、書き込み先の一時の種類（OutDevTypeTemp）は outputSlotService 側

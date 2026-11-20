@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W3（Phase8-Step4-Plan.md §2.3／§3）: <see cref="TriggerDispatchEngine"/> の単体テスト。
+    /// Phase8-Step4 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4-Plan.md §2.3／§3）: <see cref="TriggerDispatchEngine"/> の単体テスト。
     /// 偽の入力・出力・束縛と、実物の <c>IManagedActionManager</c>（状態）を使う。時刻（<c>TickCount64</c>）は入力から注入し、実時間のスリープは使わない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

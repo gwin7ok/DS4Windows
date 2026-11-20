@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step1 W2（Phase10-Step1-Plan.md §5）: Controls の <c>RecordBox</c> の ViewModel（<see cref="RecordBoxViewModel"/>）が、
+    /// Phase10-Step1 W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step1-Plan.md §5）: Controls の <c>RecordBox</c> の ViewModel（<see cref="RecordBoxViewModel"/>）が、
     /// 繰り返し（Execute Mode）と Scan Code を共通の <see cref="MacroPlaybackOptions"/> で持つこと。
     /// 読み込みで <c>keyType</c> の <c>RepeatMacro</c>／<c>ScanCode</c> を復元し、<c>ExportMacro</c> が
     /// <c>Macro</c>（＋ <c>RepeatMacro</c>、<c>ScanCode</c>）だけを書く（従来と同じ。<c>HoldMacro</c> は存在しない）。

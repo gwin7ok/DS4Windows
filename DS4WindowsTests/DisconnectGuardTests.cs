@@ -8,7 +8,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: 切断・同期・シリアル変更の処理の切り出しの守り。
+    /// Phase9 9-E E-6e（docs-forDIMG/MadeByAgent/Archive/Phase9-E6-Plan.md §3.4）: 切断・同期・シリアル変更の処理の切り出しの守り。
     /// 本体が <c>DeviceDisconnectHandler</c> へ移り、<c>ControlService</c> は委譲だけを持つこと。切断の後始末の順序（ガードレール: 切断時クリーンアップ）が変わっていないこと。
     /// </summary>
     public class DisconnectGuardTests

@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="MacroPlayback"/>（旧 <c>Mapping.PlayMacro</c> ほか）の予約・再生・後始末の特性化。
+    /// Phase9 9-C（docs-forDIMG/MadeByAgent/Archive/Phase9-C-Plan.md）: <see cref="MacroPlayback"/>（旧 <c>Mapping.PlayMacro</c> ほか）の予約・再生・後始末の特性化。
     /// スペシャルアクションを介する経路（同期キュー、押している間の繰り返し）は、入口の <c>PlayMacroDirect</c> を通る既存の挙動テストが守る。
     /// ここでは、スペシャルアクションなし（単発の背景 Task）の再生と、文字列・配列・リストの手順、切断時のキューのクリアを調べる。
     /// </summary>

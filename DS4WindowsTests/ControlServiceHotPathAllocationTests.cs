@@ -11,7 +11,7 @@ namespace DS4WindowsTests
     /// Phase6-Step2-5 (PR-5): 入力ループ（On_Report）で毎レポート評価される取得系のシムが、
     /// ヒープ割り当て（GC Alloc）を行わないこと（ゼロアロケーション方針）、および1回あたりの呼び出しコストが
     /// 想定外に大きくないことを検証する。
-    /// 処理時間の厳密な比較（置換前後 ±5%）は、実機での On_Report 全体の計測（Phase6-Step2-Plan.md §7.2）で行う。
+    /// 処理時間の厳密な比較（置換前後 ±5%）は、実機での On_Report 全体の計測（docs-forDIMG/MadeByAgent/Archive/Phase6-Step2-Plan.md §7.2）で行う。
     /// ここでの時間の検証は、Legacy 経路の再解決やログ出力の混入といった異常を検出するための緩い上限のみとする。
     /// </summary>
     public class ControlServiceHotPathAllocationTests

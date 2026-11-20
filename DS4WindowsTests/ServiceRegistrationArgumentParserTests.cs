@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     ///
     /// 経緯: 2026-09-04（4c89cd91）以降、ControlService には常に空の new ArgumentParser() が渡され、起動引数 -virtualkbm が
     /// 無視されていた。最初の是正（コンテナに登録した ArgumentParser を使う）は、ホストが Global の静的初期化で起動引数なしに
-    /// 先に作られるため実機で効かなかった（`Phase6-Step7-Plan.md` §0.4 の訂正・決定7）。このため、以下のテストは
+    /// 先に作られるため実機で効かなかった（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step7-Plan.md` §0.4 の訂正・決定7）。このため、以下のテストは
     /// 「ホストが先に作られている」実際の起動順序を再現するものを含める。
     ///
     /// ServiceRegistration の登録は、Program.rootHub が設定済みならそれを返すため、各テストで一時的に null にし、

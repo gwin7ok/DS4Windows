@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1・§4）: <see cref="ActionBindingBuilder"/> の単体テスト。
+    /// Phase8-Step5 W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step5-Plan.md §3.1・§4）: <see cref="ActionBindingBuilder"/> の単体テスト。
     /// 種別ごとの構成（入力・出力・方針）、順序、フィルタ（移行対象が空／一部）、未対応の種別を作らないこと。
     /// </summary>
     public class ActionBindingBuilderTests

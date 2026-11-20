@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase7-Step7 W2: 合成入力の状態（globalState／deviceState／syncStateLock）を <c>SyntheticInputState</c> へ切り出したことと、
     /// <c>BackingStore</c> から <c>Mapping</c> への逆参照を <c>ActionsLoaded</c> イベントへ置き換えたことの回帰ガード。
-    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2〜Q5）。
+    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step7-Plan.md（Q2〜Q5）。
     /// </summary>
     public class SyntheticInputStateGuardTests
     {

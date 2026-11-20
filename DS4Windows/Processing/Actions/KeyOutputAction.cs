@@ -29,7 +29,7 @@ namespace DS4Windows.Processing.Actions
         private readonly int _index;
         private readonly ISpecialActionRepository _actionRepository;
 
-        // TODO(Phase8-Step8。Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → 論理キー、keyType → ScanCode／Toggle）を、この互換のコンストラクターが
+        // TODO(Phase8-Step8。docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → 論理キー、keyType → ScanCode／Toggle）を、この互換のコンストラクターが
         // ActionBindingBuilder.InterpretKey を呼んで行う。ビルダーは解釈済みの値を渡す下のコンストラクターを使う。既存のテストが使うため残す。Step8 で整理する。
         public KeyOutputAction(SpecialAction sa, IProfileSettingsService profileSettings, IManagedActionManager manager, IKeyButtonControllerRegistry controllers,
             int index = -1, ISpecialActionRepository actionRepository = null)
@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Actions
 
         /// <summary>
         /// 解釈済みの値（<paramref name="values"/>）を受け取る。<paramref name="identity"/> は、状態の鍵・ログの名前・系統 B への入力として使う
-        /// （Phase8-Step7-8a-Plan.md §2.2。識別用の SpecialAction を中立な型に替えるのは Step8 以降）。
+        /// （docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8a-Plan.md §2.2。識別用の SpecialAction を中立な型に替えるのは Step8 以降）。
         /// </summary>
         public KeyOutputAction(SpecialAction identity, KeyBindingValues values, IProfileSettingsService profileSettings, IManagedActionManager manager, IKeyButtonControllerRegistry controllers,
             int index = -1, ISpecialActionRepository actionRepository = null)

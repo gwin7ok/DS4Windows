@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Actions
         IFrameOutput Frame { get; }
 
         /// <summary>
-        /// フレームの走査を打ち切る要求（Profile の切替・DisconnectBT の実行後。Phase8-Step2-Intent-Decisions.md 項目 5）。
+        /// フレームの走査を打ち切る要求（Profile の切替・DisconnectBT の実行後。docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Intent-Decisions.md 項目 5）。
         /// エンジンが渡す文脈でだけ効き、それ以外では何もしない。
         /// </summary>
         void RequestEndFrame();

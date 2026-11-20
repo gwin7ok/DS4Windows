@@ -14,7 +14,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase6-Step9-4: <c>ProfileSettingsViewModel</c>・<c>PresetMenuHelper</c>・<c>ViewModelFactory</c> の
-    /// Global 直接参照・Service Locator 解消の回帰ガード（<c>Phase6-Step9-Plan.md</c> §0A.2 表D、決定1＝S9-A、決定2＝C1）。
+    /// Global 直接参照・Service Locator 解消の回帰ガード（<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step9-Plan.md</c> §0A.2 表D、決定1＝S9-A、決定2＝C1）。
     /// - 非定数の <c>Global.</c> 参照、<c>AppHost</c>、<c>Program.rootHub</c> が再混入していないこと。
     /// - コンストラクタの依存が必須であること（<c>ControlService</c> のみ null 許容）。
     /// - 編集スロットと実機を分ける <c>targetDevice</c> の引数が維持されていること。

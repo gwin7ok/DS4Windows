@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 Steering 削除 W4（Phase9-SteeringWheel-Removal-Plan.md）: ステアリングの設定（<c>SASteeringWheelEmulationAxis</c>／<c>SASteeringWheelEmulationRange</c>／<c>SASteeringWheelFuzz</c>／<c>SASteeringWheelSmoothingOptions</c>）は、
+    /// Phase9 Steering 削除 W4（docs-forDIMG/MadeByAgent/Archive/Phase9-SteeringWheel-Removal-Plan.md）: ステアリングの設定（<c>SASteeringWheelEmulationAxis</c>／<c>SASteeringWheelEmulationRange</c>／<c>SASteeringWheelFuzz</c>／<c>SASteeringWheelSmoothingOptions</c>）は、
     /// プロファイル XML に書かれなくなり、古いプロファイルにこれらの要素が残っていても、無視されて、ほかの設定が正しく読み込まれること。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

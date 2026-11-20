@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1・§5）: SA の編集画面の ViewModel（<see cref="SpecialActEditorViewModel"/>）。
+    /// Phase10-Step2 W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §3.1・§5）: SA の編集画面の ViewModel（<see cref="SpecialActEditorViewModel"/>）。
     /// 中身を <see cref="ActionEditorViewModel"/> へ移しても、読み込み・書き出し・検証（名前の必須と重複、トリガーが 1 つ以上、種別の指定）と、
     /// エラーの文言・キーが、従来と同じであること。
     /// </summary>

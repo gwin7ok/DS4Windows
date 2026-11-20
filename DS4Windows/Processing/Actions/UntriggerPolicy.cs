@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// プロファイル切替アクションの「復帰」のポリシー（Phase8-Step2-Intent-Decisions.md 項目 11。明示的な仕様にする）。
+    /// プロファイル切替アクションの「復帰」のポリシー（docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Intent-Decisions.md 項目 11。明示的な仕様にする）。
     /// </summary>
     public enum UntriggerPolicy
     {

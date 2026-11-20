@@ -13,7 +13,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.1-W2（Phase8-Step7-Plan.md §5.2・Q6＝A）: 旧 Stage3 が出していた Button の TRACE ログ（立ち上がり・立ち下がり、出力の組み合わせ、立ち上がりの詳細）を、
+    /// Phase8-Step7 7.1-W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-Plan.md §5.2・Q6＝A）: 旧 Stage3 が出していた Button の TRACE ログ（立ち上がり・立ち下がり、出力の組み合わせ、立ち上がりの詳細）を、
     /// 新経路が同じ文言・順序で出すことを確かめる。NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替え、旧経路と新経路のログの行を比べる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。

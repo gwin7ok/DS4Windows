@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.2-W1（Phase8-Step7-2-Plan.md §3 W1）: Key 種別の「旧経路（<c>MapCustomAction</c> の Key の分岐）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
+    /// Phase8-Step7 7.2-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-2-Plan.md §3 W1）: Key 種別の「旧経路（<c>MapCustomAction</c> の Key の分岐）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
     /// 同じ入力の列を両経路に流し、フレームごとの状態（<c>BeingTriggered</c>、<c>IsToggledOn</c>、合成キーの押下の数、解放の数）が一致することを確かめる。
     /// 例外（Q1）: Key を 2 つ同時に押したときの解放は、旧経路が <c>UntriggerIndex</c> の癖で先のキーを解放しない。新経路は各キーを解放する（是正）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
@@ -135,7 +135,7 @@ namespace DS4WindowsTests
             var result = Run("L1", toggle, 0, false, frames, applyBeforeFrame3: true);
 
             // 解放の回数（Releases）は比べない: 適用の後始末（切断と同じ）で、旧経路は同じキーの解放を 1 回多く送る
-            // （Mapping が作る nativeKeyAlias の項目があるため。キーを離す効果は同じ。Phase8-Step7-2-Plan.md の W1 の結果、Q2）
+            // （Mapping が作る nativeKeyAlias の項目があるため。キーを離す効果は同じ。docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-2-Plan.md の W1 の結果、Q2）
             Assert.True(result[3].Releases >= 1, "押している最中の適用で、キーが解放される");
         }
 

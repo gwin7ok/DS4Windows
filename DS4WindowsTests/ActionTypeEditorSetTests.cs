@@ -10,7 +10,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1・§5）: 種別ごとの入力の一式（<see cref="ActionTypeEditorSet"/>）。
+    /// Phase10-Step2 W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §3.1・§5）: 種別ごとの入力の一式（<see cref="ActionTypeEditorSet"/>）。
     /// 従来は、<c>AssignmentEditor</c> のコードビハインドの 3 つの <c>switch</c> が行っていた「種別 → 入力」の対応を、1 か所に集めた。
     /// (1) 中継の対応（偽の入力で）、(2) 実物の種別ごとの入力が、従来と同じ <c>ISpecialActionRepository.SaveAction</c> の引数で保存すること（10 種）。
     /// </summary>

@@ -25,7 +25,7 @@ namespace DS4WindowsTests
     /// Phase13-Step6 6-a: <c>Func&lt;ControlService&gt;</c> を使う 9 クラスのうち、どれが <c>ControlService</c> の依存グラフの内側にあるか
     /// （内側のクラスは <c>ControlService</c> を直接受けると循環する）を、<c>ServiceRegistration</c> の登録から静的に求めて固定する。
     /// 求め方: コンストラクターの引数の型をたどる（<c>Func&lt;T&gt;</c> は遅延のため辺にしない）。ラムダで登録された型は <see cref="FactoryTypes"/> で実体の型を与える。
-    /// 結果は計画書（Phase13-Step6-Plan.md §2.1）の「循環の有無」の根拠になる。
+    /// 結果は計画書（docs-forDIMG/MadeByAgent/Archive/Phase13-Step6-Plan.md §2.1）の「循環の有無」の根拠になる。
     /// </summary>
     public class ControlServiceResolutionGraphProbeTests
     {

@@ -27,7 +27,7 @@ namespace DS4Windows.Processing.Actions
         // 前のフレームの成立。ApplyFrame は毎フレーム、このアクションの所有する束縛で呼ばれる
         private bool _prevActive;
 
-        // TODO(Phase8-Step8。Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → X360 のボタン、スイッチモード → Toggle）を、この互換のコンストラクターが
+        // TODO(Phase8-Step8。docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → X360 のボタン、スイッチモード → Toggle）を、この互換のコンストラクターが
         // ActionBindingBuilder.InterpretButton を呼んで行う。ビルダーは解釈済みの値を渡す下のコンストラクターを使う。既存のテストが使うため残す。Step8 で整理する。
         public ButtonOutputAction(SpecialAction sa, IManagedActionManager manager)
             : this(sa ?? throw new ArgumentNullException(nameof(sa)), ActionBindingBuilder.InterpretButton(sa), manager)

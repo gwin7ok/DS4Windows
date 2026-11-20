@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// Phase7-Step7 W3: マクロの実行時状態（macrodone／macroDispatchInFlight／macroDispatchLock／macroControl／macroCount／macroTaskQueue）を
     /// <c>MacroRuntimeState</c> へ切り出したことの回帰ガード。
-    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2・Q3）。
+    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step7-Plan.md（Q2・Q3）。
     /// </summary>
     public class MacroRuntimeStateGuardTests
     {

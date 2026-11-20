@@ -17,7 +17,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: マウス変換と入力の解決の切り出しの守り。
+    /// Phase9 9-B（docs-forDIMG/MadeByAgent/Archive/Phase9-B-Plan.md）: マウス変換と入力の解決の切り出しの守り。
     /// (1) <c>Mapping</c> から、移したメソッド・状態・未使用コードが無くなっていること（ソースの走査。コメントは除く）。
     /// (2) 新しい部品が DI の Singleton として登録され、静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// (3) 状態を持つ部品が、デバイスごとに状態を持つこと（添字の範囲がコントローラーの台数と一致）。

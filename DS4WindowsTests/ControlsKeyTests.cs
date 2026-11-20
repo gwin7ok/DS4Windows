@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8b-W2/W3（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の新経路。
+    /// Phase8-Step7 7.8b-W2/W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の新経路。
     /// 押下の判定（<c>TriggerInput.IsControlActive</c> ＝ 現行の <c>GetBoolActionMapping</c>）の一致、所有の条件、ビルダー、連結、ロールバック、割り当て、ログ。
     /// 動作の旧・新の比べは <c>ControlsKeyCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。

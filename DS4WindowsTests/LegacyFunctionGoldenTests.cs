@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step8 W1（Phase8-Step8-Plan.md §3 の方針 1。Q4＝A）: 旧関数（<c>getBoolSpecialActionMapping</c>、<c>GetBoolActionMapping</c>、<c>GetBoolMapping</c>、
+    /// Phase8-Step8 W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step8-Plan.md §3 の方針 1。Q4＝A）: 旧関数（<c>getBoolSpecialActionMapping</c>、<c>GetBoolActionMapping</c>、<c>GetBoolMapping</c>、
     /// <c>GetByteMapping</c>、<c>GetXYAxisMapping</c>）の戻り値の表を、削除（8a・8b）の前にゴールデンへ固定する。
     /// Phase8-Step8 8a: 旧関数を削除したため、旧関数の表の生成（<c>LegacyFunctionGolden</c>）は削除した（ゴールデンが旧関数の値の記録として残る）。
     /// <c>NewFunctionsMatchTheGolden</c>: 新経路（<c>TriggerInput</c>）の表が、ゴールデンの該当の列と一致する。旧関数を削除した後も、これが「旧と同じ値」の根拠になる。

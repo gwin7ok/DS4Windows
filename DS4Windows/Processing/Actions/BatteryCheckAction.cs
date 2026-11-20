@@ -14,7 +14,7 @@ namespace DS4Windows.Processing.Actions
     ///  - 立ち上がり（<see cref="Execute"/>）: 通知 → 現在のライトバーの色を保存して強制色を有効にする → 色の遷移の 1 ステップ → Trace 4 行 → Debug「SpecialAction BatteryCheck: …」。
     ///  - 押している間（<see cref="WhileHeld"/>）: 毎フレーム、色の遷移を 2 ずつ進める（100 まで）。
     ///  - 離したとき（<see cref="Stop"/>）: 遷移の進みを 0 に戻し、強制色を無効にする。
-    /// 旧経路との違い（Phase8-Step7-6-Plan.md Q8＝B。承認済み）: 旧経路が立ち上がりで出していた、コピーの名残りのログ（<c>LogActionDoneCountOnTrigger("WheelRecalibrate")</c>）は出さない。
+    /// 旧経路との違い（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-6-Plan.md Q8＝B。承認済み）: 旧経路が立ち上がりで出していた、コピーの名残りのログ（<c>LogActionDoneCountOnTrigger("WheelRecalibrate")</c>）は出さない。
     /// BatteryCheck が実行されたことは、既存の Debug「SpecialAction BatteryCheck: …」で分かる。
     /// 遷移の進みと保存した色は、このインスタンスが持つ。
     /// 実機・静的な窓口の操作は <see cref="IBatteryCheckPort"/> 越し。

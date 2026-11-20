@@ -15,7 +15,7 @@ namespace DS4WindowsTests
     /// - <c>-driverinstall</c> 分岐は、設定の読込の前に <c>CreateHost(config, parser)</c> を明示的に呼ぶ（<c>Global.Load</c> は削除済み）。
     /// - （終了の手順の順序は、<c>AppShutdownSequenceTests</c> が呼ばれた順で固定する）
     /// - <c>Dispose</c> の後は、<c>GetService</c> が暗黙にホストを作り直さない。
-    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
+    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step4-Plan.md</c>。
     /// </summary>
     public class AppHostStartupShutdownGuardTests
     {

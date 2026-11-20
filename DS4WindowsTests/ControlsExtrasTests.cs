@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8e-W3/W4（Phase8-Step7-8e-Plan.md §3.2・§4）: Controls タブの Extras の新経路。
+    /// Phase8-Step7 7.8e-W3/W4（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8e-Plan.md §3.2・§4）: Controls タブの Extras の新経路。
     /// 値の解釈、出力（振動、ライトバー、感度、元に戻す、後始末）、ビルダーの所有の条件（Extras は通常の割り当てと直交する別の束縛）、エンジン（1 ボタン複数束縛、
     /// 後始末）、ロールバック、割り当て、ソースのガード。動作の旧・新の比べは <c>ControlsExtrasCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。

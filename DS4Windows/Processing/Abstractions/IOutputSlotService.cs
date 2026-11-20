@@ -14,7 +14,6 @@ namespace DS4Windows.Processing.Abstractions
         // OutputDevices／GetOutputDevice／IsSlotPlugin（と実装の SetOutputDevice）は削除した。
         // 実装の内部配列は、本体で null 以外が設定されず、常に null／false を返す孤立実装だった。
         // 実体の入口は OutputSlots／GetOutSlotDevice（OutputSlotManager 連動）。
-        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.3
 
         // GetOutputDeviceType／SetOutputDeviceType を削除した。
         // 両メソッドは Global/BackingStore と非連動の孤立配列 _deviceTypes を読み書きしており、
@@ -23,7 +22,6 @@ namespace DS4Windows.Processing.Abstractions
         //   永続設定（プロファイルに保存される値）: IProfileSettingsService.OutContType
         //   実行時接続状態（仮想バスに接続中の種別）: ActiveOutDevType（本インターフェース）
         //   UI一時状態（プロファイル編集画面の未確定値）: OutDevTypeTemp（本インターフェース）
-        // 参照: docs-forDIMG/MadeByAgent/Phase6-Step5-Plan.md §2
 
         // DeviceType は、PluginSlot では指定された種別、UnplugSlot では None。
         // TODO(Phase7-Step2 W6、温存。Phase7-Step6 Q5＝A・Phase7-Step10b Q5＝A で再判断し、Phase8 以降の UI 通知の拡張点として温存): 本体の購読者がいない。PluginSlot／UnplugSlot の実行後に発行される

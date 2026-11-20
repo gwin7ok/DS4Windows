@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M2（Phase9-MapCustom-Plan.md §3）: <see cref="TwoStageTriggerProcessor"/>（旧 <c>Mapping.ProcessTwoStageTrigger</c>）の差分テスト。
+    /// Phase9 MapCustom の分割 M2（docs-forDIMG/MadeByAgent/Archive/Phase9-MapCustom-Plan.md §3）: <see cref="TwoStageTriggerProcessor"/>（旧 <c>Mapping.ProcessTwoStageTrigger</c>）の差分テスト。
     /// 旧メソッドの逐語コピー（未使用の引数 <c>cState</c> を除く。コメントは省略）と、5 つのモード × 入力の列（引きの量、経過時間）で、
     /// 返す割り当て（浅い引き／深い引き）と、状態（<see cref="TwoStageTriggerMappingData"/> の全項目）が各ステップで一致することを確かめる。
     /// 時刻は <c>DateTime.Now</c> から一定のずれ（0 または +100 秒）を加えた時計を両方に渡す（HipFire の待ち時間の判定を決定的にする）。
@@ -288,7 +288,7 @@ namespace DS4WindowsTests
                         var step = Steps[code];
                         oldClock.OffsetMs = newClock.OffsetMs = step.OffsetMs;
 
-                        // 唯一の意図した差: Exclusive Buttons で、深い引きの後の戻る途中（値 != 0、生値 != 255）は、浅い引きを出さない（Phase9-ExclusiveReturn-Fix-Plan.md）
+                        // 唯一の意図した差: Exclusive Buttons で、深い引きの後の戻る途中（値 != 0、生値 != 255）は、浅い引きを出さない（docs-forDIMG/MadeByAgent/Archive/Phase9-ExclusiveReturn-Fix-Plan.md）
                         bool returnFromFullPull = mode == TwoStageTriggerMode.ExclusiveButtons
                             && newData.actionStateMode == TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly
                             && step.Value != 0 && step.Raw != 255;

@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5a-W1（Phase8-Step7-5-Plan.md §3 7.5a の W1）: Profile 種別（復帰を持たない「切替のみ」）の特性化。
+    /// Phase8-Step7 7.5a-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5-Plan.md §3 7.5a の W1）: Profile 種別（復帰を持たない「切替のみ」）の特性化。
     /// 前半は、すでに新経路が旧経路と同じ動きをするはずの項目（切替の回数、保持中、ガード中、実行中、AND 条件、押している最中の適用）を、旧・新の両経路で比べる。
     /// 後半は、新経路に **まだ無い** 項目（フレームの打ち切り、トリガーのボタンのキーの解放、連鎖の防止）の、旧経路の挙動の固定。
     /// 後半は、W2 で新経路を実装したあと、旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）の検査にした（7.5a-W2）。

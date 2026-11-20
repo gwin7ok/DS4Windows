@@ -34,7 +34,7 @@
 3. **Phase25: A（設定のオブジェクト化）**。領域ごとに段階的に。保存の黄金テストを毎段階で通す。
 4. **Phase26: B（code-behind → ViewModel）**。画面ごと。`MainWindow` の残りと `ProfileEditor` から。
 5. **Phase27: E（実行時の管理の整理）**。A・C の後に調べ直す（それで形が変わるため）。
-6. **最後: G の整理と、USB の Xbox 360 入力（現 `Phase22-Plan.md`）**。
+6. **最後: G の整理と、USB の Xbox 360 入力（現 `Archive/Phase22-Plan.md`）**。
 
 各 Phase の前に、事実の確認（要確認の項目）と個別計画書の作成・承認を行う（規則 4 章）。
 
@@ -45,5 +45,5 @@
 - 2026-11-10 F 完了: 機種に依らない型の名前を一般化した。`DS4State`→`ControllerState`、`DS4StateExposed`→`ControllerStateExposed`、`DS4StateFieldMapping`→`ControllerStateFieldMapping`、`IDs4DeviceRegistry`→`IInputDeviceRegistry`、`Ds4DeviceRegistryAdapter`→`InputDeviceRegistryAdapter`、`DS4Devices`→`InputDeviceRegistry`、スロットの `DS4Controllers`→`Controllers`。**あえて残したもの**: `DS4Controls`（約 2,100 か所）、`DS4KeyType`、`DS4Color`、`DS4LightBar`、`DS4Touchpad` など。`DS4Controls` はプロファイル（XML）と画面の共通の語彙（Cross／Circle／Share…）で、他機種はその語彙へ対応づける設計（DS4 の配置を正準とする）。名前だけ変えても語彙は変わらず、利用者の保存データとの対応を保つため。DS4 固有のもの（`Ds4ReportParser`、`Ds4OutputCartridge`、`IDs4PadTarget`、ライトバー）も残す。
 - 2026-11-10 C 完了（Phase24）: `App.xaml.cs` を 1,323 行 → 約 940 行へ。CLI との通信（メモリマップトファイル）は `Core/Platform/IpcMemoryMap`、`-command` のクライアントは `Composition/Startup/CommandLineClient`、単一起動は `Composition/Startup/SingleInstanceGuard`、テーマと表示言語の切り替えは `UI/Services/AppThemeAndCultureService`（`IUiThemeAndLanguage` の実装。DI の Singleton）へ移した。`AppThemeLanguageAdapter` は撤去し、`AppIpcResultWriterAdapter` は `IpcResultWriterAdapter`（`IpcMemoryMap` へ委譲）に置き換えた。起動の手順の順序は変えていない（`StartupOrderGuardTests`）。Composition から `App` への参照は無くなった。
 
-- 2026-11-11: E を調べた結果、`ControlService` は Phase9・13 の分割のあとの殻で、責務の重なりは実態としてなかった。殻の解消を `Phase27-Plan.md` の 27-1〜27-4 で進める（27-1・27-2 完了）。
+- 2026-11-11: E を調べた結果、`ControlService` は Phase9・13 の分割のあとの殻で、責務の重なりは実態としてなかった。殻の解消を `Archive/Phase27-Plan.md` の 27-1〜27-4 で進める（27-1・27-2 完了）。
 - 2026-11-16 A の続き（Phase37-5）: 配列のまま残っていた設定を、`DualSenseSlotSettings`・`BasicSlotSettings`・`RumbleSlotSettings`・`OutputTypeSlotSettings` へ移した（保存の XML は不変）。振動は、実行時に読む値が別のコピーを見ていて、プロファイルの強さ・自動停止が効かなかった不具合を、持ち主の統一で直した。`ResetProfile` は領域ごとの `ResetForProfileLoad()`（Phase37-3）、読み込みと保存の節は領域ごとの対 `ProfileAreaSection`（Phase37-4）。`AppSettingsDTO` の `partial` 化（37-6）は、要素の順序がファイル名の並びに依存する脆さのため、見送った。

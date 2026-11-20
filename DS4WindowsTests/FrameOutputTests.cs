@@ -13,7 +13,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W2（Phase8-Step4-Plan.md §2.2）: <see cref="FrameOutput"/> と <see cref="ButtonOutputAction"/> のテスト。
+    /// Phase8-Step4 W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4-Plan.md §2.2）: <see cref="FrameOutput"/> と <see cref="ButtonOutputAction"/> のテスト。
     /// 現行の <c>Mapping.ResetToDefaultValue</c>（private。リフレクション）・<c>ButtonSpecialActionOutput.ResolveOutputActive</c> と同じ結果になることを確認する。
     /// Stage3 全体との比較（<c>MapCustom</c> の出力）は、配線後の W4 の結合テストで行う。
     /// </summary>

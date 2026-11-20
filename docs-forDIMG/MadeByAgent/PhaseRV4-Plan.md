@@ -76,7 +76,7 @@ PhaseRV3 で確立した形（コマンド、状態のバインディング、Vi
 
 ## 関連計画
 - `PhaseRV3-Plan.md`（基盤）、`PhaseRV2-Plan.md`（`async void`）、`PhaseRV6-Plan.md`（共有部品化の残り）。
-- 過去: `Phase34-Plan.md`、`Phase34-V2-AssignmentEditor-Plan.md`、`Phase34-V2-ProfileEditor-Plan.md`、`Phase10-Assignment-UI-Unification-Plan.md`、`PhaseX3-Localization-Plan.md`。
+- 過去: `Phase34-Plan.md`、`Phase34-V2-AssignmentEditor-Plan.md`、`Phase34-V2-ProfileEditor-Plan.md`、`Archive/Phase10-Assignment-UI-Unification-Plan.md`、`PhaseX3-Localization-Plan.md`。
 - 規約: §3.1（画面の MVVM の規則）、§4（OS の状態に触れない）。
 
 ## 履歴

@@ -10,7 +10,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase6-Step10-4-2: クラスタ 1（プロファイル系サービス）の Global／AppHost／Program.rootHub 直接参照解消の回帰ガード
-    /// （<c>Phase6-Step10-4-Plan.md</c> §13）。10-4-2b／2c で、対象のファイルを追加していく。
+    /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-4-Plan.md</c> §13）。10-4-2b／2c で、対象のファイルを追加していく。
     /// </summary>
     internal class NullProcessInspector : IProcessInspector
     {

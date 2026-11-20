@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W0（Phase10-Step4d-Plan.md §4 W0）: プロファイルと SA を<b>名前で識別・参照</b>している現行の挙動を固定する特性化テスト。
+    /// Phase10-Step4d W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4d-Plan.md §4 W0）: プロファイルと SA を<b>名前で識別・参照</b>している現行の挙動を固定する特性化テスト。
     /// 名前変更・削除の追従（リンクプロファイル、自動プロファイル、全プロファイルの <c>&lt;ProfileActions&gt;</c>）、名前の比較規則、保存形式（ID がないこと）、
     /// 実行時の鍵（<c>ActionManager</c> の登録簿が SA の名前で状態を引くこと）を固定する。製品コードは変えない。
     /// W1 以降で ID を足し、参照を ID に替えるとき、変わらないべき部分（既存の形式、名前の併記）と、替わる部分（追従）を、このテストで見分ける。

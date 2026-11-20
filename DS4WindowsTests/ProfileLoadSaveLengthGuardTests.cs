@@ -6,7 +6,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4b W11（Phase8-Step4b-Plan.md §3.5、Q8＝A）: プロファイルの読込・保存の分解が元に戻らないように、行数の上限をソースの走査で固定する。
+    /// Phase8-Step4b W11（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4b-Plan.md §3.5、Q8＝A）: プロファイルの読込・保存の分解が元に戻らないように、行数の上限をソースの走査で固定する。
     /// 上限は、分解後の実測（LoadProfile 164 行、SaveProfile 55 行、節の最大 353 行、LegacyProfileXmlSerializer.cs 378 行）に余裕を足した値。
     /// 超えるときは、節を足して分けるか、Step の計画書で上限を見直すこと。
     /// </summary>

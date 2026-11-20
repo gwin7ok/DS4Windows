@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W0（Phase10-Step2-Plan.md §5。Phase10-Assignment-UI-Unification-Plan.md §7）: Controls の割り当てと SA が、同じボタンにあるときの
+    /// Phase10-Step2 W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §5。docs-forDIMG/MadeByAgent/Archive/Phase10-Assignment-UI-Unification-Plan.md §7）: Controls の割り当てと SA が、同じボタンにあるときの
     /// 優先順位と抑制の、現行の挙動の特性化。製品コードは変えない。フレーム列（押す・離す）を <c>Mapping.MapCustom</c> に入力し、次を観察する。
     /// <list type="bullet">
     /// <item><description>Controls の Key の実行: 合成 SpecialAction（<c>Synthetic_Key_{device}_{control}</c>）の <c>BeingTriggered</c>（<c>ControlsKeyTestScope</c> と同じ観測）。</description></item>

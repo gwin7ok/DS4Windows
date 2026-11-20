@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-4（Phase9-E-Plan.md）: 仮想パッド出力の切り出しの守り。
+    /// Phase9 9-E E-4（docs-forDIMG/MadeByAgent/Archive/Phase9-E-Plan.md）: 仮想パッド出力の切り出しの守り。
     /// (1) <c>ControlService</c> から、移したメンバーが無くなっていること（ソースの走査。コメントは除く）。
     /// (2) 過渡期の逆依存（<c>OutputSlotService</c> → <c>ControlService</c>）が解消されていること。
     /// (3) 新しい部品が DI の Singleton として登録され、<c>ControlService</c> が <see cref="IVirtualPadHost"/> として解決できること。

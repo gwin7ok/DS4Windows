@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W1（Phase10-Step3-Plan.md §3.2）: 出力ピッカー（<c>BindingWindow</c>）の表示モードの整理を固定するソース走査ガード。
+    /// Phase10-Step3 W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3-Plan.md §3.2）: 出力ピッカー（<c>BindingWindow</c>）の表示モードの整理を固定するソース走査ガード。
     /// <c>SpecialAction</c>（SA の Press Key 用。旧 <c>ForPressToggle</c>）と <c>Control</c>（Controls の割り当てエディター用）を追加した。
     /// <c>Control</c> は、Default／Unbound（<c>modePanel</c>）と Extras（<c>extrasSidePanel</c>）を出し、Record A Macro・Toggle・Scan Code を出さない。
     /// ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。ソースファイルが見つからない環境では、検査を行わず合格とする。

@@ -13,7 +13,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-A(2)-A（Phase9-A2-Plan.md）: <c>Mapping.SetCurveAndDeadzone</c> の「ジャイロ → コントロール」（<c>GyroOutMode.Controls</c> の SX／SZ の補正）の<b>値の特性化テスト</b>（ゴールデン方式）。
+    /// Phase9 9-A(2)-A（docs-forDIMG/MadeByAgent/Archive/Phase9-A2-Plan.md）: <c>Mapping.SetCurveAndDeadzone</c> の「ジャイロ → コントロール」（<c>GyroOutMode.Controls</c> の SX／SZ の補正）の<b>値の特性化テスト</b>（ゴールデン方式）。
     /// ジャイロの加速度（X・Z）の格子と、設定の場面（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ 1〜6）を組み合わせ、<b>今のコードの出力</b>をそのまま記録する。
     /// X と Z が同じ設定のときの値の違い（X と Z の非対称）は、別のゴールデンに記録する（共通化の前に、差があるかが分かる。差があれば、そのまま保つ）。
     /// 切り出し（<c>IGyroControlsProcessor</c>）で、値が 1 つでも変わると失敗する。

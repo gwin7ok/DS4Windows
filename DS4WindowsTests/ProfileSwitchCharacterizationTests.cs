@@ -9,13 +9,13 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step1 W2（Phase8-Step1-Plan.md 項目 B-1・B-2、Q2＝A）: プロファイル切替のスペシャルアクション（Profile 種別）の、成立 → 切替 → 復帰の特性化テスト。
+    /// Phase8-Step1 W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step1-Plan.md 項目 B-1・B-2、Q2＝A）: プロファイル切替のスペシャルアクション（Profile 種別）の、成立 → 切替 → 復帰の特性化テスト。
     /// <see cref="RecordingProfileApplicationService"/> を <c>DefaultProfileSwitcher</c> に差し込み、実際のプロファイルの読込・適用は走らせない。
     /// 固定する挙動:
     ///  - 成立のたびに 1 回だけ、<c>ApplyFromAction</c>（<c>ActionManager</c> 経由）で切り替わる。直接の <c>ApplyProfile</c>（フォールバック、チェーン）は呼ばれない。
     ///  - 「Unload on trigger release」（<c>AutomaticUntrigger</c>）: トリガーを離すと、<c>RestoreFromAction</c> が 1 回だけ呼ばれ、復帰の合図が消える。
     ///  - 解除トリガー（<c>uTrigger</c>）あり: 解除トリガーがすべて押されたときだけ復帰する。
-    /// 台帳: <c>Phase8-Step1-Trigger-Spec-Ledger.md</c> §3・§5（Profile）。
+    /// 台帳: <c>docs-forDIMG/MadeByAgent/Archive/Phase8-Step1-Trigger-Spec-Ledger.md</c> §3・§5（Profile）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileSwitchCharacterizationTests

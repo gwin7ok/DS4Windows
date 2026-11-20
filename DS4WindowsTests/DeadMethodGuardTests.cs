@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase7-Step1 W1: <c>BackingStore</c> の呼び出し元 0 件のメソッドを削除した結果の回帰ガード。
     /// (1) 削除済みのメソッドが <c>BackingStore.cs</c> に再び現れないこと、
     /// (2) 削除せずに残すもの（<c>PostProcessLoad</c>。W3 で DTO 読込の経路へ接続する）が残っていること、を固定する。
-    /// 削除の経緯と根拠は <c>Phase7-0-Survey.md</c> §1.1、<c>Phase7-Step1-Plan.md</c> §3 W1。
+    /// 削除の経緯と根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-0-Survey.md</c> §1.1、<c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step1-Plan.md</c> §3 W1。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class DeadMethodGuardTests

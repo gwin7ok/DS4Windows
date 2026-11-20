@@ -157,7 +157,7 @@ namespace DS4WindowsTests
         }
 
         // ---- 実ファイルを書き換える委譲（SaveAsProfile／LoadLinkedProfiles／CreateStandardActions）はソース走査で確認 ----
-        // Step3-1 の SaveControllerConfigsForDevice と同じ扱い。挙動は実機確認（Phase6-Step7-Plan.md §6）で担保する。
+        // Step3-1 の SaveControllerConfigsForDevice と同じ扱い。挙動は実機確認（docs-forDIMG/MadeByAgent/Archive/Phase6-Step7-Plan.md §6）で担保する。
 
         [Fact]
         public void ProfileRepository_NewMembers_DelegateToGlobal()

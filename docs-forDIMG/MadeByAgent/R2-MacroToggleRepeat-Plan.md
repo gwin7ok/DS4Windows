@@ -83,7 +83,7 @@
 | W2 | 保存と読込（SA の `<MacroExecuteMode>`、Controls の `<MacroExecuteMode>` ノード）。往復テスト、古い形式［`extras` の `Repeat`、`KeyType` の `RepeatMacro`／`HoldMacro`］の読込テスト | `SpecialActionSerializer.cs`、`ActionsDTO.cs`、`SpecialAction.cs`、`MacroViewModel.cs`、`ProfileButtonSaveSection`、`ProfileButtonControlLoadSection` |
 | W3 | 画面（3 項目目、文字列、説明文、Controls の `OutBinding`）。ViewModel のテスト | `MacroPlaybackOptionsPanel.cs`、`Strings.*`、`AssignmentDescriber.cs`、`OutBinding.cs`、`RecordBoxViewModel.cs` |
 | W4 | 実行（`MacroAction` の反転、`MacroPlayback` の繰り返し条件、同期キュー、先頭の確認）。ループの停止（OFF、状態の差し替え）のテスト | `MacroAction.cs`、`SpecialActionOutputFactory.cs`、`MacroPlayback.cs` |
-| W5 | 実機確認の手順を `Phase6-Step11-RealDevice-Verification-Checklist.md` に追記。台帳・完了報告・モデル図 03 を更新 | docs |
+| W5 | 実機確認の手順を `Archive/Phase6-Step11-RealDevice-Verification-Checklist.md` に追記。台帳・完了報告・モデル図 03 を更新 | docs |
 
 各 Step で `dotnet test` をグリーンにする（私の環境には dotnet がないため、ビルドとテストはユーザーの環境で行い、結果を貼ってもらう）。
 

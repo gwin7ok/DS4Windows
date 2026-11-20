@@ -10,7 +10,6 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     // Issue8-1(3)是正（仕様⑤: トリガー構成ボタンの出力抑制期間の延長）の回帰防止テスト。
-    // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-Issue8-1-3-Fix-Plan.md
     //
     // 実運用の入力評価（MapCustomAction）自体を直接駆動するテストは困難だが、本Issueの是正対象である
     // 抑制の集合と CheckForSpecialActionSuppression（private、reflection経由で呼び出す）の

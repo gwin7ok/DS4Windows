@@ -20,7 +20,6 @@ namespace DS4Windows.Core.Abstractions
         // AddAction／ReplaceAction／RemoveAction／GetActionIndex は削除した。AddAction／ReplaceAction／RemoveAction は、
         // メモリ上のリストだけを変える並行実装で、本体の保存経路（SaveAction／RemoveActionAndSave＝Actions.xml への保存と読み直し）と別物だった。
         // GetActionIndex は、AddAction などの内部でだけ使われていた。
-        // 参照: docs-forDIMG/MadeByAgent/Phase7-Step2-Plan.md §2.4
 
         // ---- App.xaml.cs（Post-Host）の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>

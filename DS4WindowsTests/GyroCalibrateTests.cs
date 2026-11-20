@@ -15,7 +15,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.6a（Phase8-Step7-6-Plan.md §3.1。Q2＝A）: GyroCalibrate の新経路の確認。
+    /// Phase8-Step7 7.6a（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-6-Plan.md §3.1。Q2＝A）: GyroCalibrate の新経路の確認。
     /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。そのため、効果は記録用のポートで確かめ、
     /// 旧経路とは、立ち上がりのログの文言（Trace の 4 行）だけを比べる。ポートの本番の実装は、コントローラーがいない場合の安全性を確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。

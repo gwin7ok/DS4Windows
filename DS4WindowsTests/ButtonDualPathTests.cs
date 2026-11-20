@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.1-W1（Phase8-Step7-Plan.md §3・§5.1）: Button 種別の「旧経路（Stage3 と旧ループ）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
+    /// Phase8-Step7 7.1-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-Plan.md §3・§5.1）: Button 種別の「旧経路（Stage3 と旧ループ）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
     /// 同じ入力の列を両経路に流し、フレームごとの出力（Cross、L1／R1 の素通し、タッチパッドクリック、マウス左クリックの数）が一致することを確かめる。
     /// 期待値は旧経路に合わせる（Q3＝A。新経路を正として書き換えない）。
     /// 注意: 遅延（<c>delayTime</c>）は時刻に依存するため、ここでは「Button の出力は遅延（delayTime）で遅れない」ことだけを確かめる。時刻を伴う Fresh-press の解除は、

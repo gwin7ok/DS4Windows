@@ -41,7 +41,7 @@ namespace DS4Windows.Core.Settings
         /// </summary>
         public ControlSpecialItem special;
 
-        // 「Lightbar マクロ」機能は廃止した（Phase8-Step7-8e-Plan.md Q8＝B。プロファイルに保存されず、実質使えなかった）。
+        // 「Lightbar マクロ」機能は廃止した（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8e-Plan.md Q8＝B。プロファイルに保存されず、実質使えなかった）。
 
         // 「シフト」機能は廃止した。プロファイルに残っているシフトの設定は、解釈せず、RemovedShiftSettings に保持する。
 

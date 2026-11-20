@@ -18,7 +18,7 @@ namespace DS4WindowsTests
     /// Phase7-Step8 W3: 出力 KBM ハンドラの実体を <c>OutputKBMHandlerAdapter</c> へ移したこと（<c>Global.outputKBMHandler</c>／<c>outputKBMMapping</c> の削除）、
     /// 合成キーの送出を <c>SyntheticDispatcherService</c>（<c>ISyntheticDispatcher</c>）にし、静的な <c>SyntheticDispatcher</c> を状態を持たない橋渡しにしたこと、
     /// <c>ActionsLoadedRuntimeReset</c> を instance にしたことの回帰ガード。
-    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q6）。
+    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q6）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class OutputKbmOwnershipGuardTests

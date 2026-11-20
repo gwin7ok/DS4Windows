@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: 入力レポートの処理の切り出しの守り。
+    /// Phase9 9-E E-5（docs-forDIMG/MadeByAgent/Archive/Phase9-E5-Plan.md）: 入力レポートの処理の切り出しの守り。
     /// (1) <c>ControlService</c> から、移したメンバーが無くなっていること（ソースの走査。コメントは除く）。
     /// (2) 呼び出し側のための薄い委譲メソッドが残っていること。
     /// (3) 新しい部品が DI の Singleton として登録されること。

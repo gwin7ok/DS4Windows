@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase6-Step8: <c>ProfileEditor.xaml.cs</c> の Global 直接参照の解消を固定するソース走査ガード。
     /// 解消したグループを Step8-2 以降で順に <see cref="ResolvedMembers"/> へ追加していく
     /// （最終的に、定数［TEST_PROFILE_INDEX／ASSEMBLY_RESOURCE_PREFIX／RESOURCES_PREFIX］以外の
-    /// <c>Global.</c> 参照が 0 件になる。Phase6-Step8-Plan.md §0A.2）。
+    /// <c>Global.</c> 参照が 0 件になる。docs-forDIMG/MadeByAgent/Archive/Phase6-Step8-Plan.md §0A.2）。
     /// </summary>
     public class ProfileEditorGlobalReferenceGuardTests
     {

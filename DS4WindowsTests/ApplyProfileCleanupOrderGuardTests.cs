@@ -6,7 +6,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step1 W2（Phase8-Step1-Plan.md 項目 B-4）: プロファイル適用後の掃除の順序の構造ガード。
+    /// Phase8-Step1 W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step1-Plan.md 項目 B-4）: プロファイル適用後の掃除の順序の構造ガード。
     /// <c>ProfileApplicationService.CompleteProfileApplication</c> は、次の順序で呼ぶ（順序を入れ替えると、アクションの実体の再作成や、
     /// 復帰の合図の退避・復元［Phase7b W1］が壊れる）:
     ///   ClearAllEntries → ClearForDevice → ClearDeviceState → PreallocateForProfileApply

@@ -394,7 +394,7 @@ namespace DS4Windows.Processing.Services.Slots
             return true;
         }
 
-        // 設計: Phase8-Step7-8f-Plan.md §3.2。パッドへの割り当て。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）。値の出力は、評価されたフレームごとに、全 dcs のあと（Stage3 と同じ段階）で書く。
+        // 設計: docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8f-Plan.md §3.2。パッドへの割り当て。割り当てたボタンの通常の出力は、毎フレーム消す（Controls の規則）。値の出力は、評価されたフレームごとに、全 dcs のあと（Stage3 と同じ段階）で書く。
         // 出力先が Unbound／None のときは、出力を持たない束縛（消すだけ）
         private void AddPad(int device, DS4ControlSettings dcs, PadBindingValues values, bool eraseOnly, bool toggle, List<IActionBinding> result)
         {
@@ -415,7 +415,7 @@ namespace DS4Windows.Processing.Services.Slots
                 outputs.ToArray(), policy, identity, -1));
         }
 
-        // 設計: Phase8-Step7-8f-Plan.md §3.2（7.8f-3）。マウスの移動とアナログのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
+        // 設計: docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8f-Plan.md §3.2（7.8f-3）。マウスの移動とアナログのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
         // 移動は、評価されたフレームごとに量を借りて加算器へ書く（Q6＝A）。ホイールは、成立中に束縛ごとの状態で進む（Q5＝B）。Toggle つきなら、Toggle の出力を足す
         private void AddAnalogMouse(int device, DS4ControlSettings dcs, X360Controls target, bool toggle, List<IActionBinding> result)
         {
@@ -441,7 +441,7 @@ namespace DS4Windows.Processing.Services.Slots
                 outputs.ToArray(), policy, identity, -1));
         }
 
-        // 設計: Phase8-Step7-8f-Plan.md §3.2（7.8f-2）。マウスのボタン・タッチパッドクリック・デジタルのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
+        // 設計: docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8f-Plan.md §3.2（7.8f-2）。マウスのボタン・タッチパッドクリック・デジタルのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
         // マウスのボタンとホイールは Controls の判定。タッチパッドクリックの押下は SA と同じ判定で、出力が自分で見る。Toggle つきなら、Toggle の出力を足す（Q8＝A）
         private void AddMouse(int device, DS4ControlSettings dcs, X360Controls target, bool toggle, List<IActionBinding> result)
         {
@@ -461,7 +461,7 @@ namespace DS4Windows.Processing.Services.Slots
                 outputs.ToArray(), policy, identity, -1));
         }
 
-        // 設計: Phase8-Step7-8f-Plan.md §3.2（Q2＝A）。Default の軸の素通し。Default は通常の出力を消さない（消すのは、反対側の向きの割り当て）
+        // 設計: docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8f-Plan.md §3.2（Q2＝A）。Default の軸の素通し。Default は通常の出力を消さない（消すのは、反対側の向きの割り当て）
         private void AddPassthrough(int device, DS4ControlSettings dcs, List<IActionBinding> result)
         {
             var identity = new SpecialAction($"Synthetic_PadPassthrough_{device}_{(int)dcs.control}", "Synthetic", "PadPassthrough", "PadPassthrough", 0, string.Empty);
@@ -474,7 +474,7 @@ namespace DS4Windows.Processing.Services.Slots
                 new IOutputAction[] { new ControlPassthroughOutputAction(identity, dcs.control) }, policy, identity, -1));
         }
 
-        // 設計: Phase8-Step7-8e-Plan.md §3.2。Extras は Controls の判定（Assignment）で、通常の割り当てとは別の束縛にする。
+        // 設計: docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8e-Plan.md §3.2。Extras は Controls の判定（Assignment）で、通常の割り当てとは別の束縛にする。
         // Fresh-press ガードなし、トリガーのボタンを抑制せず、通常の出力も消さない（消すのは通常の割り当ての束縛）。離したとき Stop（元に戻す）
         private void AddExtras(int device, DS4ControlSettings dcs, ExtrasBindingValues values, List<IActionBinding> result)
         {

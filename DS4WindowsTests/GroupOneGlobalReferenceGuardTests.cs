@@ -10,7 +10,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Phase6-Step10-1: グループ1（起動・環境系）の View／ViewModel の Global 直接参照解消の回帰ガード
-    /// （<c>Phase6-Step10-1-Plan.md</c>、<c>Phase6-Step10-Plan.md</c> §0A.2）。
+    /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-1-Plan.md</c>、<c>Phase6-Step10-Plan.md</c> §0A.2）。
     /// - 置換済みのファイルに、温存項目（定数・Pre-Host の手動分岐）以外の <c>Global.</c> が再混入していないこと。
     /// - <c>AppHost</c>（Service Locator）・<c>Program.rootHub</c>・静的な <c>App.logHolder</c>／<c>App.Current</c> を持たないこと。
     /// - 削除した呼出元 0 件のメソッドが戻っていないこと。

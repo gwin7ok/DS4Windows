@@ -12,7 +12,7 @@ namespace DS4WindowsTests
     /// Phase6-Step12: 呼び出し元 0 件の旧静的シムを削除した結果の回帰ガード。
     /// (1) 削除済みのメンバーが <c>Global.cs</c> に再び現れないこと、
     /// (2) 削除禁止の防壁（定数、Pre-Host、ViGEm クライアント依存ほか）にあたるメンバーが残っていること、を固定する。
-    /// 削除した名前は Wave ごとに <see cref="RemovedFromGlobal"/> へ追記する（名簿は Phase6-Step12-Plan.md §0A.8）。
+    /// 削除した名前は Wave ごとに <see cref="RemovedFromGlobal"/> へ追記する（名簿は docs-forDIMG/MadeByAgent/Archive/Phase6-Step12-Plan.md §0A.8）。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class DeadShimRemovalGuardTests

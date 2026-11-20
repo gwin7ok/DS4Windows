@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7b-W1（Phase8-Step7-7-Plan.md §4 の W1）: MultiAction（タップ・長押し・ダブルタップ）の特性化。
+    /// Phase8-Step7 7.7b-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-7-Plan.md §4 の W1）: MultiAction（タップ・長押し・ダブルタップ）の特性化。
     /// 旧 <c>MapCustomAction</c> の MultiAction の枝は、デバイスの前回のレポートを使うため、テスト用のデバイス（<see cref="TestDs4Device"/>）をスロットに置く。
     /// 時刻は旧経路が <c>DateTime.UtcNow</c> を使うため、実際に待つ（待ち時間には余裕を持たせる）。マクロは背景のタスクで実行されるため、記録の出現を待つ。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じ期待値。W1 の時点では、ビルダーが MultiAction の束縛を作らないため、新経路の指定でも旧経路が処理する。
