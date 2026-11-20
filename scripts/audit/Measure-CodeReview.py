@@ -39,8 +39,46 @@ def walk(base, exts):
                 yield os.path.join(dp, f)
 
 
-def read(p):
+def _raw(p):
     return open(p, encoding="utf-8-sig", errors="ignore").read()
+
+
+_PARTIAL_CACHE = {}
+
+
+def partial_map():
+    """`Stem.Group.cs`（partial の分け先）を、本体 `Stem.cs`／`Stem.xaml.cs` へ束ねる表を作る。
+    RV11 で型を partial へ分けたため、ファイルごとの指標が分割で動く（行数・手結び・重複など）。
+    分け先を本体の一部として数えると、分割だけでは指標が動かない（型の単位で測る）。"""
+    if _PARTIAL_CACHE:
+        return _PARTIAL_CACHE
+    allp = list(walk(SRC, [".cs"]))
+    names = {os.path.normcase(p) for p in allp}
+    children = set()
+    for p in allp:
+        d, f = os.path.split(p)
+        if f.endswith(".Designer.cs") or f.endswith(".xaml.cs"):
+            continue
+        parts = f[:-3].split(".")
+        if len(parts) < 2:
+            continue
+        stem = parts[0]
+        for cand in (stem + ".cs", stem + ".xaml.cs"):
+            main = os.path.join(d, cand)
+            if os.path.normcase(main) in names and main != p:
+                _PARTIAL_CACHE.setdefault(main, []).append(p)
+                children.add(p)
+                break
+    _PARTIAL_CACHE["__children__"] = children
+    return _PARTIAL_CACHE
+
+
+def read(p):
+    """本体を読むときは、partial の分け先も続けて返す（テストの `.cs` には束ねない）。"""
+    t = _raw(p)
+    for c in sorted(partial_map().get(p, [])):
+        t += chr(10) + _raw(c)
+    return t
 
 
 def strip_comments(t):
@@ -49,8 +87,9 @@ def strip_comments(t):
 
 
 def src_files():
+    children = partial_map()["__children__"]
     for p in walk(SRC, [".cs"]):
-        if not p.endswith(".Designer.cs"):
+        if not p.endswith(".Designer.cs") and p not in children:
             yield p
 
 
