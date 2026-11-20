@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -34,7 +36,7 @@ namespace DS4Windows.UI.Services
             _store = store;
         }
 
-        public event EventHandler ThemeChanged;
+        public event EventHandler? ThemeChanged;
 
         /// <summary>
         /// 表示言語を設定の持ち主と、スレッドと WPFLocalizeExtension へ反映する（空のカルチャ名は無視する）。
@@ -137,15 +139,15 @@ namespace DS4Windows.UI.Services
 
                 // 4.0.1: Default is the light theme (it used to follow the Windows apps theme mode, which made the
                 // dark theme the default for many users). Choose Dark explicitly to use the dark theme.
-                ThemeLocs.TryGetValue(AppThemeChoice.Light, out string loc);
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc, uriKind: UriKind.Relative) });
+                ThemeLocs.TryGetValue(AppThemeChoice.Light, out string? loc);
+                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc!, uriKind: UriKind.Relative) });   // 表は、どのテーマも必ず持つ
 
                 if (fireChanged)
                 {
                     ThemeChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
-            else if (ThemeLocs.TryGetValue(themeChoice, out string loc))
+            else if (ThemeLocs.TryGetValue(themeChoice, out string? loc))
             {
                 Application.Current.Resources.MergedDictionaries.Clear();
                 Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri(loc, uriKind: UriKind.Relative) });

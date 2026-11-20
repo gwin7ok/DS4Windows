@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Profiles;
@@ -56,7 +58,7 @@ namespace DS4Windows.UI.Services
 
         public FocusWindowViewModel CreateFocusWindowViewModel() => new FocusWindowViewModel(_actionRepo);
 
-        public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null)
+        public SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction? action = null)
         {
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] ViewModelFactory: Created SpecialActEditorViewModel for Device {device}");

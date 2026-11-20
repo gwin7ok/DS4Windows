@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -69,7 +71,7 @@ namespace DS4Windows.UI.Services
         /// <summary>プロファイルの読み込み後の、有効なスペシャルアクションの名前（「/」区切り）。なければ空文字。</summary>
         public string GetEnabledActionsText(int editSlot)
         {
-            List<string> actions = profileRepository.ProfileActions != null && profileRepository.ProfileActions.Length > editSlot
+            List<string>? actions = profileRepository.ProfileActions != null && profileRepository.ProfileActions.Length > editSlot
                 ? profileRepository.ProfileActions[editSlot]
                 : null;
             return actions != null ? string.Join("/", actions) : string.Empty;
@@ -79,9 +81,8 @@ namespace DS4Windows.UI.Services
         public void RenameActionInEditedProfile(int editSlot, string oldName, string newName)
         {
             var actions = profileRepository.ProfileActions;
-            if (actions != null && actions.Length > editSlot && actions[editSlot] != null)
+            if (actions != null && actions.Length > editSlot && actions[editSlot] is { } list)
             {
-                var list = actions[editSlot];
                 for (int i = 0; i < list.Count; i++)
                 {
                     if (list[i] == oldName)

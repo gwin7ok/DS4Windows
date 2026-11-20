@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.UI.Abstractions
 {
     /// <summary>メッセージの窓に付ける印。</summary>

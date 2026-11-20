@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Globalization;
 using System.IO;
@@ -17,15 +19,16 @@ namespace DS4Windows.UI.Converters
     {
         public static readonly FileIconConverter Instance = new FileIconConverter();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string path = value as string;
+            string? path = value as string;
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
                 return null;
 
-            using (System.Drawing.Icon ico = System.Drawing.Icon.ExtractAssociatedIcon(path))
+            using (System.Drawing.Icon? ico = System.Drawing.Icon.ExtractAssociatedIcon(path))
             {
-                ImageSource icon = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty,
+                ImageSource icon = Imaging.CreateBitmapSourceFromHIcon(ico!.Handle,   // 取れないときの例外は、呼び出し側が扱う（従来どおり）
+                    Int32Rect.Empty,
                     BitmapSizeOptions.FromEmptyOptions());
                 icon.Freeze();
                 return icon;

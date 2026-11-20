@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Linq;
 using System.Windows;
@@ -21,17 +23,17 @@ namespace DS4Windows.UI.Services
             _dispatcher = dispatcher;
         }
 
-        public void ShowMessage(string message, string title = null, DialogIcon icon = DialogIcon.None)
+        public void ShowMessage(string message, string? title = null, DialogIcon icon = DialogIcon.None)
         {
             Show(message, title, MessageBoxButton.OK, icon);
         }
 
-        public bool Confirm(string message, string title = null, DialogIcon icon = DialogIcon.Question)
+        public bool Confirm(string message, string? title = null, DialogIcon icon = DialogIcon.Question)
         {
             return Show(message, title, MessageBoxButton.YesNo, icon) == MessageBoxResult.Yes;
         }
 
-        public string PickOpenFile(FileDialogOptions options)
+        public string? PickOpenFile(FileDialogOptions options)
         {
             return Run(() =>
             {
@@ -41,7 +43,7 @@ namespace DS4Windows.UI.Services
             });
         }
 
-        public string PickFolder()
+        public string? PickFolder()
         {
             return Run(() =>
             {
@@ -50,7 +52,7 @@ namespace DS4Windows.UI.Services
             });
         }
 
-        public string PickSaveFile(FileDialogOptions options)
+        public string? PickSaveFile(FileDialogOptions options)
         {
             return Run(() =>
             {
@@ -60,7 +62,7 @@ namespace DS4Windows.UI.Services
             });
         }
 
-        private static void Apply(FileDialog dialog, FileDialogOptions options)
+        private static void Apply(FileDialog dialog, FileDialogOptions? options)
         {
             if (options == null) return;
             if (options.Title != null) dialog.Title = options.Title;
@@ -70,11 +72,11 @@ namespace DS4Windows.UI.Services
             if (options.DefaultExtension != null) dialog.DefaultExt = options.DefaultExtension;
         }
 
-        private MessageBoxResult Show(string message, string title, MessageBoxButton buttons, DialogIcon icon)
+        private MessageBoxResult Show(string message, string? title, MessageBoxButton buttons, DialogIcon icon)
         {
             return Run(() =>
             {
-                Window owner = Owner();
+                Window? owner = Owner();
                 MessageBoxImage image = ToImage(icon);
                 string caption = title ?? string.Empty;
                 return owner != null
@@ -85,12 +87,12 @@ namespace DS4Windows.UI.Services
 
         private T Run<T>(Func<T> func)
         {
-            T result = default;
+            T result = default!;   // UI スレッドでの実行が失敗した場合の既定値
             _dispatcher.Invoke(() => result = func());
             return result;
         }
 
-        private static Window Owner()
+        private static Window? Owner()
         {
             Application app = Application.Current;
             if (app == null) return null;

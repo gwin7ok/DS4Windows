@@ -1,4 +1,6 @@
-﻿using DS4Windows.Core.Settings;
+﻿#nullable enable
+
+using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.ViewModels.SpecialActions;

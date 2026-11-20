@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.Controls
@@ -14,7 +16,7 @@ namespace DS4Windows.UI.Controls
         /// 出力ピッカー（BindingWindow）の、出力の種類ごとの図。XAML の既定の図は Xbox 360（<see cref="Xbox360"/>）で、
         /// ほかの種類は、その種類の配置表と背景の画像（リソースのキー）へ差し替える。種類がない（None）ときは、既定の種類の図を使う。
         /// </summary>
-        public static (ControllerLayout Layout, string BackgroundImageKey) ForOutputType(OutContType type)
+        public static (ControllerLayout Layout, string? BackgroundImageKey) ForOutputType(OutContType type)
         {
             switch (type)
             {

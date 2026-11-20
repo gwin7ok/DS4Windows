@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO;
 using System.Reflection;
@@ -39,7 +41,7 @@ namespace DS4Windows.UI.Services
 
         private static void RegisterInRegistry()
         {
-            string exePath = Environment.ProcessPath;
+            string? exePath = Environment.ProcessPath;
             if (string.IsNullOrEmpty(exePath) || !File.Exists(exePath))
                 return;
 
@@ -62,14 +64,14 @@ namespace DS4Windows.UI.Services
         // （従来どおり毎回解決を試みるフォールバック挙動を維持し、機能低下がないようにする）。
         private static readonly object _cacheLock = new object();
         private static bool _cacheReady = false;
-        private static Type _xmlDocType;
-        private static Type _toastType;
-        private static Type _toastManagerType;
-        private static Type _toastNotifierType;
-        private static MethodInfo _loadXmlMethod;
-        private static PropertyInfo _tagProperty;
-        private static MethodInfo _createToastNotifierMethod;
-        private static MethodInfo _showMethod;
+        private static Type? _xmlDocType;
+        private static Type? _toastType;
+        private static Type? _toastManagerType;
+        private static Type? _toastNotifierType;
+        private static MethodInfo? _loadXmlMethod;
+        private static PropertyInfo? _tagProperty;
+        private static MethodInfo? _createToastNotifierMethod;
+        private static MethodInfo? _showMethod;
 
         private static void EnsureWinRTMembersResolved()
         {
@@ -81,10 +83,10 @@ namespace DS4Windows.UI.Services
                 if (_cacheReady)
                     return;
 
-                Type xmlDocType = ResolveWinRTType("Windows.Data.Xml.Dom.XmlDocument");
-                Type toastType = ResolveWinRTType("Windows.UI.Notifications.ToastNotification");
-                Type toastManagerType = ResolveWinRTType("Windows.UI.Notifications.ToastNotificationManager");
-                Type toastNotifierType = ResolveWinRTType("Windows.UI.Notifications.ToastNotifier");
+                Type? xmlDocType = ResolveWinRTType("Windows.Data.Xml.Dom.XmlDocument");
+                Type? toastType = ResolveWinRTType("Windows.UI.Notifications.ToastNotification");
+                Type? toastManagerType = ResolveWinRTType("Windows.UI.Notifications.ToastNotificationManager");
+                Type? toastNotifierType = ResolveWinRTType("Windows.UI.Notifications.ToastNotifier");
 
                 if (xmlDocType == null || toastType == null || toastManagerType == null)
                 {
@@ -140,10 +142,10 @@ namespace DS4Windows.UI.Services
                 throw new PlatformNotSupportedException("WinRT Notification types could not be resolved.");
             }
 
-            object xmlDoc = Activator.CreateInstance(_xmlDocType);
+            object? xmlDoc = Activator.CreateInstance(_xmlDocType);
             _loadXmlMethod?.Invoke(xmlDoc, new object[] { toastXmlString });
 
-            object toast = Activator.CreateInstance(_toastType, new object[] { xmlDoc });
+            object? toast = Activator.CreateInstance(_toastType, new object?[] { xmlDoc });
 
             // ★ユニークなTagのみを付与（Groupは未指定にすることで、OSに上方向スタック積み上げを実行させる）
             _tagProperty?.SetValue(toast, uniqueTag);
@@ -156,16 +158,16 @@ namespace DS4Windows.UI.Services
             }
             catch { /* 診断の出力の失敗は無視してよい */ }
 
-            object notifier = _createToastNotifierMethod?.Invoke(null, new object[] { AppId });
-            MethodInfo showMethod = _showMethod ?? notifier?.GetType().GetMethod("Show", new[] { _toastType });
-            showMethod?.Invoke(notifier, new object[] { toast });
+            object? notifier = _createToastNotifierMethod?.Invoke(null, new object[] { AppId });
+            MethodInfo? showMethod = _showMethod ?? notifier?.GetType().GetMethod("Show", new[] { _toastType });
+            showMethod?.Invoke(notifier, new object?[] { toast });
         }
 
-        private static Type ResolveWinRTType(string fullName)
+        private static Type? ResolveWinRTType(string fullName)
         {
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                Type type = assembly.GetType(fullName);
+                Type? type = assembly.GetType(fullName);
                 if (type != null)
                     return type;
             }
@@ -173,7 +175,7 @@ namespace DS4Windows.UI.Services
             try
             {
                 Assembly sdkAssembly = Assembly.Load("Microsoft.Windows.SDK.NET");
-                Type type = sdkAssembly?.GetType(fullName);
+                Type? type = sdkAssembly?.GetType(fullName);
                 if (type != null)
                     return type;
             }

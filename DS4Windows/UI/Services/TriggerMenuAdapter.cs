@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Windows.Controls;
 using DS4Windows.UI.ViewModels;

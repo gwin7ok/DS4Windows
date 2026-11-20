@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 using DS4Windows.Core.Logging;
@@ -85,11 +87,11 @@ namespace DS4Windows.UI.Services
         /// <summary>スロットの電池の残量（スロットが空なら "N/A"）。</summary>
         public string BatteryText(int deviceIndex)
         {
-            IControllerSlotView device = slots.GetSlot(deviceIndex);
+            IControllerSlotView? device = slots.GetSlot(deviceIndex);
             return device != null ? $"{device.Battery}" : "N/A";
         }
 
-        private void OnSlotChanged(object sender, ControllerSlotChangedEventArgs args)
+        private void OnSlotChanged(object? sender, ControllerSlotChangedEventArgs args)
         {
             if (!autoProfileService.Running)
                 return;
@@ -102,7 +104,7 @@ namespace DS4Windows.UI.Services
             });
         }
 
-        private void OnTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void OnTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             timer.Stop();
             GuardedTimerTick.Run(

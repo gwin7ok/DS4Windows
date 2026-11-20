@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 
@@ -24,7 +26,7 @@ namespace DS4Windows.UI.Services
         /// 新しい版があるかを問い合わせる。起動時の自動の確認（<paramref name="startup"/> が true）は、スキップした版を除く（キャッシュを使う）。
         /// 手動の確認は、スキップした版も含めて確認する。通信の失敗などの例外は、そのまま呼び出し側へ伝える。
         /// </summary>
-        public bool TryFindNewerVersion(bool startup, out Version version)
+        public bool TryFindNewerVersion(bool startup, out Version? version)
             => changelogService.CheckNewerVersionExists(out version, appSettingsService.LastVersionChecked, false, startup);
 
         /// <summary>起動時の自動の確認が有効で、前回の確認から設定の間隔が経っているか。</summary>
@@ -44,7 +46,7 @@ namespace DS4Windows.UI.Services
         /// <param name="currentVersion">いま動いている版。</param>
         /// <param name="recordedVersion">版の記録ファイルの内容（ファイルがなければ空）。</param>
         /// <param name="latest">新しい版があるとき、その版。</param>
-        public UpdateCheckOutcome Evaluate(string currentVersion, string recordedVersion, out Version latest)
+        public UpdateCheckOutcome Evaluate(string currentVersion, string recordedVersion, out Version? latest)
         {
             latest = null;
             try

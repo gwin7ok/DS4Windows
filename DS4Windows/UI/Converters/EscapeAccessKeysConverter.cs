@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -27,14 +29,14 @@ namespace DS4Windows.UI.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string temp = value.ToString();
+            string temp = value.ToString() ?? string.Empty;
             temp = Regex.Replace(temp, "_{1}", "__");
             return temp;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string temp = value.ToString();
+            string temp = value.ToString() ?? string.Empty;
             temp = Regex.Replace(temp, "_{2}", "_");
             return temp;
         }

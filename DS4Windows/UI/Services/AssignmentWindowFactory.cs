@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
@@ -58,7 +60,7 @@ namespace DS4Windows.UI.Services
             => new StickCalibrationWindow(stick, device, profileSettingsViewModel, new ControllerReadingsFeedAdapter(_readings));
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
-            SpecialAction specialAction, IEditorWindowFactory editors)
+            SpecialAction? specialAction, IEditorWindowFactory editors)
             => new AssignmentEditor(new AssignmentEditorSession(deviceNum, null, specialAction, profileList, targetDevice, editors, _viewModelFactory,
                 _actionViewModelFactory, _specialActionRepository, _profileSettings, _environmentService, _windowSystem));
 

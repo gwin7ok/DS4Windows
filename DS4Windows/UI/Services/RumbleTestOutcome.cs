@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.UI.Services
 {
     /// <summary>振動テストのボタンを押した結果。ボタンの文字を何にするかを画面へ伝える。</summary>

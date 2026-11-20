@@ -336,7 +336,7 @@ namespace DS4WindowsTests
             }
 
             string source = File.ReadAllText(path);
-            Assert.Contains("PressKeyVM.PrepareSettings(controlTarget.Control, controlTarget.Extras)", source);
+            Assert.Contains("PressKeyVM.PrepareSettings(controlTarget!.Control, controlTarget.Extras)", source);
             Assert.Contains("BindingWindow.ExposeMode.Control", source);
             Assert.Contains("allowDefault: true", source);
             Assert.Contains("controlTarget.Extras = controlSettings.extras", source);

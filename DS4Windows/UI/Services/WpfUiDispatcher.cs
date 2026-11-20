@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
@@ -14,14 +16,14 @@ namespace DS4Windows.UI.Services
     /// </summary>
     public sealed class WpfUiDispatcher : IUiDispatcher
     {
-        private static Dispatcher Current => Application.Current?.Dispatcher;
+        private static Dispatcher? Current => Application.Current?.Dispatcher;
 
         public bool CheckAccess() => Current?.CheckAccess() ?? true;
 
         public void Invoke(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-            Dispatcher dispatcher = Current;
+            Dispatcher? dispatcher = Current;
             if (dispatcher == null || dispatcher.CheckAccess()) action();
             else dispatcher.Invoke(action);
         }
@@ -29,7 +31,7 @@ namespace DS4Windows.UI.Services
         public void BeginInvoke(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-            Dispatcher dispatcher = Current;
+            Dispatcher? dispatcher = Current;
             if (dispatcher == null) action();
             else dispatcher.BeginInvoke(action);
         }
@@ -37,7 +39,7 @@ namespace DS4Windows.UI.Services
         public void BeginInvokeIdle(Action action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-            Dispatcher dispatcher = Current;
+            Dispatcher? dispatcher = Current;
             if (dispatcher == null) action();
             else dispatcher.BeginInvoke(action, DispatcherPriority.ContextIdle);
         }
