@@ -19,7 +19,8 @@ namespace DS4Windows.Processing.Services.Slots
 
         internal ControllerSlotView(InputDeviceCore device, IProfileXmlStore profileXmlStore)
         {
-            Device = device ?? throw new ArgumentNullException(nameof(device));
+            ArgumentNullException.ThrowIfNull(device);
+            Device = device;
             _profileXmlStore = profileXmlStore;
 
             device.BatteryChanged += (s, e) => BatteryChanged?.Invoke(this, e);
@@ -46,7 +47,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public bool Synced => Device.Synced;
 
-        public bool HasValidSerial => Device.isValidSerial();
+        public bool HasValidSerial => Device.IsValidSerial();
 
         public bool IsRemoving => Device.IsRemoving;
 

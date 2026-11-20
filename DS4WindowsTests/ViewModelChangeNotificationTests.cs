@@ -1,5 +1,6 @@
 using DS4Windows.Core.Model;
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;

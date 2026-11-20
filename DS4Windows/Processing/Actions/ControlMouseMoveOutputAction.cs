@@ -18,7 +18,8 @@ namespace DS4Windows.Processing.Actions
 
         public ControlMouseMoveOutputAction(SpecialAction identity, DS4Controls source, int direction)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _source = source;
             _direction = direction;
         }

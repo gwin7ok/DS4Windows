@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,10 +9,9 @@ using DS4Windows.Processing;
 using DS4Windows.Processing.Actions;
 using DS4Windows.Processing.Touchpad;
 
-namespace StandaloneTests
+namespace DS4WindowsTests
 {
-    [TestClass]
-    public class MappingControllerLifecycleTests
+        public class MappingControllerLifecycleTests
     {
         // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
         // Phase13-Step4: 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。
@@ -34,7 +33,7 @@ namespace StandaloneTests
             public void EndMacroDirect(int device) { throw new NotSupportedException(); }
         }
 
-        [TestMethod]
+        [Fact]
         public void ClearDeviceState_RemovesKeyButtonControllersForDevice()
         {
             // Arrange: ensure no controllers for device 5
@@ -46,9 +45,9 @@ namespace StandaloneTests
                 new DS4Windows.Processing.Actions.DefaultKeyButtonActionControllerFactory(new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System),
                 new DS4Windows.Processing.Actions.DefaultControllerRegistry(), manager, new NoOpSyntheticDispatcher(), System.TimeProvider.System);
             var dictField = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.IsNotNull(dictField, "Could not find _controllers field via reflection");
+            Assert.NotNull(dictField);
             var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
-            Assert.IsNotNull(dict);
+            Assert.NotNull(dict);
 
             {
                 // Create entries
@@ -57,14 +56,14 @@ namespace StandaloneTests
 
                 // Verify entries exist for device
                 var keysBefore = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
-                Assert.IsTrue(keysBefore.Length >= 1, "Expected at least one KeyButtonActionController entry for device before clear");
+                Assert.True(keysBefore.Length >= 1, "Expected at least one KeyButtonActionController entry for device before clear");
 
                 // Act: clear device state via the manager (which calls IMapping.HandleDeviceDisconnect → registry.ClearForDevice)
                 manager.ClearDeviceState(device);
 
                 // Assert: no entries remain for that device
                 var keysAfter = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
-                Assert.IsTrue(keysAfter.Length == 0, "Expected no KeyButtonActionController entries for device after ClearDeviceState");
+                Assert.True(keysAfter.Length == 0, "Expected no KeyButtonActionController entries for device after ClearDeviceState");
             }
         }
     }

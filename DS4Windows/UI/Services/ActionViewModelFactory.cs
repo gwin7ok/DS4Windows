@@ -27,11 +27,16 @@ namespace DS4Windows.UI.Services
             DS4Windows.Core.Model.LightbarOverrides lightbar,
             IDialogService dialogs)
         {
-            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            _actionRepo = actionRepo ?? throw new ArgumentNullException(nameof(actionRepo));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            _profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(actionRepo);
+            _actionRepo = actionRepo;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(lightbar);
+            _lightbar = lightbar;
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
         }
 
         public MacroViewModel CreateMacroViewModel() => new MacroViewModel(_actionRepo);

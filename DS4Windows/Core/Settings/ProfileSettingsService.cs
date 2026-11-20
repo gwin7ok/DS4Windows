@@ -29,9 +29,12 @@ namespace DS4Windows.Core.Settings
             IEnvironmentService environmentService,
             IConfigurableDeviceLookup deviceState)
         {
-            _config = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
+            ArgumentNullException.ThrowIfNull(backingStore);
+            _config = backingStore;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(deviceState);
+            _deviceState = deviceState;
             // Phase7-Step10d W5（Q8＝A）: BackingStore が、一時プロファイル・DInput のみ・出力 KBM のマッピングを読むための登録（最初の 1 つが有効）
             _config.LinkProfileSettings(this);
         }
@@ -230,7 +233,7 @@ namespace DS4Windows.Core.Settings
             {
                 SafeConfig.rumbleSlots[index].AutostopTime = value;
                 IConfigurableDevice tempDev = _deviceState.GetConfigurableDevice(index);
-                if (tempDev != null && tempDev.isSynced())
+                if (tempDev != null && tempDev.IsSynced())
                     tempDev.RumbleAutostopTime = value;
             }
         }

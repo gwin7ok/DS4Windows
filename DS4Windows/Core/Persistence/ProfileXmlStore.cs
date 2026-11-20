@@ -23,10 +23,14 @@ namespace DS4Windows.Core.Persistence
         public ProfileXmlStore(BackingStore backingStore, DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer controllerConfigsXml,
             DS4Windows.Core.Persistence.AppSettingsXmlSerializer appSettingsXml, DS4Windows.Core.Persistence.LegacyProfileXmlSerializer legacyProfileXml)
         {
-            _legacyProfileXml = legacyProfileXml ?? throw new ArgumentNullException(nameof(legacyProfileXml));
-            _appSettingsXml = appSettingsXml ?? throw new ArgumentNullException(nameof(appSettingsXml));
-            _controllerConfigsXml = controllerConfigsXml ?? throw new ArgumentNullException(nameof(controllerConfigsXml));
-            _backingStore = backingStore ?? throw new ArgumentNullException(nameof(backingStore));
+            ArgumentNullException.ThrowIfNull(legacyProfileXml);
+            _legacyProfileXml = legacyProfileXml;
+            ArgumentNullException.ThrowIfNull(appSettingsXml);
+            _appSettingsXml = appSettingsXml;
+            ArgumentNullException.ThrowIfNull(controllerConfigsXml);
+            _controllerConfigsXml = controllerConfigsXml;
+            ArgumentNullException.ThrowIfNull(backingStore);
+            _backingStore = backingStore;
         }
 
         public bool LoadProfileXml(int deviceIndex, IProfileLoadTarget control,

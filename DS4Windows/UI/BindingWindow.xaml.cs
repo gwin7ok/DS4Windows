@@ -78,15 +78,18 @@ namespace DS4Windows.UI
             BindingWindowViewModel viewModel,
             ExposeMode expose)
         {
-            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
+            ArgumentNullException.ThrowIfNull(editorWindowFactory);
+            this.editorWindowFactory = editorWindowFactory;
             InitCommands();
             InitializeComponent();
             InitVisualizerButtons();
 
 
-            this.rumbleTest = rumbleTest ?? throw new ArgumentNullException(nameof(rumbleTest));
+            ArgumentNullException.ThrowIfNull(rumbleTest);
+            this.rumbleTest = rumbleTest;
             this.expose = expose;
-            bindingVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            bindingVM = viewModel;
             DataContext = bindingVM;
             bindingVM.CloseRequested += (s, e) => Close();
 

@@ -21,10 +21,12 @@ namespace DS4Windows.Processing.Actions
 
         public MacroStringAction(SpecialAction sa, int deviceIndex, string macro, IMacroStringPlayer player)
         {
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
+            ArgumentNullException.ThrowIfNull(sa);
+            _sa = sa;
             _deviceIndex = deviceIndex;
             _macro = macro ?? string.Empty;
-            _player = player ?? throw new ArgumentNullException(nameof(player));
+            ArgumentNullException.ThrowIfNull(player);
+            _player = player;
         }
 
         public string Id => _sa.name ?? "MacroString";

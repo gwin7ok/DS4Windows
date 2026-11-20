@@ -15,7 +15,8 @@ namespace DS4Windows.UI.ViewModels
 
         public FamilyToggleItem(InputDeviceFamily family, DeviceOptionsBase options)
         {
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            ArgumentNullException.ThrowIfNull(options);
+            this.options = options;
             Family = family;
             var ui = typeof(InputDeviceFamily).GetField(family.ToString()).GetCustomAttribute<InputDeviceFamilyUiAttribute>()
                 ?? throw new InvalidOperationException("InputDeviceFamily." + family + " に [InputDeviceFamilyUi] がない");

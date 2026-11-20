@@ -38,7 +38,8 @@ namespace DS4Windows.Core.Profiles
 
         public ProfileList(DS4Windows.Core.Abstractions.IPathService pathService)
         {
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(pathService);
+            this.pathService = pathService;
             BindingOperations.EnableCollectionSynchronization(profileListCol, _proLockobj);
         }
 

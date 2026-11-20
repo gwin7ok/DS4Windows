@@ -14,8 +14,10 @@ namespace DS4Windows.UI.Services
 
         public UpdateCheckPolicy(IChangelogService changelogService, IAppSettingsService appSettingsService)
         {
-            this.changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
-            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            ArgumentNullException.ThrowIfNull(changelogService);
+            this.changelogService = changelogService;
+            ArgumentNullException.ThrowIfNull(appSettingsService);
+            this.appSettingsService = appSettingsService;
         }
 
         /// <summary>

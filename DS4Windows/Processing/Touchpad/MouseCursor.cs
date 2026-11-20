@@ -39,8 +39,10 @@ namespace DS4Windows.Processing.Touchpad
         public MouseCursor(int deviceNum, InputDeviceCore.GyroMouseSens gyroMouseSens,
             IProfileSettingsService profileSettings, IVirtualKBM virtualKBM)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
             deviceNumber = deviceNum;
             gyroMouseSensSettings = gyroMouseSens;
             filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = GyroMouseInfo.DEFAULT_MINCUTOFF;
@@ -234,8 +236,8 @@ namespace DS4Windows.Processing.Touchpad
 
             hRemainder = vRemainder = 0.0;
 
-            xMotion = xMotion - (Mapping.remainderCutoff(xMotion * 100, 1.0) / 100);
-            yMotion = yMotion - (Mapping.remainderCutoff(yMotion * 100, 1.0) / 100);
+            xMotion = xMotion - (Mapping.RemainderCutoff(xMotion * 100, 1.0) / 100);
+            yMotion = yMotion - (Mapping.RemainderCutoff(yMotion * 100, 1.0) / 100);
 
             double distSqu = (xMotion * xMotion) + (yMotion * yMotion);
             xAction = (int)xMotion;
@@ -277,7 +279,7 @@ namespace DS4Windows.Processing.Touchpad
             vDirection = yMotion > 0.0 ? Direction.Positive : yMotion < 0.0 ? Direction.Negative : Direction.Neutral;
         }
 
-        public void mouseRemainderReset(SixAxisEventArgs arg)
+        public void MouseRemainderReset(SixAxisEventArgs arg)
         {
             hRemainder = vRemainder = 0.0;
             int iIndex = smoothBufferTail % SMOOTH_BUFFER_LEN;
@@ -397,8 +399,8 @@ namespace DS4Windows.Processing.Touchpad
                 yMotion += verticalRemainder;
             }
 
-            xMotion = xMotion - (Mapping.remainderCutoff(xMotion * 100, 1.0) / 100);
-            yMotion = yMotion - (Mapping.remainderCutoff(yMotion * 100, 1.0) / 100);
+            xMotion = xMotion - (Mapping.RemainderCutoff(xMotion * 100, 1.0) / 100);
+            yMotion = yMotion - (Mapping.RemainderCutoff(yMotion * 100, 1.0) / 100);
 
             double distSqu = (xMotion * xMotion) + (yMotion * yMotion);
             int xAction = (int)xMotion;

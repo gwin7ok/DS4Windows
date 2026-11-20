@@ -66,7 +66,7 @@ namespace DS4Windows.Input
         }
 
         int temInt = 0;
-        public void setCalibrationData(ref byte[] calibData, bool useAltGyroCalib)
+        public void SetCalibrationData(ref byte[] calibData, bool useAltGyroCalib)
         {
             int pitchPlus, pitchMinus, yawPlus, yawMinus, rollPlus, rollMinus,
                 accelXPlus, accelXMinus, accelYPlus, accelYMinus, accelZPlus, accelZMinus,
@@ -166,7 +166,7 @@ namespace DS4Windows.Input
             accelZ = temInt = (int)(temInt * (current.sensNumer / (float)current.sensDenom));
         }
 
-        public unsafe void handleSixaxisVals(
+        public unsafe void HandleSixaxisVals(
             int yaw,
             int pitch,
             int roll,
@@ -206,7 +206,7 @@ namespace DS4Windows.Input
                 }
             }
         }
-        public unsafe void handleSixaxis(byte* gyro, byte* accel, ControllerState state,
+        public unsafe void HandleSixaxis(byte* gyro, byte* accel, ControllerState state,
             double elapsedDelta)
         {
             int currentYaw = (short)((ushort)(gyro[3] << 8) | gyro[2]);
@@ -217,7 +217,7 @@ namespace DS4Windows.Input
             int AccelZ = (short)((ushort)(accel[5] << 8) | accel[4]);
 
             //Console.WriteLine("AccelZ: {0}", AccelZ);
-            handleSixaxisVals(currentYaw, currentPitch, currentRoll, AccelX, AccelY, AccelZ, state, elapsedDelta);
+            HandleSixaxisVals(currentYaw, currentPitch, currentRoll, AccelX, AccelY, AccelZ, state, elapsedDelta);
         }
 
         public unsafe void PrepareNonDS4SixAxis(ref int currentYaw, ref int currentPitch, ref int currentRoll,
@@ -253,7 +253,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public bool fixupInvertedGyroAxis()
+        public bool FixupInvertedGyroAxis()
         {
             bool result = false;
             // Some, not all, DS4 rev1 gamepads have an inverted YAW gyro axis calibration value (sensNumber>0 but at the same time sensDenom value is <0 while other two axies have both attributes >0).

@@ -24,9 +24,11 @@ namespace DS4Windows.Processing.Actions
 
         public ControlExtrasOutputAction(SpecialAction identity, ExtrasBindingValues values, IControlExtrasPort port)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _values = values;
-            _port = port ?? throw new ArgumentNullException(nameof(port));
+            ArgumentNullException.ThrowIfNull(port);
+            _port = port;
         }
 
         public string Id => string.IsNullOrEmpty(_identity.name) ? "ControlExtras" : _identity.name;

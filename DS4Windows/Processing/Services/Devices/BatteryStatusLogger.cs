@@ -30,7 +30,8 @@ namespace DS4Windows.Processing.Services.Devices
 
         public BatteryStatusLogger(IDeviceSlotState slots, TimeSpan interval)
         {
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
             _interval = interval;
         }
 
@@ -57,7 +58,7 @@ namespace DS4Windows.Processing.Services.Devices
                 try
                 {
                     if (AppLogger.IsDebugEnabled) AppLogger.LogDebug(Format(i + 1, device.DeviceType.ToString(), device.ConnectionType.ToString(),
-                        device.getMacAddress(), device.Battery, device.Charging));
+                        device.GetMacAddress(), device.Battery, device.Charging));
                 }
                 catch (Exception ex)
                 {

@@ -109,7 +109,8 @@ namespace DS4Windows.UI.ViewModels
 
         public CurrentOutDeviceViewModel(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService)
         {
-            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            this.outputSlotService = outputSlotService;
             // スロット数は、スロット管理が上限どおりの長さで作る
             var views = outputSlotService.SlotViews;
             slotDeviceEntries = new List<SlotDeviceEntry>(views.Count);

@@ -31,9 +31,12 @@ namespace DS4Windows.Processing.Actions
             IControlExtrasPort extrasPort = null)
         {
             _controlBuilder = controlBuilder;
-            _profileActions = profileActions ?? throw new ArgumentNullException(nameof(profileActions));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _outputFactory = outputFactory ?? throw new ArgumentNullException(nameof(outputFactory));
+            ArgumentNullException.ThrowIfNull(profileActions);
+            _profileActions = profileActions;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(outputFactory);
+            _outputFactory = outputFactory;
             _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory, extrasPort);   // 束縛の組み立ては、共通の部品が行う
         }
 

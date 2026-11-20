@@ -16,7 +16,8 @@ namespace DS4Windows.UI.Services
 
         public AppNotificationService(BackingStore config)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
         }
 
         private bool NotificationsEnabled => _config.notifications != 0;

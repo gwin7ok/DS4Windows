@@ -87,20 +87,20 @@ namespace DS4WindowsTests
         [Fact]
         public void GetBoolMappings_UseTheirThresholds()
         {
-            Assert.True(Mapping.getBoolButtonMapping(true));
-            Assert.False(Mapping.getBoolButtonMapping(false));
-            Assert.True(Mapping.getBoolTouchMapping(true));
-            Assert.False(Mapping.getBoolTouchMapping(false));
+            Assert.True(Mapping.GetBoolButtonMapping(true));
+            Assert.False(Mapping.GetBoolButtonMapping(false));
+            Assert.True(Mapping.GetBoolTouchMapping(true));
+            Assert.False(Mapping.GetBoolTouchMapping(false));
 
             // トリガー: 100 を超えたら押下
-            Assert.True(Mapping.getBoolTriggerMapping(101));
-            Assert.False(Mapping.getBoolTriggerMapping(100));
+            Assert.True(Mapping.GetBoolTriggerMapping(101));
+            Assert.False(Mapping.GetBoolTriggerMapping(100));
 
             // 軸の向き: 中央（128）から 55 を超えたら押下
-            Assert.True(Mapping.getBoolAxisDirMapping(184, true));
-            Assert.False(Mapping.getBoolAxisDirMapping(183, true));
-            Assert.True(Mapping.getBoolAxisDirMapping(72, false));
-            Assert.False(Mapping.getBoolAxisDirMapping(73, false));
+            Assert.True(Mapping.GetBoolAxisDirMapping(184, true));
+            Assert.False(Mapping.GetBoolAxisDirMapping(183, true));
+            Assert.True(Mapping.GetBoolAxisDirMapping(72, false));
+            Assert.False(Mapping.GetBoolAxisDirMapping(73, false));
         }
 
         [Fact]

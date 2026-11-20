@@ -12,8 +12,10 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public DisconnectBtOutputBuilder(IControllerDisconnectPort disconnectPort, IProfileSettingsService profileSettings)
         {
-            _disconnectPort = disconnectPort ?? throw new ArgumentNullException(nameof(disconnectPort));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(disconnectPort);
+            _disconnectPort = disconnectPort;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.DisconnectBT;

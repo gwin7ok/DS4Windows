@@ -24,9 +24,12 @@ namespace DS4Windows.Processing.Services.Slots
         public ProfileSlotApplier(IProfileApplicationService profileApplication, IEnvironmentService environment,
             DS4Windows.Processing.Actions.ITriggerDispatchEngine engine)
         {
-            _engine = engine ?? throw new ArgumentNullException(nameof(engine));
-            _profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            ArgumentNullException.ThrowIfNull(engine);
+            _engine = engine;
+            ArgumentNullException.ThrowIfNull(profileApplication);
+            _profileApplication = profileApplication;
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
         }
 
         public bool ApplyToSlot(int slotIndex, string profileName, ProfileChangeSource source, bool launchProgram = false)

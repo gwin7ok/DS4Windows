@@ -11,7 +11,8 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public FocusWindowOutputBuilder(IWindowFocuser windowFocuser)
         {
-            _windowFocuser = windowFocuser ?? throw new ArgumentNullException(nameof(windowFocuser));
+            ArgumentNullException.ThrowIfNull(windowFocuser);
+            _windowFocuser = windowFocuser;
         }
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.FocusWindow;

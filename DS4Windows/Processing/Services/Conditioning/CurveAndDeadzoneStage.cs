@@ -28,11 +28,16 @@ namespace DS4Windows.Processing.Services.Conditioning
             ITriggerDeadZoneProcessor triggerDeadZone, IGyroControlsProcessor gyroControls,
             IStickInputConditioner stickConditioner, StickMotionState stickMotion)
         {
-            _stickDeadZone = stickDeadZone ?? throw new ArgumentNullException(nameof(stickDeadZone));
-            _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
-            _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
-            _gyroControls = gyroControls ?? throw new ArgumentNullException(nameof(gyroControls));
-            _stickConditioner = stickConditioner ?? throw new ArgumentNullException(nameof(stickConditioner));
+            ArgumentNullException.ThrowIfNull(stickDeadZone);
+            _stickDeadZone = stickDeadZone;
+            ArgumentNullException.ThrowIfNull(outputCurve);
+            _outputCurve = outputCurve;
+            ArgumentNullException.ThrowIfNull(triggerDeadZone);
+            _triggerDeadZone = triggerDeadZone;
+            ArgumentNullException.ThrowIfNull(gyroControls);
+            _gyroControls = gyroControls;
+            ArgumentNullException.ThrowIfNull(stickConditioner);
+            _stickConditioner = stickConditioner;
             if (stickMotion == null) throw new ArgumentNullException(nameof(stickMotion));
             stickValueHistory = stickMotion.StickValueHistory;
             lastStickAxisValues = stickMotion.LastStickAxisValues;
@@ -42,11 +47,11 @@ namespace DS4Windows.Processing.Services.Conditioning
         {
             double rotation = /*tempDoubleArray[device] =*/  settings.ForSlot(device).Sticks.LSRotation;
             if (rotation > 0.0 || rotation < 0.0)
-                cState.rotateLSCoordinates(rotation);
+                cState.RotateLSCoordinates(rotation);
 
             double rotationRS = /*tempDoubleArray[device] =*/ settings.ForSlot(device).Sticks.RSRotation;
             if (rotationRS > 0.0 || rotationRS < 0.0)
-                cState.rotateRSCoordinates(rotationRS);
+                cState.RotateRSCoordinates(rotationRS);
 
             StickAntiSnapbackInfo lsAntiSnapback = settings.ForSlot(device).Sticks.LSAntiSnapback;
             StickAntiSnapbackInfo rsAntiSnapback = settings.ForSlot(device).Sticks.RSAntiSnapback;

@@ -20,8 +20,10 @@ namespace DS4Windows.Composition.Startup
 
         public SettingsLocationFallback(IPathService pathService, IDialogService dialogs)
         {
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
         }
 
         /// <returns>コピーを行ったとき true。断られたとき false</returns>

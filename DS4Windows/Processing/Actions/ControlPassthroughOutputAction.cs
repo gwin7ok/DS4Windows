@@ -17,7 +17,8 @@ namespace DS4Windows.Processing.Actions
 
         public ControlPassthroughOutputAction(SpecialAction identity, DS4Controls control)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _control = control;
         }
 

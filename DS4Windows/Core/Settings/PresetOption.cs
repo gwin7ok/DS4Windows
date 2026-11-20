@@ -51,8 +51,10 @@ namespace DS4Windows.Core.Settings
 
         protected PresetOption(DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader, DS4Windows.Core.Abstractions.IProfileLoadTarget loadTarget)
         {
-            this.presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
-            this.loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
+            ArgumentNullException.ThrowIfNull(presetLoader);
+            this.presetLoader = presetLoader;
+            ArgumentNullException.ThrowIfNull(loadTarget);
+            this.loadTarget = loadTarget;
         }
 
         public abstract void ApplyPreset(int idx);

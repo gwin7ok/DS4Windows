@@ -19,7 +19,8 @@ namespace DS4Windows.Processing.Services.Devices
 
         public XboxDeviceModule(IXboxParentHider hider)
         {
-            this.hider = hider ?? throw new ArgumentNullException(nameof(hider));
+            ArgumentNullException.ThrowIfNull(hider);
+            this.hider = hider;
         }
 
         protected override InputDeviceFamily? Family => InputDeviceFamily.Xbox;

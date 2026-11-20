@@ -139,7 +139,7 @@ namespace DS4WindowsTests
             // 適用のたびに記憶する（AppliedProfileRecorder が持つ）
             text = controlServiceText;
             Assert.Contains("_profileRepository.SelectedProfileChanged += RememberAppliedProfile;", text);
-            Assert.Contains("_deviceStateService.RememberProfile(device.getMacAddress(), e.ProfileName);", text);
+            Assert.Contains("_deviceStateService.RememberProfile(device.GetMacAddress(), e.ProfileName);", text);
         }
     }
 }

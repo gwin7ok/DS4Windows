@@ -33,8 +33,10 @@ namespace DS4Windows.UI.ViewModels
 
         public ControlSettingsEditTarget(DS4ControlSettings original, IProfileSettingsService profileSettings)
         {
-            this.original = original ?? throw new ArgumentNullException(nameof(original));
-            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(original);
+            this.original = original;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            this.profileSettings = profileSettings;
             nameTarget = new ControlEditTarget(original.control);
             working = CopyOf(original);
         }

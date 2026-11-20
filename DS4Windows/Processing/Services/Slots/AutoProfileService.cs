@@ -97,16 +97,26 @@ namespace DS4Windows.Processing.Services.Slots
             IDeviceStateAccessor deviceState,
             BackingStore config)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _holder = holder ?? throw new ArgumentNullException(nameof(holder));
-            _profileAppService = profileAppService ?? throw new ArgumentNullException(nameof(profileAppService));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _processInspector = processInspector ?? throw new ArgumentNullException(nameof(processInspector));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
-            _deviceState = deviceState ?? throw new ArgumentNullException(nameof(deviceState));
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
+            ArgumentNullException.ThrowIfNull(holder);
+            _holder = holder;
+            ArgumentNullException.ThrowIfNull(profileAppService);
+            _profileAppService = profileAppService;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(processInspector);
+            _processInspector = processInspector;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(profileRepository);
+            _profileRepository = profileRepository;
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            _lifecycle = lifecycle;
+            ArgumentNullException.ThrowIfNull(deviceState);
+            _deviceState = deviceState;
         }
 
         // 2026-10-19（AutoProfile-NoController-Investigation.md 案B）: 自動プロファイルは、接続中のスロットにだけ適用する。

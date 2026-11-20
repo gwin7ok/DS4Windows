@@ -34,7 +34,8 @@ namespace DS4Windows.Processing.Macro
         public MacroPointerRecorder(MacroPointerMoveMode mode, IWindowSystem windowSystem, int ownProcessId)
         {
             _mode = mode;
-            _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            _windowSystem = windowSystem;
             _ownProcessId = ownProcessId;
         }
 

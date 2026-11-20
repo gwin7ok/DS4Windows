@@ -32,7 +32,8 @@ namespace DS4Windows.Processing.Actions
         public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher)
         {
             this.sa = sa;
-            this._launcher = launcher ?? throw new ArgumentNullException(nameof(launcher)); // Phase6-Step10-4-4: 必須の依存
+            ArgumentNullException.ThrowIfNull(launcher);
+            this._launcher = launcher; // Phase6-Step10-4-4: 必須の依存
         }
 
         public string Id => sa?.name ?? "LaunchProcess";

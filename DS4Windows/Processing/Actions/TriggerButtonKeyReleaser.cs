@@ -16,7 +16,8 @@ namespace DS4Windows.Processing.Actions
 
         public TriggerButtonKeyReleaser(IProfileSettingsService settings)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            ArgumentNullException.ThrowIfNull(settings);
+            _settings = settings;
         }
 
         public void Release(SpecialAction sa, int device, IVirtualKBM kbm)

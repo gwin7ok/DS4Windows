@@ -1,4 +1,5 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO;
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing;
@@ -19,7 +20,8 @@ namespace DS4Windows.UI.ViewModels
 
         public GeneralSettingsViewModel(GeneralSlotSettings general)
         {
-            this.general = general ?? throw new ArgumentNullException(nameof(general));
+            ArgumentNullException.ThrowIfNull(general);
+            this.general = general;
             RefreshFromSettings();
 
             // 自分の値が変わったときの連動（派生する表示用プロパティの再計算）。値を設定した直後に同期して実行する

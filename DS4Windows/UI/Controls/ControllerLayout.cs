@@ -8,10 +8,12 @@ namespace DS4Windows.UI.Controls
     {
         public ControllerLayout(string name, double referenceWidth, double referenceHeight, IReadOnlyList<HitboxRegion> regions)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(name);
+            Name = name;
             ReferenceWidth = referenceWidth;
             ReferenceHeight = referenceHeight;
-            Regions = regions ?? throw new ArgumentNullException(nameof(regions));
+            ArgumentNullException.ThrowIfNull(regions);
+            Regions = regions;
         }
 
         public string Name { get; }

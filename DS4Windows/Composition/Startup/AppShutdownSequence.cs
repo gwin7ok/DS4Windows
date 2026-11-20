@@ -40,10 +40,14 @@ namespace DS4Windows.Composition.Startup
             _ipc = ipc;
             _registry = registry;
             _controllerSlotCount = controllerSlotCount;
-            _resetTimerResolution = resetTimerResolution ?? throw new ArgumentNullException(nameof(resetTimerResolution));
-            _stopSingleInstance = stopSingleInstance ?? throw new ArgumentNullException(nameof(stopSingleInstance));
-            _disposeHost = disposeHost ?? throw new ArgumentNullException(nameof(disposeHost));
-            _flushLogs = flushLogs ?? throw new ArgumentNullException(nameof(flushLogs));
+            ArgumentNullException.ThrowIfNull(resetTimerResolution);
+            _resetTimerResolution = resetTimerResolution;
+            ArgumentNullException.ThrowIfNull(stopSingleInstance);
+            _stopSingleInstance = stopSingleInstance;
+            ArgumentNullException.ThrowIfNull(disposeHost);
+            _disposeHost = disposeHost;
+            ArgumentNullException.ThrowIfNull(flushLogs);
+            _flushLogs = flushLogs;
         }
 
         public void Run()

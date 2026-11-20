@@ -34,7 +34,8 @@ namespace DS4Windows.UI
         {
             InitializeComponent();
 
-            firstLaunchUtilVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            firstLaunchUtilVM = viewModel;
             pagesTabControl.DataContext = firstLaunchUtilVM;
         }
 

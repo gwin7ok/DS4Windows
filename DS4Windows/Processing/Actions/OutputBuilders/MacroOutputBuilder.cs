@@ -13,8 +13,10 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public MacroOutputBuilder(IMacroPlayer macroPlayer, IManagedActionManager manager, ISpecialActionRepository actionRepository = null)
         {
-            _macroPlayer = macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(macroPlayer);
+            _macroPlayer = macroPlayer;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
             _actionRepository = actionRepository;
         }
 

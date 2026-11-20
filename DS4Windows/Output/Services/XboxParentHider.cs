@@ -39,11 +39,16 @@ namespace DS4Windows.Output.Services
         /// <summary>導入済みかの確認と、パスから隠す対象のインスタンス ID の一覧への変換（OS に問い合わせる）を、差し替えられる形。テストで、OS に触れずに使う。</summary>
         public XboxParentHider(Func<bool> hidHideInstalled, Func<string, IReadOnlyList<string>> targetsOf, IPathService pathService, IHidHideApiFactory apiFactory, IHidHideService hidHideService)
         {
-            _hidHideInstalled = hidHideInstalled ?? throw new ArgumentNullException(nameof(hidHideInstalled));
-            _targetsOf = targetsOf ?? throw new ArgumentNullException(nameof(targetsOf));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _apiFactory = apiFactory ?? throw new ArgumentNullException(nameof(apiFactory));
-            _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
+            ArgumentNullException.ThrowIfNull(hidHideInstalled);
+            _hidHideInstalled = hidHideInstalled;
+            ArgumentNullException.ThrowIfNull(targetsOf);
+            _targetsOf = targetsOf;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(apiFactory);
+            _apiFactory = apiFactory;
+            ArgumentNullException.ThrowIfNull(hidHideService);
+            _hidHideService = hidHideService;
         }
 
         // XInput を隠すには、XUSB の入り口の持ち主だけでは足りず、USB の複合機器と、その下の機器（インターフェース、HID）の全部が要る。

@@ -321,7 +321,7 @@ namespace DS4Windows.Input
                                 DevicePaths.Add(hDevice.DevicePath);
                                 deviceSerials.Add(serial);
                                 serialDevices.Add(serial, ds4Device);
-                                string foundMsg = $"{DS4Windows.Properties.Resources.FoundController} {ds4Device.getMacAddress()} ({ds4Device.getConnectionType()}) ({ds4Device.DisplayName}).";
+                                string foundMsg = $"{DS4Windows.Properties.Resources.FoundController} {ds4Device.GetMacAddress()} ({ds4Device.getConnectionType()}) ({ds4Device.DisplayName}).";
                                 AppLogger.Log(AppLogLevel.Info, foundMsg, LogOptions.UserFacing);
                                 // Phase14b-Step5（R-02）: 旧 UI.Services.NotificationService.ShowToast（中で AppLogger.LogToTray を呼ぶだけの静的な窓口）。
                                 // 第1層から UI への参照をなくすため、直接呼ぶ。LogToTray は通知の例外を自分で捕まえるので、挙動は同じ
@@ -404,14 +404,14 @@ namespace DS4Windows.Input
                 if (device != null)
                 {
                     string devPath = device.HidDevice.DevicePath;
-                    string serial = device.getMacAddress();
+                    string serial = device.GetMacAddress();
                     if (Devices.ContainsKey(devPath))
                     {
                         deviceSerials.Remove(serial);
                         serialDevices.Remove(serial);
                         device.updateSerial();
-                        serial = device.getMacAddress();
-                        if (InputDeviceCore.isValidSerial(serial))
+                        serial = device.GetMacAddress();
+                        if (InputDeviceCore.IsValidSerial(serial))
                         {
                             deviceSerials.Add(serial);
                             serialDevices.Add(serial, device);

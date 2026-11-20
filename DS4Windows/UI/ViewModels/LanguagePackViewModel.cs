@@ -59,7 +59,8 @@ namespace DS4Windows.UI.ViewModels
 
         public LanguagePackViewModel(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)
         {
-            _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            ArgumentNullException.ThrowIfNull(appSettingsService);
+            _appSettingsService = appSettingsService;
         }
 
         public void ScanForLangPacks()

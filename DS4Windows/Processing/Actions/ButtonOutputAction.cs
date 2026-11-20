@@ -40,8 +40,10 @@ namespace DS4Windows.Processing.Actions
         /// </summary>
         public ButtonOutputAction(SpecialAction identity, ButtonBindingValues values, IManagedActionManager manager)
         {
-            _sa = identity ?? throw new ArgumentNullException(nameof(identity));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(identity);
+            _sa = identity;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
             _hasControl = values.HasControl;
             _control = values.Control;
             _toggle = values.Toggle;

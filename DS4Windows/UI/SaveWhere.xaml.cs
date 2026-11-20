@@ -35,7 +35,8 @@ namespace DS4Windows.UI
 
         public SaveWhere(bool multisavespots, bool adminNeeded, ChoiceApplier applyChoice)
         {
-            _applyChoice = applyChoice ?? throw new ArgumentNullException(nameof(applyChoice));
+            ArgumentNullException.ThrowIfNull(applyChoice);
+            _applyChoice = applyChoice;
 
             InitCommands();
             InitializeComponent();

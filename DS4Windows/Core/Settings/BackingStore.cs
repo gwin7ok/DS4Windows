@@ -427,7 +427,8 @@ namespace DS4Windows.Core.Settings
 
         public BackingStore(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
             for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);
@@ -602,7 +603,7 @@ namespace DS4Windows.Core.Settings
             return -1;
         }
 
-        public string stickOutputCurveString(int id)
+        public string StickOutputCurveString(int id)
         {
             string result = "linear";
             switch (id)
@@ -620,7 +621,7 @@ namespace DS4Windows.Core.Settings
             return result;
         }
 
-        public int stickOutputCurveId(string name)
+        public int StickOutputCurveId(string name)
         {
             int id = 0;
             switch (name)
@@ -935,7 +936,7 @@ namespace DS4Windows.Core.Settings
                 bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
                 IConfigurableDevice tempDevice = control.GetController(device);
                 bool exists = tempBool = (tempDevice != null);
-                bool synced = tempBool = exists ? tempDevice.isSynced() : false;
+                bool synced = tempBool = exists ? tempDevice.IsSynced() : false;
                 bool isAlive = tempBool = exists ? tempDevice.IsAlive() : false;
                 if (basicSlots[device].DinputOnly != oldUseDInputOnly)
                 {
@@ -963,12 +964,12 @@ namespace DS4Windows.Core.Settings
         public void PostLoadSnippet(int device, IProfileLoadTarget control, bool xinputStatus, bool xinputPlug)
         {
             IConfigurableDevice tempDev = control.GetController(device);
-            if (tempDev != null && tempDev.isSynced())
+            if (tempDev != null && tempDev.IsSynced())
             {
                 tempDev.queueEvent(() =>
                 {
-                    //tempDev.setIdleTimeout(idleDisconnectTimeout[device]);
-                    //tempDev.setBTPollRate(btPollRate[device]);
+                    //tempDev.SetIdleTimeout(idleDisconnectTimeout[device]);
+                    //tempDev.SetBTPollRate(btPollRate[device]);
                     if (xinputStatus)
                     {
                         if (xinputPlug)

@@ -63,8 +63,8 @@ namespace DS4Windows.Processing.Touchpad
         {
             int iIndex = trackballBufferTail;
             // Establish 4 ms as the base
-            trackballXBuffer[iIndex] = (x * TRACKBALL_SCALE) / 0.004; // dev.getCurrentStateRef().elapsedTime;
-            trackballYBuffer[iIndex] = (y * TRACKBALL_SCALE) / 0.004; // dev.getCurrentStateRef().elapsedTime;
+            trackballXBuffer[iIndex] = (x * TRACKBALL_SCALE) / 0.004; // dev.GetCurrentStateRef().elapsedTime;
+            trackballYBuffer[iIndex] = (y * TRACKBALL_SCALE) / 0.004; // dev.GetCurrentStateRef().elapsedTime;
             trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
             if (trackballBufferHead == trackballBufferTail)
                 trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;

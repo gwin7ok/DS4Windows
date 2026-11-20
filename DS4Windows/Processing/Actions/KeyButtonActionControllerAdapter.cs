@@ -35,7 +35,8 @@ namespace DS4Windows.Processing.Actions
         // Wrap an existing KeyButtonActionController instance (used by Mapping to avoid duplicate instances)
         public KeyButtonActionControllerAdapter(KeyButtonActionController existing)
         {
-            inner = existing ?? throw new ArgumentNullException(nameof(existing));
+            ArgumentNullException.ThrowIfNull(existing);
+            inner = existing;
             // Query inner controller for its configured mode to avoid mismatches with registry timing
             try { isToggle = inner.IsToggleMode; } catch { isToggle = false; }
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC Adapter wrap ctor created adapter ControllerId={ControllerId} assigned={(inner?.AssignedActionName??"(null)")} isToggle={isToggle}");

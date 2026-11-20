@@ -38,9 +38,11 @@ namespace DS4Windows.Processing.Actions
 
         public BatteryCheckAction(SpecialAction sa, int deviceIndex, IBatteryCheckPort port, int actionIndex, ISpecialActionRepository actionRepository)
         {
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
+            ArgumentNullException.ThrowIfNull(sa);
+            _sa = sa;
             _deviceIndex = deviceIndex;
-            _port = port ?? throw new ArgumentNullException(nameof(port));
+            ArgumentNullException.ThrowIfNull(port);
+            _port = port;
             _actionIndex = actionIndex;
             _actionRepository = actionRepository;
         }

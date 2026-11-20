@@ -1,4 +1,5 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
@@ -35,9 +36,11 @@ namespace DS4Windows.UI.ViewModels
 
         public GyroSettingsViewModel(GyroSlotSettings gyro, IProfileLoadTarget loadTarget, IEnvironmentService environmentService)
         {
-            this.gyro = gyro ?? throw new ArgumentNullException(nameof(gyro));
+            ArgumentNullException.ThrowIfNull(gyro);
+            this.gyro = gyro;
             this.loadTarget = loadTarget;
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
             RefreshSmoothMethodIndexes();
         }
 

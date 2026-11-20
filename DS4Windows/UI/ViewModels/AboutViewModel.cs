@@ -18,8 +18,10 @@ namespace DS4Windows.UI.ViewModels
 
         public AboutViewModel(IEnvironmentService environmentService, IShellLauncher launcher)
         {
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(launcher);
+            _launcher = launcher;
             OpenLinkCommand = CommandGuard.CreateSync<string>(OpenLink, name: nameof(OpenLinkCommand));
         }
 

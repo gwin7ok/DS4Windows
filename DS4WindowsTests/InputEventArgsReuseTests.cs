@@ -85,7 +85,7 @@ namespace DS4WindowsTests
                 state.Touch2 = (i % 5) == 0;
                 state.TouchButton = (i % 11) == 0;
                 state.ReportTimeStamp = DateTime.UtcNow;
-                pad.handleTouchpad(data, state, 0);
+                pad.HandleTouchpad(data, state, 0);
             }
 
             for (int i = 0; i < 200; i++) Frame(i); // ウォームアップ

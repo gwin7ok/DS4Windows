@@ -28,10 +28,8 @@ using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
-    public class PressKeyViewModel : NotifyDataErrorBase, INotifyPropertyChanged, IActionTypeEditor
+    public class PressKeyViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         private string switchMode = string.Empty;
         public string SwitchMode
         {
@@ -398,10 +396,13 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public PressKeyViewModel(ISpecialActionRepository specialActionRepository,
             IProfileSettingsService profileSettingsService, IOutputSlotService outputSlotService)
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             // ボタン名の表示に使う出力コントローラー種別の取得元（profileSettingsService.OutContType／outputSlotService.OutDevTypeTemp の置換先）
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
-            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            this.outputSlotService = outputSlotService;
         }
 
         public void SaveAction(SpecialAction action, bool edit = false)

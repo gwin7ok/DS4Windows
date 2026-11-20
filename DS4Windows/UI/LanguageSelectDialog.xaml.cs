@@ -42,7 +42,8 @@ namespace DS4Windows.UI
 
         public LanguageSelectDialog(Action<string> applyCulture)
         {
-            _applyCulture = applyCulture ?? throw new ArgumentNullException(nameof(applyCulture));
+            ArgumentNullException.ThrowIfNull(applyCulture);
+            _applyCulture = applyCulture;
             InitializeComponent();
             LoadAvailableLanguages();
         }

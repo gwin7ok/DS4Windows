@@ -52,7 +52,8 @@ namespace DS4Windows.UI
 
             _saveSettings = saveSettings;
             _themeLanguage = themeLanguage;
-            langPackVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            langPackVM = viewModel;
             this.DataContext = null;
             langPackVM.ScanFinished += LangPackVM_ScanFinished;
             langPackVM.SelectedIndexChanged += CheckForCultureChange;

@@ -17,13 +17,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace DS4Windows.UI.ViewModels.Util
 {
-    public abstract class NotifyDataErrorBase : INotifyDataErrorInfo
+    public abstract class NotifyDataErrorBase : ObservableObject, INotifyDataErrorInfo
     {
         protected Dictionary<string, List<string>> errors =
             new Dictionary<string, List<string>>();

@@ -17,7 +17,8 @@ namespace DS4Windows.Processing.Services.Devices
 
         public DeviceBatteryText(IDeviceStateAccessor devices)
         {
-            _devices = devices ?? throw new ArgumentNullException(nameof(devices));
+            ArgumentNullException.ThrowIfNull(devices);
+            _devices = devices;
         }
 
         public string GetBatteryText(int index)

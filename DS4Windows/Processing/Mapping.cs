@@ -107,22 +107,36 @@ namespace DS4Windows.Processing
             DS4Windows.Processing.Abstractions.IProfileActionProvider profileActionProvider)
         {
             // Phase13-Step5b: 旧 MapCustom の ControlService 引数（逆依存）の代わりに、必要な 3 つの窓口をコンストラクターで受ける
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(profileActionProvider);
+            _profileActionProvider = profileActionProvider;
 
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(macroRuntime);
+            _macroRuntime = macroRuntime;
             if (stickMotion == null) throw new ArgumentNullException(nameof(stickMotion));
-            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            this.VirtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _macroPlayback = macroPlayback ?? throw new ArgumentNullException(nameof(macroPlayback));
-            _inputCleanup = inputCleanup ?? throw new ArgumentNullException(nameof(inputCleanup));
-            _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
-            _mouseConversion = mouseConversion ?? throw new ArgumentNullException(nameof(mouseConversion));
-            _curveStage = curveStage ?? throw new ArgumentNullException(nameof(curveStage));
-            _controlActivityReader = controlActivityReader ?? throw new ArgumentNullException(nameof(controlActivityReader));
-            _syntheticCommitter = syntheticCommitter ?? throw new ArgumentNullException(nameof(syntheticCommitter));
-            _twoStageTrigger = twoStageTrigger ?? throw new ArgumentNullException(nameof(twoStageTrigger));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            this.profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            this.VirtualKBM = virtualKBM;
+            ArgumentNullException.ThrowIfNull(macroPlayback);
+            _macroPlayback = macroPlayback;
+            ArgumentNullException.ThrowIfNull(inputCleanup);
+            _inputCleanup = inputCleanup;
+            ArgumentNullException.ThrowIfNull(triggerEngine);
+            _engine = triggerEngine;
+            ArgumentNullException.ThrowIfNull(mouseConversion);
+            _mouseConversion = mouseConversion;
+            ArgumentNullException.ThrowIfNull(curveStage);
+            _curveStage = curveStage;
+            ArgumentNullException.ThrowIfNull(controlActivityReader);
+            _controlActivityReader = controlActivityReader;
+            ArgumentNullException.ThrowIfNull(syntheticCommitter);
+            _syntheticCommitter = syntheticCommitter;
+            ArgumentNullException.ThrowIfNull(twoStageTrigger);
+            _twoStageTrigger = twoStageTrigger;
 
             _triggerInputs = new DS4Windows.Processing.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Processing.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
@@ -321,16 +335,16 @@ namespace DS4Windows.Processing
             int mouseDeltaX = 0;
             int mouseDeltaY = 0;
 
-            cState.calculateStickAngles();
+            cState.CalculateStickAngles();
             ControllerStateFieldMapping fieldMapping = fieldMappings[device];
             fieldMapping.PopulateFieldMapping(cState, eState, tp);
             ControllerStateFieldMapping outputfieldMapping = outputFieldMappings[device];
             outputfieldMapping.PopulateFieldMapping(cState, eState, tp);
             // Phase8-Step4 W4: トリガー判定の入力と、フレームの出力の書き込み口を、このフレームの表に合わせる（割り当て 0）
-            // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
+            // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の GetPreviousStateRef と同じ）を渡す。
             // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
             ControllerState? previousState = null;
-            try { previousState = _slots.Controllers[device]?.getPreviousStateRef(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            try { previousState = _slots.Controllers[device]?.GetPreviousStateRef(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             _sampleState[device] = cState;
@@ -446,8 +460,8 @@ namespace DS4Windows.Processing
                 if (isRightStick && stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
                 {
                     InputDeviceCore d = _slots.Controllers[device];
-                    ControllerState cRawState = d.getCurrentStateRef();
-                    cRawState.calculateStickAngles();
+                    ControllerState cRawState = d.GetCurrentStateRef();
+                    cRawState.CalculateStickAngles();
 
                     double maxXValue = cState.RX >= 128.0 ? 255.0 : 0.0;
                     double maxYValue = cState.RY >= 128.0 ? 255.0 : 0.0;
@@ -485,8 +499,8 @@ namespace DS4Windows.Processing
                         break;
                     case StickMode.FlickStick:
                         InputDeviceCore d = _slots.Controllers[device];
-                        ControllerState cRawState = d.getCurrentStateRef();
-                        ControllerState pState = d.getPreviousStateRef();
+                        ControllerState cRawState = d.GetCurrentStateRef();
+                        ControllerState pState = d.GetPreviousStateRef();
 
                         if (isRightStick)
                         {
@@ -794,7 +808,7 @@ namespace DS4Windows.Processing
         // 旧 calculateFinalMouseMovement は MouseMotionQuantizer（同）へ、そのまま移した。
         // 計算の変更履歴は git log を参照（Phase9-B-Plan.md）。
 
-        public static double remainderCutoff(double dividend, double divisor)
+        public static double RemainderCutoff(double dividend, double divisor)
         {
             return dividend - (divisor * (int)(dividend / divisor));
         }
@@ -834,22 +848,22 @@ namespace DS4Windows.Processing
             return _engine.IsSuppressed(device, control);
         }
 
-        public static bool getBoolButtonMapping(bool stateButton)
+        public static bool GetBoolButtonMapping(bool stateButton)
         {
             return stateButton;
         }
 
-        public static bool getBoolAxisDirMapping(byte stateAxis, bool positive)
+        public static bool GetBoolAxisDirMapping(byte stateAxis, bool positive)
         {
             return positive ? stateAxis > 128 + 55 : stateAxis < 128 - 55;
         }
 
-        public static bool getBoolTriggerMapping(byte stateAxis)
+        public static bool GetBoolTriggerMapping(byte stateAxis)
         {
             return stateAxis > 100;
         }
 
-        public static bool getBoolTouchMapping(bool touchButton)
+        public static bool GetBoolTouchMapping(bool touchButton)
         {
             return touchButton;
         }

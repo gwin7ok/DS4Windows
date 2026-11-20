@@ -19,10 +19,14 @@ namespace DS4Windows.Processing.Actions
             Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
         {
             _repeaterFactory = repeaterFactory;
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));   // Phase14c-Step3（R-06）
-            _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _time = timeProvider;
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            _dispatcher = dispatcher;   // Phase14c-Step3（R-06）
+            ArgumentNullException.ThrowIfNull(registry);
+            _registry = registry;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
         }
 
         public DS4Windows.Processing.Actions.KeyButtonActionController Create(int device, DS4Windows.Processing.Actions.KeyButtonActionController.Mode mode, string actionName = null)

@@ -27,10 +27,14 @@ namespace DS4Windows.Processing.Services.Slots
 
         public ProfileProgramLauncher(IProfileSettingsService profileSettings, IProcessInspector inspector, IProcessLauncher launcher, TimeProvider time)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _inspector = inspector ?? throw new ArgumentNullException(nameof(inspector));
-            _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
-            _time = time ?? throw new ArgumentNullException(nameof(time));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(inspector);
+            _inspector = inspector;
+            ArgumentNullException.ThrowIfNull(launcher);
+            _launcher = launcher;
+            ArgumentNullException.ThrowIfNull(time);
+            _time = time;
         }
 
         public void LaunchIfNotRunning(int slot)

@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -30,7 +31,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.UI.ViewModels
 {
 
-    public class CompositeDeviceModel : INotifyPropertyChanged
+    public class CompositeDeviceModel : ObservableObject
     {
         private IControllerSlotView device;
         private string selectedProfile;
@@ -46,7 +47,6 @@ namespace DS4Windows.UI.ViewModels
             lightbarWindow ??= profileSettingsService.ForSlot(devIndex).Lightbar;
         private readonly IProfileRepository profileRepo;
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public IControllerSlotView Device { get => device; set => device = value; }
 
@@ -99,7 +99,7 @@ namespace DS4Windows.UI.ViewModels
             // このクラスは INotifyPropertyChanged を実装しているため、WPF のバインディングは「<プロパティ名>Changed」イベントを使わず、
             // PropertyChanged だけを見る。以前は PropertyChanged を出していなかったため、一覧の電池表示が、行を作った時点の値のまま更新されなかった
             // （S9-5 の確認で判明。60 秒ごとの読み直しも、これがないと画面に届かない）
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BatteryState)));
+            OnPropertyChanged(nameof(BatteryState));
         }
 
         /// <summary>電池表示を読み直し、前回の通知から文字列が変わっていたときだけ <see cref="BatteryStateChanged"/> を出す。</summary>
@@ -127,7 +127,7 @@ namespace DS4Windows.UI.ViewModels
                 if (selectedIndex == value) return;
                 selectedIndex = value;
 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedIndex)));
+                OnPropertyChanged(nameof(SelectedIndex));
 
                 if (!suppressSelectedIndexChanged)
                 {
@@ -351,8 +351,10 @@ namespace DS4Windows.UI.ViewModels
         {
             this.imageResources = imageResources;
             // Phase6-Step10-2-2: 必須引数（null は拒否する）
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
-            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            this.profileRepo = profileRepo;
             this.device = device;
             device.BatteryChanged += (sender, e) => RaiseBatteryStateChanged(e);
             device.ChargingChanged += (sender, e) => RaiseBatteryStateChanged(e);
@@ -466,7 +468,7 @@ namespace DS4Windows.UI.ViewModels
         public void RaiseLightColorChanged()
         {
             LightColorChanged?.Invoke(this, EventArgs.Empty);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LightColor)));
+            OnPropertyChanged(nameof(LightColor));
         }
 
         public void RequestDisconnect()

@@ -17,63 +17,63 @@ namespace DS4Windows.Processing.Services.Slots
             DS4Controls result = DS4Controls.None;
             if (connected)
             {
-                if (Mapping.getBoolButtonMapping(cState.Cross))
+                if (Mapping.GetBoolButtonMapping(cState.Cross))
                     result = DS4Controls.Cross;
-                else if (Mapping.getBoolButtonMapping(cState.Circle))
+                else if (Mapping.GetBoolButtonMapping(cState.Circle))
                     result = DS4Controls.Circle;
-                else if (Mapping.getBoolButtonMapping(cState.Triangle))
+                else if (Mapping.GetBoolButtonMapping(cState.Triangle))
                     result = DS4Controls.Triangle;
-                else if (Mapping.getBoolButtonMapping(cState.Square))
+                else if (Mapping.GetBoolButtonMapping(cState.Square))
                     result = DS4Controls.Square;
-                else if (Mapping.getBoolButtonMapping(cState.L1))
+                else if (Mapping.GetBoolButtonMapping(cState.L1))
                     result = DS4Controls.L1;
-                else if (Mapping.getBoolTriggerMapping(cState.L2))
+                else if (Mapping.GetBoolTriggerMapping(cState.L2))
                     result = DS4Controls.L2;
-                else if (Mapping.getBoolButtonMapping(cState.L3))
+                else if (Mapping.GetBoolButtonMapping(cState.L3))
                     result = DS4Controls.L3;
-                else if (Mapping.getBoolButtonMapping(cState.R1))
+                else if (Mapping.GetBoolButtonMapping(cState.R1))
                     result = DS4Controls.R1;
-                else if (Mapping.getBoolTriggerMapping(cState.R2))
+                else if (Mapping.GetBoolTriggerMapping(cState.R2))
                     result = DS4Controls.R2;
-                else if (Mapping.getBoolButtonMapping(cState.R3))
+                else if (Mapping.GetBoolButtonMapping(cState.R3))
                     result = DS4Controls.R3;
-                else if (Mapping.getBoolButtonMapping(cState.DpadUp))
+                else if (Mapping.GetBoolButtonMapping(cState.DpadUp))
                     result = DS4Controls.DpadUp;
-                else if (Mapping.getBoolButtonMapping(cState.DpadDown))
+                else if (Mapping.GetBoolButtonMapping(cState.DpadDown))
                     result = DS4Controls.DpadDown;
-                else if (Mapping.getBoolButtonMapping(cState.DpadLeft))
+                else if (Mapping.GetBoolButtonMapping(cState.DpadLeft))
                     result = DS4Controls.DpadLeft;
-                else if (Mapping.getBoolButtonMapping(cState.DpadRight))
+                else if (Mapping.GetBoolButtonMapping(cState.DpadRight))
                     result = DS4Controls.DpadRight;
-                else if (Mapping.getBoolButtonMapping(cState.Share))
+                else if (Mapping.GetBoolButtonMapping(cState.Share))
                     result = DS4Controls.Share;
-                else if (Mapping.getBoolButtonMapping(cState.Options))
+                else if (Mapping.GetBoolButtonMapping(cState.Options))
                     result = DS4Controls.Options;
-                else if (Mapping.getBoolButtonMapping(cState.PS))
+                else if (Mapping.GetBoolButtonMapping(cState.PS))
                     result = DS4Controls.PS;
-                else if (Mapping.getBoolAxisDirMapping(cState.LX, true))
+                else if (Mapping.GetBoolAxisDirMapping(cState.LX, true))
                     result = DS4Controls.LXPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.LX, false))
+                else if (Mapping.GetBoolAxisDirMapping(cState.LX, false))
                     result = DS4Controls.LXNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.LY, true))
+                else if (Mapping.GetBoolAxisDirMapping(cState.LY, true))
                     result = DS4Controls.LYPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.LY, false))
+                else if (Mapping.GetBoolAxisDirMapping(cState.LY, false))
                     result = DS4Controls.LYNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.RX, true))
+                else if (Mapping.GetBoolAxisDirMapping(cState.RX, true))
                     result = DS4Controls.RXPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.RX, false))
+                else if (Mapping.GetBoolAxisDirMapping(cState.RX, false))
                     result = DS4Controls.RXNeg;
-                else if (Mapping.getBoolAxisDirMapping(cState.RY, true))
+                else if (Mapping.GetBoolAxisDirMapping(cState.RY, true))
                     result = DS4Controls.RYPos;
-                else if (Mapping.getBoolAxisDirMapping(cState.RY, false))
+                else if (Mapping.GetBoolAxisDirMapping(cState.RY, false))
                     result = DS4Controls.RYNeg;
-                else if (Mapping.getBoolTouchMapping(tp.leftDown))
+                else if (Mapping.GetBoolTouchMapping(tp.leftDown))
                     result = DS4Controls.TouchLeft;
-                else if (Mapping.getBoolTouchMapping(tp.rightDown))
+                else if (Mapping.GetBoolTouchMapping(tp.rightDown))
                     result = DS4Controls.TouchRight;
-                else if (Mapping.getBoolTouchMapping(tp.multiDown))
+                else if (Mapping.GetBoolTouchMapping(tp.multiDown))
                     result = DS4Controls.TouchMulti;
-                else if (Mapping.getBoolTouchMapping(tp.upperDown))
+                else if (Mapping.GetBoolTouchMapping(tp.upperDown))
                     result = DS4Controls.TouchUpper;
             }
 

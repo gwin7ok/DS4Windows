@@ -88,7 +88,8 @@ namespace DS4Windows.UI.ViewModels
         public ControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions serviceDeviceOpts,
             IControllerSlotQuery slots, IAppSettingsService appSettings)
         {
-            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            this.appSettings = appSettings;
             this.serviceDeviceOpts = serviceDeviceOpts;
             FamilyToggles = serviceDeviceOpts?.Families
                 .Select(f => new FamilyToggleItem(f, serviceDeviceOpts[f])).ToList() ?? new List<FamilyToggleItem>();

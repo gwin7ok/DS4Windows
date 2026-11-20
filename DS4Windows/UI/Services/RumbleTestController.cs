@@ -18,8 +18,10 @@ namespace DS4Windows.UI.Services
 
         public RumbleTestController(IControllerSlotCommands slotCommands, IEnvironmentService environmentService)
         {
-            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(slotCommands);
+            this.slotCommands = slotCommands;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
         }
 
         /// <summary>

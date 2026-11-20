@@ -12,7 +12,8 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public GyroCalibrateOutputBuilder(IGyroCalibrationPort gyroCalibration, ISpecialActionRepository actionRepository = null)
         {
-            _gyroCalibration = gyroCalibration ?? throw new ArgumentNullException(nameof(gyroCalibration));
+            ArgumentNullException.ThrowIfNull(gyroCalibration);
+            _gyroCalibration = gyroCalibration;
             _actionRepository = actionRepository;
         }
 

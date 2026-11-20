@@ -14,7 +14,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public WindowTargetPicker(IWindowSystem windowSystem, int ownProcessId)
         {
-            this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            this.windowSystem = windowSystem;
             this.ownProcessId = ownProcessId;
         }
 

@@ -48,7 +48,8 @@ namespace DS4Windows.Core.Utilities
 
         public Changelog(System.Net.Http.HttpClient httpClient)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            ArgumentNullException.ThrowIfNull(httpClient);
+            _httpClient = httpClient;
         }
 
         // Much more compact and elegant way of checking if there is a new update available than the

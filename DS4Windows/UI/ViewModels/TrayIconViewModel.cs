@@ -111,16 +111,21 @@ namespace DS4Windows.UI.ViewModels
             IEnvironmentService environmentService, IPathService pathService,
             IUiDispatcher dispatcher)
         {
-            this.uiDispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            this.uiDispatcher = dispatcher;
             // Phase6-Step9-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A）
-            this.appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(appearanceSettings);
+            this.appearanceSettings = appearanceSettings;
+            ArgumentNullException.ThrowIfNull(profileRepository);
+            this.profileRepository = profileRepository;
+            ArgumentNullException.ThrowIfNull(pathService);
+            this.pathService = pathService;
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
 
             this.profileListHolder = profileListHolder;
             this.slots = slots;
-            this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));   // Phase13-Step9: 旧 ControlService.running の転送
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            this.lifecycle = lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             iconSource = TrayIconResources.iconChoiceResources[appearanceSettings.UseIconChoice];
             appearanceSettings.BatteryChanged += UpdateTrayBattery;

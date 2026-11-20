@@ -13,7 +13,8 @@ namespace DS4Windows.Output.Services
 
         public DeviceRumbleService(IProfileSettingsService profileSettings)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         // sets the rumble adjusted with rumble boost. Method more used for

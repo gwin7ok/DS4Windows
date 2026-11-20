@@ -66,7 +66,7 @@ namespace DS4WindowsTests
             // 受けた設定の使い方と、null の扱い・画面の開き方（コードの形。WPF の画面は単体テストで開けないため、ソースで確かめる）
             string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;
-            Assert.Contains("throw new ArgumentNullException(nameof(appSettingsService))", editor);
+            Assert.Contains("ArgumentNullException.ThrowIfNull(appSettingsService)", editor);
             Assert.Contains("appSettingsService.UseLang", editor);
             string main = SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
             Assert.Contains("_editorWindowFactory.CreateProfileEditor(targetDevice)", main);

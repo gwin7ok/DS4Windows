@@ -34,7 +34,7 @@ namespace DS4Windows.Input.Devices
         // 基底の Report は仮想のイベント。派生で持ち直し、読み取りのスレッドから発火する
         public override event ReportHandler<EventArgs>? Report = null;
 
-        public override void removeReportHandlers()
+        public override void RemoveReportHandlers()
         {
             this.Report = null;
         }

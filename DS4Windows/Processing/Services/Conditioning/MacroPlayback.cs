@@ -30,11 +30,15 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public MacroPlayback(DS4Windows.Core.Model.LightbarOverrides lightbar, IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager, TimeProvider timeProvider)
         {
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _time = timeProvider;
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _stepExecutor = stepExecutor ?? throw new ArgumentNullException(nameof(stepExecutor));
-            _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
+            ArgumentNullException.ThrowIfNull(stepExecutor);
+            _stepExecutor = stepExecutor;
+            ArgumentNullException.ThrowIfNull(macroRuntime);
+            _macroRuntime = macroRuntime;
         }
 
         /// <summary>切断時の後始末: そのデバイスの同期キュー（スペシャルアクションごとの Task の連鎖）を空にする。</summary>

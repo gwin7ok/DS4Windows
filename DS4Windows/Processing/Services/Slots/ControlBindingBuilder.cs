@@ -40,7 +40,8 @@ namespace DS4Windows.Processing.Services.Slots
             IControlExtrasPort? extrasPort = null, ISpecialActionOutputFactory? outputFactory = null,
             IManagedActionManager? manager = null, IKeyButtonControllerRegistry? controllers = null)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             _macroPlayer = macroPlayer;
             _extrasPort = extrasPort;
             _outputFactory = outputFactory;

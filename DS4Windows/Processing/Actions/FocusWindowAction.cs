@@ -31,9 +31,12 @@ namespace DS4Windows.Processing.Actions
         /// <summary>テスト用: 別スレッドへ逃がす処理を差し替える（同じスレッドで実行して、結果をその場で確かめる）。</summary>
         public FocusWindowAction(SpecialAction sa, IWindowFocuser focuser, Action<Action> runInBackground)
         {
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
-            _focuser = focuser ?? throw new ArgumentNullException(nameof(focuser));
-            _runInBackground = runInBackground ?? throw new ArgumentNullException(nameof(runInBackground));
+            ArgumentNullException.ThrowIfNull(sa);
+            _sa = sa;
+            ArgumentNullException.ThrowIfNull(focuser);
+            _focuser = focuser;
+            ArgumentNullException.ThrowIfNull(runInBackground);
+            _runInBackground = runInBackground;
             _target = new WindowTargetMatcher(sa.details, sa.extra);
         }
 

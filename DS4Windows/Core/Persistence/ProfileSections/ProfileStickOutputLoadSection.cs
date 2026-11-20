@@ -31,12 +31,12 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             // Note! xxOutputCurveCustom property needs to be read before xxOutputCurveMode property in case the curveMode is value 6
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveCustom"); store.stickSlots[device].LsBezier.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveMode"); store.stickSlots[device].ApplyLSCurveMode(store.stickOutputCurveId(Item.InnerText)); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSOutputCurveMode"); store.stickSlots[device].ApplyLSCurveMode(store.StickOutputCurveId(Item.InnerText)); }
             catch { store.stickSlots[device].ApplyLSCurveMode(0); missingSetting = true; }
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveCustom"); store.stickSlots[device].RsBezier.CustomDefinition = Item.InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveMode"); store.stickSlots[device].ApplyRSCurveMode(store.stickOutputCurveId(Item.InnerText)); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/RSOutputCurveMode"); store.stickSlots[device].ApplyRSCurveMode(store.StickOutputCurveId(Item.InnerText)); }
             catch { store.stickSlots[device].ApplyRSCurveMode(0); missingSetting = true; }
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSSquareStick"); bool.TryParse(Item.InnerText, out store.stickSlots[device].SquStick.lsMode); }

@@ -16,7 +16,8 @@ namespace DS4Windows.Composition
 
         public IpcResultWriterAdapter(IpcMemoryMap ipc)
         {
-            _ipc = ipc ?? throw new ArgumentNullException(nameof(ipc));
+            ArgumentNullException.ThrowIfNull(ipc);
+            _ipc = ipc;
         }
 
         public void WriteQueryResult(string value) => _ipc.WriteResult(value);

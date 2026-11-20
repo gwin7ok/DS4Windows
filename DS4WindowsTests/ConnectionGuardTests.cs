@@ -59,7 +59,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             // 旧 TouchPadOn と同じく、発火のたびに配列からマウスを引き直す
-            Assert.Contains("touchPads[ind].populatePriorButtonStates()", text);
+            Assert.Contains("touchPads[ind].PopulatePriorButtonStates()", text);
             Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "DeviceConnectionSetup が ControlService を参照している");
         }
     

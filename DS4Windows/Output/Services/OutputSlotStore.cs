@@ -13,7 +13,8 @@ namespace DS4Windows.Output.Services
 
         public OutputSlotStore(IPathService pathService)
         {
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
         }
 
         public bool Load(OutputSlotManager slotManager)

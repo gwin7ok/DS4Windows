@@ -13,7 +13,8 @@ namespace DS4Windows.UI.Services
 
         public IpcCommandDispatcher(IIpcCommandProcessor processor)
         {
-            _processor = processor ?? throw new ArgumentNullException(nameof(processor));
+            ArgumentNullException.ThrowIfNull(processor);
+            _processor = processor;
         }
 
         public void Execute(MainWindowIpcHost host, string[] data) => _processor.Execute(host, data);

@@ -18,8 +18,10 @@ namespace DS4Windows.Processing.Services.Slots
 
         public SpecialActionRuntimeReset(SyntheticInputState syntheticInput, IManagedActionManager actionManager)
         {
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(actionManager);
+            _actionManager = actionManager;
         }
 
         public void ClearAllActionStates() => _actionManager.ClearAllEntries();

@@ -13,7 +13,8 @@ namespace DS4Windows.Processing.Actions
         {
             if (outputs == null) throw new ArgumentNullException(nameof(outputs));
             Outputs = (IOutputAction[])outputs.Clone();
-            Policy = policy ?? throw new ArgumentNullException(nameof(policy));
+            ArgumentNullException.ThrowIfNull(policy);
+            Policy = policy;
             InvertOnRelease = invertOnRelease;
             IsMultiTap = isMultiTap;
         }

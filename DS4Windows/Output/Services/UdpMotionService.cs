@@ -48,11 +48,16 @@ namespace DS4Windows.Output.Services
         public UdpMotionService(IAppSettingsService appSettings, IInputDeviceRegistry deviceRegistry,
             IUdpMotionServerFactory serverFactory, IDeviceSlotState slots, IEventThreadDispatcher eventThread)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
-            _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(deviceRegistry);
+            _deviceRegistry = deviceRegistry;
+            ArgumentNullException.ThrowIfNull(serverFactory);
+            _serverFactory = serverFactory;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(eventThread);
+            _eventThread = eventThread;
 
             // 旧 ControlService のコンストラクターにあった購読
             _appSettings.UDPServerSmoothingMincutoffChanged += ChangeUdpSmoothingAttrs;
@@ -234,31 +239,31 @@ namespace DS4Windows.Output.Services
                 //return meta;
             }
 
-            bool isValidSerial = false;
-            string stringMac = d.getMacAddress();
+            bool IsValidSerial = false;
+            string stringMac = d.GetMacAddress();
             if (!string.IsNullOrEmpty(stringMac))
             {
                 stringMac = string.Join("", stringMac.Split(':'));
                 //stringMac = stringMac.Replace(":", "").Trim();
                 meta.PadMacAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(stringMac);
-                isValidSerial = d.isValidSerial();
+                IsValidSerial = d.IsValidSerial();
             }
 
-            if (!isValidSerial)
+            if (!IsValidSerial)
             {
                 //meta.PadMacAddress = null;
                 meta.PadState = DsState.Disconnected;
             }
             else
             {
-                if (d.isSynced() || d.IsAlive())
+                if (d.IsSynced() || d.IsAlive())
                     meta.PadState = DsState.Connected;
                 else
                     meta.PadState = DsState.Reserved;
             }
 
             meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
-            meta.IsActive = !d.isDS4Idle();
+            meta.IsActive = !d.IsDS4Idle();
 
             int batteryLevel = d.getBattery();
             if (d.isCharging() && batteryLevel >= 100)

@@ -21,11 +21,16 @@ namespace DS4Windows.UI.Services
         public MacroRecordingWindowFactory(IMacroRecordingState macroRecording, IPathService pathService,
             IProfileEditViewModelFactory viewModelFactory, IWindowSystem windowSystem, IMouseInputHook mouseHook)
         {
-            _macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
-            _mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
+            ArgumentNullException.ThrowIfNull(macroRecording);
+            _macroRecording = macroRecording;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(viewModelFactory);
+            _viewModelFactory = viewModelFactory;
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            _windowSystem = windowSystem;
+            ArgumentNullException.ThrowIfNull(mouseHook);
+            _mouseHook = mouseHook;
         }
 
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,

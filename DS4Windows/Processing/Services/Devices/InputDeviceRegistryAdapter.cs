@@ -24,7 +24,8 @@ namespace DS4Windows.Processing.Services.Devices
         /// <summary>登録簿のインスタンスを受ける（DI とテスト）。</summary>
         public InputDeviceRegistryAdapter(InputDeviceRegistry devices)
         {
-            _devices = devices ?? throw new ArgumentNullException(nameof(devices));
+            ArgumentNullException.ThrowIfNull(devices);
+            _devices = devices;
         }
 
         public IEnumerable<InputDeviceCore> FindControllers()

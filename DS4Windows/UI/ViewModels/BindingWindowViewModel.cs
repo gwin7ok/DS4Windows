@@ -71,8 +71,10 @@ namespace DS4Windows.UI.ViewModels
             IEnvironmentService environmentService, int targetDevice = -1)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
             if (outputSlotService == null) throw new ArgumentNullException(nameof(outputSlotService));
             this.deviceNum = deviceNum;
             this.targetDevice = targetDevice;

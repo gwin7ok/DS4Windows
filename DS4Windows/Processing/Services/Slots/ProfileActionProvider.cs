@@ -16,8 +16,10 @@ namespace DS4Windows.Processing.Services.Slots
 
         public ProfileActionProvider(BackingStore config, ISpecialActionRepository specialActions)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _specialActions = specialActions ?? throw new ArgumentNullException(nameof(specialActions));
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
+            ArgumentNullException.ThrowIfNull(specialActions);
+            _specialActions = specialActions;
         }
 
         public int ActionDefinitionCount => _specialActions.ActionList.Count;

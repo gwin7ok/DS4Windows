@@ -25,7 +25,8 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public TouchpadToggleService(IProfileSettingsService profileSettings, IEnvironmentService environmentService)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
             _controllerSlotLimit = environmentService.ControllerSlotLimit;
             for (int i = 0; i < _touchreleased.Length; i++)

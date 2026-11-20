@@ -16,7 +16,8 @@ namespace DS4Windows.Processing.Services.Slots
 
         public ControllerSlotCommands(IDeviceSlotState slotState)
         {
-            _slotState = slotState ?? throw new ArgumentNullException(nameof(slotState));
+            ArgumentNullException.ThrowIfNull(slotState);
+            _slotState = slotState;
         }
 
         public bool IsConnected(int slot) => DeviceAt(slot) != null;

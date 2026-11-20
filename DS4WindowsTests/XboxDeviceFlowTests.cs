@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             byte l2 = 0;
             device.Report += (sender, args) =>
             {
-                ControllerState state = sender.getCurrentStateRef();
+                ControllerState state = sender.GetCurrentStateRef();
                 cross = state.Cross;
                 l2 = state.L2;
                 reported.Set();

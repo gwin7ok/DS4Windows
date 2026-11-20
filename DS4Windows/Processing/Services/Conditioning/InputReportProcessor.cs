@@ -64,16 +64,26 @@ namespace DS4Windows.Processing.Services.Conditioning
             _currentState = slots.CurrentStates;
             _tempState = slots.TempStates;
             _touchPad = slots.TouchPads;
-            _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _firstReportLogger = firstReportLogger ?? throw new ArgumentNullException(nameof(firstReportLogger));
-            _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
-            _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
+            ArgumentNullException.ThrowIfNull(latencyMonitor);
+            _latencyMonitor = latencyMonitor;
+            ArgumentNullException.ThrowIfNull(firstReportLogger);
+            _firstReportLogger = firstReportLogger;
+            ArgumentNullException.ThrowIfNull(appearanceSettings);
+            _appearanceSettings = appearanceSettings;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(mapping);
+            _mapping = mapping;
+            ArgumentNullException.ThrowIfNull(touchpadToggle);
+            _touchpadToggle = touchpadToggle;
+            ArgumentNullException.ThrowIfNull(profileActionProvider);
+            _profileActionProvider = profileActionProvider;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(oscService);
+            _oscService = oscService;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
 
             // CurrentStates[i] は DeviceSlotState が作る。ExposedState は、それを参照して作る
             for (int i = 0; i < _currentState.Length; i++)
@@ -99,14 +109,14 @@ namespace DS4Windows.Processing.Services.Conditioning
                 _latencyMonitor.OnReport(device, ind);
 
                 ControllerState cState = _currentState[ind];
-                device.getRawCurrentState(cState);
+                device.GetRawCurrentState(cState);
 
-                ControllerState pState = device.getPreviousStateRef();
+                ControllerState pState = device.GetPreviousStateRef();
                 //device.getPreviousState(PreviousState[ind]);
                 //ControllerState pState = PreviousState[ind];
 
 
-                if (device.firstReport && device.isSynced())
+                if (device.firstReport && device.IsSynced())
                 {
                     // Emit missing-action logs once per profile-apply (respect suppression).
                     // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents

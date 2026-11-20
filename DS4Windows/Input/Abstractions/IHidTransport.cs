@@ -39,9 +39,9 @@ namespace DS4Windows.Input.Abstractions
         bool WriteFeatureReport(byte[] data);
 
         /// <summary>特徴レポートを読む（先頭にレポート ID を入れて渡す）。</summary>
-        bool readFeatureData(byte[] inputBuffer);
+        bool ReadFeatureData(byte[] inputBuffer);
 
-        void resetSerial();
+        void ResetSerial();
         string ReadSerial(byte featureID = 18);
         string GenerateFakeHwSerial();
 

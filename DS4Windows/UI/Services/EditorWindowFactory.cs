@@ -20,9 +20,12 @@ namespace DS4Windows.UI.Services
         public EditorWindowFactory(AssignmentWindowFactory assignments, MacroRecordingWindowFactory recording,
             ProfileEditorFactory profileEditors)
         {
-            _assignments = assignments ?? throw new ArgumentNullException(nameof(assignments));
-            _recording = recording ?? throw new ArgumentNullException(nameof(recording));
-            _profileEditors = profileEditors ?? throw new ArgumentNullException(nameof(profileEditors));
+            ArgumentNullException.ThrowIfNull(assignments);
+            _assignments = assignments;
+            ArgumentNullException.ThrowIfNull(recording);
+            _recording = recording;
+            ArgumentNullException.ThrowIfNull(profileEditors);
+            _profileEditors = profileEditors;
         }
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,

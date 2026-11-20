@@ -19,7 +19,8 @@ namespace DS4Windows.Processing.Actions
         public AssignmentBindingBuilder(ISpecialActionOutputFactory outputFactory,
             IControlExtrasPort extrasPort = null)
         {
-            _outputFactory = outputFactory ?? throw new ArgumentNullException(nameof(outputFactory));
+            ArgumentNullException.ThrowIfNull(outputFactory);
+            _outputFactory = outputFactory;
             _extrasPort = extrasPort;
         }
 

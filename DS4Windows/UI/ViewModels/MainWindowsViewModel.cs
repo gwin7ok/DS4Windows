@@ -75,15 +75,24 @@ namespace DS4Windows.UI.ViewModels
             IRuntimeFeatureSwitch features, IProcessPriorityControl priority,
             IAppSettingsService appSettings)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _priority = priority ?? throw new ArgumentNullException(nameof(priority));
-            _features = features ?? throw new ArgumentNullException(nameof(features));
-            _launcher = launcher ?? throw new ArgumentNullException(nameof(launcher));
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
-            _updateCheckPolicy = updateCheckPolicy ?? throw new ArgumentNullException(nameof(updateCheckPolicy));
-            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(priority);
+            _priority = priority;
+            ArgumentNullException.ThrowIfNull(features);
+            _features = features;
+            ArgumentNullException.ThrowIfNull(launcher);
+            _launcher = launcher;
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
+            ArgumentNullException.ThrowIfNull(updateCheckPolicy);
+            _updateCheckPolicy = updateCheckPolicy;
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            _lifecycle = lifecycle;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
 
             ToggleServiceCommand = CommandGuard.Create(ToggleServiceAsync, () => !IsServiceBusy, nameof(ToggleServiceCommand));
             RestartForHideDs4Command = CommandGuard.Create(() => RestartServiceAsync(isXbox: false), name: nameof(RestartForHideDs4Command));

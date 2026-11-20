@@ -30,9 +30,12 @@ namespace DS4Windows.Output.Services
 
         public HidHideService(IEnvironmentService environmentService, IPathService pathService, IHidHideApiFactory apiFactory)
         {
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _apiFactory = apiFactory ?? throw new ArgumentNullException(nameof(apiFactory));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(apiFactory);
+            _apiFactory = apiFactory;
         }
 
         public void CheckPresence(string ExePath = "", string ExeName = "Autoprofile Exe", bool AddExe = true) // Default value for D4W Startup

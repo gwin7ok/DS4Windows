@@ -72,7 +72,7 @@ namespace DS4WindowsTests
 
             device.PostInit();
 
-            Assert.Equal("00:11:22:33:44:55", device.getMacAddress());
+            Assert.Equal("00:11:22:33:44:55", device.GetMacAddress());
             Assert.Equal(ConnectionType.USB, device.getConnectionType());
             Assert.NotEmpty(fake.Writes);   // 初期の出力レポート
             Assert.All(fake.Writes, w => Assert.Equal("interrupt", w.Kind));

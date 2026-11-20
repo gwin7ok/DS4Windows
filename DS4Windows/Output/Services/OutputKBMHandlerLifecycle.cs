@@ -23,9 +23,12 @@ namespace DS4Windows.Output.Services
         public OutputKBMHandlerLifecycle(IEnvironmentService environmentService, OutputKBMHandlerAdapter handlerOwner,
             IProfileSettingsService profileSettings)
         {
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _handlerOwner = handlerOwner ?? throw new ArgumentNullException(nameof(handlerOwner));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(handlerOwner);
+            _handlerOwner = handlerOwner;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public void ReleaseHandler()

@@ -83,7 +83,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public MultiActButtonViewModel(ISpecialActionRepository specialActionRepository)
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             loadAccessArray = new List<int>[3] { tapMacro, holdMacro, doubleTapMacro };
         }
 

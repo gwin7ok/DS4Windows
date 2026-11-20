@@ -24,12 +24,17 @@ namespace DS4Windows.Processing.Services.Slots
         public ConnectedDeviceOutputs(IProfileSettingsService profileSettings, IAppSettingsService appSettings, IOscService oscService,
             IVirtualPadService virtualPad, IOutputDeviceTypeState outputDeviceTypes, IUdpMotionService udpMotion)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(oscService);
+            _oscService = oscService;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
             _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
+            ArgumentNullException.ThrowIfNull(udpMotion);
+            _udpMotion = udpMotion;
         }
 
         public void NotifyPlugged(int index)
@@ -42,7 +47,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public void PlugVirtualPad(int index, InputDeviceCore device)
         {
-            if (!_profileSettings.GetDInputOnly(index) && device.isSynced())
+            if (!_profileSettings.GetDInputOnly(index) && device.IsSynced())
             {
                 _virtualPad.PluginOutDev(index, device);
             }

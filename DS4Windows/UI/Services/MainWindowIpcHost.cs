@@ -21,10 +21,14 @@ namespace DS4Windows.UI.Services
 
         public MainWindowIpcHost(Action toggleService, Action closeApplication, ControllerListViewModel controllers, ProfileList profiles)
         {
-            _toggleService = toggleService ?? throw new ArgumentNullException(nameof(toggleService));
-            _closeApplication = closeApplication ?? throw new ArgumentNullException(nameof(closeApplication));
-            _controllers = controllers ?? throw new ArgumentNullException(nameof(controllers));
-            _profiles = profiles ?? throw new ArgumentNullException(nameof(profiles));
+            ArgumentNullException.ThrowIfNull(toggleService);
+            _toggleService = toggleService;
+            ArgumentNullException.ThrowIfNull(closeApplication);
+            _closeApplication = closeApplication;
+            ArgumentNullException.ThrowIfNull(controllers);
+            _controllers = controllers;
+            ArgumentNullException.ThrowIfNull(profiles);
+            _profiles = profiles;
         }
 
         public void ToggleService() => _toggleService();

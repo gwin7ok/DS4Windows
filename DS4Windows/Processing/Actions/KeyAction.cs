@@ -44,8 +44,10 @@ namespace DS4Windows.Processing.Actions
         /// </summary>
         public KeyAction(SpecialAction action, int index, ushort keyId, bool useScan, IManagedActionManager manager, IKeyButtonControllerRegistry controllers)
         {
-            this.manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            this.controllers = controllers ?? throw new ArgumentNullException(nameof(controllers));
+            ArgumentNullException.ThrowIfNull(manager);
+            this.manager = manager;
+            ArgumentNullException.ThrowIfNull(controllers);
+            this.controllers = controllers;
             this.action = action;
             this.index = index;
             this.keyId = keyId;

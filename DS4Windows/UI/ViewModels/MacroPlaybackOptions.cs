@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using DS4Windows.Core.Settings;
 
@@ -10,7 +11,7 @@ namespace DS4Windows.UI.ViewModels
     /// 旧 <c>HoldMacro</c> から統合）、<see cref="DS4KeyType.RepeatLatchMacro"/>（R-2: 繰り返しをトグルする）、<see cref="DS4KeyType.ScanCode"/> の有無で表す。
     /// 実行時の表現であり、保存形式（<c>MacroExecuteMode</c>）との変換は保存・読込の層が行う（R2-MacroToggleRepeat-Plan.md §3.1）。
     /// </summary>
-    public class MacroPlaybackOptions : INotifyPropertyChanged
+    public class MacroPlaybackOptions : ObservableObject
     {
         /// <summary>ドロップダウンの添字。Play Once。</summary>
         public const int PlayOnceIndex = 0;
@@ -26,7 +27,6 @@ namespace DS4Windows.UI.ViewModels
         private bool useScanCode;
         private bool repeatable;
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <param name="repeatable">繰り返しを選べるか。Press Key／MultiAction のマクロは偽（画面で、ドロップダウンを無効にする）。</param>
         public MacroPlaybackOptions(bool repeatable = true)
@@ -144,9 +144,5 @@ namespace DS4Windows.UI.ViewModels
             return options;
         }
 
-        private void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
     }
 }

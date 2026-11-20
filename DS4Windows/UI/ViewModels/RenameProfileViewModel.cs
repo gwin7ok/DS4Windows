@@ -28,7 +28,8 @@ namespace DS4Windows.UI.ViewModels
 
         public RenameProfileViewModel(DS4Windows.Core.Abstractions.IPathService pathService)
         {
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(pathService);
+            this.pathService = pathService;
         }
 
         private string profileName;

@@ -33,12 +33,12 @@ namespace DS4Windows.Input
             this.serial = serial;
         }
 
-        public int getIndex()
+        public int GetIndex()
         {
             return index;
         }
 
-        public string getSerial()
+        public string GetSerial()
         {
             return serial;
         }

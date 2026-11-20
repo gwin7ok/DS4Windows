@@ -27,11 +27,16 @@ namespace DS4Windows.Processing.Services.Connection
         public DeviceConnectionSetup(IProfileSettingsService profileSettings, IUdpMotionService udpMotion, StickMotionState stickMotion,
             IInputDeviceModuleRegistry deviceModules, IProfileProgramLauncher programLauncher)
         {
-            _programLauncher = programLauncher ?? throw new ArgumentNullException(nameof(programLauncher));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
+            ArgumentNullException.ThrowIfNull(programLauncher);
+            _programLauncher = programLauncher;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(udpMotion);
+            _udpMotion = udpMotion;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
+            ArgumentNullException.ThrowIfNull(deviceModules);
+            _deviceModules = deviceModules;
         }
 
         public void ApplyProfileOptions(int ind, InputDeviceCore device, TouchpadMouse touchPad, bool startUp = false)
@@ -44,8 +49,8 @@ namespace DS4Windows.Processing.Services.Connection
             if (!_profileSettings.GetEnableOutputDataToDS4(ind))
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Conn_OutputDisabled");
 
-            device.setIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
-            device.setBTPollRate(_profileSettings.GetBTPollRate(ind));
+            device.SetIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
+            device.SetBTPollRate(_profileSettings.GetBTPollRate(ind));
 
             touchPad.ResetTrackAccel(_profileSettings.ForSlot(ind).Touchpad.TrackballFriction);
             touchPad.ResetToggleGyroModes();
@@ -152,8 +157,8 @@ namespace DS4Windows.Processing.Services.Connection
             device.Touchpad.TouchesEnded += tPad.touchesEnded;
             device.Touchpad.TouchesEnded += tPad.TouchStartedOrEnded;
             device.Touchpad.TouchUnchanged += tPad.touchUnchanged;
-            //device.Touchpad.PreTouchProcess += delegate { touchPads[ind].populatePriorButtonStates(); };
-            device.Touchpad.PreTouchProcess += (sender, args) => { touchPads[ind].populatePriorButtonStates(); };
+            //device.Touchpad.PreTouchProcess += delegate { touchPads[ind].PopulatePriorButtonStates(); };
+            device.Touchpad.PreTouchProcess += (sender, args) => { touchPads[ind].PopulatePriorButtonStates(); };
             device.SixAxis.SixAccelMoved += tPad.sixaxisMoved;
             //LogDebug("Touchpad mode for " + device.MacAddress + " is now " + tmode.ToString());
             //Log.LogToTray("Touchpad mode for " + device.MacAddress + " is now " + tmode.ToString());

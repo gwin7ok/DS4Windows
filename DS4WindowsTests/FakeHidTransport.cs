@@ -129,7 +129,7 @@ namespace DS4WindowsTests
 
         private bool _useFeatureScript;
 
-        public bool readFeatureData(byte[] inputBuffer)
+        public bool ReadFeatureData(byte[] inputBuffer)
         {
             if (_useFeatureScript)
             {
@@ -149,7 +149,7 @@ namespace DS4WindowsTests
             return true;
         }
 
-        public void resetSerial() { }
+        public void ResetSerial() { }
         /// <summary>最後に <see cref="ReadSerial"/> が受けた特徴レポート番号（読んでいなければ -1）。</summary>
         public int LastSerialFeatureId { get; private set; } = -1;
         /// <summary>擬似のシリアル（<see cref="GenerateFakeHwSerial"/> の戻り値）。</summary>

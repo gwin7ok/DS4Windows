@@ -20,12 +20,14 @@ namespace DS4Windows.Processing.Actions
 
         public RepeatHelperToIRepeaterAdapter(RepeatHelper existing)
         {
-            helper = existing ?? throw new ArgumentNullException(nameof(existing));
+            ArgumentNullException.ThrowIfNull(existing);
+            helper = existing;
         }
 
         public RepeatHelperToIRepeaterAdapter(Func<RepeatHelper> factory, Func<Func<RepeatHelper>, IRepeater> repeaterFactoryOverride = null)
         {
-            helperFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+            ArgumentNullException.ThrowIfNull(factory);
+            helperFactory = factory;
             this.repeaterFactoryOverride = repeaterFactoryOverride;
         }
 

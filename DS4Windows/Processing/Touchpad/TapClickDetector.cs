@@ -47,7 +47,8 @@ namespace DS4Windows.Processing.Touchpad
         public TapClickDetector(int deviceNum, TimeProvider timeProvider)
         {
             this.deviceNum = deviceNum;
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _time = timeProvider;
         }
 
         /// <summary>ダブルタップの 2 回目の触れ始め（タップ＆ホールドを含む）。真の間は、ドラッグとしてクリックを出し続ける。</summary>

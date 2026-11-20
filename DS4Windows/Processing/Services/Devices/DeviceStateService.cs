@@ -21,7 +21,8 @@ namespace DS4Windows.Processing.Services.Devices
 
         public DeviceStateService(BackingStore config)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
         }
 
         // ---- Phase6-Step2-2 (PR-2): 起動後の初回接続判定 ----

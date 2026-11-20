@@ -1,9 +1,9 @@
-
+﻿
 using DS4Windows.Core.Settings;
 
-namespace StandaloneTests
+namespace DS4WindowsTests
 {
-    public static class TestHelpers
+    public static class StandaloneTestHelpers
     {
         public static SpecialAction CreateToggleAction(ushort logicalKey, string name = "test-toggle-action")
         {

@@ -36,9 +36,12 @@ namespace DS4Windows.Core.Persistence
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
         {
             _profileIdentity = profileIdentity;
-            this.store = store ?? throw new ArgumentNullException(nameof(store));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            ArgumentNullException.ThrowIfNull(store);
+            this.store = store;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
         }
 
         public bool Load()

@@ -15,7 +15,8 @@ namespace DS4Windows.Processing.Actions
 
         public DefaultGyroCalibrationPort(IDeviceStateAccessor deviceStateAccessor)
         {
-            _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
+            ArgumentNullException.ThrowIfNull(deviceStateAccessor);
+            _deviceStateAccessor = deviceStateAccessor;
         }
 
         public void ResetContinuousCalibration(int deviceIndex)

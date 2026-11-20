@@ -64,7 +64,8 @@ namespace DS4Windows.UI.ViewModels
         public MappedControl(int devIndex, DS4Controls control, string controlName,
             OutContType devType, IProfileSettingsService profileSettingsService, bool initMap = false)
         {
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
             this.devIndex = devIndex;
             this.devType = devType;
             this.control = control;

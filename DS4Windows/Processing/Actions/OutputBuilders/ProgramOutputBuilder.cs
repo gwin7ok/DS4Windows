@@ -12,7 +12,8 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public ProgramOutputBuilder(IProcessLauncher processLauncher, ISpecialActionRepository actionRepository = null)
         {
-            _processLauncher = processLauncher ?? throw new ArgumentNullException(nameof(processLauncher));
+            ArgumentNullException.ThrowIfNull(processLauncher);
+            _processLauncher = processLauncher;
             _actionRepository = actionRepository;
         }
 

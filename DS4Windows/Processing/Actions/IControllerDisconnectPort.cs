@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Actions
         /// <summary>ドングル接続（SONYWA）で同期済みか（旧経路の、離したときの切断待ちの条件）。</summary>
         bool IsDongleSynced(int deviceIndex);
 
-        /// <summary>コントローラーが無操作か（<c>InputDeviceCore.isDS4Idle()</c>）。コントローラーがいなければ false。</summary>
+        /// <summary>コントローラーが無操作か（<c>InputDeviceCore.IsDS4Idle()</c>）。コントローラーがいなければ false。</summary>
         bool IsIdle(int deviceIndex);
 
         /// <summary>ドングル接続を切断する（<c>InputDeviceCore.DisconnectDongle()</c>）。コントローラーがいなければ false。</summary>

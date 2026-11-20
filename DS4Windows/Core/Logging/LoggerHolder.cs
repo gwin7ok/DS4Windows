@@ -40,7 +40,8 @@ namespace DS4Windows.Core.Logging
 
         public LoggerHolder(DS4Windows.Core.Abstractions.IAppSettingsService appSettings)
         {
-            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            this.appSettings = appSettings;
             var configuration = LogManager.Configuration;
             if (configuration == null)
                 throw new InvalidOperationException("NLog configuration is not loaded");

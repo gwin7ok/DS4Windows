@@ -10,17 +10,17 @@ namespace DS4Windows.Core.Abstractions
     /// </summary>
     public interface IPadStatusSource
     {
-        string getMacAddress();
+        string GetMacAddress();
 
-        bool isValidSerial();
+        bool IsValidSerial();
 
-        bool isSynced();
+        bool IsSynced();
 
         bool IsAlive();
 
         ConnectionType getConnectionType();
 
-        bool isDS4Idle();
+        bool IsDS4Idle();
 
         int getBattery();
 

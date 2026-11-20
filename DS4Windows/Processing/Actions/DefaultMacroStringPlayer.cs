@@ -14,7 +14,8 @@ namespace DS4Windows.Processing.Actions
 
         public DefaultMacroStringPlayer(IMapping mapping)
         {
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
+            ArgumentNullException.ThrowIfNull(mapping);
+            _mapping = mapping;
         }
 
         public void PlayMacroString(int deviceIndex, string macro)

@@ -1,4 +1,5 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
 
@@ -14,7 +15,8 @@ namespace DS4Windows.UI.ViewModels
 
         public SixAxisSettingsViewModel(SixAxisSlotSettings sixAxis)
         {
-            this.sixAxis = sixAxis ?? throw new ArgumentNullException(nameof(sixAxis));
+            ArgumentNullException.ThrowIfNull(sixAxis);
+            this.sixAxis = sixAxis;
         }
 
         // デッドゾーンは、試験表示（Controller Readings）が変更を受けるため、変わったときに通知する

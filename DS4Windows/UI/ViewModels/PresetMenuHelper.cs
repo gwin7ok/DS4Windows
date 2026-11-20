@@ -77,7 +77,8 @@ namespace DS4Windows.UI.ViewModels
         public PresetMenuHelper(int device, IProfileSettingsService profileSettings)
         {
             deviceNum = device;
-            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            this.profileSettings = profileSettings;
         }
 
         public ControlSelection PresetTagIndex(DS4Controls control)

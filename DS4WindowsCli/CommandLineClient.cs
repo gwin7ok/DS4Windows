@@ -35,8 +35,10 @@ namespace DS4Windows.Cli
 
         public CommandLineClient(IpcMemoryMap ipc, TextWriter output)
         {
-            _ipc = ipc ?? throw new ArgumentNullException(nameof(ipc));
-            _output = output ?? throw new ArgumentNullException(nameof(output));
+            ArgumentNullException.ThrowIfNull(ipc);
+            _ipc = ipc;
+            ArgumentNullException.ThrowIfNull(output);
+            _output = output;
         }
 
         /// <summary>コマンドを送る。終了コード（<see cref="ExitOk"/> など）を返す。</summary>

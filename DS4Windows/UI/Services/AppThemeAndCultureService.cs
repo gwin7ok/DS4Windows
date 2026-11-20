@@ -30,7 +30,8 @@ namespace DS4Windows.UI.Services
 
         public AppThemeAndCultureService(BackingStore store)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
+            ArgumentNullException.ThrowIfNull(store);
+            _store = store;
         }
 
         public event EventHandler ThemeChanged;

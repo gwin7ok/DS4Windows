@@ -27,6 +27,7 @@ namespace DS4WindowsTests
         /// <summary>撤去した型（単純名。どの名前空間にもないこと）。</summary>
         private static readonly string[] RemovedTypeNames =
         {
+            "ObservableObject",        // PhaseRV7-1（独自の変更通知の基底。CommunityToolkit.Mvvm の ObservableObject へ）
             "TriggerType",        // PhaseRV6-5（参照 0 の列挙型）
             "MappingDoneEventArgs",        // PhaseRV6-5（参照 0 の型）
             "BTOutputReportMethod",        // PhaseRV6-5（参照 0 の型）

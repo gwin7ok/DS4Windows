@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DS4Windows.Core.Model;
@@ -25,7 +26,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
 
-    public class SpecialActionItem : INotifyPropertyChanged
+    public class SpecialActionItem : ObservableObject
     {
         private bool active;
         private string actionName;
@@ -36,7 +37,6 @@ namespace DS4Windows.UI.ViewModels
 
         public bool IsMissing { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public SpecialActionItem(SpecialAction action, string actionName, int index)
         {
@@ -145,9 +145,5 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(string.Empty);
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

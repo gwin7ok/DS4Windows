@@ -17,8 +17,10 @@ namespace DS4Windows.Processing.Services.Devices
 
         public DeviceLayerSettings(IAppSettingsService appSettings, IProfileSettingsService profileSettings)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public bool UseMoonlight => _appSettings.UseMoonlight;

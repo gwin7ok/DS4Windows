@@ -15,8 +15,10 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public ProfileOutputBuilder(IProfileSwitcher profileSwitcher, IProfileSettingsService profileSettings, ISpecialActionRepository actionRepository = null, IMapping mapping = null)
         {
-            _profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSwitcher);
+            _profileSwitcher = profileSwitcher;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             _actionRepository = actionRepository;
             _mapping = mapping;
         }

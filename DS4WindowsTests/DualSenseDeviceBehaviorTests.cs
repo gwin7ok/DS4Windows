@@ -62,7 +62,7 @@ namespace DS4WindowsTests
             device.PostInit();
 
             var reports = new StringBuilder();
-            device.Report += (sender, args) => reports.AppendLine(Snapshot(sender.getCurrentStateRef()));
+            device.Report += (sender, args) => reports.AppendLine(Snapshot(sender.GetCurrentStateRef()));
             using var removed = new ManualResetEventSlim();
             device.Removal += (sender, args) => removed.Set();
 

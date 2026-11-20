@@ -16,7 +16,8 @@ namespace DS4Windows.Output.Services
 
         internal OutputSlotView(OutSlotDevice slot)
         {
-            _slot = slot ?? throw new ArgumentNullException(nameof(slot));
+            ArgumentNullException.ThrowIfNull(slot);
+            _slot = slot;
             slot.PermanentTypeChanged += (s, e) => PermanentTypeChanged?.Invoke(this, e);
             slot.CurrentInputBoundChanged += (s, e) => InputBoundChanged?.Invoke(this, e);
         }

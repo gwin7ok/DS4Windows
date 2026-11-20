@@ -22,10 +22,14 @@ namespace DS4Windows.Processing.Services.Conditioning
         public MouseConversionStage(IButtonMouseMovementCalculator buttonMouseMovement, IFlickStickProcessor flickStick,
             IMouseMotionQuantizer mouseMotionQuantizer, IGyroMouseStickBlender gyroMouseStickBlender)
         {
-            _buttonMouseMovement = buttonMouseMovement ?? throw new ArgumentNullException(nameof(buttonMouseMovement));
-            _flickStick = flickStick ?? throw new ArgumentNullException(nameof(flickStick));
-            _mouseMotionQuantizer = mouseMotionQuantizer ?? throw new ArgumentNullException(nameof(mouseMotionQuantizer));
-            _gyroMouseStickBlender = gyroMouseStickBlender ?? throw new ArgumentNullException(nameof(gyroMouseStickBlender));
+            ArgumentNullException.ThrowIfNull(buttonMouseMovement);
+            _buttonMouseMovement = buttonMouseMovement;
+            ArgumentNullException.ThrowIfNull(flickStick);
+            _flickStick = flickStick;
+            ArgumentNullException.ThrowIfNull(mouseMotionQuantizer);
+            _mouseMotionQuantizer = mouseMotionQuantizer;
+            ArgumentNullException.ThrowIfNull(gyroMouseStickBlender);
+            _gyroMouseStickBlender = gyroMouseStickBlender;
         }
 
         public double CalculateButtonMouseMovement(int device, DS4Controls control, int mnum, ControllerState cState,

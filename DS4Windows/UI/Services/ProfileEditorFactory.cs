@@ -20,11 +20,16 @@ namespace DS4Windows.UI.Services
         public ProfileEditorFactory(IAppSettingsService appSettings, IControllerReadingsSource readings,
             IProfileEditViewModelFactory viewModelFactory, IActionViewModelFactory actionViewModelFactory, ProfileEditorBackend backend)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _readings = readings ?? throw new ArgumentNullException(nameof(readings));
-            _actionViewModelFactory = actionViewModelFactory ?? throw new ArgumentNullException(nameof(actionViewModelFactory));
-            _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            _backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(readings);
+            _readings = readings;
+            ArgumentNullException.ThrowIfNull(actionViewModelFactory);
+            _actionViewModelFactory = actionViewModelFactory;
+            ArgumentNullException.ThrowIfNull(viewModelFactory);
+            _viewModelFactory = viewModelFactory;
+            ArgumentNullException.ThrowIfNull(backend);
+            _backend = backend;
         }
 
         public ProfileEditor CreateProfileEditor(int targetDevice, IEditorWindowFactory editors)

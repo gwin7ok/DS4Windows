@@ -50,7 +50,7 @@ namespace DS4WindowsTests
                 LX = (byte)random.Next(256), LY = (byte)random.Next(256),
                 RX = (byte)random.Next(256), RY = (byte)random.Next(256),
             };
-            state.calculateStickAngles();
+            state.CalculateStickAngles();
             fields = new ControllerStateFieldMapping();
             for (int i = 0; i < fields.buttons.Length; i++)
             {
