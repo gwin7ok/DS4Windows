@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,10 +9,9 @@ using DS4Windows.Processing;
 using DS4Windows.Processing.Actions;
 using DS4Windows.Processing.Touchpad;
 
-namespace StandaloneTests
+namespace DS4WindowsTests
 {
-    [TestClass]
-    public class MappingControllerDisposeBehaviorTests
+        public class MappingControllerDisposeBehaviorTests
     {
         // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
         // Phase13-Step4: 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。
@@ -51,7 +50,7 @@ namespace StandaloneTests
         private static System.Collections.IDictionary ControllersOf(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry registry)
         {
             var field = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.IsNotNull(field, "Could not find _controllers field via reflection");
+            Assert.NotNull(field);
             return field.GetValue(registry) as System.Collections.IDictionary;
         }
 
@@ -89,7 +88,7 @@ namespace StandaloneTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ClearDeviceState_UsesDispose_FromFactoryCreatedControllers()
         {
             int device = 7;
@@ -105,19 +104,19 @@ namespace StandaloneTests
                 // capture instances
                 var dict = ControllersOf(provider.Registry);
                 var instances = dict.Values.Cast<object>().Where(v => v is TestKeyButtonActionController).Cast<TestKeyButtonActionController>().ToArray();
-                Assert.IsTrue(instances.Length >= 1);
+                Assert.True(instances.Length >= 1);
 
                 // act
                 manager.ClearDeviceState(device);
 
                 // assert: each instance was disposed and mapping entries removed
-                foreach (var inst in instances) Assert.IsTrue(inst.WasDisposed, "Expected controller disposed");
+                foreach (var inst in instances) Assert.True(inst.WasDisposed, "Expected controller disposed");
                 var keysAfter = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
-                Assert.AreEqual(0, keysAfter.Length);
+                Assert.Empty(keysAfter);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ClearDeviceState_Continues_WhenDisposeThrows()
         {
             int device = 8;
@@ -146,9 +145,9 @@ namespace StandaloneTests
                 manager.ClearDeviceState(device);
 
                 // assert: mapping entries cleared and normal controller disposed (throwing one may have thrown but should not block)
-                Assert.IsTrue(normal.WasDisposed, "Expected normal controller disposed even if another threw");
+                Assert.True(normal.WasDisposed, "Expected normal controller disposed even if another threw");
                 var keysAfter = dict.Keys.Cast<object>().Select(k => k.ToString()).Where(s => s.StartsWith(device + ":")).ToArray();
-                Assert.AreEqual(0, keysAfter.Length);
+                Assert.Empty(keysAfter);
             }
         }
     }
