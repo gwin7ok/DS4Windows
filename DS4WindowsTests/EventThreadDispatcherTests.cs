@@ -5,7 +5,7 @@ using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {
-    /// <summary>Phase13-Step3: 旧 <c>ControlService</c> のイベントスレッド（生成・実行・破棄）の特性化。</summary>
+    /// <summary>旧 <c>ControlService</c> のイベントスレッド（生成・実行・破棄）の特性化。</summary>
     public class EventThreadDispatcherTests
     {
         [Fact]

@@ -14,7 +14,7 @@ namespace DS4WindowsTests
     // 実運用の入力評価（MapCustomAction）自体を直接駆動するテストは困難だが、本Issueの是正対象である
     // 抑制の集合と CheckForSpecialActionSuppression（private、reflection経由で呼び出す）の
     // 2点に絞って、抑制ロジックそのものの正しさを検証する。
-    // Phase8-Step4 W4: 抑制の集合の所有が Mapping（suppressedTriggerButtons）からエンジンに移ったため、エンジン経由で操作する。
+    // 抑制の集合の所有が Mapping（suppressedTriggerButtons）からエンジンに移ったため、エンジン経由で操作する。
     public class MappingSpecialActionSuppressionTests
     {
         // 他のテストと状態を共有しない、独立のエンジンと Mapping の instance を使う
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SuppressedTriggerButtons_AreHeldPerDevice_AndOwnedByTheEngine()
         {
-            // 抑制の集合はエンジンの所有（デバイスごと）。Mapping は集合を持たない（Phase8-Step4 W4）
+            // 抑制の集合はエンジンの所有（デバイスごと）。Mapping は集合を持たない
             Assert.Null(typeof(Mapping).GetField("suppressedTriggerButtons", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
 
             Engine.AddSuppressed(TestDevice, new[] { DS4Controls.L2 });

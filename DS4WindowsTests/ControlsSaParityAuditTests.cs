@@ -14,7 +14,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10 完了後の点検（2026-10-22）: Controls と SA の両方で選べる割り当て先が、どちらの側でも、実行時の束縛（出力）になること（片側の実装漏れがないこと）。
+    /// Controls と SA の両方で選べる割り当て先が、どちらの側でも、実行時の束縛（出力）になること（片側の実装漏れがないこと）。
     /// 出力ピッカーで選べる X360 の出力先（Toggle あり・なし）と、種別（Key、Macro、Program、Profile、Disconnect BT、Check Battery、Multi-action、較正 2 種）を総当たりで調べる。
     /// SA の出力先のうち、パッドのボタンは <c>PressX360</c> が DS4 の同じ添字へ書くため、Controls の写し（<c>reverseX360ButtonMapping</c>）と同じ出力先になることも調べる。
     /// </summary>
@@ -93,7 +93,7 @@ namespace DS4WindowsTests
         [InlineData(X360Controls.DpadDown)]
         [InlineData(X360Controls.DpadLeft)]
         [InlineData(X360Controls.Guide)]
-        [InlineData(X360Controls.Back)]   // Phase10 完了後の点検: SA が別のボタン（TouchLeft・TouchUpper）へ書く不具合だった。PressX360 が変換表を使うよう直した
+        [InlineData(X360Controls.Back)]   // SA が別のボタン（TouchLeft・TouchUpper）へ書く不具合だった。PressX360 が変換表を使うよう直した
         [InlineData(X360Controls.Start)]
         public void ThePadButtonTargetOfTheSa_IsTheSameDs4OutputAsTheControlsMapping(X360Controls target)
         {

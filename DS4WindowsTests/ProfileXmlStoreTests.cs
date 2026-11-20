@@ -74,7 +74,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructor_WithNullBackingStore_Throws()
         {
-            // Phase7-Step3 W1: Global.store へのフォールバックを廃止した
+            // Global.store へのフォールバックを廃止した
             Assert.Throws<System.ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService())), TestRepositoryFactory.CreateAppSettingsXml(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService())), TestRepositoryFactory.CreateLegacyProfileXml(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()))));
         }
     }

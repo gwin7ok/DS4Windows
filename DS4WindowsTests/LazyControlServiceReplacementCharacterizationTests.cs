@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step6 6-a: <c>Func&lt;ControlService&gt;</c> の撤廃（6-b 以降）の前に、置き換える側の挙動を固定する特性テスト。
+    /// <c>Func&lt;ControlService&gt;</c> の撤廃（6-b 以降）の前に、置き換える側の挙動を固定する特性テスト。
     /// 入口は、置き換え前の経路（<c>ControlService</c> 経由）。6-b で入口を新しい経路に替えても、同じ結果になることを確かめる。
     /// 書けなかったもの: <c>setRumble</c> と <c>RumbleAutostopTime</c> の実デバイスへの反映は、<c>InputDeviceCore</c> の内部状態（<c>testRumble</c>、タイマー）が
     /// 未初期化のテスト用デバイスでは動かないため、6-b では <c>IDeviceRumbleService</c> の差し替えで検査する。

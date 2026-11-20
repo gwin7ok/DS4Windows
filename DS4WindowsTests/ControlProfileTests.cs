@@ -22,7 +22,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W6（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §5）: 第 4 群（Load Profile）を、Controls で保存・実行・編集できるようにした縦通しの検査。
+    /// 第 4 群（Load Profile）を、Controls で保存・実行・編集できるようにした縦通しの検査。
     /// builder の合成 <see cref="SpecialAction"/>（切り替え先、離したら戻る）、実際の切り替えと復帰、編集対象の往復（見つからない名前を含む）、Save の可否、保存と再読み込み、
     /// プロファイルの名前変更への追従（全プロファイルの <c>&lt;Control&gt;&lt;Special&gt;</c> の書き換え）。
     /// </summary>
@@ -284,7 +284,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, rig.LoadProfile.ProfileIndex);
         }
 
-        // Phase10-Step4c W3: 以前ここにあった CanWrite（Load Profile の未選択で Save を止める暫定）は、種別ごとの入力の IsValid（偽を返す）に置き換えた。
+        // 以前ここにあった CanWrite（Load Profile の未選択で Save を止める暫定）は、種別ごとの入力の IsValid（偽を返す）に置き換えた。
         // 検証は ValidationTableTests が持つ
 
         [Fact]

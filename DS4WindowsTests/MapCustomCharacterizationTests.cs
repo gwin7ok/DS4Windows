@@ -5,7 +5,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W1（Q1＝A）: <c>Mapping.MapCustom</c>（通常入力の評価の本体）の特性化テスト。
+    /// <c>Mapping.MapCustom</c>（通常入力の評価の本体）の特性化テスト。
     /// 現在の挙動を固定することが目的で、Step7〜9 で状態の置き場所や呼び出し元を変えても、入力 → 出力が変わらないことを保証する。
     /// 対象: 既定（素通し）、ボタン → ボタン、軸の向き → ボタン、トリガー → ボタン、ボタン → マウスボタン。
     /// 範囲外: ボタン → キー（<c>ActionManager</c> 経由。Phase8 の対象）、マクロ、ジャイロ、フリックスティック、タッチ（実機確認 U-17）。

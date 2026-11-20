@@ -7,7 +7,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Plan.md §4）: 共通の割り当て定義（<see cref="AssignmentDefinition"/>）の型の検査。
+    /// 共通の割り当て定義（<see cref="AssignmentDefinition"/>）の型の検査。
     /// I1 は型の追加だけで、既存の経路は使っていない（I3 で接続する）。
     /// </summary>
     public class AssignmentDefinitionTests

@@ -7,7 +7,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step2-5 (PR-5): 入力ループ（On_Report）の最頻度経路で参照するために追加・利用するシムが、
+    /// 入力ループ（On_Report）の最頻度経路で参照するために追加・利用するシムが、
     /// Global（m_Config / BackingStore）と完全に同一の実体・同一の値を返すことを検証する。
     /// 各テストは変更した Global 状態を必ず元に戻す。
     /// </summary>
@@ -191,7 +191,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnableTouchToggle_And_RumbleBoost_GettersMatchArrays()
         {
-            // Phase6-Step12 Wave 2: 旧シム（Global.getEnableTouchToggle／getRumbleBoost ほか）を削除したため、
+            // 旧シム（Global.getEnableTouchToggle／getRumbleBoost ほか）を削除したため、
             // サービスのメソッドと配列が一致することを確認する。
             const int slot = 0;
 

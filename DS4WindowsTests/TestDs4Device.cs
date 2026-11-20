@@ -5,7 +5,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7b-W1: テスト用の <see cref="InputDeviceCore"/>。実機（HID）を持たずに、デバイスの「前回のレポート」だけを返す。
+    /// テスト用の <see cref="InputDeviceCore"/>。実機（HID）を持たずに、デバイスの「前回のレポート」だけを返す。
     /// 旧 <c>MapCustomAction</c> の MultiAction の枝が <c>d.GetPreviousStateRef()</c> だけを使うため（押下・解放のエッジの判定）。
     /// 作成は <c>RuntimeHelpers.GetUninitializedObject</c> で行い、コンストラクターは実行しない（<c>MappingCharacterizationScope</c> と同じ方式）。
     /// </summary>

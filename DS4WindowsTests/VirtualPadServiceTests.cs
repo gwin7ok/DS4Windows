@@ -11,13 +11,13 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-4（docs-forDIMG/MadeByAgent/Archive/Phase9-E-Plan.md）: <see cref="VirtualPadService"/> の特性化テスト。
+    /// <see cref="VirtualPadService"/> の特性化テスト。
     /// ViGEm の本物（仮想パッドの作成、振動・ライトバーの戻り）は、ViGEmBus とコントローラーが必要なため、台帳 §36 の実機確認で担保する。
     /// ここでは、ViGEm なしで確かめられる範囲（窓口、事前条件による何もしない経路、ホストへの委譲、コンストラクター）を調べる。
     /// </summary>
     public class VirtualPadServiceTests
     {
-        // Phase13-Step3: 旧 IVirtualPadHost の偽実装を、イベントスレッドと振動の偽実装へ分けた
+        // 旧 IVirtualPadHost の偽実装を、イベントスレッドと振動の偽実装へ分けた
         private sealed class RecordingHost : IEventThreadDispatcher
         {
             public readonly List<Action> Queued = new List<Action>();
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         {
             return new VirtualPadService(TestHost.GetService<IEnvironmentService>(),
                 settings ?? TestHost.GetService<IProfileSettingsService>(),
-                TestHost.GetService<IOutputDeviceTypeState>(),   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
+                TestHost.GetService<IOutputDeviceTypeState>(),   // 旧 Func<IOutputSlotService>
                 new NoControllers(),
                 host ?? new RecordingHost(), rumble ?? new NoRumble(), backend ?? new FakeVirtualPadBackend(),
                 TestOutputCartridges.For(settings ?? TestHost.GetService<IProfileSettingsService>(), rumble ?? new NoRumble()));
@@ -197,7 +197,7 @@ namespace DS4WindowsTests
         {
             IEnvironmentService env = TestHost.GetService<IEnvironmentService>();
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
-            IOutputDeviceTypeState slots = new DS4Windows.Output.Services.OutputDeviceTypeState();   // Phase13-Step7 7-c: 旧 Func<IOutputSlotService>
+            IOutputDeviceTypeState slots = new DS4Windows.Output.Services.OutputDeviceTypeState();   // 旧 Func<IOutputSlotService>
             IDeviceStateAccessor accessor = new NoControllers();
             IEventThreadDispatcher host = new RecordingHost();
             IDeviceRumbleService rumble = new NoRumble();

@@ -61,7 +61,7 @@
 | TODO／FIXME／HACK | 44（原則4 の TODO。**消さない**） |
 | XML コメントに Phase 名を持つテストのファイル | 415 |
 
-**RV8 後（2026-11-20）**: `Phase<数字>` を含む行 258（含むファイル 127／全 986 の 13%）、`//` コメントに「旧」を含む行 468、TODO／FIXME／HACK 44（変化なし）。残る `Phase<数字>` の行の多くは、実在するテストのクラス名（例: `Phase9EOscServiceDifferentialTests`）を指す参照で、RV8-5 のテストの改名で減らす。`CodeHealthRatchetTests.PhaseReferencesInCommentsDoNotGrow` が 258 で凍結している。
+**RV8 後（2026-11-20）**: `Phase<数字>` を含む行 225（RV8-5 の後。RV8-4 の直後は 258）、`//` コメントに「旧」を含む行 468、TODO／FIXME／HACK 44（変化なし）。残る `Phase<数字>` の行の多くは、実在するテストのクラス名（例: `Phase9EOscServiceDifferentialTests`）を指す参照で、RV8-5 のテストの改名で減らす。`CodeHealthRatchetTests.PhaseReferencesInCommentsDoNotGrow` が 258 で凍結している。
 
 ## 5. インターフェースの実装数（`iface`）
 

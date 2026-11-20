@@ -7,7 +7,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step8 8-d: サービスを遅延で取る <c>Func&lt;I…&gt;</c> を、許可リスト（型 × 利用者のファイル × 理由）で固定する。増えたら失敗する。
+    /// サービスを遅延で取る <c>Func&lt;I…&gt;</c> を、許可リスト（型 × 利用者のファイル × 理由）で固定する。増えたら失敗する。
     /// 残るのは、依存グラフに本物の循環があるもの（LazyDependencyResolutionGraphProbeTests で確認）だけ:
     /// <list type="bullet">
     /// <item><c>Func&lt;IMapping&gt;</c> ← <c>DefaultActionManager</c>: <c>Mapping</c> → … → <c>ActionManager</c>（<c>DefaultActionManager</c>）。直接受けると循環する。
@@ -19,7 +19,7 @@ namespace DS4WindowsTests
     /// </summary>
     public class FuncRatchetGuardTests
     {
-        // Phase14d-Step3: Func<ControlService>（I で始まらない、Phase13-Step6 で撤廃した遅延取得）も対象にした（旧 Phase13Step5FuncRemovalGuardTests の検査を引き継ぐ。許可リストにないので、現れたら失敗する）
+        // Func<ControlService>（I で始まらない、Phase13-Step6 で撤廃した遅延取得）も対象にした
         private static readonly Regex LazyService = new Regex(@"Func<\s*[\w.]*\b(I[A-Z]\w*|ControlService)\s*>");
 
         // ファイル名 → そのファイルに現れてよい遅延取得の型
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         {
             ("DefaultActionManager.cs", "IMapping"),            // 本物の循環（Mapping → … → ActionManager）
             ("ProfileApplicationService.cs", "IActionBindingBuilder"),   // 本物の循環（ActionBindingBuilder → … → ProfileApplicationService）
-            ("ServiceRegistration.Processing.cs", "IMapping"),             // 上の 2 つの登録（Phase14c-Step6: 第2層の登録のファイル）
+            ("ServiceRegistration.Processing.cs", "IMapping"),             // 上の 2 つの登録
             ("ServiceRegistration.Processing.cs", "IActionBindingBuilder"),
         };
 

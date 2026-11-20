@@ -13,13 +13,13 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M1（docs-forDIMG/MadeByAgent/Archive/Phase9-MapCustom-Plan.md §3）: <see cref="SyntheticInputCommitter"/>（旧 <c>Mapping.Commit</c>）の差分テスト。
+    /// Phase9 MapCustom の分割 M1（docs-forDIMG/MadeByAgent/Archive/Phase9-MapCustom-Plan.md §3）: <see cref="SyntheticInputCommitter"/>の差分テスト。
     /// 旧 <c>Commit</c> の逐語コピー（<c>pressagain</c> の判定を除く。常に false だった）と、同じクリックの列で、記録された出力（ボタン、拡張ボタン、ホイール、Sync）が一致することを確かめる。
     /// 時刻は、両方に同じ偽の時計を渡して決定的にする（ホイールの繰り返しは 150ms）。
     /// </summary>
     public class MapCustomCommitterDifferentialTests
     {
-        // ---- 旧 Mapping.Commit の逐語コピー（旧 oldnow／wheel は、この中が持つ。コメントは省略）----
+        // ---- 旧 Mapping.Commit の逐語コピー----
         private sealed class OldCommitter
         {
             private readonly SyntheticInputState _syntheticInput;
@@ -293,7 +293,7 @@ namespace DS4WindowsTests
             int checkedCount = 0;
 
             // 全種類は 2 ティックまで（11^4 通り）、主要な 6 種類は 3 ティックまで（6^6 通り）。組み合わせの爆発を避ける
-            // Phase14d-Step4: 3 ティックの列は 5 つおきに選ぶ（46,656 → 9,332 通り。全体で約 5.8 秒 → 約 2 秒）。5 は 6 と互いに素なので、
+            // 3 ティックの列は 5 つおきに選ぶ（46,656 → 9,332 通り。全体で約 5.8 秒 → 約 2 秒）。5 は 6 と互いに素なので、
             // どの位置（ティック × デバイス）でも 6 種類の押し方がすべて現れ、ホイールの繰り返し（150ms。3 ティック目の 200ms で起きる）の列も残る
             foreach (var (length, masks, stride) in new[] { (1, allMasks, 1), (2, allMasks, 1), (3, fewMasks, 5) })
             {

@@ -13,7 +13,7 @@ namespace DS4WindowsTests
     {
         private static string LoadSource()
         {
-            // Phase8-Step4b W10: ホバーの表（HoverRow の配列）は、同じ部分クラスの別ファイル（ProfileEditor.HoverTables.cs）へ移した
+            // ホバーの表（HoverRow の配列）は、同じ部分クラスの別ファイル（ProfileEditor.HoverTables.cs）へ移した
             string path = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             string tablesPath = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.HoverTables.cs");
             if (path == null || tablesPath == null) return null;

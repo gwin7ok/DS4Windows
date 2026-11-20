@@ -6,7 +6,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step1 W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step1-Plan.md §3.1・§5）: <see cref="MacroPlaybackOptions"/> の単体テスト。
+    /// <see cref="MacroPlaybackOptions"/> の単体テスト。
     /// <c>DS4KeyType</c> との相互変換が、<c>RepeatMacro</c>／<c>ScanCode</c> のビットだけを操作し、ほかのビットを保つこと。
     /// </summary>
     public class MacroPlaybackOptionsTests

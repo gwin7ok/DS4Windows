@@ -192,7 +192,7 @@ namespace DS4Windows.UI.ViewModels
                 // 「OFF のとき数値が保存されない」のは仕様。OFF のときは、数値を入力する行
                 // （MainWindow.xaml の checkEveryOptionsStack）ごと IsEnabled で無効になり、利用者は数値を操作できない。
                 // ここで何もしないのは、無効な入力欄のバインディングが値を書き戻して、更新確認を ON に戻すのを防ぐ安全弁。
-                // 意図は Phase11W5CheckEveryTests で固定している。
+                // 意図は 対応するテスト で固定している。
                 if (!_appSettings.CheckUpdateStartupEnabled)
                 {
                     return;

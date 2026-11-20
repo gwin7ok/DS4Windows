@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step3 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step3-Plan.md §2.3）: <see cref="ComboTriggerInputAction"/> のテスト。
+    /// <see cref="ComboTriggerInputAction"/> のテスト。
     /// 時刻は <see cref="TriggerInput"/> に注入し、実時間のスリープは使わない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

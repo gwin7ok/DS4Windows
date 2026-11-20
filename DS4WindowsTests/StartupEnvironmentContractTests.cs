@@ -10,12 +10,12 @@ using DS4Windows.Core.Platform;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-1-1: グループ1（起動・環境系）の View／ViewModel の Global 直接参照解消に先立って追加した契約が、
+    /// グループ1（起動・環境系）の View／ViewModel の Global 直接参照解消に先立って追加した契約が、
     /// いずれも <c>Global</c> と同じ値・同じ動作であること（薄い委譲）を検証する。
     /// - IEnvironmentService: IsWin10OrGreater／IsWin8OrGreater／IsFakerInputInstalled／RefreshViGEmBusInfo
     /// - IPathService: SetSaveLocation（Global.SaveWhere。AppDataPath の setter とは別物）／CreateEmptyProfilesFile（Global.SaveDefault）
     /// - IAppSettingsService: LastVersionChecked／SetCulture
-    /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Status.md §6.4-1）。
+    /// Global 状態を変更するテストは、変更を必ず元に戻す。
     /// </summary>
     [Xunit.Collection(SharedHostStateCollection.Name)]
     public class StartupEnvironmentContractTests
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnvironmentService_WindowsVersionChecks_MatchLegacyFormula()
         {
-            // Phase7-Step4 W1: 旧 Global.IsWin10OrGreater／IsWin8OrGreater は EnvironmentService へ移した。旧実装と同じ式で照合する
+            // 旧 Global.IsWin10OrGreater／IsWin8OrGreater は EnvironmentService へ移した。旧実装と同じ式で照合する
             IEnvironmentService service = new EnvironmentService();
             var os = Environment.OSVersion.Version;
             Assert.Equal(os.Major >= 10, service.IsWin10OrGreater());
@@ -35,7 +35,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnvironmentService_IsFakerInputInstalled_IsStableAcrossInstances()
         {
-            // Phase7-Step4 W1: 調べ物は EnvironmentService が持つ。どのインスタンスでも同じ結果を返す
+            // 調べ物は EnvironmentService が持つ。どのインスタンスでも同じ結果を返す
             IEnvironmentService service = new EnvironmentService();
             Assert.Equal(new EnvironmentService().IsFakerInputInstalled(), service.IsFakerInputInstalled());
         }
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
         [Fact]
         public void EnvironmentService_RefreshViGEmBusInfo_SharesStateAcrossInstances()
         {
-            // Phase7-Step4 W1: 状態は static。更新はどのインスタンスからでも、ほかのインスタンスに見える
+            // 状態は static。更新はどのインスタンスからでも、ほかのインスタンスに見える
             IEnvironmentService service = new EnvironmentService();
             service.RefreshViGEmBusInfo();
             Assert.Equal(new EnvironmentService().IsViGEmBusInstalled(), service.IsViGEmBusInstalled());
@@ -64,7 +64,7 @@ namespace DS4WindowsTests
         [Fact]
         public void PathService_SetSaveLocation_UpdatesGlobalAppDataPath_AndAppDataPathReflectsIt()
         {
-            IPathService service = new PathService(config: TestGlobals.Store); // Phase7-Step10d W5: 保存場所の決定には BackingStore が必要
+            IPathService service = new PathService(config: TestGlobals.Store); // 保存場所の決定には BackingStore が必要
             string original = TestGlobals.AppDataPath;
             // Global.SaveWhere は appdatapath のほかに、設定ファイル 4 つのパス（BackingStore）も書き換える。
             // 他のテスト（ProfileRepositoryTests など）へ影響を残さないよう、4 つとも元の値へ戻す。
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
                 string viaService = Path.Combine(dir, "service.xml");
                 string viaGlobal = Path.Combine(dir, "second.xml");
 
-                // Phase7-Step4 W3: 旧 Global.SaveDefault は PathService.CreateEmptyProfilesFile へ移した。2 つのインスタンスが同じ XML を作る
+                // 旧 Global.SaveDefault は PathService.CreateEmptyProfilesFile へ移した。2 つのインスタンスが同じ XML を作る
                 Assert.True(service.CreateEmptyProfilesFile(viaService));
                 Assert.True(new PathService().CreateEmptyProfilesFile(viaGlobal));
 

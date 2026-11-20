@@ -11,9 +11,9 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8c-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8c-Plan.md §5）: Controls タブの Macro（<c>ProcessControlSettingAction</c> の Macro の枝）の特性化。
+    /// Controls タブの Macro（<c>ProcessControlSettingAction</c> の Macro の枝）の特性化。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。W2 で新経路（SA の Macro の仕様に合わせた）が入り、
-    /// <b>承認済みの動作の変更</b>（Play Once の連続再実行を、不具合として 1 回だけに直す。Fresh-press ガードを SA と同じく見る）を、期待値として固定する（Phase8-Step8 8d: 旧経路は削除した）。
+    /// <b>承認済みの動作の変更</b>（Play Once の連続再実行を、不具合として 1 回だけに直す。Fresh-press ガードを SA と同じく見る）を、期待値として固定する。
     /// マクロは背景のタスクで再生されるため、実際に待つ（待ち時間に余裕を持たせる）。手順は { 65, 65 }（キー 65 を押して離す）。
     /// <b>押し続けたときの再実行の有無</b>など、読むだけでは断定できない挙動は、回数を <c>ITestOutputHelper</c> に出力して記録する（W2 で、SA の仕様に合わせたときの変更点を確定する材料）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。

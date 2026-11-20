@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step8: <c>ProfileEditor.xaml.cs</c> の Global 直接参照の解消を固定するソース走査ガード。
+    /// <c>ProfileEditor.xaml.cs</c> の Global 直接参照の解消を固定するソース走査ガード。
     /// 解消したグループを Step8-2 以降で順に <see cref="ResolvedMembers"/> へ追加していく
     /// （最終的に、定数［TEST_PROFILE_INDEX／ASSEMBLY_RESOURCE_PREFIX／RESOURCES_PREFIX］以外の
     /// <c>Global.</c> 参照が 0 件になる。docs-forDIMG/MadeByAgent/Archive/Phase6-Step8-Plan.md §0A.2）。
@@ -55,8 +55,8 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileEditor_ReceivesAppSettingsServiceByConstructor_AndMainWindowPassesIt()
         {
-            // Phase7-Step5 W5: 旧 AppHost.GetService の 4 件をコンストラクター引数に替えた
-            // Phase14d-Step3: 引数の並びは、ソースの文字列ではなくリフレクションで確かめる（書式に依存しない）
+            // 旧 AppHost.GetService の 4 件をコンストラクター引数に替えた
+            // 引数の並びは、ソースの文字列ではなくリフレクションで確かめる（書式に依存しない）
             Type[] ps = typeof(DS4Windows.UI.ProfileEditor).GetConstructors().Single().GetParameters().Select(p => p.ParameterType).ToArray();
             Assert.Equal(typeof(int), ps[0]);
             Assert.Equal(typeof(DS4Windows.UI.Abstractions.IEditorLayoutSettings), ps[1]);

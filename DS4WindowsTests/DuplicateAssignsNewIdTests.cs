@@ -12,7 +12,7 @@ using DS4Windows.Core.Platform;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6 K-W6-8: アプリの「複製（Duplicate）」は、ファイルをコピーするだけで、コピー側が元と同じ ProfileId のままだった（再起動の補正まで）。
+    /// アプリの「複製（Duplicate）」は、ファイルをコピーするだけで、コピー側が元と同じ ProfileId のままだった（再起動の補正まで）。
     /// 複製の直後に、コピー側へ新しい ID を振る（<see cref="IProfileIdentityService.AssignNewId"/>）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

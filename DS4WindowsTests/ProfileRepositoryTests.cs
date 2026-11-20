@@ -6,7 +6,7 @@ using DS4Windows.Input;
 
 namespace DS4WindowsTests
 {
-    // 共有のアプリデータのパス（PathService の静的な状態）を書き換える/読むテストが並行すると、一時フォルダーが消えて失敗する（Phase8-Step4 W5 で観測）ため、同じコレクションで直列に実行する
+    // 共有のアプリデータのパス（PathService の静的な状態）を書き換える/読むテストが並行すると、一時フォルダーが消えて失敗するため、同じコレクションで直列に実行する
     [Xunit.Collection(SharedHostStateCollection.Name)]
     public class ProfileRepositoryTests
     {
@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             public bool LoadAppSettingsXml() => true;
             public bool SaveAppSettingsXml() => true;
 
-            // Phase6-Step2-2 (PR-2) / Phase6-Step3-1: IProfileXmlStore の拡張に追随（本テストでは使用しない）
+            // IProfileXmlStore の拡張に追随（本テストでは使用しない）
             public bool LoadControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;
             public bool SaveControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;
         }
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ApplyAndRestoreProfileDirect_ShouldUpdateTempProfileState()
         {
-            // Phase6-Step12 Wave 3: Global.ProfileRepositoryInstance（旧シム）を削除したため、リポジトリを直接使う。
+            // Global.ProfileRepositoryInstanceを削除したため、リポジトリを直接使う。
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
             var repository = TestRepositoryFactory.CreateProfileRepository(settings);
 
@@ -151,7 +151,7 @@ namespace DS4WindowsTests
             Assert.False(result2);
         }
 
-        // Phase5-Step13-2で追加: ProfilePath等はGlobal(m_Config)への薄い公開アクセサであり、
+        // ProfilePath等はGlobal(m_Config)への薄い公開アクセサであり、
         // 同一配列の参照であることを検証する(状態複製がないことの確認)。
         [Fact]
         public void ProfilePath_ShouldReferenceSameArrayAsGlobal()

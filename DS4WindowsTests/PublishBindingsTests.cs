@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step5 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step5-Plan.md §3.3・§4）: プロファイルの適用 → 束縛の組み立て → 登録簿への差し替えの結合を確かめる。
+    /// プロファイルの適用 → 束縛の組み立て → 登録簿への差し替えの結合を確かめる。
     /// 適用サービスには偽の登録簿・偽のビルダーを渡して呼び出しを数え、実ホストでは、移行対象が空／一部のときの登録簿の中身を確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
 
         private readonly string _dir;
         private readonly string _originalAppData;
-        private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 ControlService（プロファイル読込の窓口）
+        private readonly IProfileLoadTarget _control;   // 旧 ControlService（プロファイル読込の窓口）
         private readonly IProfileSettingsService _settings;
         private readonly ProfileRepository _repo;
         private readonly BackingStore _store;
@@ -231,7 +231,7 @@ namespace DS4WindowsTests
         public void TheSource_PublishesAfterTheCleanup_AndThePipePathPublishesAfterALoadSuccess()
         {
             string service = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs");
-            string window = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
+            string window = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");   // IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
             if (service == null || window == null) return;
 
             string text = File.ReadAllText(service);

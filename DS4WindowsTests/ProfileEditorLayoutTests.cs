@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3b W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3b-Plan.md §2・§5）: <c>ProfileEditor.xaml</c> の画面構成の特性化（ソース走査）。製品コードは変えない。
+    /// <c>ProfileEditor.xaml</c> の画面構成の特性化（ソース走査）。製品コードは変えない。
     /// 左ペイン（<c>sidebarTabControl</c>）と右ペイン（<c>profileSettingsTabCon</c>）のタブの構成、右ペインのタブが依存するリソース、
     /// 右ペインのタブの番号・選択に依存するコードがないこと、Axis Config の 4 つの入口（Outer Bind／Full Pull）の構成、Controls タブの行の構成を固定する。
     /// W1（Touchpad・ジャイロのタブの移動。実施済み）で、左右のタブの構成、リソース、DataContext の検査を、移動後の構成へ更新した。
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
             XDocument xaml = LoadXaml(ProfileEditorXaml);
             if (xaml == null) return;
 
-            // Phase10-Step3b W1: Touchpad・ジャイロを、Special Actions の次へ移した（Controller Readings は、最後）
+            // Touchpad・ジャイロを、Special Actions の次へ移した（Controller Readings は、最後）
             Assert.Equal(new[] { "Controls", "specialActionsTab", "touchpadTab", "gyroTab", "contReadingsTab" }, TopLevelTabs(LeftPane(xaml)));
         }
 
@@ -104,7 +104,7 @@ namespace DS4WindowsTests
             Assert.Single(Regex.Matches(code, @"profileSettingsTabCon\.DataContext = profileSettingsVM;"));
             Assert.Single(Regex.Matches(code, @"profileSettingsTabCon\.DataContext = null;"));
 
-            // Phase10-Step3b W1: 左ペインへ移した 2 つのタブにも、同じ場所で、同じ設定・解除を行う（古い参照を残さない）
+            // 左ペインへ移した 2 つのタブにも、同じ場所で、同じ設定・解除を行う（古い参照を残さない）
             // ジャイロのタブの DataContext は、サブ ViewModel（profileSettingsVM.Gyro）
             foreach (var (tab, value) in new[] { ("touchpadTab", @"profileSettingsVM\.Touchpad"), ("gyroTab", @"profileSettingsVM\.Gyro") })
             {
@@ -178,7 +178,7 @@ namespace DS4WindowsTests
             XElement axis = XamlTestHelper.ChildElements(RightPane(xaml), "TabItem").First();
             Assert.Equal("AxisConfig", XamlTestHelper.Describe(axis));
 
-            // Phase10-Step3b W2: 入口のボタンは、Controls タブへ移した（割り当てエディターの入口を、すべて左ペインのタブのボタンにする）
+            // 入口のボタンは、Controls タブへ移した（割り当てエディターの入口を、すべて左ペインのタブのボタンにする）
             string[] values = XamlTestHelper.AllAttributeValues(axis).ToArray();
             Assert.DoesNotContain(values, v => v.Contains("StickOuterBindButton_Click"));
             Assert.DoesNotContain(values, v => v.Contains("TriggerFullPullBtn_Click"));
@@ -203,7 +203,7 @@ namespace DS4WindowsTests
             string code = Read("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (code == null) return;
 
-            // Axis Config の読み取り専用のラベルと、Controls タブの入口の横のラベル（Phase10-Step3b W2）。どちらも、同じ割り当て名を結ぶ
+            // Axis Config の読み取り専用のラベルと、Controls タブの入口の横のラベル。どちらも、同じ割り当て名を結ぶ
             // L2・R2 のラベルは TriggerSettingsPanel が持ち、編集画面は割り当ての一覧を渡して結ばせる
             Assert.Contains("triggersPanel.AssignFullPullAssociation(mappingListVM);", code);
             string panelCode = Read("DS4Windows/UI/TriggerSettingsPanel.xaml.cs");
@@ -230,21 +230,21 @@ namespace DS4WindowsTests
             XElement controls = XamlTestHelper.ChildElements(LeftPane(xaml), "TabItem").First();
             Assert.Equal("Controls", XamlTestHelper.Describe(controls));
 
-            // Phase10-Step3b W2（ユーザーの指示）: 4 つの入口は、専用のボタンではなく、下の文字の一覧に、ほかのボタンと同じ形式で加えた。
+            // 4 つの入口は、専用のボタンではなく、下の文字の一覧に、ほかのボタンと同じ形式で加えた。
             // 絵と一覧の構成（幅 470、行は Canvas［高さは下記］と一覧［*］の 2 つ）は、変えていない
             // 構造だけを確かめる。属性の並び・空白・改行・「/>」の前の空白は、XAML の整形で変わるため、固定しない
             XElement grid = XamlTestHelper.ChildElements(controls, "Grid").Single(g => XamlTestHelper.Attr(g, "Width") == "470");
             XElement rows = XamlTestHelper.PropertyElement(grid, "RowDefinitions");
             Assert.NotNull(rows);
             string[] heights = XamlTestHelper.ChildElements(rows, "RowDefinition").Select(r => XamlTestHelper.Attr(r, "Height")).ToArray();
-            Assert.Equal(new[] { "252", "*" }, heights);   // Phase9 UI 変更: 割り当て表示の下に余白（240 → 252）
+            Assert.Equal(new[] { "252", "*" }, heights);   // 割り当て表示の下に余白（240 → 252）
 
             // 絵の上のボタンは、コントローラーの図のコントロール（配置表から生成）。旧: Canvas
             XElement canvas = XamlTestHelper.ChildElements(grid, "ControllerVisualizerControl").Single();
             Assert.Equal("0", XamlTestHelper.Attr(canvas, "Grid.Row"));
             Assert.Equal("conCanvas", XamlTestHelper.NameOf(canvas));
 
-            XElement list = XamlTestHelper.ChildElements(grid, "ListView").Single();   // Phase9 UI 変更: 割り当て一覧は、2 列の表（ListView）
+            XElement list = XamlTestHelper.ChildElements(grid, "ListView").Single();   // 割り当て一覧は、2 列の表（ListView）
             Assert.Equal("1", XamlTestHelper.Attr(list, "Grid.Row"));
             Assert.Equal("mappingListBox", XamlTestHelper.NameOf(list));
 

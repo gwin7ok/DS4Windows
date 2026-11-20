@@ -70,7 +70,7 @@ namespace DS4WindowsTests
             var items = new TriggerCatalog().Items;
 
             Assert.Equal(51, items.Count);
-            // Phase9 UI 変更: Outer は、スティックの 4 方向の下（InputControlCatalog の並び）。末尾は Touch Ended
+            // Outer は、スティックの 4 方向の下（InputControlCatalog の並び）。末尾は Touch Ended
             Assert.Equal("Touch Ended", items[50].Name);
             Assert.Equal("LS Outer", items[items.ToList().FindIndex(i => i.Name == "Left Stick Right") + 1].Name);
             Assert.Equal("RS Outer", items[items.ToList().FindIndex(i => i.Name == "Right Stick Right") + 1].Name);

@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W5（Q1・Q3・Q5＝A）: プロファイル（旧形式の XML）の保存を <c>BackingStore</c> から <c>LegacyProfileXmlSerializer</c> へ移したことの回帰ガード。
+    /// プロファイルの保存を <c>BackingStore</c> から <c>LegacyProfileXmlSerializer</c> へ移したことの回帰ガード。
     /// 保存結果の同一性は <c>GoldenPersistenceTests</c>（プロファイルの既定／変化させた状態）と
     /// <c>ProfileLegacyXmlCompletenessTests</c> が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>

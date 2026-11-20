@@ -7,7 +7,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step4: 静的 <c>ActionManager</c>、<c>ServiceProviderHolder</c>、<c>ButtonSpecialActionOutput</c> を撤廃したことのガード。
+    /// 静的 <c>ActionManager</c>、<c>ServiceProviderHolder</c>、<c>ButtonSpecialActionOutput</c> を撤廃したことのガード。
     /// 型が存在しないこと、<c>DS4Windows/</c> に参照が残っていないこと、<c>AppHost</c> が <c>SetProvider</c> を呼ばないこと、
     /// 管理役の契約（<c>IsBeingTriggered</c>）を検査する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>

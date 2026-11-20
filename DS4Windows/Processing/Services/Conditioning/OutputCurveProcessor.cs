@@ -12,7 +12,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// 旧 <c>Mapping.SetCurveAndDeadzone</c> の左スティックの出力カーブとスクエアスティック、L2 の出力カーブを、そのまま移したもの
     /// （右スティックと R2 のコードは、名前以外は同じだったため、統合した。計算結果は変わらない）。
     /// スクエアスティックは、旧 <c>Mapping.DS4SquareStick</c>（デバイスごとの作業用オブジェクト）の計算を、ローカル変数で行う（割り当て 0。結果は同じ）。
-    /// 値の特性化は <c>Phase9A1SetCurveAndDeadzoneGoldenTests</c> が守る。
+    /// 値の特性化は 対応するテスト が守る。
     /// </summary>
     public sealed class OutputCurveProcessor : IOutputCurveProcessor
     {

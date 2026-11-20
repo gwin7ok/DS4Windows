@@ -5,7 +5,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 電池残量の一本化（案C）: 書き込みの入口は InputDeviceCore 基底の UpdateBattery／UpdateCharging、
+    /// 書き込みの入口は InputDeviceCore 基底の UpdateBattery／UpdateCharging、
     /// 通知のイベントは基底の 1 組だけ、読み手は一覧のモデルを経由せずデバイスから直接読む。
     /// </summary>
     public class BatteryUnificationTests

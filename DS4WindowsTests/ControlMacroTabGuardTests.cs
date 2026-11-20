@@ -42,7 +42,7 @@ namespace DS4WindowsTests
         [Fact]
         public void NoMode_CollapsesThem_SinceControlsCanSaveThemNow()
         {
-            // Phase10-Step4 W3: Controls にも保存できるようになったため、Controls のモードでも隠さない（Step3 W3 までは、保存する場所がなく、隠していた）
+            // Controls にも保存できるようになったため、Controls のモードでも隠さない（Step3 W3 までは、保存する場所がなく、隠していた）
             string source = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
             if (source == null)
             {

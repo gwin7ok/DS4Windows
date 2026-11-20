@@ -10,7 +10,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step4-5: `Mouse` が、コンストラクタで受け取った `IProfileSettingsService`／`IVirtualKBM` を
+    /// `Mouse` が、コンストラクタで受け取った `IProfileSettingsService`／`IVirtualKBM` を
     /// 内部の `MouseCursor`／`MouseWheel` へ同一インスタンスのまま伝搬していることを検証する。
     /// `InputDeviceCore` は実機・HID が必要なため、コンストラクタを実行せずに生成した未初期化オブジェクトを渡す
     /// （`Mouse` のコンストラクタは `GyroMouseSensSettings`（null でよい）しか参照しない）。
@@ -73,7 +73,7 @@ namespace DS4WindowsTests
                 new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, null, new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System));
         }
 
-        // Phase7-Step8 W1: 保持クラスはコンストラクターで受ける（旧: StickMotionState.Shared／Mapping.MapClick）
+        // 保持クラスはコンストラクターで受ける
         [Fact]
         public void Constructor_NullStateHolders_Throws()
         {

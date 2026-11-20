@@ -16,7 +16,7 @@ using DS4Windows.Core.Profiles;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6 K-W6-9（重大・クラッシュ）: リンク（Linked Profile）のコンボが選択しているプロファイルを一覧から削除すると、アプリが落ちていた
+    /// リンク（Linked Profile）のコンボが選択しているプロファイルを一覧から削除すると、アプリが落ちていた
     /// （<c>TargetException: Object does not match target type</c>。<c>ValueChangedEventManager.AddHandler → ReflectEventDescriptor.AddEventHandler</c>）。
     /// 原因: <see cref="ProfileEntity"/> は <see cref="INotifyPropertyChanged"/> ではなく、旧式の <c>NameChanged</c> イベントで名前の変更を通知していた。
     /// WPF はこの形のオブジェクトの <c>{Binding Name}</c> に、リフレクションによるイベントの購読を使う。

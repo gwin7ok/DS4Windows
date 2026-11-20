@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W4（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §5）: 第 2 群（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel。設定は押し続ける秒数だけ）を、
+    /// 第 2 群（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel。設定は押し続ける秒数だけ）を、
     /// Controls で保存・実行・編集できるようにした縦通しの検査。入力の押し続ける秒数、builder の束縛、編集対象の往復、種別の保存可否、保存と再読み込み、実際の実行。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -113,7 +113,7 @@ namespace DS4WindowsTests
             Assert.False(action.Evaluate(h.Input).IsEstablished);
         }
 
-        // Phase13-Step1: 旧 ADelayWithoutTheSettings_IsRejected_AndNoDelayNeedsNone は、profileSettings 引数の削除で前提がなくなったため削除した
+        // 旧 ADelayWithoutTheSettings_IsRejected_AndNoDelayNeedsNone は、profileSettings 引数の削除で前提がなくなったため削除した
         [Fact]
         public void ADelayWithoutAnyOtherArgument_IsAccepted()
         {
@@ -352,7 +352,7 @@ namespace DS4WindowsTests
 
         [Theory]
         [InlineData(SpecialAction.ActionTypeId.DisconnectBT, 5)]
-        [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, 8)]   // Phase9 Steering 削除 W1: 添字を詰めた（9→8）
+        [InlineData(SpecialAction.ActionTypeId.GyroCalibrate, 8)]   // 添字を詰めた（9→8）
         public void TheInitialType_AndTheLoadedSeconds_FollowTheItem(SpecialAction.ActionTypeId type, int expectedIndex)
         {
             var rig = new Rig();

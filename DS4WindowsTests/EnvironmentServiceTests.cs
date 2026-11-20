@@ -3,7 +3,7 @@ using DS4Windows.Core.Platform;
 
 namespace DS4WindowsTests
 {
-    // Phase5-Step14 FormSettings統一: 本テストクラスは以前、EnvironmentServiceが独自に
+    // 本テストクラスは以前、EnvironmentServiceが独自に
     // 孤立保持していた RunAtStartup/StartMinimized/CloseMinimizes/UseLang/FormWidth/FormHeight/
     // FormLocationX/FormLocationY（Global/m_Configと非連動）を前提としたアサートを含んでいた。
     // これらのプロパティはIAppSettingsServiceとの重複であったため撤去され、IEnvironmentServiceは

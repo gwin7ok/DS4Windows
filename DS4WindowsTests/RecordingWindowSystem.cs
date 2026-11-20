@@ -5,7 +5,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step3 3c: マクロのマウス移動のテスト用の <see cref="IWindowSystem"/>。ポインターの移動（<see cref="MoveCursorTo"/>）と前面ウィンドウの原点だけを持ち、
+    /// マクロのマウス移動のテスト用の <see cref="IWindowSystem"/>。ポインターの移動（<see cref="MoveCursorTo"/>）と前面ウィンドウの原点だけを持ち、
     /// 実際のカーソルは動かさない。ほかの操作は使われない（呼ばれたらテストの誤り）。
     /// </summary>
     public sealed class RecordingWindowSystem : IWindowSystem

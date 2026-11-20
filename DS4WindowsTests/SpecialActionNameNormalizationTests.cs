@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Util_NormalizeActionName_FixedExpectations()
         {
-            // Phase6-Step12 Wave 1: 重複実装だった Global.NormalizeActionName を削除したため、Util 側の期待値を固定する。
+            // 重複実装だった Global.NormalizeActionName を削除したため、Util 側の期待値を固定する。
             Assert.Equal("Action", Util.NormalizeActionName("  Action\t\n"));
             Assert.Equal(string.Empty, Util.NormalizeActionName(null));
             Assert.Equal("My Action Name", Util.NormalizeActionName("  My Action Name  "));

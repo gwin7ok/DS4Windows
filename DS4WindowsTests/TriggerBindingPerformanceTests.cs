@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step3 W5（docs-forDIMG/MadeByAgent/Archive/Phase8-Step3-Plan.md §2.5。Q5＝A）: 判定の割り当て 0 の検査と、処理時間の比較の基盤。
+    /// 判定の割り当て 0 の検査と、処理時間の比較の基盤。
     /// 割り当てが 0 であることは厳密に検査する。処理時間は出力するだけで、失敗条件にしない（環境依存のため）。
     /// Step7 の各 PR の前後で、このテストの出力（1 フレームあたりの時間）を比較する。
     /// </summary>

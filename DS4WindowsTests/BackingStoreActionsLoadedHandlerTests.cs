@@ -5,9 +5,8 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14c-Step6（R-13）: <c>BackingStore.ReplaceActionsLoadedHandler</c> の振る舞い。
-    /// コンテナが作り直されても（登録のラムダが何度呼ばれても）、<c>ActionsLoaded</c> の購読者は最後の 1 つだけになる
-    /// （旧: <c>ServiceRegistration</c> の静的フィールド <c>_subscribedReset</c> で前回の購読者を覚えていた）。
+    /// <c>BackingStore.ReplaceActionsLoadedHandler</c> の振る舞い。
+    /// コンテナが作り直されても（登録のラムダが何度呼ばれても）、<c>ActionsLoaded</c> の購読者は最後の 1 つだけになる。
     /// </summary>
     public class BackingStoreActionsLoadedHandlerTests
     {

@@ -14,7 +14,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step5（docs-forDIMG/MadeByAgent/Archive/Phase13-Step5-Plan.md §6 計測②）: スロット状態の読み取りの 1 回あたりの処理時間の<b>手動計測</b>。
+    /// スロット状態の読み取りの 1 回あたりの処理時間の<b>手動計測</b>。
     /// 通常のテスト実行では何もせず合格する（環境変数 <c>DS4W_RUN_BENCH=1</c> のときだけ計測する。処理時間は実行環境の負荷で揺れるため、合否の基準にしない）。
     /// 比べる対象:
     ///   (a) 現状: 旧 <c>ControlService</c> と同じ形（クラスの private フィールドの配列を、毎回そのフィールドから読む）

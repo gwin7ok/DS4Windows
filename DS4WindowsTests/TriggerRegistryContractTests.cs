@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4-Plan.md §2.1）: 契約・登録簿・移行スイッチのテスト。
+    /// 契約・登録簿・移行スイッチのテスト。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class TriggerRegistryContractTests
@@ -141,7 +141,7 @@ namespace DS4WindowsTests
             Assert.Equal(0, broken);
         }
 
-        // ---- 登録簿（Phase8-Step8 8d: 移行のスイッチ BindingMigrationOptions は削除した） ----
+        // ---- 登録簿 ----
 
         [Fact]
         public void Host_RegistersTheRegistry_AsASingleton()

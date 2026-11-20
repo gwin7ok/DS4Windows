@@ -7,7 +7,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M3: <c>MapCustom</c> の L2／R2 の複製を 1 つにまとめる前に、2 段階トリガーの出力（浅い引き＝Y、深い引き＝B）を
+    /// <c>MapCustom</c> の L2／R2 の複製を 1 つにまとめる前に、2 段階トリガーの出力（浅い引き＝Y、深い引き＝B）を
     /// <c>MapCustom</c> の全体を通して固定する。L2 と R2 で同じ結果になること（折りたたみで取り違えがないこと）も確かめる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

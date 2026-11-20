@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §3.3）: 種別ごとの出力アクション・方針の作り方を、共通の部品（<see cref="SpecialActionOutputFactory"/>）へ取り出した。
+    /// 種別ごとの出力アクション・方針の作り方を、共通の部品（<see cref="SpecialActionOutputFactory"/>）へ取り出した。
     /// SA の束縛が変わらないこと（W0 の一覧表のテストが守る）に加えて、部品そのものの契約を固定する。
     /// </summary>
     public class SpecialActionOutputFactoryTests
@@ -160,14 +160,14 @@ namespace DS4WindowsTests
                 SpecialActionOutputs plain = factory.Create(0, sa, 0);
                 SpecialActionOutputs erasing = factory.Create(0, sa, 0, forControls: true);
 
-                // Phase10-Step4 W4: Controls 用は、Controls の既存の束縛と同じ 3 つのフラグ（抑制しない・出力を消さない・割り当てたボタンの出力を毎フレーム消す）
+                // Controls 用は、Controls の既存の束縛と同じ 3 つのフラグ（抑制しない・出力を消さない・割り当てたボタンの出力を毎フレーム消す）
                 Assert.True(plain.Policy.SuppressesTriggerButtons);
                 Assert.True(plain.Policy.ResetsTriggerOutput);
                 Assert.False(plain.Policy.ErasesOutputEveryFrame);
                 Assert.False(erasing.Policy.SuppressesTriggerButtons);
                 Assert.False(erasing.Policy.ResetsTriggerOutput);
                 Assert.True(erasing.Policy.ErasesOutputEveryFrame);
-                // Phase10-Step6 I4b: Fresh-press ガードの規則は、種別 × 由来の表（FreshPressGuardTable.For）。Controls の Key だけ見ない（従来の Controls の Key の束縛と同じ）。他の種別は、SA と同じ
+                // Fresh-press ガードの規則は、種別 × 由来の表（FreshPressGuardTable.For）。Controls の Key だけ見ない（従来の Controls の Key の束縛と同じ）。他の種別は、SA と同じ
                 Assert.Equal(sa.typeID == SpecialAction.ActionTypeId.Key ? false : plain.Policy.RespectsFreshPressGuard, erasing.Policy.RespectsFreshPressGuard);
                 Assert.Equal(plain.Policy.BlocksWhileExecuting, erasing.Policy.BlocksWhileExecuting);
                 Assert.Equal(plain.Policy.Untrigger, erasing.Policy.Untrigger);

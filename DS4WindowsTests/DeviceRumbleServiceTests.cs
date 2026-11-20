@@ -3,7 +3,7 @@ using DS4Windows.Output.Services;
 
 namespace DS4WindowsTests
 {
-    /// <summary>Phase13-Step3: 旧 <c>ControlService.SetDevRumble</c> の式（ブースト・上限 255・反転）の特性化。</summary>
+    /// <summary>旧 <c>ControlService.SetDevRumble</c> の式（ブースト・上限 255・反転）の特性化。</summary>
     public class DeviceRumbleServiceTests
     {
         [Theory]

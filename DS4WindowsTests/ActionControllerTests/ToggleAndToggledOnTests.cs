@@ -12,7 +12,7 @@ namespace DS4Windows.Actions.Tests
     public class ToggleAndToggledOnTests
     {
         /// <summary>
-        /// Phase13-Step4: 旧 <c>ServiceProviderHolder.SetProvider(TestServiceProvider)</c> の代わりに、テストごとに独立の管理役・登録簿を作って
+        /// 旧 <c>ServiceProviderHolder.SetProvider(TestServiceProvider)</c> の代わりに、テストごとに独立の管理役・登録簿を作って
         /// <see cref="KeyAction"/>／アダプターへ直接渡す（静的な Service Locator を介さない）。
         /// </summary>
         private sealed class Parts
@@ -52,7 +52,7 @@ namespace DS4Windows.Actions.Tests
             Assert.True(stateAfter.IsToggledOn);
 
             // Simulate explicit Toggle-OFF by invoking controller's OnSATriggerToggleOff
-            // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
+            // 登録簿は Mapping から KeyButtonControllerRegistry へ移った
             var dictField = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
             // Find controller instance matching action name (sa.name) and invoke ToggleOff
@@ -228,7 +228,7 @@ namespace DS4Windows.Actions.Tests
         }
 
         /// <summary>
-        /// Phase13-Step4: コントローラーは、注入された管理役のイベントを購読する。OFF になったら（旧: 静的イベント）保持中の出力を解放し、
+        /// コントローラーは、注入された管理役のイベントを購読する。OFF になったら保持中の出力を解放し、
         /// 破棄したあとは反応しない（購読を解除する）。
         /// </summary>
         [Fact]

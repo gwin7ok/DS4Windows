@@ -10,9 +10,9 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-3（docs-forDIMG/MadeByAgent/Archive/Phase9-E-Plan.md）: UDP モーションの切り出しの守り。
+    /// UDP モーションの切り出しの守り。
     /// (1) <c>ControlService</c> から、移したメンバーが無くなっていること（ソースの走査。コメントは除く）。
-    /// (2) 新しい部品が DI の Singleton として登録され、<c>IDeviceSlotState</c> を直接注入で受けること（Phase13-Step5 で <c>IUdpMotionHost</c> を廃止）。
+    /// (2) 新しい部品が DI の Singleton として登録され、<c>IDeviceSlotState</c> を直接注入で受けること。
     /// (3) 部品が静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// </summary>
     public class UdpMotionGuardTests
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         public void TheOtherFiles_ForTheCallers()
         {
 
-            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            // 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
             string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_udpMotion.ChangeStatus(state, openPort)", sw);

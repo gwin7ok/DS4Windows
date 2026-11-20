@@ -12,7 +12,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step3-Plan.md §3.1・§3.3・§5）: Controls のモードの割り当てエディターと、出力ピッカーとの受け渡し。
+    /// Controls のモードの割り当てエディターと、出力ピッカーとの受け渡し。
     /// <see cref="PressKeyViewModel"/> の「Default」の状態、ピッカーへ渡す一時設定（ボタン・Extras・いまの割り当て）、
     /// <see cref="ControlSettingsEditTarget"/> の Default の書き出し・読み込みと、Extras の取り込み（Save で反映、Cancel で破棄）。
     /// SA のモード（<c>allowDefault</c> が既定の <c>false</c>、<c>PrepareSettings()</c> が引数なし）は、従来どおりであること。
@@ -72,9 +72,9 @@ namespace DS4WindowsTests
             rig.PressKey.ReadSettings(Settings(DS4ControlSettings.ActionType.Default), allowDefault: true);
 
             Assert.Equal(DS4ControlSettings.ActionType.Default, rig.PressKey.SelectedActionType);
-            Assert.StartsWith(PressKeyViewModel.DefaultText, rig.PressKey.DescribeText);   // Phase9 UI 変更: 「Default (既定の出力名)」
+            Assert.StartsWith(PressKeyViewModel.DefaultText, rig.PressKey.DescribeText);   // 「Default (既定の出力名)」
             Assert.False(rig.PressKey.IsScanCodeEnabled);
-            Assert.Equal("Press", rig.PressKey.SwitchMode);   // Phase9 UI 変更: Default の実際の動きは Press（Switch Mode の欄を空欄にしない）
+            Assert.Equal("Press", rig.PressKey.SwitchMode);   // Default の実際の動きは Press（Switch Mode の欄を空欄にしない）
             Assert.Equal(0, rig.PressKey.Value);
         }
 
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
 
             rig.PressKey.ReadSettings(Settings(DS4ControlSettings.ActionType.Default), allowDefault: true);
 
-            // Phase9 UI 変更: 「Default (既定の出力名)」（Circle の既定の出力は B）
+            // 「Default (既定の出力名)」（Circle の既定の出力は B）
             Assert.StartsWith(PressKeyViewModel.DefaultText + " (", rig.PressKey.DescribeText);
             Assert.EndsWith(")", rig.PressKey.DescribeText);
         }
@@ -192,7 +192,7 @@ namespace DS4WindowsTests
         [Fact]
         public void WriteFrom_PressKeyInTheDefaultState_WithToggle_WritesAToggleButtonToTheDefaultOutput_AndIgnoresScanCode()
         {
-            // Phase9 UI 変更（ユーザー指示 2026-10-22）: 旧仕様は、Default のとき Toggle も捨てて Default を書いた。
+            // 旧仕様は、Default のとき Toggle も捨てて Default を書いた。
             // 新仕様: Toggle は捨てず、既定の出力への Button ＋ Toggle として書く。Scan Code は、キーボードのキーだけに効くため、書かない
             var rig = new Rig();
             DS4ControlSettings original = Settings(DS4ControlSettings.ActionType.Key);

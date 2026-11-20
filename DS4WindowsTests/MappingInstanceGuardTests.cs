@@ -17,7 +17,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step8 W2: <c>Mapping</c> を DI の Singleton（<c>IMapping</c>）の instance にしたこと、サービスへの静的な束縛
+    /// <c>Mapping</c> を DI の Singleton（<c>IMapping</c>）の instance にしたこと、サービスへの静的な束縛
     /// （<c>AppHost</c>／<c>ServiceProviderHolder</c>／<c>Global</c> のフォールバック）をコンストラクター注入に替えたこと、
     /// キー／ボタンのコントローラー登録簿を <c>KeyButtonControllerRegistry</c> に切り出したことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q1〜Q4・Q8）。
@@ -28,8 +28,8 @@ namespace DS4WindowsTests
         // 状態を持たない表（読み取り専用の運用）。Q2＝A により static のまま残すもの
         private static readonly string[] AllowedStaticFields =
         {
-            // Phase8-Fix-MacroRepeatUnify（D5）: ds4ControlMapping／macroEndIndex は、macrodone の添字の表だったため削除した
-            // Phase9 Steering 削除 W2: calibrationColor_0〜3（ステアリング較正のライトバーの色）は、機能ごと削除した
+            // ds4ControlMapping／macroEndIndex は、macrodone の添字の表だったため削除した
+            // calibrationColor_0〜3（ステアリング較正のライトバーの色）は、機能ごと削除した
         };
 
         private readonly ITestOutputHelper _output;
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         public void IMapping_HasExactlyTheTenWindowMembers()
         {
             string[] names = typeof(IMapping).GetMethods().Select(m => m.Name).OrderBy(n => n).ToArray();
-            // Phase7b W1: プロファイル切替の復帰の合図の退避・復元（CaptureProfileUntrigger／RestoreProfileUntrigger）を追加した（8 → 10）
+            // プロファイル切替の復帰の合図の退避・復元（CaptureProfileUntrigger／RestoreProfileUntrigger）を追加した（8 → 10）
             string[] expected =
             {
                 "CaptureProfileUntrigger", "Commit", "EndMacroDirect", "GetBoolMappingExternal", "HandleDeviceDisconnect",
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<IProfileSettingsService>(),
                 TestHost.GetService<IVirtualKBM>(),
                 TestHost.GetService<IDeviceInputCleanup>(),
-                TestHost.GetService<IMacroPlayback>(),   // Phase9 9-C: 旧 Func<IDeviceStateAccessor> の位置
+                TestHost.GetService<IMacroPlayback>(),   // 旧 Func<IDeviceStateAccessor> の位置
                 TestHost.GetService<ITriggerDispatchEngine>(),
                 TestHost.GetService<IMouseConversionStage>(),
                 TestHost.GetService<ICurveAndDeadzoneStage>(),

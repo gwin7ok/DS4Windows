@@ -6,7 +6,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step4-5: `MouseCursor.TouchMoveCursor`（タッチパッドのマウス移動。毎レポート呼ばれるホットパス）が、
+    /// `MouseCursor.TouchMoveCursor`（タッチパッドのマウス移動。毎レポート呼ばれるホットパス）が、
     /// 置換後もヒープ割り当て0バイトであることを固定する（`MappingHotPathAllocationTests` と同じ手法）。
     /// 出力先のスタブは記録を止めて（`Recording = false`）、記録用リストの拡張を計測から除外する。
     /// </summary>

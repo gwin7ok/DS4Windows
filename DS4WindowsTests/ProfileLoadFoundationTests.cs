@@ -10,7 +10,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4b W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4b-Plan.md §3.2）: <c>LoadProfile</c> の分解の基盤（<see cref="ProfileLoadContext"/>、<see cref="IProfileLoadSection"/>）の検査。
+    /// <c>LoadProfile</c> の分解の基盤（<see cref="ProfileLoadContext"/>、<see cref="IProfileLoadSection"/>）の検査。
     /// 節の中身は、W1 のゴールデン（<c>ProfileGoldenGapTests</c> ほか）が担保する。
     /// </summary>
     public class ProfileLoadFoundationTests
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         public void Sections_AreInternalSealedAndNotRegisteredInTheContainer()
         {
             string root = SourceFileLocator.RepoRoot();
-            // Phase14c-Step6（R-18）: 登録は層ごとの partial ファイル（ServiceRegistration*.cs）に分かれている
+            // 登録は層ごとの partial ファイル（ServiceRegistration*.cs）に分かれている
             string registration = string.Join(System.Environment.NewLine, Directory.GetFiles(Path.Combine(root, "DS4Windows", "Composition"), "ServiceRegistration*.cs").Select(File.ReadAllText));
             Assert.DoesNotContain("LoadSection", registration);
 

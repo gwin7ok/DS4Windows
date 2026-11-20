@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step2-2 (PR-2): ControlService の Global 直接参照解消のために追加した薄い委譲シム
+    /// ControlService の Global 直接参照解消のために追加した薄い委譲シム
     /// （UDP 平滑化、初回接続判定、リンクプロファイル解決、スロットへのプロファイル適用ポート）が、
     /// Global（m_Config / BackingStore）と完全に同一の実体を共有していることを検証する。
     /// 各テストは変更した Global 状態を必ず元に戻す。
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
         [Fact]
         public void LinkedProfile_ContainsAndGet_ShareStateWithGlobal_AndIgnoreColons()
         {
-            // 旧 Global.containsLinkedProfile/getLinkedProfile と同じく、MAC アドレスのコロンを除去して照合する（Phase7-Step3 W5 でサービスへ移した）。
+            // 旧 Global.containsLinkedProfile/getLinkedProfile と同じく、MAC アドレスのコロンを除去して照合する。
             const string key = "A1B2C3D4E5F6";
             var linked = TestGlobals.Store.linkedProfiles;
             Assert.False(linked.ContainsKey(key));

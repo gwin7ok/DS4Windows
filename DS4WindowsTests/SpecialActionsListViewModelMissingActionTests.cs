@@ -7,7 +7,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-3b-2: Actions.xml に無く、プロファイルの XML にだけ残っているアクション名が、
+    /// Actions.xml に無く、プロファイルの XML にだけ残っているアクション名が、
     /// スペシャルアクション一覧に「トリガー・アクション欄が空のグレーの項目」として表示されること
     /// （36d124a6 のリファクタで失われていた 40011c12 の動作の復活）。
     /// </summary>

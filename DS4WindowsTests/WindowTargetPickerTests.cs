@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step2 2i（R-4）: ターゲットマークのドロップで、カーソル位置のウィンドウから対象（フルパスとタイトル全文）を取り出す処理。
+    /// ターゲットマークのドロップで、カーソル位置のウィンドウから対象（フルパスとタイトル全文）を取り出す処理。
     /// マウス操作と Win32 の取得そのものは、実機で確認する。
     /// </summary>
     public class WindowTargetPickerTests

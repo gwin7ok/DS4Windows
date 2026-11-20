@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             var state = TestActions.Manager.GetStateFor(sa, 0);
             Assert.NotNull(state);
 
-            // Phase8-Step1 W3（B-5）: Press は押下で 1 回だけ押し、まだ離していない（保持中）。トグル状態は使わない
+            // Press は押下で 1 回だけ押し、まだ離していない（保持中）。トグル状態は使わない
             Assert.Equal(new uint[] { 0x1E }, mockKbm.KeyPressCalls.ToArray());
             Assert.Empty(mockKbm.KeyReleaseCalls);
             Assert.False(state.IsToggledOn);
@@ -98,7 +98,7 @@ namespace DS4WindowsTests
             // 2回目の押下/停止 (Stop) -> トグル解除
             adapter.Stop(binding, triggerDown);
 
-            // Phase8-Step1 W3（B-5）: トグル OFF で、リピートを止めて、押していたキーを解放する（リピーターは非同期に押下を送るため、押下の回数は固定しない）
+            // トグル OFF で、リピートを止めて、押していたキーを解放する（リピーターは非同期に押下を送るため、押下の回数は固定しない）
             Assert.Contains((uint)0x1E, mockKbm.KeyReleaseCalls.ToArray());
         }
 

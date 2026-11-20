@@ -39,7 +39,7 @@ namespace DS4WindowsTests
             string reportedProperty = null;
             bool eventFired = false;
 
-            // Phase7-Step10b W3: OnSubPropertyChanged（親への中継）は削除した。PropertyChanged で変更の通知を確認する
+            // OnSubPropertyChanged（親への中継）は削除した。PropertyChanged で変更の通知を確認する
             settings.PropertyChanged += (s, e) =>
             {
                 reportedProperty = e.PropertyName;

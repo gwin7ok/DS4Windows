@@ -10,14 +10,14 @@ using DS4Windows.Output.Kbm;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step9-1: 主要4大 ViewModel の Global 直接参照解消に先立って追加した契約が、
+    /// 主要4大 ViewModel の Global 直接参照解消に先立って追加した契約が、
     /// いずれも <c>Global</c> と同じ値・同じ動作であること（薄い委譲）を検証する。
     /// - IAppSettingsService: UseCustomSteamFolder／CustomSteamFolder／FakeExeName／LogMaxArchiveFiles
     /// - IEnvironmentService: IsViGEmBusInstalled／IsRunningSupportedViGEmBus／IsUsingMinViGEm117333／AdminNeeded
     /// - IPathService: ProgramDirectory（Global.exedirpath。ExecutableDirectory とは別物）
     /// - IAppearanceSettingsService: BatteryChanged（Global.BatteryChanged への転送）
     /// - IProfileSettingsService: RefreshActionAlias（Global.RefreshActionAlias と同じ結果）
-    /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Status.md §6.4-1）。
+    /// Global 状態を変更するテストは、変更を必ず元に戻す。
     /// </summary>
     public class MainViewModelContractTests
     {
@@ -131,7 +131,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ViGEmProbes_AreConsistentWithTheCachedVersion()
         {
-            // Phase7-Step4 W1: 旧 Global.IsViGEmBusInstalled／IsRunningSupportedViGEmBus／IsUsingMinViGEm117333 は EnvironmentService へ移した。
+            // 旧 Global.IsViGEmBusInstalled／IsRunningSupportedViGEmBus／IsUsingMinViGEm117333 は EnvironmentService へ移した。
             // 旧実装と同じ式（最小バージョンとの比較）で照合する
             var service = new EnvironmentService();
             var version = EnvironmentService.ViGEmBusVersionState;
@@ -219,7 +219,7 @@ namespace DS4WindowsTests
         public void RefreshActionAlias_KeyAction_UsesOutputKbmMapping_LikeGlobal()
         {
             var service = TestRepositoryFactory.CreateProfileSettingsService();
-            // Phase7-Step8 W3: 旧 Global.outputKBMMapping は、Global.ProfileSettingsServiceInstance.OutputKBMMapping への転送プロパティだった
+            // 旧 Global.outputKBMMapping は、Global.ProfileSettingsServiceInstance.OutputKBMMapping への転送プロパティだった
             var globalSettings = TestGlobals.ProfileSettingsServiceInstance;
             VirtualKBMMapping originalMapping = globalSettings.OutputKBMMapping;
             try

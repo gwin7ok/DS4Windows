@@ -158,3 +158,10 @@
 ## 別に扱うもの
 - XML コメントの Phase 名（439 ファイル、1,309 か所）: 目的を述べる部分は残し、Phase 名の参照だけを外す（RV8-1〜4 と同じ道具）。テストのクラス名にある `Phase<数字>`（例: `Phase9EOscServiceDifferentialTests`）は、機能名へ改名し、参照するコメントも同時に直す。
 - 改名の対応表は `Phase15-0-Test-Rename-Map.md` の形式で、この文書へ追記する。
+## 実施の記録（RV8-5）
+- **テストの XML コメント・行コメントの Phase 名**: 構文の差 0 を確認して外した（Phase<数字> を含む行 1,309 → 約 278。残りはテストデータの文字列と、`RemovedApiRuleTests` の表の「由来」のコメント）。
+- **本体のコメントが指す、実在しない古いテスト名（40 か所）**: 「対応するテスト」へ直した（テストは Phase15-0 で機能名へ改名済みで、名前が一致しなかった）。
+- **廃止（守る対象がすでに存在しない）**: `MappingHelperMethodsGlobalReferenceGuardTests`、`MappingMacroPathGlobalReferenceGuardTests`（ファイルごと）、`AppPostHostGlobalReferenceGuardTests.RetainedGlobalReferences_HaveTodoComments`、`GlobalRemovedGuardTests.TheGlobalType_AndFile_AreGone`。
+- **表へ統合**: `RemovedApiRuleTests` の撤去メンバーの表に `Mapping.IsUsingGyroForControls`・`Mapping.outputKBMMapping` を追加。
+- **負の確認**: 一時的に `Mapping` へ `IsUsingGyroForControls` を、`DS4Windows` へ型 `Global` を足してから実行し、`RemovedMembers_AreNotDeclaredAgain` と `RemovedTypes_DoNotExist` が失敗することを確かめた（その後、元へ戻した）。
+- **未実施（理由）**: 残りの「型へ」45 件・「要確認」46 件・「残す」28 件は、1 つのファイルの中に、型の検査にできる Fact と、実際の挙動を確かめる Fact（コンストラクターの null の拒否など）が混在しており、1 件ずつ中身を読んで分ける作業になる。守りの喪失のリスクが大きいため、この Phase では行わず、別の Phase の候補とした（分類表の第 1 案はそのまま、次の Phase の入力になる）。

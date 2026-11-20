@@ -6,8 +6,8 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step8 8a: Controls タブの Key の識別用 <c>SpecialAction</c>（名前 <c>Synthetic_Key_{device}_{control}</c>。状態の鍵）を、テストが作るための部品。
-    /// 旧 <c>Mapping.GetOrCreateSyntheticKeyAction</c>（旧経路の合成と、キャッシュ）は、旧経路の削除で <c>Mapping</c> から削除した。新経路の束縛は、同じ名前の識別用 SA を作る
+    /// Controls タブの Key の識別用 <c>SpecialAction</c>（名前 <c>Synthetic_Key_{device}_{control}</c>。状態の鍵）を、テストが作るための部品。
+    /// 旧 <c>Mapping.GetOrCreateSyntheticKeyAction</c>は、旧経路の削除で <c>Mapping</c> から削除した。新経路の束縛は、同じ名前の識別用 SA を作る
     /// （<c>ControlBindingBuilder</c>）ため、状態は名前で引ける。
     /// </summary>
     internal static class SyntheticKeyActionFactory

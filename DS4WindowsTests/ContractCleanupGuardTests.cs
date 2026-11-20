@@ -12,7 +12,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10b W3（Q3＝A・Q5＝A）: 持ち越しの契約の整理の回帰ガード。
+    /// 持ち越しの契約の整理の回帰ガード。
     /// (1) <c>ProfileSubSettingBase.OnSubPropertyChanged</c>（購読者 0 件の孤立イベント）を削除したこと（<c>PropertyChanged</c> は残る）、
     /// (2) <c>ProfileApplicationService</c> が未使用の依存 <c>IDeviceStateService</c> を持たないこと、
     /// (3) <c>IOutputSlotService.OutputSlotChanged</c> は温存し、TODO が更新されていること。
@@ -53,9 +53,9 @@ namespace DS4WindowsTests
         {
             var ctor = typeof(ProfileApplicationService).GetConstructors().Single();
             Assert.DoesNotContain(ctor.GetParameters(), p => p.ParameterType == typeof(IDeviceStateService));
-            // Phase8-Step5 W2: 束縛の登録簿（IActionRegistry）とビルダーの遅延解決（Func<IActionBindingBuilder>）を足した（8 → 10）
-            // Phase10-Step4d W5c: Load Profile の切り替え先を ID から引く、省略可能な登録簿（IProfileIdentityService）を足した（10 → 11）
-            // Phase13-Step4: 静的 ActionManager の廃止により、管理役（IManagedActionManager）を足した（11 → 12）
+            // 束縛の登録簿（IActionRegistry）とビルダーの遅延解決（Func<IActionBindingBuilder>）を足した（8 → 10）
+            // Load Profile の切り替え先を ID から引く、省略可能な登録簿（IProfileIdentityService）を足した（10 → 11）
+            // 静的 ActionManager の廃止により、管理役（IManagedActionManager）を足した（11 → 12）
             Assert.Equal(12, ctor.GetParameters().Length);
         }
 

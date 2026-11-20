@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step3 3c（R-3）: マクロのマウスポインターの移動ステップの実行（絶対／前面ウィンドウ基準）。
+    /// マクロのマウスポインターの移動ステップの実行（絶対／前面ウィンドウ基準）。
     /// 実際のカーソルの移動（<c>Win32WindowSystem</c>）と、ゲームでの効き方は、実機で確認する。
     /// </summary>
     public class MacroPointerMoveExecutionTests

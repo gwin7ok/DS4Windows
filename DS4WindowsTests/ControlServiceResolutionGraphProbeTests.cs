@@ -22,7 +22,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step6 6-a: <c>Func&lt;ControlService&gt;</c> を使う 9 クラスのうち、どれが <c>ControlService</c> の依存グラフの内側にあるか
+    /// <c>Func&lt;ControlService&gt;</c> を使う 9 クラスのうち、どれが <c>ControlService</c> の依存グラフの内側にあるか
     /// （内側のクラスは <c>ControlService</c> を直接受けると循環する）を、<c>ServiceRegistration</c> の登録から静的に求めて固定する。
     /// 求め方: コンストラクターの引数の型をたどる（<c>Func&lt;T&gt;</c> は遅延のため辺にしない）。ラムダで登録された型は <see cref="FactoryTypes"/> で実体の型を与える。
     /// 結果は計画書（docs-forDIMG/MadeByAgent/Archive/Phase13-Step6-Plan.md §2.1）の「循環の有無」の根拠になる。
@@ -143,7 +143,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Phase13-Step7 7-a: <c>VirtualPadService</c> ⇄ <c>OutputSlotService</c> の相互参照は、<c>Func</c> を辺にしない閉包では、どちらからも他方・
+        /// <c>VirtualPadService</c> ⇄ <c>OutputSlotService</c> の相互参照は、<c>Func</c> を辺にしない閉包では、どちらからも他方・
         /// <c>ControlService</c> に届かない（<c>Func</c> が循環の回避のためだけに使われていることの確認。7-d で <c>Func</c> を撤廃しても循環しない根拠）。
         /// </summary>
         [Fact]

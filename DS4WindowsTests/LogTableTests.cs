@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4c-Plan.md §2 項目 4・§4 W0）: 立ち上がりのログ（SA 形式: Trace の <c>Trigger detected for SA '…'</c> ほか、Debug の <c>SpecialAction …</c>）を
+    /// 立ち上がりのログ（SA 形式: Trace の <c>Trigger detected for SA '…'</c> ほか、Debug の <c>SpecialAction …</c>）を
     /// 出す Controls の束縛の種類を固定するテスト。W0 では、Controls の既存の種別（Key／Macro／Pad／Mouse／AnalogMouse／Extras）は出さず、SA 専用の種別（Special。W4〜W6）だけ出していた。
     /// W2（ユーザー承認、2026-10-21）で、既存の種別も、立ち上がりと離したときのログ（Trace の <c>Trigger released for SA '…'</c> ほか）を出す形へ書き換えた。
     /// NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替える（既存のログのテストと同じ方式）。他の Host 構築テストと同じコレクションで直列に実行する。

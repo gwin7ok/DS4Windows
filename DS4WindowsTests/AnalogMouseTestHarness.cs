@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-3: マウスの移動とアナログのホイールのテスト用ハーネス。実機がないため、スロットにテスト用のデバイス（経過時間つき）を置く。
+    /// マウスの移動とアナログのホイールのテスト用ハーネス。実機がないため、スロットにテスト用のデバイス（経過時間つき）を置く。
     /// ホイールの 10ms の間隔は、旧経路は <c>Mapping.oldnow</c> をフレームごとに戻し、新経路は束縛ごとの時刻のため、フレームの間に 12ms 待って、どちらも決定的にする。
     /// ホイールと移動の端数（Mapping が共有）は、作成時に初期化する。
     /// </summary>
@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         public ControllerState Step(ControllerState input)
         {
             Thread.Sleep(12);
-            // 旧経路のホイールの繰り返しの基準時刻を最古に戻し、間隔を満たした状態にする（Phase9 MapCustom の分割 M1: 基準時刻は SyntheticInputCommitter が持つ）
+            // 旧経路のホイールの繰り返しの基準時刻を最古に戻し、間隔を満たした状態にする
             ((DS4Windows.Processing.Services.Conditioning.SyntheticInputCommitter)typeof(Mapping)
                 .GetField("_syntheticCommitter", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                 .GetValue(T.Mapping)).SetWheelRepeatBase(DateTime.MinValue);
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             Set("stickWheelRemainder", 0.0);
             Set("stickWheel", 0.0);
             Set("stickWheelDownDir", false);
-            // Phase9 9-B: 旧 horizontalRemainder／verticalRemainder は MouseMotionQuantizer（TestMappingFactory が独立の instance を渡す）へ移ったため、作成時は 0 から始まる。
+            // 旧 horizontalRemainder／verticalRemainder は MouseMotionQuantizer（TestMappingFactory が独立の instance を渡す）へ移ったため、作成時は 0 から始まる。
         }
 
         public void Dispose()

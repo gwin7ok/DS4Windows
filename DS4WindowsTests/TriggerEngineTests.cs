@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4-Plan.md §2.3／§3）: <see cref="TriggerDispatchEngine"/> の単体テスト。
+    /// <see cref="TriggerDispatchEngine"/> の単体テスト。
     /// 偽の入力・出力・束縛と、実物の <c>IManagedActionManager</c>（状態）を使う。時刻（<c>TickCount64</c>）は入力から注入し、実時間のスリープは使わない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -440,7 +440,7 @@ namespace DS4WindowsTests
             Assert.Equal(new[] { "execute" }, firstOutput.Events);
             Assert.Empty(secondOutput.Events);                 // 打ち切られた
 
-            // フック経路: 打ち切りの結果を返す（旧ループが return する）
+            // フック経路: 打ち切りの結果を返す
             var h2 = new Harness();
             SpecialAction only = h2.NewSource();
             h2.Register(h2.Bind(new FakeInputAction(DS4Controls.L1) { Established = true }, only, NoGuard(), new RecordingOutput { RequestEndFrameOnExecute = true }));
@@ -601,7 +601,7 @@ namespace DS4WindowsTests
 
             h.Frame.Record = false;
 
-            // JIT の段階的な最適化（Tiered Compilation）が、計測の途中で 1 回だけ割り当てることがある（Phase8-Step7-3a の W1 の実行で 1 回だけ発生）。
+            // JIT の段階的な最適化（Tiered Compilation）が、計測の途中で 1 回だけ割り当てることがある。
             // 本物の割り当てなら、毎回起きる。3 回まで測り、最小値が 0 であることを確かめる
             long allocated = long.MaxValue;
             for (int attempt = 0; attempt < 3 && allocated != 0; attempt++)

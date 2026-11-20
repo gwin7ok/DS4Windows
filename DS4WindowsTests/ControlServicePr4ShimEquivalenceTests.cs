@@ -8,7 +8,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step2-4 (PR-4): ControlService の Global 直接参照解消のために追加した薄い委譲シム
+    /// ControlService の Global 直接参照解消のために追加した薄い委譲シム
     /// （遅延警告の点滅設定、デバイスのシリアル変更通知）が、Global と同一の実体・同一の挙動であることを検証する。
     /// あわせて、On_Report の初回処理などで呼ばれるようになった取得系のシムが、
     /// ヒープ割り当て（GC Alloc）を行わないことを検証する（入力ループのゼロアロケーション方針）。

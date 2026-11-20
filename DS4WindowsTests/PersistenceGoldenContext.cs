@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W1: ゴールデンテストの実行環境。設定の保存場所（<c>Global.appdatapath</c>）と実行ファイルの場所
+    /// ゴールデンテストの実行環境。設定の保存場所（<c>Global.appdatapath</c>）と実行ファイルの場所
     /// （<c>Global.exedirpath</c>）を一時フォルダーへ向け、DI のホストと <see cref="ControlService"/> を用意する。破棄時に元へ戻す。
     /// 並列実行は xunit.runner.json で無効のため、静的状態の書き換えは他のテストと競合しない。
     /// </summary>
@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         public string AppData { get; }
         public string ExeDir { get; }
 
-        /// <summary>Phase13-Step6 6-e: プロファイル読込の鎖に渡す窓口（旧: ControlService を渡していた）。</summary>
+        /// <summary>プロファイル読込の鎖に渡す窓口。</summary>
         public IProfileLoadTarget LoadTarget { get; }
 
         public PersistenceGoldenContext()
@@ -61,9 +61,9 @@ namespace DS4WindowsTests
             text = Regex.Replace(text, "<!--.*?-->", "<!--C-->", RegexOptions.Singleline);
             // 読込の入力にもゴールデンを使うため、置換後も妥当な XML でなければならない（属性値に < を含めない）
             text = Regex.Replace(text, "app_version=\"[^\"]*\"", "app_version=\"0.0.0.0\"");
-            // Phase10-Step4d W1: プロファイルの固定 ID（保存のたびに新しい値になる GUID）は、ゴールデンの比較から除く（ID の検査は ProfileIdTests が持つ）
+            // プロファイルの固定 ID（保存のたびに新しい値になる GUID）は、ゴールデンの比較から除く（ID の検査は ProfileIdTests が持つ）
             text = Regex.Replace(text, @"\s*<ProfileId>[0-9a-fA-F]{32}</ProfileId>", string.Empty);
-            // Phase10-Step4d W2: Actions.xml の SA の固定 ID（Action の Id 属性）も除く
+            // Actions.xml の SA の固定 ID（Action の Id 属性）も除く
             text = Regex.Replace(text, " Id=\"[0-9a-fA-F]{32}\"", string.Empty);
             return text;
         }

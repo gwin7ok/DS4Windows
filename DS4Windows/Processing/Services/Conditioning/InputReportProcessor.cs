@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// <see cref="IInputReportProcessor"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService.On_Report</c> の本文を、フィールド名の置換だけでそのまま移したもの（呼び出しの順序・条件・ログは変えていない）。
     /// ホットパス（1 レポートごとに呼ばれる）のため、スロット状態の配列の参照はコンストラクターで一度だけ取得して <c>readonly</c> で保持し、
-    /// 1 回あたりの新規割り当てを増やさない（計測: <c>Phase13Step5bOnReportTimingBenchmark</c>、特性: <c>Phase13Step5bOnReportCharacterizationTests</c>）。
+    /// 1 回あたりの新規割り当てを増やさない（計測: 対応するテスト）。
     /// </summary>
     public sealed class InputReportProcessor : IInputReportProcessor
     {

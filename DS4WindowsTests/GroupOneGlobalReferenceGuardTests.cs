@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-1: グループ1（起動・環境系）の View／ViewModel の Global 直接参照解消の回帰ガード
+    /// グループ1（起動・環境系）の View／ViewModel の Global 直接参照解消の回帰ガード
     /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-1-Plan.md</c>、<c>Phase6-Step10-Plan.md</c> §0A.2）。
     /// - 置換済みのファイルに、温存項目（定数・Pre-Host の手動分岐）以外の <c>Global.</c> が再混入していないこと。
     /// - <c>AppHost</c>（Service Locator）・<c>Program.rootHub</c>・静的な <c>App.logHolder</c>／<c>App.Current</c> を持たないこと。
@@ -60,7 +60,7 @@ namespace DS4WindowsTests
         [Fact]
         public void StartupMethods_TakesPathsAsArguments()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数（名前と型）を確かめる
+            // ソースの文字列ではなく、メソッドの引数（名前と型）を確かめる
             Type service = typeof(DS4Windows.Core.Platform.StartupEntryService);
             foreach ((string method, string[] parameters) in new[]
             {
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
             if (xaml == null || code == null) return;
 
             Assert.Contains("x:Name=\"languagePackControl\"", File.ReadAllText(xaml));
-            Assert.Contains("languagePackControl.Initialize(layout.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);", code);   // Phase14b-Step16（D11）: テーマ・言語の契約も渡す
+            Assert.Contains("languagePackControl.Initialize(layout.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);", code);   // テーマ・言語の契約も渡す
         }
     }
 }

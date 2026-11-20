@@ -9,7 +9,7 @@ using DS4Windows.Core.Model;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10b W1（Q1＝A）: 既定のボタン割り当て・名前の表・<c>getX360ControlString</c>（旧 <c>Global</c> と <c>BackingStore</c>）を
+    /// 既定のボタン割り当て・名前の表・<c>getX360ControlString</c>を
     /// <c>X360ControlTables</c>／<c>DS4ControlNames</c> へ移したことの回帰ガード。表の内容は従来と同じでなければならない。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>

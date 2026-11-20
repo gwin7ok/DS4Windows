@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I4c（docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Plan.md §4）: 共通の組み立て（<see cref="AssignmentBindingBuilder"/>）の検査。入力の型と設定が、由来 × 種別で従来どおりであること。
+    /// 共通の組み立て（<see cref="AssignmentBindingBuilder"/>）の検査。入力の型と設定が、由来 × 種別で従来どおりであること。
     /// Controls の束縛としての挙動は Phase8・Phase10 Step4 系の特性化テストが、出力と方針は <c>SpecialActionOutputFactoryTests</c> が守る。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

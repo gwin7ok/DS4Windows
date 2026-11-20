@@ -21,7 +21,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step8 8-a: 残る遅延取得（IMapping／IAutoProfileService／IActionBindingBuilder）について、
+    /// 残る遅延取得（IMapping／IAutoProfileService／IActionBindingBuilder）について、
     /// 利用者が対象の依存グラフの内側にあるか（＝対象を直接受けると循環するか）を、登録から静的に求める。結果は docs-forDIMG/MadeByAgent/Archive/Phase13-Step8-Plan.md §2 の根拠。
     /// 求め方は ControlServiceResolutionGraphProbeTests と同じ（Func は辺にしない）。
     /// </summary>

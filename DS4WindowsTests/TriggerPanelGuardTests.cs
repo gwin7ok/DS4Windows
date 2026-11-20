@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §3.2）: SA の編集画面のトリガーの一覧は、データ駆動（<c>TriggerOptions</c>）。
+    /// SA の編集画面のトリガーの一覧は、データ駆動（<c>TriggerOptions</c>）。
     /// 名前つきのチェックボックス 49＋49 個と、その <c>Click</c> のコードビハインド、チェックボックスの照合の再混入を検出するソース走査ガード。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>

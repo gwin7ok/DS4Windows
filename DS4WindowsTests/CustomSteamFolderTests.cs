@@ -15,7 +15,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W5（Issue #4 の 3、Q3）: 設定画面の「カスタム Steam フォルダー」に、存在しないパスを入れたときの扱い。
+    /// 設定画面の「カスタム Steam フォルダー」に、存在しないパスを入れたときの扱い。
     /// 旧: <c>SettingsViewModel.CustomSteamFolder</c> の setter は、存在するフォルダーか空文字のときだけ保存し、
     /// それ以外は何も言わずに捨てていた。TextBox には入力が残るため、保存されたように見える（Issue #4 の 3 の実体）。
     /// 復元後: 値は保存し、警告（GUI ログの warning。ステータス行に目立つ色で出る）を出す。入力を黙って捨てない。
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         {
             _vm.CustomSteamFolder = _missingFolder;
 
-            // 入力を黙って捨てない（旧: 保存されず、何も言わなかった）
+            // 入力を黙って捨てない
             Assert.Equal(_missingFolder, _service.CustomSteamFolder);
             Assert.Equal(_missingFolder, _vm.CustomSteamFolder);
 

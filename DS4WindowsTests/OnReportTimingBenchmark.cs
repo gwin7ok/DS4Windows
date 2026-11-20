@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step5b（docs-forDIMG/MadeByAgent/Archive/Phase13-Step5b-Plan.md §7 A/B 計測）: 入力レポート処理（<c>On_Report</c>）の 1 回あたりの処理時間の<b>手動計測</b>。
+    /// 入力レポート処理（<c>On_Report</c>）の 1 回あたりの処理時間の<b>手動計測</b>。
     /// 通常のテスト実行では何もせず合格する（環境変数 <c>DS4W_RUN_BENCH=1</c> のときだけ計測する。処理時間は実行環境の負荷で揺れるため、合否の基準にしない）。
     /// before＝5b-a（<c>ControlService.On_Report</c>）、after＝5b-c 後（<c>InputReportProcessor</c>）。同じ条件で測り、悪化 5% 以内を合格基準とする。
     /// 実行例（PowerShell）:

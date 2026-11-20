@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-4-5d: プロファイルの名前変更が、プロファイル切替のスペシャルアクションの切替先へ伝わること。
+    /// プロファイルの名前変更が、プロファイル切替のスペシャルアクションの切替先へ伝わること。
     /// </summary>
     // Global.store（静的）を一時的に差し替えるため、同じコレクションで直列に実行する
     [Collection(SharedHostStateCollection.Name)]
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
 
                 var repo = TestRepositoryFactory.CreateProfileRepository(TestRepositoryFactory.CreateProfileSettingsService());
 
-                // Phase10-Step4d W7: ID のない SA（この SA は profileId を持たない）は、従来どおり、旧名との一致（大文字小文字を区別しない）で置き換える
+                // ID のない SA（この SA は profileId を持たない）は、従来どおり、旧名との一致（大文字小文字を区別しない）で置き換える
                 Assert.Equal(0, repo.RefreshProfileSwitchTargets(" ", "x"));
                 Assert.Equal(1, repo.RefreshProfileSwitchTargets("oldprofile", "NewProfile"));
                 Assert.Equal("NewProfile", match.details);

@@ -13,7 +13,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7-4（決定5＝A、決定7＝案H）: ServiceRegistration が ControlService を生成するとき、
+    /// ServiceRegistration が ControlService を生成するとき、
     /// <see cref="IStartupArguments"/> に設定された実際の起動引数（<see cref="ArgumentParser"/>）を渡すこと、
     /// および DS4Windows.Composition.AppHost.CreateHost(config, parser) が、ホストが既に構築済みの場合も起動引数を設定することを検証する。
     ///
@@ -23,11 +23,11 @@ namespace DS4WindowsTests
     /// 「ホストが先に作られている」実際の起動順序を再現するものを含める。
     ///
     /// ServiceRegistration の登録は、Program.rootHub が設定済みならそれを返すため、各テストで一時的に null にし、
-    /// 終了時に元へ戻す（Phase6-Step2 の教訓: static 状態を必ず復元する）。
+    /// 終了時に元へ戻す。
     /// </summary>
     public class ServiceRegistrationArgumentParserTests
     {
-        // Phase13-Step3: 起動引数の読み取りは、ControlService の cmdParser から OutputKbmInitializer（Initialize の時点で読む）へ移った。
+        // 起動引数の読み取りは、ControlService の cmdParser から OutputKbmInitializer（Initialize の時点で読む）へ移った。
         // 検査の対象も、ControlService が保持する値から、初期化部品が Initialize() で使うパーサー（ResolveParser）に変えた。
         private static ArgumentParser GetCmdParser(IOutputKbmInitializer initializer)
         {
@@ -113,7 +113,7 @@ namespace DS4WindowsTests
 
         private static void EnsureHostCreated()
         {
-            // Phase7-Step10e W3: AppHost.GetService は暗黙にホストを作らなくなったため、TestHost が（未構築なら）引数なしの CreateHost() で明示的に構築する。
+            // AppHost.GetService は暗黙にホストを作らなくなったため、TestHost が（未構築なら）引数なしの CreateHost() で明示的に構築する。
             Assert.NotNull(TestHost.GetService<IStartupArguments>());
             Assert.NotNull(DS4Windows.Composition.AppHost.Host);
         }

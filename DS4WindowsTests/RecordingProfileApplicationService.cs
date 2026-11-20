@@ -7,7 +7,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step1 W2（Q2＝A）: <see cref="IProfileApplicationService"/> の記録用の実装。呼ばれたことだけを記録し、実際のプロファイルの読込・適用はしない。
+    /// <see cref="IProfileApplicationService"/> の記録用の実装。呼ばれたことだけを記録し、実際のプロファイルの読込・適用はしない。
     /// スペシャルアクションのプロファイル切替・復帰が、どの条件で何回、どの入口（<c>ApplyFromAction</c>／<c>RestoreFromAction</c>／直接の <c>ApplyProfile</c>）を呼ぶかを
     /// 特性化するために使う（<see cref="SpecialActionTestScope.InstallProfileRecorder"/>）。
     /// </summary>
@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         /// 適用を呼ばれたとき、本番の <c>ProfileApplicationService.CompleteProfileApplication</c> と同じ、アクションの状態の掃除
         /// （<c>ActionManager.ClearAllEntries</c>、<c>ActionManager.ClearDeviceState</c>）を行うか（既定は true）。
         /// 本番では、この掃除でアクションの <c>BeingTriggered</c> が false に戻る。戻らないと、トリガーを離したとき
-        /// <c>ProfileSwitchActionAdapter.OnRelease</c> → <c>RestoreFromAction</c> が追加で呼ばれる（Phase8 台帳 §8 項目 11）。
+        /// <c>ProfileSwitchActionAdapter.OnRelease</c> → <c>RestoreFromAction</c> が追加で呼ばれる。
         /// </summary>
         public bool SimulateStateReset { get; set; } = true;
 

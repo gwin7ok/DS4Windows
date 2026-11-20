@@ -13,7 +13,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4-Plan.md §2.2）: <see cref="FrameOutput"/> と <see cref="ButtonOutputAction"/> のテスト。
+    /// <see cref="FrameOutput"/> と <see cref="ButtonOutputAction"/> のテスト。
     /// 現行の <c>Mapping.ResetToDefaultValue</c>（private。リフレクション）・<c>ButtonSpecialActionOutput.ResolveOutputActive</c> と同じ結果になることを確認する。
     /// Stage3 全体との比較（<c>MapCustom</c> の出力）は、配線後の W4 の結合テストで行う。
     /// </summary>
@@ -131,7 +131,7 @@ namespace DS4WindowsTests
                 int pressed = 0;
                 for (int i = 0; i < fields.buttons.Length; i++) if (fields.buttons[i]) pressed++;
                 Assert.Equal(button ? 1 : 0, pressed);
-                // Phase10 完了後の点検: パッドのボタンは、Controls と同じ変換表で写す（Back・Start は、番号が違う。以前は、番号をそのまま使い、別のボタンへ書いていた）
+                // パッドのボタンは、Controls と同じ変換表で写す（Back・Start は、番号が違う。以前は、番号をそのまま使い、別のボタンへ書いていた）
                 int expectedIndex = control >= X360Controls.LXNeg && control <= X360Controls.Start ? (int)X360ControlTables.reverseX360ButtonMapping[(int)control] : (int)control;
                 if (button) Assert.True(fields.buttons[expectedIndex], control.ToString());
             }
@@ -189,7 +189,7 @@ namespace DS4WindowsTests
 
         // ---- ButtonOutputAction: 旧 ButtonSpecialActionOutput（テスト内のオラクル）との一致 ----
 
-        // Phase13-Step4: 旧 ButtonSpecialActionOutput.ResolveOutputActive（Stage3 の残骸。本番の呼び出し元 0 件のため削除）の規則を、
+        // 旧 ButtonSpecialActionOutput.ResolveOutputActive（Stage3 の残骸。本番の呼び出し元 0 件のため削除）の規則を、
         // ButtonOutputAction の一致の検査用の基準（オラクル）として、このテストの中に残した。
         private static bool ReferenceResolveOutputActive(SpecialAction sa, int device, bool triggered, bool prevTriggered)
         {

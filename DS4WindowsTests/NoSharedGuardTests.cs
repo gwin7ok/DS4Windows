@@ -14,7 +14,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step8 W4: 状態の保持クラス 3 つ（<c>SyntheticInputState</c>／<c>MacroRuntimeState</c>／<c>StickMotionState</c>）の
+    /// 状態の保持クラス 3 つ（<c>SyntheticInputState</c>／<c>MacroRuntimeState</c>／<c>StickMotionState</c>）の
     /// 暫定の静的な窓口 <c>Shared</c> を削除したことと、コンテナの Singleton を利用者が共有していることの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q5）。
     /// </summary>

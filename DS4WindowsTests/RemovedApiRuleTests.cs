@@ -12,7 +12,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14d-Step2: 撤去した API（型・メンバー）が戻っていないことと、<c>AppHost</c> の利用者の規則を、型の検査 1 か所にまとめる。
+    /// 撤去した API（型・メンバー）が戻っていないことと、<c>AppHost</c> の利用者の規則を、型の検査 1 か所にまとめる。
     /// 旧: 各 Guard テストがソースを文字列で読み、名前が現れないことを個別に確かめていた。
     /// 型がないことは、その型への参照をコンパイルで止める（たとえば <c>Global.xxx</c> とは書けない）。メンバーは、宣言されたもの（非公開・静的を含む）を調べる。
     /// 新しく型やメンバーを撤去したときは、ここに 1 行足す（由来の Phase を行のコメントに書く）。
@@ -39,9 +39,9 @@ namespace DS4WindowsTests
             "MainWindowServiceControl",     // PhaseRV3-4（サービス操作は MainWindowsViewModel へ）
             "RelayCommand",              // PhaseRV3-1（独自のコマンドは CommunityToolkit.Mvvm ＋ CommandGuard へ。ツールキットの型は別の assembly）
             "ControlService",               // Phase27（取り付けは RuntimeBootstrapper へ。静的なスロット数の上限 CURRENT_DS4_CONTROLLER_LIMIT は Phase7-Step10e W1・W2 で撤去済み）
-            "Global",                       // Phase7-Step10d W5（Phase6〜7 の Global の参照の検査はこの 1 行に畳んだ）
+            "Global",                       // Phase7-Step10d W5
             "Program",                      // Phase7-Step5 W2（Program.rootHub）
-            "ServiceProviderHolder",        // Phase13-Step4（Phase7-Step1 W4 のラチェットもこの 1 行に畳んだ）
+            "ServiceProviderHolder",        // Phase13-Step4
             "SyntheticDispatcher",          // Phase14c-Step3（静的な橋渡し）
             "ActionRegistry",               // Phase14c-Step5（本番で未初期化の静的な登録簿）
             "DS4LightBar",                  // Phase16-Step7（静的なライトバーの色の計算は ILightbarService／LightbarService へ）
@@ -57,7 +57,7 @@ namespace DS4WindowsTests
             "BatteryReportArgs",            // Phase6-Step12（呼び出し元 0 件の旧シム）
             "ControllerRemovedArgs",        // Phase6-Step12
             "DeviceStatusChangeEventArgs",  // Phase6-Step12
-            "DS4ControlAssignementSerializer",            // Phase6-Step12（旧 DTOXml）
+            "DS4ControlAssignementSerializer",            // Phase6-Step12
             "DS4ControlAssignmentSerializerBase",         // Phase6-Step12
             "DS4ControlButtonAssignmentSerializer",       // Phase6-Step12
             "DS4ControlExtrasAssignmentSerializer",       // Phase6-Step12
@@ -81,11 +81,11 @@ namespace DS4WindowsTests
         /// <summary>撤去・移動したメンバー（型の単純名 → メンバー名）。型は本体に 1 つだけあること。</summary>
         private static readonly (string Type, string[] Members)[] RemovedMembers =
         {
-            // Phase36-B1: 静的な差し替え口は、コンストラクターで受ける工場に替えた
+            // 静的な差し替え口は、コンストラクターで受ける工場に替えた
             ("RepeatHelperToIRepeaterAdapter", new[] { "RepeaterFactoryOverride" }),
-            // Phase7-Step1 W1: 呼び出し元 0 件のメソッド
+            // 呼び出し元 0 件のメソッド
             ("BackingStore", new[] { "SaveOld", "UsedSavedProfileString", "RebuildProfileActionDicts", "GetDS4Action", "GetDS4Extra", "GetDS4KeyType", "GetDS4STrigger", "GetGyroOutModeString", "GetGyroOutModeType", "UpdateDS4CLightbarMacro" }),
-            // Phase7-Step2: 本体の呼び出しが 0 件だった契約のメンバー
+            // 本体の呼び出しが 0 件だった契約のメンバー
             ("IProfileSettingsService", new[]
             {
                 "GetLowColor", "GetChargingColor", "GetCustomColor", "GetFlashColor", "GetUseCustomLed", "GetDS4CSettings",
@@ -100,7 +100,7 @@ namespace DS4WindowsTests
                 "GetConnectionType", "GetBatteryLevel", "SetDevice", "DeviceStateChanged",
             }),
             ("IOutputSlotService", new[] { "OutputDevices", "GetOutputDevice", "IsSlotPlugin" }),
-            // Phase16-Step4b: 出力デバイスの配列と実体を契約から外した（HasOutputDevice／SendReport などのメソッドへ）
+            // 出力デバイスの配列と実体を契約から外した（HasOutputDevice／SendReport などのメソッドへ）
             ("IVirtualPadService", new[] { "OutputDevices" }),
             ("IProfileLoadTarget", new[] { "GetOutputDevice" }),
             ("IVirtualKBM", new[] { "ErrorMessage", "Version" }),
@@ -109,21 +109,23 @@ namespace DS4WindowsTests
             ("IProfileRepository", new[] { "GetProfileNames", "ProfileExists", "LoadProfileToSlot", "LoadDefaultProfile" }),
             ("ISpecialActionRepository", new[] { "AddAction", "ReplaceAction", "RemoveAction", "GetActionIndex", "GetAction", "ActionExists", "SaveActions" }),
             ("IInputDeviceRegistry", new[] { "ConnectedDevices", "DeviceCount", "IsHidHideInstalled" }),
-            // Phase7-Step4 W4: 起動前の設定の読み込みは App のブートストラップへ
+            // 起動前の設定の読み込みは App のブートストラップへ
             ("WelcomeDialog", new[] { "loadConfig" }),
-            // Phase7-Step7 W3: マクロの実行時状態は MacroRuntimeState へ
+            // マクロの実行時状態は MacroRuntimeState へ
             ("Mapping", new[] { "macrodone", "DS4ControltoInt", "macroDispatchInFlight", "macroDispatchLock", "macroControl", "macroTaskQueue", "DS4_CONTROL_MACRO_ARRAY_LEN" }),
-            // Phase7-Step8 W1・W2: SyntheticInputState への移動、本体の呼び出し 0 件、キー／ボタンのコントローラー登録簿の移動
+            // SyntheticInputState への移動、本体の呼び出し 0 件、キー／ボタンのコントローラー登録簿の移動
             ("Mapping", new[] { "MapClick", "ResetRuntimeStateForKey", "DispatchProfileActionEdge", "TakePendingRestoreProfileName", "ApplyProfileDirect", "RestoreProfileDirect", "keyButtonControllerLock", "keyButtonControllers" }),
-            // Phase7-Step8 W4: 状態の保持クラスの暫定の静的な窓口
+            // ControlActivityReader へ移った判定と、マクロ経路の静的な出力ハンドラの参照
+            ("Mapping", new[] { "IsUsingGyroForControls", "outputKBMMapping" }),
+            // 状態の保持クラスの暫定の静的な窓口
             ("SyntheticInputState", new[] { "Shared" }),
             ("MacroRuntimeState", new[] { "Shared" }),
             ("StickMotionState", new[] { "Shared" }),
-            // Phase6-Step9-2: 呼び出し元 0 件だった更新確認の旧実装
+            // 呼び出し元 0 件だった更新確認の旧実装
             ("MainWindowsViewModel", new[] { "RunUpdaterCheck", "DownloadUpstreamVersionInfo", "LauchDS4Updater", "IsNET8Available", "DownloadUpstreamUpdaterVersion", "updaterExe" }),
-            // Phase6-Step9-3: 購読者 0 件のハンドラー
+            // 購読者 0 件のハンドラー
             ("SettingsViewModel", new[] { "SettingsViewModel_CheckForUpdatesChanged" }),
-            // Phase6-Step10-1: 呼び出し元 0 件
+            // 呼び出し元 0 件
             ("Util", new[] { "ElevatedCopyUpdater" }),
         };
 

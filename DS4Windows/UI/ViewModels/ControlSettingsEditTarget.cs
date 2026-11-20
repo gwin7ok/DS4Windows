@@ -16,7 +16,7 @@ namespace DS4Windows.UI.ViewModels
     /// 対象は Default／Key／Button／Macro。<c>extras</c>（振動・ライトバー・マウス感度）は、<see cref="WriteFrom"/> では変えず、出力ピッカーの結果を
     /// <see cref="Extras"/> で取り込む（Phase10-Step3 W2。割り当てエディター自身には、Extras の欄を作らない）。
     /// Key と Button は、同じ入力（Press Key）で扱い、<b>Toggle は、Key と Button の両方に書く</b>（従来の <c>OutBinding.WriteBind</c> は、Key にしか書かず、
-    /// Toggle つきの Button が、ダイアログを開いて閉じるだけで消えた。持ち越し C-5。<c>Phase10Step2W0ButtonToggleReproTests</c> で、その挙動を固定してある）。
+    /// Toggle つきの Button が、ダイアログを開いて閉じるだけで消えた。持ち越し C-5。対応するテスト で、その挙動を固定してある）。
     /// 保存形式（<c>keyType</c> の <c>Toggle</c> フラグ）は、Button でも、すでに読み書きでき、実行側も対応済みのため、変更は要らない。
     /// </para>
     /// <para>

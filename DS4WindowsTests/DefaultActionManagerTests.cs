@@ -181,7 +181,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のとき、デバイス 4〜7 のマクロが再生されなかった。
+        /// 4 スロット固定だと、拡張スロット数が 8 のとき、デバイス 4〜7 のマクロが再生されなかった。
         /// </summary>
         [Fact]
         public void DefaultMacroPlayer_HandlesAllControllerSlots_NotJustFour()

@@ -13,7 +13,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step9-4: <c>ProfileSettingsViewModel</c>・<c>PresetMenuHelper</c>・<c>ViewModelFactory</c> の
+    /// <c>ProfileSettingsViewModel</c>・<c>PresetMenuHelper</c>・<c>ViewModelFactory</c> の
     /// Global 直接参照・Service Locator 解消の回帰ガード（<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step9-Plan.md</c> §0A.2 表D、決定1＝S9-A、決定2＝C1）。
     /// - 非定数の <c>Global.</c> 参照、<c>AppHost</c>、<c>Program.rootHub</c> が再混入していないこと。
     /// - コンストラクタの依存が必須であること（<c>ControlService</c> のみ null 許容）。
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Constructors_HaveNoOptionalServiceArguments_AndKeepTargetDevice()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる
+            // ソースの文字列ではなく、コンストラクターの引数を確かめる
             System.Reflection.ParameterInfo[] ps = typeof(DS4Windows.UI.ViewModels.ProfileSettingsViewModel).GetConstructors().Single().GetParameters();
             Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IEnvironmentService));
             Assert.Contains(ps, p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IPathService));
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ViewModelFactory_HasNoServiceLocatorInConstructor()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数を確かめる（AppHost を使わないことは RemovedApiRuleTests）
+            // ソースの文字列ではなく、コンストラクターの引数を確かめる（AppHost を使わないことは RemovedApiRuleTests）
             // 用途別の 3 つのファクトリーのコンストラクターを合わせて確かめる
             System.Reflection.ParameterInfo[] ps = new[]
             {

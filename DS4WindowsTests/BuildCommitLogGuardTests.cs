@@ -5,7 +5,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7（実機確認で、インストール済みのビルドが古いことに気づいたため）: 起動時のログの「This binary was built at …」に、ビルドのコミットのハッシュも出す。
+    /// 起動時のログの「This binary was built at …」に、ビルドのコミットのハッシュも出す。
     /// ビルド（<c>DS4WinWPF.csproj</c> の <c>UpdateLatestBuildSummary</c>）が <c>build_timestamp.txt</c> に「commit=ハッシュ（未コミットの変更があれば -dirty）」を書き、
     /// 起動（<c>App.xaml.cs</c>）がそれを読んでログに出す。ここでは、その契約（書式と、読み取りの正規表現）をソースの照合で守る。
     /// </summary>
@@ -20,7 +20,7 @@ namespace DS4WindowsTests
 
             Assert.Contains("git rev-parse --short=7 HEAD", text);
             Assert.Contains("git status --porcelain", text);
-            Assert.Contains("AssemblyMetadataAttribute", text);   // Phase14: build_timestamp.txt をやめ、アセンブリに埋め込む
+            Assert.Contains("AssemblyMetadataAttribute", text);   // build_timestamp.txt をやめ、アセンブリに埋め込む
             Assert.Contains("<_Parameter1>BuildCommit</_Parameter1>", text);
             Assert.Contains("<_Parameter1>BuildTimestamp</_Parameter1>", text);
             Assert.DoesNotContain("Name=\"UpdateLatestBuildSummary\"", text);
@@ -31,7 +31,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStartupLogShowsTheCommit_AndStillReadsTheOldFormat()
         {
-            // Phase9 9-F F-1a: 文言づくりは BuildStampReader へ移した（App.xaml.cs は、それを呼んでログに出す）
+            // 文言づくりは BuildStampReader へ移した（App.xaml.cs は、それを呼んでログに出す）
             string path = SourceFileLocator.Find("DS4Windows/Composition/Startup/BuildStampReader.cs");
             if (path == null) return;
             string text = File.ReadAllText(path);

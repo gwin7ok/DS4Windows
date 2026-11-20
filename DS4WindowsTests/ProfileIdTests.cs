@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4d-Plan.md §3・§4 W1）: プロファイルの固定 ID。プロファイル XML のルート直下の先頭に <c>&lt;ProfileId&gt;</c>（GUID の N 形式）を保存し、
+    /// プロファイルの固定 ID。プロファイル XML のルート直下の先頭に <c>&lt;ProfileId&gt;</c>（GUID の N 形式）を保存し、
     /// 上書き保存では保ち、別名で保存・新規作成では新しい ID を振る。名前の変更（ファイル名の変更）では変わらない。
     /// 登録簿（<see cref="IProfileIdentityService"/>）は、起動時に、ID のないファイルへ ID を書き、ファイルのコピーで重複した ID に新しい ID を振って書く。参照は、まだ名前のまま。
     /// </summary>

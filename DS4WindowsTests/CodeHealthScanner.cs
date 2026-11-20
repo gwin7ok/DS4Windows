@@ -138,7 +138,7 @@ namespace DS4WindowsTests
             return -1;
         }
 
-        // 空の catch（本体が空白だけ）・コメントだけの catch・ログを包む try・イベントハンドラー以外の async void（PhaseRV2-7）。
+        // 空の catch（本体が空白だけ）・コメントだけの catch・ログを包む try・イベントハンドラー以外の async void。
         private static readonly Regex EmptyCatchBlank = new Regex(
             @"\bcatch\b(?:\s*\([^)]*\))?(?:\s*when\s*\([^)]*\))?\s*\{\s*\}", RegexOptions.Compiled);
 

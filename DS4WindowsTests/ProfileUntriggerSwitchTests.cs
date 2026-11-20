@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5b-W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5b-Plan.md §3 の W3）: 復帰を持つ Profile（Unload on trigger release）の、ロールバック・割り当て・性能の確認。
+    /// 復帰を持つ Profile（Unload on trigger release）の、ロールバック・割り当て・性能の確認。
     /// 既定の一覧は 7.5a で Profile を含むため変わらない。プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

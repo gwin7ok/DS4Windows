@@ -13,7 +13,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I5 の修正（実機確認 4 で発見）: SA の Extras の束縛が、実際のエンジンの流れ（プロファイルの SA の一覧の順に <c>ProcessOwned</c>）で処理されること。
+    /// SA の Extras の束縛が、実際のエンジンの流れ（プロファイルの SA の一覧の順に <c>ProcessOwned</c>）で処理されること。
     /// 以前は、Extras の束縛（合成の SA）が SA の一覧になく、一度も処理されず、ライトバー・振動・感度が動かなかった（束縛を作るところしか検査していなかった）。
     /// 付随する束縛（<see cref="TriggerBinding.PrimarySource"/>）は、SA 本体の <c>ProcessOwned</c> が、一緒に処理する。
     /// </summary>

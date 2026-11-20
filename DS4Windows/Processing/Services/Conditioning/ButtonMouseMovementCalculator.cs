@@ -13,7 +13,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// 旧 <c>Mapping.getMouseMapping</c> の計算を、そのまま移したもの（<c>ctrl</c>／<c>eState</c> の引数を外し、設定と経過時間は引数で受ける。計算結果は変わらない）。
     /// マウス加速の状態は、
     /// ユーザー判断（Q2）によりデバイスごとに持つ（2 台以上のとき、互いの加速を邪魔しない。1 台のときの挙動は変わらない）。
-    /// 値の特性化は <c>Phase9BButtonMouseMovementDifferentialTests</c>が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class ButtonMouseMovementCalculator : IButtonMouseMovementCalculator
     {

@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             Assert.False(vm.HasErrors);
         }
 
-        // Phase10-Step6 I6c（ユーザー承認、2026-10-22）: 解除トリガーの機能は廃止済みで、入力する画面もないため、旧データ用の「No unload triggers specified」の表示ごと削除した。
+        // 解除トリガーの機能は廃止済みで、入力する画面もないため、旧データ用の「No unload triggers specified」の表示ごと削除した。
         // Toggle の Key は、解除トリガーがなくても、エラーなしで保存できる
         [Fact]
         public void PressKey_Toggle_IsValid_AndShowsNoUnloadError()
@@ -211,7 +211,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheErrorsAreShownWithARedBorder_OnTheTargetOfEachRequiredValue()
         {
-            // 名前欄・トリガー欄と同じ仕組み（ValidatesOnNotifyDataErrors）で、必須の値がない入力を赤い枠で示す（Phase10-Step4c W3）
+            // 名前欄・トリガー欄と同じ仕組み（ValidatesOnNotifyDataErrors）で、必須の値がない入力を赤い枠で示す
             string path = SourceFileLocator.Find("DS4Windows/UI/AssignmentEditor.xaml");
             if (path == null) return;
 

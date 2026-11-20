@@ -17,7 +17,7 @@ namespace DS4Windows.Output.Services
     /// 旧 <c>ControlService</c> の UDP モーション系（Cemuhook 互換サーバーの作成・開始・停止、モーションの送出のハンドラー <c>PrepareDevUDPMotion</c>、
     /// スムージングのフィルター、出力バッファー、状態 <c>_udpServer</c>／<c>udpChangeStatus</c>）を、そのまま移したもの。
     /// <c>ControlService</c> が持つもの（デバイスの状態、イベントスレッド、パッドの情報）は <see cref="IDeviceSlotState"/>（スロットごとの状態。直接注入で受ける）から受ける。パッドの情報（<c>GetPadDetailForIdx</c>）は、旧 <c>ControlService</c> から本クラスへ移した。
-    /// 値の特性化は <c>Phase9EUdpMotionServiceTests</c> が守る。
+    /// 値の特性化は 対応するテスト が守る。
     /// </summary>
     public sealed class UdpMotionService : IUdpMotionService
     {

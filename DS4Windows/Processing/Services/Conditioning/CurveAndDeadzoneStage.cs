@@ -87,7 +87,7 @@ namespace DS4Windows.Processing.Services.Conditioning
 
 
             // 左右のスティックのデッドゾーン（Radial・Axial、Radial の外側の出力）は、共通の処理（IStickDeadZoneProcessor）が行う。
-            // 以前は、ここに、左右でほぼ同じコードが 2 回あった（約 470 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests が守る
+            // 以前は、ここに、左右でほぼ同じコードが 2 回あった（約 470 行）。値は 対応するテスト が守る
             _stickDeadZone.Process(lsMod, cState.LX, cState.LY, ref dState.LX, ref dState.LY, ref dState.OutputLSOuter);
             _stickDeadZone.Process(rsMod, cState.RX, cState.RY, ref dState.RX, ref dState.RY, ref dState.OutputRSOuter);
 
@@ -97,7 +97,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             */
 
             // トリガーのデッドゾーン（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）は、L2／R2 とも共通の処理（ITriggerDeadZoneProcessor）が行う。
-            // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests と Phase7bTriggerDeadZoneRoundingTests が守る
+            // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は 対応するテスト が守る
             TriggerDeadZoneZInfo l2ModInfo = settings.ForSlot(device).Triggers.L2Mod;
             if (l2ModInfo.deadZone > 0 || l2ModInfo.antiDeadZone > 0 || l2ModInfo.maxZone != 100 || l2ModInfo.maxOutput != 100.0)
                 _triggerDeadZone.Process(l2ModInfo, cState.L2, ref dState.L2);
@@ -180,7 +180,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 int gyroX = cState.Motion.accelX, gyroZ = cState.Motion.accelZ;
 
                 // ジャイロの補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）は、X／Z とも共通の処理（IGyroControlsProcessor）が行う。
-                // 以前は、ここに、X と Z で同じコードが 2 回あった（約 150 行）。値は Phase9A2GyroControlsGoldenTests が守る。出力カーブを適用する条件は、X と Z で違うため、ここに残す
+                // 以前は、ここに、X と Z で同じコードが 2 回あった（約 150 行）。値は 対応するテスト が守る。出力カーブを適用する条件は、X と Z で違うため、ここに残す
                 dState.Motion.outputAccelX = _gyroControls.Correct(gyroX, SXD, SXMax, sxAntiDead, sxsens);
                 dState.Motion.outputAccelZ = _gyroControls.Correct(gyroZ, SZD, SZMax, szAntiDead, szsens);
 

@@ -5,7 +5,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W1: <see cref="XamlTestHelper"/> が、XAML の書式（空白・改行・属性の順序・インデント・「/&gt;」の前の空白）に依存せず、
+    /// <see cref="XamlTestHelper"/> が、XAML の書式（空白・改行・属性の順序・インデント・「/&gt;」の前の空白）に依存せず、
     /// 構造だけで読めること。XAML の整形を適用しても、これを使うテストが壊れないことの根拠。
     /// </summary>
     public class XamlTestHelperTests

@@ -14,7 +14,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step5b 5b-a: 入力レポートの処理（旧 <c>ControlService.On_Report</c>。5b-c で <c>InputReportProcessor</c> へ移した）の特性テスト。
+    /// 入力レポートの処理の特性テスト。
     /// 移す前の挙動を固定し、移した後も同じ結果になることを確かめる。入口は <see cref="Invoke"/> に集約している
     /// （5b-c で、呼び出し先を <c>IInputReportProcessor.OnReport</c> に替えた）。
     /// デバイスは <see cref="TestDs4Device"/>（実機の HID なし）に、レポート処理が読む保護フィールドをリフレクションで与えて使う。
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
             for (int i = 0; i < n; i++) Invoke(d, Slot);
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
             _output.WriteLine($"OnReport の割り当て: {allocated} bytes / {n} 回");
-            Assert.Equal(0, allocated);   // 合格基準（Phase13-Step5b-Plan §6）: 1 レポートあたりの割り当ては 0
+            Assert.Equal(0, allocated);   // 合格基準: 1 レポートあたりの割り当ては 0
         }
     }
 }

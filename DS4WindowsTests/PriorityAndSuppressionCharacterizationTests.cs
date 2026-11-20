@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §5。docs-forDIMG/MadeByAgent/Archive/Phase10-Assignment-UI-Unification-Plan.md §7）: Controls の割り当てと SA が、同じボタンにあるときの
+    /// Controls の割り当てと SA が、同じボタンにあるときの
     /// 優先順位と抑制の、現行の挙動の特性化。製品コードは変えない。フレーム列（押す・離す）を <c>Mapping.MapCustom</c> に入力し、次を観察する。
     /// <list type="bullet">
     /// <item><description>Controls の Key の実行: 合成 SpecialAction（<c>Synthetic_Key_{device}_{control}</c>）の <c>BeingTriggered</c>（<c>ControlsKeyTestScope</c> と同じ観測）。</description></item>
@@ -229,7 +229,7 @@ namespace DS4WindowsTests
         }
 
         // ---- R6: アナログ（L2 の軸）。閾値に達する前は Controls が出て、成立後は SA が優先 ----
-        // Phase10-Step4c W4（ユーザー承認、2026-10-21）: Controls の Key（デジタルな出力）は SA と同じ閾値（100 を超える）で判定する。
+        // Controls の Key（デジタルな出力）は SA と同じ閾値（100 を超える）で判定する。
         // そのため、Key では、閾値に達する前の Controls の出力はなくなった（閾値までは、どちらも成立しない）。アナログな出力（パッドの軸）は従来の判定のまま
 
         [Fact]

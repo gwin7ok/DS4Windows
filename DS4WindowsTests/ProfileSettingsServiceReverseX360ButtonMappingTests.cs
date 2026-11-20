@@ -6,7 +6,7 @@ using DS4Windows.Core.Model;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step3-6a（決定 R1）: <c>IProfileSettingsService.ReverseX360ButtonMapping</c> が、
+    /// <c>IProfileSettingsService.ReverseX360ButtonMapping</c> が、
     /// 起動時に1回作られて以後変化しない定数表 <c>Global.reverseX360ButtonMapping</c> をコピーせずに返すことを検証する。
     /// （コピー版 <c>GetReverseX360ButtonMapping()</c> は、呼び出し元が 0 件のため Phase7-Step2 W1 で削除し、その確認テストも削除した。）
     /// この表は毎入力レポートの経路（<c>Mapping.ProcessControlSettingAction</c>）から引かれるため、

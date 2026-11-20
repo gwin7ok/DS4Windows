@@ -7,7 +7,7 @@ namespace DS4Windows.Actions.Tests
     class TestServiceProvider : IServiceProvider
     {
         private readonly object[] svcs;
-        // Phase7-Step8 W2: KeyAction は ActionManager（静的ファサード）経由で IKeyButtonControllerRegistry を解決するため、複数のサービスを返せるようにした
+        // KeyAction は ActionManager（静的ファサード）経由で IKeyButtonControllerRegistry を解決するため、複数のサービスを返せるようにした
         public TestServiceProvider(params object[] svcs) { this.svcs = svcs; }
         public object GetService(Type serviceType)
         {

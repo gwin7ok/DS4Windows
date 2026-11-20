@@ -9,7 +9,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step9 W2（Q2＝A）: <c>Mapping</c> と状態の保持クラス 3 つが <c>Global</c> を参照しないことと、
+    /// <c>Mapping</c> と状態の保持クラス 3 つが <c>Global</c> を参照しないことと、
     /// 新設した <c>ControllerLimits</c>／<c>NumericUtil</c> が旧 <c>Global</c> の値・計算と同一であることの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
             Assert.Equal((byte)128, ControllerLimits.StickAxisMidpoint);
         }
 
-        // Phase7-Step10a W4: Global の別名（定数 5 つ・Clamp）は削除した。再導入の禁止は DeadShimRemovalGuardTests が固定する。
+        // Global の別名（定数 5 つ・Clamp）は削除した。再導入の禁止は DeadShimRemovalGuardTests が固定する。
 
         [Theory]
         [InlineData(0.0, -5.0, 10.0)]

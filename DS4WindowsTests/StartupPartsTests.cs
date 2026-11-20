@@ -7,7 +7,7 @@ using DS4Windows.Composition.Startup;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-F F-1a（docs-forDIMG/MadeByAgent/Archive/Phase9-F-Plan.md §5）: 起動処理から切り出した、状態を持たない部品の値の特性化。
+    /// 起動処理から切り出した、状態を持たない部品の値の特性化。
     /// 旧 <c>App.Application_Startup</c> の中の処理と同じ結果を返すこと（文言とレベルは変えない）。
     /// </summary>
     public class StartupPartsTests
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
         {
             Assert.Equal("This binary was built at 2026-10-22 21:50:14 (commit 0bdfe58)",
                 BuildStampReader.BuildLogMessage("built 2026-10-22 21:50:14 commit=0bdfe58\n"));
-            // 日時は、読み取った文字列のまま出す（旧コードと同じ。「T」区切りもそのまま）
+            // 日時は、読み取った文字列のまま出す
             Assert.Equal("This binary was built at 2026-10-22T21:50:14 (commit 0bdfe58-dirty)",
                 BuildStampReader.BuildLogMessage("2026-10-22T21:50:14 commit=0bdfe58-dirty"));
         }

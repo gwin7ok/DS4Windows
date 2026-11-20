@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step1（R-01）: 名前空間 → 層の対応と、層の組み合わせ → 規則の対応。
+    /// 名前空間 → 層の対応と、層の組み合わせ → 規則の対応。
     /// 状態を持たない純粋関数だけにして、<see cref="LayerMapTests"/> で単体テストする。
     /// </summary>
     public static class LayerMap

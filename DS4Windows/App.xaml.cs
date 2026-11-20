@@ -98,7 +98,7 @@ namespace DS4Windows
             skipSave = true;
 
             // Phase9 9-F F-1b（docs-forDIMG/MadeByAgent/Archive/Phase9-F-Plan.md §5）: 起動の手順を、順に呼ぶだけにした（各手順は、下のメソッド。順序と、早期の終了の条件は、従来のまま。
-            // 呼び出しの順序は Phase9F1StartupOrderGuardTests が守る）
+            // 呼び出しの順序は 対応するテスト が守る）
             RunPreHostBootstrap(e);
 
             ArgumentParser parser = new ArgumentParser();

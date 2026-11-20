@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14c-Step6（R-18）: DI の登録のソース。登録は層ごとの partial ファイル（<c>DS4Windows/Composition/ServiceRegistration*.cs</c>）に分かれているため、
+    /// DI の登録のソース。登録は層ごとの partial ファイル（<c>DS4Windows/Composition/ServiceRegistration*.cs</c>）に分かれているため、
     /// 登録の文字列を検査するテストは、全部をファイル名の順につないだ文字列を使う。ソースが見つからない環境では <c>null</c>。
     /// <paramref name="stripComments"/> が true のときは、コメント（<c>/* */</c> と <c>//</c>）を除く（コメントの中の旧名で誤検出しないため）。
     /// </summary>

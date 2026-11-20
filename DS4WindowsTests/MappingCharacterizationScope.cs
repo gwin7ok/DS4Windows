@@ -14,7 +14,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W1: <c>Mapping</c>（静的）の特性化テストの共通の土台。
+    /// <c>Mapping</c>（静的）の特性化テストの共通の土台。
     /// - 専用のデバイス添字（<see cref="Device"/>）を使い、他のテストと状態を共有しない。
     /// - <c>Mapping.globalState</c>／<c>deviceState</c> を新品へ差し替え、<c>Global.outputKBMHandler</c> へ記録用のスタブを差し、
     ///   KBM マッピングの定数を初期化する。終了時にすべて元へ戻す。
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
 
             _savedGlobalState = Synthetic.GlobalState;
             _savedDeviceState = Synthetic.DeviceState[Device];
-            _savedHandler = _handlerOwner.Handler; // Phase7-Step8 W3: 旧 Global.outputKBMHandler
+            _savedHandler = _handlerOwner.Handler; // 旧 Global.outputKBMHandler
             _savedMapping = Settings.OutputKBMMapping;
 
             Synthetic.GlobalState = new SyntheticState();
@@ -78,7 +78,7 @@ namespace DS4WindowsTests
             dcs.action.actionBtn = target;
             _touched.Add(control);
 
-            // Phase8-Step8 8a: 旧経路（Controls タブの割り当てを Mapping が直接処理する）を削除したため、割り当てを変えたら、束縛を組み立て直して登録する
+            // 旧経路（Controls タブの割り当てを Mapping が直接処理する）を削除したため、割り当てを変えたら、束縛を組み立て直して登録する
             TestHost.GetService<DS4Windows.Processing.Actions.IActionRegistry>().Replace(Device, TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>().Build(Device));
         }
 

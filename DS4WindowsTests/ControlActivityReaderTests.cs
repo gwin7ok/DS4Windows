@@ -8,7 +8,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-B（docs-forDIMG/MadeByAgent/Archive/Phase9-B-Plan.md）: <see cref="ControlActivityReader"/>（旧 <c>Mapping.GetBoolMappingExternal</c>）の値の特性化。
+    /// <see cref="ControlActivityReader"/>の値の特性化。
     /// ボタン、トリガー（100 を超える）、スティックの方向（中心から 55 を超える）、ジャイロ（Controls モードのときだけ。しきい値 67）の境界を調べる。
     /// タッチパッド・スワイプは <c>Mouse</c> を作れないため、<c>tp == null</c>（常に false）だけを調べる。
     /// </summary>

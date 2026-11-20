@@ -8,7 +8,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// LaunchProcessAction（スペシャルアクション「プログラム起動」）の単体テスト。
-    /// Phase6-Step9b-3（F06）: DI 移行前（Mapping.cs の specActionLaunchProc）の仕様へ戻したことを固定する。
+    /// DI 移行前（Mapping.cs の specActionLaunchProc）の仕様へ戻したことを固定する。
     /// - extra に "$hidden" を含むときだけ、その語を 1 回取り除き、非表示で起動する（.bat/.cmd は %COMSPEC% /C）。
     /// - それ以外は UseShellExecute = true、非表示にせず、extra をそのまま引数に渡す。
     /// </summary>

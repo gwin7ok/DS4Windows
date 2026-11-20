@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7b-3: プロファイル編集画面の「編集内容の即時反映」を廃止した構造を固定する回帰ガード。
+    /// プロファイル編集画面の「編集内容の即時反映」を廃止した構造を固定する回帰ガード。
     /// - 編集スロットは常に作業スロット（Global.TEST_PROFILE_INDEX）で、呼び出し元（MainWindow）は編集スロットを指定しない。
     /// - キャンセルはコントローラーのスロットへプロファイルを読み込み直さない。
     /// - 適用は実機（targetDevice）へ ApplyProfileToSlot する。
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
 
             var checks = new (string Call, int MinCount)[]
             {
-                ("CreateControlActionEditor(", 1),   // Phase10-Step3 W4: Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった（旧: CreateBindingWindow の 6 か所）
+                ("CreateControlActionEditor(", 1),   // Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった
                 ("CreateAssignmentEditor(", 1),
                 ("CreateAssignmentEditorFor(", 1),
                 ("CreateProfileSettingsViewModel(", 1),
@@ -156,11 +156,11 @@ namespace DS4WindowsTests
                 }
             }
 
-            // Phase6-Step9-4: ファクトリ以外での ProfileSettingsViewModel の生成（レガシーフォールバック）は無い
+            // ファクトリ以外での ProfileSettingsViewModel の生成（レガシーフォールバック）は無い
             Assert.DoesNotContain("new ProfileSettingsViewModel(", text);
 
             // スティック再校正は、実機がなければ不可とし、ウィンドウには実機（targetDevice）を渡す
-            // （Phase6-Step10-2-4a: StickCalibrationWindow は IEditorWindowFactory 経由で生成する）
+            //
             string calibrate = SourceText.Method(text, "private void CalibrateStick_OnClick(");
             Assert.Contains("if (!HasTargetDevice)", calibrate);
             Assert.Contains("CreateStickCalibrationWindow(stick, targetDevice, profileSettingsVM)", calibrate);
@@ -213,7 +213,7 @@ namespace DS4WindowsTests
                     $"ShowProfileEditor({a}) に編集スロットが渡されている（編集スロットは ProfileEditor 内部で決める）");
             }
 
-            // Phase7-Step5 W5: ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
+            // ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
             Assert.Contains("profileSelection.CreateEditor(targetDevice)", text);
             Assert.Contains("_editorWindowFactory.CreateProfileEditor(targetDevice)", SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs"));
             string factory = SourceText.ReadCode("DS4Windows/UI/Services/ProfileEditorFactory.cs");

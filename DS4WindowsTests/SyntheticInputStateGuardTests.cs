@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W2: 合成入力の状態（globalState／deviceState／syncStateLock）を <c>SyntheticInputState</c> へ切り出したことと、
+    /// 合成入力の状態（globalState／deviceState／syncStateLock）を <c>SyntheticInputState</c> へ切り出したことと、
     /// <c>BackingStore</c> から <c>Mapping</c> への逆参照を <c>ActionsLoaded</c> イベントへ置き換えたことの回帰ガード。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step7-Plan.md（Q2〜Q5）。
     /// </summary>
@@ -27,7 +27,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoSyntheticStateOfItsOwn_OnlyForwarders()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、Mapping のフィールド（readonly と型）と、保持クラスと同じ参照であることを確かめる
+            // ソースの文字列ではなく、Mapping のフィールド（readonly と型）と、保持クラスと同じ参照であることを確かめる
             Type mapping = typeof(DS4Windows.Processing.Mapping);
             Assert.DoesNotContain("SyntheticState", mapping.GetNestedTypes(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Select(t => t.Name));
             foreach ((string field, Type type) in new[]
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
 
             Assert.False(Regex.IsMatch(store, @"\bMapping\."), "BackingStore が Mapping を参照している");
             Assert.Contains("public event Action ActionsLoaded;", store);
-            // Phase7-Step10c W2: Actions.xml の読込（2 経路）は SpecialActionsXmlSerializer へ移した。発行元（イベントとメソッド）は BackingStore のまま
+            // Actions.xml の読込（2 経路）は SpecialActionsXmlSerializer へ移した。発行元（イベントとメソッド）は BackingStore のまま
             Assert.Contains("public void RaiseActionsLoaded()", store);
             string actionsXml = SourceText.ReadCode("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs");
             if (actionsXml == null) return;
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_SubscribesTheResetOnce_AndRegistersTheSharedState()
         {
-            // Phase14d-Step3: 登録の文字列ではなく、コンテナが組み立てた BackingStore の購読者が、コンテナの ActionsLoadedRuntimeReset であることを確かめる
+            // 登録の文字列ではなく、コンテナが組み立てた BackingStore の購読者が、コンテナの ActionsLoadedRuntimeReset であることを確かめる
             // （購読が 1 つだけになる差し替えの振る舞いは BackingStoreActionsLoadedHandlerTests）
             var store = TestHost.GetService<DS4Windows.Core.Settings.BackingStore>();
             var handler = (Action)typeof(DS4Windows.Core.Settings.BackingStore).GetField("_actionsLoadedHandler", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).GetValue(store);
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
             int state = reset.IndexOf("_syntheticInput.ResetAll();");
             int toggled = reset.IndexOf("_actionManager.ClearAllToggledOn();");
             int log = reset.IndexOf("Log_Actions_RuntimeReset");
-            // Phase8-Fix-MacroRepeatUnify（D5）: 旧 macrodone の解除（_macroRuntime.ClearMacroDone）は削除した
+            // 旧 macrodone の解除（_macroRuntime.ClearMacroDone）は削除した
             Assert.True(state >= 0 && state < toggled && toggled < log);
             Assert.DoesNotContain("ClearMacroDone", reset);
         }

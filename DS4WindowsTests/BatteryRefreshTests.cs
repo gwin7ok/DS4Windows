@@ -5,7 +5,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6（S9-5 の確認で判明）: Controllers タブの電池表示は、変化通知だけでなく 60 秒ごとにも読み直す
+    /// Controllers タブの電池表示は、変化通知だけでなく 60 秒ごとにも読み直す
     /// （通知を取りこぼすと、表示が古い値のまま止まっていた）。文字列が変わったときだけ通知し、コントローラーが外れたら止める。
     /// </summary>
     public class BatteryRefreshTests
@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNotification_ReachesTheBinding_ThroughPropertyChanged()
         {
-            // 根本原因: CompositeDeviceModel は ObservableObject（INotifyPropertyChanged）のため、WPF は BatteryStateChanged（旧式のイベント）を無視する
+            // 根本原因: CompositeDeviceModel は ObservableObject（INotifyPropertyChanged）のため、WPF は BatteryStateChangedを無視する
             string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (code == null) return;
 

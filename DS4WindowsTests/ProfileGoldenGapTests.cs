@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4b W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4b-Plan.md §3.1。4b-0）: プロファイルの読込・保存（<c>LegacyProfileXmlSerializer.LoadProfile</c>／<c>SaveProfile</c>）の
+    /// プロファイルの読込・保存（<c>LegacyProfileXmlSerializer.LoadProfile</c>／<c>SaveProfile</c>）の
     /// 節ごとの分解（W2 以降）の前に、既存のゴールデン（<c>GoldenPersistenceTests</c>）で未検証だった節を固定する。
     /// <list type="bullet">
     /// <item><description>gap: 状態の自動入力（<c>BackingStoreStateFiller</c>）が変えられない項目（曲線のモード＝private なフィールド、ライトバーのモード、
@@ -103,12 +103,12 @@ namespace DS4WindowsTests
             }
         }
 
-        // ---- legacy（旧形式の読込専用の要素）----
+        // ---- legacy----
 
         private static string LegacyXml(PersistenceGoldenContext ctx)
         {
             string xml = GapXml(ctx);
-            // 新しい形式の出力モードの要素を取り除き（旧形式のフォールバックの経路を通す）、旧形式の要素を足す
+            // 新しい形式の出力モードの要素を取り除き、旧形式の要素を足す
             xml = Regex.Replace(xml, "<GyroOutputMode>.*?</GyroOutputMode>", string.Empty, RegexOptions.Singleline);
             xml = Regex.Replace(xml, "<TouchpadOutputMode>.*?</TouchpadOutputMode>", string.Empty, RegexOptions.Singleline);
             // ジャイロのマウスの平滑化は、新しい形式のグループを取り除き、旧形式の GyroSmoothing／GyroSmoothingWeight から読ませる

@@ -110,7 +110,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IControlBindingBuilder, ControlBindingBuilder>();
 
             // 入力の評価の窓口（Singleton）。Mapping の ControlService への逆依存は解消した（IDeviceSlotState／IProfileActionProvider／ISpecialActionRepository をコンストラクターで受ける）。
-            // 遅延取得（Func<I…>）で受けるのは、本物の循環がある DefaultActionManager（IMapping）と ProfileApplicationService（IActionBindingBuilder）だけ（Phase13FuncRatchetGuardTests の許可リスト）。
+            // 遅延取得（Func<I…>）で受けるのは、本物の循環がある DefaultActionManager（IMapping）と ProfileApplicationService（IActionBindingBuilder）だけ（対応するテスト の許可リスト）。
             services.AddSingleton<IStickDeadZoneProcessor, StickDeadZoneProcessor>();   // スティックのデッドゾーンの補正（状態なし）
             services.AddSingleton<IOutputCurveProcessor, OutputCurveProcessor>();   // スクエアスティックと出力カーブ（状態なし）
             services.AddSingleton<ITriggerDeadZoneProcessor, TriggerDeadZoneProcessor>();   // トリガーのデッドゾーンの補正（状態なし）

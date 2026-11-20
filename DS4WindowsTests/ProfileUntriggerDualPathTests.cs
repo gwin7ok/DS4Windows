@@ -13,12 +13,12 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5b-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5b-Plan.md §3 の W1）: Profile 種別の復帰（「Unload on trigger release」＝<c>AutomaticUntrigger</c>）の特性化。
-    /// コードは変えない。復帰の合図の置き場所（旧 <c>Mapping</c>／新 エンジン）に依存しない、外から見える動き（復帰の回数）を、旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で比べる。
+    /// Profile 種別の復帰（「Unload on trigger release」＝<c>AutomaticUntrigger</c>）の特性化。
+    /// コードは変えない。復帰の合図の置き場所に依存しない、外から見える動き（復帰の回数）を、旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で比べる。
     /// W1 の時点では、ビルダーが復帰つきの Profile の束縛を作らないため、新経路の指定でも旧経路が処理する。W2 で新経路が復帰を持つと、同じ検査が新経路を確かめる。
     /// 観察は <see cref="RecordingProfileApplicationService"/>（<c>InstallProfileRecorder</c>）で、実際のプロファイルの読込・適用は走らせない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileUntriggerDualPathTests
@@ -110,7 +110,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AProfileApplyWhileHeld_KeepsTheSignal_AndTheReleaseStillRestoresOnce()
         {
-            // Phase7b W1 の観点: 切替の適用の後始末（ClearDeviceState など）が入っても、復帰の合図は消えない
+            // 切替の適用の後始末（ClearDeviceState など）が入っても、復帰の合図は消えない
             ControllerState[] frames = { Frame(false), Frame(true), Frame(true), Frame(true), Frame(false), Frame(false) };
 
             var counts = Run("L1", frames, beforeFrame: (t, i) =>

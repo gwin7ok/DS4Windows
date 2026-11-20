@@ -10,7 +10,7 @@ namespace DS4WindowsTests
     /// Phase6-Step9b-2（F02）の回帰テスト。
     /// F02: 2026-09-04（31dddc43）で IManagedActionManager／IControllerRegistry の登録が巻き込み削除され、
     ///      トグルの状態の更新が例外になり（呼び出し元が握りつぶす）IsToggledOn が true にならなかった。
-    /// Phase13-Step4: 静的 ActionManager と ServiceProviderHolder（F07: GetRequiredService の検査を含む）を廃止したため、
+    /// 静的 ActionManager と ServiceProviderHolder（F07: GetRequiredService の検査を含む）を廃止したため、
     ///      管理役を注入して直接使う形に書き換えた。
     /// </summary>
     // 共有のテスト用ホストを使うテストは同じコレクションで直列に実行する
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         {
             const int device = 0;
             SpecialAction sa = null;
-            // Phase7-Step8 W2: DefaultActionManager は Func<IMapping>（切断時の後始末）を必須とする。合成アクションのキャッシュは Mapping の instance が持つ
+            // DefaultActionManager は Func<IMapping>（切断時の後始末）を必須とする。合成アクションのキャッシュは Mapping の instance が持つ
             var mapper = TestMappingFactory.Create();
             var manager = new DefaultActionManager(() => mapper);
             try
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
                 sa = SyntheticKeyActionFactory.Create(device, 91, 0x41, toggle: true, useScan: false);
                 Assert.True(sa.keyType.HasFlag(DS4KeyType.Toggle));
 
-                // Phase8-Step8 8c: 系統 B の DispatchTriggerEdge は削除した。Toggle の状態の遷移は、新経路の束縛（ControlToggleOutputAction ほか）のテストが確かめる。
+                // 系統 B の DispatchTriggerEdge は削除した。Toggle の状態の遷移は、新経路の束縛（ControlToggleOutputAction ほか）のテストが確かめる。
                 manager.SetToggledOn(sa, device, true);
                 Assert.True(manager.GetStateFor(sa, device).IsToggledOn);
 

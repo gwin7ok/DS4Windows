@@ -16,7 +16,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step1 W2b（docs-forDIMG/MadeByAgent/Archive/Phase8-Step1-SlotLimit-Fix-Plan.md）: 「デバイス上限が 4 前提」だった箇所の回帰ガード。
+    /// 「デバイス上限が 4 前提」だった箇所の回帰ガード。
     /// 上限は <see cref="ControllerLimits.MaxControllerCount"/>（8）。
     ///  - A-1: <c>Mapping.nowAction</c>／<c>oldnowAction</c> が 4 要素で、<c>delayTime</c> のアクションがデバイス 4〜7 で例外になっていた（上流の 2015 年から。8 スロット化の更新漏れ）。
     ///  - B-1: <c>OutputSlotPersistDTO.MapTo</c> が出力スロットの添字を 0〜3 に限り、5〜8 番目の恒久スロットが復元されなかった。
@@ -33,9 +33,9 @@ namespace DS4WindowsTests
             Assert.NotNull(mapping);
             string[] perDevice =
             {
-                // Phase8-Step4 W4: nowAction／oldnowAction／suppressedTriggerButtons は、_triggerInputs（Delay）とエンジンへ移した
+                // nowAction／oldnowAction／suppressedTriggerButtons は、_triggerInputs（Delay）とエンジンへ移した
                 "_triggerInputs", "_frameOutputs", "fadetimer", "prevFadetimer", "lastColor",
-                "deviceRuntime",   // Phase8-Step8 8a: held／customMapQueue は旧経路の削除で消えた
+                "deviceRuntime",   // held／customMapQueue は旧経路の削除で消えた
             };
 
             foreach (string name in perDevice)

@@ -14,7 +14,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §3.1・§3.2・§6）: Controls の割り当ての、SA 専用の種別と項目（型のある項目 <see cref="ControlSpecialItem"/>）の、
+    /// Controls の割り当ての、SA 専用の種別と項目（型のある項目 <see cref="ControlSpecialItem"/>）の、
     /// プロファイル XML（<c>&lt;Control&gt;&lt;Special&gt;</c>）への保存・読み込み（往復、既定の値は書かない、文化に依らない、壊れた要素の扱い、優先順位）と、
     /// <see cref="DS4ControlSettings"/> のリセット・編集用のコピーでの扱い。画面・実行は、まだ関係しない。
     /// </summary>

@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// <see cref="IFlickStickProcessor"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.ProcessFlickStick</c>／<c>HandleFlickStickAngle</c>／<c>WarpEaseOut</c> を、そのまま移したもの
     /// （<c>ProcessFlickStick</c> の未使用の引数［<c>device</c>、<c>ControlService ctrl</c>］は外した。<c>ControllerState</c> は <c>elapsedTime</c> だけ使うため、値で受ける。計算結果は変わらない）。
-    /// 値の特性化は <c>Phase9A2FlickStickGoldenTests</c> が守る。
+    /// 値の特性化は 対応するテスト が守る。
     /// </summary>
     public sealed class FlickStickProcessor : IFlickStickProcessor
     {

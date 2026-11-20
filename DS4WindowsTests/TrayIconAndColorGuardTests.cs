@@ -12,7 +12,7 @@ using DS4Windows.UI.Services;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10b W2（Q1・Q2＝A）: トレイアイコンの資源の表を <c>TrayIconResources</c> へ、色の純粋関数を <c>ColorUtil</c> へ
+    /// トレイアイコンの資源の表を <c>TrayIconResources</c> へ、色の純粋関数を <c>ColorUtil</c> へ
     /// 移したことの回帰ガード。内容・計算は従来と同じでなければならない。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAppearanceService_NoLongerResolvesUiResourcePaths()
         {
-            // Phase14b-Step13（決定 D13）: 旧 GetIconResourcePath（UI の TrayIconResources を引いていた）は外し、UI が直接表を引く
+            // 旧 GetIconResourcePath（UI の TrayIconResources を引いていた）は外し、UI が直接表を引く
             Assert.Null(typeof(DS4Windows.Core.Abstractions.IAppearanceSettingsService).GetMethod("GetIconResourcePath"));
             Assert.Null(typeof(DS4Windows.Core.Settings.AppearanceSettingsService).GetMethod("GetIconResourcePath"));
         }

@@ -15,7 +15,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// <see cref="IMacroStepExecutor"/> の実装（DI の Singleton）。
     /// 旧 <c>Mapping.PlayMacroCodeValue</c> を、そのまま移したもの（キー・マウスボタンの送出は <c>IVirtualKBM</c>、設定は <c>IProfileSettingsService</c>、
     /// ゲームパッドのボタンの出力フラグは <c>MacroRuntimeState</c> へ。フラグと個数は、ユーザー判断（Q2）によりデバイスごとに持つ）。
-    /// 値の特性化は <c>Phase9CMacroStepExecutorDifferentialTests</c>が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// TODO(技術的負債・Phase9 9-E 付近): ライトバーの強制色（<c>DS4LightBar.forcelight</c>／<c>forcedColor</c>／<c>forcedFlash</c>）は、旧実装どおり静的な配列へ直接書く。
     /// ライトバーのサービス化（<c>ILightbarService</c>）のときに、窓口経由へ置き換える。
     /// </summary>

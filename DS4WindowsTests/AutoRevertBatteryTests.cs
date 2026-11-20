@@ -6,7 +6,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6（S9-5 の確認で判明）: 自動プロファイルから元のプロファイルへ戻すときの通知は、バッテリー残量を「N/A」固定にせず、
+    /// 自動プロファイルから元のプロファイルへ戻すときの通知は、バッテリー残量を「N/A」固定にせず、
     /// 接続中のコントローラーの値を使う。
     /// </summary>
     public class AutoRevertBatteryTests

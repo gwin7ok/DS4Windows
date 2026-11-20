@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W5（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4c-Plan.md §2 項目 9・§4 W5、ユーザー承認 2026-10-21）: 追加した入力が使えることを確かめる。
+    /// 追加した入力が使えることを確かめる。
     /// Controls に足した Touch Started／Touch Ended は、束縛が作られ、プロファイル XML に保存・読み込みされる。
     /// SA に足した LS Outer／RS Outer は、トリガーとして保存した名前から読み戻せる。一覧の項目数と差は <c>TriggerInputSetDifferenceTests</c> が固定する。
     /// </summary>

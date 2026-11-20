@@ -5,7 +5,7 @@ using DS4Windows.Output.Kbm;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W1 のテスト用スタブ。<c>OutputKBMHandlerAdapter.Handler</c>（旧 Global.outputKBMHandler）（<see cref="VirtualKBMBase"/>）へ差して、
+    /// Phase7-Step7 W1 のテスト用スタブ。<c>OutputKBMHandlerAdapter.Handler</c>（<see cref="VirtualKBMBase"/>）へ差して、
     /// <c>Mapping</c> が <c>IVirtualKBM</c>（アダプタ経由）へ送る出力を記録する。実際の入力は送出しない。
     /// </summary>
     public sealed class RecordingVirtualKbmBase : VirtualKBMBase
@@ -13,8 +13,8 @@ namespace DS4WindowsTests
         public readonly List<uint> MouseButtonEvents = new List<uint>();
         public readonly List<(uint Button, int Type)> MouseButtonAltEvents = new List<(uint, int)>();
         public readonly List<(int X, int Y)> MoveEvents = new List<(int, int)>();
-        public readonly List<(int Vertical, int Horizontal)> WheelEvents = new List<(int, int)>();   // Phase8-Step7 7.8f-3: アナログのホイールの特性化のために記録する
-        public readonly List<uint> KeyPresses = new List<uint>();   // Phase8-Step7-3a: マクロの手順どおりの再生を確かめるために記録する
+        public readonly List<(int Vertical, int Horizontal)> WheelEvents = new List<(int, int)>();   // アナログのホイールの特性化のために記録する
+        public readonly List<uint> KeyPresses = new List<uint>();   // マクロの手順どおりの再生を確かめるために記録する
         public readonly List<uint> KeyReleases = new List<uint>();
         public int SyncCount;
 

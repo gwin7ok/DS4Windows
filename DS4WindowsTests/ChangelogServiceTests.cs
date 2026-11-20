@@ -13,7 +13,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step17（決定 D10）: <see cref="Changelog"/> を、注入した HttpClient を使う <see cref="IChangelogService"/> の実装にした（旧: 静的クラスが App.requestClient を使っていた）。
+    /// <see cref="Changelog"/> を、注入した HttpClient を使う <see cref="IChangelogService"/> の実装にした。
     /// 通信を偽物に差し替えて、問い合わせ先・結果の使い回し・変更履歴の整形を確かめる。
     /// </summary>
     public class ChangelogServiceTests

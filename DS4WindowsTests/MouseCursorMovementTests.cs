@@ -7,7 +7,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step4-2: `MouseCursor` が `Global`（静的な状態）ではなく、コンストラクタで受け取った
+    /// `MouseCursor` が `Global`（静的な状態）ではなく、コンストラクタで受け取った
     /// `IProfileSettingsService`（`TouchSensitivity`、`TouchpadInvert`、`TouchRelMouse` 等）と
     /// `IVirtualKBM`（`MoveRelativeMouse`）を使うことを検証する。
     /// 互いに独立した BackingStore を持つ設定を用意し、片方だけ値を変えて出力を相対比較する

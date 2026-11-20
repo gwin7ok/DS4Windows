@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W1: <c>BackingStore</c> の公開の値を、既定値と異なる決定的な値に変えるテスト用ヘルパー
+    /// <c>BackingStore</c> の公開の値を、既定値と異なる決定的な値に変えるテスト用ヘルパー
     /// （「全項目が既定値」では保存・読込の取りこぼしを検出できないため）。
     /// bool は反転、整数・実数は小さく加算、列挙型は次の値、文字列は接尾辞を付ける。スロットごとの配列は指定スロットの要素だけを変える。
     /// 他のインスタンスと共有されている配列（静的な既定値）は変えない。値の検証・丸めは保存・読込の側が行い、その結果をゴールデンが固定する。
@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         private static readonly HashSet<string> ExcludedNames = new HashSet<string>(StringComparer.Ordinal)
         {
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "ActiveOutDevType",
-            // Phase7-Step10d W5: 別のサービス（ProfileSettingsService）への参照であり、BackingStore の設定値ではない
+            // 別のサービス（ProfileSettingsService）への参照であり、BackingStore の設定値ではない
             "ProfileSettings",
             "lastVersionChecked", "lastVersionCheckedNum", "useLang", "fakeExeFileName", "loggedInvalidActions",
             "actions", "linkedProfiles",
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         {
             object reference = null;
             try { reference = Activator.CreateInstance(root.GetType()); } catch { }
-            // Phase7-Step10d W5: BackingStore は引数なしでは作れない（環境サービスが必須）
+            // BackingStore は引数なしでは作れない（環境サービスが必須）
             if (reference == null && root is DS4Windows.Core.Settings.BackingStore)
                 reference = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             FillObject(root, reference, slot, 0);

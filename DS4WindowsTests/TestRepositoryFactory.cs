@@ -17,42 +17,42 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-4-2: 必須引数化したサービスのテスト用の生成ヘルパー。
+    /// 必須引数化したサービスのテスト用の生成ヘルパー。
     /// 既定では本番と同じく Global.store と PathService（Global.appdatapath をオンデマンドで参照）を渡す。
     /// </summary>
     internal static class TestRepositoryFactory
     {
-        /// <summary>Phase7-Step8 W2: 切断時の後始末などで使う IMapping の遅延プロバイダー（コンテナの Singleton。ホスト構築時に Mapping を作らない）。</summary>
+        /// <summary>切断時の後始末などで使う IMapping の遅延プロバイダー（コンテナの Singleton。ホスト構築時に Mapping を作らない）。</summary>
         public static Func<IMapping> MappingProvider => () => TestHost.GetService<IMapping>();
 
         public static SpecialActionRepository CreateSpecialActionRepository(BackingStore store = null, IPathService pathService = null)
         {
-            // Phase14b-Step14（D14）: 旧 引数（new SyntheticInputState()、TestActions.Manager）を、同じ組み合わせのリセットの実装にまとめて渡す
+            // 旧 引数（new SyntheticInputState()、TestActions.Manager）を、同じ組み合わせのリセットの実装にまとめて渡す
             return new SpecialActionRepository(store ?? TestGlobals.Store, pathService ?? new PathService(),
                 CreateActionsXml(store), new SpecialActionRuntimeReset(new SyntheticInputState(), TestActions.Manager));
         }
 
-        /// <summary>Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）。</summary>
+        /// <summary>Actions.xml の保存・読込。</summary>
         public static DS4Windows.Core.Persistence.SpecialActionsXmlSerializer CreateActionsXml(BackingStore store = null,
             IProfileIdentityService profileIdentity = null)
             => new DS4Windows.Core.Persistence.SpecialActionsXmlSerializer(store ?? TestGlobals.Store, TestActions.RuntimeReset, profileIdentity);
 
-        /// <summary>Phase7-Step10c W2: リンクプロファイルの保存・読込（旧: BackingStore のメソッド）。</summary>
+        /// <summary>リンクプロファイルの保存・読込。</summary>
         public static DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer CreateLinkedProfilesXml(BackingStore store = null)
             => new DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer(store ?? TestGlobals.Store);
 
-        /// <summary>Phase7-Step10c W2: ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
+        /// <summary>ProfileXmlStore（コントローラー固有設定の保存・読込を含む）。</summary>
         public static ProfileXmlStore CreateProfileXmlStore(BackingStore store = null)
             => new ProfileXmlStore(store ?? TestGlobals.Store, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(store ?? TestGlobals.Store),
                 CreateAppSettingsXml(store), CreateLegacyProfileXml(store));
 
-        /// <summary>Phase7-Step10c W4: プロファイル（旧形式の XML）の保存・読込（旧: BackingStore のメソッド）。</summary>
+        /// <summary>プロファイルの保存・読込。</summary>
         public static DS4Windows.Core.Persistence.LegacyProfileXmlSerializer CreateLegacyProfileXml(BackingStore store = null,
             IProfileSettingsService settings = null, IPathService pathService = null, IProfileIdentityService profileIdentity = null)
             => new DS4Windows.Core.Persistence.LegacyProfileXmlSerializer(TestLightbar.State, store ?? TestGlobals.Store, pathService ?? new PathService(),
                 settings ?? TestGlobals.ProfileSettingsServiceInstance, new EnvironmentService(), profileIdentity);
 
-        /// <summary>Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）。</summary>
+        /// <summary>アプリ設定（Profiles.xml）の保存・読込。</summary>
         public static DS4Windows.Core.Persistence.AppSettingsXmlSerializer CreateAppSettingsXml(BackingStore store = null,
             IPathService pathService = null, IEnvironmentService environment = null)
             => new DS4Windows.Core.Persistence.AppSettingsXmlSerializer(store ?? TestGlobals.Store, pathService ?? new PathService(), environment ?? new EnvironmentService());
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
                 settings ?? TestGlobals.ProfileSettingsServiceInstance,
                 xmlStore ?? CreateProfileXmlStore(store),
                 pathService ?? new PathService(),
-                loadTarget ?? new LazyProfileLoadTarget(),   // Phase13-Step6 6-e: 旧 Func<ControlService>（遅延）。ホストから初回使用時に解決する
+                loadTarget ?? new LazyProfileLoadTarget(),   // 旧 Func<ControlService>（遅延）。ホストから初回使用時に解決する
                 CreateLinkedProfilesXml(store), CreateActionsXml(store), CreateLegacyProfileXml(store, settings, pathService), new EnvironmentService());
         }
 
@@ -88,9 +88,9 @@ namespace DS4WindowsTests
         {
             OutputSlotManager mgr = manager ?? CreateOutputSlotManager();
             return new OutputSlotService(
-                new FakeVirtualPadService(mgr, null),   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>。抜き差しは VirtualPadService（Phase9 E-4）
+                new FakeVirtualPadService(mgr, null),   // 旧 Func<OutputSlotManager>／Func<IVirtualPadService>。抜き差しは VirtualPadService
                 store ?? new OutputSlotStore(new PathService()),
-                new DS4Windows.Output.Services.OutputDeviceTypeState());   // Phase13-Step7 7-b: 出力種別の配列の持ち主
+                new DS4Windows.Output.Services.OutputDeviceTypeState());   // 出力種別の配列の持ち主
         }
 
         public static ProfileActionProvider CreateProfileActionProvider(BackingStore store = null)

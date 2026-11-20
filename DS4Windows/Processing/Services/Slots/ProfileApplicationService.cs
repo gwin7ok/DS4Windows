@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Services.Slots
         // 束縛の登録簿と、ビルダーの遅延解決（ビルダー → IProfileSwitcher → 本サービス、の循環を避ける）
         private readonly DS4Windows.Processing.Actions.IActionRegistry _actionRegistry;
         // 遅延取得のまま残す（意図的）。ActionBindingBuilder → IProfileSwitcher → IProfileApplicationService と循環する。
-        // 再検討条件: 束縛の構築を ProfileApplicationService の外へ出したとき。許可リスト: Phase13FuncRatchetGuardTests
+        // 再検討条件: 束縛の構築を ProfileApplicationService の外へ出したとき。許可リスト: 対応するテスト
         private readonly Func<DS4Windows.Processing.Actions.IActionBindingBuilder> _bindingBuilderProvider;
         // 旧 静的 ActionManager（ClearAllEntries／ClearDeviceState／PreallocateForProfileApply）の代わり
         private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;
@@ -430,7 +430,7 @@ namespace DS4Windows.Processing.Services.Slots
             }
 
             // 後始末（掃除）の最後に、このプロファイルの束縛を組み立てて登録簿へ差し替える。
-            // 掃除の順序（ClearAllEntries → ClearForDevice → ClearDeviceState → PreallocateForProfileApply。Phase8Step1ApplyProfileCleanupOrderGuardTests）は変えない
+            // 掃除の順序（ClearAllEntries → ClearForDevice → ClearDeviceState → PreallocateForProfileApply。対応するテスト）は変えない
             PublishBindings(device);
         }
 

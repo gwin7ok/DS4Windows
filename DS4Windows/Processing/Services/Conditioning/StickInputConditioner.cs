@@ -12,7 +12,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// <see cref="IStickInputConditioner"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.ApplyStickCalibration</c>／<c>CalcStickAxisFuzz</c>／<c>CalcAntiSnapbackStick</c> を、そのまま移したもの
     /// （<c>out</c> 引数は、入力と出力が同じ変数だったため、<c>ref</c> に直した。アンチスナップバックの時刻は、引数で受ける。計算結果は変わらない）。
-    /// 値の特性化は、ドリフト補正とファズが <c>Phase9A1SetCurveAndDeadzoneGoldenTests</c>、アンチスナップバックが <c>Phase9A2AntiSnapbackDifferentialTests</c>が守る。
+    /// 値の特性化は、ドリフト補正とファズが 対応するテスト、アンチスナップバックが 対応するテストが守る。
     /// </summary>
     public sealed class StickInputConditioner : IStickInputConditioner
     {

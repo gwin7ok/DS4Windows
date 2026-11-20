@@ -6,7 +6,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step3 3e（R-3）: マクロの記録で、マウスの移動・ボタンの位置を移動ステップの値へ変えるロジック（<see cref="MacroPointerRecorder"/>）と、
+    /// マクロの記録で、マウスの移動・ボタンの位置を移動ステップの値へ変えるロジック（<see cref="MacroPointerRecorder"/>）と、
     /// フックのメッセージからボタンへの変換。フックそのものと、記録画面の操作は、実機で確認する。
     /// </summary>
     public class MacroPointerRecorderTests

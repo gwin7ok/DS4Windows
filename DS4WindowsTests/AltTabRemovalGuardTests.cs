@@ -12,7 +12,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7-3a（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-3a-AltTab-Removal-Plan.md。機能廃止［ユーザー承認済み］）: Alt-Tab のマクロの特別扱い（<c>AltTabSwapping</c> ほか）と、
+    /// Alt-Tab のマクロの特別扱い（<c>AltTabSwapping</c> ほか）と、
     /// 記録画面の「Cycle Programs」プリセットが、ソースに残っていないこと。Alt-Tab の並びのマクロが、通常のマクロとして手順どおりに再生されること。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -22,7 +22,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheAltTabSpecialCase_IsGoneFromMapping()
         {
-            // Phase9 9-C: 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
+            // 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
             string text = SourceText.Read("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
             text += SourceText.Read("DS4Windows/Processing/Services/Conditioning/MacroPlayback.cs") ?? string.Empty;

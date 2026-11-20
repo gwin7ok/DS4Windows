@@ -13,7 +13,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W3（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4d-Plan.md §3.2・§4 W3）: 保存する参照を、ID を主・名前を併記にする。
+    /// 保存する参照を、ID を主・名前を併記にする。
     /// 対象は、プロファイルが使う SA（<c>&lt;ProfileActions&gt;</c>＋<c>&lt;ProfileActionIds&gt;</c>）、SA の Load Profile の切り替え先（<c>Actions.xml</c> の <c>ProfileId</c>）、
     /// Controls の Load Profile の切り替え先（<c>&lt;Control&gt;&lt;Special&gt;</c> の <c>ProfileId</c>）。読み込みでは、ID が見つかれば現在の名前に引き直し（ID が勝つ）、
     /// ない・見つからないときは名前のまま。実行時の内部（<c>profileActions</c> ほか）は名前のまま。

@@ -13,7 +13,7 @@ namespace DS4Windows.Processing.Services.Connection
     /// <summary>
     /// <see cref="ILatencyMonitor"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService.On_Report</c> の先頭（エラーのログと遅延の監視）と <c>LagFlashWarning</c> を、そのまま移したもの。
-    /// 値の特性化は <c>Phase9EInputReportPartsTests</c>が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class LatencyMonitor : ILatencyMonitor
     {

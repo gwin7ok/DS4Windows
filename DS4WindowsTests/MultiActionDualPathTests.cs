@@ -11,12 +11,12 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7b-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-7-Plan.md §4 の W1）: MultiAction（タップ・長押し・ダブルタップ）の特性化。
+    /// MultiAction（タップ・長押し・ダブルタップ）の特性化。
     /// 旧 <c>MapCustomAction</c> の MultiAction の枝は、デバイスの前回のレポートを使うため、テスト用のデバイス（<see cref="TestDs4Device"/>）をスロットに置く。
     /// 時刻は旧経路が <c>DateTime.UtcNow</c> を使うため、実際に待つ（待ち時間には余裕を持たせる）。マクロは背景のタスクで実行されるため、記録の出現を待つ。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じ期待値。W1 の時点では、ビルダーが MultiAction の束縛を作らないため、新経路の指定でも旧経路が処理する。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class MultiActionDualPathTests
@@ -213,8 +213,8 @@ namespace DS4WindowsTests
         [Fact]
         public void WhenAnEarlierSpecialActionEndsTheFrame_ThePressEdgeIsMissed()
         {
-            // 前のスペシャルアクション（Profile の切替）がフレームを打ち切ると、その後ろの MultiAction は、その押下のエッジを見逃す（旧ループの return）。
-            // 次のフレーム以降は「前回も押している」ため、長押しにもならない（旧経路の性質。新経路も旧ループの位置で動くため同じ）
+            // 前のスペシャルアクション（Profile の切替）がフレームを打ち切ると、その後ろの MultiAction は、その押下のエッジを見逃す。
+            // 次のフレーム以降は「前回も押している」ため、長押しにもならない
             using var h = new Harness();
             h.Scope.InstallProfileRecorder();
             SpecialAction profile = h.Scope.Add(new SpecialAction("p8s77b_profile_" + Guid.NewGuid().ToString("N"), "L1", "Profile", "p8s77b-target", 0, string.Empty));

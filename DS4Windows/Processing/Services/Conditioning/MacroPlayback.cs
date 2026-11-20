@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// 1 つのマクロ値の実行は <see cref="IMacroStepExecutor"/> へ、同期キューの Task の連鎖は <c>MacroRuntimeState.TaskQueue</c> に持つ。
     /// 旧 静的な <c>ActionManager.GetStateFor</c>／<c>IsBeingTriggered</c> は、注入された <c>IManagedActionManager</c> を使う（<c>IsBeingTriggered</c> を契約へ追加した）。
     /// ライトバーの強制色の復帰（<c>DS4LightBar.forcedFlash</c>／<c>forcelight</c>）も、静的な配列へ直接書く（ライトバーのサービス化で置き換える）。
-    /// 実際の挙動は、入口の <c>PlayMacroDirect</c>／<c>PlayMacroString</c> を通る既存の挙動テスト（<c>Phase8Step78cW2ControlsMacroTests</c> ほか）が守る。
+    /// 実際の挙動は、入口の <c>PlayMacroDirect</c>／<c>PlayMacroString</c> を通る既存の挙動テスト（対応するテスト ほか）が守る。
     /// </summary>
     public sealed class MacroPlayback : IMacroPlayback
     {

@@ -13,7 +13,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10e W4（承認済み。docs-forDIMG/MadeByAgent/Archive/Phase7-Step10e-Plan.md §4.1）: 呼び出し 0 件だったメンバーの決着の回帰ガード。
+    /// 呼び出し 0 件だったメンバーの決着の回帰ガード。
     /// - 削除したメンバー（<c>ColorUtil.applyRatio(Color…)</c>／<c>HuetoRGB</c>、<c>IAppSettingsService.CheckWhen</c>、
     ///   <c>IProfileSettingsService.SATriggerCond</c>、<c>IAutoProfileService.ClearState</c>、<c>IProfileRepository.GetProfilePath</c>）が再び宣言されない。
     /// - 維持したメンバーのうち、未接続のもの（<c>SettingChanged</c>／<c>ActionsChanged</c>／<c>UseTempProfileArray</c>）に TODO(Phase8) が付いている。

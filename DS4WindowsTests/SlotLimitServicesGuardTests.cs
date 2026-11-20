@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10e W1（Q2＝A）: サービス・シリアライザー・DTO が、静的な <c>ControlService.CURRENT_DS4_CONTROLLER_LIMIT</c> ではなく、
+    /// サービス・シリアライザー・DTO が、静的な <c>ControlService.CURRENT_DS4_CONTROLLER_LIMIT</c> ではなく、
     /// 注入された上限（<see cref="IEnvironmentService.ControllerSlotLimit"/>）を使うことの回帰ガード。ソースが見つからない環境では、ソースの検査を省略する。
     /// </summary>
     public class SlotLimitServicesGuardTests

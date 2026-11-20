@@ -6,7 +6,7 @@ using DS4Windows.Core.Logging;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（ILogSettingsApplier）の遅延接続プロキシ。
+    /// ログ設定の反映の窓口（ILogSettingsApplier）の遅延接続プロキシ。
     /// 置換前の <c>App.logHolder?.…</c> と同じ動作（接続前は何もしない、接続後は転送する）を固定する。
     /// </summary>
     public class LogSettingsApplierProxyTests

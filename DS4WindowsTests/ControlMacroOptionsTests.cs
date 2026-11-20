@@ -19,7 +19,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W3（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §5）: Controls の Macro に、SA 専用の 3 項目（Run on trigger release／Synchronized Run／Keep key state）を
+    /// Controls の Macro に、SA 専用の 3 項目（Run on trigger release／Synchronized Run／Keep key state）を
     /// 保存し、実行し、画面で編集できるようにした縦通しの検査。入力（離したとき成立）、builder の写し、編集用の対象の往復、保存と再読み込み、実際の再生。
     /// 項目のない従来の Macro は、変わらない。
     /// </summary>

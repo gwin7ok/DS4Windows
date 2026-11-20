@@ -14,7 +14,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// （旧 <c>oldnow</c>／<c>wheel</c> も、ここが持つ。<b>全デバイスで共有</b>のまま。<c>GlobalState</c> が全デバイスの合計で遷移を検出するため、
     /// 繰り返しの状態だけをデバイスごとにすると、押した側と離した側が別のデバイスのとき、繰り返しが止まらなくなる）。
     /// 常に <c>false</c> だった <c>pressagain</c>（上流 DS4Windows 由来の残骸）は削除した。
-    /// 値の特性化は <c>Phase7Step7CommitCharacterizationTests</c> と <c>Phase9MapCustomCommitterDifferentialTests</c>が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class SyntheticInputCommitter : ISyntheticInputCommitter
     {

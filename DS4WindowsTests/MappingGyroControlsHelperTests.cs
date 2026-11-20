@@ -8,9 +8,9 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step3-6b（決定 P2）: ジャイロを Controls に使うかの判定（`Global.IsUsingSAForControls` の置き換え）が、
+    /// ジャイロを Controls に使うかの判定（`Global.IsUsingSAForControls` の置き換え）が、
     /// 置き換え前と同じ結果（出力モードが Controls のときだけ true）になることを検証する。
-    /// Phase9 9-B: 判定は `Mapping.IsUsingGyroForControls`（private）から `ControlActivityReader` の中へ移ったため、
+    /// 判定は `Mapping.IsUsingGyroForControls`（private）から `ControlActivityReader` の中へ移ったため、
     /// リフレクションではなく、公開の窓口（`IsActive`）の結果（GyroXNeg が有効になるのは Controls のときだけ）で確かめる。
     /// 検証後は元の値へ戻す（Global の static 状態を残さない。Phase6-Status.md §6.4 の教訓1）。
     /// </summary>

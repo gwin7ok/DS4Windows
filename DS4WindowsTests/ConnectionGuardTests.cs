@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6（docs-forDIMG/MadeByAgent/Archive/Phase9-E6-Plan.md）: ライフサイクルの切り出しの守り（段階ごとに検査を足していく）。
+    /// ライフサイクルの切り出しの守り（段階ごとに検査を足していく）。
     /// E-6a: 接続時のプロファイルの選択と適用が <c>ConnectionProfileSelector</c> へ移り、<c>ControlService</c> は委譲だけを持つこと。
     /// E-6b: 設定の反映とイベントの配線が <c>DeviceConnectionSetup</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。
     /// E-6c: デバイスの種類ごとの分岐が <c>IInputDeviceModule</c>（カートリッジ）へ移り、<c>ControlService</c> には種類ごとの分岐が残らないこと。
@@ -28,7 +28,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_DelegatesTheSelection_BeforeThePluginStep()
         {
-            // Phase9 9-E E-6f1: 接続の組み立ては DeviceConnector へ移った
+            // 接続の組み立ては DeviceConnector へ移った
             string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (text == null) return;
 
@@ -90,7 +90,7 @@ namespace DS4WindowsTests
 
             foreach (string file in new[] { "Ds4DeviceModule", "DualSenseDeviceModule", "SwitchProDeviceModule", "XboxDeviceModule", "NullInputDeviceModule", "InputDeviceModuleBase", "InputDeviceModuleRegistry" })
             {
-                string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // Phase14d-Step1: 旧パス（DS4Control/Services/）のまま、黙って省略されていた
+                string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // 旧パス（DS4Control/Services/）のまま、黙って省略されていた
                 if (text == null) continue;
 
                 Assert.False(Regex.IsMatch(text, @"\bControlService\b(?!DeviceOptions)"), file + " が ControlService を参照している");
@@ -101,9 +101,9 @@ namespace DS4WindowsTests
         public void TheOtherFiles_AndCallsTheSetupInTheOriginalOrder()
         {
 
-            // Phase13-Step10 10-b: 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
+            // 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
 
-            // 接続時の順序: 設定の反映 → イベントの配線（旧: CheckProfileOptions → SetupInitialHookEvents）。接続の組み立ては DeviceConnector へ移った（E-6f1）
+            // 接続時の順序: 設定の反映 → イベントの配線。接続の組み立ては DeviceConnector へ移った（E-6f1）
             string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (connector == null) return;
             int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");

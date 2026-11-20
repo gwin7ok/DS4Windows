@@ -29,10 +29,10 @@ namespace DS4WindowsTests
             }
         }
 
-        // Phase6-Step5-2: GetOutputDeviceType／SetOutputDeviceType（孤立配列 _deviceTypes）を削除したため、
+        // GetOutputDeviceType／SetOutputDeviceType（孤立配列 _deviceTypes）を削除したため、
         // それらを対象としたテスト（初期値・更新・グローバルシム経由の更新）は削除し、
         // イベント発行・範囲外の安全性のテストを SetOutputDevice／PluginSlot／UnplugSlot ベースへ置き換えた。
-        // Phase7-Step2 W4: OutputDevices／GetOutputDevice／IsSlotPlugin／SetOutputDevice（常に null を返す孤立配列）を削除したため、
+        // OutputDevices／GetOutputDevice／IsSlotPlugin／SetOutputDevice（常に null を返す孤立配列）を削除したため、
         // それらを対象としたテスト（初期状態、SetOutputDevice によるイベント発行、範囲外）も削除した。
         // 抜き差しの要求とイベントの確認は PluginSlot／UnplugSlot を対象とする（FourTwoGlobalReferenceGuardTests など）。
 
@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             Assert.Equal(8, slots.Count); // OutputSlotManager の既定スロット数は 8
         }
 
-        // Phase7-Step6 W1: 2 つの配列の実体は OutputSlotService が持つ（旧: Global の静的配列への参照）。
+        // 2 つの配列の実体は OutputSlotService が持つ。
         // 参照は安定し（再代入されない）、初期値は Temp＝全スロット X360、Active＝全スロット None。
         [Fact]
         public void OutDevTypeTemp_IsOwnedByTheService_AndStable()

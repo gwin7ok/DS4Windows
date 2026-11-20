@@ -10,7 +10,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §5）: 持ち越し C-5 と、Step9 の B-11 の食い違いの再現。選択ダイアログ（<c>BindingWindow</c>）の書き込み
+    /// 持ち越し C-5 と、Step9 の B-11 の食い違いの再現。選択ダイアログ（<c>BindingWindow</c>）の書き込み
     /// （<c>OutBinding.WriteBind</c>）は、Toggle を、Key の分岐でしか書かない。Button（マウスボタン、パッドのボタン）の分岐は、
     /// 最初に <c>keyType</c> を <c>None</c> にして、Toggle を書かない。そのため、Toggle つきの Button の設定は、ダイアログを開いて閉じるだけでも、Toggle が消える。
     /// ここでは、現行の挙動を固定する。Step4（共通画面の Switch Mode が Key と Button の両方に Toggle を書く）で、是正する。

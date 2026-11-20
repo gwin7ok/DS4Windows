@@ -12,11 +12,11 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.2-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-2-Plan.md §3 W1）: Key 種別の「旧経路（<c>MapCustomAction</c> の Key の分岐）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
+    /// Key 種別の「旧経路（<c>MapCustomAction</c> の Key の分岐）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
     /// 同じ入力の列を両経路に流し、フレームごとの状態（<c>BeingTriggered</c>、<c>IsToggledOn</c>、合成キーの押下の数、解放の数）が一致することを確かめる。
     /// 例外（Q1）: Key を 2 つ同時に押したときの解放は、旧経路が <c>UntriggerIndex</c> の癖で先のキーを解放しない。新経路は各キーを解放する（是正）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class KeyDualPathTests

@@ -121,7 +121,7 @@ namespace DS4WindowsTests
             if (path == null) return;
 
             string controlServiceText = File.ReadAllText(path);
-            // Phase9 9-E E-6a: 判定の本体は ConnectionProfileSelector へ移った
+            // 判定の本体は ConnectionProfileSelector へ移った
             string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (selectorPath == null) return;
             string text = File.ReadAllText(selectorPath);

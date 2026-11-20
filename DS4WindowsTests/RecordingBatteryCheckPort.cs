@@ -5,7 +5,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の記録用の実装。呼び出しを順に記録し、実機のコントローラー・ライトバー・通知には触れない。
+    /// <see cref="IBatteryCheckPort"/> の記録用の実装。呼び出しを順に記録し、実機のコントローラー・ライトバー・通知には触れない。
     /// <see cref="Record"/> を偽にすると、記録せず（割り当てなし）、色の書き込みの回数だけを数える。
     /// </summary>
     public sealed class RecordingBatteryCheckPort : IBatteryCheckPort

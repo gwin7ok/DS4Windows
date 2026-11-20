@@ -7,7 +7,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Plan.md §4）: <see cref="SpecialActionItemMapper"/>（SA ⇄ 型のある項目）の検査。
+    /// <see cref="SpecialActionItemMapper"/>（SA ⇄ 型のある項目）の検査。
     /// 保存形式（<c>SpecialAction</c> の文字列）は変えない。旧書式の文字列が、同じ項目になること、項目から作った SA が、同じ文字列に戻ることを確かめる。
     /// </summary>
     public class SpecialActionItemMapperTests

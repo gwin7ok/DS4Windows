@@ -11,7 +11,7 @@ namespace DS4Windows.Processing.Services.Slots
     /// <see cref="IConnectionProfileSelector"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService.PrepareConnectedInputControllerSettingEvents</c> の、プロファイルの選択と適用の部分
     /// （初回接続／再接続、Linked、適用、一時プロファイルのときの束縛の差し替え）を、そのまま移したもの。
-    /// 値の特性化は <c>Phase9E6ConnectionProfileSelectorTests</c>（偽物の依存を使った差分テスト）が守る。
+    /// 値の特性化は 対応するテスト（偽物の依存を使った差分テスト）が守る。
     /// </summary>
     public sealed class ConnectionProfileSelector : IConnectionProfileSelector
     {

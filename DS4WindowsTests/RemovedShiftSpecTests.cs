@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8d-W1（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8d-Plan.md §4）: 廃止された「シフト」機能の設定の、保持（<see cref="RemovedShiftSettings"/>）と、編集画面の警告の判定
+    /// 廃止された「シフト」機能の設定の、保持（<see cref="RemovedShiftSettings"/>）と、編集画面の警告の判定
     /// （<see cref="RemovedShiftNotice"/>）の仕様のテスト。画面・読込・保存への配線は W2・W3。
     /// </summary>
     public class RemovedShiftSpecTests

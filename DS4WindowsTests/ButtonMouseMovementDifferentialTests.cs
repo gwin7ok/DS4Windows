@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-B（docs-forDIMG/MadeByAgent/Archive/Phase9-B-Plan.md）: <see cref="ButtonMouseMovementCalculator"/> を、旧実装（<c>Mapping.getMouseMapping</c> を逐語的に写したもの。
+    /// <see cref="ButtonMouseMovementCalculator"/> を、旧実装（<c>Mapping.getMouseMapping</c> を逐語的に写したもの。
     /// <c>ctrl</c>／<c>eState</c> の引数を外し、設定と経過時間を引数にした。マウス加速の状態は、旧実装のとおり写した側が 1 組だけ持つ）と<b>突き合わせる差分テスト</b>。
     /// 旧実装は private で、切り出しの後は <c>Mapping</c> から消えるため、写しをこのファイルに残す（Phase9 の後のテスト整理まで。整理ではゴールデンへの置き換えを検討する）。
     /// 設定の組み合わせ（マウス加速、デルタ加速、デッドゾーン、感度、縦倍率）× コントロール × 方向 × 疑似乱数の入力の列で、戻り値が 1 回ごとに完全一致することを調べる。

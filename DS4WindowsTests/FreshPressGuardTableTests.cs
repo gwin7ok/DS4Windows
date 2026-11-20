@@ -6,7 +6,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W1（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4c-Plan.md §2 項目 2・§4 W1）: Fresh-press ガードを見るかの規則の表（<see cref="FreshPressGuardTable"/>）の値を固定する。
+    /// Fresh-press ガードを見るかの規則の表（<see cref="FreshPressGuardTable"/>）の値を固定する。
     /// 値は W1 の前と同じ（挙動は変えない）。束縛に現れる値は <c>PolicyTableTests</c>（Controls）と SA の表のテストが守る。
     /// </summary>
     public class FreshPressGuardTableTests

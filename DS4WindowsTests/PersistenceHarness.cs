@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W1: 設定ファイルの保存・読込を呼ぶ窓口（ゴールデンテスト用）。
+    /// 設定ファイルの保存・読込を呼ぶ窓口（ゴールデンテスト用）。
     /// 切り出し（W2 以降）で永続化の実装が <c>BackingStore</c> から新しい型へ移るたびに、ここだけを付け替える。
     /// ゴールデンテストの本体（入力・期待値・照合）は変えない。
     /// </summary>
@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         /// <summary>プロファイルの保存・読込・プリセットに使うスロット（編集用の作業スロット。ControlService の状態に触れない）。</summary>
         public const int Slot = ControllerLimits.TestProfileIndex;
 
-        // Phase7-Step10d W5: 旧 Global.ProfileSettingsServiceInstance（出力 KBM のマッピングを設定した共有の instance）を、新しい BackingStore も使う
+        // 旧 Global.ProfileSettingsServiceInstance（出力 KBM のマッピングを設定した共有の instance）を、新しい BackingStore も使う
         // （プロファイルの読込・保存が、一時プロファイル・DInput のみ・タッチパッドの配列をこのサービスから読むため）
         public static BackingStore NewStore()
         {
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
             return store;
         }
 
-        // ---- プロファイル（旧形式の XML）----
+        // ---- プロファイル----
 
         public static string SaveProfile(PersistenceGoldenContext ctx, BackingStore store, string name)
         {
@@ -66,7 +66,7 @@ namespace DS4WindowsTests
 
         /// <summary>
         /// 旧い書き方（Extras を持つ Macro、Arguements、UnloadTrigger、ID なし）の Actions.xml。
-        /// 古いファイルの読み込みを守る固定の入力（旧い保存の入口を撤去したため、固定の文字列で持つ）。
+        /// 古いファイルの読み込みを守る固定の入力。
         /// </summary>
         private const string LegacyActionsXml = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <!-- Special Actions Configuration Data. -->

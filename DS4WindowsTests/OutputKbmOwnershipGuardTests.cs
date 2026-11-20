@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step8 W3: 出力 KBM ハンドラの実体を <c>OutputKBMHandlerAdapter</c> へ移したこと（<c>Global.outputKBMHandler</c>／<c>outputKBMMapping</c> の削除）、
+    /// 出力 KBM ハンドラの実体を <c>OutputKBMHandlerAdapter</c> へ移したこと（<c>Global.outputKBMHandler</c>／<c>outputKBMMapping</c> の削除）、
     /// 合成キーの送出を <c>SyntheticDispatcherService</c>（<c>ISyntheticDispatcher</c>）にし、静的な <c>SyntheticDispatcher</c> を状態を持たない橋渡しにしたこと、
     /// <c>ActionsLoadedRuntimeReset</c> を instance にしたことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q6）。
@@ -116,7 +116,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheStaticBridge_IsGone()
         {
-            // Phase14c-Step3（R-06）: 旧 静的な橋渡し SyntheticDispatcher（Bind で束縛）は撤廃した。キーの操作の部品は、登録簿・ファクトリーから送出役を受け取る
+            // 旧 静的な橋渡し SyntheticDispatcher（Bind で束縛）は撤廃した。キーの操作の部品は、登録簿・ファクトリーから送出役を受け取る
             Assert.Null(typeof(ISyntheticDispatcher).Assembly.GetType("DS4Windows.Processing.SyntheticDispatcher"));
             Assert.Same(TestHost.GetService<ISyntheticDispatcher>(), TestHost.GetService<DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry>().Dispatcher);
         }

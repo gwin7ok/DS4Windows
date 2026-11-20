@@ -11,7 +11,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-3: グループ3（スペシャルアクション系）の View／ViewModel の Global 直接参照解消の回帰ガード
+    /// グループ3（スペシャルアクション系）の View／ViewModel の Global 直接参照解消の回帰ガード
     /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-3-Plan.md</c>）。Step10-3 の各マイクロステップで、置換済みのファイルを一覧へ追加していく。
     /// - 置換済みのファイルに、温存項目以外の <c>Global.</c> が再混入していないこと。
     /// - <c>AppHost</c>（Service Locator）・<c>Program.rootHub</c> を持たないこと。

@@ -20,7 +20,7 @@ namespace DS4WindowsTests
             "GyroPanel_TiltControlClicked",   // ジャイロのタブ（GyroSettingsPanel）の傾きのボタンのイベントを受ける
             "TouchpadPanel_SwipeControlClicked",   // タッチパッドのタブ（TouchpadSettingsPanel）のスワイプのボタンのイベントを受ける
         };
-        // Phase10-Step3b W2: Full Pull・Outer Bind の入口は、Controls タブの一覧の項目（LS／RS Outer、L2／R2 Full Pull）になった。
+        // Full Pull・Outer Bind の入口は、Controls タブの一覧の項目（LS／RS Outer、L2／R2 Full Pull）になった。
         // 専用のボタンとクリックのハンドラー（TriggerFullPullBtn_Click、StickOuterBindButton_Click）は、なくなった。一覧の入口は、ShowControlBindingWindow（ダブルクリック）
 
         private readonly ITestOutputHelper _output;

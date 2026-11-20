@@ -3,7 +3,7 @@ using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests
 {
-    /// <summary>Phase10-Step6 I4a: Controls の束縛の出力の種類（デジタル／アナログ）を決める表。判定の中身は Phase10-Step4c W4 のまま。</summary>
+    /// <summary>Controls の束縛の出力の種類（デジタル／アナログ）を決める表。判定の中身は Phase10-Step4c W4 のまま。</summary>
     public class OutputNatureTableTests
     {
         [Theory]

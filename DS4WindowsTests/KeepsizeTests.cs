@@ -13,7 +13,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W3（Issue #4 の 2）: 「画面サイズを保持」のチェック（<c>ProfileEditor.Keepsize</c>）の仕組みを固定する。
+    /// 「画面サイズを保持」のチェック（<c>ProfileEditor.Keepsize</c>）の仕組みを固定する。
     /// - XAML の <c>IsChecked="{Binding Keepsize, Mode=TwoWay}"</c> は、ProfileEditor ではなく、メインウィンドウの DataContext
     ///   （<see cref="MainWindowsViewModel"/>）に対して評価され、そこに Keepsize が無いため、最初から解決していなかった（書き込み不能の get-only かどうか以前の問題）。
     ///   実際にチェックの状態を持つのは Click ハンドラー（<c>KeepSizeCheckBox_Click</c>）だけである。

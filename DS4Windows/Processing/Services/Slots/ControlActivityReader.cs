@@ -9,7 +9,7 @@ namespace DS4Windows.Processing.Services.Slots
     /// <summary>
     /// <see cref="DS4Windows.Processing.Abstractions.IControlActivityReader"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.GetBoolMappingExternal</c>（と、その補助 <c>IsUsingGyroForControls</c>）を、そのまま移したもの（設定は引数で受ける）。
-    /// 値の特性化は <c>Phase9BControlActivityReaderTests</c> が守る。
+    /// 値の特性化は 対応するテスト が守る。
     /// </summary>
     public sealed class ControlActivityReader : DS4Windows.Processing.Abstractions.IControlActivityReader
     {

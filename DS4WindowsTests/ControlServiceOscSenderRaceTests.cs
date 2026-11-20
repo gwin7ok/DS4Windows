@@ -11,11 +11,11 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step9-3c（K9-1）: OSC 送信を有効にしたときの NullReferenceException の回帰テスト。
+    /// OSC 送信を有効にしたときの NullReferenceException の回帰テスト。
     /// <c>UseOscSender</c> が先に true になり、送信側の生成（<c>ChangeOSCSenderStatus</c>）が終わる前に
     /// 入力スレッドが送信すると、アプリが未処理例外で終了していた（Step2 より前から存在した競合）。
     /// 送信側が未生成・破棄済みの間は、送信せずに通過することを固定する。
-    /// Phase9 9-E E-1: OSC 系は <c>ControlService</c> から <c>OscService</c> へ移ったため、検査の対象も <c>OscService</c> に変えた
+    /// OSC 系は <c>ControlService</c> から <c>OscService</c> へ移ったため、検査の対象も <c>OscService</c> に変えた
     /// （<c>ControlService.ChangeOSCSenderStatus</c> は薄い委譲として残っている）。
     /// </summary>
     public class ControlServiceOscSenderRaceTests
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlService_ChangeOSCSenderStatus_Disable_WhenSenderNotCreated_DoesNotThrow()
         {
-            // Phase13-Step10 10-c: 旧 ControlService.ChangeOSCSenderStatus は削除した。画面が使う IRuntimeFeatureSwitch を経由する
+            // 旧 ControlService.ChangeOSCSenderStatus は削除した。画面が使う IRuntimeFeatureSwitch を経由する
             TestHost.InitializeRuntime();
             var service = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
 

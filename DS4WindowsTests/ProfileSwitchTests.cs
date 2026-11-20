@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5a-W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5-Plan.md §3 7.5a の W3）: Profile（切替のみ）をスイッチに入れた状態の、ロールバック・復帰つきの扱い・割り当て・性能の確認。
+    /// Profile（切替のみ）をスイッチに入れた状態の、ロールバック・復帰つきの扱い・割り当て・性能の確認。
     /// プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -44,7 +44,7 @@ namespace DS4WindowsTests
         [InlineData("R1")]
         public void AProfileWithAnUnloadTrigger_IsBuilt_SwitchesButNeverRestores(string extras)
         {
-            // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。uTrigger を持つ Profile も束縛になり、切替は行う
+            // 解除トリガー（uTrigger）のボタンによる復帰は廃止した。uTrigger を持つ Profile も束縛になり、切替は行う
             var builder = TestHost.GetService<IActionBindingBuilder>();
             using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();

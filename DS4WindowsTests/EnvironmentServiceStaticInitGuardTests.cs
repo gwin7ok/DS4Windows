@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step2 (PR-1b の是正): EnvironmentService の静的初期化（コントローラースロット上限の計算）が、
+    /// EnvironmentService の静的初期化（コントローラースロット上限の計算）が、
     /// Global の静的初期化を起こさないことを固定する回帰ガード。
     ///
     /// 背景: Global は明示的な静的コンストラクタを持ち、その初期化中に OutputSlotManager が生成され、

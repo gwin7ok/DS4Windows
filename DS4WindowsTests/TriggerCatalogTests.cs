@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W2（docs-forDIMG/MadeByAgent/Archive/Phase10-Step2-Plan.md §3.2・§5）: トリガーの一覧（<see cref="TriggerCatalog"/>）。並び・保存する名前（<c>Tag</c>）・
+    /// トリガーの一覧（<see cref="TriggerCatalog"/>）。並び・保存する名前（<c>Tag</c>）・
     /// 表示名（<c>Content</c>）は、従来の <c>AssignmentEditor.xaml</c> の、名前つきのチェックボックス 49 個と同じ。既存の <c>Actions.xml</c> を
     /// 読めるように、保存する名前は、すべて <c>SpecialAction</c> が解釈できる名前であること。
     /// </summary>
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         {
             var catalog = new TriggerCatalog();
 
-            // Phase9 UI 変更: 並びと表示名は InputControlCatalog（Controls の一覧と共通）。保存する名前は、従来の 49 項目（＋ LS／RS Outer）のまま
+            // 並びと表示名は InputControlCatalog（Controls の一覧と共通）。保存する名前は、従来の 49 項目（＋ LS／RS Outer）のまま
             Assert.Equal(49, LegacyCheckBoxes.Length);
             Assert.Equal(51, catalog.Items.Count);
             Assert.Equal(LegacyCheckBoxes.Select(x => x.Name).Concat(new[] { "LS Outer", "RS Outer" }).OrderBy(x => x, System.StringComparer.Ordinal),

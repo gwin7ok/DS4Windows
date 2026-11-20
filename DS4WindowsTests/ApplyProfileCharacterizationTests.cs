@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step3c: プロファイル適用（旧 <c>Global.ApplyProfile</c>／<c>ApplyProfileToSlot</c>／<c>LoadTempProfile</c>／プリセット）の結果を固定する特性化テスト。
+    /// プロファイル適用の結果を固定する特性化テスト。
     /// W1 では旧 <c>Global</c> に対して書き、W3 で移管先と両方に流して同じ結果であることを確かめ、W4 で旧 <c>Global</c> の削除とともに移管先だけにした
     /// （期待値は W1 から変えていない）。
     /// 固定するもの: 適用後の状態（<c>ProfilePath</c>／<c>SelectedProfile</c>／<c>OlderProfilePath</c>）、一時プロファイルの状態（名前・使用・距離）、
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
 
         private readonly string _dir;
         private readonly string _originalAppData;
-        private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 ControlService（プロファイル読込の窓口）
+        private readonly IProfileLoadTarget _control;   // 旧 ControlService（プロファイル読込の窓口）
         private readonly IProfileSettingsService _settings;
         private readonly ProfileRepository _repo;
         private readonly ProfileApplicationService _service;

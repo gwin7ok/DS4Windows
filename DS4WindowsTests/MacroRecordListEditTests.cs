@@ -12,7 +12,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12（ユーザー要望 2026-11-03）: 記録画面（<c>RecordBox</c>）のコマンド一覧の編集。
+    /// 記録画面（<c>RecordBox</c>）のコマンド一覧の編集。
     /// 複数選択の挿入位置（いちばん上の選択行）、選択行の一括削除、ドラッグ＆ドロップによる並べ替えの ViewModel の部分。
     /// Ctrl＋クリック・Shift＋クリックの選択、空白クリックでの選択解除、ドラッグ操作そのものは、実機で確認する。
     /// </summary>

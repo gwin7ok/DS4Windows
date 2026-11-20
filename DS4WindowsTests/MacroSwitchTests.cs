@@ -14,7 +14,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.3-W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-3-Plan.md §3 W3）: Macro をスイッチに入れた状態の、ロールバック・割り当て・性能の確認。
+    /// Macro をスイッチに入れた状態の、ロールバック・割り当て・性能の確認。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

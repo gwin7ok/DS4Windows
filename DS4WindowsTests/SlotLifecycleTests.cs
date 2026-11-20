@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step6 W3（docs-forDIMG/MadeByAgent/Archive/Phase8-Step6-Plan.md §3.3・§4）: 切断（<c>ReleaseSlot</c>）と接続（<c>PublishSlot</c>）の口を確かめる。
+    /// 切断（<c>ReleaseSlot</c>）と接続（<c>PublishSlot</c>）の口を確かめる。
     /// 偽のエンジンで呼び出しを数え、実ホストで、登録簿とエンジンの状態が消えること、スロットのプロファイル選択が不変であること、再接続で束縛が戻ることを確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -192,19 +192,19 @@ namespace DS4WindowsTests
             string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
-            // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
+            // 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
             string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
             string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
             int handle = removal.IndexOf("_mapping.HandleDeviceDisconnect(ind);", StringComparison.Ordinal);
             int release = removal.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
             Assert.True(handle >= 0 && release > handle, "ReleaseSlot は HandleDeviceDisconnect の後に呼ぶ");
-            // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
+            // Stop の本体は ServiceLifecycle へ移った
             string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
             Assert.DoesNotContain("ReleaseSlot", SourceText.Method(File.ReadAllText(lifecyclePath), "public bool Stop("));
 
-            // Phase9 9-E E-6a: 接続時のプロファイルの適用と束縛の差し替えは ConnectionProfileSelector へ移った
+            // 接続時のプロファイルの適用と束縛の差し替えは ConnectionProfileSelector へ移った
             string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (selectorPath == null) return;
             string connect = SourceText.Method(File.ReadAllText(selectorPath), "public bool ApplyOnConnect(");

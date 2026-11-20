@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// Phase9 MapCustom の分割 M2: <see cref="ITwoStageTriggerProcessor"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>Mapping.ProcessTwoStageTrigger</c>（2 段階トリガーの 5 つのモードの状態機械）を、そのまま移したもの
     /// （状態は、呼び出し側が渡す <see cref="TwoStageTriggerMappingData"/> が持つ。使われていなかった引数 <c>cState</c> は削除した。時計はテストで差し替えられる）。
-    /// 値の特性化は <c>Phase9MapCustomTwoStageDifferentialTests</c>が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class TwoStageTriggerProcessor : ITwoStageTriggerProcessor
     {

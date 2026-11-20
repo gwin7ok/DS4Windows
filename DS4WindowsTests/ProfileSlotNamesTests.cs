@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W5b（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4d-Plan.md §4 W5、ユーザー決定: 案 1）: スロットごとのプロファイルの<b>保管を ID に</b>し、名前を ID から引く窓口（<see cref="ProfileSlotNames"/>）。
+    /// スロットごとのプロファイルの<b>保管を ID に</b>し、名前を ID から引く窓口（<see cref="ProfileSlotNames"/>）。
     /// 書くときは名前の控えと ID を保存し、読むときは ID から現在の名前を返す（名前を変えても、保管を書き換えなくてよい）。ID が引けないとき（削除、未登録）は名前の控え。
     /// 登録簿がなければ、従来の <c>string[]</c> と同じに動く。
     /// </summary>
@@ -189,7 +189,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_TiesTheRegistryToTheBackingStore()
         {
-            string source = RegistrationSource.ReadAll();   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの
+            string source = RegistrationSource.ReadAll();   // 層ごとの partial ファイルをつないだもの
             if (source == null) return;
 
             Assert.Contains("AttachProfileIdentity(service)", source);

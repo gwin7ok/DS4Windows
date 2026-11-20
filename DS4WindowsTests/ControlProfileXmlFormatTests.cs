@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §3.2・§5）: プロファイル XML（<c>Profile.xml</c>）の <c>&lt;Control&gt;</c> の、現在の保存・読み込みの形式の特性化。
+    /// プロファイル XML（<c>Profile.xml</c>）の <c>&lt;Control&gt;</c> の、現在の保存・読み込みの形式の特性化。
     /// Step4 の W1 で、SA 専用の割り当ての節（<c>&lt;Special&gt;</c>）を足す。そのとき、既存の節（Button／Macro／Key／Extras／KeyType）の形式・要素の順序が、
     /// 変わらないことを、この検査で守る。また、将来の節（未知の要素）を、現在は読み飛ばして、保存し直すと失う、という互換の事実を固定する。製品コードは変えない。
     /// </summary>

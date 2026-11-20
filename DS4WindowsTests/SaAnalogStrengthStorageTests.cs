@@ -12,7 +12,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step5 S5a（Phase10-Step6 後の Step5。SA 側のアナログ出力）: アナログな出力の種類の規則（<see cref="AnalogOutputTargets"/>）、強さ（0〜100%）の保存・読み込み
+    /// アナログな出力の種類の規則（<see cref="AnalogOutputTargets"/>）、強さ（0〜100%）の保存・読み込み
     /// （<c>Actions.xml</c> の Button の <c>Strength</c> 要素。100 のときは書かない。古いファイルは 100）、割り当て編集画面の入力（<see cref="PressKeyViewModel"/>）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

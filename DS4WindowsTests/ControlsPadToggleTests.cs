@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9（docs-forDIMG/MadeByAgent/Archive/Phase9-ControlsPadToggle-Plan.md）: Controls のパッドボタンの Toggle。SA の Button と同じ部品（<c>ButtonOutputAction</c>）で処理する。
+    /// Controls のパッドボタンの Toggle。SA の Button と同じ部品（<c>ButtonOutputAction</c>）で処理する。
     /// 押すたびに ON／OFF が切り替わり、ON の間は、仮想パッドのそのボタンが押され続ける（元のボタンの通常の出力は消える）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

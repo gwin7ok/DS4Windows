@@ -20,7 +20,7 @@ namespace DS4Windows.Core.Platform
     /// 同じ状態を読み書きする。下位層（BackingStore／LoggerHolder など）が静的に読んでいた <c>Global.appdatapath</c>／<c>exedirpath</c>／
     /// <c>exelocation</c>／<c>exeversion</c> の窓口は、Phase7-Step10d で <c>Global</c> ごと削除済み
     /// （下位層は、本クラスの <c>*State</c> の静的な状態、または注入された <see cref="IPathService"/> を読む。Phase7c W3 でコメントを訂正）。
-    /// 静的初期化の循環を作らないため、本クラスの static 初期化は <c>Global</c> を参照しない（回帰ガード: Phase7Step4PathServiceGuardTests）。
+    /// 静的初期化の循環を作らないため、本クラスの static 初期化は <c>Global</c> を参照しない（回帰ガード: 対応するテスト）。
     /// </summary>
     public class PathService : IPathService
     {

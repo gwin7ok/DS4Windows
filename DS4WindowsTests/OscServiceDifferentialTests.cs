@@ -12,9 +12,9 @@ using DS4Windows.Output.Services;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-1（docs-forDIMG/MadeByAgent/Archive/Phase9-E-Plan.md）: <see cref="OscService"/> を、旧実装（<c>ControlService</c> の OSC 系を逐語的に写したもの。
+    /// <see cref="OscService"/> を、旧実装（<c>ControlService</c> の OSC 系を逐語的に写したもの。
     /// 送信は <c>SendOsc(アドレス, 値)</c> に直し、設定の 2 つのフラグはフィールドにした）と<b>突き合わせる差分テスト</b>。
-    /// 受信の解釈（ボタン、スティック、トリガー、バッテリー、監視形式、不正なアドレス）、範囲外・不正なメッセージ（旧実装は例外。是正して、捨てる／丸める）、マッピング前後の重ね合わせ、変化の送信（全フィールド）、
+    /// 受信の解釈（ボタン、スティック、トリガー、バッテリー、監視形式、不正なアドレス）、範囲外・不正なメッセージ、マッピング前後の重ね合わせ、変化の送信（全フィールド）、
     /// リスナー／送信側のライフサイクルを調べる。旧実装の写しは、Phase9 の後のテスト整理まで残す。
     /// </summary>
     public class OscServiceDifferentialTests

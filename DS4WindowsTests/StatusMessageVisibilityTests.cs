@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6（P11-7 の実機確認で発見）: メインウィンドウ最下部の 1 行メッセージ欄（<c>lastMsgLb</c>）を、すべてのタブで表示する。
+    /// メインウィンドウ最下部の 1 行メッセージ欄（<c>lastMsgLb</c>）を、すべてのタブで表示する。
     /// 旧: <c>MainTabCon_SelectionChanged</c> が、タブの番号（<c>SelectedIndex == 4</c>）で欄を隠していた。本来は Log タブ
     /// （内容が一覧と同じ）を隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際には <b>Settings</b> タブで隠れていた。
     /// そのため、Settings タブで出る警告（カスタム Steam フォルダーが見つからない、など）が、他のタブへ移るまで見えなかった。

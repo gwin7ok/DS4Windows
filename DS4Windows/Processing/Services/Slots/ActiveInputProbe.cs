@@ -8,7 +8,7 @@ namespace DS4Windows.Processing.Services.Slots
     /// <summary>
     /// <see cref="DS4Windows.Processing.Abstractions.IActiveInputProbe"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>ControlService.GetActiveInputControl</c> を、そのまま移したもの（判定の順序も同じ）。
-    /// 値の特性化は <c>Phase9EInputReportPartsTests</c>が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class ActiveInputProbe : DS4Windows.Processing.Abstractions.IActiveInputProbe
     {

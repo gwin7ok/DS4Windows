@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step6 6-d: <see cref="IProfileLoadTarget"/>（<see cref="ProfileLoadTarget"/>）が、鎖の <c>control</c> 引数（<c>ControlService</c>）と
+    /// <see cref="IProfileLoadTarget"/>（<see cref="ProfileLoadTarget"/>）が、鎖の <c>control</c> 引数（<c>ControlService</c>）と
     /// 同じ結果を返すこと（6-e で型を置き換えても挙動が変わらないことの根拠）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

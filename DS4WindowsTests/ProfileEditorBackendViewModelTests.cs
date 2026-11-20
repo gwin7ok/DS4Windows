@@ -10,13 +10,13 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step8-4: ProfileEditor（View）から ViewModel へ移したバックエンド操作を、UI なしで検証する。
+    /// ProfileEditor（View）から ViewModel へ移したバックエンド操作を、UI なしで検証する。
     /// - <see cref="SpecialActionsListViewModel.CommitEnabledActionsToProfile"/>: 有効なアクション名を
     ///   編集スロットの ProfileActions へ反映する（保存時・チェック切り替え時の共通処理）。
     /// - <see cref="ProfileSettingsViewModel"/> の SaveProfile／LoadBlankProfile／RefreshCustomsFlags／
     ///   RefreshExtraProfileInfo: 編集スロットだけを対象にし、コントローラーのスロットへの再適用をしないこと。
     ///   実ファイル・実機が必要な副作用があるため、委譲先の呼び出し形をソース走査で固定する。
-    /// 変更した Global 状態は必ず元に戻す（Phase6-Step2 の教訓）。
+    /// 変更した Global 状態は必ず元に戻す。
     /// </summary>
     public class ProfileEditorBackendViewModelTests
     {

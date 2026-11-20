@@ -7,14 +7,14 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step12（方針: 旧形式を正とし、プロファイル用 DTO［ProfileDTO］を削除して旧形式に統一する。Plan §0A.18）の安全網。
+    /// 旧形式を正とし、プロファイル用 DTO［ProfileDTO］を削除して旧形式に統一する。Plan §0A.18）の安全網。
     /// 旧形式の <c>BackingStore.SaveProfile</c> が書くプロファイル XML に、ProfileDTO が持っていた設定の要素（162 要素）が
-    /// すべて含まれることを固定する（Phase9 Steering 削除 W4 で、ステアリングの 4 要素を除いた）。ProfileDTO が持っていて旧形式が書いていなかった 10 要素（U-8 の原因）の再発も検出する。
+    /// すべて含まれることを固定する。ProfileDTO が持っていて旧形式が書いていなかった 10 要素（U-8 の原因）の再発も検出する。
     /// 要素名の一覧は、ProfileDTO の削除前に、そのソースから抜き出して固定したもの（読み取り専用の移行用の 13 要素 —
     /// Red／Green／Blue、LowRed ほか、ChargingRed ほか、ShiftModifier、UseSAforMouse、UseTPforControls、LastChecked — は除く）。
     /// 変更した Global 状態は必ず元に戻す。
     /// </summary>
-    // 共有のアプリデータのパス（PathService の静的な状態）を書き換える/読むテストが並行すると、一時フォルダーが消えて失敗する（Phase8-Step4 W5 で観測）ため、同じコレクションで直列に実行する
+    // 共有のアプリデータのパス（PathService の静的な状態）を書き換える/読むテストが並行すると、一時フォルダーが消えて失敗するため、同じコレクションで直列に実行する
     [Xunit.Collection(SharedHostStateCollection.Name)]
     public class ProfileLegacyXmlCompletenessTests
     {
@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             "RSDeadZoneType", "RSDeltaAccelSettings", "RSFuzz", "RSMaxOutput", "RSMaxOutputForce", "RSMaxZone", "RSOuterBindDead",
             "RSOuterBindInvert", "RSOutputCurveCustom", "RSOutputCurveMode", "RSOutputMode", "RSOutputSettings", "RSRotation",
             "RSSquareStick", "RSVerticalScale", "Rainbow", "RightStickDriftXAxis", "RightStickDriftYAxis", "RightTriggerMiddle",
-            "RumbleAutostopTime", "RumbleBoost", // Phase9 Steering 削除 W4: SASteeringWheelEmulationAxis／SASteeringWheelEmulationRange／SASteeringWheelFuzz／SASteeringWheelSmoothingOptions の 4 要素は、機能ごと削除した
+            "RumbleAutostopTime", "RumbleBoost", // SASteeringWheelEmulationAxis／SASteeringWheelEmulationRange／SASteeringWheelFuzz／SASteeringWheelSmoothingOptions の 4 要素は、機能ごと削除した
             "SATriggerCond", "SATriggers", "SXAntiDeadZone", "SXDeadZone",
             "SXMaxZone", "SXOutputCurveCustom", "SXOutputCurveMode", "SZAntiDeadZone", "SZDeadZone", "SZMaxZone",
             "SZOutputCurveCustom", "SZOutputCurveMode", "Sensitivity", "ShiftControl", "SquareRStickRoundness",

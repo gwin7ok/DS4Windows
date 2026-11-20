@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4 W0（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4-Plan.md §3.3・§5）: <see cref="ActionBindingBuilder"/> が、SA の種別ごとに作る束縛（入力の型、出力アクションの型、方針）の一覧表の特性化。
+    /// <see cref="ActionBindingBuilder"/> が、SA の種別ごとに作る束縛（入力の型、出力アクションの型、方針）の一覧表の特性化。
     /// Step4 の W2 で、種別ごとの出力アクションの作り方を、共通の部品へ取り出す。そのとき、SA の束縛が変わらないことを、この表で守る。
     /// 窓口（ポート）がないときに、束縛を作らない種別も固定する。製品コードは変えない。
     /// </summary>

@@ -10,13 +10,13 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7b-2: マクロ記録画面の ViewModel（`RecordBoxViewModel`）が、設定の読み書き先
+    /// マクロ記録画面の ViewModel（`RecordBoxViewModel`）が、設定の読み書き先
     /// （`DeviceNum`＝編集スロット）とは別に実機のスロット番号 `targetDevice` を持ち、
     /// (a) 記録中のタッチパッド Passthru を実機のスロットにだけ設定して、`RevertControlsSettings` で元に戻すこと、
     /// (b) ライトバー強制色のプレビューが実機にだけ効くこと、を固定する。
     /// 編集スロットには、Step7b-3 以降と同じ `Global.TEST_PROFILE_INDEX`（8）を渡す。
     /// 設定は独立した `BackingStore` に対して操作し、`Global.store` は変えない。
-    /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する（Phase6-Status.md §6.4-1）。
+    /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する。
     /// </summary>
     public class RecordBoxViewModelTargetDeviceTests
     {

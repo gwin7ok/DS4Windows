@@ -11,7 +11,7 @@ namespace DS4Windows.Processing.Services.Conditioning
     /// <see cref="ITriggerDeadZoneProcessor"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.SetCurveAndDeadzone</c> の L2 のデッドゾーンの処理を、そのまま移したもの
     /// （R2 のコードは、名前と数値の書き方［<c>255.0 * ratio</c> と <c>255 * ratio</c>］以外は同じだったため、統合した。計算結果は変わらない）。
-    /// 値の特性化は <c>Phase9A1SetCurveAndDeadzoneGoldenTests</c> と <c>Phase7bTriggerDeadZoneRoundingTests</c> が守る。
+    /// 値の特性化は 対応するテスト が守る。
     /// </summary>
     public sealed class TriggerDeadZoneProcessor : ITriggerDeadZoneProcessor
     {

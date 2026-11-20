@@ -20,7 +20,7 @@ namespace DS4WindowsTests
         [Fact]
         public void GetAction_ShouldReturnItemInList()
         {
-            // Phase7-Step2 W5: AddAction（メモリ上の並行実装）を削除したため、一覧への追加は ActionList で行う。
+            // AddAction（メモリ上の並行実装）を削除したため、一覧への追加は ActionList で行う。
             var repo = TestRepositoryFactory.CreateSpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var action = new SpecialAction("TestAction", "Touchpad", "Key", "10", 0);
 

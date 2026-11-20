@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I5b（docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Plan.md §4）: SA に付けた Extras の実行。読み込みの部品が定義の <c>Extras</c> に解釈済みの値を入れ、
+    /// SA に付けた Extras の実行。読み込みの部品が定義の <c>Extras</c> に解釈済みの値を入れ、
     /// <see cref="AssignmentBindingBuilder.BuildExtras"/> が Extras 用の別の束縛を作り、<see cref="ActionBindingBuilder"/> が SA の束縛の<b>前</b>に並べる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

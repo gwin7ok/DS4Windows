@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W4（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4c-Plan.md §2 項目 1・§4 W4、ユーザー承認 2026-10-21。案 B）: Controls の束縛のうち、<b>デジタルな出力</b>
+    /// Controls の束縛のうち、<b>デジタルな出力</b>
     /// （Key、Macro、Special、Extras、パッドのボタン、マウスのボタン・タッチパッドクリック・デジタルのホイール）は SA と同じ閾値（<see cref="ControlOutputNature.Digital"/>）で判定し、
     /// <b>アナログな出力</b>（パッドの軸・トリガー、マウスの移動、アナログのホイール、Default の軸の素通し）は従来の判定（<see cref="ControlOutputNature.Analog"/>）のままであることを固定する。
     /// 閾値そのものの値は <c>JudgementTableTests</c> が固定する。
@@ -74,9 +74,9 @@ namespace DS4WindowsTests
 
             Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_Pad", DS4Controls.Cross));
             Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_Mouse", DS4Controls.Circle));
-            // Phase9（Controls のパッドボタンの Toggle）: パッドの軸 + Toggle も、SA の Button と同じ部品（ON の間は端まで出す）になり、SA と同じ閾値（デジタル）で判定する
+            // パッドの軸 + Toggle も、SA の Button と同じ部品（ON の間は端まで出す）になり、SA と同じ閾値（デジタル）で判定する
             Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_Pad", DS4Controls.Share));
-            // Phase9: マウスの移動 + Toggle も、SA の Button と同じ部品（SA と同じ閾値のデジタルな判定）
+            // マウスの移動 + Toggle も、SA の Button と同じ部品（SA と同じ閾値のデジタルな判定）
             Assert.Equal(ControlOutputNature.Digital, Of("Synthetic_AnalogMouse", DS4Controls.Square));
         }
     }

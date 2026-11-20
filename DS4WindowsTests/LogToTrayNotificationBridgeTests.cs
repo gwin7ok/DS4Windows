@@ -4,7 +4,7 @@ using DS4Windows.Core.Logging;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase5-Step14 通知経路統合: AppLogger.LogToTray が
+    /// AppLogger.LogToTray が
     /// AppLogger.NotificationService.SendNotification へ正しく委譲することを検証する。
     /// </summary>
     public class LogToTrayNotificationBridgeTests

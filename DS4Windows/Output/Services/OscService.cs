@@ -14,7 +14,7 @@ namespace DS4Windows.Output.Services
     /// <see cref="IOscService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の OSC 系（受信の解釈 <c>CreateOSCCallback</c>、リスナー／送信側のライフサイクル、<c>SendOsc</c>、<c>OSCPreMappingStep</c>／<c>OSCPostMappingStep</c>、
     /// <c>CompareAndSendChangesToOSC</c>、状態 <c>oscState</c>）を、そのまま移したもの（SharpOSC の型は <see cref="IOscTransportFactory"/> の実装の中に閉じた。送信する値は旧実装と同じ型のまま渡す）。
-    /// 値の特性化は <c>Phase9EOscServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は 対応するテスト（旧実装との差分テスト）が守る。
     /// 現行の癖: リスナーが null のときの停止は <see cref="NullReferenceException"/>（計画書 E3。呼び出し側が <see cref="HasListener"/> を確かめてから呼ぶ）。
     /// 範囲外のコントローラー番号・値・不正なメッセージ（計画書 E1・E2）は、旧実装では例外だったが、ユーザー承認により是正した（範囲外の番号は捨てる／値は 0〜255 に丸める／不正なメッセージはログに出して捨てる）。
     /// </summary>

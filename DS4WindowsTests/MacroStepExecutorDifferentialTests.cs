@@ -18,10 +18,10 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-C（docs-forDIMG/MadeByAgent/Archive/Phase9-C-Plan.md）: <see cref="MacroStepExecutor"/> を、旧実装（<c>Mapping.PlayMacroCodeValue</c> を逐語的に写したもの）と<b>突き合わせる差分テスト</b>。
+    /// <see cref="MacroStepExecutor"/> を、旧実装（<c>Mapping.PlayMacroCodeValue</c> を逐語的に写したもの）と<b>突き合わせる差分テスト</b>。
     /// 仮想キーボード・マウスへの送出を、呼び出しの名前と引数で記録して比べる。ゲームパッドのボタンの出力フラグ（<c>MacroControl</c>）と個数（<c>MacroCount</c>）、
     /// ライトバーの強制色（<c>DS4LightBar</c> の静的な配列）、待ちの要否の戻り値、押下の表（<c>keydown</c>）も比べる。
-    /// 旧実装は private で、切り出しの後は <c>Mapping</c> から消えるため、写しをこのファイルに残す（Phase9 の後のテスト整理まで）。
+    /// 旧実装は private で、切り出しの後は <c>Mapping</c> から消えるため、写しをこのファイルに残す。
     /// 旧実装は全コントローラーで 1 つのフラグと個数を共有していたが、新しい実装はデバイスごと（ユーザー判断 Q2）。1 台のときの結果は同じ。
     /// </summary>
     public class MacroStepExecutorDifferentialTests
@@ -67,8 +67,8 @@ namespace DS4WindowsTests
 
             public bool PlayMacroCodeValue(int device, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
             {
-                // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
-                // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
+                // 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
+                // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む。
                 bool doDelayOnCaller = false;
                 if (macroCodeValue >= 261 && macroCodeValue <= DS4ControlSettings.MAX_MACRO_VALUE)
                 {
@@ -211,7 +211,7 @@ namespace DS4WindowsTests
                         if (accessor != null) d = accessor.GetController(device);
                     }
                     catch { }
-                    // Phase7-Step5 W2: IDeviceStateAccessor は ControlService 自身の登録のため、旧 Program.rootHub のフォールバックは冗長だった
+                    // IDeviceStateAccessor は ControlService 自身の登録のため、旧 Program.rootHub のフォールバックは冗長だった
                     string r = macroCodeValue.ToString().Substring(1);
                     byte heavy = (byte)(int.Parse(r[0].ToString()) * 100 + int.Parse(r[1].ToString()) * 10 + int.Parse(r[2].ToString()));
                     byte light = (byte)(int.Parse(r[3].ToString()) * 100 + int.Parse(r[4].ToString()) * 10 + int.Parse(r[5].ToString()));
@@ -235,7 +235,7 @@ namespace DS4WindowsTests
             var list = new List<int> { 0, 1, 8, 13, 65, 90, 160, 255, 256, 257, 258, 259, 260, 261, 262, 273, 285, 286, 299 };
             list.Add(DS4ControlSettings.MAX_MACRO_VALUE + 1);   // ゲームパッドの範囲の外（キーとして扱われる）
             list.AddRange(new[] { 300, 301, 350, 5000, 999999 });                // 待ち
-            // 1,300,000,000 以上は、Phase12-Step3 3c でマウスポインターの移動に割り当てた（旧実装は、それも「ライトバー」と読む）。ライトバーの最大は 1,255,255,255
+            // 1,300,000,000 以上は、Phase12-Step3 3c でマウスポインターの移動に割り当てた。ライトバーの最大は 1,255,255,255
             list.AddRange(new[] { 1000000000, 1255128064, 1000000001, 1255255255, 1299999999 });   // ライトバー（消灯・色）
             return list.Distinct().ToArray();
         }
@@ -327,7 +327,7 @@ namespace DS4WindowsTests
         public void TouchStartedAndEndedValues_NoLongerThrow_ButOutputNothing(int code)
         {
             // 計画書 M6 の是正（ユーザー承認）: 旧実装は、ゲームパッドの範囲（261〜288）のうち、フラグの配列（26 個＝261〜286）を超える 287（Touch Started）・
-            // 288（Touch Ended）で IndexOutOfRangeException になっていた（旧実装の写しは、今も同じ例外を出す）。新しい実装は、フラグの配列を 28 個にして例外にしない。
+            // 288（Touch Ended）で IndexOutOfRangeException になっていた。新しい実装は、フラグの配列を 28 個にして例外にしない。
             IProfileSettingsService settings = TestHost.GetService<IProfileSettingsService>();
             var oldImpl = new OldMacroStep(new LogKbm(), settings, () => null);
             Assert.IsType<IndexOutOfRangeException>(Record.Exception(() => oldImpl.PlayMacroCodeValue(OldDevice, DS4KeyType.None, code, new bool[512])));

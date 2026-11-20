@@ -67,7 +67,7 @@ namespace DS4WindowsTests
 
             Assert.Null(ex);
             Assert.NotNull(accessor);
-            // Phase13-Step5: 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
+            // 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
             Assert.Same(TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>(), accessor);
         }
     }

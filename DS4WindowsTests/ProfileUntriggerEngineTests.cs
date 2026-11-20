@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5b-W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-5b-Plan.md §3 の W2）: 復帰の合図をエンジンが持つ新経路の確認（新経路だけの項目）。
+    /// 復帰の合図をエンジンが持つ新経路の確認（新経路だけの項目）。
     /// 旧・新の両経路の比べは <c>ProfileUntriggerDualPathTests</c>。
     /// プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AProfileWithUntriggerButtons_IsOwned_AndHasNoSignal_AfterTheRemovalOfTheUnloadTrigger()
         {
-            // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は新経路が行い、復帰の合図は立たない
+            // 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は新経路が行い、復帰の合図は立たない
             using var t = new SpecialActionTestScope();
             RecordingProfileApplicationService recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "R1");

@@ -6,7 +6,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step7 7-a: 出力種別の 2 本の配列（<c>ActiveOutDevType</c>／<c>OutDevTypeTemp</c>）の現状の挙動を固定する特性テスト。
+    /// 出力種別の 2 本の配列（<c>ActiveOutDevType</c>／<c>OutDevTypeTemp</c>）の現状の挙動を固定する特性テスト。
     /// 7-b 以降で配列の持ち主を <c>IOutputDeviceTypeState</c> へ移しても、<c>IOutputSlotService</c> 経由で見える結果が同じであることを確かめる。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

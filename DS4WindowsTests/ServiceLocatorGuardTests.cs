@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step5 W3 以降: Service Locator の解消（Q4〜Q9）の回帰ガード。Wave ごとに追記する。
+    /// Service Locator の解消（Q4〜Q9）の回帰ガード。Wave ごとに追記する。
     /// - W3: 出力スロットの契約（<c>LoadOutputSlots</c>／<c>SaveOutputSlots</c>）の接続、<c>Global.ProfileXmlStoreInstance</c> と
     ///   <c>Global.NotificationServiceInstance</c> の削除（<c>AppLogger.NotificationService</c> への置き換え）。
     /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step5-Plan.md</c>。
@@ -28,7 +28,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ControlServiceAndBackingStore_ReceiveTheirCollaborators()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数と、コンテナが組み立てた結果を確かめる（AppHost を使わないことは RemovedApiRuleTests）
+            // ソースの文字列ではなく、コンストラクターの引数と、コンテナが組み立てた結果を確かめる（AppHost を使わないことは RemovedApiRuleTests）
             Assert.Contains(typeof(DS4Windows.Processing.Services.Devices.DeviceRegistryHooks).GetConstructors().Single().GetParameters(),
                 p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IElevatedProcessLauncher));
             Assert.NotNull(TestHost.GetService<DS4Windows.Core.Settings.BackingStore>());
@@ -51,7 +51,7 @@ namespace DS4WindowsTests
             string main = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
             string editor = SourceText.ReadCode("DS4Windows/UI/ProfileEditor.xaml.cs");
             string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
-            string registration = RegistrationSource.ReadAll(stripComments: true);   // Phase14c-Step6（R-18）: 層ごとの partial ファイルをつないだもの（コメントは除く）
+            string registration = RegistrationSource.ReadAll(stripComments: true);   // 層ごとの partial ファイルをつないだもの（コメントは除く）
             if (main == null || editor == null || app == null || registration == null) return;
 
             Assert.DoesNotContain("AppHost", main);

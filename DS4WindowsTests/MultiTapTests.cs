@@ -19,7 +19,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7b-W2（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-7-Plan.md §3.2。Q2＝B: 独立した入力アクション）: <see cref="MultiTapInputAction"/>、<see cref="MultiActionOutput"/>、
+    /// <see cref="MultiTapInputAction"/>、<see cref="MultiActionOutput"/>、
     /// ビルダー、ログ、割り当ての確認。旧・新の両経路の比べは <c>MultiActionDualPathTests</c>。
     /// 入力アクションは、時刻と押下を差し込める偽の入力（待たない）で確かめる。他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -305,7 +305,7 @@ namespace DS4WindowsTests
             player.PlayMacroString(-1, "65/65");
             player.PlayMacroString(99, "65/65");
 
-            Assert.Throws<ArgumentNullException>(() => new DefaultMacroStringPlayer(null));   // Phase13-Step8 8-b: 直接注入にしたため、Mapping は必須（旧: 遅延取得デリゲートが null を返しても例外にしない）
+            Assert.Throws<ArgumentNullException>(() => new DefaultMacroStringPlayer(null));   // 直接注入にしたため、Mapping は必須
         }
 
         [Fact]
@@ -413,7 +413,7 @@ namespace DS4WindowsTests
             held.L1 = true;
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // JIT は、測定の外へ
 
-            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）
+            // 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）
             long min = long.MaxValue;
             for (int round = 0; round < 5; round++)
             {
