@@ -1,10 +1,10 @@
 {
   "_comment": "Score-CodeReview.py が読む、手で記録する値と、はい／いいえの確認項目。Phase の最終 Step で、根拠を確かめてから answer / value を更新する。答えを変えるときは evidence に、確かめた方法（実行したテスト名・コマンド・日付）を書く。",
-  "snapshot_label": "2026-11-20 RV5 完了",
+  "snapshot_label": "2026-11-20 RV9 完了",
   "manual": {
     "nullable_layers_enabled": {
-      "value": 3,
-      "evidence": "2026-11-19（RV2 完了）: RV9 A 組の完了で、Composition・Input・Output の 3 層が全ファイル #nullable enable（警告 0、CodeHealthRatchetTests.NullableIsEnabledInEveryFileOfTheEnabledFolders が検査）。Core は Settings・Persistence が、Processing は Actions が B 組で未着手のため、層としては数えない。"
+      "value": 6,
+      "evidence": "2026-11-20（RV9-13）: DS4WinWPF.csproj と DS4WindowsCli.csproj に <Nullable>enable</Nullable> と TreatWarningsAsErrors を設定。ファイルごとの指令 988 件を削除（Remove-NullableDirective.py --verify で差分が指令の削除だけと確認）。Debug・Release のビルドが警告 0・エラー 0。設定から自動で 6 になる（Score-CodeReview.py）。"
     },
     "profile_setting_files": {
       "value": 2,
@@ -45,7 +45,7 @@
     "safety_net_green": {
       "text": "ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査が、Debug ALL（0 警告・0 エラー）で通る",
       "answer": true,
-      "evidence": "2026-11-20（RV5）: Debug ALL（Build-Debug 相当: DS4WinWPF と DS4Windows.Actions.Tests のビルドが警告 0・エラー 0）、xUnit 3,687 件（StandaloneTests は未実行）の合格（--blame-hang 15s）。ArchUnitNET の層の検査・ガードテスト・ラチェットの一致検査（新設の ViewCommandBindingRatchetTests を含む）を含む"
+      "evidence": "2026-11-20（RV9-13）: Debug（DS4WinWPF と DS4Windows.Actions.Tests）・Release のビルドが警告 0・エラー 0（TreatWarningsAsErrors）。xUnit 3,660 件（Benchmark 除く）の合格。ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査を含む。StandaloneTests は、プロジェクトがなくなった。"
     }
   }
 }
