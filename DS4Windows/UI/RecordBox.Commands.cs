@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI

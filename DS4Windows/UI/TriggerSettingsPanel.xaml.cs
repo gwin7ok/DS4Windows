@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.ViewModels;

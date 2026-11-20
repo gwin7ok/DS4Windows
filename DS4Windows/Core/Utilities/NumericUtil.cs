@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Runtime.CompilerServices;
 
 namespace DS4Windows.Core.Utilities

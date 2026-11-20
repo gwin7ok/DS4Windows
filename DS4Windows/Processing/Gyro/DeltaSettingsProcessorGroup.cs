@@ -1,7 +1,5 @@
 
 
-#nullable enable
-
 namespace DS4Windows.Processing.Gyro
 {
     public class DeltaSettingsProcessorGroup

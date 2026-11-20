@@ -30,6 +30,10 @@
 		<RepositoryUrl>https://github.com/gwin7ok/DS4Windows</RepositoryUrl>
 		<!-- Suppress WPF-related false positive errors (project-only) -->
 		<NoWarn>$(NoWarn);CS0103;CS0122;CS1061;CS0246;CS0234</NoWarn>
+		<!-- null 許容の注釈は、プロジェクト全体で有効（個々のファイルへ #nullable enable を書かない） -->
+		<Nullable>enable</Nullable>
+		<!-- 新しい警告は、ビルドを止める。パッケージの更新で出たときは、Analyzers.globalconfig の 1 行で、その警告だけを一時的に外す -->
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
 		<!-- Disable auto-generated .editorconfig to use repository root .editorconfig only -->
 		<GenerateEditorConfigFile>false</GenerateEditorConfigFile>

@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO;
 using DS4Windows.Core.Settings;

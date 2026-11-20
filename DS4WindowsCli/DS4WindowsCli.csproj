@@ -12,7 +12,8 @@
 		<RootNamespace>DS4Windows.Cli</RootNamespace>
 		<AssemblyName>DS4WindowsCli</AssemblyName>
 		<ApplicationIcon>..\DS4Windows\DS4W.ico</ApplicationIcon>
-		<Nullable>disable</Nullable>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>

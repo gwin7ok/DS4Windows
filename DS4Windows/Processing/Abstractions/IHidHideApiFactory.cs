@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary><see cref="IHidHideApi"/> を開く。呼び出し側が <c>using</c> で閉じる（毎回開いて閉じる。旧実装と同じ）。</summary>

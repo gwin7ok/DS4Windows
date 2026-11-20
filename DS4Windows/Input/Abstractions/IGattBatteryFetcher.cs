@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Threading.Tasks;
 
 namespace DS4Windows.Input.Abstractions

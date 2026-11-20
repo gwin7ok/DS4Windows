@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;

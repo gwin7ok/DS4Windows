@@ -1,5 +1,3 @@
-#nullable enable
-
 using SharpOSC;
 using DS4Windows.Processing.Abstractions;
 

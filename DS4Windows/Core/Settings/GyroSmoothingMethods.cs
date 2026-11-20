@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace DS4Windows.Core.Settings
+﻿namespace DS4Windows.Core.Settings
 {
     /// <summary>平滑化の方式と、プロファイルへ保存する識別子（"one-euro"・"weighted-average"・"none"）の相互変換。</summary>
     public static class GyroSmoothingMethods

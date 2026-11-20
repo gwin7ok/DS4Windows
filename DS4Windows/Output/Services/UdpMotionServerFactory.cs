@@ -1,6 +1,4 @@
 
-#nullable enable
-
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Output.Services

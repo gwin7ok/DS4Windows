@@ -1,5 +1,3 @@
-#nullable enable
-
 using Sensorit.Base;
 
 namespace DS4Windows.Core.Settings

@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace DS4Windows.UI.Services
 {
     /// <summary>更新の確認の結果。画面が何を出すかを決める。</summary>

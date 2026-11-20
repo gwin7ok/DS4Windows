@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using CommunityToolkit.Mvvm.Input;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Updater;

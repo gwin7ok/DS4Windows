@@ -39,13 +39,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void NullableIsEnabledInEveryFileOfTheEnabledFolders()
-        {
-            var missing = CodeHealthScanner.FilesMissingNullableDirective(ProductionSources(), CodeHealthBaseline.NullableEnabledFolders);
-            Assert.True(missing.Count == 0, "#nullable enable がないファイル: " + string.Join(", ", missing.Take(20)));
-        }
-
-        [Fact]
         public void NullForgivingOperatorAlwaysHasAReason()
         {
             int actual = CodeHealthScanner.CountNullForgivingWithoutReason(ProductionSources());

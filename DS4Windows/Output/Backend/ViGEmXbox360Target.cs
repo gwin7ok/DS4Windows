@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 

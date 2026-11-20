@@ -1,5 +1,3 @@
-#nullable enable
-
 using DS4Windows.Processing.Gyro;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;

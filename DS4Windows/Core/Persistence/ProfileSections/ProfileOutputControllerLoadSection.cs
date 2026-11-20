@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Xml;
+﻿using System.Xml;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;

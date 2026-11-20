@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using static DS4Windows.Input.InputDeviceRegistry;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;

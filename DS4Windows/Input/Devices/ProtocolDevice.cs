@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Threading;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;

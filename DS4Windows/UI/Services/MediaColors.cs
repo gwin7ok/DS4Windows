@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Windows.Media;
 using DS4Windows.Core.Model;
 

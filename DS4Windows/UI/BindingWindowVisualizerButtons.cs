@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace DS4Windows.UI
+﻿namespace DS4Windows.UI
 {
     /// <summary>
     /// 出力ピッカーの、コントローラーの図（<c>ControllerVisualizerControl</c>）が配置表から生成するボタンと、割り当てる出力（<c>X360Controls</c> の名前）の表。

@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;

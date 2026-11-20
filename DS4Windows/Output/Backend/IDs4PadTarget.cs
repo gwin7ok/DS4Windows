@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Output.Backend
+﻿namespace DS4Windows.Output.Backend
 {
     /// <summary>仮想 DS4 パッド 1 台の操作。ドライバーの型を使わない値だけで表す（ボタンのビットは <see cref="Ds4Buttons"/>、<see cref="Ds4SpecialButtons"/>）。</summary>
     public interface IDs4PadTarget

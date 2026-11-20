@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Actions

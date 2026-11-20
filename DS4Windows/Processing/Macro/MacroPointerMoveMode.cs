@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace DS4Windows.Processing.Macro
 {
     /// <summary>

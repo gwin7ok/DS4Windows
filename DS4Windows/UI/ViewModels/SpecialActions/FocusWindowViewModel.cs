@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using DS4Windows.Core.Abstractions;

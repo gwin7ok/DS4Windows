@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Core.Persistence.Dto;

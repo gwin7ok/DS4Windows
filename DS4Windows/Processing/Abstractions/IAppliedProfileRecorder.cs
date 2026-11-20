@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Processing.Abstractions
+﻿namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// プロファイルを適用したとき（<c>SelectedProfileChanged</c> は適用のたびに発火する）、そのスロットのコントローラーに、適用したプロファイルを記憶する。

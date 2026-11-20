@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Collections.Generic;
 
 namespace DS4Windows.UI.ViewModels

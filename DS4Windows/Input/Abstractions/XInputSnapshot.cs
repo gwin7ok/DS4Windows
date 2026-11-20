@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace DS4Windows.Input.Abstractions
 {
     /// <summary>XInput で読んだ 1 回分の状態（<c>XINPUT_STATE</c> の写し）。</summary>

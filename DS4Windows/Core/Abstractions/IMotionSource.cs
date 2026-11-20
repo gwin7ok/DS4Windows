@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 
 namespace DS4Windows.Core.Abstractions

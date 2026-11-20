@@ -1,3 +1,4 @@
+// テストのプロジェクトも、このファイルを取り込む（Nullable の設定がない）ため、ここだけ指令を残す
 #nullable enable
 
 using System;

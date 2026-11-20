@@ -11,21 +11,6 @@ namespace DS4WindowsTests
         private static CodeHealthScanner.SourceFile File(string path, string text) => new CodeHealthScanner.SourceFile(path, text);
 
         [Fact]
-        public void FilesMissingNullableDirective_ReportsOnlyFilesInTheGivenFolders()
-        {
-            var files = new[]
-            {
-                File("Core/Abstractions/A.cs", "#nullable enable\r\nnamespace X {}"),
-                File("Core/Abstractions/B.cs", "using System;\r\nnamespace X {}"),
-                File("Core/Model/C.cs", "namespace X {}"),
-                File("App.xaml.cs", "namespace X {}"),
-            };
-
-            Assert.Equal(new[] { "Core/Abstractions/B.cs" }, CodeHealthScanner.FilesMissingNullableDirective(files, new[] { "Core/Abstractions/" }));
-            Assert.Equal(new[] { "App.xaml.cs" }, CodeHealthScanner.FilesMissingNullableDirective(files, new[] { "App.xaml.cs" }));
-        }
-
-        [Fact]
         public void CountNullForgivingWithoutReason_AcceptsOnlyCommentedOperators()
         {
             string code = "#nullable enable\r\nclass C {\r\n"
@@ -42,7 +27,7 @@ namespace DS4WindowsTests
                 File("Core/B.cs", code.Replace("#nullable enable\r\n", string.Empty)),
             };
 
-            Assert.Equal(1, CodeHealthScanner.CountNullForgivingWithoutReason(files));
+            Assert.Equal(2, CodeHealthScanner.CountNullForgivingWithoutReason(files));   // 指令の有無に関わらず、全ファイルを数える
         }
 
         [Fact]

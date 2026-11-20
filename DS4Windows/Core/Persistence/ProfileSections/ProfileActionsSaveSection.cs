@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
 using static DS4Windows.Core.Utilities.Util;

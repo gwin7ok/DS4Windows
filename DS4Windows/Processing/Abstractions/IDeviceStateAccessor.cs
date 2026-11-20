@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using DS4Windows.Input;
+﻿using DS4Windows.Input;
 
 namespace DS4Windows.Processing.Abstractions
 {

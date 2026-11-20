@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Processing.Actions
+﻿namespace DS4Windows.Processing.Actions
 {
     public interface IKeyButtonActionControllerFactory
     {
