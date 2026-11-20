@@ -22,7 +22,7 @@ namespace DS4Windows.Actions.Tests
         public void Start(IActionBinding binding, ITriggerContext trigger)
         {
             Running = true;
-            repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(33), () => { });
+            repeater.Start();
         }
 
         public void Stop(IActionBinding binding, ITriggerContext trigger)

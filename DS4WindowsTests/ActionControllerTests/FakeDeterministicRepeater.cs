@@ -3,35 +3,24 @@ using DS4Windows.Processing.Actions;
 
 namespace DS4Windows.Actions.Tests
 {
-    // Deterministic fake repeater for tests: Start stores tickAction and exposes TriggerOnce to invoke it.
+    // Deterministic fake repeater for tests: Start／Stop の状態だけを持つ。
     public class FakeDeterministicRepeater : IRepeater
     {
-        private System.Action tickAction;
-        private bool running = false;
+        public bool IsRunning { get; private set; }
 
-        public void Start(TimeSpan initialDelay, TimeSpan interval, System.Action tickAction)
+        public void Start()
         {
-            this.tickAction = tickAction;
-            running = true;
+            IsRunning = true;
         }
 
         public void Stop()
         {
-            running = false;
-        }
-
-        public void TriggerOnce()
-        {
-            if (running && tickAction != null)
-            {
-                try { tickAction(); } catch { }
-            }
+            IsRunning = false;
         }
 
         public void Dispose()
         {
-            running = false;
-            tickAction = null;
+            IsRunning = false;
         }
     }
 }

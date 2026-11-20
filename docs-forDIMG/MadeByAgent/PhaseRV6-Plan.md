@@ -81,3 +81,4 @@
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＋D5＝(A)、D2＝(B)、D3＝(A)、D4＝(B) をユーザーが選択。D2 の判断のため、`IRepeater.Start` の呼び出しを調べた（本番は `tickAction` をいつも `null`、アダプターは 3 つの引数をすべて無視。使うのはテストの偽物だけ）。`PressActionController` の削除は承認済み。
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
+- 2026-11-20: RV6-1（`PressActionController` 削除、`IRepeater.Start()` を引数なしへ）、RV6-2（`GyroSmoothingMethod`・`GyroSmoothingMethods` の共有。フィールドごとの共通化は参照が約 120 か所のため見送り）、RV6-0（`PhaseRV6-Unreferenced-Types.md`）、RV6-5（承認された 5 型の削除。`InputReportDataBytesBT` は TODO を付けて残す）を実施。**RV6-3・RV6-4（重複の整理）、RV6-6（公開フィールドの記録）は未実施**（効果に対し、キー送出・毎フレームの経路を触るリスクがあり、実機確認の準備ができてから別に行う）。連打（`RepeatHelper`）の実機確認が必要。

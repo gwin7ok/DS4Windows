@@ -1053,12 +1053,6 @@ namespace DS4Windows.UI
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
-        private enum RumbleType
-        {
-            Light,
-            Heavy
-        }
-
         private void RumbleTestBtn_Click(object sender, RoutedEventArgs e)
         {
             // 振動させるのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。

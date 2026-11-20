@@ -199,7 +199,7 @@ namespace DS4Windows.Processing.Touchpad
 
             if (gyroSmooth)
             {
-                if (tempInfo.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro)
+                if (tempInfo.smoothingMethod == GyroSmoothingMethod.OneEuro)
                 {
                     double currentRate = 1.0 / arg.sixAxis.elapsed;
                     xMotion = filterPair.axis1Filter.Filter(xMotion, currentRate);
@@ -286,7 +286,7 @@ namespace DS4Windows.Processing.Touchpad
             smoothBufferTail = iIndex + 1;
 
             GyroMouseInfo tempInfo = _profileSettings.ForSlot(deviceNumber).Gyro.Mouse;
-            if (tempInfo.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro)
+            if (tempInfo.smoothingMethod == GyroSmoothingMethod.OneEuro)
             {
                 double currentRate = 1.0 / arg.sixAxis!.elapsed; // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
                 filterPair.axis1Filter.Filter(0.0, currentRate);

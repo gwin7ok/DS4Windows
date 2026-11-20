@@ -142,34 +142,6 @@ namespace DS4Windows.Actions.Tests
 
                 // Trigger action: controller should create adapter that wraps FakeDeterministicRepeater
                 ka.OnTrigger(0, 0, 0, false, handler);
-
-                // Inspect mapping controllers and invoke TriggerOnce on any fake repeater found
-                // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った
-                var dictField = typeof(DS4Windows.Processing.Services.Devices.KeyButtonControllerRegistry).GetField("_controllers", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                var dict = dictField.GetValue(registry) as System.Collections.IDictionary;
-                if (dict != null)
-                {
-                    foreach (System.Collections.DictionaryEntry de in dict)
-                    {
-                        var inst = de.Value as DS4Windows.Processing.Actions.KeyButtonActionController;
-                        if (inst == null) continue;
-                        // attempt to access internal entries via reflection to find the IRepeater and trigger it
-                        var implField = typeof(DS4Windows.Processing.Actions.KeyButtonActionController).GetField("impl", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                        var impl = implField?.GetValue(inst);
-                        if (impl == null) continue;
-                        var toggleImplType = impl.GetType();
-                        var entriesField = toggleImplType.GetField("entries", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                        var entries = entriesField?.GetValue(impl) as System.Collections.IDictionary;
-                        if (entries == null) continue;
-                        foreach (System.Collections.DictionaryEntry e in entries)
-                        {
-                            var entry = e.Value;
-                            var repField = entry.GetType().GetField("repeater", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-                            var rep = repField?.GetValue(entry) as FakeDeterministicRepeater;
-                            try { rep?.TriggerOnce(); } catch { }
-                        }
-                    }
-                }
             }
         }
 

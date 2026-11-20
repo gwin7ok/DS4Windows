@@ -81,6 +81,12 @@
 - 確認項目・手入力の値を変えたもの: `profile_setting_files` 5→2（根拠は `Rubric-Inputs.json`）、`safety_net_green` の根拠を更新（xUnit 3,687 件。StandaloneTests は未実行）。
 - 次の Phase で動かす指標: `AppSettingsService` の重複（プロパティ宣言の整理）、`BackingStore` の公開フィールド（窓口への寄せ）、読み込みの節の宣言化（Motion・OutputCurve・TriggerStick）。
 
+### RV6（2026-11-20。一部完了）
+- 保存: `scorecard/RV6.json`。基準の版: v1。直前の保存: `scorecard/RV5.json`。
+- 等級が変わった観点: なし（全観点で点数が 0.1 点未満の変化）。
+- 予想（`03-Rubric.md` §5）とのずれ: 予想は冗長処理 B→B+。**動かなかった**。実施したのは `PressActionController`・`TriggerType` など 6 型の削除、`IRepeater` の契約の整理、平滑化の方式の共有で、採点の指標（同一の重複・空の `catch`・構造の重複）にはほとんど効かない。B+ へ上げる本体の RV6-3・RV6-4（重複の整理）を、キー送出・毎フレームの経路のリスクから未実施としたため。
+- 次の Phase で動かす指標: 同一の重複 2.1%、`PresetMenuHelper`・`ControllerReadingsControl` の構造の重複（RV6-3・RV6-4 を実機確認の準備ができてから）。
+
 ### RVn（完了日）
 - 保存: scorecard/RVn.json。基準の版: v1。直前の保存: …
 - 等級が変わった観点: 観点名 X→Y（点数 a%→b%）。…

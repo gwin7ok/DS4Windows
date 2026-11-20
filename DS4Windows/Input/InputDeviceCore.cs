@@ -474,12 +474,6 @@ namespace DS4Windows.Input
 
         public virtual byte SerialReportID { get => SERIAL_FEATURE_ID; }
 
-        public enum BTOutputReportMethod : uint
-        {
-            WriteFile,
-            HidD_SetOutputReport,
-        }
-
         protected DS4Windows.Core.Model.InputDeviceType deviceType;
         public DS4Windows.Core.Model.InputDeviceType DeviceType { get => deviceType; }
 

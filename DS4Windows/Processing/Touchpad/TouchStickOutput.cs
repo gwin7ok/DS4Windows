@@ -203,13 +203,13 @@ namespace DS4Windows.Processing.Touchpad
             }
             //if (msinfo.useSmoothing)
             //{
-            //    if (msinfo.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.OneEuro)
+            //    if (msinfo.smoothingMethod == GyroSmoothingMethod.OneEuro)
             //    {
             //        double currentRate = 1.0 / arg.sixAxis.elapsed;
             //        deltaX = (int)(filterPair.axis1Filter.Filter(deltaX, currentRate));
             //        deltaY = (int)(filterPair.axis2Filter.Filter(deltaY, currentRate));
             //    }
-            //    else if (msinfo.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.WeightedAverage)
+            //    else if (msinfo.smoothingMethod == GyroSmoothingMethod.WeightedAverage)
             //    {
             //        int iIndex = smoothBufferTail % SMOOTH_BUFFER_LEN;
             //        xSmoothBuffer[iIndex] = deltaX;

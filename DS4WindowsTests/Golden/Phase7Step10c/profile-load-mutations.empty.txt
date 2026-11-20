@@ -360,8 +360,8 @@
 - $.gyroSlots[8].Mouse.enableSmoothing = true
 + $.gyroSlots[8].Mouse.enableSmoothing = false
 ## /DS4Windows/GyroMouseSmoothingSettings/SmoothingMethod [empty]
-- $.gyroSlots[8].Mouse.smoothingMethod = SmoothingMethod.OneEuro
-+ $.gyroSlots[8].Mouse.smoothingMethod = SmoothingMethod.None
+- $.gyroSlots[8].Mouse.smoothingMethod = GyroSmoothingMethod.OneEuro
++ $.gyroSlots[8].Mouse.smoothingMethod = GyroSmoothingMethod.None
 ## /DS4Windows/GyroMouseSmoothingSettings/SmoothingWeight [empty]
 - $.gyroSlots[8].Mouse.smoothingWeight = 0.75
 + $.gyroSlots[8].Mouse.smoothingWeight = 0
@@ -437,8 +437,8 @@
 - $.gyroSlots[8].MouseStick.useSmoothing = true
 + $.gyroSlots[8].MouseStick.useSmoothing = false
 ## /DS4Windows/GyroMouseStickSmoothingSettings/SmoothingMethod [empty]
-- $.gyroSlots[8].MouseStick.smoothingMethod = SmoothingMethod.OneEuro
-+ $.gyroSlots[8].MouseStick.smoothingMethod = SmoothingMethod.None
+- $.gyroSlots[8].MouseStick.smoothingMethod = GyroSmoothingMethod.OneEuro
++ $.gyroSlots[8].MouseStick.smoothingMethod = GyroSmoothingMethod.None
 ## /DS4Windows/GyroMouseStickSmoothingSettings/SmoothingWeight [empty]
 - $.gyroSlots[8].MouseStick.smoothWeight = 0.75
 + $.gyroSlots[8].MouseStick.smoothWeight = 0
