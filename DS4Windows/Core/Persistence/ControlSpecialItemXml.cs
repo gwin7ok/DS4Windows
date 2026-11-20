@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -71,12 +73,12 @@ namespace DS4Windows.Core.Persistence
             return element;
         }
 
-        public static bool TryRead(XmlNode node, out ControlSpecialItem item)
+        public static bool TryRead(XmlNode? node, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out ControlSpecialItem? item)
         {
             item = null;
             if (node == null) return false;
 
-            string typeText = node.Attributes?["Type"]?.Value;
+            string? typeText = node.Attributes?["Type"]?.Value;
             if (typeText == "SASteeringWheelEmulationCalibrate")
             {
                 // 廃止した種別。読み込まずに取り除く（次の保存でファイルから消え、そのボタンは既定に戻る）

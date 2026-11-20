@@ -1,4 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Xml;
 using DS4Windows.Core.Settings;
 
@@ -17,22 +20,23 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
+            List<string> slotActions = store.GetRequiredProfileActions(device);
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ProfileActions");
-                store.profileActions[device].Clear();
-                if (!string.IsNullOrEmpty(Item.InnerText))
+                slotActions.Clear();
+                if (!string.IsNullOrEmpty(Item.Required().InnerText))
                 {
-                    string[] actionNames = Item.InnerText.Split('/');
+                    string[] actionNames = Item.Required().InnerText.Split('/');
 
                     // <ProfileActionIds>（名前の一覧と同じ並びの SA の固定 ID）があれば、ID を主にして、現在の名前に引き直す
                     // （SA の名前変更に追従する。ID が勝つ）。ない（古いファイル）・並びが合わない・SA が見つからないときは、名前のまま
-                    string[] actionIds = null;
+                    string[]? actionIds = null;
                     try
                     {
-                        XmlNode idsNode = m_Xdoc.SelectSingleNode("/" + rootname + "/ProfileActionIds");
+                        XmlNode? idsNode = m_Xdoc.SelectSingleNode("/" + rootname + "/ProfileActionIds");
                         if (idsNode != null && !string.IsNullOrEmpty(idsNode.InnerText))
                         {
                             string[] split = idsNode.InnerText.Split('/');
@@ -57,24 +61,24 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                             }
                         }
 
-                        if (!store.profileActions[device].Contains(tempActionName))
+                        if (!slotActions.Contains(tempActionName))
                         {
-                            store.profileActions[device].Add(tempActionName);
+                            slotActions.Add(tempActionName);
                         }
                     }
                 }
             }
-            catch { store.profileActions[device].Clear(); missingSetting = true; }
+            catch { slotActions.Clear(); missingSetting = true; }
 
             foreach (DS4ControlSettings dcs in store.ds4settings[device])
                 dcs.Reset();
 
             store.containsCustomAction[device] = false;
             store.containsCustomExtras[device] = false;
-            store.profileActionCount[device] = store.profileActions[device].Count;
+            store.profileActionCount[device] = slotActions.Count;
             store.profileActionDict[device].Clear();
             store.profileActionIndexDict[device].Clear();
-            foreach (string actionname in store.profileActions[device])
+            foreach (string actionname in slotActions)
             {
                 store.profileActionDict[device][actionname] = store.GetAction(actionname);
                 store.profileActionIndexDict[device][actionname] = store.GetActionIndexOf(actionname);

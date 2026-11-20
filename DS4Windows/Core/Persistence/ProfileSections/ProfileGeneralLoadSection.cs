@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Xml;
 using DS4Windows.Core.Settings;
 
@@ -19,14 +21,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             LightbarSettingInfo lightbarSettings = context.LightbarSettings;
             LightbarDS4WinInfo lightInfo = context.LightInfo;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             missingSetting |= ProfileGeneralSettings.LoadAll(context);
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LightbarMode");
-                string tempMode = Item.InnerText;
+                string tempMode = Item.Required().InnerText;
                 lightbarSettings.mode = GetLightbarModeType(tempMode);
             }
             catch { lightbarSettings.mode = LightbarMode.DS4Win; missingSetting = true; }
@@ -36,8 +38,8 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Color");
                 string[] colors;
-                if (!string.IsNullOrEmpty(Item.InnerText))
-                    colors = Item.InnerText.Split(',');
+                if (!string.IsNullOrEmpty(Item.Required().InnerText))
+                    colors = Item.Required().InnerText.Split(',');
                 else
                     colors = new string[0];
 
@@ -50,12 +52,12 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             if (m_Xdoc.SelectSingleNode("/" + rootname + "/Color") == null)
             {
                 //Old method of color saving
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Red"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.red); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Red"); Byte.TryParse(Item.Required().InnerText, out lightInfo.m_Led.red); }
                 catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Green"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.green); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Green"); Byte.TryParse(Item.Required().InnerText, out lightInfo.m_Led.green); }
                 catch { missingSetting = true; }
 
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Blue"); Byte.TryParse(Item.InnerText, out lightInfo.m_Led.blue); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Blue"); Byte.TryParse(Item.Required().InnerText, out lightInfo.m_Led.blue); }
                 catch { missingSetting = true; }
             }
 
@@ -64,8 +66,8 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowColor");
                 string[] colors;
-                if (!string.IsNullOrEmpty(Item.InnerText))
-                    colors = Item.InnerText.Split(',');
+                if (!string.IsNullOrEmpty(Item.Required().InnerText))
+                    colors = Item.Required().InnerText.Split(',');
                 else
                     colors = new string[0];
 
@@ -78,11 +80,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             if (m_Xdoc.SelectSingleNode("/" + rootname + "/LowColor") == null)
             {
                 //Old method of color saving
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowRed"); byte.TryParse(Item.InnerText, out lightInfo.m_LowLed.red); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowRed"); byte.TryParse(Item.Required().InnerText, out lightInfo.m_LowLed.red); }
                 catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowGreen"); byte.TryParse(Item.InnerText, out lightInfo.m_LowLed.green); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowGreen"); byte.TryParse(Item.Required().InnerText, out lightInfo.m_LowLed.green); }
                 catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowBlue"); byte.TryParse(Item.InnerText, out lightInfo.m_LowLed.blue); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LowBlue"); byte.TryParse(Item.Required().InnerText, out lightInfo.m_LowLed.blue); }
                 catch { missingSetting = true; }
             }
 
@@ -91,8 +93,8 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingColor");
                 string[] colors;
-                if (!string.IsNullOrEmpty(Item.InnerText))
-                    colors = Item.InnerText.Split(',');
+                if (!string.IsNullOrEmpty(Item.Required().InnerText))
+                    colors = Item.Required().InnerText.Split(',');
                 else
                     colors = new string[0];
 
@@ -104,11 +106,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
             if (m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingColor") == null)
             {
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingRed"); Byte.TryParse(Item.InnerText, out lightInfo.m_ChargingLed.red); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingRed"); Byte.TryParse(Item.Required().InnerText, out lightInfo.m_ChargingLed.red); }
                 catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingGreen"); Byte.TryParse(Item.InnerText, out lightInfo.m_ChargingLed.green); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingGreen"); Byte.TryParse(Item.Required().InnerText, out lightInfo.m_ChargingLed.green); }
                 catch { missingSetting = true; }
-                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingBlue"); Byte.TryParse(Item.InnerText, out lightInfo.m_ChargingLed.blue); }
+                try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingBlue"); Byte.TryParse(Item.Required().InnerText, out lightInfo.m_ChargingLed.blue); }
                 catch { missingSetting = true; }
             }
 
@@ -116,8 +118,8 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/FlashColor");
                 string[] colors;
-                if (!string.IsNullOrEmpty(Item.InnerText))
-                    colors = Item.InnerText.Split(',');
+                if (!string.IsNullOrEmpty(Item.Required().InnerText))
+                    colors = Item.Required().InnerText.Split(',');
                 else
                     colors = new string[0];
                 lightInfo.m_FlashLed.red = byte.Parse(colors[0]);

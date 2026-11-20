@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
@@ -54,25 +56,25 @@ namespace DS4Windows.Core.Persistence.Dto
         }
 
         [XmlElement("Trigger")]
-        public string Trigger
+        public string? Trigger
         {
             get; set;
         } = string.Empty;
 
         [XmlElement("Type")]
-        public string TypeString
+        public string? TypeString
         {
             get; set;
         } = string.Empty;
 
         [XmlElement("Details")]
-        public string Details
+        public string? Details
         {
             get; set;
         } = string.Empty;
 
         [XmlElement("Extras")]
-        public string Extras
+        public string? Extras
         {
             get; set;
         } = string.Empty;
@@ -84,7 +86,7 @@ namespace DS4Windows.Core.Persistence.Dto
         // R-2: マクロの Execute Mode（Held／Toggle）。Once（既定）のときは書かない。ない（古いファイル）ときは、Extras の Repeat を古い形式として読む
         // （ActionsDTO.MapTo）。古いバージョンは、未知の要素として読み飛ばす（繰り返しは効かず、Play Once になる）
         [XmlElement("MacroExecuteMode")]
-        public string MacroExecuteMode
+        public string? MacroExecuteMode
         {
             get; set;
         } = string.Empty;
@@ -94,7 +96,7 @@ namespace DS4Windows.Core.Persistence.Dto
         }
 
         [XmlElement("Arguements")]
-        public string Arguments
+        public string? Arguments
         {
             get; set;
         } = string.Empty;
@@ -151,7 +153,7 @@ namespace DS4Windows.Core.Persistence.Dto
         }
 
         [XmlElement("UnloadTrigger")]
-        public string UnloadTrigger
+        public string? UnloadTrigger
         {
             get; set;
         } = string.Empty;
@@ -161,7 +163,7 @@ namespace DS4Windows.Core.Persistence.Dto
             {
                 "Key", "Profile",
             };
-            return knownUseTypes.Contains(TypeString) && !string.IsNullOrEmpty(UnloadTrigger);
+            return knownUseTypes.Contains(TypeString ?? string.Empty) && !string.IsNullOrEmpty(UnloadTrigger);
         }
 
         [XmlElement("UnloadStyle")]

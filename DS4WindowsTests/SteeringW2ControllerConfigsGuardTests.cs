@@ -37,7 +37,7 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             Assert.Contains("device.OptionsStore?.LoadSettings(xmlDoc, node)", text);
-            Assert.Contains("device.OptionsStore?.PersistSettings(xmlDoc, node)", text);
+            Assert.Contains("device.OptionsStore?.PersistSettings(xmlDoc, node.Required())", text);
             Assert.Contains("CreateAttribute(\"Mac\")", text);
             Assert.Contains("CreateAttribute(\"ControllerType\")", text);
         }

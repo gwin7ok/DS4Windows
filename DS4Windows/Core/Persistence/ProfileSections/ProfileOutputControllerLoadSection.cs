@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿#nullable enable
+
+using System.Xml;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
@@ -19,7 +21,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             int device = context.Device;
             IProfileLoadTarget control = context.Control;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             DS4Windows.Core.Abstractions.IEnvironmentService _environment = context.Environment;
             bool xinputChange = context.XinputChange;
@@ -27,7 +29,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool xinputPlug = false;
             bool xinputStatus = false;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/OutputContDevice"); store.outputTypeSlots[device].ContType = OutContTypeInfo.FromSaveKey(Item.InnerText); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/OutputContDevice"); store.outputTypeSlots[device].ContType = OutContTypeInfo.FromSaveKey(Item.Required().InnerText); }
             catch { store.outputTypeSlots[device].ContType = OutContTypeInfo.DefaultType; missingSetting = true; }
 
             // Only change xinput devices under certain conditions. Avoid

@@ -36,7 +36,7 @@ namespace DS4Windows.Core.Settings
         /// 保存された文字列（前後の空白を除き、大文字小文字を区別しない <c>Once</c>／<c>Held</c>／<c>Toggle</c>）を読む。
         /// 空・不明な値は false（呼び出し側は、古い形式［SA の extras の <c>Repeat</c>、Controls の <c>KeyType</c> の <c>RepeatMacro</c>／<c>HoldMacro</c>］の読込に任せる）。
         /// </summary>
-        public static bool TryParse(string text, out MacroExecuteMode mode)
+        public static bool TryParse(string? text, out MacroExecuteMode mode)
         {
             mode = MacroExecuteMode.Once;
             if (string.IsNullOrWhiteSpace(text)) return false;

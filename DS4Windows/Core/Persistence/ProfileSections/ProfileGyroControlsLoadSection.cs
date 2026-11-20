@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Xml;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
@@ -19,7 +21,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             int device = context.Device;
             IProfileLoadTarget control = context.Control;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             void PortOldGyroSettings(int device)
             {
@@ -29,10 +31,10 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 }
             }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SATriggers"); store.gyroSlots[device].MouseTriggers = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SATriggers"); store.gyroSlots[device].MouseTriggers = Item.Required().InnerText; }
             catch { store.gyroSlots[device].MouseTriggers = "-1"; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SATriggerCond"); store.gyroSlots[device].MouseTriggerCondAnd = BackingStore.SaTriggerCondValue(Item.InnerText); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SATriggerCond"); store.gyroSlots[device].MouseTriggerCondAnd = BackingStore.SaTriggerCondValue(Item.Required().InnerText); }
             catch { store.gyroSlots[device].MouseTriggerCondAnd = true; missingSetting = true; }
 
             // 古いプロファイルに要素が残っていても、読み込まずに無視する（再保存すると、書かれなくなる）。
@@ -40,7 +42,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
-                string tempMode = Item.InnerText;
+                string tempMode = Item.Required().InnerText;
                 // 廃止された DirectionalSwipe のモードは、なかったことにして（None）、保持だけする
                 store.gyroSlots[device].RemovedSwipe.CaptureGyroOutputMode(tempMode);
                 //gyroSlots[device].OutputMode = GetGyroOutModeType(tempMode);
@@ -48,7 +50,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { PortOldGyroSettings(device); missingSetting = true; }
 
-            XmlNode xmlGyroControlsElement =
+            XmlNode? xmlGyroControlsElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/GyroControlsSettings");
             if (xmlGyroControlsElement != null)
             {
@@ -93,28 +95,28 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 catch { }
             }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggers"); store.gyroSlots[device].MouseStickTriggers = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggers"); store.gyroSlots[device].MouseStickTriggers = Item.Required().InnerText; }
             catch { store.gyroSlots[device].MouseStickTriggers = "-1"; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggerCond"); store.gyroSlots[device].MouseStickTriggerCondAnd = BackingStore.SaTriggerCondValue(Item.InnerText); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggerCond"); store.gyroSlots[device].MouseStickTriggerCondAnd = BackingStore.SaTriggerCondValue(Item.Required().InnerText); }
             catch { store.gyroSlots[device].MouseStickTriggerCondAnd = true; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggerTurns"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.gyroSlots[device].MouseStickTriggerTurns = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggerTurns"); { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.gyroSlots[device].MouseStickTriggerTurns = parsedValue; }; }
             catch { store.gyroSlots[device].MouseStickTriggerTurns = true; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickHAxis"); int temp = 0; int.TryParse(Item.InnerText, out temp); store.gyroSlots[device].MouseStickHorizontalAxis = Math.Min(Math.Max(0, temp), 1); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickHAxis"); int temp = 0; int.TryParse(Item.Required().InnerText, out temp); store.gyroSlots[device].MouseStickHorizontalAxis = Math.Min(Math.Max(0, temp), 1); }
             catch { store.gyroSlots[device].MouseStickHorizontalAxis = 0; missingSetting = true; }
 
             try
             {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickDeadZone"); int.TryParse(Item.InnerText, out int temp);
+                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickDeadZone"); int.TryParse(Item.Required().InnerText, out int temp);
                 store.gyroSlots[device].MouseStick.deadZone = temp;
             }
             catch { store.gyroSlots[device].MouseStick.deadZone = 30; missingSetting = true; }
 
             try
             {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickMaxZone"); int.TryParse(Item.InnerText, out int temp);
+                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickMaxZone"); int.TryParse(Item.Required().InnerText, out int temp);
                 store.gyroSlots[device].MouseStick.maxZone = Math.Max(temp, 1);
             }
             catch { store.gyroSlots[device].MouseStick.maxZone = 830; missingSetting = true; }
@@ -133,25 +135,25 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
             try
             {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickAntiDeadX"); double.TryParse(Item.InnerText, out double temp);
+                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickAntiDeadX"); double.TryParse(Item.Required().InnerText, out double temp);
                 store.gyroSlots[device].MouseStick.antiDeadX = temp;
             }
             catch { store.gyroSlots[device].MouseStick.antiDeadX = 0.4; missingSetting = true; }
 
             try
             {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickAntiDeadY"); double.TryParse(Item.InnerText, out double temp);
+                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickAntiDeadY"); double.TryParse(Item.Required().InnerText, out double temp);
                 store.gyroSlots[device].MouseStick.antiDeadY = temp;
             }
             catch { store.gyroSlots[device].MouseStick.antiDeadY = 0.4; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickInvert"); uint.TryParse(Item.InnerText, out store.gyroSlots[device].MouseStick.inverted); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickInvert"); uint.TryParse(Item.Required().InnerText, out store.gyroSlots[device].MouseStick.inverted); }
             catch { store.gyroSlots[device].MouseStick.inverted = 0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickToggle");
-                bool.TryParse(Item.InnerText, out bool temp);
+                bool.TryParse(Item.Required().InnerText, out bool temp);
                 store.SetGyroMouseStickToggle(device, temp, control);
             }
             catch
@@ -163,7 +165,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickMaxOutput"); double temp = 100.0;
-                temp = double.Parse(Item.InnerText);
+                temp = double.Parse(Item.Required().InnerText);
                 store.gyroSlots[device].MouseStick.maxOutput = Math.Min(Math.Max(temp, 0.0), 100.0);
             }
             catch { store.gyroSlots[device].MouseStick.maxOutput = 100.0; missingSetting = true; }
@@ -171,16 +173,16 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickMaxOutputEnabled");
-                bool.TryParse(Item.InnerText, out bool temp);
+                bool.TryParse(Item.Required().InnerText, out bool temp);
                 store.gyroSlots[device].MouseStick.maxOutputEnabled = temp;
             }
             catch { store.gyroSlots[device].MouseStick.maxOutputEnabled = false; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickVerticalScale"); int.TryParse(Item.InnerText, out store.gyroSlots[device].MouseStick.vertScale); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickVerticalScale"); int.TryParse(Item.Required().InnerText, out store.gyroSlots[device].MouseStick.vertScale); }
             catch { store.gyroSlots[device].MouseStick.vertScale = 100; missingSetting = true; }
 
             bool gyroMStickSmoothingGroup = false;
-            XmlNode xmlGyroMStickSmoothingElement =
+            XmlNode? xmlGyroMStickSmoothingElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickSmoothingSettings");
             gyroMStickSmoothingGroup = xmlGyroMStickSmoothingElement != null;
 
@@ -188,15 +190,15 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 try
                 {
-                    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("UseSmoothing");
-                    bool.TryParse(Item.InnerText, out bool tempSmoothing);
+                    Item = xmlGyroMStickSmoothingElement.Required().SelectSingleNode("UseSmoothing");
+                    bool.TryParse(Item.Required().InnerText, out bool tempSmoothing);
                     store.gyroSlots[device].MouseStick.useSmoothing = tempSmoothing;
                 }
                 catch { store.gyroSlots[device].MouseStick.useSmoothing = false; missingSetting = true; }
 
                 try
                 {
-                    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("SmoothingMethod");
+                    Item = xmlGyroMStickSmoothingElement.Required().SelectSingleNode("SmoothingMethod");
                     string temp = Item?.InnerText ?? GyroMouseStickInfo.DEFAULT_SMOOTH_TECHNIQUE;
                     store.gyroSlots[device].MouseStick.DetermineSmoothMethod(temp);
                 }
@@ -204,24 +206,24 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("SmoothingWeight");
-                    int temp = 0; int.TryParse(Item.InnerText, out temp);
+                    Item = xmlGyroMStickSmoothingElement.Required().SelectSingleNode("SmoothingWeight");
+                    int temp = 0; int.TryParse(Item.Required().InnerText, out temp);
                     store.gyroSlots[device].MouseStick.smoothWeight = Math.Min(Math.Max(0.0, Convert.ToDouble(temp * 0.01)), 1.0);
                 }
                 catch { store.gyroSlots[device].MouseStick.smoothWeight = 0.5; missingSetting = true; }
 
                 try
                 {
-                    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("SmoothingMinCutoff");
-                    double.TryParse(Item.InnerText, out double temp);
+                    Item = xmlGyroMStickSmoothingElement.Required().SelectSingleNode("SmoothingMinCutoff");
+                    double.TryParse(Item.Required().InnerText, out double temp);
                     store.gyroSlots[device].MouseStick.minCutoff = Math.Min(Math.Max(0.0, temp), 100.0);
                 }
                 catch { store.gyroSlots[device].MouseStick.minCutoff = GyroMouseStickInfo.DEFAULT_MINCUTOFF; missingSetting = true; }
 
                 try
                 {
-                    Item = xmlGyroMStickSmoothingElement.SelectSingleNode("SmoothingBeta");
-                    double.TryParse(Item.InnerText, out double temp);
+                    Item = xmlGyroMStickSmoothingElement.Required().SelectSingleNode("SmoothingBeta");
+                    double.TryParse(Item.Required().InnerText, out double temp);
                     store.gyroSlots[device].MouseStick.beta = Math.Min(Math.Max(0.0, temp), 1.0);
                 }
                 catch { store.gyroSlots[device].MouseStick.beta = GyroMouseStickInfo.DEFAULT_BETA; missingSetting = true; }

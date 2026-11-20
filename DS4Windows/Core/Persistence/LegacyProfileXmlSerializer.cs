@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.IO;
 using System.Xml;
 using DS4Windows.Core.Abstractions;
@@ -43,13 +45,13 @@ namespace DS4Windows.Core.Persistence
 
 
         // Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? _profileIdentity;
 
         // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public LegacyProfileXmlSerializer(DS4Windows.Core.Model.LightbarOverrides lightbar, BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
-            DS4Windows.Core.Abstractions.IEnvironmentService environment, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
+            DS4Windows.Core.Abstractions.IEnvironmentService environment, DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity = null)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _profileIdentity = profileIdentity;
@@ -204,7 +206,7 @@ namespace DS4Windows.Core.Persistence
             return Loaded;
         }
 
-        private string ReadLegacyElement(string rootname, string name)
+        private string? ReadLegacyElement(string rootname, string name)
         {
             return m_Xdoc.SelectSingleNode("/" + rootname + "/" + name)?.InnerText;
         }
@@ -225,7 +227,7 @@ namespace DS4Windows.Core.Persistence
             if (sbyte.TryParse(ReadLegacyElement(rootname, "RightStickDriftYAxis"), out value))
                 store.stickSlots[device].RightStickDriftYAxis = value;
 
-            string triggerMode = ReadLegacyElement(rootname, "DS4OutputTriggerMode");
+            string? triggerMode = ReadLegacyElement(rootname, "DS4OutputTriggerMode");
             if (triggerMode != null && Enum.TryParse(triggerMode, out DS4TriggerOutputMode mode) &&
                 Enum.IsDefined(typeof(DS4TriggerOutputMode), mode))
             {
@@ -316,10 +318,10 @@ namespace DS4Windows.Core.Persistence
 
             foreach (DS4ControlSettings dcs in store.ds4settings[device])
             {
-                ControlSpecialItem special = dcs.special;
+                ControlSpecialItem? special = dcs.special;
                 if (special == null || special.Type != SpecialAction.ActionTypeId.Profile || string.IsNullOrEmpty(special.ProfileId)) continue;
 
-                string name = _profileIdentity.GetName(special.ProfileId);
+                string? name = _profileIdentity.GetName(special.ProfileId);
                 if (name != null) special.ProfileName = name;
             }
         }
@@ -334,10 +336,10 @@ namespace DS4Windows.Core.Persistence
 
             foreach (DS4ControlSettings dcs in store.ds4settings[device])
             {
-                ControlSpecialItem special = dcs.special;
+                ControlSpecialItem? special = dcs.special;
                 if (special == null || special.Type != SpecialAction.ActionTypeId.Profile || string.IsNullOrEmpty(special.ProfileName)) continue;
 
-                string id = _profileIdentity.EnsurePersisted(special.ProfileName);
+                string? id = _profileIdentity.EnsurePersisted(special.ProfileName);
                 if (id != null) special.ProfileId = id;
             }
         }

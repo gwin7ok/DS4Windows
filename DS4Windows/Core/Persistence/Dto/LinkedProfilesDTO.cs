@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -31,10 +33,10 @@ namespace DS4Windows.Core.Persistence.Dto
         private List<LinkedProfileItem> linkedProfileItems;
 
         /// <summary>名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。シリアライザーが設定する。</summary>
-        public Func<string, string> ProfileIdOf { get; set; }
+        public Func<string, string?>? ProfileIdOf { get; set; }
 
         /// <summary>ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。シリアライザーが設定する。</summary>
-        public Func<string, string> ProfileNameOf { get; set; }
+        public Func<string, string?>? ProfileNameOf { get; set; }
 
         public LinkedProfilesDTO()
         {
@@ -64,7 +66,7 @@ namespace DS4Windows.Core.Persistence.Dto
                 string profile = item.Profile;
                 if (!string.IsNullOrEmpty(item.ProfileId))
                 {
-                    string resolved = ProfileNameOf?.Invoke(item.ProfileId);
+                    string? resolved = ProfileNameOf?.Invoke(item.ProfileId);
                     if (!string.IsNullOrEmpty(resolved)) profile = resolved;
                 }
 
@@ -72,7 +74,7 @@ namespace DS4Windows.Core.Persistence.Dto
             }
         }
 
-        public XmlSchema GetSchema()
+        public XmlSchema? GetSchema()
         {
             return null;
         }
@@ -82,7 +84,7 @@ namespace DS4Windows.Core.Persistence.Dto
             XmlDocument tempDoc = new XmlDocument();
             tempDoc.Load(reader);
 
-            XmlNode node = tempDoc.SelectSingleNode("/LinkedControllers");
+            XmlNode? node = tempDoc.SelectSingleNode("/LinkedControllers");
             if (node == null)
             {
                 return;
@@ -91,16 +93,16 @@ namespace DS4Windows.Core.Persistence.Dto
             XmlNodeList links = node.ChildNodes;
             for (int i = 0, listLen = links.Count; i < listLen; i++)
             {
-                XmlNode current = links[i];
-                if (current.Name.Contains("MAC"))
+                XmlNode? current = links[i];
+                if (current.Required().Name.Contains("MAC"))
                 {
-                    string serial = current.Name.Replace("MAC", string.Empty);
-                    string profile = current.InnerText;
+                    string serial = current.Required().Name.Replace("MAC", string.Empty);
+                    string profile = current.Required().InnerText;
                     LinkedProfileItem tempItem = new LinkedProfileItem()
                     {
                         Serial = serial,
                         Profile = profile,
-                        ProfileId = current.Attributes?["Id"]?.Value,   // Phase10-Step4d W4
+                        ProfileId = current.Required().Attributes?["Id"]?.Value,   // Phase10-Step4d W4
                     };
 
                     linkedProfileItems.Add(tempItem);

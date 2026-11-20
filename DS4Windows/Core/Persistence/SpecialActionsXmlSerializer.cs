@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -21,13 +23,13 @@ namespace DS4Windows.Core.Persistence
         private readonly BackingStore store;
 
         // Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity;
 
         // 旧 静的 ActionManager.ClearAllEntries の代わり。Phase14b-Step14（D14）: 第2層の IManagedActionManager の代わりに、リセットだけの契約を受ける
         private readonly DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset _runtimeReset;
 
         public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset runtimeReset,
-            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
+            DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentityService = null)
         {
             ArgumentNullException.ThrowIfNull(runtimeReset);
             _runtimeReset = runtimeReset;
@@ -78,13 +80,13 @@ namespace DS4Windows.Core.Persistence
 
                 if (!string.IsNullOrEmpty(action.profileId) && Guid.TryParseExact(action.profileId, "N", out _))
                 {
-                    string name = profileIdentity.GetName(action.profileId);
+                    string? name = profileIdentity.GetName(action.profileId);
                     if (name != null && !string.Equals(action.details, name, StringComparison.Ordinal))
                         action.details = name;
                 }
                 else
                 {
-                    string id = profileIdentity.GetId(action.details);
+                    string? id = profileIdentity.GetId(action.details);
                     if (id != null)
                     {
                         action.profileId = id;
@@ -113,7 +115,7 @@ namespace DS4Windows.Core.Persistence
                     bool hasId = !string.IsNullOrEmpty(action.profileId) && Guid.TryParseExact(action.profileId, "N", out _);
                     if (hasId && profileIdentity != null)
                     {
-                        string current = profileIdentity.GetName(action.profileId);
+                        string? current = profileIdentity.GetName(action.profileId);
                         if (current != null && !string.Equals(action.details, current, StringComparison.Ordinal))
                         {
                             action.details = current;
@@ -124,7 +126,7 @@ namespace DS4Windows.Core.Persistence
                         string.Equals(action.details, oldName, StringComparison.CurrentCultureIgnoreCase))
                     {
                         action.details = newName;
-                        string id = profileIdentity?.GetId(newName);
+                        string? id = profileIdentity?.GetId(newName);
                         if (id != null) action.profileId = id;
                         updated++;
                     }
@@ -147,7 +149,7 @@ namespace DS4Windows.Core.Persistence
             {
                 if (action.typeID != SpecialAction.ActionTypeId.Profile) continue;
 
-                string id = profileIdentity.EnsurePersisted(action.details);
+                string? id = profileIdentity.EnsurePersisted(action.details);
                 if (id != null) action.profileId = id;
             }
         }
@@ -177,9 +179,9 @@ namespace DS4Windows.Core.Persistence
         /// null のときは、編集（<paramref name="edit"/>）なら同じ名前の SA の ID を、新規なら新しい ID を使う。
         /// </param>
         public void SaveActionNew(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "",
-            string actionId = null, MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
+            string? actionId = null, MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
         {
-            SpecialAction tempAction = null;
+            SpecialAction? tempAction = null;
 
             switch (mode)
             {
@@ -231,7 +233,7 @@ namespace DS4Windows.Core.Persistence
             {
                 if (edit)
                 {
-                    SpecialAction existing = store.actions.Find(item => item.name == name);
+                    SpecialAction? existing = store.actions.Find(item => item.name == name);
                     if (existing != null) tempAction.id = existing.id;
                 }
 
@@ -262,7 +264,7 @@ namespace DS4Windows.Core.Persistence
         /// <returns>SA が見つかれば true</returns>
         public bool SetActionExtras(string name, string outputExtras)
         {
-            SpecialAction action = store.actions.Find(item => item.name == name);
+            SpecialAction? action = store.actions.Find(item => item.name == name);
             if (action == null) return false;
 
             action.outputExtras = string.IsNullOrWhiteSpace(outputExtras) ? null : outputExtras.Trim();
@@ -277,7 +279,7 @@ namespace DS4Windows.Core.Persistence
         /// <returns>Button の SA が見つかれば true</returns>
         public bool SetActionAnalogStrength(string name, int strength)
         {
-            SpecialAction action = store.actions.Find(item => item.name == name);
+            SpecialAction? action = store.actions.Find(item => item.name == name);
             if (action == null || action.typeID != SpecialAction.ActionTypeId.Button) return false;
 
             action.analogStrength = Math.Max(0, Math.Min(100, strength));
@@ -302,11 +304,11 @@ namespace DS4Windows.Core.Persistence
 
             XmlDocument doc = new XmlDocument();
             doc.Load(store.m_Actions);
-            XmlNode root = doc.SelectSingleNode("/Actions");
+            XmlNode? root = doc.SelectSingleNode("/Actions");
             if (root == null) return false;
 
-            XmlNode source = null;
-            foreach (XmlNode node in root.SelectNodes("Action"))
+            XmlNode? source = null;
+            foreach (XmlNode node in root.SelectNodes("Action")!)   // SelectNodes は、一致がなくても空のリストを返す
             {
                 if (node.Attributes?["Name"]?.Value == sourceName)
                 {
@@ -380,18 +382,18 @@ namespace DS4Windows.Core.Persistence
             {
                 try
                 {
-                    ActionsDTO dto = serializer.Deserialize(sr) as ActionsDTO;
-                    dto.MapTo(store);
+                    ActionsDTO? dto = serializer.Deserialize(sr) as ActionsDTO;
+                    dto!.MapTo(store);   // Actions の根要素なら、必ずこの型で返る
                     idsChanged = dto.AssignedNewIds;
                 }
                 catch (InvalidOperationException e)
                 {
-                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ActionsInvalidData", e.InnerException.Message);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ActionsInvalidData", e.InnerException?.Message ?? e.Message);
                     loaded = false;
                 }
                 catch (XmlException e)
                 {
-                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ActionsInvalidSyntax", e.InnerException.Message);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_ActionsInvalidSyntax", e.InnerException?.Message ?? e.Message);
                     loaded = false;
                 }
             }

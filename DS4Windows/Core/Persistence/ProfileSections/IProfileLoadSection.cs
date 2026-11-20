@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.Core.Persistence.ProfileSections
+﻿#nullable enable
+
+namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> の節（ファイル順で連続した要素の範囲）の契約。

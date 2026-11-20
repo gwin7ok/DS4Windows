@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -30,10 +32,10 @@ namespace DS4Windows.Core.Persistence
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
 
         // スロットの選択のプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? _profileIdentity;
 
         public AppSettingsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IEnvironmentService environment,
-            DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity = null)
+            DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity = null)
         {
             _profileIdentity = profileIdentity;
             ArgumentNullException.ThrowIfNull(store);
@@ -60,7 +62,7 @@ namespace DS4Windows.Core.Persistence
                     bool dtoLoaded = false;
                     try
                     {
-                        AppSettingsDTO dto = null;
+                        AppSettingsDTO? dto = null;
                         try
                         {
                             var xr = new XmlRootAttribute("Profile");
@@ -108,23 +110,23 @@ namespace DS4Windows.Core.Persistence
                     }
 
                     // Fall back to legacy DOM-based loader
-                    XmlNode Item;
+                    XmlNode? Item;
 
                     m_Xdoc.Load(store.m_Profile);
 
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/useExclusiveMode"); Boolean.TryParse(Item.InnerText, out store.useExclusiveMode); } // Ex Mode
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/useExclusiveMode"); Boolean.TryParse(Item.Required().InnerText, out store.useExclusiveMode); } // Ex Mode
                     catch { missingSetting = true; } // Ex Mode
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/startMinimized"); Boolean.TryParse(Item.InnerText, out store.startMinimized); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/startMinimized"); Boolean.TryParse(Item.Required().InnerText, out store.startMinimized); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/minimizeToTaskbar"); Boolean.TryParse(Item.InnerText, out store.minToTaskbar); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/minimizeToTaskbar"); Boolean.TryParse(Item.Required().InnerText, out store.minToTaskbar); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formWidth"); Int32.TryParse(Item.InnerText, out store.formWidth); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formWidth"); Int32.TryParse(Item.Required().InnerText, out store.formWidth); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formHeight"); Int32.TryParse(Item.InnerText, out store.formHeight); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formHeight"); Int32.TryParse(Item.Required().InnerText, out store.formHeight); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formLocationX"); Int32.TryParse(Item.InnerText, out store.formLocationX); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formLocationX"); Int32.TryParse(Item.Required().InnerText, out store.formLocationX); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formLocationY"); Int32.TryParse(Item.InnerText, out store.formLocationY); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/formLocationY"); Int32.TryParse(Item.Required().InnerText, out store.formLocationY); }
                     catch { missingSetting = true; }
 
                     try { Item = m_Xdoc.SelectSingleNode("/Profile/profileEditorLeftWidth"); Int32.TryParse(Item?.InnerText ?? string.Empty, out store.profileEditorLeftWidth); }
@@ -200,14 +202,14 @@ namespace DS4Windows.Core.Persistence
                         catch { store.profilePath[i] = store.olderProfilePath[i] = string.Empty; store.distanceProfiles[i] = false; }
                     }
 
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/LastChecked"); DateTime.TryParse(Item.InnerText, out store.lastChecked); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/LastChecked"); DateTime.TryParse(Item.Required().InnerText, out store.lastChecked); }
                     catch { missingSetting = true; }
                     // Read new explicit startup-check fields when available. If not present,
                     // fall back to legacy <CheckWhen> value and map it into daily/hourly values.
                     try
                     {
-                        XmlNode everyValNode = m_Xdoc.SelectSingleNode("/Profile/CheckEveryValue");
-                        XmlNode everyUnitNode = m_Xdoc.SelectSingleNode("/Profile/CheckEveryUnit");
+                        XmlNode? everyValNode = m_Xdoc.SelectSingleNode("/Profile/CheckEveryValue");
+                        XmlNode? everyUnitNode = m_Xdoc.SelectSingleNode("/Profile/CheckEveryUnit");
                         if (everyValNode != null)
                         {
                             Int32.TryParse(everyValNode.InnerText, out store.checkEveryValue);
@@ -249,39 +251,39 @@ namespace DS4Windows.Core.Persistence
                     try
                     {
                         Item = m_Xdoc.SelectSingleNode("/Profile/Notifications");
-                        if (!int.TryParse(Item.InnerText, out store.notifications))
-                            store.notifications = (Boolean.Parse(Item.InnerText) ? 2 : 0);
+                        if (!int.TryParse(Item.Required().InnerText, out store.notifications))
+                            store.notifications = (Boolean.Parse(Item.Required().InnerText) ? 2 : 0);
                     }
                     catch { missingSetting = true; }
 
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/DisconnectBTAtStop"); Boolean.TryParse(Item.InnerText, out store.disconnectBTAtStop); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/DisconnectBTAtStop"); Boolean.TryParse(Item.Required().InnerText, out store.disconnectBTAtStop); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/SwipeProfiles"); Boolean.TryParse(Item.InnerText, out store.swipeProfiles); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/SwipeProfiles"); Boolean.TryParse(Item.Required().InnerText, out store.swipeProfiles); }
                     catch { missingSetting = true; }
                     //try { Item = m_Xdoc.SelectSingleNode("/Profile/UseDS4ForMapping"); Boolean.TryParse(Item.InnerText, out ds4Mapping); }
                     //catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/QuickCharge"); Boolean.TryParse(Item.InnerText, out store.quickCharge); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/QuickCharge"); Boolean.TryParse(Item.Required().InnerText, out store.quickCharge); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/CloseMinimizes"); Boolean.TryParse(Item.InnerText, out store.closeMini); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/CloseMinimizes"); Boolean.TryParse(Item.Required().InnerText, out store.closeMini); }
                     catch { missingSetting = true; }
                     try
                     {
-                        Item = m_Xdoc.SelectSingleNode("/Profile/UseLang"); store.useLang = Item.InnerText;
+                        Item = m_Xdoc.SelectSingleNode("/Profile/UseLang"); store.useLang = Item.Required().InnerText;
                         AppLogger.LogDebug($"ScpUtil: loaded UseLang='{store.useLang}' from profile (appdatapath={_pathService.AppDataPath})");
                     }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/DownloadLang"); Boolean.TryParse(Item.InnerText, out store.downloadLang); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/DownloadLang"); Boolean.TryParse(Item.Required().InnerText, out store.downloadLang); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/FlashWhenLate"); Boolean.TryParse(Item.InnerText, out store.flashWhenLate); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/FlashWhenLate"); Boolean.TryParse(Item.Required().InnerText, out store.flashWhenLate); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/FlashWhenLateAt"); int.TryParse(Item.InnerText, out store.flashWhenLateAt); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/FlashWhenLateAt"); int.TryParse(Item.Required().InnerText, out store.flashWhenLateAt); }
                     catch { missingSetting = true; }
 
                     Item = m_Xdoc.SelectSingleNode("/Profile/AppIcon");
                     bool hasIconChoice = Item != null;
                     if (hasIconChoice)
                     {
-                        hasIconChoice = Enum.TryParse(Item.InnerText ?? "", out store.useIconChoice);
+                        hasIconChoice = Enum.TryParse(Item.Required().InnerText ?? "", out store.useIconChoice);
                     }
 
                     if (!hasIconChoice)
@@ -303,51 +305,51 @@ namespace DS4Windows.Core.Persistence
                     try
                     {
                         Item = m_Xdoc.SelectSingleNode("/Profile/AppTheme");
-                        string temp = Item.InnerText;
+                        string temp = Item.Required().InnerText;
                         Enum.TryParse(temp, out AppThemeChoice choice);
                         store.useCurrentTheme = choice;
                     }
                     catch { missingSetting = true; store.useCurrentTheme = AppThemeChoice.Default; }
 
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseOSCServer"); Boolean.TryParse(Item.InnerText, out store.useOSCServ); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseOSCServer"); Boolean.TryParse(Item.Required().InnerText, out store.useOSCServ); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/OSCServerPort"); int temp; int.TryParse(Item.InnerText, out temp); store.oscServPort = Math.Min(Math.Max(temp, 1024), 65535); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/OSCServerPort"); int temp; int.TryParse(Item.Required().InnerText, out temp); store.oscServPort = Math.Min(Math.Max(temp, 1024), 65535); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/InterpretingOscMonitoring"); Boolean.TryParse(Item.InnerText, out store.interpretingOscMonitoring); }
-                    catch { missingSetting = true; }
-
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseOSCSender"); Boolean.TryParse(Item.InnerText, out store.useOSCSend); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/OSCSenderPort"); int temp; int.TryParse(Item.InnerText, out temp); store.oscSendPort = Math.Min(Math.Max(temp, 1024), 65535); }
-                    catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/OSCSenderAddress"); store.oscSendAddress = Item.InnerText; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/InterpretingOscMonitoring"); Boolean.TryParse(Item.Required().InnerText, out store.interpretingOscMonitoring); }
                     catch { missingSetting = true; }
 
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseUDPServer"); Boolean.TryParse(Item.InnerText, out store.useUDPServ); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseOSCSender"); Boolean.TryParse(Item.Required().InnerText, out store.useOSCSend); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UDPServerPort"); int temp; int.TryParse(Item.InnerText, out temp); store.udpServPort = Math.Min(Math.Max(temp, 1024), 65535); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/OSCSenderPort"); int temp; int.TryParse(Item.Required().InnerText, out temp); store.oscSendPort = Math.Min(Math.Max(temp, 1024), 65535); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UDPServerListenAddress"); store.udpServListenAddress = Item.InnerText; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/OSCSenderAddress"); store.oscSendAddress = Item.Required().InnerText; }
+                    catch { missingSetting = true; }
+
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseUDPServer"); Boolean.TryParse(Item.Required().InnerText, out store.useUDPServ); }
+                    catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UDPServerPort"); int temp; int.TryParse(Item.Required().InnerText, out temp); store.udpServPort = Math.Min(Math.Max(temp, 1024), 65535); }
+                    catch { missingSetting = true; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UDPServerListenAddress"); store.udpServListenAddress = Item.Required().InnerText; }
                     catch { missingSetting = true; }
 
                     bool udpServerSmoothingGroup = false;
-                    XmlNode xmlUdpServerSmoothElement =
+                    XmlNode? xmlUdpServerSmoothElement =
                         m_Xdoc.SelectSingleNode("/Profile/UDPServerSmoothingOptions");
                     udpServerSmoothingGroup = xmlUdpServerSmoothElement != null;
                     if (udpServerSmoothingGroup)
                     {
                         try
                         {
-                            Item = xmlUdpServerSmoothElement.SelectSingleNode("UseSmoothing");
-                            bool.TryParse(Item.InnerText, out bool temp);
+                            Item = xmlUdpServerSmoothElement.Required().SelectSingleNode("UseSmoothing");
+                            bool.TryParse(Item.Required().InnerText, out bool temp);
                             store.useUdpSmoothing = temp;
                         }
                         catch { missingSetting = true; }
 
                         try
                         {
-                            Item = xmlUdpServerSmoothElement.SelectSingleNode("UdpSmoothMinCutoff");
-                            double.TryParse(Item.InnerText, out double temp);
+                            Item = xmlUdpServerSmoothElement.Required().SelectSingleNode("UdpSmoothMinCutoff");
+                            double.TryParse(Item.Required().InnerText, out double temp);
                             temp = Math.Min(Math.Max(temp, 0.00001), 100.0);
                             store.udpSmoothingMincutoff = temp;
                         }
@@ -355,22 +357,22 @@ namespace DS4Windows.Core.Persistence
 
                         try
                         {
-                            Item = xmlUdpServerSmoothElement.SelectSingleNode("UdpSmoothBeta");
-                            double.TryParse(Item.InnerText, out double temp);
+                            Item = xmlUdpServerSmoothElement.Required().SelectSingleNode("UdpSmoothBeta");
+                            double.TryParse(Item.Required().InnerText, out double temp);
                             temp = Math.Min(Math.Max(temp, 0.0), 1.0);
                             store.udpSmoothingBeta = temp;
                         }
                         catch { missingSetting = true; }
                     }
 
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseCustomSteamFolder"); Boolean.TryParse(Item.InnerText, out store.useCustomSteamFolder); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/UseCustomSteamFolder"); Boolean.TryParse(Item.Required().InnerText, out store.useCustomSteamFolder); }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/CustomSteamFolder"); store.customSteamFolder = Item.InnerText; }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/CustomSteamFolder"); store.customSteamFolder = Item.Required().InnerText; }
                     catch { missingSetting = true; }
-                    try { Item = m_Xdoc.SelectSingleNode("/Profile/AutoProfileRevertDefaultProfile"); Boolean.TryParse(Item.InnerText, out store.autoProfileRevertDefaultProfile); }
+                    try { Item = m_Xdoc.SelectSingleNode("/Profile/AutoProfileRevertDefaultProfile"); Boolean.TryParse(Item.Required().InnerText, out store.autoProfileRevertDefaultProfile); }
                     catch { missingSetting = true; }
 
-                    XmlNode xmlDeviceOptions = m_Xdoc.SelectSingleNode("/Profile/DeviceOptions");
+                    XmlNode? xmlDeviceOptions = m_Xdoc.SelectSingleNode("/Profile/DeviceOptions");
                     if (xmlDeviceOptions != null)
                     {
                         // 系統ごとの設定（Enabled と機種固有の項目）。節の名前と項目は DeviceOptionsBase の定義が持つ。
@@ -378,7 +380,7 @@ namespace DS4Windows.Core.Persistence
                         foreach (InputDeviceFamily family in store.deviceOptions.Families)
                         {
                             DeviceOptionsBase options = store.deviceOptions[family];
-                            XmlNode xmlSupport = xmlDeviceOptions.SelectSingleNode(options.SectionName);
+                            XmlNode? xmlSupport = xmlDeviceOptions.SelectSingleNode(options.SectionName);
                             if (xmlSupport == null) continue;
                             foreach (ControllerSetting setting in options.Settings)
                             {
@@ -396,7 +398,7 @@ namespace DS4Windows.Core.Persistence
                         try
                         {
                             Item = m_Xdoc.SelectSingleNode("/Profile/CustomLed" + (i + 1));
-                            string[] ss = Item.InnerText.Split(':');
+                            string[] ss = Item.Required().InnerText.Split(':');
                             bool.TryParse(ss[0], out store.lightbarSlots[i].Info.ds4winSettings.useCustomLed);
                             DS4Color.TryParse(ss[1], ref store.lightbarSlots[i].Info.ds4winSettings.m_CustomLed);
                         }

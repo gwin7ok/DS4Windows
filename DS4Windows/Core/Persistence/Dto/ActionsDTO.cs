@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +47,7 @@ namespace DS4Windows.Core.Persistence.Dto
         {
             foreach(SpecialAction action in source.actions)
             {
-                SpecialActionSerializer actionSerializer = new SpecialActionSerializer();
+                SpecialActionSerializer? actionSerializer = new SpecialActionSerializer();
                 switch(action.typeID)
                 {
                     case SpecialAction.ActionTypeId.Macro:
@@ -124,7 +126,7 @@ namespace DS4Windows.Core.Persistence.Dto
                         actionSerializer.TypeString = action.type;
                         if (action.typeID == SpecialAction.ActionTypeId.BatteryCheck)
                         {
-                            actionSerializer.Details = string.Join("|", action.details.Split(","));
+                            actionSerializer.Details = string.Join("|", action.details!.Split(","));   // BatteryCheck のスペシャルアクションは、必ず詳細（秒数）を持つ
                         }
                         else
                         {
@@ -149,7 +151,7 @@ namespace DS4Windows.Core.Persistence.Dto
         }
 
         /// <summary>R-2: Macro の Extras（<c>/</c> 区切り）から、古い形式の <c>Repeat</c> のトークン（完全一致）を取り除く。</summary>
-        public static string RemoveLegacyRepeatToken(string extras)
+        public static string? RemoveLegacyRepeatToken(string? extras)
         {
             if (string.IsNullOrEmpty(extras)) return extras;
             return string.Join("/", extras.Split('/').Where(token => token != "Repeat"));
@@ -159,13 +161,21 @@ namespace DS4Windows.Core.Persistence.Dto
         {
             foreach(SpecialActionSerializer actionSerializer in actionSerializers)
             {
-                SpecialAction tempAction = null;
-                switch(actionSerializer.TypeString)
+                // 読み込んだ要素がない項目は、既定値（空文字列）で入る。XmlSerializer が null を入れることはないため、空文字列へ揃える
+                string sName = actionSerializer.Name ?? string.Empty;
+                string sTrigger = actionSerializer.Trigger ?? string.Empty;
+                string sType = actionSerializer.TypeString ?? string.Empty;
+                string sDetails = actionSerializer.Details ?? string.Empty;
+                string sExtras = actionSerializer.Extras ?? string.Empty;
+                string sArguments = actionSerializer.Arguments ?? string.Empty;
+                string sUnloadTrigger = actionSerializer.UnloadTrigger ?? string.Empty;
+                SpecialAction? tempAction = null;
+                switch(sType)
                 {
                     case "Macro":
-                        tempAction = new SpecialAction(actionSerializer.Name,
-                            actionSerializer.Trigger, actionSerializer.TypeString,
-                            actionSerializer.Details, 0, actionSerializer.Extras);
+                        tempAction = new SpecialAction(sName,
+                            sTrigger, sType,
+                            sDetails, 0, sExtras);
                         // R-2: 独立した MacroExecuteMode 要素があれば、それを使う（古い形式の Extras の Repeat［SpecialAction が RepeatMacro にする］より優先）。
                         // ない（古いファイル、または Once）ときは、Extras の Repeat がそのまま効く
                         if (MacroExecuteModes.TryParse(actionSerializer.MacroExecuteMode, out MacroExecuteMode executeMode))
@@ -173,28 +183,28 @@ namespace DS4Windows.Core.Persistence.Dto
                         break;
                     case "Program":
                         {
-                            string extras = actionSerializer.Arguments;
-                            tempAction = new SpecialAction(actionSerializer.Name,
-                                actionSerializer.Trigger, actionSerializer.TypeString,
-                                actionSerializer.Details, actionSerializer.Delay,
+                            string extras = sArguments;
+                            tempAction = new SpecialAction(sName,
+                                sTrigger, sType,
+                                sDetails, actionSerializer.Delay,
                                 extras
                             );
                         }
 
                         break;
                     case "FocusWindow":
-                        tempAction = new SpecialAction(actionSerializer.Name,
-                            actionSerializer.Trigger, actionSerializer.TypeString,
-                            actionSerializer.Details, actionSerializer.Delay,
+                        tempAction = new SpecialAction(sName,
+                            sTrigger, sType,
+                            sDetails, actionSerializer.Delay,
                             actionSerializer.WindowTitle);
                         tempAction.centerCursor = actionSerializer.CenterCursor;
                         break;
                     case "Profile":
                         {
-                            string extras = actionSerializer.UnloadTrigger;
-                            tempAction = new SpecialAction(actionSerializer.Name,
-                                actionSerializer.Trigger, actionSerializer.TypeString,
-                                actionSerializer.Details, 0, extras);
+                            string extras = sUnloadTrigger;
+                            tempAction = new SpecialAction(sName,
+                                sTrigger, sType,
+                                sDetails, 0, extras);
                         }
 
                         break;
@@ -211,32 +221,32 @@ namespace DS4Windows.Core.Persistence.Dto
                                 mode = "Toggle"; // legacy UnloadStyle indicates toggle behavior
                             else
                                 mode = "Press"; // default to Press when neither SwitchMode nor legacy UnloadStyle present
-                            if (!string.IsNullOrEmpty(mode) || !string.IsNullOrEmpty(actionSerializer.UnloadTrigger))
+                            if (!string.IsNullOrEmpty(mode) || !string.IsNullOrEmpty(sUnloadTrigger))
                             {
-                                tempExtras = $"{mode}\n{actionSerializer.UnloadTrigger}";
+                                tempExtras = $"{mode}\n{sUnloadTrigger}";
                             }
 
-                            tempAction = new SpecialAction(actionSerializer.Name,
-                                actionSerializer.Trigger, actionSerializer.TypeString,
-                                actionSerializer.Details, 0, tempExtras);
+                            tempAction = new SpecialAction(sName,
+                                sTrigger, sType,
+                                sDetails, 0, tempExtras);
                         }
 
                         break;
                         case "Button":
                             // SwitchMode（Press／Toggle）を読み込む。無い場合は従来どおり Press
-                            tempAction = new SpecialAction(actionSerializer.Name,
-                                actionSerializer.Trigger, actionSerializer.TypeString,
-                                actionSerializer.Details, 0,
+                            tempAction = new SpecialAction(sName,
+                                sTrigger, sType,
+                                sDetails, 0,
                                 string.IsNullOrEmpty(actionSerializer.SwitchMode) ? string.Empty : $"{actionSerializer.SwitchMode}\n");
                             break;
                     case "DisconnectBT":
                         {
                             double delayTime = actionSerializer.Delay;
-                            string details = actionSerializer.Details;
+                            string details = sDetails;
                             double.TryParse(details, System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out delayTime);
 
-                            tempAction = new SpecialAction(actionSerializer.Name,
-                                actionSerializer.Trigger, actionSerializer.TypeString,
+                            tempAction = new SpecialAction(sName,
+                                sTrigger, sType,
                                 details, delayTime);
                         }
 
@@ -244,7 +254,7 @@ namespace DS4Windows.Core.Persistence.Dto
                     case "BatteryCheck":
                         {
                             double delayTime = actionSerializer.Delay;
-                            string details = actionSerializer.Details;
+                            string details = sDetails;
                             if (double.TryParse(details.Split('|')[0], System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out delayTime))
                             {
                             }
@@ -252,27 +262,27 @@ namespace DS4Windows.Core.Persistence.Dto
                             {
                             }
 
-                            tempAction = new SpecialAction(actionSerializer.Name,
-                                actionSerializer.Trigger, actionSerializer.TypeString,
+                            tempAction = new SpecialAction(sName,
+                                sTrigger, sType,
                                 details, delayTime);
                         }
 
                         break;
 
                     case "MultiAction":
-                        tempAction = new SpecialAction(actionSerializer.Name,
-                            actionSerializer.Trigger, actionSerializer.TypeString,
-                            actionSerializer.Details, actionSerializer.Delay,
-                            actionSerializer.Extras);
+                        tempAction = new SpecialAction(sName,
+                            sTrigger, sType,
+                            sDetails, actionSerializer.Delay,
+                            sExtras);
                         break;
                     case "SASteeringWheelEmulationCalibrate":
                         // 廃止した種別。読み込まずに取り除く（tempAction は null のまま＝一覧に入らない。次の保存でファイルから消える）
-                        AppLogger.Log(AppLogLevel.Info, string.Format(DS4Windows.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", actionSerializer.Name), LogOptions.UserFacing);
+                        AppLogger.Log(AppLogLevel.Info, string.Format(DS4Windows.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", sName), LogOptions.UserFacing);
                         break;
                     case "GyroCalibration":
-                        double.TryParse(actionSerializer.Details, System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out var delay);
-                        tempAction = new SpecialAction(actionSerializer.Name, actionSerializer.Trigger,
-                            actionSerializer.TypeString, actionSerializer.Details, delay);
+                        double.TryParse(sDetails, System.Globalization.NumberStyles.Float, DS4Windows.Core.Settings.ConfigFileCulture.DecimalCulture, out var delay);
+                        tempAction = new SpecialAction(sName, sTrigger,
+                            sType, sDetails, delay);
                         break;
                     default:
                         break;

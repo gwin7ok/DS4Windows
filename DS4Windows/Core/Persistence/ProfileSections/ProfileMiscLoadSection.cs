@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿#nullable enable
+
+using System.Xml;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 
@@ -20,25 +22,25 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings = context.ProfileSettings;
             IProfileLoadTarget control = context.Control;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingType"); int.TryParse(Item.InnerText, out lightInfo.chargingType); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/ChargingType"); int.TryParse(Item.Required().InnerText, out lightInfo.chargingType); }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MouseAcceleration"); bool.TryParse(Item.InnerText, out store.buttonMouseInfos[device].mouseAccel); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/MouseAcceleration"); bool.TryParse(Item.Required().InnerText, out store.buttonMouseInfos[device].mouseAccel); }
             catch { missingSetting = true; }
 
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LaunchProgram");
-                store.basicSlots[device].LaunchProgram = Item.InnerText;
+                store.basicSlots[device].LaunchProgram = Item.Required().InnerText;
             }
             catch { store.basicSlots[device].LaunchProgram = string.Empty; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/DinputOnly");
-                bool.TryParse(Item.InnerText, out bool dinputOnly);
+                bool.TryParse(Item.Required().InnerText, out bool dinputOnly);
                 store.basicSlots[device].DinputOnly = dinputOnly;
             }
             catch { store.basicSlots[device].DinputOnly = false; missingSetting = true; }
@@ -48,14 +50,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/StartTouchpadOff");
-                { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].StartOff = parsedValue; };
+                { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.touchpadSlots[device].StartOff = parsedValue; };
                 if (store.touchpadSlots[device].StartOff == true) control.StartTPOff(device);
             }
             catch { store.touchpadSlots[device].StartOff = false; missingSetting = true; }
 
             // Fallback lookup if TouchpadOutMode is not set
             bool tpForControlsPresent = false;
-            XmlNode xmlUseTPForControlsElement =
+            XmlNode? xmlUseTPForControlsElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/UseTPforControls");
             tpForControlsPresent = xmlUseTPForControlsElement != null;
             if (tpForControlsPresent)

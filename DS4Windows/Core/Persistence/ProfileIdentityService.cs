@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +36,7 @@ namespace DS4Windows.Core.Persistence
         private readonly Dictionary<string, string> _nameToId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private bool _built;
         private bool _trusted;
-        private string _indexedFolder;
+        private string? _indexedFolder;
         private DateTime _indexedStamp;
 
         public ProfileIdentityService(IPathService pathService)
@@ -45,9 +47,9 @@ namespace DS4Windows.Core.Persistence
 
         private sealed class Entry
         {
-            public string Name;
-            public string Path;
-            public string Id;
+            public string Name = string.Empty;
+            public string Path = string.Empty;
+            public string? Id;
             public DateTime Created;
         }
 
@@ -106,14 +108,14 @@ namespace DS4Windows.Core.Persistence
             }
         }
 
-        public string GetId(string profileName)
+        public string? GetId(string? profileName)
         {
             if (string.IsNullOrWhiteSpace(profileName)) return null;
 
             // 速い経路: 索引が有効なら、索引のロックだけで引く（実行時の読み取りが、長い XML の読み書き［XmlIoLock］を待たないように）
             lock (_gate)
             {
-                if (IsFresh()) return _nameToId.TryGetValue(profileName, out string fast) ? fast : null;
+                if (IsFresh()) return _nameToId.TryGetValue(profileName, out string? fast) ? fast : null;
             }
 
             lock (ProfileXmlStore.XmlIoLock)
@@ -121,18 +123,18 @@ namespace DS4Windows.Core.Persistence
                 lock (_gate)
                 {
                     EnsureIndex();
-                    return _nameToId.TryGetValue(profileName, out string id) ? id : null;
+                    return _nameToId.TryGetValue(profileName, out string? id) ? id : null;
                 }
             }
         }
 
-        public string GetName(string profileId)
+        public string? GetName(string? profileId)
         {
             if (!_file.IsValid(profileId)) return null;
 
             lock (_gate)
             {
-                if (IsFresh()) return _idToName.TryGetValue(profileId, out string fast) ? fast : null;
+                if (IsFresh()) return _idToName.TryGetValue(profileId, out string? fast) ? fast : null;
             }
 
             lock (ProfileXmlStore.XmlIoLock)
@@ -140,14 +142,14 @@ namespace DS4Windows.Core.Persistence
                 lock (_gate)
                 {
                     EnsureIndex();
-                    return _idToName.TryGetValue(profileId, out string name) ? name : null;
+                    return _idToName.TryGetValue(profileId, out string? name) ? name : null;
                 }
             }
         }
 
-        public string EnsurePersisted(string profileName)
+        public string? EnsurePersisted(string? profileName)
         {
-            string path = PathOf(profileName);
+            string? path = PathOf(profileName);
             if (path == null || !File.Exists(path)) return null;
 
             lock (ProfileXmlStore.XmlIoLock)
@@ -157,10 +159,10 @@ namespace DS4Windows.Core.Persistence
                     EnsureIndex();
 
                     string name = Path.GetFileNameWithoutExtension(path);
-                    if (_nameToId.TryGetValue(name, out string known)) return known;
+                    if (_nameToId.TryGetValue(name, out string? known)) return known;
 
                     // 索引にない: ファイルを読み（外から作られた直後など）、ID がなければ書く
-                    string id = _file.ReadId(path);
+                    string? id = _file.ReadId(path);
                     if (id == null)
                     {
                         id = _file.NewId();
@@ -174,9 +176,9 @@ namespace DS4Windows.Core.Persistence
             }
         }
 
-        public string AssignNewId(string profileName)
+        public string? AssignNewId(string? profileName)
         {
-            string path = PathOf(profileName);
+            string? path = PathOf(profileName);
             if (path == null || !File.Exists(path)) return null;
 
             lock (ProfileXmlStore.XmlIoLock)
@@ -194,19 +196,19 @@ namespace DS4Windows.Core.Persistence
             }
         }
 
-        public bool TryResolve(string profileId, string nameHint, out string profileName)
+        public bool TryResolve(string? profileId, string? nameHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? profileName)
         {
-            string byId = GetName(profileId);
+            string? byId = GetName(profileId);
             if (byId != null)
             {
                 profileName = byId;
                 return true;
             }
 
-            string path = PathOf(nameHint);
+            string? path = PathOf(nameHint);
             if (path != null && File.Exists(path))
             {
-                profileName = nameHint;
+                profileName = nameHint!;   // PathOf が null でないのは、nameHint が空白でないときだけ
                 return true;
             }
 
@@ -303,7 +305,7 @@ namespace DS4Windows.Core.Persistence
             return entries;
         }
 
-        private string PathOf(string profileName)
+        private string? PathOf(string? profileName)
         {
             if (string.IsNullOrWhiteSpace(profileName)) return null;
 

@@ -1,4 +1,7 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.Xml;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Settings;
@@ -17,15 +20,16 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlDocument m_Xdoc = context.Xdoc;
             XmlElement rootElement = context.RootElement;
             int device = context.Device;
+            List<string> slotActions = store.GetRequiredProfileActions(device);
 
             XmlNode xmlProfileActions = m_Xdoc.CreateNode(XmlNodeType.Element, "ProfileActions", null);
-            xmlProfileActions.InnerText = string.Join("/", store.profileActions[device]); rootElement.AppendChild(xmlProfileActions);
+            xmlProfileActions.InnerText = string.Join("/", slotActions); rootElement.AppendChild(xmlProfileActions);
 
             // 使う SA の固定 ID を、名前の一覧と同じ並びで書く（名前の一覧は、古いバージョンのために残す）。
             // 読み込みは、ID を主にして名前を引き直す（SA の名前変更に追従する）。見つからない SA の ID は空（名前だけの参照）。1 つも ID がなければ、要素を書かない
             var ids = new System.Collections.Generic.List<string>();
             bool anyId = false;
-            foreach (string actionName in store.profileActions[device])
+            foreach (string actionName in slotActions)
             {
                 string id = FindActionId(store, actionName);
                 anyId |= id.Length > 0;

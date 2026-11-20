@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -26,13 +28,13 @@ namespace DS4Windows.Core.Persistence
 {
     public class ProfileMigration
     {
-        private XmlReader profileReader;
-        public XmlReader ProfileReader { get => profileReader; }
+        private XmlReader? profileReader;
+        public XmlReader ProfileReader { get => profileReader!; }   // 読み取りを終えて破棄するまでは、コンストラクターが必ず作る
 
         private int configFileVersion;
         private bool usedMigration;
         public bool UsedMigration { get => usedMigration; }
-        private string currentMigrationText;
+        private string currentMigrationText = string.Empty;
         public string CurrentMigrationText { get => currentMigrationText; }
 
         public ProfileMigration(Stream inputStream)
@@ -62,8 +64,8 @@ namespace DS4Windows.Core.Persistence
             {
                 profileReader = XmlReader.Create(new StringReader(currentMigrationText));
                 // Move stream to root element
-                profileReader.MoveToContent();
-                string temp = profileReader.GetAttribute("config_version");
+                ProfileReader.MoveToContent();
+                string? temp = ProfileReader.GetAttribute("config_version");
                 if (!string.IsNullOrEmpty(temp))
                 {
                     int.TryParse(temp, out configFileVersion);
@@ -132,14 +134,14 @@ namespace DS4Windows.Core.Persistence
         {
             usedMigration = true;
             // Close and flush current XmlReader instance
-            profileReader.Close();
-            profileReader.Dispose();
+            ProfileReader.Close();
+            ProfileReader.Dispose();
 
             currentMigrationText = migratedText;
             StringReader stringReader = new StringReader(currentMigrationText);
             profileReader = XmlReader.Create(stringReader);
             // Move stream to root element
-            //profileReader.MoveToContent();
+            //ProfileReader.MoveToContent();
         }
 
         public void Close()
@@ -147,8 +149,8 @@ namespace DS4Windows.Core.Persistence
             if (profileReader != null)
             {
                 // Close and flush current XmlReader instance
-                profileReader.Close();
-                profileReader.Dispose();
+                ProfileReader.Close();
+                ProfileReader.Dispose();
 
                 profileReader = null;
             }
@@ -160,27 +162,27 @@ namespace DS4Windows.Core.Persistence
             //int deadZoneLS = -1;
 
             // Move stream to root element
-            profileReader.MoveToContent();
+            ProfileReader.MoveToContent();
             // Skip past root element
-            profileReader.Read();
-            while (profileReader.Read())
+            ProfileReader.Read();
+            while (ProfileReader.Read())
             {
-                /*if (profileReader.Name == "LSDeadZone" && profileReader.IsStartElement())
+                /*if (ProfileReader.Name == "LSDeadZone" && ProfileReader.IsStartElement())
                 {
-                    string weight = profileReader.ReadElementContentAsString();
+                    string weight = ProfileReader.ReadElementContentAsString();
                     int.TryParse(weight, out deadZoneLS);
                 }
                 */
-                if (profileReader.Name == "LSAntiDeadZone" && profileReader.IsStartElement())
+                if (ProfileReader.Name == "LSAntiDeadZone" && ProfileReader.IsStartElement())
                 {
                     hasAntiDeadLSTag = true;
-                    profileReader.ReadElementContentAsString();
+                    ProfileReader.ReadElementContentAsString();
                 }
             }
 
             // Close and dispose current XmlReader
-            profileReader.Close();
-            profileReader.Dispose();
+            ProfileReader.Close();
+            ProfileReader.Dispose();
 
             if (hasAntiDeadLSTag)
             {
@@ -194,7 +196,7 @@ namespace DS4Windows.Core.Persistence
             // Start reader at zero position
             profileReader = XmlReader.Create(new StringReader(currentMigrationText));
             // Move stream to root element
-            profileReader.MoveToContent();
+            ProfileReader.MoveToContent();
         }
 
         struct MigrationSettings0004
@@ -278,10 +280,10 @@ namespace DS4Windows.Core.Persistence
             });
             tempWriter.WriteStartDocument();
             // Move stream to root element
-            profileReader.MoveToContent();
+            ProfileReader.MoveToContent();
             // Skip past root element
-            profileReader.Read();
-            profileReader.MoveToContent();
+            ProfileReader.Read();
+            ProfileReader.MoveToContent();
 
             // Write replacement root element in XmlWriter
             tempWriter.WriteStartElement("DS4Windows");
@@ -289,17 +291,17 @@ namespace DS4Windows.Core.Persistence
             tempWriter.WriteAttributeString("config_version", "4");
 
             // First pass
-            while (!profileReader.EOF)
+            while (!ProfileReader.EOF)
             {
                 bool readNext = true;
-                if (profileReader.IsStartElement() && profileReader.Depth == 1)
+                if (ProfileReader.IsStartElement() && ProfileReader.Depth == 1)
                 {
-                    switch(profileReader.Name)
+                    switch(ProfileReader.Name)
                     {
                         case "GyroSmoothing":
                         {
                             gyroSmoothSettings.hasGyroMouseSmoothing = true;
-                            string useSmooth = profileReader.ReadElementContentAsString();
+                            string useSmooth = ProfileReader.ReadElementContentAsString();
                             bool.TryParse(useSmooth, out gyroSmoothSettings.useGyroMouseSmoothing);
                             readNext = false;
                             break;
@@ -307,7 +309,7 @@ namespace DS4Windows.Core.Persistence
                         case "GyroSmoothingWeight":
                         {
                             gyroSmoothSettings.hasGyroMouseSmoothingWeight = true;
-                            string weight = profileReader.ReadElementContentAsString();
+                            string weight = ProfileReader.ReadElementContentAsString();
                             double.TryParse(weight, out gyroSmoothSettings.gyroMouseSmoothingWeight);
                             readNext = false;
                             break;
@@ -315,7 +317,7 @@ namespace DS4Windows.Core.Persistence
                         case "GyroMouseStickSmoothing":
                         {
                             gyroSmoothSettings.hasGyroMouseStickSmoothing = true;
-                            string useSmooth = profileReader.ReadElementContentAsString();
+                            string useSmooth = ProfileReader.ReadElementContentAsString();
                             bool.TryParse(useSmooth, out gyroSmoothSettings.useGyroMouseStickSmoothing);
                             readNext = false;
                             break;
@@ -323,7 +325,7 @@ namespace DS4Windows.Core.Persistence
                         case "GyroMouseStickSmoothingWeight":
                         {
                             gyroSmoothSettings.hasGyroMouseStickSmoothingWeight = true;
-                            string weight = profileReader.ReadElementContentAsString();
+                            string weight = ProfileReader.ReadElementContentAsString();
                             double.TryParse(weight, out gyroSmoothSettings.gyroMouseStickSmoothingWeight);
                             readNext = false;
                             break;
@@ -335,42 +337,42 @@ namespace DS4Windows.Core.Persistence
 
                 if (readNext)
                 {
-                    profileReader.Read();
+                    ProfileReader.Read();
                 }
             }
 
             // Close and dispose current XmlReader
-            profileReader.Close();
-            profileReader.Dispose();
+            ProfileReader.Close();
+            ProfileReader.Dispose();
 
             // Prepare for second pass
             StringReader stringReader = new StringReader(currentMigrationText);
             profileReader = XmlReader.Create(stringReader);
             // Move stream to root element
-            profileReader.MoveToContent();
+            ProfileReader.MoveToContent();
             // Skip past root element
-            profileReader.Read();
-            profileReader.MoveToContent();
+            ProfileReader.Read();
+            ProfileReader.MoveToContent();
 
             // Second pass
-            while (!profileReader.EOF)
+            while (!ProfileReader.EOF)
             {
-                if (profileReader.IsStartElement() && profileReader.Depth == 1)
+                if (ProfileReader.IsStartElement() && ProfileReader.Depth == 1)
                 {
-                    switch (profileReader.Name)
+                    switch (ProfileReader.Name)
                     {
                         case "GyroSmoothing":
                         {
                             // Place new GyroMouseSmoothingSettings group where GyroSmoothing used to be
                             MigrateGyroMouseSmoothingSettings(tempWriter);
                             // Consume reset of element
-                            profileReader.ReadElementContentAsString();
+                            ProfileReader.ReadElementContentAsString();
                             break;
                         }
                         case "GyroSmoothingWeight":
                         {
                             // Consume reset of element
-                            profileReader.ReadElementContentAsString();
+                            ProfileReader.ReadElementContentAsString();
                             break;
                         }
                         case "GyroMouseStickSmoothing":
@@ -378,23 +380,23 @@ namespace DS4Windows.Core.Persistence
                             // Place new GyroMouseStickSmoothingSettings group where GyroSmoothing used to be
                             MigrateGyroMouseStickSmoothingSettings(tempWriter);
                             // Consume reset of element
-                            profileReader.ReadElementContentAsString();
+                            ProfileReader.ReadElementContentAsString();
                             break;
                         }
                         case "GyroMouseStickSmoothingWeight":
                         {
                             // Consume reset of element
-                            profileReader.ReadElementContentAsString();
+                            ProfileReader.ReadElementContentAsString();
                             break;
                         }
                         default:
-                            tempWriter.WriteNode(profileReader, true);
+                            tempWriter.WriteNode(ProfileReader, true);
                             break;
                     }
                 }
                 else
                 {
-                    profileReader.Read();
+                    ProfileReader.Read();
                 }
             }
 
@@ -415,25 +417,25 @@ namespace DS4Windows.Core.Persistence
             });
             tempWriter.WriteStartDocument();
             // Move stream to root element
-            profileReader.MoveToContent();
+            ProfileReader.MoveToContent();
             // Skip past root element
-            profileReader.Read();
-            profileReader.MoveToContent();
+            ProfileReader.Read();
+            ProfileReader.MoveToContent();
 
             // Write replacement root element in XmlWriter
             tempWriter.WriteStartElement("DS4Windows");
             tempWriter.WriteAttributeString("app_version", PathService.ExecutableVersionState);
             tempWriter.WriteAttributeString("config_version", "2");
 
-            while (!profileReader.EOF)
+            while (!ProfileReader.EOF)
             {
-                if (profileReader.IsStartElement() && profileReader.Depth == 1)
+                if (ProfileReader.IsStartElement() && ProfileReader.Depth == 1)
                 {
-                    switch (profileReader.Name)
+                    switch (ProfileReader.Name)
                     {
                         case "LSDeadZone":
                         {
-                            string lsdead = profileReader.ReadElementContentAsString();
+                            string lsdead = ProfileReader.ReadElementContentAsString();
                             bool valid = int.TryParse(lsdead, out int temp);
                             if (valid)
                             {
@@ -451,7 +453,7 @@ namespace DS4Windows.Core.Persistence
                         }
                         case "RSDeadZone":
                         {
-                            string rsdead = profileReader.ReadElementContentAsString();
+                            string rsdead = ProfileReader.ReadElementContentAsString();
                             bool valid = int.TryParse(rsdead, out int temp);
                             if (valid)
                             {
@@ -469,13 +471,13 @@ namespace DS4Windows.Core.Persistence
                         }
 
                         default:
-                            tempWriter.WriteNode(profileReader, true);
+                            tempWriter.WriteNode(ProfileReader, true);
                             break;
                     }
                 }
                 else
                 {
-                    profileReader.Read();
+                    ProfileReader.Read();
                 }
              }
 
@@ -496,25 +498,25 @@ namespace DS4Windows.Core.Persistence
             });
             tempWriter.WriteStartDocument();
             // Move stream to root element
-            profileReader.MoveToContent();
+            ProfileReader.MoveToContent();
             // Skip past root element
-            profileReader.Read();
-            profileReader.MoveToContent();
+            ProfileReader.Read();
+            ProfileReader.MoveToContent();
 
             // Write replacement root element in XmlWriter
             tempWriter.WriteStartElement("DS4Windows");
             tempWriter.WriteAttributeString("app_version", PathService.ExecutableVersionState);
             tempWriter.WriteAttributeString("config_version", "5");
 
-            while (!profileReader.EOF)
+            while (!ProfileReader.EOF)
             {
-                if (profileReader.IsStartElement() && profileReader.Depth == 1)
+                if (ProfileReader.IsStartElement() && ProfileReader.Depth == 1)
                 {
-                    switch (profileReader.Name)
+                    switch (ProfileReader.Name)
                     {
                         case "UseTPforControls":
                             {
-                                string tpControls = profileReader.ReadElementContentAsString();
+                                string tpControls = ProfileReader.ReadElementContentAsString();
                                 bool valid = bool.TryParse(tpControls, out bool temp);
                                 if (valid && temp)
                                 {
@@ -524,13 +526,13 @@ namespace DS4Windows.Core.Persistence
                                 break;
                             }
                         default:
-                            tempWriter.WriteNode(profileReader, true);
+                            tempWriter.WriteNode(ProfileReader, true);
                             break;
                     }
                 }
                 else
                 {
-                    profileReader.Read();
+                    ProfileReader.Read();
                 }
             }
 

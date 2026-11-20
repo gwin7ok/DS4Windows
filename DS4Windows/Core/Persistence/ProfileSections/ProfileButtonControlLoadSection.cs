@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using DS4Windows.Core.Model;
@@ -31,7 +33,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             Dictionary<DS4Controls, String> customMapMacros = new Dictionary<DS4Controls, String>();
             Dictionary<DS4Controls, String> customMapExtras = new Dictionary<DS4Controls, String>();
 
-            XmlNode ParentItem = m_Xdoc.SelectSingleNode("/" + rootname + "/Control/Button");
+            XmlNode? ParentItem = m_Xdoc.SelectSingleNode("/" + rootname + "/Control/Button");
             if (ParentItem != null)
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
@@ -177,7 +179,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (!Enum.TryParse(item.Name, out DS4Controls modeControl) || modeControl == DS4Controls.None) continue;
                     if (!MacroExecuteModes.TryParse(item.InnerText, out MacroExecuteMode executeMode)) continue;
 
-                    DS4ControlSettings modeSetting = store.GetDS4CSetting(device, modeControl);
+                    DS4ControlSettings? modeSetting = store.GetDS4CSetting(device, modeControl);
                     if (modeSetting == null || modeSetting.actionType != DS4ControlSettings.ActionType.Macro) continue;
 
                     DS4KeyType updated = MacroExecuteModes.ApplyTo(modeSetting.keyType, executeMode);
@@ -196,9 +198,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     if (!(item is XmlElement)) continue;
                     if (!Enum.TryParse(item.Name, out DS4Controls specialControl) || specialControl == DS4Controls.None) continue;
-                    if (!ControlSpecialItemXml.TryRead(item, out ControlSpecialItem specialItem)) continue;
+                    if (!ControlSpecialItemXml.TryRead(item, out ControlSpecialItem? specialItem)) continue;
 
-                    DS4ControlSettings dcs = store.GetDS4CSetting(device, specialControl);
+                    DS4ControlSettings? dcs = store.GetDS4CSetting(device, specialControl);
                     if (dcs == null) continue;
 
                     if (specialItem.Type == SpecialAction.ActionTypeId.Macro)
