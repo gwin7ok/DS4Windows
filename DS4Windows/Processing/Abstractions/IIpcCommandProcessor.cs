@@ -3,7 +3,7 @@
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase13-Step11 11-b（台帳 F-2c）: IPC コマンド（解析済みの文字列の配列）を実行する。旧 <c>MainWindow.Ipc.cs</c> の 9 個の <c>Ipc*</c> を、UI から独立させたもの。
+    /// IPC コマンド（解析済みの文字列の配列）を実行する。旧 <c>MainWindow.Ipc.cs</c> の 9 個の <c>Ipc*</c> を、UI から独立させたもの。
     /// 受け付けの順序、引数の個数の条件、範囲の検査は従来のまま。UI にしかできない操作は <see cref="IIpcCommandHost"/> に頼む。
     /// </summary>
     public interface IIpcCommandProcessor

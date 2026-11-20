@@ -7,10 +7,10 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M2（Phase9-MapCustom-Plan.md §3）: <see cref="ITwoStageTriggerProcessor"/> の実装（DI の Singleton。状態なし）。
+    /// Phase9 MapCustom の分割 M2: <see cref="ITwoStageTriggerProcessor"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>Mapping.ProcessTwoStageTrigger</c>（2 段階トリガーの 5 つのモードの状態機械）を、そのまま移したもの
     /// （状態は、呼び出し側が渡す <see cref="TwoStageTriggerMappingData"/> が持つ。使われていなかった引数 <c>cState</c> は削除した。時計はテストで差し替えられる）。
-    /// 値の特性化は <c>Phase9MapCustomTwoStageDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は <c>Phase9MapCustomTwoStageDifferentialTests</c>が守る。
     /// </summary>
     public sealed class TwoStageTriggerProcessor : ITwoStageTriggerProcessor
     {
@@ -61,8 +61,8 @@ namespace DS4Windows.Processing.Services.Conditioning
                     else if (triggerValue != 0 && triggerData.actionStateMode ==
                         TwoStageTriggerMappingData.EngageButtonsMode.FullPullOnly)
                     {
-                        // Phase9 MapCustom の分割 M3 の後の挙動修正（ユーザー承認 2026-10-22）: 深い引きの後、戻る途中（生値 < 255、値 != 0）に
-                        // 浅い引きが出てしまっていた（旧コードの取りこぼし）。HipFireExclusiveButtons と同様、離す（値 0）までは何も出さない。
+                        // 深い引きの後、戻る途中（生値 < 255、値 != 0）に
+                        // 浅い引きが出てしまっていた。HipFireExclusiveButtons と同様、離す（値 0）までは何も出さない。
                         dcsTemp = null;
                     }
 

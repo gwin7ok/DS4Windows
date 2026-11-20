@@ -7,14 +7,14 @@ namespace DS4Windows.Core.Persistence
     /// <summary>
     /// <see cref="IProfilePresetLoader"/> の実装。プリセットを読み込み、既定のスペシャルアクションの作成、エクストラ情報のキャッシュ更新、
     /// 一時プロファイルの状態（名前・使用・距離）のクリアまでを行う。
-    /// Phase7-Step3c W2: 旧 <c>Global.Load…Profile</c>（10 名）の処理をここへ移した。<c>Global</c> 経由をやめ、
+    /// 旧 <c>Global.Load…Profile</c>（10 名）の処理をここへ移した。<c>Global</c> 経由をやめ、
     /// 注入された <see cref="BackingStore"/> と <see cref="IProfileSettingsService"/> を使う。
     /// </summary>
     public class ProfilePresetLoader : IProfilePresetLoader
     {
         private readonly BackingStore _config;
         private readonly IProfileSettingsService _profileSettings;
-        // Phase7-Step10c W6: プリセットの読込（旧: BackingStore.LoadBlank*／LoadDefault*）
+        // プリセットの読込
         private readonly ProfilePresets _presets;
 
         public ProfilePresetLoader(BackingStore config, IProfileSettingsService profileSettings, ProfilePresets presets)
@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Persistence
             _profileSettings = profileSettings;
         }
 
-        // どのプリセットでも、読み込みの後に同じ後処理を行う（旧 Global.Load…Profile の共通部分）。
+        // どのプリセットでも、読み込みの後に同じ後処理を行う。
         private void CompleteLoad(int deviceIndex)
         {
             _config.EstablishDefaultSpecialActions(deviceIndex);

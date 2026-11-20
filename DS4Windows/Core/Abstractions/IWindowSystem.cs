@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase12-Step2 2b-2: ウィンドウの列挙と前面化に使う Win32 の操作の抽象。<see cref="IWindowFocuser"/> の手順（復元→素の前面化→
+    /// ウィンドウの列挙と前面化に使う Win32 の操作の抽象。<see cref="IWindowFocuser"/> の手順（復元→素の前面化→
     /// 入力の結び付け→Alt の擬似入力）を、実際の Windows なしで単体テストするために分けた。実装は <c>Win32WindowSystem</c>。
     /// </summary>
     public interface IWindowSystem
@@ -43,31 +43,31 @@ namespace DS4Windows.Core.Abstractions
         void BringToTop(IntPtr window);
 
         /// <summary>
-        /// Phase12-Step2 2j: マウスポインターを、ウィンドウの外枠の中央へ移動する（画面の座標。複数モニターでも、仮想スクリーンの座標のまま）。
+        /// マウスポインターを、ウィンドウの外枠の中央へ移動する（画面の座標。複数モニターでも、仮想スクリーンの座標のまま）。
         /// 最小化されている・外枠が取れない・面積がないときは動かさず、false。
         /// </summary>
         bool MoveCursorToCenter(IntPtr window);
 
         /// <summary>
-        /// Phase12-Step2 2i: 今のマウスカーソルの位置にあるウィンドウの、最上位の親（トップレベル）。ウィンドウがない・取得できないときは null。
+        /// 今のマウスカーソルの位置にあるウィンドウの、最上位の親（トップレベル）。ウィンドウがない・取得できないときは null。
         /// 位置は画面の座標（物理ピクセル）で、カーソルの取得と同じ座標系のため、画面の拡大率の変換は要らない。
         /// </summary>
         CapturedWindow? GetWindowUnderCursor();
 
         /// <summary>
-        /// Phase12-Step3 3c（R-3）: マウスポインターを、画面（仮想スクリーン）の座標 (<paramref name="x"/>, <paramref name="y"/>) へ移動する（物理ピクセル。
+        /// マウスポインターを、画面（仮想スクリーン）の座標 (<paramref name="x"/>, <paramref name="y"/>) へ移動する（物理ピクセル。
         /// 範囲外は Windows が端に丸める）。マクロのマウス移動ステップが使う。動かせたら true。
         /// </summary>
         bool MoveCursorTo(int x, int y);
 
         /// <summary>
-        /// Phase12-Step3 3c（R-3）: 今の前面ウィンドウの外枠（タイトルバーを含む）の左上の、画面の座標。マクロの「ウィンドウ基準」の原点。
+        /// 今の前面ウィンドウの外枠（タイトルバーを含む）の左上の、画面の座標。マクロの「ウィンドウ基準」の原点。
         /// 前面ウィンドウがない・最小化されている・外枠が取れない・面積がないときは false。
         /// </summary>
         bool TryGetForegroundWindowOrigin(out int x, out int y);
 
         /// <summary>
-        /// Phase12-Step3 3e（R-3）: 画面の座標 (<paramref name="x"/>, <paramref name="y"/>) にあるウィンドウの、最上位の親（トップレベル）の、
+        /// 画面の座標 (<paramref name="x"/>, <paramref name="y"/>) にあるウィンドウの、最上位の親（トップレベル）の、
         /// プロセスの ID と外枠の左上（画面の座標）。マクロの記録が、自分のウィンドウの上の操作を除くのと、ウィンドウ基準の座標を求めるのに使う。
         /// ウィンドウがない・外枠が取れないときは false。
         /// </summary>

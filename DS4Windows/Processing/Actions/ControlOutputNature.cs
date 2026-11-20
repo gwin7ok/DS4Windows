@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 I4a（旧 <c>ControlJudgement</c> の置き換え）: Controls タブの束縛（<see cref="ControlButtonInputAction"/>）の出力の種類。
+    /// Controls タブの束縛（<see cref="ControlButtonInputAction"/>）の出力の種類。
     /// 押下の判定は、出力の種類から決まる（決める箇所は <see cref="ControlOutputNatureTable"/> の 1 か所）。
     /// </summary>
     public enum ControlOutputNature

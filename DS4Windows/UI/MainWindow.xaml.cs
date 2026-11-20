@@ -76,7 +76,7 @@ namespace DS4Windows.UI
         private readonly UpdateCheckPolicy updateCheckPolicy;
         // スワイプでのプロファイル切替の規則（画面に依存しない。値の計算だけを担当する）
         private readonly TouchpadSwipeProfileRule swipeRule = new TouchpadSwipeProfileRule();
-        // [Phase 5 Step 13-9] 廃止: DIコンテナ注入の _autoProfileService を直接利用
+        // 廃止: DIコンテナ注入の _autoProfileService を直接利用
         private readonly AutoProfileRunner _autoProfileService;
         private readonly MainWindowLayoutViewModel layout;
         // トレイ・通知・テーマの切り替えと、プロファイルの選択・編集後の同期は、それぞれの部品が受け持つ
@@ -99,7 +99,7 @@ namespace DS4Windows.UI
 
         public bool IsInitialShow { get; set; }
 
-        // Phase7-Step5 W5（Q4＝A）: 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
+        // 旧 AppHost.GetService の 17 件を、コンストラクター引数に替えた。
         // IMainWindowFactory（実装は MainWindowFactory）が DI から解決して渡す。
 
         public MainWindow(ArgumentParser parser,
@@ -119,7 +119,7 @@ namespace DS4Windows.UI
             this.profileSelection = profileSelection;
             ArgumentNullException.ThrowIfNull(updateCheckPolicy);
             this.updateCheckPolicy = updateCheckPolicy;
-            // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
+            // テーマ・言語の切り替え
             ArgumentNullException.ThrowIfNull(themeLanguage);
             this.themeLanguage = themeLanguage;
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
@@ -127,7 +127,7 @@ namespace DS4Windows.UI
             Height = WindowLayoutDefaults.MAIN_WINDOW_HEIGHT;
 
             InitializeComponent();
-            // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
+            // XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
             ArgumentNullException.ThrowIfNull(mainWindowsViewModel);
             mainWinVM = mainWindowsViewModel;
@@ -143,14 +143,13 @@ namespace DS4Windows.UI
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
             logMinLevelComboBox.SelectedValue = mainWinVM.LogMinLevel;
 
-            // Phase7-Step5 W5: 旧 AppHost 解決の失敗時の new MainWindowsViewModel(...) のフォールバックは削除した（必須引数）
 
-            // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
+            // ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
             ArgumentNullException.ThrowIfNull(viewModelFactory);
             _viewModelFactory = viewModelFactory;
             settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
-            // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
+            // XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
             languagePackControl.Initialize(layout.Save, viewModelFactory.CreateLanguagePackViewModel(), themeLanguage);
             logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
@@ -215,12 +214,12 @@ namespace DS4Windows.UI
             noContLb.Content = string.Format(Strings.NoControllersConnected,
                 mainWinVM.ControllerSlotLimit);
 
-            // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
-            // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
+            // 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
+            // AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
             ArgumentNullException.ThrowIfNull(autoProfileService);
             _autoProfileService = autoProfileService;
 
-            // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
+            // XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             string autoProfilesFile = mainWinVM.AppDataPath + "\\Auto Profiles.xml";
             _autoProfileService.EnsureFile(autoProfilesFile);
 
@@ -499,7 +498,7 @@ namespace DS4Windows.UI
             CheckAutoProfileStatus();
         }
 
-        // Phase6-Step10-4-4: 廃止済みの AutoProfileChecker を引数に持つオーバーロードを削除し、1 つに統合した
+        // 廃止済みの AutoProfileChecker を引数に持つオーバーロードを削除し、1 つに統合した
         private void AutoprofileChecker_RequestServiceChange(bool state)
         {
             // ChangeService は、サービスの開始・停止の失敗を自分でログへ出す。ここでは完了を待たない。
@@ -686,7 +685,7 @@ namespace DS4Windows.UI
                 {
                     int devIndex = e.DeviceIndex;
                     string prof = e.ProfileName ?? string.Empty;
-                    // Phase11 電池残量の一本化: 残量は一覧のモデルを経由せず、スロットのデバイスから直接読む
+                    // 残量は一覧のモデルを経由せず、スロットのデバイスから直接読む
                     // （再接続の直後は一覧の行がまだ無く、"0" と表示されていた）
                     string battery = _autoProfileService.BatteryText(devIndex);
 
@@ -825,7 +824,6 @@ namespace DS4Windows.UI
             lastLogMsg.Warning = false;
         }
 
-        // Phase11 W6 K-W6-1: 旧 MainTabCon_SelectionChanged（タブの番号 4 のとき、最下部の 1 行メッセージ欄 lastMsgLb を隠していた）は削除した。
         // 本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は Settings タブで隠れ、
         // Settings で出る警告が見えなかった。すべてのタブで表示する（ユーザー決定 2026-11-02）。
 
@@ -1041,7 +1039,7 @@ namespace DS4Windows.UI
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam,
             IntPtr lParam, ref bool handled)
         {
-            // Phase9 9-F F-2b: メッセージの種類ごとの処理は、メソッドへ分けた（順序・条件は従来のまま）
+            // メッセージの種類ごとの処理は、メソッドへ分けた（順序・条件は従来のまま）
             switch (msg)
             {
                 case Util.WM_DEVICECHANGE:
@@ -1058,7 +1056,7 @@ namespace DS4Windows.UI
 
 
         /// <summary>
-        /// Phase9 9-F F-2b: デバイスの着脱（ホットプラグ）。カウンターのロックと、実行中のフラグ（inHotPlug）は、従来のまま。
+        /// デバイスの着脱（ホットプラグ）。カウンターのロックと、実行中のフラグ（inHotPlug）は、従来のまま。
         /// </summary>
         private void HandleDeviceChange(IntPtr wParam)
         {
@@ -1117,7 +1115,7 @@ namespace DS4Windows.UI
             bool result = Util.RegisterNotify(source.Handle, mainWinVM.HidClassGuid, ref regHandle);
             if (!result)
             {
-                Application.Current.Shutdown();   // Phase14b-Step16: 旧 App.Current（同じもの）
+                Application.Current.Shutdown();   // 旧 App.Current（同じもの）
             }
 
             // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
@@ -1319,7 +1317,7 @@ namespace DS4Windows.UI
 
         /// <summary>
         /// プロファイル編集画面を開く。
-        /// Phase6-Step7b: 編集は常に作業スロット（Global.TEST_PROFILE_INDEX）に対して行い、保存・適用を押すまで
+        /// 編集は常に作業スロット（Global.TEST_PROFILE_INDEX）に対して行い、保存・適用を押すまで
         /// コントローラーには反映しない。編集スロットは ProfileEditor の内部で決まり、呼び出し元は指定しない。
         /// </summary>
         /// <param name="targetDevice">
@@ -1389,7 +1387,7 @@ namespace DS4Windows.UI
             SyncProfileListAndControllers(oldProfile: profile, newProfile: null);
         }
 
-        // Phase6-Step10-3b-3: アクションの除去・名前変更でプロファイルの XML が書き換わったときも、
+        // アクションの除去・名前変更でプロファイルの XML が書き換わったときも、
         // 保存時と同じ経路（一覧の読み直し＋該当スロットへの再適用）を使う
         private void Editor_ProfilesUpdatedExternally(IReadOnlyList<string> profiles)
         {
@@ -1474,7 +1472,7 @@ namespace DS4Windows.UI
                         string oldProfileName = entity.Name;
                         string newProfileName = renameWin.RenameProfileVM.ProfileName;
                         entity.RenameProfile(newProfileName);
-                        // Phase6-Step10-4-5b: 名前変更を、全スロットの現在のプロファイル名・リンクプロファイルへ反映し、再適用する
+                        // 名前変更を、全スロットの現在のプロファイル名・リンクプロファイルへ反映し、再適用する
                         // （従来はファイルと一覧の名前だけを変えていたため、サービスの再開後に Selected Profile が空欄になった）
                         if (string.Equals(entity.Name, newProfileName, StringComparison.Ordinal) &&
                             !string.Equals(oldProfileName, newProfileName, StringComparison.Ordinal))

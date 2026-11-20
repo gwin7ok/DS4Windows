@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="IGyroMouseStickBlender"/> の実装（DI の Singleton。状態は持たない）。
+    /// <see cref="IGyroMouseStickBlender"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.TempMouseJoystick</c> の内側（出力スティックの X／Y それぞれで、ジャイロ由来の値と通常のスティックの値のうち中心から遠い方を採る）を、そのまま移したもの。
     /// 値の特性化は <c>Phase9BGyroMouseStickBlenderTests</c> が守る。
     /// </summary>

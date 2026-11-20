@@ -5,7 +5,7 @@ using System;
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase12-Step2 2i: マウスの位置にあるトップレベルのウィンドウ 1 つ（ターゲットマークのドラッグ＆ドロップで取得する）。
+    /// マウスの位置にあるトップレベルのウィンドウ 1 つ（ターゲットマークのドラッグ＆ドロップで取得する）。
     /// <see cref="WindowCandidate"/>（照合用に小文字化）と違い、画面の入力欄へ入れるため、パス・タイトルとも元の大文字小文字のまま持つ。
     /// </summary>
     public class CapturedWindow

@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W2（Phase8-Step4b-Plan.md §3.2）: 全般・ライトバー・振動・バッテリー・タッチパッドのジッター補正（<c>touchToggle</c>〜<c>touchpadJitterCompensation</c>）の読込。
+    /// 全般・ライトバー・振動・バッテリー・タッチパッドのジッター補正（<c>touchToggle</c>〜<c>touchpadJitterCompensation</c>）の読込。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileGeneralLoadSection : IProfileLoadSection

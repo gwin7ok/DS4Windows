@@ -32,7 +32,7 @@ namespace DS4Windows.Core.Persistence.Dto
         [XmlElement("Action")] // Use XmlElement here to skip container element
         public List<SpecialActionSerializer> actionSerializers;
 
-        /// <summary>Phase10-Step4d W2: <see cref="MapTo"/> で、ID のない（または形式が不正な）SA に、新しい ID を割り当てたか。</summary>
+        /// <summary><see cref="MapTo"/> で、ID のない（または形式が不正な）SA に、新しい ID を割り当てたか。</summary>
         [XmlIgnore]
         public bool AssignedNewIds { get; private set; }
 
@@ -66,7 +66,7 @@ namespace DS4Windows.Core.Persistence.Dto
                         actionSerializer.Delay = action.delayTime;
                         break;
                     case SpecialAction.ActionTypeId.FocusWindow:
-                        // Phase12-Step2 2c（R-4）: Details＝プログラムのパス、WindowTitle＝ウィンドウタイトル。古いバージョンは、未知の種別の項目として読み飛ばす（実行されない）
+                        // Details＝プログラムのパス、WindowTitle＝ウィンドウタイトル。古いバージョンは、未知の種別の項目として読み飛ばす（実行されない）
                         actionSerializer.Name = action.name;
                         actionSerializer.Trigger = action.controls;
                         actionSerializer.TypeString = action.type;
@@ -88,7 +88,7 @@ namespace DS4Windows.Core.Persistence.Dto
                         actionSerializer.Name = action.name;
                         actionSerializer.Trigger = action.controls;
                         actionSerializer.TypeString = action.type;
-                        // Phase10-Step1 W4（実機確認で発見。以前からの不具合）: action.details は、コンストラクターが「Scan Code」を除いたキーの値だけ
+                        // action.details は、コンストラクターが「Scan Code」を除いたキーの値だけ
                         // （keyType の ScanCode ビットに移してある）。そのまま書くと、Scan Code が Actions.xml に残らず、開き直すと外れていた。
                         // 読み込み側（SpecialAction のコンストラクター）は、Details に「Scan Code」を含めば ScanCode を立てる（元の DS4Windows と同じ書式）
                         actionSerializer.Details = action.keyType.HasFlag(DS4KeyType.ScanCode) ? action.details + " Scan Code" : action.details;
@@ -107,7 +107,7 @@ namespace DS4Windows.Core.Persistence.Dto
                         actionSerializer.Trigger = action.controls;
                         actionSerializer.TypeString = "Button";
                         actionSerializer.Details = action.details;
-                        // Phase6-Step10-3c: SwitchMode（Press／Toggle）を保存する（Key と同じ。従来は書き出していなかった）
+                        // SwitchMode（Press／Toggle）を保存する（Key と同じ。従来は書き出していなかった）
                         if (!string.IsNullOrEmpty(action.extra))
                         {
                             string[] btnExts = action.extra.Split('\n');
@@ -223,7 +223,7 @@ namespace DS4Windows.Core.Persistence.Dto
 
                         break;
                         case "Button":
-                            // Phase6-Step10-3c: SwitchMode（Press／Toggle）を読み込む。無い場合は従来どおり Press
+                            // SwitchMode（Press／Toggle）を読み込む。無い場合は従来どおり Press
                             tempAction = new SpecialAction(actionSerializer.Name,
                                 actionSerializer.Trigger, actionSerializer.TypeString,
                                 actionSerializer.Details, 0,
@@ -266,7 +266,7 @@ namespace DS4Windows.Core.Persistence.Dto
                             actionSerializer.Extras);
                         break;
                     case "SASteeringWheelEmulationCalibrate":
-                        // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（tempAction は null のまま＝一覧に入らない。次の保存でファイルから消える）
+                        // 廃止した種別。読み込まずに取り除く（tempAction は null のまま＝一覧に入らない。次の保存でファイルから消える）
                         AppLogger.Log(AppLogLevel.Info, string.Format(DS4Windows.Properties.Resources.ObsoleteAssignmentRemovedSpecialAction, "SASteeringWheelEmulationCalibrate", actionSerializer.Name), LogOptions.UserFacing);
                         break;
                     case "GyroCalibration":
@@ -280,14 +280,14 @@ namespace DS4Windows.Core.Persistence.Dto
 
                 if (tempAction != null)
                 {
-                    // Phase10-Step4d W2: ファイルの ID を引き継ぐ。ない（古いファイル）・形式が不正なら、SpecialAction が作った新しい ID のままにして、呼び出し側へ知らせる
+                    // ファイルの ID を引き継ぐ。ない（古いファイル）・形式が不正なら、SpecialAction が作った新しい ID のままにして、呼び出し側へ知らせる
                     if (tempAction.typeID == SpecialAction.ActionTypeId.Profile && !string.IsNullOrEmpty(actionSerializer.ProfileId))
                         tempAction.profileId = actionSerializer.ProfileId;   // Phase10-Step4d W3
 
-                    // Phase10-Step6 I5a: SA に付けた Extras。ない（古いファイル）・空白だけのときは、付けない
+                    // SA に付けた Extras。ない（古いファイル）・空白だけのときは、付けない
                     if (!string.IsNullOrWhiteSpace(actionSerializer.OutputExtras)) tempAction.outputExtras = actionSerializer.OutputExtras.Trim();
 
-                    // Phase10-Step6 後の Step5: アナログな出力の強さ。ない（古いファイル）ときは 100。範囲外は 0〜100 に丸める
+                    // アナログな出力の強さ。ない（古いファイル）ときは 100。範囲外は 0〜100 に丸める
                     if (tempAction.typeID == SpecialAction.ActionTypeId.Button)
                         tempAction.analogStrength = Math.Max(0, Math.Min(100, actionSerializer.Strength));
 

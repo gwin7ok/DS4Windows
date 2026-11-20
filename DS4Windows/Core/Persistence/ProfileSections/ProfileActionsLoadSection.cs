@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W5（Phase8-Step4b-Plan.md §3.2）: スペシャルアクションの割り当て（ProfileActions）の読込と、アクションの辞書の作り直し。Step5 が組み立ての入力に使う節のため、単独のクラスにする。
+    /// スペシャルアクションの割り当て（ProfileActions）の読込と、アクションの辞書の作り直し。Step5 が組み立ての入力に使う節のため、単独のクラスにする。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileActionsLoadSection : IProfileLoadSection
@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 {
                     string[] actionNames = Item.InnerText.Split('/');
 
-                    // Phase10-Step4d W3: <ProfileActionIds>（名前の一覧と同じ並びの SA の固定 ID）があれば、ID を主にして、現在の名前に引き直す
+                    // <ProfileActionIds>（名前の一覧と同じ並びの SA の固定 ID）があれば、ID を主にして、現在の名前に引き直す
                     // （SA の名前変更に追従する。ID が勝つ）。ない（古いファイル）・並びが合わない・SA が見つからないときは、名前のまま
                     string[] actionIds = null;
                     try

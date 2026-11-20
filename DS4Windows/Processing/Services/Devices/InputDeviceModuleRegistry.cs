@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
-    /// Phase9 9-E E-6c: <see cref="IInputDeviceModuleRegistry"/> の実装（DI の Singleton）。DI に登録された <see cref="IInputDeviceModule"/> の全部を受け取り、
+    /// <see cref="IInputDeviceModuleRegistry"/> の実装（DI の Singleton）。DI に登録された <see cref="IInputDeviceModule"/> の全部を受け取り、
     /// 種類から最初に <see cref="IInputDeviceModule.Handles"/> が true の部品を返す。なければ <see cref="NullInputDeviceModule"/>。
     /// </summary>
     public sealed class InputDeviceModuleRegistry : IInputDeviceModuleRegistry

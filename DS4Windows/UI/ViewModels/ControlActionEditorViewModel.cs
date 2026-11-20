@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3）: 共通の編集画面の、Controls のモードの ViewModel。割り当てを編集する対象のボタン 1 つについて、
+    /// 共通の編集画面の、Controls のモードの ViewModel。割り当てを編集する対象のボタン 1 つについて、
     /// 名前（ボタンの表示名。編集不可）、トリガー（そのボタンだけ。変更不可）、種別の一覧（Controls で現在保存できるものだけ有効）を持つ。
     /// SA のモードは <see cref="SpecialActEditorViewModel"/>。
     /// <para>
@@ -21,7 +21,7 @@ namespace DS4Windows.UI.ViewModels
         {
         }
 
-        /// <summary>Phase10-Step2 W4: 対象のボタンの設定（編集用のコピー）との変換つき。</summary>
+        /// <summary>対象のボタンの設定（編集用のコピー）との変換つき。</summary>
         public ControlActionEditorViewModel(int deviceNum, ControlSettingsEditTarget target)
             : this(deviceNum, (target ?? throw new System.ArgumentNullException(nameof(target))).Control, target)
         {

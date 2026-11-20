@@ -30,7 +30,7 @@ namespace DS4Windows.UI.ViewModels
 {
     public class LanguagePackViewModel
     {
-        // Phase7-Step10d W2: 旧 Global.PROBING_PATH／LANGUAGE_ASSEMBLY_NAME（利用はこのクラスのみ）。
+        // 旧 Global.PROBING_PATH／LANGUAGE_ASSEMBLY_NAME（利用はこのクラスのみ）。
         // Need to add additional probing path in code starting with .NET 6.
         private const string ProbingPath = "Lang";
         private const string LanguageAssemblyName = "DS4Windows.resources.dll";
@@ -54,7 +54,7 @@ namespace DS4Windows.UI.ViewModels
         public event EventHandler SelectedIndexChanged;
         public event EventHandler ScanFinished;
 
-        // Phase6-Step10-1-4: Global.UseLang の置換先（必須引数。null は拒否する）
+        // Global.UseLang の置換先（必須引数。null は拒否する）
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
 
         public LanguagePackViewModel(DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService)

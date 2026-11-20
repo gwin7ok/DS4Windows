@@ -11,7 +11,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// Phase9 9-E E-6b（Phase9-E6-Plan.md）: <see cref="IDeviceConnectionSetup"/> の実装（DI の Singleton。状態なし）。
+    /// <see cref="IDeviceConnectionSetup"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService</c> の <c>CheckProfileOptions</c>／<c>CheckLauchProfileOption</c>／<c>SetupInitialHookEvents</c>／<c>TouchPadOn</c> を、そのまま移したもの
     /// （<c>touchPad[ind]</c> は引数で受ける。<c>TouchPadOn</c> のイベントは、旧コードと同じく、発火のたびに配列から引き直す）。
     /// DualSense の振動設定の枝は、E-6c で種類ごとの部品（<c>IInputDeviceModule</c>）へ移した。
@@ -41,7 +41,7 @@ namespace DS4Windows.Processing.Services.Connection
 
         public void ApplyProfileOptions(int ind, InputDeviceCore device, TouchpadMouse touchPad, bool startUp = false)
         {
-            // Phase11 W6c（K-W6-12。D2＝案 B）: 書く状態から書かない状態（OFF）へ変わるときは、フラグを立てる前に、消灯・振動ゼロを 1 度だけ書く
+            // 書く状態から書かない状態（OFF）へ変わるときは、フラグを立てる前に、消灯・振動ゼロを 1 度だけ書く
             // （同じプロファイルの再適用でも、OFF の結果が見える。フラグ後は何も書かれず、パッドが最後の色を保持するため）
             if (!_profileSettings.GetEnableOutputDataToDS4(ind))
                 device.WriteOutputOffOnce();
@@ -70,7 +70,7 @@ namespace DS4Windows.Processing.Services.Connection
             device.setRumble(0, 0);
             device.LightBarColor = _profileSettings.GetMainColor(ind);
 
-            // 種類ごとの設定（DualSense の振動エミュレーションと触覚の強さ）は、種類ごとの部品（Phase9 9-E E-6c）が反映する
+            // 種類ごとの設定（DualSense の振動エミュレーションと触覚の強さ）は、種類ごとの部品が反映する
             _deviceModules.Resolve(device.DeviceType).ApplyProfileOptions(device, ind, _profileSettings);
 
             if (!startUp)
@@ -81,9 +81,8 @@ namespace DS4Windows.Processing.Services.Connection
 
         public void WireInitialHooks(int ind, InputDeviceCore device)
         {
-            _udpMotion.ResetSmoothingFilters(ind);   // Phase9 9-E E-3: 旧 ResetUdpSmoothingFilters
+            _udpMotion.ResetSmoothingFilters(ind);   // 旧 ResetUdpSmoothingFilters
 
-            // Phase9 Steering 削除 W2: 旧「ステアリング用のフィルター（OneEuroFilter）の作成と、設定［スムージング］との連動」は削除した（機能ごと削除）
 
             FlickStickSettings flickStickSettings = _profileSettings.ForSlot(ind).Sticks.LSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();

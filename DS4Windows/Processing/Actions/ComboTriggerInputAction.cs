@@ -5,7 +5,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step3 W3: 1 つ以上のボタンの AND 条件で成立するトリガー（Phase8-Step2-Design.md §4。D2＝B1: Controls タブとスペシャルアクションの両方を扱う汎用クラス）。
+    /// 1 つ以上のボタンの AND 条件で成立するトリガー（Phase8-Step2-Design.md §4。D2＝B1: Controls タブとスペシャルアクションの両方を扱う汎用クラス）。
     /// 判定は、現行の <c>Mapping.MapCustomAction</c> の分岐 A（<c>delayTime</c> つき）と分岐 C（標準。Macro の <c>RunOnRelease</c> を含む）と同じ意味
     /// （Phase8-Step2-Intent-Decisions.md 項目 2。タップ判定の分岐 B は移植しない［項目 3］）。
     /// <list type="bullet">

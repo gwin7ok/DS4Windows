@@ -32,7 +32,7 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class AutoProfiles : UserControl
     {
-        // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
+        // 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、AutoProfileHolder を読む前に 1 回だけ呼ぶ）。
         // 列幅の読み書きは、設定を持つ MainWindow が関数で渡す（View は設定のサービスを参照しない）
         private Func<(int name, int path, int title)> loadColumnWidths;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 共通の編集画面の、トリガーの供給元。SA のモード（<see cref="SpecialActionTriggerSource"/>）は、
+    /// 共通の編集画面の、トリガーの供給元。SA のモード（<see cref="SpecialActionTriggerSource"/>）は、
     /// 複数のボタンの組み合わせを、選んで変えられる。Controls のモード（W3 で追加）は、対象のボタン 1 つに固定で、変えられない。
     /// トリガーは、従来どおり、名前（<c>DS4ControlNames</c> の名前。例: <c>Cross</c>、<c>L2 Full Pull</c>）の文字列で表す（Actions.xml の書式）。
     /// </summary>

@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 編集画面の種別の一覧。並び・種別の ID は、従来の <c>SpecialActEditorViewModel.typeAssoc</c>
+    /// 編集画面の種別の一覧。並び・種別の ID は、従来の <c>SpecialActEditorViewModel.typeAssoc</c>
     /// （と、<c>AssignmentEditor.xaml</c> のドロップダウンの項目の並び）と同じ。画面の添字（<c>ActionTypeIndex</c>）と種別の ID の、相互変換を担う。
     /// 状態を持たない（不変）。
     /// </summary>
@@ -15,17 +15,17 @@ namespace DS4Windows.UI.ViewModels
         private readonly SpecialAction.ActionTypeId[] typeIds;
 
         /// <summary>
-        /// Phase10-Step3: Controls のモードの項目「Default」（既定の割り当て）の添字。足していない一覧（SA のモード）では -1。
+        /// Controls のモードの項目「Default」（既定の割り当て）の添字。足していない一覧（SA のモード）では -1。
         /// </summary>
         public int DefaultIndex { get; }
 
         /// <summary>
-        /// Phase10-Step3: Controls のモードの項目「Unbound」（Button の Unbound。出力先がない）の添字。足していない一覧（SA のモード）では -1。
+        /// Controls のモードの項目「Unbound」（Button の Unbound。出力先がない）の添字。足していない一覧（SA のモード）では -1。
         /// </summary>
         public int UnboundIndex { get; }
 
         /// <param name="includeControlOnlyItems">
-        /// Phase10-Step3: <c>true</c>（Controls のモード）のとき、末尾に「Default」（添字 10）と「Unbound」（添字 11）の項目を足す。出力ピッカーの
+        /// <c>true</c>（Controls のモード）のとき、末尾に「Default」（添字 10）と「Unbound」（添字 11）の項目を足す。出力ピッカーの
         /// Default／Unbound ボタンと同じ設定を、種別の一覧から選べるようにするため。画面は、これらの項目の表示・非表示だけで、モードごとの入力を制限する
         /// （Controls のモードでは、添字 0 の「種別を選んでください」を隠し、SA のモードでは、足した 2 項目を隠す。検証は、モードを区別しない）。
         /// 足さない一覧（SA のモード、既定）は、従来の <c>typeAssoc</c> と同じ並び。
@@ -69,7 +69,7 @@ namespace DS4Windows.UI.ViewModels
                 typeIds[i] = descriptors[i].TypeId;
         }
 
-        // Phase10-Step6 I6b: SA 専用の種別が Controls で保存できるかは、規則の表（ControlsSpecialTypeTable。実行時に束縛が作られる種別）に従う（以前は、ここに直書きしていた）
+        // SA 専用の種別が Controls で保存できるかは、規則の表（ControlsSpecialTypeTable。実行時に束縛が作られる種別）に従う（以前は、ここに直書きしていた）
         private static ActionEditorModes ControlsSavable(SpecialAction.ActionTypeId type)
             => DS4Windows.Processing.Actions.ControlsSpecialTypeTable.IsSupported(type) ? ActionEditorModes.Both : ActionEditorModes.SpecialAction;
 

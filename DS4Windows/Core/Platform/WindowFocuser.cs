@@ -7,12 +7,12 @@ using DS4Windows.Core.Logging;
 namespace DS4Windows.Core.Platform
 {
     /// <summary>
-    /// Phase12-Step2 2b-2（R-4）: <see cref="IWindowFocuser"/> の実装。手順は AutoHotkey の <c>SetForegroundWindowEx</c> を参考にした
-    /// （Phase12-Step2-Plan.md §5b）:
+    /// <see cref="IWindowFocuser"/> の実装。手順は AutoHotkey の <c>SetForegroundWindowEx</c> を参考にした
+    ///:
     /// ①対象を探す（Z 順で最初に一致した 1 つ）→ ②応答なしなら失敗 → ③最小化なら復元 → ④すでに前面なら成功 →
     /// ⑤素の前面化を 1 回 → ⑥入力を結び付けて最大 5 回（初回の前に Alt の解放を 1 回送る）→ ⑦なお失敗なら Alt の押下・解放を 2 回送って再試行 →
     /// ⑧成功なら最上位へ。管理者権限のウィンドウなど、前面化できないものは、警告ログを出して <see cref="WindowFocusResult.Failed"/> を返す。
-    /// <para>ログは Log-Policy.md に従う（旧 API。汎用 Log への集約は Phase13b）。</para>
+    /// <para>ログは Log-Policy.md に従う。</para>
     /// </summary>
     public class WindowFocuser : IWindowFocuser
     {

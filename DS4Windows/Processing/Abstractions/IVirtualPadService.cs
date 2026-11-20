@@ -8,7 +8,7 @@ using DS4Windows.Output;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-4（Phase9-E-Plan.md）: 仮想パッド（Xbox 360／DS4。ViGEmBus 経由）の出力。
+    /// 仮想パッド（Xbox 360／DS4。ViGEmBus 経由）の出力。
     /// 以前は <c>ControlService</c> の仮想パッド系のメンバー（ViGEm クライアントの生成・破棄、仮想パッドの作成、振動・ライトバーの戻り、デバイスへの割り当て・取り外し、
     /// 入力に紐づかない仮想パッドの抜き差し、スロット管理 <c>OutputSlotManager</c>、出力デバイスの配列）だった。
     /// <c>ControlService.PluginOutDev</c>／<c>UnplugOutDev</c>／<c>OutputslotMan</c>／<c>outputDevices</c> は、窓口として残す（呼び出し側は 9-F まで変えない）。
@@ -16,7 +16,7 @@ namespace DS4Windows.Processing.Abstractions
     /// </summary>
     public interface IVirtualPadService
     {
-        /// <summary>仮想パッドのスロット管理（旧: <c>ControlService.OutputslotMan</c>）。</summary>
+        /// <summary>仮想パッドのスロット管理。</summary>
         OutputSlotManager OutputSlotManager { get; }
 
         /// <summary>入力デバイスのスロット <paramref name="index"/> に、出力デバイス（仮想パッド）が割り当てられているか。</summary>
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>出力スロットの状態を文字列で返す（IPC の問い合わせ用）。</summary>
         string DescribeSlot(int slot, OutputSlotInfoKind kind);
 
-        /// <summary>ViGEm のクライアントが生成できているか（旧: <c>vigemTestClient != null</c>）。</summary>
+        /// <summary>ViGEm のクライアントが生成できているか。</summary>
         bool HasViGEmClient { get; }
 
         /// <summary>ViGEm のクライアントを生成する（対応する ViGEmBus が動いているとき。別スレッドで生成し、完了まで待つ）。</summary>

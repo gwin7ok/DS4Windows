@@ -9,7 +9,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Synthetic
 {
     /// <summary>
-    /// Phase7-Step7 W2（Q2＝A）: 合成キー・マウス入力の状態の保持クラス（旧: <c>Mapping</c> の静的フィールド <c>globalState</c>／<c>deviceState</c>／<c>syncStateLock</c>）。
+    /// 合成キー・マウス入力の状態の保持クラス。
     /// <c>Mapping</c>（<c>Commit</c> ほか）、<c>SyntheticDispatcher</c>、<c>ActionsLoadedRuntimeReset</c> が使う。
     /// 配列の参照は再代入しない（要素の差し替えのみ。<c>GlobalState</c> は読み込み後のリセットで差し替える）。要素の読み書きにロックはない（従来どおり）。
     /// </summary>
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Synthetic
         }
 
         /// <summary>
-        /// Phase7-Step8 W1: 旧 <c>Mapping.MapClick</c>。このティックで押されたマウスボタンの回数を数える（<c>Commit</c> が前ティックとの差で押下／解放を送る）。
+        /// 旧 <c>Mapping.MapClick</c>。このティックで押されたマウスボタンの回数を数える（<c>Commit</c> が前ティックとの差で押下／解放を送る）。
         /// 配列の要素を更新するだけで、割り当てはない。
         /// </summary>
         public void CountClick(int device, Click mouseClick)
@@ -61,7 +61,7 @@ namespace DS4Windows.Processing.Synthetic
         }
 
         /// <summary>
-        /// Phase7-Step8 W1: 旧 <c>Mapping.ResetRuntimeStateForKey</c>。キー型スペシャルアクションの保存直後に、当該キーの合成キーの記録と
+        /// 旧 <c>Mapping.ResetRuntimeStateForKey</c>。キー型スペシャルアクションの保存直後に、当該キーの合成キーの記録と
         /// トグル状態を全デバイスから消す（古い合成キューや押下フラグの残留を防ぐ）。ログは従来どおり。
         /// </summary>
         public void ResetRuntimeStateForKey(ushort key, DS4Windows.Processing.Actions.IManagedActionManager actionManager)
@@ -79,7 +79,7 @@ namespace DS4Windows.Processing.Synthetic
                         DeviceState[d].nativeKeyAlias.Remove(key);
                 }
 
-                // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）。Phase13-Step4: 管理役は引数で受ける（旧: 静的 ActionManager）
+                // 押下済みフラグをクリア（ActionManager が持つ IsToggledOn）。Phase13-Step4: 管理役は引数で受ける
                 try { actionManager?.ClearToggledOnForKey(key); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
 
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Synth_StateCleared", key);

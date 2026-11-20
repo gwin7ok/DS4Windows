@@ -15,7 +15,7 @@ namespace DS4Windows.Processing.Actions
         public IVirtualKBM OutputHandler { get; }
         public IFrameOutput Frame { get; }
 
-        /// <summary>Phase8-Step4 W1: <see cref="RequestEndFrame"/> が呼ばれたか。</summary>
+        /// <summary><see cref="RequestEndFrame"/> が呼ばれたか。</summary>
         public bool EndFrameRequested { get; private set; }
 
         public void RequestEndFrame()

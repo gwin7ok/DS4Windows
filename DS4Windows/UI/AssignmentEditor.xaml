@@ -35,7 +35,7 @@
                                             <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
                                         </Style>
                                     </GridViewColumn.HeaderContainerStyle>
-                                    <!-- Phase10-Step2 W2: トリガーの行は、TriggerOptions（TriggerCatalog の 49 項目）から作る。旧: 名前つきのチェックボックス 49 個 -->
+                                    <!-- トリガーの行は、TriggerOptions（TriggerCatalog の 49 項目）から作る。旧: 名前つきのチェックボックス 49 個 -->
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <CheckBox Content="{Binding Label}" IsChecked="{Binding IsSelected}" IsEnabled="{Binding IsEnabled}" />
@@ -64,7 +64,7 @@
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.MultiAction}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CalibrateGyro}" />
                         <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindow}" />
-                        <!-- Phase10-Step3: Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
+                        <!-- Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
                         <ComboBoxItem x:Name="defaultTypeItem" Content="{lex:Loc Default}" />
                         <ComboBoxItem x:Name="unboundTypeItem" Content="{lex:Loc Unbound}" />
                     </ComboBox>
@@ -78,7 +78,7 @@
                                 <Button x:Name="recordMacroBtn" Content="{lex:Loc SpecialActionEdit.RecordMacro}"
                                         Tag="{Binding MacroElements,Mode=OneWay,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}"
                                         Command="{Binding Session.RecordMacroCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-                                <!-- Phase10-Step1 W3: Execute Mode（Play Once／Repeat While Held／Repeat (Toggle)）と Scan Code は、共通部品 -->
+                                <!-- Execute Mode（Play Once／Repeat While Held／Repeat (Toggle)）と Scan Code は、共通部品 -->
                                 <local:MacroPlaybackOptionsPanel DataContext="{Binding PlaybackOptions}" ScanCodeAlignment="Left"
                                                                  HorizontalAlignment="Left" Width="200" Margin="{StaticResource spaceMargin}" />
                                 <CheckBox x:Name="runTriggerReleaseChk" Content="{lex:Loc SpecialActionEdit.RunTriggerRelease}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding RunTriggerRelease}" IsEnabled="{Binding CanRunTriggerRelease}" />
@@ -94,7 +94,7 @@
                                     <xctk:DecimalUpDown Value="{Binding Delay}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                     <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                                 </StackPanel>
-                                <!-- Phase10-Step4c W3: 必須の値がないエラー（パスが空）は、赤い枠で示す（名前欄・トリガー欄と同じ仕組み）。ファイルが存在しない警告も、同じ枠で示す（保存は止めない） -->
+                                <!-- 必須の値がないエラー（パスが空）は、赤い枠で示す（名前欄・トリガー欄と同じ仕組み）。ファイルが存在しない警告も、同じ枠で示す（保存は止めない） -->
                                 <Button x:Name="launchProgBrowseBtn" Content="{lex:Loc Browse}" Margin="{StaticResource spaceMargin}"
                                         Tag="{Binding Filepath,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
                                         Command="{Binding BrowseCommand}" />
@@ -150,10 +150,10 @@
                                         <ComboBoxItem Content="{lex:Loc Toggle}" />
                                     </ComboBox>
                                 </StackPanel>
-                                <!-- Phase10-Step1 W4: Scan Code は、選択ダイアログではなく、この画面で設定する -->
+                                <!-- Scan Code は、選択ダイアログではなく、この画面で設定する -->
                                 <CheckBox Content="{lex:Loc ScanCode}" IsChecked="{Binding UseScanCode}" IsEnabled="{Binding IsScanCodeEnabled}"
                                           Margin="0,0,0,6" />
-                                <!-- Phase10-Step4c W3: キーが未選択のエラーは、赤い枠で示す -->
+                                <!-- キーが未選択のエラーは、赤い枠で示す -->
                                 <Button x:Name="pressKeySelectBtn" Content="{Binding DescribeText,FallbackValue={lex:Loc SpecialActionEdit.SelectKey}}"
                                         Tag="{Binding Value,Mode=OneWay,ValidatesOnNotifyDataErrors=True}"
                                         Margin="{StaticResource spaceMargin}" Click="PressKeySelectBtn_Click" />
@@ -231,7 +231,7 @@
                                 <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                             </StackPanel>
                         </TabItem>
-                        <!-- Phase12-Step2 2e（R-4）: ウィンドウのフォーカス。対象はプログラムのパスとウィンドウタイトル（Auto-Profile と同じ書式）。両方が空は保存できない -->
+                        <!-- ウィンドウのフォーカス。対象はプログラムのパスとウィンドウタイトル（Auto-Profile と同じ書式）。両方が空は保存できない -->
                         <TabItem x:Name="focusWindowTab" Header="{lex:Loc SpecialActionEdit.FocusWindow}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
@@ -242,12 +242,12 @@
                                 <local:WindowTargetEditor x:Name="focusWindowTarget" Path="{Binding WindowPath, ValidatesOnNotifyDataErrors=True}"
                                                           Title="{Binding TitleText, ValidatesOnNotifyDataErrors=True}"
                                                           TitleMatchMode="{Binding TitleMatchMode}" />
-                                <!-- Phase12-Step2 2j: 前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する -->
+                                <!-- 前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する -->
                                 <CheckBox Content="{lex:Loc SpecialActionEdit.FocusWindowCenterCursor}" Margin="0,8,0,0"
                                           IsChecked="{Binding CenterCursor}" />
                             </StackPanel>
                         </TabItem>
-                        <!-- Phase10-Step3: 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->
+                        <!-- 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->
                         <TabItem x:Name="defaultActTab" Header="">
                         </TabItem>
                         <TabItem x:Name="unboundActTab" Header="">

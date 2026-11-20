@@ -5,10 +5,10 @@ namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// プリセット（プロファイル編集画面の「プリセット」）の読み込み。
-    /// Phase6-Step10-2（決定 E2＝A）: <c>PresetOption</c> が <c>Global.Load…Profile</c> を直接呼んでいたため、
+    /// <c>PresetOption</c> が <c>Global.Load…Profile</c> を直接呼んでいたため、
     /// プリセットの関心事を 1 つの契約にまとめて置き換える。いずれも <c>Global</c> の同名メソッドへの薄い委譲
     /// （既定のスペシャルアクションの作成・一時プロファイル名のクリアを含む）。
-    /// Phase7-Step3c W2: 実装は旧 <c>Global.Load…Profile</c> の処理を <c>ProfilePresetLoader</c> に移した（<c>BackingStore</c> と
+    /// 実装は旧 <c>Global.Load…Profile</c> の処理を <c>ProfilePresetLoader</c> に移した（<c>BackingStore</c> と
     /// <c>IProfileSettingsService</c> を注入で受ける）。重複していた <c>IProfileRepository.LoadBlankProfile</c> は契約から削除した。
     /// 引数: <c>launchProgram</c>＝読み込み後にプログラムを起動するか、<c>xinputChange</c>＝出力デバイスの種類の変更を反映するか、
     /// <c>postLoad</c>＝読み込み後にデバイス設定を反映するか。

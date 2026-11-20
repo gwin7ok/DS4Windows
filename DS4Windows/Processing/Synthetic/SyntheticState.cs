@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace DS4Windows.Processing.Synthetic
 {
-    // Phase7-Step7 W2: 旧 Mapping.SyntheticState（入れ子の型）をトップレベルへ移した（Q5＝A。中身は変えていない）。
     /*
      * Represent the synthetic keyboard and mouse events.  Maintain counts for each so we don't duplicate events.
      */

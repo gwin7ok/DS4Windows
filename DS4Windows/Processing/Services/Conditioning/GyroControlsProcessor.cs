@@ -7,7 +7,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-A(2)-A（Phase9-A2-Plan.md）: <see cref="IGyroControlsProcessor"/> の実装（DI の Singleton。状態は持たない）。
+    /// <see cref="IGyroControlsProcessor"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.SetCurveAndDeadzone</c> の「ジャイロ → コントロール」の X（SX）の処理を、そのまま移したもの
     /// （Z［SZ］のコードは、名前以外は同じだったため、統合した。出力カーブを適用する条件の違い［Z だけ <c>outputAccelZ != 0</c>］は、呼び出し側に残した。計算結果は変わらない）。
     /// 値の特性化は <c>Phase9A2GyroControlsGoldenTests</c> が守る。

@@ -6,7 +6,7 @@ using DS4Windows.Input;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-6b（Phase9-E6-Plan.md）: コントローラーをスロットへつなぐときの、プロファイルの設定のデバイスへの反映と、イベントの配線。
+    /// コントローラーをスロットへつなぐときの、プロファイルの設定のデバイスへの反映と、イベントの配線。
     /// 以前は <c>ControlService.CheckProfileOptions</c>／<c>CheckLauchProfileOption</c>／<c>SetupInitialHookEvents</c>／<c>TouchPadOn</c> だった。
     /// <c>ControlService</c> の <c>CheckProfileOptions</c>／<c>TouchPadOn</c> は、外部の呼び出し（BackingStore）があるため、薄い委譲として残す。
     /// </summary>

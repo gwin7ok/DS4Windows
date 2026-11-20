@@ -128,14 +128,14 @@ namespace DS4Windows.Core.Settings
         public const double DEFAULT_TRACKBALL_FRICTION = 10.0;
 
         // Stick output curve consts in place more as a precaution
-        // Phase7-Step10b W4: DEFAULT_STICK_OUTPUT_CURVE／_ID、DEFAULT_SA_OUTPUT_CURVE／_ID は削除した（廃止済みの ProfileDTO の既定値の残骸。参照 0 件）。
+        // DEFAULT_STICK_OUTPUT_CURVE／_ID、DEFAULT_SA_OUTPUT_CURVE／_ID は削除した（廃止済みの ProfileDTO の既定値の残骸。参照 0 件）。
 
         public String m_Profile = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName + "\\Profiles.xml";
         public String m_Actions = PathService.AppDataPathState + "\\Actions.xml";
         public string m_linkedProfiles = PathService.AppDataPathState + "\\LinkedProfiles.xml";
         public string m_controllerConfigs = PathService.AppDataPathState + "\\ControllerConfigs.xml";
 
-        // Phase7-Step10c W5: 作業用の XmlDocument（m_Xdoc）は、読み書きを担う各シリアライザーが自分のフィールドとして持つ。BackingStore からは削除した。
+        // 作業用の XmlDocument（m_Xdoc）は、読み書きを担う各シリアライザーが自分のフィールドとして持つ。BackingStore からは削除した。
         // ninth (fifth in old builds) value used for options, not last controller
         public ButtonMouseInfo[] buttonMouseInfos = new ButtonMouseInfo[ControllerLimits.TestProfileItemCount]
         {
@@ -150,7 +150,7 @@ namespace DS4Windows.Core.Settings
         public ProfileSlotNames profilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames olderProfilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames selectedProfile = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
-        // Phase10-Step4d W5b: 上の 3 つ（現在・直前・選択のプロファイル）は、保管がプロファイルの固定 ID で、名前を読み書きする窓口（ProfileSlotNames）。
+        // 上の 3 つ（現在・直前・選択のプロファイル）は、保管がプロファイルの固定 ID で、名前を読み書きする窓口（ProfileSlotNames）。
         // 登録簿は、DI の登録が結ぶ（登録簿が BackingStore に依存しない向き）。結ばなければ、名前の控えだけで、従来の配列と同じに動く
         public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService identity)
         {
@@ -161,10 +161,10 @@ namespace DS4Windows.Core.Settings
             linkedProfiles.AttachIdentity(identity);
         }
         public ProfileSlotNames linkedProfileUI = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
-        // プロファイル切り替え時の無効アクション名エラーログ抑制用（Phase7-Step3c W3: Global の静的フィールドから移した）
+        // プロファイル切り替え時の無効アクション名エラーログ抑制用
         public HashSet<string> loggedInvalidActions = new HashSet<string>();
         public bool[] firstConnectionAfterStartup = new bool[ControllerLimits.TestProfileItemCount] { true, true, true, true, true, true, true, true, true };
-        public LinkedProfileMap linkedProfiles = new LinkedProfileMap();   // Phase10-Step4d W5d: 値は、プロファイルの名前を読み書きする窓口（保管は ID）
+        public LinkedProfileMap linkedProfiles = new LinkedProfileMap();   // 値は、プロファイルの名前を読み書きする窓口（保管は ID）
         // Cache properties instead of performing a string comparison every frame
         public bool[] distanceProfiles = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
         /// <summary>振動の設定（強さ、自動停止、モーターの入れ替え）の持ち主（スロットごとに 1 つ）。</summary>
@@ -219,7 +219,7 @@ namespace DS4Windows.Core.Settings
         public const int DEFAULT_CHECK_EVERY_UNIT = 1;
         // New explicit startup update-check persistence fields
         public bool checkUpdateStartup = true;
-        // Phase7-Step10b W4: 既定値の出所を DEFAULT_CHECK_EVERY_VALUE／_UNIT に一本化した（値は従来と同じ）
+        // 既定値の出所を DEFAULT_CHECK_EVERY_VALUE／_UNIT に一本化した（値は従来と同じ）
         public int checkEveryValue = DEFAULT_CHECK_EVERY_VALUE; // default 1 day
         public int checkEveryUnit = DEFAULT_CHECK_EVERY_UNIT; // 0=hours,1=days
 
@@ -237,13 +237,13 @@ namespace DS4Windows.Core.Settings
         public bool closeMini = false;
         public List<SpecialAction> actions = new List<SpecialAction>();
         /// <summary>
-        /// Phase8-Step7 7.8d: 廃止された「シフト」機能の設定（プロファイルの &lt;ShiftControl&gt;）を、解釈せずに保持する。スロットごと。
+        /// 廃止された「シフト」機能の設定（プロファイルの &lt;ShiftControl&gt;）を、解釈せずに保持する。スロットごと。
         /// 読込のたびに取り込み直し（<see cref="RemovedShiftSettings.Capture"/>）、保存で、そのまま書き出す（<see cref="RemovedShiftSettings.AppendTo"/>）。
         /// </summary>
         public readonly RemovedShiftSettings[] removedShiftSettings = new RemovedShiftSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>
-        /// Phase8-Step8 8-0（Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定（<c>&lt;GyroSwipeSettings&gt;</c>、<c>&lt;Control&gt;</c> 内の <c>GyroSwipe*</c> の割り当て、
+        /// 廃止された「ジャイロスワイプ」機能の設定（<c>&lt;GyroSwipeSettings&gt;</c>、<c>&lt;Control&gt;</c> 内の <c>GyroSwipe*</c> の割り当て、
         /// ジャイロの出力モード <c>DirectionalSwipe</c>）を、解釈せずに保持する。スロットごと。読込のたびに取り込み直し、保存で、そのまま書き出す。
         /// </summary>
 
@@ -320,7 +320,7 @@ namespace DS4Windows.Core.Settings
         public string fakeExeFileName = string.Empty;
 
 
-        // Phase11 K-W6-10: debouncingMs（デバウンス時間）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
+        // debouncingMs（デバウンス時間）は機能廃止で削除した
 
 
 
@@ -359,20 +359,20 @@ namespace DS4Windows.Core.Settings
 
         bool tempBool = false;
 
-        // Phase7-Step6 W1（Q2＝A）: 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
+        // 旧 Global.activeOutDevType。スロットごとの、現在接続中の出力種別（実体は OutputSlotService が持つ）。
         // ServiceRegistration の IOutputSlotService の登録が、OutputSlotService の生成時に ActiveOutDevType の配列を設定する。
         // 設定前（コンテナ構築前の起動処理、コンテナを通らないテスト）は、全スロット None の既定の配列を読む（接続前は元々 None）。
         // 書き込むのは ControlService だけで、既定の配列は書き換わらない。配列の参照は再代入されない前提で使うこと。
-        // Phase7-Step10d W5: コンストラクター注入にしない理由 → 配列を持つ OutputSlotService は BackingStore の後に作られ、BackingStore の登録側から解決できない（循環）。
+        // コンストラクター注入にしない理由 → 配列を持つ OutputSlotService は BackingStore の後に作られ、BackingStore の登録側から解決できない（循環）。
         public OutContType[] ActiveOutDevType { get; set; } = new OutContType[ControllerLimits.TestProfileItemCount];
 
-        // Phase7-Step10d W5（Q8＝A）: 旧 Global.ProfileSettingsServiceInstance（静的に最初のコンテナの実体を保持していた）の置き換え。
+        // 旧 Global.ProfileSettingsServiceInstance（静的に最初のコンテナの実体を保持していた）の置き換え。
         // 一時プロファイル・DInput のみの配列と、出力 KBM のマッピング（RefreshActionAlias が使う）は ProfileSettingsService が持つ。
         // ProfileSettingsService が BackingStore を受け取る（逆向きの依存）ため、コンストラクターでは渡せない。ProfileSettingsService が
         // 自分の生成時に LinkProfileSettings で登録する（最初の 1 つが有効）。
-        // Phase14b-Step9（決定 D8）: 登録がないまま使われたときのフォールバック（コントローラーを持たない ProfileSettingsService を自分で作る）は撤去した。
-        // 通常の起動では、プロファイルの読込より前に BuildHostAndServices の CreateControlService が DI の ProfileSettingsService を結ぶため通らない
-        // （Phase14b-Plan.md §8.3）。登録がないまま使われたら、組み立ての誤りとして例外にする。テストは明示的に設定する。
+        // 登録がないまま使われたときのフォールバック（コントローラーを持たない ProfileSettingsService を自分で作る）は撤去した。
+        // 通常の起動では、プロファイルの読込より前に BuildHostAndServices の CreateControlService が DI の ProfileSettingsService を結ぶため通らない。
+        // 登録がないまま使われたら、組み立ての誤りとして例外にする。テストは明示的に設定する。
         private readonly object _profileSettingsLock = new object();
         private DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
 
@@ -422,7 +422,7 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        // Phase7-Step10d W5（Q3・Q9＝A）: スロット数の上限は、静的な _environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む。
+        // スロット数の上限は、静的な _environmentService.ControllerSlotLimit ではなく、注入された環境サービスから読む。
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environmentService;
 
         public BackingStore(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
@@ -678,13 +678,13 @@ namespace DS4Windows.Core.Settings
         public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseStickToggle(value, control);
 
 
-        // Phase7-Step10b W1: getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
+        // getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
 
 
         // Legacy Load implementation (formerly LoadOld) will be the canonical Load method below.
 
 
-        // Phase7-Step1 W3: Load() の末尾にあった偽の exe 名の読み込みを切り出した（旧形式の経路と DTO の経路の両方から呼ぶ。処理は同一）
+        // Load() の末尾にあった偽の exe 名の読み込みを切り出した
 
 
         public void PostProcessLoad()
@@ -757,12 +757,12 @@ namespace DS4Windows.Core.Settings
         }
 
 
-        // Phase7-Step7 W2（Q4＝A）: Actions.xml の読み込み（または既定の作成）の後に発行する。BackingStore から Mapping への逆参照をなくすための通知。
+        // Actions.xml の読み込み（または既定の作成）の後に発行する。BackingStore から Mapping への逆参照をなくすための通知。
         // コンテナ構築前の読み込みでは購読者がいないが、その時点では実行時状態は新品であり、結果は同じ。
         public event Action ActionsLoaded;
 
-        // Phase14c-Step6（R-13）: ActionsLoaded の購読者の差し替え。ブートストラップの BackingStore はコンテナより長く生きるため、
-        // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を BackingStore 自身が覚えて外す（旧: ServiceRegistration の静的フィールド _subscribedReset）
+        // ActionsLoaded の購読者の差し替え。ブートストラップの BackingStore はコンテナより長く生きるため、
+        // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を BackingStore 自身が覚えて外す
         private Action _actionsLoadedHandler;
 
         public void ReplaceActionsLoadedHandler(Action handler)
@@ -772,7 +772,7 @@ namespace DS4Windows.Core.Settings
             if (handler != null) ActionsLoaded += handler;
         }
 
-        // Phase7-Step10c W2: Actions.xml の読込を担う SpecialActionsXmlSerializer が呼ぶため、公開にした（ActionsLoaded イベントの発行元は BackingStore のまま）
+        // Actions.xml の読込を担う SpecialActionsXmlSerializer が呼ぶため、公開にした（ActionsLoaded イベントの発行元は BackingStore のまま）
         public void RaiseActionsLoaded()
         {
             ActionsLoaded?.Invoke();
@@ -889,10 +889,10 @@ namespace DS4Windows.Core.Settings
             return false;
         }
 
-        // Phase6-Step12: 旧形式の保存・読込に欠けていた設定（ProfileDTO にあり、旧形式に無かった 10 要素）の読み書き。
+        // 旧形式の保存・読込に欠けていた設定（ProfileDTO にあり、旧形式に無かった 10 要素）の読み書き。
 
 
-        // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
+        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
         public void ResetMouseProperties(int device, IProfileLoadTarget control)
         {
             if (device < ControllerLimits.MaxControllerCount &&
@@ -902,7 +902,7 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
+        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
         public void ResetProfile(int device)
         {
             // 領域ごとの設定は、各領域のオブジェクトが自分を既定へ戻す。ここは、順に呼ぶのと、領域に入っていない配列の項目の既定値だけ
@@ -924,7 +924,7 @@ namespace DS4Windows.Core.Settings
         }
 
 
-        // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
+        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
         public void CheckOldDevicestatus(int device, IProfileLoadTarget control,
             OutContType oldContType, out bool xinputPlug, out bool xinputStatus)
         {
@@ -960,7 +960,7 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        // Phase7-Step10c W4: プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込［Phase7-Step10c W6 まで BackingStore］も使う）
+        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
         public void PostLoadSnippet(int device, IProfileLoadTarget control, bool xinputStatus, bool xinputPlug)
         {
             IConfigurableDevice tempDev = control.GetController(device);

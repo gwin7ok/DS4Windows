@@ -72,7 +72,7 @@ namespace DS4Windows.UI.ViewModels
             this.imageResources = imageResources;
             ArgumentNullException.ThrowIfNull(uiDispatcher);
             this.uiDispatcher = uiDispatcher;
-            // Phase6-Step10-2-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
+            // 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
             // 置換前は、任意引数の null を AppHost/Global.*Instance で補っていた。さらに、コンストラクタ本体の
             // profileRepo（引数）が null のままだと NullReferenceException になる状態だった。
             ArgumentNullException.ThrowIfNull(profileSettingsService);
@@ -146,7 +146,7 @@ namespace DS4Windows.UI.ViewModels
             int index = args.SlotIndex;
             using (WriteLocker readLock = new WriteLocker(_colListLocker))
             {
-                // Phase11 電池残量の一本化: 再接続の通知が、前のデバイスの Removal より先に来ても、前のデバイスの行を残さない
+                // 再接続の通知が、前のデバイスの Removal より先に来ても、前のデバイスの行を残さない
                 // （残ると、新しいデバイスの行が作られず、一覧が前の残量のまま止まっていた）
                 if (controllerDict.TryGetValue(index, out CompositeDeviceModel staleRow) && staleRow.Device != device)
                 {

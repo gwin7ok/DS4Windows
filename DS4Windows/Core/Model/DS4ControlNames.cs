@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace DS4Windows.Core.Model
 {
     /// <summary>
-    /// Phase7-Step10b W1（Q1＝A）: DS4 入力の表示名と、マクロ記録用の値の表（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。
+    /// DS4 入力の表示名と、マクロ記録用の値の表。
     /// </summary>
     public static class DS4ControlNames
     {
@@ -102,7 +102,7 @@ namespace DS4Windows.Core.Model
             [DS4Controls.TouchEnded] = 288,
         };
 
-        // Phase8-Step4b W9（Q6＝A）: 旧 BackingStore.getDS4ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
+        // 旧 BackingStore.getDS4ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
         public static DS4Controls getDS4ControlsByName(string key)
         {
             if (!key.StartsWith("bn"))

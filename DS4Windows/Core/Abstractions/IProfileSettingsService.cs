@@ -15,10 +15,10 @@ namespace DS4Windows.Core.Abstractions
 
         bool[] TouchpadActiveArray { get; set; }
         // TODO(Phase8): 呼び出し元が 0 件のまま維持している。BackingStore の状態の窓口として作られたが、読み手が BackingStore を直接使っているため未接続。
-        // BackingStore の分割（Phase8）とあわせて、読み手をこの契約へ切り替える。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
+        // BackingStore の分割とあわせて、読み手をこの契約へ切り替える。Phase7-Step10e W4 で経緯を確認し、削除せず維持と判断した。
         bool[] UseTempProfileArray { get; set; }
         bool[] TempProfileDistanceArray { get; set; }
-        // Phase7-Step10d W5: 旧 Global.DistanceProfiles（BackingStore.distanceProfiles の配列そのもの）。ライトバー（DS4LightBar）が読む。
+        // 旧 Global.DistanceProfiles（BackingStore.distanceProfiles の配列そのもの）。ライトバー（DS4LightBar）が読む。
         bool[] DistanceProfiles { get; }
         bool[] UseDInputOnlyArray { get; set; }
 
@@ -37,7 +37,7 @@ namespace DS4Windows.Core.Abstractions
 
         X360Controls[] GetDefaultButtonMapping();
 
-        // ---- Phase6-Step9-1: PresetMenuHelper／BindingWindowViewModel の Global.RefreshActionAlias 参照の置換先 ----
+        // ---- PresetMenuHelper／BindingWindowViewModel の Global.RefreshActionAlias 参照の置換先 ----
         /// <summary>
         /// 仮想キーの別名（actionAlias）を、現在の出力 KBM マッピング（<see cref="OutputKBMMapping"/>）で更新する
         /// （<c>Global.RefreshActionAlias</c> と同じ動作）。
@@ -99,18 +99,18 @@ namespace DS4Windows.Core.Abstractions
         bool ProfileChangedNotification { get; set; }
         VirtualKBMMapping OutputKBMMapping { get; set; }
 
-        // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築（Global への薄い委譲）----
+        // ---- 接続時のエクストラボタン再構築（Global への薄い委譲）----
         void RefreshExtrasButtons(int deviceIndex, List<DS4Controls> buttons);
 
-        // ---- Phase6-Step2-5 (PR-5): カスタムアクション／エクストラの有無（毎レポート評価。割り当てなし）----
+        // ---- カスタムアクション／エクストラの有無（毎レポート評価。割り当てなし）----
         bool ContainsCustomAction(int deviceIndex);
         bool ContainsCustomExtras(int deviceIndex);
 
-        // ---- Phase6-Step3-1: デバイスの入力→出力割り当てグループ（毎レポート評価。割り当てなし）----
+        // ---- デバイスの入力→出力割り当てグループ（毎レポート評価。割り当てなし）----
         ControlSettingsGroup GetControlSettingsGroup(int deviceIndex);
 
         /// <summary>
-        /// Phase8-Step7 7.8d: 廃止された「シフト」機能の設定（プロファイルの <c>&lt;ShiftControl&gt;</c>）を、解釈せずに保持した入れ物（スロットごと）。
+        /// 廃止された「シフト」機能の設定（プロファイルの <c>&lt;ShiftControl&gt;</c>）を、解釈せずに保持した入れ物（スロットごと）。
         /// 編集画面が、プロファイルを読み込んだあと、警告（削除か残すか）に使う。
         /// </summary>
         RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex);

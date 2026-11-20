@@ -9,8 +9,8 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
-    /// Phase13-Step5: <see cref="IDeviceSlotState"/> の実装（DI の Singleton。依存なし）。
-    /// 配列の長さは <see cref="ControllerLimits.MaxControllerCount"/>（旧 <c>ControlService.MAX_DS4_CONTROLLER_COUNT</c> と同じ）。
+    /// <see cref="IDeviceSlotState"/> の実装（DI の Singleton。依存なし）。
+    /// 配列の長さは <see cref="ControllerLimits.MaxControllerCount"/>。
     /// 現在・作業用・前回の <c>ControllerState</c> は、すべてコンストラクターで作る（持ち主が自分の中身を作るため、生成の順序に依存しない）。
     /// </summary>
     public class DeviceSlotState : IDeviceSlotState, DS4Windows.Core.Abstractions.IConfigurableDeviceLookup
@@ -26,7 +26,7 @@ namespace DS4Windows.Processing.Services.Devices
 
         DS4Windows.Core.Abstractions.IConfigurableDevice? DS4Windows.Core.Abstractions.IConfigurableDeviceLookup.GetConfigurableDevice(int deviceIndex) => GetController(deviceIndex);
 
-        /// <summary>範囲外は null（旧 <c>ControlService.GetController</c> と同じ）。</summary>
+        /// <summary>範囲外は null。</summary>
         public InputDeviceCore? GetController(int deviceIndex)
         {
             if (deviceIndex < 0 || deviceIndex >= Controllers.Length) return null;

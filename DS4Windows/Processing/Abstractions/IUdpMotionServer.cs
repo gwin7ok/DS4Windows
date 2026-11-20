@@ -5,7 +5,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-3（Phase9-E-Plan.md）: Cemuhook 互換のモーションデータの UDP サーバーの窓口。実装は <c>UdpServer</c>（internal）を包む。
+    /// Cemuhook 互換のモーションデータの UDP サーバーの窓口。実装は <c>UdpServer</c>（internal）を包む。
     /// ソケットなしで、開始・停止・送出の判断をテストするための境界。
     /// </summary>
     public interface IUdpMotionServer

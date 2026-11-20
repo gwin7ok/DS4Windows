@@ -12,7 +12,7 @@ namespace DS4Windows.Processing.Abstractions
         bool RestoreFromAction(int deviceIndex);
 
         /// <summary>
-        /// Phase11 W6 K-W6-7: Load Profile の切り替え先が読み込める状態か。切り替え先が空、または削除されて見つからない（割り当て編集画面で (none) 表示）ときは false
+        /// Load Profile の切り替え先が読み込める状態か。切り替え先が空、または削除されて見つからない（割り当て編集画面で (none) 表示）ときは false
         /// （そのとき、ボタンを押しても何もせず、離しても元のプロファイルを適用し直さない）。既定は true（実装しない差し替え用の型のため）。
         /// </summary>
         bool HasLoadableTarget(SpecialAction action) => true;
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Abstractions
                     string? prolog = null);
 
         /// <summary>
-        /// Phase8-Step5 W2（Phase8-Step5-Plan.md §3.2。Q6＝A）: そのデバイスのスペシャルアクションから束縛を組み立てて、登録簿へ差し替える。
+        /// そのデバイスのスペシャルアクションから束縛を組み立てて、登録簿へ差し替える。
         /// 適用の経路（<c>ApplyProfile</c> ほか）は後始末の中で呼ぶので、外から呼ぶ必要はない。適用の後始末を通らずにプロファイルを読み込む経路
         /// （名前付きパイプの「一時プロファイルの読込」）が、読込の成功後に呼ぶ。
         /// 範囲外のデバイス（編集スロットを含む）では何もしない。組み立てに失敗しても例外は投げない（そのデバイスの束縛は空になる）。

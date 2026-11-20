@@ -6,25 +6,25 @@ using DS4Windows.Input;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-6f2（Phase9-E6-Plan.md §9.2）: サービスの開始・停止・ホットプラグと、その状態・イベント。
+    /// サービスの開始・停止・ホットプラグと、その状態・イベント。
     /// 以前は <c>ControlService.Start</c>／<c>Stop</c>／<c>HotPlug</c>／<c>PrepareAbort</c> と、公開フィールド <c>running</c> ほか 4 つ、イベント 5 つだった。
     /// <c>ControlService</c> は、同名の公開メンバーを転送で残す（UI が直接使うため。イベントの送り主は <c>ControlService</c>）。
     /// </summary>
     public interface IServiceLifecycle
     {
-        /// <summary>サービスが動作中か（旧 <c>running</c>）。</summary>
+        /// <summary>サービスが動作中か。</summary>
         bool Running { get; set; }
 
-        /// <summary>デバイスの列挙のループを続けるか（旧 <c>loopControllers</c>。ViGEm の失敗で false にされる）。</summary>
+        /// <summary>デバイスの列挙のループを続けるか。</summary>
         bool LoopControllers { get; set; }
 
-        /// <summary>開始・停止・ホットプラグの最中か（旧 <c>inServiceTask</c>。ViGEm の失敗の処理が、終わるまで待つ）。</summary>
+        /// <summary>開始・停止・ホットプラグの最中か。</summary>
         bool InServiceTask { get; set; }
 
-        /// <summary>接続中のコントローラーの数（旧 <c>activeControllers</c>）。</summary>
+        /// <summary>接続中のコントローラーの数。</summary>
         int ActiveControllers { get; set; }
 
-        /// <summary>システムのサスペンド中か（旧 <c>suspending</c>。MainWindow が設定する。停止時に Bluetooth を切断する判断に使う）。</summary>
+        /// <summary>システムのサスペンド中か。</summary>
         bool Suspending { get; set; }
 
         event EventHandler ServiceStarted;

@@ -6,7 +6,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase10-Step4d W5d（Phase10-Step4d-Plan.md §4 W5）: リンクプロファイル（コントローラーのシリアル → プロファイル）の、実行時の保持。<c>BackingStore.linkedProfiles</c> の型
+    /// リンクプロファイル（コントローラーのシリアル → プロファイル）の、実行時の保持。<c>BackingStore.linkedProfiles</c> の型
     /// （以前は <c>Dictionary&lt;string, string&gt;</c>）。使い方（インデクサー、<c>ContainsKey</c>、<c>Remove</c>、<c>TryGetValue</c>、<c>Keys</c>、列挙）は辞書と同じで、
     /// 値は<b>プロファイルの名前を読み書きする窓口</b>（<see cref="ProfileSlotNames"/> と同じ。保管は固定 ID と名前の控え）。
     /// 書くと、名前の控えと、登録簿から引いた ID を保存し、読むと、ID から現在の名前を返す（プロファイルの名前を変えても、リンクを書き換えなくてよい）。

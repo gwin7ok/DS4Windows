@@ -82,7 +82,7 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler ControllerSelectedIndexChanged;
 
-        // Phase6-Step10-2-2: Global.UseMoonlight／UseAdvancedMoonlight／SaveControllerConfigs の置換先（必須引数。null は拒否する）
+        // Global.UseMoonlight／UseAdvancedMoonlight／SaveControllerConfigs の置換先（必須引数。null は拒否する）
         private readonly IAppSettingsService appSettings;
 
         public ControllerRegDeviceOptsViewModel(ControlServiceDeviceOptions serviceDeviceOpts,

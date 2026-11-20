@@ -6,7 +6,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-A(1) (c)（Phase9-A1-Plan.md §2）: スティックのスクエア化と出力カーブ、トリガーの出力カーブ。
+    /// スティックのスクエア化と出力カーブ、トリガーの出力カーブ。
     /// 以前は <c>Mapping.SetCurveAndDeadzone</c> の中に、左右のスティックで、ほぼ同じコードが 2 回、L2／R2 で同じコードが 2 回あった。左右とも、同じメソッドを呼ぶ。状態は持たない。
     /// 呼び出し側は、「モードが有効で、入力が中立でない」ときだけ呼ぶ（呼び出さないフレームには、呼び出しの費用がかからない）。
     /// </summary>

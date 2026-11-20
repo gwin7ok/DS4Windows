@@ -1,7 +1,7 @@
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧の 1 項目。<see cref="Name"/> は、Actions.xml の <c>Trigger</c> に書く名前
+    /// トリガーの一覧の 1 項目。<see cref="Name"/> は、Actions.xml の <c>Trigger</c> に書く名前
     /// （従来の <c>AssignmentEditor.xaml</c> のチェックボックスの <c>Tag</c>。例: <c>SideL</c>、<c>Function Left</c>）。
     /// <see cref="Label"/> は、画面に出す表示名（従来のチェックボックスの <c>Content</c>。例: <c>Side L</c>、<c>Function L</c>）。
     /// </summary>

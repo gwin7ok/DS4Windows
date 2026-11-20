@@ -6,7 +6,7 @@ using System.Xml;
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase8-Step8 8-0（Phase8-Step8-Plan.md §5.1。Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定を、<b>解釈せずに、そのまま保持する</b>入れ物（プロファイルごと）。
+    /// 廃止された「ジャイロスワイプ」機能の設定を、<b>解釈せずに、そのまま保持する</b>入れ物（プロファイルごと）。
     /// 保持するのは 3 つ: (1) 設定の <c>&lt;GyroSwipeSettings&gt;</c> ノード（既定値と異なるときだけ）、(2) <c>&lt;Control&gt;</c> 内の
     /// <c>GyroSwipeLeft／Right／Up／Down</c> の割り当ての項目（<c>Button</c>・<c>Macro</c>・<c>Key</c>・<c>Extras</c>・<c>KeyType</c> の各グループの子）、
     /// (3) ジャイロの出力モードが <c>DirectionalSwipe</c>（廃止されたスワイプのモード）だったこと（<c>&lt;GyroOutputMode&gt;</c> の値）。

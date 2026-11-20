@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W4（Phase10-Step2-Plan.md §3.3）: Controls のモードの編集の対象。ボタン 1 つの割り当て（<see cref="DS4ControlSettings"/>）の
+    /// Controls のモードの編集の対象。ボタン 1 つの割り当て（<see cref="DS4ControlSettings"/>）の
     /// <b>編集用のコピー</b>を持ち、種別ごとの入力（Press Key の <see cref="PressKeyViewModel"/>、Macro の <see cref="MacroViewModel"/>）との間で、
     /// 値を読み込み・書き出しする。<see cref="Apply"/>（Save）で、コピーを元へ反映し、反映しなければ（Cancel）、元は変わらない
     /// （従来の選択ダイアログ <c>BindingWindow</c> は、閉じると、元の設定を直接書き換えていた）。
@@ -51,7 +51,7 @@ namespace DS4Windows.UI.ViewModels
         public DS4ControlSettings Original => original;
 
         /// <summary>
-        /// Phase10-Step3 W2: 編集用のコピーの Extras（振動・ライトバー・マウス感度の文字列）。出力ピッカーで編集した結果を取り込む。
+        /// 編集用のコピーの Extras（振動・ライトバー・マウス感度の文字列）。出力ピッカーで編集した結果を取り込む。
         /// <see cref="WriteFrom"/> は、変えない。<see cref="Apply"/> で、元へ反映される（Cancel なら、反映されない）。
         /// </summary>
         public string Extras
@@ -89,7 +89,7 @@ namespace DS4Windows.UI.ViewModels
                 switch (working.actionType)
                 {
                     case DS4ControlSettings.ActionType.Button:
-                        // Phase10-Step3: Unbound は、種別の一覧の「Unbound」の項目で表す（Default は、添字 0）
+                        // Unbound は、種別の一覧の「Unbound」の項目で表す（Default は、添字 0）
                         if (working.action.actionBtn == X360Controls.Unbound) return typeCatalog.UnboundIndex;
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Key);
                     case DS4ControlSettings.ActionType.Key:
@@ -97,10 +97,10 @@ namespace DS4Windows.UI.ViewModels
                     case DS4ControlSettings.ActionType.Macro:
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Macro);
                     case DS4ControlSettings.ActionType.Special:
-                        // Phase10-Step4 W4: SA 専用の種別は、その種別の項目（項目がなければ Default）
+                        // SA 専用の種別は、その種別の項目（項目がなければ Default）
                         return working.special != null ? typeCatalog.IndexOf(working.special.Type) : typeCatalog.DefaultIndex;
                     case DS4ControlSettings.ActionType.Default:
-                        // Phase9 UI 変更（ユーザー承認 2026-10-22）: Default の割り当ても、種別は「Output Key/Mouse/Button」を選んだ状態で開く
+                        // Default の割り当ても、種別は「Output Key/Mouse/Button」を選んだ状態で開く
                         // （出力の欄には「Default (既定の出力名)」を表示する。そのまま Save しても Default のまま［WriteFrom の Key の枝が WriteDefault を呼ぶ］）。
                         // 種別の一覧の「Default」の項目は、これまでどおり選べる
                         return typeCatalog.IndexOf(SpecialAction.ActionTypeId.Key);
@@ -112,7 +112,7 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>編集用のコピーの値を、種別ごとの入力へ読み込む（Default のときは、何も読み込まない）。</summary>
         /// <param name="editors">
-        /// Phase10-Step4 W4〜: SA 専用の種別ごとの入力の一式（押し続ける秒数、Launch Program、Load Profile ほか）。省略可（なければ、その種別の値は読み書きしない）。
+        /// SA 専用の種別ごとの入力の一式（押し続ける秒数、Launch Program、Load Profile ほか）。省略可（なければ、その種別の値は読み書きしない）。
         /// </param>
         public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet editors = null)
         {
@@ -140,7 +140,7 @@ namespace DS4Windows.UI.ViewModels
                     macro.Macro.Clear();
                     macro.Macro.AddRange(working.action.actionMacro ?? new int[0]);
                     macro.PlaybackOptions.LoadFrom(working.keyType);
-                    // Phase10-Step4 W3: Macro の SA 専用の 3 項目（型のある項目）。なければ、すべて偽
+                    // Macro の SA 専用の 3 項目（型のある項目）。なければ、すべて偽
                     ControlSpecialItem options = working.special != null && working.special.Type == SpecialAction.ActionTypeId.Macro ? working.special : null;
                     macro.RunTriggerRelease = options != null && options.RunOnRelease;
                     macro.SyncRun = options != null && options.Synchronized;
@@ -165,7 +165,7 @@ namespace DS4Windows.UI.ViewModels
             if (typeIndex != 0 && !descriptor.IsSavableIn(ActionEditorModes.Control))
                 throw new ArgumentException("この種別は、Controls には、まだ保存できない（Step3 の保存形式の拡張まで）: " + descriptor.TypeId, nameof(typeIndex));
 
-            // Phase10-Step3: 種別の一覧の「Default」「Unbound」の項目（出力ピッカーの Default／Unbound ボタンと同じ。Unbound は Button の Unbound）
+            // 種別の一覧の「Default」「Unbound」の項目（出力ピッカーの Default／Unbound ボタンと同じ。Unbound は Button の Unbound）
             if (typeIndex == typeCatalog.DefaultIndex)
             {
                 WriteDefault();
@@ -185,7 +185,7 @@ namespace DS4Windows.UI.ViewModels
                 case SpecialAction.ActionTypeId.Key:
                     if (pressKey.SelectedActionType == DS4ControlSettings.ActionType.Default)
                     {
-                        // Phase9 UI 変更（ユーザー指示 2026-10-22）: Default のまま Switch Mode を Toggle にしたときは、設定を捨てず、
+                        // Default のまま Switch Mode を Toggle にしたときは、設定を捨てず、
                         // 「そのボタンの既定の出力（パッドのボタン等）」への Button ＋ Toggle として保存する（実行時は、既定の出力を Toggle で出す）。
                         // Press のままなら、従来どおり Default（XML に項目を書かない）。Scan Code は、キーボードのキーだけに効くため、Default（出力はパッドのボタン等）には効かない
                         if (IsToggle(pressKey) && TryGetDefaultOutputButton(out X360Controls defaultOutput))
@@ -203,7 +203,7 @@ namespace DS4Windows.UI.ViewModels
                     WriteMacro(macro);
                     break;
 
-                // Phase10-Step6 I6b/W7: Controls で実行時に束縛を作る SA 専用の種別（ControlsSpecialTypeTable）。種別が増えても、ここは変えない
+                // Controls で実行時に束縛を作る SA 専用の種別（ControlsSpecialTypeTable）。種別が増えても、ここは変えない
                 case SpecialAction.ActionTypeId typeId when DS4Windows.Processing.Actions.ControlsSpecialTypeTable.IsSupported(typeId):
                     WriteSpecial(typeId, editors);
                     break;
@@ -281,7 +281,7 @@ namespace DS4Windows.UI.ViewModels
             if (IsToggle(pressKey)) working.keyType |= DS4KeyType.Toggle;
         }
 
-        // Phase10-Step6 I6b: SA 専用の種別（Disconnect BT、較正 2 種、Launch Program、Load Profile）。型のある項目は、種別ごとの入力（ActionTypeEditorSet）が作る
+        // SA 専用の種別（Disconnect BT、較正 2 種、Launch Program、Load Profile）。型のある項目は、種別ごとの入力（ActionTypeEditorSet）が作る
         // （以前は、種別ごとの書き出しを、この型が持っていた）。通常の割り当て（キー・マクロの手順）は残さない。入力がなければ（テスト）、種別だけの項目
         private void WriteSpecial(SpecialAction.ActionTypeId type, ActionTypeEditorSet editors)
         {
@@ -302,7 +302,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void WriteMacro(MacroViewModel macro)
         {
-            // Phase10-Step4 W3: Macro の SA 専用の 3 項目を、型のある項目へ書く。1 つも立っていなければ、項目は持たない（従来の Macro と同じ形で保存される）
+            // Macro の SA 専用の 3 項目を、型のある項目へ書く。1 つも立っていなければ、項目は持たない（従来の Macro と同じ形で保存される）
             working.special = macro.RunTriggerRelease || macro.SyncRun || macro.KeepKeyState
                 ? new ControlSpecialItem
                 {
@@ -314,7 +314,7 @@ namespace DS4Windows.UI.ViewModels
                 : null;
             working.actionType = DS4ControlSettings.ActionType.Macro;
             working.action.actionMacro = macro.Macro.ToArray();
-            // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す。Macro の印は、常に立てる
+            // 「押している間繰り返す」は RepeatMacro だけで表す。Macro の印は、常に立てる
             working.keyType = macro.PlaybackOptions.ApplyTo(DS4KeyType.Macro);
         }
 
@@ -347,7 +347,7 @@ namespace DS4Windows.UI.ViewModels
             to.extras = from.extras;
             to.keyType = from.keyType;
             to.actionType = from.actionType;
-            to.special = from.special?.Clone();   // Phase10-Step4 W1: SA 専用の項目も、独立した複製にする
+            to.special = from.special?.Clone();   // SA 専用の項目も、独立した複製にする
             to.action = new ControlActionData
             {
                 actionKey = from.action.actionKey,

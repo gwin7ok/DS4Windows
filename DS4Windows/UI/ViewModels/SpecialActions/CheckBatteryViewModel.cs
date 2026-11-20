@@ -99,7 +99,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             fullColor = new DS4Color(byte.Parse(details[6]), byte.Parse(details[7]), byte.Parse(details[8]));
         }
 
-        // Phase10-Step6 W7 相当: Controls のモード。型のある項目との往復（SA と同じ入力・同じ検証。色は Color ⇄ DS4Color）
+        // Controls のモード。型のある項目との往復（SA と同じ入力・同じ検証。色は Color ⇄ DS4Color）
         public void LoadControlItem(ControlSpecialItem item)
         {
             if (item == null) return;
@@ -129,12 +129,12 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             };
         }
 
-        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        // Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
-        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        // スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService environmentService;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public CheckBatteryViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, ISpecialActionRepository specialActionRepository, IEnvironmentService environmentService)
@@ -162,7 +162,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             List<string> notificationErrors = new List<string>();
             List<string> lightbarErrors = new List<string>();
 
-            // Phase10-Step4c W3: 必須の値がないエラー（どちらの方法も選んでいない、ライトバーの 2 色が同じ）は、保存を止める
+            // 必須の値がないエラー（どちらの方法も選んでいない、ライトバーの 2 色が同じ）は、保存を止める
             if (!notification && !lightbar)
             {
                 valid = false;

@@ -6,7 +6,7 @@ using DS4Windows.Core.Logging;
 namespace DS4Windows.Core.Utilities
 {
     /// <summary>
-    /// Phase7-Step10c W3（Q1＝A）: バージョン文字列の数値化（旧: <c>Global.CompileVersionNumberFromString</c>／<c>CompileVersionNumber</c>。本体は同一）。
+    /// バージョン文字列の数値化。
     /// スキップしたバージョンの比較（<c>BackingStore.PostProcessLoad</c>、<c>AppSettingsXmlSerializer.Load</c>、<c>AppSettingsService</c>）が使う。
     /// </summary>
     public static class VersionUtil

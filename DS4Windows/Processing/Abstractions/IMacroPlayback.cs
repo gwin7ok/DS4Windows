@@ -7,7 +7,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: マクロの再生の予約と進行（同期キュー、単発、押している間の繰り返し、後始末）。
+    /// マクロの再生の予約と進行（同期キュー、単発、押している間の繰り返し、後始末）。
     /// 以前は <c>Mapping.PlayMacro</c>／<c>PlayMacroTask</c>／<c>RunMacroOnce</c>（private）だった。入口の <c>IMapping.PlayMacroDirect</c> などは変えず、<c>Mapping</c> がここへ委譲する。
     /// </summary>
     public interface IMacroPlayback

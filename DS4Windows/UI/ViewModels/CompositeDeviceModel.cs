@@ -350,7 +350,7 @@ namespace DS4Windows.UI.ViewModels
             IProfileRepository profileRepo, DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
         {
             this.imageResources = imageResources;
-            // Phase6-Step10-2-2: 必須引数（null は拒否する）
+            // 必須引数（null は拒否する）
             ArgumentNullException.ThrowIfNull(profileSettingsService);
             this.profileSettingsService = profileSettingsService;
             ArgumentNullException.ThrowIfNull(profileRepo);

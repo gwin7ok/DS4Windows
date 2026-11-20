@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase9 UI 変更: 入力ボタンのカタログ（<see cref="InputControlCatalog"/>）の 1 項目。
+    /// 入力ボタンのカタログ（<see cref="InputControlCatalog"/>）の 1 項目。
     /// <see cref="Name"/> は、Actions.xml の <c>Trigger</c> に書く名前（変えない）。<see cref="Label"/> は、Controls の一覧と SA のトリガーの一覧が共通で使う表示名。
     /// </summary>
     public sealed class InputControlEntry

@@ -6,7 +6,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6b（Phase8-Step7-6-Plan.md Q5＝A）: スペシャルアクションのトリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す。
+    /// スペシャルアクションのトリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す。
     /// 旧 <c>Mapping.ReleaseActionKeys</c> と同じ処理。DisconnectBT（切断の直後）と、Profile の切替（<see cref="ProfileSwitchAction"/>。7.5a）が共有する。
     /// 切断・切替のあと、キーが押されたまま残らないようにする。
     /// </summary>

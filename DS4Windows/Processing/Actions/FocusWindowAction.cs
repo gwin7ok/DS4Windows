@@ -9,7 +9,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase12-Step2 2d（R-4）: FocusWindow（指定のウィンドウを前面へ出す）の出力。立ち上がりの 1 回だけ実行する。
+    /// FocusWindow（指定のウィンドウを前面へ出す）の出力。立ち上がりの 1 回だけ実行する。
     /// 対象は <c>sa.details</c>（プログラムのパス）と <c>sa.extra</c>（ウィンドウタイトル）で、Auto-Profile と同じ規則（<see cref="WindowTargetMatcher"/>）で特定する。
     /// 前面化は、確認の待ちを含み数十〜数百ミリ秒かかるため、入力処理のスレッドを止めないよう、別のスレッドで行う（<see cref="IWindowFocuser"/> は同期の部品）。
     /// 前の前面化が終わっていないうちの再実行は、重ねずに捨てる（押しっぱなしの連発や、連打で、前面化の試行が並ばないように）。

@@ -5,7 +5,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step4 W2: <see cref="IFrameOutput"/> の実装（デバイスごとに 1 つ。<c>Mapping</c> が持ち、毎フレーム <see cref="Bind"/> で出力の表を差し替える。割り当て 0）。
+    /// <see cref="IFrameOutput"/> の実装（デバイスごとに 1 つ。<c>Mapping</c> が持ち、毎フレーム <see cref="Bind"/> で出力の表を差し替える。割り当て 0）。
     /// 中身は、現行の <c>Mapping.ResetToDefaultValue</c> と、Stage3（Synchronous Button SpecialAction handling）の出力の分岐をそのまま移したもの
     /// （<c>FrameOutputTests</c> が現行のメソッドと比較する）。まだ <c>Mapping</c> には配線していない（W4）。
     /// </summary>
@@ -19,11 +19,11 @@ namespace DS4Windows.Processing.Actions
         {
             _outputFields = outputFields;
             _deviceState = deviceState;
-            MouseDeltaX = 0.0;   // Phase8-Step7 7.8f-3: フレームごとに、マウスの移動量の加算器を空にする
+            MouseDeltaX = 0.0;   // フレームごとに、マウスの移動量の加算器を空にする
             MouseDeltaY = 0.0;
         }
 
-        /// <summary>Phase8-Step7 7.8f-3（Q6＝A）: このフレームで、新経路が書いたマウスの移動量（旧 <c>tempMouseDeltaX／Y</c> の置き換え）。</summary>
+        /// <summary>このフレームで、新経路が書いたマウスの移動量。</summary>
         public double MouseDeltaX { get; private set; }
 
         public double MouseDeltaY { get; private set; }
@@ -66,7 +66,7 @@ namespace DS4Windows.Processing.Actions
             }
         }
 
-        // Phase8-Step7 7.8f-1: 旧 customMapQueue の処理（Mapping の全 dcs のあと）が出力の表へ書いていたものと同じ
+        // 旧 customMapQueue の処理（Mapping の全 dcs のあと）が出力の表へ書いていたものと同じ
         public void SetAxisPair(DS4Controls outControl, byte value)
         {
             ControllerStateFieldMapping fields = _outputFields;
@@ -94,7 +94,7 @@ namespace DS4Windows.Processing.Actions
             fields.buttons[(int)outControl] = true;
         }
 
-        // Phase8-Step7 7.8f-2: 旧経路の Controls の Toggle が、デバイスの合成状態へ書いていたものと同じ
+        // 旧経路の Controls の Toggle が、デバイスの合成状態へ書いていたものと同じ
         public void FlipToggle()
         {
             SyntheticState deviceState = _deviceState;
@@ -111,7 +111,7 @@ namespace DS4Windows.Processing.Actions
             deviceState.currentClicks.toggleCount++;
         }
 
-        // Phase8-Step7 7.1-W2: 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式
+        // 現行の Stage3 の「出力の組み合わせ」のログ（Mapping の Stage3／LogSpecialActionTrace）と同じ順序・書式
         public void AppendOutputCombo(List<string> parts)
         {
             ControllerStateFieldMapping fields = _outputFields;
@@ -163,7 +163,7 @@ namespace DS4Windows.Processing.Actions
             }
             else if ((int)xboxControl < fields.buttons.Length && xboxControl != X360Controls.None)
             {
-                // Phase10 完了後の点検（2026-10-22）: パッドのボタンは、Controls と同じ変換表（reverseX360ButtonMapping）で DS4 のボタンへ写す。以前は X360 の番号をそのまま使い、
+                // パッドのボタンは、Controls と同じ変換表（reverseX360ButtonMapping）で DS4 のボタンへ写す。以前は X360 の番号をそのまま使い、
                 // Back・Start だけ、別のボタン（TouchLeft・TouchUpper）へ書いていた（ほかのボタンは、番号が一致するため、変換しても同じ）
                 int outputIndex = xboxControl >= X360Controls.LXNeg && xboxControl <= X360Controls.Start
                     ? (int)X360ControlTables.reverseX360ButtonMapping[(int)xboxControl]

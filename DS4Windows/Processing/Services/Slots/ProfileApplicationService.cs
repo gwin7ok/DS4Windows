@@ -13,24 +13,24 @@ namespace DS4Windows.Processing.Services.Slots
     public class ProfileApplicationService : IProfileApplicationService
     {
         private readonly IProfileSettingsService _profileSettings;
-        private readonly IProfileLoadTarget _control;   // Phase13-Step6 6-e: 旧 Func<ControlService>（遅延解決）。プロファイル読込の鎖が使う窓口を直接受ける
+        private readonly IProfileLoadTarget _control;   // 旧 Func<ControlService>（遅延解決）。プロファイル読込の鎖が使う窓口を直接受ける
         private readonly IProfileRepository _profileRepo;
-        // Phase10-Step4d W5c: Load Profile の切り替え先を、実行の直前に ID から現在の名前に引く。省略可（なければ、従来どおり details の名前）
+        // Load Profile の切り替え先を、実行の直前に ID から現在の名前に引く。省略可（なければ、従来どおり details の名前）
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? _profileIdentity;
-        // Phase6-Step10-4-2f（K1 是正）: スロット上限は、固定の 4 ではなく、環境（Windows 8 以上は 8）から取得する
+        // スロット上限は、固定の 4 ではなく、環境（Windows 8 以上は 8）から取得する
         private readonly IEnvironmentService _environmentService;
-        // Phase7-Step3c W3: 適用の核（旧 Global.ApplyProfile）に必要な依存
+        // 適用の核に必要な依存
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IProfileActionProvider _profileActionProvider;
         private readonly BackingStore _config;
-        // Phase7-Step8 W2（Q3＝A）: 旧 Mapping.ClearKeyButtonControllersForDevice の静的呼び出し
+        // 旧 Mapping.ClearKeyButtonControllersForDevice の静的呼び出し
         private readonly IKeyButtonControllerRegistry _keyButtonControllers;
-        // Phase8-Step5 W2（Q3＝A）: 束縛の登録簿と、ビルダーの遅延解決（ビルダー → IProfileSwitcher → 本サービス、の循環を避ける）
+        // 束縛の登録簿と、ビルダーの遅延解決（ビルダー → IProfileSwitcher → 本サービス、の循環を避ける）
         private readonly DS4Windows.Processing.Actions.IActionRegistry _actionRegistry;
-        // Phase13-Step8: 遅延取得のまま残す（意図的）。ActionBindingBuilder → IProfileSwitcher → IProfileApplicationService と循環する。
+        // 遅延取得のまま残す（意図的）。ActionBindingBuilder → IProfileSwitcher → IProfileApplicationService と循環する。
         // 再検討条件: 束縛の構築を ProfileApplicationService の外へ出したとき。許可リスト: Phase13FuncRatchetGuardTests
         private readonly Func<DS4Windows.Processing.Actions.IActionBindingBuilder> _bindingBuilderProvider;
-        // Phase13-Step4: 旧 静的 ActionManager（ClearAllEntries／ClearDeviceState／PreallocateForProfileApply）の代わり
+        // 旧 静的 ActionManager（ClearAllEntries／ClearDeviceState／PreallocateForProfileApply）の代わり
         private readonly DS4Windows.Processing.Actions.IManagedActionManager _actionManager;
 
         public ProfileApplicationService(
@@ -64,7 +64,7 @@ namespace DS4Windows.Processing.Services.Slots
             _config = config;
             ArgumentNullException.ThrowIfNull(profileSettings);
             _profileSettings = profileSettings;
-            // Phase7-Step10b W3: 未使用だった依存 IDeviceStateService（フィールドを保持するだけ。234e20f9 で DI コンテナ化の途中に追加）を外した。
+            // 未使用だった依存 IDeviceStateService（フィールドを保持するだけ。234e20f9 で DI コンテナ化の途中に追加）を外した。
             ArgumentNullException.ThrowIfNull(loadTarget);
             _control = loadTarget;
             ArgumentNullException.ThrowIfNull(profileRepo);
@@ -74,7 +74,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// 旧 静的 <c>ActionManager.PreallocateForProfileApply</c>（Phase13-Step4 で本サービスへ移した）。適用するプロファイルのスペシャルアクションについて、
+        /// 旧 静的 <c>ActionManager.PreallocateForProfileApply</c>。適用するプロファイルのスペシャルアクションについて、
         /// 状態とコントローラーを先に作る。ログは従来のまま。
         /// </summary>
         private void PreallocateForProfileApply(int device)
@@ -125,7 +125,7 @@ namespace DS4Windows.Processing.Services.Slots
 
             InputDeviceCore device = (InputDeviceCore)_control.GetController(deviceIndex);   // IConfigurableDevice の実装は InputDeviceCore だけ
 
-            // Phase10-Step4d W5c: 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
+            // 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
             string target = ResolveTarget(action);
 
             string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
@@ -156,7 +156,7 @@ namespace DS4Windows.Processing.Services.Slots
             });
         }
 
-        // Phase11 W6 K-W6-7: 切り替え先が空、または ID が引けず（プロファイルが削除された）名前でも見つからないときは、読み込めない。
+        // 切り替え先が空、または ID が引けず（プロファイルが削除された）名前でも見つからないときは、読み込めない。
         // ID のない古い SA は、判定できないため従来どおり（読み込める扱い）
         public bool HasLoadableTarget(SpecialAction action)
         {
@@ -172,7 +172,7 @@ namespace DS4Windows.Processing.Services.Slots
             return true;
         }
 
-        // Phase10-Step4d W5c: Load Profile の切り替え先。SA の切り替え先の ID（profileId）が引ければ、現在の名前を返す（details も同じ名前に直す）。
+        // Load Profile の切り替え先。SA の切り替え先の ID（profileId）が引ければ、現在の名前を返す（details も同じ名前に直す）。
         // 引けない・ID がないときは、details の名前（従来どおり）
         public string ResolveTarget(SpecialAction action)
         {
@@ -262,7 +262,7 @@ namespace DS4Windows.Processing.Services.Slots
             return success;
         }
 
-        // ---- Phase7-Step3c W3: 旧 Global.ApplyProfile／LoadProfile／CompleteProfileApplication の処理 ----
+        // ---- 旧 Global.ApplyProfile／LoadProfile／CompleteProfileApplication の処理 ----
         // 手順・ログ・順序は旧 Global と同一。W4 で、呼び出し元（ProfileSlotApplier／Mapping／本サービスの既存の入口）をここへ切り替え、旧 Global の該当メンバーを削除した。
         // 静的な ActionManager／Mapping の呼び出しは、それぞれ Phase8／Phase7-Step7〜9 で解消するまで残す。
 
@@ -429,12 +429,12 @@ namespace DS4Windows.Processing.Services.Slots
                 AppLogger.LogWarn($"ApplyProfile: Controller activation check failed: {ex}");
             }
 
-            // Phase8-Step5 W2: 後始末（掃除）の最後に、このプロファイルの束縛を組み立てて登録簿へ差し替える。
+            // 後始末（掃除）の最後に、このプロファイルの束縛を組み立てて登録簿へ差し替える。
             // 掃除の順序（ClearAllEntries → ClearForDevice → ClearDeviceState → PreallocateForProfileApply。Phase8Step1ApplyProfileCleanupOrderGuardTests）は変えない
             PublishBindings(device);
         }
 
-        // Phase8-Step8 8d: 移行のスイッチは削除した。ここで差し替える束縛は、プロファイルの全種別の束縛。OnProfileApplied（適用時の抑制の集合の消去）の接続は、Step7.1 で判断する（Step5 計画書 Q4）。
+        // 移行のスイッチは削除した。ここで差し替える束縛は、プロファイルの全種別の束縛。OnProfileApplied（適用時の抑制の集合の消去）の接続は、Step7.1 で判断する（Step5 計画書 Q4）。
         public void PublishBindings(int deviceIndex)
         {
             if (deviceIndex < 0 || deviceIndex >= _environmentService.ControllerSlotLimit)
@@ -454,8 +454,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// 入力の読み取りを一時停止（Halt）せずに適用する。接続処理中など、呼び出し元がすでに停止している経路で使う
-        /// （旧 <c>Global.ApplyProfileToSlot</c> と同じく Halt しない。例外は握らず、そのまま呼び出し元へ伝える）。
+        /// 入力の読み取りを一時停止（Halt）せずに適用する。接続処理中など、呼び出し元がすでに停止している経路で使う。
         /// </summary>
         public bool ApplyProfileWithoutHalt(int deviceIndex, string profileName, bool isTemp = false,
                     bool launchProgram = false, ProfileChangeSource source = ProfileChangeSource.Manual,

@@ -18,7 +18,7 @@ namespace DS4Windows.Processing.Services.Slots
         private readonly IProfileApplicationService _profileAppService;
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProcessInspector _processInspector;
-        // Phase6-Step2-1c (決定O2=C/O3=A): スロット上限（現在接続台数ではない）の取得元。
+        // スロット上限（現在接続台数ではない）の取得元。
         private readonly IEnvironmentService _environmentService;
 
         private bool _turnOffTemp;
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public AutoProfileHolder Holder => _holder;
 
-        // Phase7-Step3 W5: Global 経由をやめ、注入された BackingStore を直接使う。
+        // Global 経由をやめ、注入された BackingStore を直接使う。
         private readonly BackingStore _config;
 
         public AutoProfileDisplayProfileSwitchChoices AutoProfileSwitchNotifyChoice
@@ -49,7 +49,7 @@ namespace DS4Windows.Processing.Services.Slots
             set => _config.autoProfileSwitchNotifyChoice = value;
         }
 
-        // Phase6-Step10-2-1: 画面（AutoProfiles）が使う。Phase7-Step10d W4: 旧 Global.CreateAutoProfiles の本体をここへ移した（内容は同一）
+        // 画面（AutoProfiles）が使う。Phase7-Step10d W4: 旧 Global.CreateAutoProfiles の本体をここへ移した（内容は同一）
         public bool CreateAutoProfilesFile(string path)
         {
             bool Saved = true;
@@ -79,8 +79,8 @@ namespace DS4Windows.Processing.Services.Slots
 
         public event Action<bool>? RequestServiceChange;
 
-        // Phase6-Step10-4-2b: 全ての依存を必須化（new／AppHost／Program.rootHub／Global の設定参照を廃止）。
-        // Phase13-Step6 6-b: 旧 Func<ControlService>（決定 D4-3）。使うのは running と Controllers だけだったため、IServiceLifecycle と IDeviceStateAccessor を直接受ける
+        // 全ての依存を必須化（new／AppHost／Program.rootHub／Global の設定参照を廃止）。
+        // 旧 Func<ControlService>（決定 D4-3）。使うのは running と Controllers だけだったため、IServiceLifecycle と IDeviceStateAccessor を直接受ける
         private readonly IServiceLifecycle _lifecycle;
         private readonly IDeviceStateAccessor _deviceState;
         private readonly IAppSettingsService _appSettings;
@@ -120,7 +120,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         // 2026-10-19（AutoProfile-NoController-Investigation.md 案B）: 自動プロファイルは、接続中のスロットにだけ適用する。
-        // テストなどで差し替える。未設定（null）なら Controllers[slot] が null でないことを接続とみなす（Phase13-Step6 6-b: 旧「ControlService が未解決なら接続とみなす」は、直接注入で常に解決済みのため不要）。
+        // テストなどで差し替える。未設定（null）なら Controllers[slot] が null でないことを接続とみなす。
         public Func<int, bool>? SlotConnectedProbe { get; set; }
 
         private bool IsSlotConnected(int slot)
@@ -128,7 +128,7 @@ namespace DS4Windows.Processing.Services.Slots
             if (SlotConnectedProbe != null)
                 return SlotConnectedProbe(slot);
 
-            return _deviceState.GetController(slot) != null;   // 範囲外は null（旧: 範囲検査つきの Controllers[slot] と同じ）
+            return _deviceState.GetController(slot) != null;   // 範囲外は null
         }
 
         // S9-5 の確認で判明: 元のプロファイルへ戻すときの通知が、バッテリー残量を常に「N/A」と出していた。

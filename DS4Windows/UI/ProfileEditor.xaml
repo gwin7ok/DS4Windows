@@ -117,7 +117,7 @@
                     Content="{lex:Loc Ui_SelectPreset}"
                     Margin="10,0,0,0"
                     Command="{Binding PresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-            <!-- Phase11 W3: 状態は Click ハンドラー（ProfileEditor.Keepsize の元）が持つ。以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、
+            <!-- 状態は Click ハンドラー（ProfileEditor.Keepsize の元）が持つ。以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、
                  DataContext がメインウィンドウの MainWindowsViewModel（Keepsize を持たない）のため、最初から解決していなかったので外した -->
             <CheckBox x:Name="keepSizeCheckBox"
                       Margin="10,0,0,0"
@@ -538,7 +538,7 @@
                     </Grid>
                 </DockPanel>
             </TabItem>
-            <!-- Phase10-Step3b W1: Touchpad・ジャイロのタブは、右ペインから、左ペインへ移した（割り当てエディターの入口を、すべて左ペインのタブのボタンにするため） -->
+            <!-- Touchpad・ジャイロのタブは、右ペインから、左ペインへ移した（割り当てエディターの入口を、すべて左ペインのタブのボタンにするため） -->
             <TabItem x:Name="touchpadTab"
                      Header="{lex:Loc Touchpad}">
                 <local:TouchpadSettingsPanel x:Name="touchpadPanel"/>
@@ -556,7 +556,7 @@
             </TabItem>
         </TabControl>
 
-        <!-- Phase10-Step3 W4: Controls の割り当てエディター（AssignmentEditor の Controls のモード）の表示場所。
+        <!-- Controls の割り当てエディター（AssignmentEditor の Controls のモード）の表示場所。
          編集中は、左ペイン全体（sidebarTabControl）の代わりに、ここへ表示する（コードビハインドで切り替える） -->
         <Grid x:Name="controlEditorHost"
               Grid.Row="1"

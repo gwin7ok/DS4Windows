@@ -41,10 +41,10 @@ namespace DS4Windows.Processing.Touchpad
         private readonly MouseCursor cursor;
         private readonly MouseWheel wheel;
         private readonly GyroOutputProcessor _gyro;
-        // Phase6-Step4-3: Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
+        // Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
-        // Phase7-Step8 W1: 旧 StickMotionState.Shared／Mapping.MapClick（静的な窓口）。コンストラクターで受ける。
+        // 旧 StickMotionState.Shared／Mapping.MapClick（静的な窓口）。コンストラクターで受ける。
         private readonly StickMotionState _stickMotion;
         private readonly SyntheticInputState _syntheticInput;
         private readonly TapClickDetector _tap;
@@ -72,7 +72,7 @@ namespace DS4Windows.Processing.Touchpad
         private bool trackballTouchStickActive = false;
 
 
-        // Phase14b-Step2（R-04）: 旧ネスト型 Mouse.TouchButtonActivationMode は、プロファイルの設定値の型として
+        // 旧ネスト型 Mouse.TouchButtonActivationMode は、プロファイルの設定値の型として
         // Core/Settings/TouchButtonActivationMode.cs（トップレベル）へ移した（値と基底型は同じ）
 
 
@@ -577,7 +577,7 @@ namespace DS4Windows.Processing.Touchpad
             {
                 DateTime current = DateTime.UtcNow;
                 // Set keydown time to 100 ms for now
-                // Phase6 fix: 上流の比較が逆（'<'）で、離した直後のフレームでフラグが下りて Mapping に届かなかった。
+                // 上流の比較が逆（'<'）で、離した直後のフレームでフラグが下りて Mapping に届かなかった。
                 // 100ms 経過後にフラグを下ろす（'>='）。
                 if (current >= (_buttons.OnReleaseTime + TimeSpan.FromMilliseconds(100.0)))
                 {
@@ -588,7 +588,7 @@ namespace DS4Windows.Processing.Touchpad
             }
 
             // Double Tap の保留クリックと、タップクリックの保持中は、
-            // 指を離した後も処理が必要（Phase6 変更、ユーザー承認 2026-10-15）
+            // 指を離した後も処理が必要
             if (s.Touch1Finger || s.TouchButton ||
                 _buttons.ReleaseButtonActive || releaseButtonChanged ||
                 _tap.IsPendingOrHolding)

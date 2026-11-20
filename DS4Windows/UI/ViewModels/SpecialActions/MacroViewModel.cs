@@ -35,7 +35,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private List<int> macro = new List<int>(1);
         private string macrostring;
 
-        // Phase10-Step1 W3: Execute Mode（繰り返し）と Scan Code は、共通の MacroPlaybackOptions に持つ（旧: UseScanCode、RepeatHeld）
+        // Execute Mode（繰り返し）と Scan Code は、共通の MacroPlaybackOptions に持つ
         public MacroPlaybackOptions PlaybackOptions { get; } = new MacroPlaybackOptions();
         public bool RunTriggerRelease { get => runTriggerRelease; set { runTriggerRelease = value; OnPropertyChanged(nameof(RunTriggerRelease)); } }
         public bool SyncRun { get => syncRun; set { syncRun = value; OnPropertyChanged(nameof(SyncRun)); } }
@@ -73,13 +73,13 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             DS4ControlSettings settings = new DS4ControlSettings(DS4Controls.None);
             settings.action.actionMacro = macro.ToArray();
             settings.actionType = DS4ControlSettings.ActionType.Macro;
-            // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro だけで表す
+            // 「押している間繰り返す」は RepeatMacro だけで表す
             settings.keyType = PlaybackOptions.ApplyTo(DS4KeyType.Macro);
 
             return settings;
         }
 
-        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        // Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
 
         public MacroViewModel(ISpecialActionRepository specialActionRepository)
@@ -111,7 +111,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             extrasList.Add(runTriggerRelease && !PlaybackOptions.RepeatToggle ? "RunOnRelease" : null);   // R-2: Repeat (Toggle) とは併用しない
             extrasList.Add(syncRun ? "Sync" : null);
             extrasList.Add(keepKeyState ? "KeepKeyState" : null);
-            // R-2: Execute Mode（Once／Held／Toggle）は、extras ではなく、独立した MacroExecuteMode 要素へ保存する（旧: extras の Repeat）
+            // R-2: Execute Mode（Once／Held／Toggle）は、extras ではなく、独立した MacroExecuteMode 要素へ保存する
             MacroExecuteMode executeMode = MacroExecuteModes.FromKeyType(PlaybackOptions.ApplyTo(DS4KeyType.Macro));
             specialActionRepository.SaveAction(action.name, action.controls, 1, string.Join("/", macro), edit,
                 extras: string.Join("/", extrasList.Where(s => !string.IsNullOrEmpty(s))), actionId: action.id, macroExecuteMode: executeMode);
@@ -134,7 +134,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         {
             ClearOldErrors();
 
-            // Phase10-Step3（ユーザー承認、2026-10-21）: 手順が空のマクロも、保存できる（従来は「No macro defined」で保存できなかった）。
+            // 手順が空のマクロも、保存できる（従来は「No macro defined」で保存できなかった）。
             // トリガーが成立すると、空のマクロが実行される（何も出力しない）。「押している間繰り返す」の空のマクロは、押している間、
             // 短い間隔を置いて繰り返す（Mapping.PlayMacroTask。間隔を置かないと、待ちなしの空回りになるため）
             return true;

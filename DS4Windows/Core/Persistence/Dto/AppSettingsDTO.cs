@@ -24,7 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 public class AppSettingsDTO
 {
-    // Phase7-Step10d W2: 旧 Global.APP_CONFIG_VERSION（利用はこのクラスのみ）。
+    // 旧 Global.APP_CONFIG_VERSION（利用はこのクラスのみ）。
     public const int AppConfigVersion = 2;
 
     // ここに既存の全てのプロパティ・メソッド・フィールド・コンストラクタを収める
@@ -225,7 +225,7 @@ public class AppSettingsDTO
             ControllerLimits.MaxControllerCount >= 8;
     }
 
-    // Phase10-Step4d W4（Phase10-Step4d-Plan.md §3.2）: 各スロットの選択（Controller1〜8）のプロファイルの固定 ID を、同じ並びで「/」区切りに書く（名前の要素は、古いバージョンのために残す）。
+    // 各スロットの選択（Controller1〜8）のプロファイルの固定 ID を、同じ並びで「/」区切りに書く（名前の要素は、古いバージョンのために残す）。
     // 読み込みは、ID を主にして、現在の名前に引き直す（プロファイルの名前変更に追従する。ID が勝つ）。ない・見つからないときは、名前のまま。1 つも ID がなければ、書かない
     [XmlElement("ControllerProfileIds")]
     public string ControllerProfileIds { get; set; }
@@ -965,7 +965,7 @@ public class AppSettingsDTO
         Controller7CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(6)) ? source.GetPersistedProfileName(6) : string.Empty;
         Controller8CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(7)) ? source.GetPersistedProfileName(7) : string.Empty;
 
-        // Phase10-Step4d W4: 選択しているプロファイルの固定 ID（名前の要素と同じ並び。ないスロットは空）
+        // 選択しているプロファイルの固定 ID（名前の要素と同じ並び。ないスロットは空）
         if (ProfileIdOf != null)
         {
             var ids = new string[8];
@@ -1099,7 +1099,7 @@ public class AppSettingsDTO
         destination.profilePath[6] = destination.olderProfilePath[6] = destination.selectedProfile[6] = !string.IsNullOrEmpty(Controller7CurrentProfile) ? Controller7CurrentProfile : string.Empty;
         destination.profilePath[7] = destination.olderProfilePath[7] = destination.selectedProfile[7] = !string.IsNullOrEmpty(Controller8CurrentProfile) ? Controller8CurrentProfile : string.Empty;
 
-        // Phase10-Step4d W4: ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
+        // ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
         if (ProfileNameOf != null && !string.IsNullOrEmpty(ControllerProfileIds))
         {
             string[] ids = ControllerProfileIds.Split('/');

@@ -8,20 +8,20 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1。Phase8-Step2-Design.md §6・§8）: <see cref="IActionBindingBuilder"/> の実装（DI の Singleton）。
+    /// <see cref="IActionBindingBuilder"/> の実装（DI の Singleton）。
     /// 種別ごとの構成は設計書 §6 のとおり（Button／Key／Macro／Program／Profile／GyroCalibrate／DisconnectBT／BatteryCheck／MultiAction の 9 種。SASteeringWheelEmulationCalibrate は Phase9 Steering 削除 W1 で削除）。それ以外の種別
     /// （<c>None</c>）は束縛を作らず、旧経路が処理する。
     /// <para>
     /// TODO（Phase8-Step7。規約 2.4）: 本クラスは Step5 で作り、本番の適用の経路（<c>ProfileApplicationService</c>）から呼ぶが、
-    /// Phase8-Step8 8d: 種別ごとの移行のスイッチ（<c>BindingMigrationOptions</c>）は削除した。全種別の束縛を常に組み立てる。
+    /// 種別ごとの移行のスイッチ（<c>BindingMigrationOptions</c>）は削除した。全種別の束縛を常に組み立てる。
     /// </para>
     /// </summary>
     public sealed class ActionBindingBuilder : IActionBindingBuilder
     {
         private readonly IProfileActionProvider _profileActions;
         private readonly IProfileSettingsService _profileSettings;
-        private readonly ISpecialActionOutputFactory _outputFactory;     // Phase10-Step4 W2: 種別ごとの出力アクション・方針の作り方（Controls タブの束縛を作る側と共有）
-        private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: 定義 → 束縛の組み立て（Controls タブ側と同じ部品）
+        private readonly ISpecialActionOutputFactory _outputFactory;     // 種別ごとの出力アクション・方針の作り方（Controls タブの束縛を作る側と共有）
+        private readonly AssignmentBindingBuilder _assignmentBuilder;   // 定義 → 束縛の組み立て（Controls タブ側と同じ部品）
         private readonly IControlBindingBuilder _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
 
         /// <param name="outputFactory">種別ごとの出力と方針の作り方（Controls タブの束縛を作る側と共有する）。窓口（ポート）の束ねは、この部品が持つ。</param>
@@ -44,7 +44,7 @@ namespace DS4Windows.Processing.Actions
         {
             IReadOnlyList<IActionBinding> special = BuildSpecialActions(device);
 
-            // Phase8-Step7 7.8b: Controls タブの束縛を、同じ一覧に連結する（Q5＝A。入力アクションの型で見分ける）。空なら、連結しない
+            // Controls タブの束縛を、同じ一覧に連結する（Q5＝A。入力アクションの型で見分ける）。空なら、連結しない
             IReadOnlyList<IActionBinding> controls = _controlBuilder?.Build(device);
             if (controls == null || controls.Count == 0) return special;
 
@@ -72,18 +72,18 @@ namespace DS4Windows.Processing.Actions
             return result.Count == 0 ? (IReadOnlyList<IActionBinding>)Array.Empty<IActionBinding>() : result.ToArray();
         }
 
-        // Phase10-Step6 I5b: SA の束縛（と、SA に Extras が付いていれば、その前に並べる Extras の束縛）を一覧へ足す
+        // SA の束縛（と、SA に Extras が付いていれば、その前に並べる Extras の束縛）を一覧へ足す
         private void AddBindings(int device, SpecialAction sa, int index, List<IActionBinding> result)
         {
             // トリガーのボタンがないスペシャルアクションは、旧経路でも成立しない。束縛を作らない
             if (sa.trigger == null || sa.trigger.Count == 0) return;
 
-            // Phase10-Step4 W2: 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null（旧経路が処理する）
-            // Phase10-Step6 I3: SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（実行時の状態は、プロファイルの SpecialAction の実物が持つ）
+            // 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null
+            // SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（実行時の状態は、プロファイルの SpecialAction の実物が持つ）
             AssignmentDefinition definition = SpecialActionAssignmentReader.Read(sa);
             if (definition == null) return;
 
-            // Phase10-Step6 I4c: 出力・方針・入力・包みは、共通の組み立て（AssignmentBindingBuilder）が行う。入力は SA 由来（複数ボタンの組み合わせ。MultiAction は独立した入力）
+            // 出力・方針・入力・包みは、共通の組み立て（AssignmentBindingBuilder）が行う。入力は SA 由来（複数ボタンの組み合わせ。MultiAction は独立した入力）
             TriggerBinding binding = _assignmentBuilder.Build(device, definition, sa, index);
             if (binding == null) return;
 
@@ -94,7 +94,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8a（Q9＝A）: SA タブの Key の設定の解釈（<c>details</c> → 論理キー、<c>keyType</c> → ScanCode／Toggle）。変換層の責務。
+        /// SA タブの Key の設定の解釈（<c>details</c> → 論理キー、<c>keyType</c> → ScanCode／Toggle）。変換層の責務。
         /// <c>details</c> が数値として読めなければ論理キーは 0（現行の <c>KeyOutputAction</c> と同じ）。
         /// </summary>
         public static KeyBindingValues InterpretKey(SpecialAction sa)
@@ -107,7 +107,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8a（Q9＝A）: SA タブの Button の設定の解釈（<c>details</c> → X360 のボタン、<c>KeyButtonSwitchMode</c> → Toggle）。変換層の責務。
+        /// SA タブの Button の設定の解釈（<c>details</c> → X360 のボタン、<c>KeyButtonSwitchMode</c> → Toggle）。変換層の責務。
         /// <c>details</c> が整数として読めなければ、ボタンなし（現行の Stage3 と同じく、何も出力しない）。
         /// </summary>
         public static ButtonBindingValues InterpretButton(SpecialAction sa)
@@ -115,7 +115,7 @@ namespace DS4Windows.Processing.Actions
             bool toggle = sa != null && sa.KeyButtonSwitchMode.HasValue &&
                 sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
             if (sa != null && int.TryParse(sa.details, out int value))
-                return new ButtonBindingValues(true, (X360Controls)value, toggle, sa.analogStrength);   // Phase10-Step6 後の Step5: アナログな出力の強さ
+                return new ButtonBindingValues(true, (X360Controls)value, toggle, sa.analogStrength);   // アナログな出力の強さ
             return new ButtonBindingValues(false, X360Controls.None, toggle, sa != null ? sa.analogStrength : 100);
         }
 

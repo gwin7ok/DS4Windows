@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-2（Phase9-E-Plan.md）: HidHide ドライバーの制御デバイス（<c>\\.\HidHide</c>）の窓口。HidHide の設定を読み書きする。
+    /// HidHide ドライバーの制御デバイス（<c>\\.\HidHide</c>）の窓口。HidHide の設定を読み書きする。
     /// 実装は <c>HidHideAPIDevice</c>（internal）を包む。ドライバーなしで、ホワイトリストの確認などの判断をテストするための境界。
     /// </summary>
     public interface IHidHideApi : IDisposable

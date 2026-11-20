@@ -3,10 +3,10 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step4c W1（Phase10-Step4c-Plan.md §2 項目 2）: Fresh-press ガード（<see cref="BindingPolicy.RespectsFreshPressGuard"/>）を見るかの規則を、1 か所にまとめた表。
+    /// Fresh-press ガード（<see cref="BindingPolicy.RespectsFreshPressGuard"/>）を見るかの規則を、1 か所にまとめた表。
     /// 以前は、<see cref="SpecialActionOutputFactory"/>（SA の種別ごと）と <c>ControlBindingBuilder</c>（Controls の区分ごとの直書き）に散っていた。挙動は変えない（値は従来のまま）。
     /// Fresh-press ガードは、プロファイル適用直後の押しっぱなしで連鎖して発火しないための安全弁（規約 2.2）。見る束縛は、トリガーが未成立になるまで新規に成立とみなさない。
-    /// 統合の Step で、方針の表（種別 × 由来）の 1 列になる（Phase10-Integration-Target-Model.md §3）。
+    /// 統合の Step で、方針の表（種別 × 由来）の 1 列になる。
     /// </summary>
     public static class FreshPressGuardTable
     {
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase10-Step6 I4b: 種別 × 由来の規則（方針の表の 1 列）。SA 由来は <see cref="ForSpecialAction"/>。Controls 由来は、Key は見ず、Macro と SA 専用の種別は見る
+        /// 種別 × 由来の規則（方針の表の 1 列）。SA 由来は <see cref="ForSpecialAction"/>。Controls 由来は、Key は見ず、Macro と SA 専用の種別は見る
         /// （<see cref="ForControls"/> の区分の規則と同じ）。
         /// </summary>
         public static bool For(AssignmentOrigin origin, SpecialAction.ActionTypeId type, bool toggle = false)

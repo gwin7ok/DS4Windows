@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
-    /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md §3.2）: <see cref="IControlBindingBuilder"/> の実装（DI の Singleton）。
+    /// <see cref="IControlBindingBuilder"/> の実装（DI の Singleton）。
     /// Controls タブの割り当て（<c>ControlSettingsGroup</c>）のうち、各区分の条件を満たす割り当てだけを、束縛にする。
     /// 条件を満たさない割り当ては束縛を作らない（Phase8-Step8: 旧経路は削除済みのため、束縛なし＝何もしない。Q2＝C）。Phase8-Step8 8d: 区分ごとの移行のスイッチ（<c>BindingMigrationOptions</c>）は削除した。
     /// <para>
@@ -29,9 +29,9 @@ namespace DS4Windows.Processing.Services.Slots
         private readonly IProfileSettingsService _profileSettings;
         private readonly IMacroPlayer? _macroPlayer;   // Macro（7.8c）。省略時（テスト）は、Macro の束縛を作らず、旧経路が処理する
         private readonly IControlExtrasPort? _extrasPort;   // Extras（7.8e）。省略時（テスト）は、Extras を持つ割り当ての束縛を作らず、旧経路が処理する
-        private readonly ISpecialActionOutputFactory? _outputFactory;   // Phase10-Step4 W4: SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
-        private readonly AssignmentBindingBuilder _assignmentBuilder;   // Phase10-Step6 I4c: Key／Macro／Special の束縛の組み立て（SA タブ側と同じ部品）
-        private readonly ISpecialActionOutputFactory? _controlsFactory;   // Phase10-Step6 I4b: Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
+        private readonly ISpecialActionOutputFactory? _outputFactory;   // SA 専用の種別（Special）の出力と方針。省略時（テスト）は、Special の束縛を作らない
+        private readonly AssignmentBindingBuilder _assignmentBuilder;   // Key／Macro／Special の束縛の組み立て（SA タブ側と同じ部品）
+        private readonly ISpecialActionOutputFactory? _controlsFactory;   // Key と Macro 用。_outputFactory がなければ、最小の部品（Key と Macro だけを作る）
 
         /// <summary>Program の引数に書くと、ウィンドウを隠して起動する語（SA の仕様。大文字小文字不問）。</summary>
         public const string HiddenKeyword = "$hidden";
@@ -45,11 +45,11 @@ namespace DS4Windows.Processing.Services.Slots
             _macroPlayer = macroPlayer;
             _extrasPort = extrasPort;
             _outputFactory = outputFactory;
-            // Phase13-Step4: 最小の部品は _outputFactory がないとき（テスト）だけ使う。Key の出力が使う管理役と登録簿は、ここで受ける（旧: 静的 ActionManager）
+            // 最小の部品は _outputFactory がないとき（テスト）だけ使う。Key の出力が使う管理役と登録簿は、ここで受ける
             _controlsFactory = outputFactory == null
                 ? SpecialActionOutputFactory.ForControlsKeyAndMacro(_profileSettings, manager, controllers, macroPlayer)
                 : null;
-            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory);   // Phase10-Step6 I4c: 束縛の組み立ては、SA タブ側と同じ部品
+            _assignmentBuilder = new AssignmentBindingBuilder(_outputFactory ?? _controlsFactory);   // 束縛の組み立ては、SA タブ側と同じ部品
         }
 
         public IReadOnlyList<IActionBinding> Build(int device)
@@ -78,7 +78,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8c: Macro の新経路の条件（Key と同じ形。Macro、手順あり、Extras なし）を満たすか。満たすとき、手順を返す。
+        /// Macro の新経路の条件（Key と同じ形。Macro、手順あり、Extras なし）を満たすか。満たすとき、手順を返す。
         /// </summary>
         public static bool TryInterpretMacro(DS4ControlSettings dcs, [NotNullWhen(true)] out int[]? steps)
         {
@@ -87,7 +87,7 @@ namespace DS4Windows.Processing.Services.Slots
             if (dcs.actionType != DS4ControlSettings.ActionType.Macro) return false;
 
             int[] macro = dcs.action.actionMacro;
-            // Phase10-Step3（ユーザー承認、2026-10-21）: 手順が空のマクロも、新経路が所有する（SA の Macro と同じ。トリガーが成立すると、空のマクロを実行し、何も出力しない。
+            // 手順が空のマクロも、新経路が所有する（SA の Macro と同じ。トリガーが成立すると、空のマクロを実行し、何も出力しない。
             // 通常の出力は、他の割り当てと同じく毎フレーム消える）。以前は「旧経路が、手順がないと例外になる」ため所有しなかったが、旧経路の本体は
             // Phase8-Step8 8a で削除済みで、所有しないと、割り当てたのに通常の出力が出てしまっていた。手順そのものがない（null）ものは、従来どおり所有しない
             if (macro == null) return false;
@@ -115,9 +115,9 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8e: Extras（カンマ区切りの 9 個の値）の解釈。空（<c>IsExtrasEmpty</c>）なら偽（Extras なし）。
-        /// 9 個未満だと、旧経路は途中の欄の参照で例外になり、そこまでの効果だけが残る。その挙動を保つため、新経路は所有せず、偽を返す（旧経路が処理する）。
-        /// 数値として読めない欄は 0（旧経路の <c>int.TryParse</c> の失敗と同じ）。
+        /// Extras（カンマ区切りの 9 個の値）の解釈。空（<c>IsExtrasEmpty</c>）なら偽（Extras なし）。
+        /// 9 個未満だと、旧経路は途中の欄の参照で例外になり、そこまでの効果だけが残る。その挙動を保つため、新経路は所有せず、偽を返す。
+        /// 数値として読めない欄は 0。
         /// </summary>
         public static bool TryInterpretExtras(string extras, out ExtrasBindingValues values)
         {
@@ -145,7 +145,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8f-1: Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当ての解釈。出力先が Unbound／None なら、消すだけ（<paramref name="eraseOnly"/>）。
+        /// Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当ての解釈。出力先が Unbound／None なら、消すだけ（<paramref name="eraseOnly"/>）。
         /// マウス・ホイール・タッチパッドクリックへの割り当て（7.8f-2・7.8f-3）と、Toggle つきは偽（Toggle つきは、<see cref="TryInterpretPadTarget"/> と Toggle の出力を組み合わせて扱う［7.8f-2］）。
         /// </summary>
         public static bool TryInterpretPad(DS4ControlSettings dcs, out PadBindingValues values, out bool eraseOnly)
@@ -157,7 +157,7 @@ namespace DS4Windows.Processing.Services.Slots
             return TryInterpretPadTarget(dcs, out values, out eraseOnly);
         }
 
-        /// <summary>Phase8-Step7 7.8f-2: <see cref="TryInterpretPad"/> と同じ解釈で、Toggle の有無を見ない（Toggle は別の出力が担う）。</summary>
+        /// <summary><see cref="TryInterpretPad"/> と同じ解釈で、Toggle の有無を見ない（Toggle は別の出力が担う）。</summary>
         public static bool TryInterpretPadTarget(DS4ControlSettings dcs, out PadBindingValues values, out bool eraseOnly)
         {
             values = default;
@@ -183,7 +183,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8f-2: Button のうち、マウスのボタン（左・右・中・4・5）、タッチパッドクリック、デジタルのホイール（元がボタン）への割り当ての解釈。
+        /// Button のうち、マウスのボタン（左・右・中・4・5）、タッチパッドクリック、デジタルのホイール（元がボタン）への割り当ての解釈。
         /// Toggle の有無は見ない（Toggle は別の出力が担う）。元がスティック・トリガー・ジャイロのホイール（アナログ）と、マウスの移動は偽（7.8f-3。旧経路が処理する）。
         /// </summary>
         public static bool TryInterpretMouse(DS4ControlSettings dcs, out X360Controls target)
@@ -219,7 +219,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8f-3: Button のうち、マウスの移動（MouseUp／Down／Left／Right）と、元がスティック・トリガー・ジャイロのホイール（アナログ）への割り当ての解釈。
+        /// Button のうち、マウスの移動（MouseUp／Down／Left／Right）と、元がスティック・トリガー・ジャイロのホイール（アナログ）への割り当ての解釈。
         /// Toggle の有無は見ない。元がボタンのホイール（デジタル）は <see cref="TryInterpretMouse"/> が扱う。
         /// </summary>
         public static bool TryInterpretAnalogMouse(DS4ControlSettings dcs, out X360Controls target)
@@ -294,7 +294,7 @@ namespace DS4Windows.Processing.Services.Slots
                     }
                     break;
                 case DS4ControlSettings.ActionType.Special:
-                    // Phase10-Step6 I3: 定義と、実行時の状態の入れ物（合成の SpecialAction）は、読み込みの部品が作る
+                    // 定義と、実行時の状態の入れ物（合成の SpecialAction）は、読み込みの部品が作る
                     if (_outputFactory != null && ControlsAssignmentReader.TryReadSpecial(device, dcs, out AssignmentDefinition? special, out SpecialAction? identity))
                     {
                         // 出力を作れない種別（窓口が未接続のテスト）は、束縛を 1 つも作らない（Extras も含め、dcs 全体を作らない）
@@ -307,7 +307,7 @@ namespace DS4Windows.Processing.Services.Slots
                     break;
                 case DS4ControlSettings.ActionType.Button:
                     {
-                        // Phase8-Step7 7.8f-2: Toggle つきは、ButtonMouse が有効なときだけ（Toggle の出力は ButtonMouse の区分）。出力先がパッドなら ButtonPad も要る
+                        // Toggle つきは、ButtonMouse が有効なときだけ（Toggle の出力は ButtonMouse の区分）。出力先がパッドなら ButtonPad も要る
                         bool toggle = dcs.keyType.HasFlag(DS4KeyType.Toggle);
                         if (toggle && !mice) break;
 
@@ -316,7 +316,7 @@ namespace DS4Windows.Processing.Services.Slots
                             if (!mice) break;
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
 
-                            // Phase9: マウスのボタン等の Toggle も、SA の Button と同じ部品（ボタンごとの状態）で処理する。作れないときは、従来の束縛
+                            // マウスのボタン等の Toggle も、SA の Button と同じ部品（ボタンごとの状態）で処理する。作れないときは、従来の束縛
                             if (toggle && ControlsAssignmentReader.TryReadMouseToggle(device, dcs, out AssignmentDefinition? mouseToggle, out SpecialAction? mouseToggleIdentity))
                             {
                                 TriggerBinding mouseToggleBinding = _assignmentBuilder.Build(device, mouseToggle, mouseToggleIdentity, -1);
@@ -334,7 +334,7 @@ namespace DS4Windows.Processing.Services.Slots
                             if (!analogMice) break;
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
 
-                            // Phase9: マウスの移動・アナログのホイールの Toggle も、SA の Button と同じ部品で処理する（以前は、Toggle が移動に効かなかった）。作れないときは、従来の束縛
+                            // マウスの移動・アナログのホイールの Toggle も、SA の Button と同じ部品で処理する（以前は、Toggle が移動に効かなかった）。作れないときは、従来の束縛
                             if (toggle && ControlsAssignmentReader.TryReadAnalogMouseToggle(device, dcs, out AssignmentDefinition? analogToggle, out SpecialAction? analogToggleIdentity))
                             {
                                 TriggerBinding analogToggleBinding = _assignmentBuilder.Build(device, analogToggle, analogToggleIdentity, -1);
@@ -351,7 +351,7 @@ namespace DS4Windows.Processing.Services.Slots
                         {
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
 
-                            // Phase9（Phase9-ControlsPadToggle-Plan.md）: パッドへの Toggle は、SA の Button と同じ部品（ButtonOutputAction）で処理する。
+                            // パッドへの Toggle は、SA の Button と同じ部品（ButtonOutputAction）で処理する。
                             // 以前は ControlToggleOutputAction（マウスのボタンの Toggle の仕組み）しかなく、仮想パッドのボタンには Toggle が効かなかった。
                             // 部品を作れない（窓口が未接続のテスト）ときは、従来の束縛にする
                             if (toggle && ControlsAssignmentReader.TryReadPadToggle(device, dcs, out AssignmentDefinition? padToggle, out SpecialAction? padToggleIdentity))
@@ -374,7 +374,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         /// <summary>
-        /// Phase10-Step4 W4: SA 専用の種別の割り当てが、新経路の条件（<see cref="ControlsSpecialTypeTable"/> の種別で、型のある項目を持つ）を満たすか。
+        /// SA 専用の種別の割り当てが、新経路の条件（<see cref="ControlsSpecialTypeTable"/> の種別で、型のある項目を持つ）を満たすか。
         /// </summary>
         public static bool TryInterpretSpecial(DS4ControlSettings dcs, [NotNullWhen(true)] out ControlSpecialItem? item)
         {
@@ -383,10 +383,10 @@ namespace DS4Windows.Processing.Services.Slots
             if (dcs.actionType != DS4ControlSettings.ActionType.Special) return false;
             if (dcs.special == null || !ControlsSpecialTypeTable.IsSupported(dcs.special.Type)) return false;
 
-            // Phase10-Step4 W6: 切り替え先のない Load Profile は、束縛を作らない（作ると、切り替えに失敗し続けながら、割り当てたボタンの元の出力だけが消える）
+            // 切り替え先のない Load Profile は、束縛を作らない（作ると、切り替えに失敗し続けながら、割り当てたボタンの元の出力だけが消える）
             if (dcs.special.Type == SpecialAction.ActionTypeId.Profile && string.IsNullOrWhiteSpace(dcs.special.ProfileName)) return false;
 
-            // Phase12-Step2 2d（R-4）: パスもタイトルも空のフォーカスは、どのウィンドウにも一致してしまうため、束縛を作らない
+            // パスもタイトルも空のフォーカスは、どのウィンドウにも一致してしまうため、束縛を作らない
             if (dcs.special.Type == SpecialAction.ActionTypeId.FocusWindow
                 && string.IsNullOrWhiteSpace(dcs.special.WindowPath) && string.IsNullOrWhiteSpace(dcs.special.WindowTitle)) return false;
 
@@ -403,13 +403,13 @@ namespace DS4Windows.Processing.Services.Slots
             identity.details = dcs.action.actionBtn.ToString();   // ログの「maps to」に出る（出力の部品は values を使い、details は読まない）
             identity.controls = identity.name;
 
-            // Phase10-Step4c W2: 立ち上がり・離したときのログはエンジンが出す。出力先が Unbound／None の消すだけの束縛は、ユーザーの操作ではないので出さない
+            // 立ち上がり・離したときのログはエンジンが出す。出力先が Unbound／None の消すだけの束縛は、ユーザーの操作ではないので出さない
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonPad), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: true, logsRisingEdge: !eraseOnly, logsReleaseEdge: !eraseOnly);
             var outputs = new List<IOutputAction>(2);
             if (!eraseOnly) outputs.Add(new ControlPadOutputAction(identity, values));
             if (toggle) outputs.Add(new ControlToggleOutputAction(identity));   // 7.8f-2（Q8＝A）。Toggle の出力は ButtonMouse の区分
-            // Phase10-Step4c W4（ユーザー承認、2026-10-21）: パッドのボタンへの割り当て（デジタルな出力）は、SA と同じ閾値で判定する。軸・トリガーへの割り当て（アナログな出力）は、従来の判定のまま
+            // パッドのボタンへの割り当て（デジタルな出力）は、SA と同じ閾値で判定する。軸・トリガーへの割り当て（アナログな出力）は、従来の判定のまま
             ControlOutputNature nature = ControlOutputNatureTable.ForPad(eraseOnly, values.Kind);
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, toggle ? ControlBindingKind.ButtonMouse : ControlBindingKind.ButtonPad, nature),
                 outputs.ToArray(), policy, identity, -1));
@@ -442,7 +442,7 @@ namespace DS4Windows.Processing.Services.Slots
         }
 
         // 設計: Phase8-Step7-8f-Plan.md §3.2（7.8f-2）。マウスのボタン・タッチパッドクリック・デジタルのホイール。割り当てたボタンの通常の出力は、毎フレーム消す。
-        // マウスのボタンとホイールは Controls の判定（旧 GetBoolActionMapping）。タッチパッドクリックの押下は SA と同じ判定（旧 GetBoolMapping）で、出力が自分で見る。Toggle つきなら、Toggle の出力を足す（Q8＝A）
+        // マウスのボタンとホイールは Controls の判定。タッチパッドクリックの押下は SA と同じ判定で、出力が自分で見る。Toggle つきなら、Toggle の出力を足す（Q8＝A）
         private void AddMouse(int device, DS4ControlSettings dcs, X360Controls target, bool toggle, List<IActionBinding> result)
         {
             var identity = new SpecialAction($"Synthetic_Mouse_{device}_{(int)dcs.control}", "Synthetic", "Mouse", "Mouse", 0, string.Empty);
@@ -456,7 +456,7 @@ namespace DS4Windows.Processing.Services.Slots
             if (target == X360Controls.TouchpadClick) outputs.Add(new ControlTouchpadClickOutputAction(identity, dcs.control));
             else outputs.Add(new ControlMouseOutputAction(identity, target));
             if (toggle) outputs.Add(new ControlToggleOutputAction(identity));
-            // Phase10-Step4c W4: マウスのボタン・タッチパッドクリック・デジタルのホイール（デジタルな出力）は、SA と同じ閾値で判定する
+            // マウスのボタン・タッチパッドクリック・デジタルのホイール（デジタルな出力）は、SA と同じ閾値で判定する
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonMouse, ControlOutputNatureTable.ForKind(ControlBindingKind.ButtonMouse)),
                 outputs.ToArray(), policy, identity, -1));
         }
@@ -469,7 +469,7 @@ namespace DS4Windows.Processing.Services.Slots
             identity.controls = identity.name;
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.ButtonPad), suppressesTriggerButtons: false, resetsTriggerOutput: false,
-                erasesOutputEveryFrame: false, logsReleaseEdge: false);   // Phase10-Step4c W2: 素通しは、ユーザーの操作ではないので、ログを出さない
+                erasesOutputEveryFrame: false, logsReleaseEdge: false);   // 素通しは、ユーザーの操作ではないので、ログを出さない
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.ButtonPad, ControlOutputNatureTable.ForKind(ControlBindingKind.ButtonPad)),
                 new IOutputAction[] { new ControlPassthroughOutputAction(identity, dcs.control) }, policy, identity, -1));
         }
@@ -485,18 +485,18 @@ namespace DS4Windows.Processing.Services.Slots
 
             var policy = new BindingPolicy(respectsFreshPressGuard: FreshPressGuardTable.ForControls(ControlBindingKind.Extras), suppressesTriggerButtons: false, resetsTriggerOutput: false,
                 erasesOutputEveryFrame: false, logsRisingEdge: true);
-            // Phase10-Step4c W4: Extras（振動・ライトバー・感度。オン／オフの出力）は、SA と同じ閾値で判定する
+            // Extras（振動・ライトバー・感度。オン／オフの出力）は、SA と同じ閾値で判定する
             result.Add(new TriggerBinding(new ControlButtonInputAction(identity.name, dcs.control, ControlBindingKind.Extras, ControlOutputNatureTable.ForKind(ControlBindingKind.Extras)),
                 new IOutputAction[] { new ControlExtrasOutputAction(identity, values, _extrasPort) }, policy, identity, -1));
         }
 
-        // Phase10-Step6 I4b: Key と Macro は、読み込みの部品（定義と、実行時の状態の入れ物）と、出力の部品（種別 × 由来の方針）を通して作る。
-        // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す（旧 ResetToDefaultValue）。
+        // Key と Macro は、読み込みの部品（定義と、実行時の状態の入れ物）と、出力の部品（種別 × 由来の方針）を通して作る。
+        // 設計書 §3.2: Controls タブの Key は、Fresh-press ガードを見ず、トリガーのボタンを抑制せず、押していなくても毎フレーム通常の出力を消す。
         // Macro は SA と同じ仕組み（MacroAction、SA と同じ押下の判定、ActionInstanceState）に載せ、Fresh-press ガードは SA と同じく見る。割り当てたボタンの通常の出力は、毎フレーム消す
         private void AddFromDefinition(int device, AssignmentDefinition definition, SpecialAction identity, List<IActionBinding> result)
         {
-            // Phase10-Step4c W4: Key・Macro（デジタルな出力）は、SA と同じ閾値で判定する。Macro の「Run on trigger release」は、離したときに成立する入力にする
-            // Phase10-Step6 I4c: 入力の組み立て（区分、判定の性質、離したとき成立）は AssignmentBindingBuilder が行う
+            // Key・Macro（デジタルな出力）は、SA と同じ閾値で判定する。Macro の「Run on trigger release」は、離したときに成立する入力にする
+            // 入力の組み立て（区分、判定の性質、離したとき成立）は AssignmentBindingBuilder が行う
             TriggerBinding binding = _assignmentBuilder.Build(device, definition, identity, -1);
             if (binding != null) result.Add(binding);
         }

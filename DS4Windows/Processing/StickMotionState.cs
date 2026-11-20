@@ -7,10 +7,10 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing
 {
     /// <summary>
-    /// Phase7-Step7 W4（Q2＝A）: スティック・ジャイロ・トリガーの処理状態のうち、<c>Mapping</c> の外から触られるものの保持クラス
+    /// スティック・ジャイロ・トリガーの処理状態のうち、<c>Mapping</c> の外から触られるものの保持クラス
     /// （旧: <c>Mapping</c> の静的フィールド <c>gyroStickX</c>／<c>gyroStickY</c>／<c>mapStickActionData</c>／<c>flickMappingData</c>／
     /// <c>l2TwoStageMappingData</c>／<c>r2TwoStageMappingData</c>／<c>wheelFilters</c>／<c>deltaAccelProcessors</c>）。
-    /// <c>Mapping</c>、<c>Mouse</c>、<c>ControlService</c> が使う。Phase9 9-A(2)-B で、<c>Mapping</c> の内部だけで使っていたスティックの前処理の状態（旧 <c>stickValueHistory</c>／<c>lastStickAxisValues</c>）も、ここへ移した（<c>IStickInputConditioner</c> へ引数で渡す）。
+    /// <c>Mapping</c>、<c>Mouse</c>、<c>ControlService</c> が使う。Phase9 9-A(2)-B で、<c>Mapping</c> の内部だけで使っていたスティックの前処理の状態も、ここへ移した（<c>IStickInputConditioner</c> へ引数で渡す）。
     /// 配列の参照は再代入しない（要素の読み書き、または要素の差し替えのみ）。デバイスの添字ごとに分かれており、ロックはない（従来どおり）。
     /// </summary>
     public class StickMotionState

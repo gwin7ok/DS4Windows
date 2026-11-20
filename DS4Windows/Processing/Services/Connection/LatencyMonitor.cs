@@ -11,9 +11,9 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="ILatencyMonitor"/> の実装（DI の Singleton）。
+    /// <see cref="ILatencyMonitor"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService.On_Report</c> の先頭（エラーのログと遅延の監視）と <c>LagFlashWarning</c> を、そのまま移したもの。
-    /// 値の特性化は <c>Phase9EInputReportPartsTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は <c>Phase9EInputReportPartsTests</c>が守る。
     /// </summary>
     public sealed class LatencyMonitor : ILatencyMonitor
     {
@@ -24,7 +24,7 @@ namespace DS4Windows.Processing.Services.Connection
         private readonly bool[] _inWarnMonitor = new bool[ControllerLimits.MaxControllerCount];
         private readonly string?[] _tempStrings = new string?[ControllerLimits.MaxControllerCount];
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public LatencyMonitor(DS4Windows.Core.Model.LightbarOverrides lightbar, IAppSettingsService appSettings, IProfileSettingsService profileSettings)

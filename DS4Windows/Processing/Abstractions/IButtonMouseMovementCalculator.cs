@@ -7,9 +7,9 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: ボタン・スティック・トリガー・ジャイロ方向のコントロールを「マウスの移動」に割り当てたときの、生の移動量（符号の処理の前）の計算。
+    /// ボタン・スティック・トリガー・ジャイロ方向のコントロールを「マウスの移動」に割り当てたときの、生の移動量（符号の処理の前）の計算。
     /// 以前は <c>Mapping.getMouseMapping</c>（private。約 318 行）だった。感度・縦倍率・マウス加速・デッドゾーン・経過時間を使う。
-    /// マウス加速の状態はデバイスごとに持つ（旧: <c>Mapping</c> が全コントローラーで 1 つを共有。ユーザー判断 Q2）。
+    /// マウス加速の状態はデバイスごとに持つ。
     /// </summary>
     public interface IButtonMouseMovementCalculator
     {

@@ -3,7 +3,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-1（Phase8-Step7-8f-Plan.md §3.2。Q9＝A の考え方）: Controls タブの Button（パッド）の出力が受け取る「解釈済みの値」。
+    /// Controls タブの Button（パッド）の出力が受け取る「解釈済みの値」。
     /// どの元（<see cref="Source"/>）を、どの出力先（<see cref="Output"/>。X360 のコントロールを逆引きした DS4Controls）へ、どの種類（<see cref="Kind"/>）で出すかの解釈は変換層（ビルダー）が行う。
     /// </summary>
     public readonly struct PadBindingValues

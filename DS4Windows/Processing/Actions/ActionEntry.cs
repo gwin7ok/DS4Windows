@@ -9,7 +9,7 @@ namespace DS4Windows.Processing.Actions
         public SpecialAction ActionDef;
         public ActionInstanceState[] States;
 
-        // Phase8-Step8 8c: 系統 B の Action 実体（ActionImpl）とその工場は削除した。このクラスは、アクションごと・デバイスごとの状態の入れ物だけを持つ。
+        // 系統 B の Action 実体（ActionImpl）とその工場は削除した。このクラスは、アクションごと・デバイスごとの状態の入れ物だけを持つ。
         public ActionEntry(SpecialAction action)
         {
             ActionDef = action;

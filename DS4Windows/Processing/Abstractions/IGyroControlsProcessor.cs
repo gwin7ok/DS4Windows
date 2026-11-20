@@ -5,7 +5,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-A(2)-A（Phase9-A2-Plan.md）: 「ジャイロ → コントロール」（<c>GyroOutMode.Controls</c>）の、ジャイロの加速度 1 軸分の補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）。
+    /// 「ジャイロ → コントロール」（<c>GyroOutMode.Controls</c>）の、ジャイロの加速度 1 軸分の補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）。
     /// 以前は <c>Mapping.SetCurveAndDeadzone</c> の中に、X（SX）と Z（SZ）で同じコードが 2 回あった。X／Z とも、同じメソッドを呼ぶ。状態は持たない。
     /// 出力カーブを適用する条件（X と Z で違う）は、呼び出し側が持つ。
     /// </summary>

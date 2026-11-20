@@ -84,7 +84,7 @@ namespace DS4Windows.UI.ViewModels
                     text = setting.action.actionBtn == X360Controls.Unbound ? UnboundText : ForButton(buttonName(setting.action.actionBtn), toggle);
                     break;
                 default:
-                    // Phase9 UI 変更: 対応するボタンがない Default は「Default (No matching button)」（以前は「未割り当て」）
+                    // 対応するボタンがない Default は「Default (No matching button)」（以前は「未割り当て」）
                     text = isExtraControl || defaultOutput == X360Controls.None ? DefaultNoMatchText : ForDefault(buttonName(defaultOutput));
                     break;
             }

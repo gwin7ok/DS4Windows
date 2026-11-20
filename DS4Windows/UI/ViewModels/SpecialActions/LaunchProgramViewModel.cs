@@ -117,7 +117,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             arguments = action.extra;
         }
 
-        // Phase10-Step6 I6b: Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
+        // Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
         public void LoadControlItem(ControlSpecialItem item)
         {
             if (item == null) return;
@@ -127,7 +127,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             Arguments = ComposeArguments(item.ProgramArguments, item.HideWindow);
         }
 
-        // Phase10-Step4 W5: Launch Program。パスは未選択（null）でも空にする
+        // Launch Program。パスは未選択（null）でも空にする
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
         {
             SplitArguments(Arguments, out string args, out bool hideWindow);
@@ -157,7 +157,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public static string ComposeArguments(string arguments, bool hideWindow)
             => (hideWindow ? DS4Windows.Processing.Services.Slots.ControlBindingBuilder.HiddenKeyword : string.Empty) + (arguments ?? string.Empty);
 
-        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        // Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
 
         public void SaveAction(SpecialAction action, bool edit = false)
@@ -172,7 +172,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             bool valid = true;
             List<string> filepathErrors = new List<string>();
 
-            // Phase10-Step4c W3: パスが未選択（null）・空は、必須の値がないエラー（保存を止める。以前は null で NullReferenceException）。
+            // パスが未選択（null）・空は、必須の値がないエラー（保存を止める。以前は null で NullReferenceException）。
             // ファイルが存在しないのは警告のみ（別のドライブ、あとで作る場合があるため。表示するが、保存は止めない）
             if (string.IsNullOrWhiteSpace(filepath))
             {

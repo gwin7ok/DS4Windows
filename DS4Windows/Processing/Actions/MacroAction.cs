@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.3-W2（Q3＝A）: 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Macro の分岐が出していたログ
+    /// 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Macro の分岐が出していたログ
     /// （Trace の立ち上がり 4 行、Debug の「SpecialAction Macro／MacroRelease: …」）を、同じ文言・順序で出す。
     /// 旧経路のアダプター（<c>MacroActionAdapter</c>）は、<c>Mapping</c> が同じログを出すため、このログを出さない（添字つきのコンストラクターを使ったときだけ出す）。
     /// </summary>
@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Actions
         public int deviceIndex { get; }
         public IMacroPlayer macroPlayer { get; }
 
-        // Phase6-Step10-4-4: マクロ再生役は必須の依存（AppHost／new DefaultMacroPlayer のフォールバックを廃止）
+        // マクロ再生役は必須の依存（AppHost／new DefaultMacroPlayer のフォールバックを廃止）
         public MacroAction(SpecialAction sa, IMacroPlayer macroPlayer) : this(sa, -1, macroPlayer) { }
 
         private readonly bool _logTrigger;
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Actions
         /// <summary>
         /// エンジン用: 旧経路のログ（立ち上がり）も出す。<paramref name="actionIndex"/> と <paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。
         /// <paramref name="manager"/>: R-2 の Execute Mode が Repeat (Toggle) のとき、トグルの状態（<c>IsToggledOn</c>）を反転するために使う（<see cref="ButtonOutputAction"/> と同じ管理役）。
-        /// Phase13-Step4: 必須（旧: 省略のときは静的な ActionManager を使っていた。静的な窓口は廃止した）。
+        /// 必須。
         /// </summary>
         public MacroAction(SpecialAction sa, int deviceIndex, IMacroPlayer macroPlayer, int actionIndex, ISpecialActionRepository actionRepository,
             IManagedActionManager manager)

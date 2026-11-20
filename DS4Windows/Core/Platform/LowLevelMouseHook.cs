@@ -9,10 +9,10 @@ using DS4Windows.Core.Logging;
 namespace DS4Windows.Core.Platform
 {
     /// <summary>
-    /// Phase12-Step3 3e（R-3）: <see cref="IMouseInputHook"/> の実装（Win32 の <c>WH_MOUSE_LL</c>）。
+    /// <see cref="IMouseInputHook"/> の実装（Win32 の <c>WH_MOUSE_LL</c>）。
     /// フックは、<see cref="Start"/> を呼んだスレッドのメッセージループで呼ばれるため、イベントもそのスレッド（UI スレッド）で起こる。
     /// DS4Windows 自身が送るマウス入力（タッチパッドのマウス操作など）も、そのまま通知する（記録の対象にするかは、呼び出し側が決める）。
-    /// ログは Log-Policy.md に従う（旧 API。汎用 Log への集約は Phase13b）。
+    /// ログは Log-Policy.md に従う。
     /// </summary>
     public sealed class LowLevelMouseHook : IMouseInputHook, IDisposable
     {

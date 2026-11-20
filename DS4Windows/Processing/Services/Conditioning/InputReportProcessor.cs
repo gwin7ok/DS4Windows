@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase13-Step5b: <see cref="IInputReportProcessor"/> の実装（DI の Singleton）。
+    /// <see cref="IInputReportProcessor"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService.On_Report</c> の本文を、フィールド名の置換だけでそのまま移したもの（呼び出しの順序・条件・ログは変えていない）。
     /// ホットパス（1 レポートごとに呼ばれる）のため、スロット状態の配列の参照はコンストラクターで一度だけ取得して <c>readonly</c> で保持し、
     /// 1 回あたりの新規割り当てを増やさない（計測: <c>Phase13Step5bOnReportTimingBenchmark</c>、特性: <c>Phase13Step5bOnReportCharacterizationTests</c>）。
@@ -43,7 +43,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         public double[] ProcessingDelayMs => _processingDelayMs;
         public ControllerStateExposed[] ExposedState => _exposedState;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly ILightbarService _lightbar;
 
         public InputReportProcessor(ILightbarService lightbar, 
@@ -200,7 +200,6 @@ namespace DS4Windows.Processing.Services.Conditioning
                     }
                     */
                 }
-                // Phase9 Steering 削除 W3: 旧「出力デバイスがないとき［UseDInputOnly］の、ステアリングの vJoy 軸への送出」（else 側）は、機能ごと削除した（vJoy も削除）。
 
                 // Output any synthetic events.
                 _mapping.Commit(ind, _profileSettings);

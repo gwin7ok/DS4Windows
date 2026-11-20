@@ -5,9 +5,9 @@ using DS4Windows.Input;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: コントローラーをスロットへつなぐときの組み立て（設定の読み込み、イベントの購読、マウスの作成、プロファイルの適用、仮想パッドの接続、レポートの購読、更新の開始）。
+    /// コントローラーをスロットへつなぐときの組み立て（設定の読み込み、イベントの購読、マウスの作成、プロファイルの適用、仮想パッドの接続、レポートの購読、更新の開始）。
     /// 以前は <c>ControlService.PrepareConnectedInputControllerSettingEvents</c>／<c>BeginPrepareConnectedInputController</c>／<c>CheckQuickCharge</c> だった。
-    /// <c>ControlService.Start</c>／<c>HotPlug</c> が呼ぶ。入力レポートの処理は <see cref="IInputReportProcessor.OnReport"/>（Phase13-Step5b で <c>ControlService.On_Report</c> から移した）を、デバイスの <c>Report</c> イベントの購読から呼ぶ。
+    /// <c>ControlService.Start</c>／<c>HotPlug</c> が呼ぶ。入力レポートの処理は <see cref="IInputReportProcessor.OnReport"/>を、デバイスの <c>Report</c> イベントの購読から呼ぶ。
     /// </summary>
     public interface IDeviceConnector
     {

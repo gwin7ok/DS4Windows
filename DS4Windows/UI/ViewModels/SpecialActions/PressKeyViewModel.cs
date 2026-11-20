@@ -53,7 +53,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private bool normalTrigger = true;
         public bool IsToggle => (keyType & DS4KeyType.Toggle) != 0;
 
-        // Phase10-Step1 W4: Scan Code は、選択ダイアログのチェックボックスではなく、この画面（Press Key タブ）で設定する。
+        // Scan Code は、選択ダイアログのチェックボックスではなく、この画面（Press Key タブ）で設定する。
         // keyType とは別に持つ（ボタンを選んで keyType が 0 になっても、Scan Code の選択を失わず、キーに戻したとき使えるように）
         private bool useScanCode;
         public bool UseScanCode
@@ -74,12 +74,12 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             && lastActionType != DS4ControlSettings.ActionType.Default;
 
         /// <summary>
-        /// Phase10-Step2 W4: 選ばれている割り当ての種別（<c>Key</c> か <c>Button</c>）。Controls のモードが、書き出しの分岐に使う。
-        /// Phase10-Step3 W2: Controls のモードでは、<c>Default</c>（既定の割り当て）も取りうる（<see cref="ReadSettings"/> の <c>allowDefault</c>）。
+        /// 選ばれている割り当ての種別（<c>Key</c> か <c>Button</c>）。Controls のモードが、書き出しの分岐に使う。
+        /// Controls のモードでは、<c>Default</c>（既定の割り当て）も取りうる（<see cref="ReadSettings"/> の <c>allowDefault</c>）。
         /// </summary>
         public DS4ControlSettings.ActionType SelectedActionType => lastActionType;
 
-        /// <summary>Phase10-Step2 W4: 選ばれているボタン（<c>X360Controls</c> の整数値）。キーのときは -1。</summary>
+        /// <summary>選ばれているボタン（<c>X360Controls</c> の整数値）。キーのときは -1。</summary>
         public int SelectedButton => lastActionBtn;
         public event EventHandler IsToggleChanged;
 
@@ -92,7 +92,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         }
         public event EventHandler ShowToggleControlsChanged;
 
-        // Phase10-Step6 後の Step5（SA 側のアナログ出力）: 出力先がアナログ（パッドの軸・トリガー、マウス移動）のときの強さ（0〜100%）。
+        // 出力先がアナログ（パッドの軸・トリガー、マウス移動）のときの強さ（0〜100%）。
         // SA の組み合わせトリガーはオン／オフのため、成立中はこの固定値で出す。Controls のモードには出さない（Controls は、入力のアナログ値で強さが決まる）
         private int analogStrength = 100;
         public int AnalogStrength
@@ -230,7 +230,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                         buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
                     }
 
-                    // Phase9 UI 変更: 書式は AssignmentDescriber（Controls の一覧、SA の一覧と同じ）。Unbound は、モードを付けない
+                    // 書式は AssignmentDescriber（Controls の一覧、SA の一覧と同じ）。Unbound は、モードを付けない
                     describeText = (X360Controls)lastActionBtn == X360Controls.Unbound
                         ? buttonName
                         : AssignmentDescriber.ForButton(buttonName, string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase));
@@ -242,7 +242,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             }
             else if (lastActionType == DS4ControlSettings.ActionType.Default)
             {
-                // Phase9 UI 変更（ユーザー承認 2026-10-22）: 「Default (A)」のように、そのボタンの既定の出力名を添える。取得できなければ「Default」のみ
+                // 「Default (A)」のように、そのボタンの既定の出力名を添える。取得できなければ「Default」のみ
                 string defaultName = GetDefaultOutputName();
                 // Toggle のときは、保存すると「既定の出力への Button ＋ Toggle」になる（ControlSettingsEditTarget.WriteFrom）
                 describeText = AssignmentDescriber.ForDefault(defaultName, string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase));
@@ -261,7 +261,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         {
             IsToggleChanged?.Invoke(this, EventArgs.Empty);
             ShowToggleControlsChanged?.Invoke(this, EventArgs.Empty);
-            OnPropertyChanged(nameof(ShowAnalogStrength));   // Phase10-Step6 後の Step5: 出力先が変わったとき、強さの入力の表示も更新する
+            OnPropertyChanged(nameof(ShowAnalogStrength));   // 出力先が変わったとき、強さの入力の表示も更新する
         }
 
         public void SetDeviceNum(int deviceNum)
@@ -271,7 +271,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         /// <summary>
         /// 出力ピッカー（<c>BindingWindow</c>）へ渡す、一時的な設定を作る。
-        /// Phase10-Step3 W2: Controls のモードでは、対象のボタン（<paramref name="control"/>）と Extras を載せ、いまの割り当て（Button、Default を含む）も渡す
+        /// Controls のモードでは、対象のボタン（<paramref name="control"/>）と Extras を載せ、いまの割り当て（Button、Default を含む）も渡す
         /// （ピッカーの Default ボタンが、そのボタンの既定値を使い、Extras のパネルに、いまの値が出るように）。
         /// <paramref name="control"/> が <c>None</c>（SA のモード）のときは、従来どおり（キーの割り当てとして渡す）。
         /// </summary>
@@ -294,7 +294,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 keyTypeToPass &= ~DS4KeyType.Toggle;
             }
-            // Phase10-Step1 W4: Scan Code も、タブの値を渡す（選択ダイアログは、値を通過させるだけ）
+            // Scan Code も、タブの値を渡す（選択ダイアログは、値を通過させるだけ）
             keyTypeToPass = useScanCode ? keyTypeToPass | DS4KeyType.ScanCode : keyTypeToPass & ~DS4KeyType.ScanCode;
             settings.keyType = keyTypeToPass;
             settings.actionType = DS4ControlSettings.ActionType.Key;
@@ -319,7 +319,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         }
 
         /// <param name="allowDefault">
-        /// Phase10-Step3 W2: <c>true</c>（Controls のモード）のとき、<c>Default</c> の割り当てを「Default が選ばれた」状態として取り込む。
+        /// <c>true</c>（Controls のモード）のとき、<c>Default</c> の割り当てを「Default が選ばれた」状態として取り込む。
         /// <c>false</c>（SA のモード。既定）では、従来どおり、キーの割り当てとして扱う（SA に「Default」はない）。
         /// </param>
         public void ReadSettings(DS4ControlSettings settings, int deviceNum = -1, bool allowDefault = false)
@@ -330,7 +330,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 lastActionBtn = -1;
                 value = 0;
                 keyType = DS4KeyType.None;
-                defaultOutputInput = settings.control;   // Phase9 UI 変更: 「Default (既定の出力名)」の表示に使う
+                defaultOutputInput = settings.control;   // 「Default (既定の出力名)」の表示に使う
                 // Default の実際の動きは Press（押している間だけ出力）。Switch Mode の欄が空欄にならないよう、Press を表示する（Default の保存には使わない）
                 switchMode = "Press";
                 OnPropertyChanged(nameof(SwitchMode));
@@ -367,7 +367,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 // clear numeric key value since this is a button mapping
                 value = 0;
                 keyType = 0;
-                // Phase6-Step10-3c: 画面が購読している PropertyChanged（DescribeText）も発行して、戻った直後の表示を更新する
+                // 画面が購読している PropertyChanged（DescribeText）も発行して、戻った直後の表示を更新する
                 // （従来は DescribeTextChanged だけを発行していたため、保存して開き直すまで古い表示のままだった）
                 UpdateDescribeText();
                 UpdateToggleControls();
@@ -388,7 +388,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             UpdateToggleControls();
         }
 
-        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        // Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
         private readonly IProfileSettingsService profileSettingsService;
         private readonly IOutputSlotService outputSlotService;
@@ -412,13 +412,13 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             string modeToSave = !string.IsNullOrEmpty(switchMode) ? switchMode : (keyType.HasFlag(DS4KeyType.Toggle) ? "Toggle" : "Press");
 
             // If last binding was a Button, save as Button type
-            // （Phase6-Step10-3c: SwitchMode（Press／Toggle）も保存する。従来は渡しておらず、Toggle を選んでも Press になっていた）
+            //も保存する。従来は渡しておらず、Toggle を選んでも Press になっていた）
             if (lastActionType == DS4ControlSettings.ActionType.Button && lastActionBtn >= 0)
             {
                 specialActionRepository.SaveAction(action.name, action.controls, 10, lastActionBtn.ToString(), edit,
                     extras: $"{modeToSave}\n{action.ucontrols}", actionId: action.id);
 
-                // Phase10-Step6 後の Step5: アナログな出力の強さは、SA の保存のあとに書く（SA の保存は SA を作り直すため）。既定の 100 は書かない
+                // アナログな出力の強さは、SA の保存のあとに書く（SA の保存は SA を作り直すため）。既定の 100 は書かない
                 if (IsAnalogOutput && analogStrength != 100)
                     specialActionRepository.SaveActionAnalogStrength(action.name, analogStrength);
                 return;
@@ -439,7 +439,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 if (value == 0)
                 {
-                    valid = false;   // Phase10-Step4c W3: 必須の値がないエラーは、保存を止める
+                    valid = false;   // 必須の値がないエラーは、保存を止める
                     valueErrors.Add("No key defined");
                     errors["Value"] = valueErrors;
                     RaiseErrorsChanged("Value");

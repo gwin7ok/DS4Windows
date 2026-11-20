@@ -7,8 +7,8 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="IMouseMotionQuantizer"/> の実装（DI の Singleton）。
-    /// 旧 <c>Mapping.calculateFinalMouseMovement</c> を、そのまま移したもの。端数は、デバイスごとに持つ（旧: <c>Mapping</c> の 1 組を全コントローラーで共有。ユーザー判断 Q2）。
+    /// <see cref="IMouseMotionQuantizer"/> の実装（DI の Singleton）。
+    /// 旧 <c>Mapping.calculateFinalMouseMovement</c> を、そのまま移したもの。端数は、デバイスごとに持つ。
     /// 値の特性化は <c>Phase9BMouseMotionQuantizerTests</c> が守る。
     /// </summary>
     public sealed class MouseMotionQuantizer : IMouseMotionQuantizer

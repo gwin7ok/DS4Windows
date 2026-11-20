@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W6（Phase8-Step4b-Plan.md §3.3）: ボタン割り当て（Control）の保存。ShiftControl（廃止されたシフトの設定）は、保持した内容をそのまま書き出す（Phase8-Step7 7.8d）。
+    /// ボタン割り当て（Control）の保存。ShiftControl（廃止されたシフトの設定）は、保持した内容をそのまま書き出す。
     /// <c>LegacyProfileXmlSerializer.SaveProfile</c> から移したもの。移動のみで、要素の順序・値の書式は変えない（XML の順序はゴールデンが固定している）。
     /// </summary>
     internal sealed class ProfileButtonSaveSection : IProfileSaveSection
@@ -24,7 +24,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             XmlNode KeyType = m_Xdoc.CreateNode(XmlNodeType.Element, "KeyType", null);
             XmlNode Button = m_Xdoc.CreateNode(XmlNodeType.Element, "Button", null);
             XmlNode Extras = m_Xdoc.CreateNode(XmlNodeType.Element, "Extras", null);
-            XmlNode Special = m_Xdoc.CreateNode(XmlNodeType.Element, "Special", null);   // Phase10-Step4 W1: SA 専用の割り当て（型のある項目）
+            XmlNode Special = m_Xdoc.CreateNode(XmlNodeType.Element, "Special", null);   // SA 専用の割り当て（型のある項目）
 
             foreach (DS4ControlSettings dcs in store.ds4settings[device])
             {
@@ -83,7 +83,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     }
                 }
 
-                // Phase10-Step4 W1: SA 専用の種別（Special）と、Macro の SA 専用の 3 項目は、型のある項目として、<Special> に書く
+                // SA 専用の種別（Special）と、Macro の SA 専用の 3 項目は、型のある項目として、<Special> に書く
                 if (dcs.special != null)
                 {
                     if (dcs.actionType == DS4ControlSettings.ActionType.Special)
@@ -135,13 +135,13 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             if (Special.HasChildNodes)
                 NodeControl.AppendChild(Special);
 
-            // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては、保持した項目を、元のグループへそのまま戻す
+            // 廃止された「ジャイロスワイプ」の割り当ては、保持した項目を、元のグループへそのまま戻す
             store.gyroSlots[device].RemovedSwipe.AppendControlsTo(m_Xdoc, NodeControl);
 
             if (NodeControl.HasChildNodes)
                 rootElement.AppendChild(NodeControl);
 
-            // Phase8-Step7 7.8d: 廃止された「シフト」の設定は、保持した内容をそのまま書き出す（なければ、従来と同じ空の <ShiftControl />）
+            // 廃止された「シフト」の設定は、保持した内容をそのまま書き出す（なければ、従来と同じ空の <ShiftControl />）
             store.removedShiftSettings[device].AppendTo(m_Xdoc, rootElement);
         }
     }

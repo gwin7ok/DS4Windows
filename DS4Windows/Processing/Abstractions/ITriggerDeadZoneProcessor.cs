@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-A(1) (d)（Phase9-A1-Plan.md §6）: トリガー 1 本のデッドゾーンの補正（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）。
+    /// トリガー 1 本のデッドゾーンの補正（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）。
     /// 以前は <c>Mapping.SetCurveAndDeadzone</c> の中に、L2 と R2 で同じコードが 2 回あった。L2／R2 とも、このメソッドを呼ぶ。状態は持たない。
     /// 呼び出し側は、「補正の設定が既定でない」ときだけ呼ぶ（既定のフレームには、呼び出しの費用がかからない）。
     /// </summary>

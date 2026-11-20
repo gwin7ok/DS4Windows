@@ -36,23 +36,23 @@ namespace DS4Windows.Core.Abstractions
         bool FirstRun { get; set; }
         bool RunHotPlug { get; set; }
 
-        // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
+        // ---- App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         /// <summary>UI の言語（カルチャ名。<c>Global.UseLang</c>）。</summary>
         string UseLang { get; set; }
 
-        // ---- Phase6-Step10-1-1: UpdaterWindowViewModel／LanguageSelectDialog の Global 直接参照解消 ----
+        // ---- UpdaterWindowViewModel／LanguageSelectDialog の Global 直接参照解消 ----
         /// <summary>最後に確認（スキップ）した更新バージョン（<c>Global.LastVersionChecked</c>）。代入すると <see cref="LastVersionCheckedNum"/> も更新される。</summary>
         string LastVersionChecked { get; set; }
         /// <summary>UI のカルチャを切り替える（<c>Global.SetCulture</c>。設定ファイルの <see cref="UseLang"/> は変えない）。</summary>
         void SetCulture(string culture);
 
-        // ---- Phase6-Step10-2-1: ControllerRegDeviceOptsViewModel の Global 直接参照解消 ----
+        // ---- ControllerRegDeviceOptsViewModel の Global 直接参照解消 ----
         /// <summary>Moonlight（仮想コントローラーの検出の除外の緩和。<c>Global.UseMoonlight</c>）。</summary>
         bool UseMoonlight { get; set; }
         /// <summary>Advanced Moonlight（<c>Global.UseAdvancedMoonlight</c>）。</summary>
         bool UseAdvancedMoonlight { get; set; }
 
-        // ---- Phase5-Step13-7: ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
+        // ---- ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
         int FormWidth { get; set; }
         int FormHeight { get; set; }
         int FormLocationX { get; set; }
@@ -78,7 +78,7 @@ namespace DS4Windows.Core.Abstractions
         int LogTimeColWidth { get; set; }
         int LogDataColWidth { get; set; }
 
-        // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
+        // ---- 通知レベル・スワイプ操作設定 ----
         int Notifications { get; set; }
         bool SwipeProfiles { get; set; }
         /// <summary>
@@ -86,14 +86,14 @@ namespace DS4Windows.Core.Abstractions
         /// </summary>
         bool ProfileChangedNotification { get; set; }
 
-        // ---- Phase5-Step14: プロファイル編集画面・SpecialAction カラム幅の永続化 ----
+        // ---- プロファイル編集画面・SpecialAction カラム幅の永続化 ----
         int ProfileEditorLeftWidth { get; set; }
         int ProfileEditorRightWidth { get; set; }
         int SpecialActionNameColWidth { get; set; }
         int SpecialActionTriggerColWidth { get; set; }
         int SpecialActionDetailColWidth { get; set; }
 
-        // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消 ----
+        // ---- ControlService の Global 直接参照解消 ----
         // いずれも Global(m_Config/BackingStore) への薄い委譲。独自フィールドは保持しない（SSOT 維持）。
         bool UseOscServer { get; set; }
         bool UseOscSender { get; set; }
@@ -109,18 +109,18 @@ namespace DS4Windows.Core.Abstractions
         event EventHandler UDPServerSmoothingMincutoffChanged;
         event EventHandler UDPServerSmoothingBetaChanged;
 
-        // ---- Phase6-Step2-2 (PR-2): UDP サーバ平滑化パラメータ（Global への薄い委譲）----
+        // ---- UDP サーバ平滑化パラメータ（Global への薄い委譲）----
         double UDPServerSmoothingMincutoff { get; set; }
         double UDPServerSmoothingBeta { get; set; }
 
-        // ---- Phase6-Step2-4 (PR-4): 遅延警告時のライトバー点滅（Global への薄い委譲）----
+        // ---- 遅延警告時のライトバー点滅（Global への薄い委譲）----
         bool FlashWhenLate { get; set; }
 
-        // ---- Phase6-Step2-5 (PR-5): 入力処理ホットパスで参照する設定（Global への薄い委譲。独自のキャッシュは持たない）----
+        // ---- 入力処理ホットパスで参照する設定（Global への薄い委譲。独自のキャッシュは持たない）----
         bool UseUdpServerSmoothing { get; set; }
         int FlashWhenLateAt { get; set; }
 
-        // ---- Phase6-Step9-1: SettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
+        // ---- SettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
         bool UseCustomSteamFolder { get; set; }
         string CustomSteamFolder { get; set; }
         /// <summary>

@@ -32,7 +32,7 @@ namespace DS4Windows.UI
     {
         private ControllerRegDeviceOptsViewModel deviceOptsVM;
 
-        // Phase6-Step10-2-2: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
+        // 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
         public ControllerRegisterOptionsWindow(ControllerRegDeviceOptsViewModel viewModel)
         {
             InitializeComponent();

@@ -13,11 +13,11 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public class DefaultMacroPlayer : IMacroPlayer
     {
-        // Phase6-Step9b-3（F05）: 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
+        // 4 スロット固定だと、拡張スロット数が 8 のときデバイス 4〜7 のマクロが再生されなかった。
         private readonly bool[] _isPlaying = new bool[ControllerLimits.MaxControllerCount];
         private readonly object _lock = new object();
         private readonly IVirtualKBM _virtualKBM;
-        // Phase7-Step8 W2: 旧 Mapping.PlayMacroDirect／EndMacroDirect の静的呼び出し。Phase13-Step8 8-b: 旧 遅延取得デリゲートをやめ、直接受ける（循環なし）
+        // 旧 Mapping.PlayMacroDirect／EndMacroDirect の静的呼び出し。Phase13-Step8 8-b: 旧 遅延取得デリゲートをやめ、直接受ける（循環なし）
         private readonly DS4Windows.Processing.Abstractions.IMapping _mapping;
 
         public DefaultMacroPlayer(IVirtualKBM virtualKBM, DS4Windows.Processing.Abstractions.IMapping mapping)
@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Actions
             ArgumentNullException.ThrowIfNull(mapping);
             _mapping = mapping;
             ArgumentNullException.ThrowIfNull(virtualKBM);
-            _virtualKBM = virtualKBM; // Phase6-Step10-4-4: 必須の依存
+            _virtualKBM = virtualKBM; // 必須の依存
         }
 
         public bool IsPlaying(int deviceIndex)

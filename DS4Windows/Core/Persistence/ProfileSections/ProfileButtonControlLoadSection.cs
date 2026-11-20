@@ -7,12 +7,12 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W5（Phase8-Step4b-Plan.md §3.2）: ボタン割り当て（通常。Control/Button・Macro・Key・Extras・KeyType）の読込。
+    /// ボタン割り当て（通常。Control/Button・Macro・Key・Extras・KeyType）の読込。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileButtonControlLoadSection : IProfileLoadSection
     {
-        // 旧版（Phase8-Fix-MacroRepeatUnify 以前）が KeyType に書いた「押している間繰り返す」の名前。読込のみ受け付ける（enum の HoldMacro は削除した）
+        // 旧版が KeyType に書いた「押している間繰り返す」の名前。読込のみ受け付ける（enum の HoldMacro は削除した）
         private const string LegacyHoldMacroName = "HoldMacro";
 
         public void Load(ProfileLoadContext context)
@@ -36,7 +36,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
-                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    // 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
                         store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Button", item);
@@ -56,7 +56,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
-                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    // 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
                         store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Macro", item);
@@ -92,7 +92,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
-                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    // 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
                         store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Key", item);
@@ -112,7 +112,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
-                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    // 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
                         store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("Extras", item);
@@ -134,7 +134,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 foreach (XmlNode item in ParentItem.ChildNodes)
                 {
-                    // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
+                    // 廃止された「ジャイロスワイプ」の割り当ては解釈せず、そのまま保持する
                     if (RemovedGyroSwipeSettings.IsSwipeControlName(item.Name))
                     {
                         store.gyroSlots[device].RemovedSwipe.CaptureControlEntry("KeyType", item);
@@ -150,7 +150,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                             keyType |= DS4KeyType.Toggle;
                         if (item.InnerText.Contains(DS4KeyType.Macro.ToString()))
                             keyType |= DS4KeyType.Macro;
-                        // Phase8-Fix-MacroRepeatUnify（D1・D3）: 「押している間繰り返す」は RepeatMacro に統合した。旧版が書いた HoldMacro も、ここでは RepeatMacro として読む
+                        // 「押している間繰り返す」は RepeatMacro に統合した。旧版が書いた HoldMacro も、ここでは RepeatMacro として読む
                         // （保存時に RepeatMacro へ置き換わる）。"RepeatMacro"／"HoldMacro" は "Macro" を含むため、上の Macro も同時に立つ（従来と同じ）
                         if (item.InnerText.Contains(DS4KeyType.RepeatMacro.ToString()) || item.InnerText.Contains(LegacyHoldMacroName))
                             keyType |= DS4KeyType.RepeatMacro;
@@ -186,7 +186,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 }
             }
 
-            // Phase10-Step4 W1: SA 専用の割り当て（型のある項目）。最後に読む。種別が未知のもの、ボタン名が不明なものは、その要素だけ読み飛ばす。
+            // SA 専用の割り当て（型のある項目）。最後に読む。種別が未知のもの、ボタン名が不明なものは、その要素だけ読み飛ばす。
             // Macro の要素は、そのボタンが Macro のときだけ、3 項目の入れ物として取り込む。Macro 以外の種別は、そのボタンの割り当てを Special にする（同じボタンの
             // Button／Macro／Key があっても、Special が優先する）
             ParentItem = m_Xdoc.SelectSingleNode("/" + rootname + "/Control/Special");

@@ -11,16 +11,16 @@ namespace DS4Windows.Core.Settings
     // ★ IDE0290 根本解決: C# 12 プライマリコンストラクタ構文を適用
     public class AppSettingsService(BackingStore config, IProfileXmlStore xmlStore = null, IPathService pathService = null) : IAppSettingsService
     {
-        // Phase7-Step3 W2: Global の転送プロパティ経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
+        // Global の転送プロパティ経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
         private readonly BackingStore _config = config ?? throw new ArgumentNullException(nameof(config));
         private readonly IProfileXmlStore _xmlStore = xmlStore;
         private readonly IPathService _pathService = pathService;
 
-        // Phase5-Step13-7根本修正: StartMinimized等はGlobal(m_Config/BackingStore)への
+        // StartMinimized等はGlobal(m_Config/BackingStore)への
         // 正規シムとし、UI層(MainWindow.xaml.cs等)からGlobal直参照した場合と完全に同一の実体を
         // 参照するようにする。従来はここに独立したprivateフィールドを持ち、Global側と非連動という
         // 「孤立した重複状態」バグがあった(Step13投入時に発覚)。
-        // Phase7-Step10e W4（承認済み）: 非連動プロパティ CheckWhen（旧 Global 側の概念は撤廃済み）を削除した。
+        // 非連動プロパティ CheckWhenを削除した。
 
         public event EventHandler<string> SettingChanged;
 
@@ -121,7 +121,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _config.autoProfileRevertDefaultProfile, value);
         }
 
-        // ---- Phase5-Step13-7: ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
+        // ---- ウィンドウ位置・サイズ、コントローラー一覧列幅の永続化 ----
         // いずれも m_Config(BackingStore) への薄い公開アクセサ(Global.X)への正規シム。
         public int FormWidth
         {
@@ -267,7 +267,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _config.logDataColWidth, value);
         }
 
-        // ---- Phase5-Step13-7: 通知レベル・スワイプ操作設定 ----
+        // ---- 通知レベル・スワイプ操作設定 ----
         public int Notifications
         {
             get => _config.notifications;
@@ -327,7 +327,7 @@ namespace DS4Windows.Core.Settings
         // 本シムも読み取り専用として公開する。
         public ulong LastVersionCheckedNum => _config.lastVersionCheckedNum;
 
-        // Phase7-Step3 W4: 代入時に番号（LastVersionCheckedNum）を算出する処理を、Global のプロパティからここへ移した。
+        // 代入時に番号（LastVersionCheckedNum）を算出する処理を、Global のプロパティからここへ移した。
         public string LastVersionChecked
         {
             get => _config.lastVersionChecked;
@@ -345,7 +345,7 @@ namespace DS4Windows.Core.Settings
 
         public void SetCulture(string culture) => UiCulture.Set(culture);
 
-        // ---- Phase6-Step10-2-1: Global への薄い委譲 ----
+        // ---- Global への薄い委譲 ----
         public bool UseMoonlight
         {
             get => _config.useMoonlight;
@@ -360,12 +360,12 @@ namespace DS4Windows.Core.Settings
 
         public bool FirstRun
         {
-            // Phase7-Step4 W3: 旧 Global.firstRun。実体は PathService（FindConfigLocation が設定する）
+            // 旧 Global.firstRun。実体は PathService（FindConfigLocation が設定する）
             get => PathService.FirstRunState;
             set { if (PathService.FirstRunState != value) { PathService.FirstRunState = value; NotifyChanged(nameof(FirstRun)); } }
         }
 
-        // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
+        // ---- App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         // 他のプロパティと同じく Global(m_Config/BackingStore) への正規シム（独立フィールドを持たない）。
         public string UseLang
         {
@@ -373,7 +373,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _config.useLang, value);
         }
 
-        // Phase7-Step4 W3: 旧 Global.runHotPlug（保存しない実行時のフラグ）。このサービス（DI のシングルトン）のインスタンスの状態にした
+        // 旧 Global.runHotPlug（保存しない実行時のフラグ）。このサービス（DI のシングルトン）のインスタンスの状態にした
         private bool _runHotPlug;
 
         public bool RunHotPlug
@@ -382,7 +382,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _runHotPlug, value);
         }
 
-        // ---- Phase5-Step14: プロファイル編集画面・SpecialAction カラム幅の永続化 ----
+        // ---- プロファイル編集画面・SpecialAction カラム幅の永続化 ----
         public int ProfileEditorLeftWidth
         {
             get => _config.profileEditorLeftWidth;
@@ -413,7 +413,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _config.specialActionDetailColWidth, value);
         }
 
-        // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消（Global への薄い委譲）----
+        // ---- ControlService の Global 直接参照解消（Global への薄い委譲）----
 
         public bool UseOscServer
         {
@@ -478,13 +478,13 @@ namespace DS4Windows.Core.Settings
 
         public ControlServiceDeviceOptions DeviceOptions => _config.deviceOptions;
 
-        // Phase7-Step3 W4: 静的イベントだった UDPServerSmoothing*Changed を、このサービスのインスタンスイベントにした
+        // 静的イベントだった UDPServerSmoothing*Changed を、このサービスのインスタンスイベントにした
         // （購読者は ControlService のみ。発火の条件と順序は従来と同一で、発火元だけが Global の静的イベントから this に変わった）。
         public event EventHandler UDPServerSmoothingMincutoffChanged;
 
         public event EventHandler UDPServerSmoothingBetaChanged;
 
-        // ---- Phase6-Step2-2 (PR-2): UDP サーバ平滑化パラメータ ----
+        // ---- UDP サーバ平滑化パラメータ ----
         public double UDPServerSmoothingMincutoff
         {
             get => _config.udpSmoothingMincutoff;
@@ -513,14 +513,14 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        // ---- Phase6-Step2-4 (PR-4): 遅延警告時のライトバー点滅 ----
+        // ---- 遅延警告時のライトバー点滅 ----
         public bool FlashWhenLate
         {
             get => _config.flashWhenLate;
             set => SetIfChanged(ref _config.flashWhenLate, value);
         }
 
-        // ---- Phase6-Step2-5 (PR-5): 入力処理ホットパスで参照する設定 ----
+        // ---- 入力処理ホットパスで参照する設定 ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の値を直接返し、キャッシュ・割り当て・ログを行わない。
         public bool UseUdpServerSmoothing
         {
@@ -534,7 +534,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _config.flashWhenLateAt, value);
         }
 
-        // ---- Phase6-Step9-1: SettingsViewModel の Global 直接参照解消（Global への薄い委譲。独自フィールドは持たない）----
+        // ---- SettingsViewModel の Global 直接参照解消（Global への薄い委譲。独自フィールドは持たない）----
         public bool UseCustomSteamFolder
         {
             get => _config.useCustomSteamFolder;

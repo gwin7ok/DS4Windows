@@ -6,7 +6,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: いま押されている（倒されている）入力を 1 つ探す。プロファイル編集画面の「どのボタンを押した?」が使う。
+    /// いま押されている（倒されている）入力を 1 つ探す。プロファイル編集画面の「どのボタンを押した?」が使う。
     /// 以前は <c>ControlService.GetActiveInputControl</c>。状態は持たない。<c>ControlService</c> の同名のメソッドは、薄い委譲として残す。
     /// </summary>
     public interface IActiveInputProbe

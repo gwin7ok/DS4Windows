@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4Windows.UI
 {
     /// <summary>
-    /// Phase12-Step2 2e（R-4）: 対象のウィンドウを指定する入力欄（プログラムのパスとウィンドウタイトル）。FocusWindow の編集画面で使う。
+    /// 対象のウィンドウを指定する入力欄（プログラムのパスとウィンドウタイトル）。FocusWindow の編集画面で使う。
     /// 書式は Auto-Profile と同じ（<see cref="DS4Windows.Core.Platform.WindowTargetMatcher"/>）。
     /// </summary>
     public partial class WindowTargetEditor : UserControl
@@ -22,7 +22,7 @@ namespace DS4Windows.UI
             nameof(Title), typeof(string), typeof(WindowTargetEditor),
             new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        // Phase12-Step2 2h: タイトルの一致方法（一覧の添字と WindowTitleMatchMode の値は同じ並び）
+        // タイトルの一致方法（一覧の添字と WindowTitleMatchMode の値は同じ並び）
         public static readonly DependencyProperty TitleMatchModeProperty = DependencyProperty.Register(
             nameof(TitleMatchMode), typeof(WindowTitleMatchMode), typeof(WindowTargetEditor),
             new FrameworkPropertyMetadata(WindowTitleMatchMode.Exact, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnTitleMatchModeChanged));
@@ -63,7 +63,7 @@ namespace DS4Windows.UI
             if (titleMatchCombo.SelectedIndex >= 0) TitleMatchMode = (WindowTitleMatchMode)titleMatchCombo.SelectedIndex;
         }
 
-        /// <summary>Phase12-Step2 2i: ドロップした位置のウィンドウの取得。表示側（<c>AssignmentEditor</c>）が設定する。未設定のときは、ターゲットマークは動かない。</summary>
+        /// <summary>ドロップした位置のウィンドウの取得。表示側（<c>AssignmentEditor</c>）が設定する。未設定のときは、ターゲットマークは動かない。</summary>
         public WindowTargetPicker Picker { get; set; }
 
         private void TargetMark_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

@@ -20,7 +20,6 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             ProfileSetting.Text("TouchpadOutputMode", (store, device, c) => store.touchpadSlots[device].OutputMode.ToString()),
             ProfileSetting.Text("SATriggers", (store, device, c) => store.gyroSlots[device].MouseTriggers.ToString()),
             ProfileSetting.Text("SATriggerCond", (store, device, c) => BackingStore.SaTriggerCondString(store.gyroSlots[device].MouseTriggerCondAnd)),
-            // Phase9 Steering 削除 W4: 旧「SASteeringWheelEmulationAxis／SASteeringWheelEmulationRange／SASteeringWheelFuzz／SASteeringWheelSmoothingOptions」（ステアリングの設定）の書き込みは、機能ごと削除した。
             ProfileSetting.Text("TouchDisInvTriggers", (store, device, c) => string.Join(",", store.touchpadSlots[device].DisInvertTriggers)),
             ProfileSetting.Text("GyroSensitivity", (store, device, c) => store.gyroSlots[device].Sensitivity.ToString()),
             ProfileSetting.Text("GyroSensVerticalScale", (store, device, c) => store.gyroSlots[device].SensVerticalScale.ToString()),

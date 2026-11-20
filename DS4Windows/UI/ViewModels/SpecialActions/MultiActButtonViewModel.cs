@@ -102,7 +102,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             }
         }
 
-        // Phase10-Step6 W8 相当: Controls のモード。型のある項目（3 つのマクロ）との往復（SA と同じ入力・同じ検証）
+        // Controls のモード。型のある項目（3 つのマクロ）との往復（SA と同じ入力・同じ検証）
         public void LoadControlItem(ControlSpecialItem item)
         {
             if (item == null) return;
@@ -169,7 +169,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             return settings;
         }
 
-        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        // Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
 
         public void SaveAction(SpecialAction action, bool edit = false)

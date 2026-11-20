@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.5a-W2: 統一ディスパッチ（エンジン）から使うとき（添字などつきのコンストラクター）は、旧 <c>MapCustomAction</c> の Profile の分岐が行っていた次の処理も、同じ条件・順序で行う（Phase8-Step7-5-Plan.md Q2〜Q4）。
+    /// 統一ディスパッチ（エンジン）から使うとき（添字などつきのコンストラクター）は、旧 <c>MapCustomAction</c> の Profile の分岐が行っていた次の処理も、同じ条件・順序で行う。
     /// (1) 連鎖の防止（<see cref="CanExecute"/>）、(2) ログ（Trace の立ち上がり 4 行、Debug 3 行）、(3) トリガーのボタンの通常の割り当て（キー、マクロ）のキーを離す、
     /// (4) 切替のあとでフレームを打ち切る（<c>RequestEndFrame</c>。Intent-Decisions 項目 5）。
     /// 旧経路のアダプター（<c>ProfileSwitchActionAdapter</c>）は、<c>Mapping</c> が同じ処理を行うため、添字なしのコンストラクターのままで、これらを行わない。
@@ -21,14 +21,14 @@ namespace DS4Windows.Processing.Actions
         private readonly int _actionIndex;
         private readonly ISpecialActionRepository _actionRepository;
         private readonly IProfileSettingsService _settings;
-        private readonly IMapping _mapping;   // Phase13-Step8 8-b: 旧 遅延取得デリゲート。省略可（テスト）
+        private readonly IMapping _mapping;   // 旧 遅延取得デリゲート。省略可（テスト）
         private readonly TriggerButtonKeyReleaser _keyReleaser;
 
         public SpecialAction sa { get; }
         public int deviceIndex { get; }
         public IProfileSwitcher profileSwitcher { get; }
 
-        // Phase6-Step10-4-4: プロファイル切替役は必須の依存（AppHost／new DefaultProfileSwitcher のフォールバックを廃止）
+        // プロファイル切替役は必須の依存（AppHost／new DefaultProfileSwitcher のフォールバックを廃止）
         public ProfileSwitchAction(SpecialAction sa, IProfileSwitcher profileSwitcher) : this(sa, -1, profileSwitcher) { }
 
         /// <summary>エンジン用。<paramref name="actionIndex"/>・<paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。<paramref name="mapping"/> は、連鎖の防止（復帰の合図の参照）用。</summary>
@@ -55,7 +55,7 @@ namespace DS4Windows.Processing.Actions
 
         public string Id => sa?.name ?? "ProfileSwitch";
 
-        // Phase11 W6 K-W6-7: 切り替え先が空・削除済みで何もしなかった。離したときの復帰［Stop］も行わない（元のプロファイルの再適用で仮想コントローラーが再接続されるのを防ぐ）
+        // 切り替え先が空・削除済みで何もしなかった。離したときの復帰［Stop］も行わない（元のプロファイルの再適用で仮想コントローラーが再接続されるのを防ぐ）
         private bool _skippedNoTarget;
 
         public void Execute(IOutputContext ctx)
@@ -81,7 +81,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// 連鎖の防止（旧経路の条件と同じ）: 一時プロファイルの間、復帰の合図が Profile のスペシャルアクションなら、別の切替を始めない。
+        /// 連鎖の防止: 一時プロファイルの間、復帰の合図が Profile のスペシャルアクションなら、別の切替を始めない。
         /// 復帰の合図は、エンジン（<see cref="IPendingUntriggerQuery"/>）と旧経路（<c>Mapping</c>。解除トリガーつきの Profile）のどちらにもありうるため、両方を見る。
         /// </summary>
         public bool CanExecute(IOutputContext ctx)

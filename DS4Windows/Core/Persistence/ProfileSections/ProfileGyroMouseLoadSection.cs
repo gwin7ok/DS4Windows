@@ -8,8 +8,8 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W4（Phase8-Step4b-Plan.md §3.2）: ジャイロのスワイプ・タッチパッドの出力モード・タッチパッドの反転の無効トリガー・ジャイロの感度とマウス（GyroSwipeSettings〜GyroMouseToggle）の読込。TouchpadOutputMode は UseTPforControls が無いときだけ読む。
-    /// Phase8-Step8 8-0: ジャイロスワイプの機能廃止に伴い、GyroSwipeSettings は保持だけ（<see cref="RemovedGyroSwipeSettings"/>）。名前を Swipe から Mouse に改めた。
+    /// ジャイロのスワイプ・タッチパッドの出力モード・タッチパッドの反転の無効トリガー・ジャイロの感度とマウス（GyroSwipeSettings〜GyroMouseToggle）の読込。TouchpadOutputMode は UseTPforControls が無いときだけ読む。
+    /// ジャイロスワイプの機能廃止に伴い、GyroSwipeSettings は保持だけ（<see cref="RemovedGyroSwipeSettings"/>）。名前を Swipe から Mouse に改めた。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileGyroMouseLoadSection : IProfileLoadSection
@@ -25,7 +25,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             bool missingSetting = context.MissingSetting;
             XmlNode Item;
 
-            // Phase8-Step8 8-0: 廃止された「ジャイロスワイプ」の設定は解釈せず、既定値と異なるときだけ、そのまま保持する（編集画面で「残す」を選んだとき、保存で書き戻す）
+            // 廃止された「ジャイロスワイプ」の設定は解釈せず、既定値と異なるときだけ、そのまま保持する（編集画面で「残す」を選んだとき、保存で書き戻す）
             store.gyroSlots[device].RemovedSwipe.CaptureSettings(m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSwipeSettings"));
 
             // Check for TouchpadOutputMode if UseTPforControls is not present in profile

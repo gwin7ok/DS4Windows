@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W4（Phase8-Step4b-Plan.md §3.2）: 雑多の設定（ChargingType、MouseAcceleration、LaunchProgram、DinputOnly、StartTouchpadOff、UseTPforControls、UseSAforMouse）の読込。UseTPforControls の有無は、後の節が使うため文脈に書き戻す。
+    /// 雑多の設定（ChargingType、MouseAcceleration、LaunchProgram、DinputOnly、StartTouchpadOff、UseTPforControls、UseSAforMouse）の読込。UseTPforControls の有無は、後の節が使うため文脈に書き戻す。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileMiscLoadSection : IProfileLoadSection

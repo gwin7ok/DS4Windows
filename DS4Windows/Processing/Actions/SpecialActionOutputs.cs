@@ -3,7 +3,7 @@ using System;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step4 W2（Phase10-Step4-Plan.md §3.3）: <see cref="ISpecialActionOutputFactory"/> が、スペシャルアクション（<see cref="SpecialAction"/>）1 つから作る、束縛の「出力側」の組。
+    /// <see cref="ISpecialActionOutputFactory"/> が、スペシャルアクション（<see cref="SpecialAction"/>）1 つから作る、束縛の「出力側」の組。
     /// 出力アクション（<see cref="Outputs"/>）、実行方針（<see cref="Policy"/>）、その種別が必要とする入力の種類（<see cref="InvertOnRelease"/>、<see cref="IsMultiTap"/>）を持つ。
     /// 入力アクション自体は、束縛を作る側が作る（SA は複数ボタンの組み合わせ、Controls は単体ボタン）。不変。
     /// </summary>

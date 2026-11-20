@@ -8,18 +8,18 @@ namespace DS4Windows.Core.Persistence
     public class ProfileXmlStore : IProfileXmlStore
     {
         private readonly BackingStore _backingStore;
-        // Phase7-Step10c W2: コントローラー固有設定の保存・読込（旧: BackingStore のメソッド）
+        // コントローラー固有設定の保存・読込
         private readonly DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer _controllerConfigsXml;
-        // Phase7-Step10c W3: アプリ設定（Profiles.xml）の保存・読込（旧: BackingStore.Load／Save）
+        // アプリ設定（Profiles.xml）の保存・読込
         private readonly DS4Windows.Core.Persistence.AppSettingsXmlSerializer _appSettingsXml;
-        // Phase7-Step10c W4: プロファイル（旧形式の XML）の読込（旧: BackingStore.LoadProfile）
+        // プロファイルの読込
         private readonly DS4Windows.Core.Persistence.LegacyProfileXmlSerializer _legacyProfileXml;
 
-        // Phase 5 ガードレール: Profiles.xml に対する同一プロセス内の並行アクセス競合を防ぐための静的排他ロックオブジェクト
+        // Profiles.xml に対する同一プロセス内の並行アクセス競合を防ぐための静的排他ロックオブジェクト
         // (Step6: AppSettingsService との同一ファイル排他ロック共有)
         public static readonly object XmlIoLock = new object();
 
-        // Phase7-Step3 W1: 任意引数＋Global 経由のフォールバックを廃止し、BackingStore を必須にした（Pure DI）。
+        // 任意引数＋Global 経由のフォールバックを廃止し、BackingStore を必須にした（Pure DI）。
         public ProfileXmlStore(BackingStore backingStore, DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer controllerConfigsXml,
             DS4Windows.Core.Persistence.AppSettingsXmlSerializer appSettingsXml, DS4Windows.Core.Persistence.LegacyProfileXmlSerializer legacyProfileXml)
         {
@@ -109,11 +109,11 @@ namespace DS4Windows.Core.Persistence
             }
         }
 
-        // ---- Phase6-Step2-2 (PR-2): 接続時のコントローラー固有設定の読込 ----
+        // ---- 接続時のコントローラー固有設定の読込 ----
         public bool LoadControllerConfigsForDevice(IConfigurableDevice device)
             => _controllerConfigsXml.LoadControllerConfigsForDevice(device);
 
-        // ---- Phase6-Step3-1: 切断時のコントローラー固有設定の保存 ----
+        // ---- 切断時のコントローラー固有設定の保存 ----
         public bool SaveControllerConfigsForDevice(IConfigurableDevice device)
             => _controllerConfigsXml.SaveControllerConfigsForDevice(device);
     }

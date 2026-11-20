@@ -3,7 +3,7 @@
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase13-Step6 6-b: スロットのコントローラーの電池残量の文言（旧 <c>ControlService.GetDS4Battery</c>）。
+    /// スロットのコントローラーの電池残量の文言。
     /// 充電中は "%+"、充電中で 100% 以上は「満充電」、コントローラーがいなければ「N/A」。
     /// </summary>
     public interface IDeviceBatteryText

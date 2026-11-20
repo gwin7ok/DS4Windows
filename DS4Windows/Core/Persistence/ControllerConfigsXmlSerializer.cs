@@ -8,7 +8,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase7-Step10c W2（Q1＝A）: コントローラー固有設定（<c>ControllerConfigs.xml</c>）の保存・読込。
+    /// コントローラー固有設定（<c>ControllerConfigs.xml</c>）の保存・読込。
     /// 旧: <c>BackingStore</c> の <c>createControllerConfigs</c>／<c>LoadControllerConfigsForDevice</c>／<c>SaveControllerConfigsForDevice</c>（移動のみ）。
     /// </summary>
     public class ControllerConfigsXmlSerializer
@@ -60,7 +60,7 @@ namespace DS4Windows.Core.Persistence
                 XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
                 if (node != null)
                 {
-                    // Phase9 Steering 削除 W2: 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
+                    // 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
 
                     device.OptionsStore?.LoadSettings(xmlDoc, node);
 
@@ -109,7 +109,6 @@ namespace DS4Windows.Core.Persistence
                 contTypeAttr.Value = device.DeviceType.ToString();
                 node.Attributes.Append(contTypeAttr);
 
-                // Phase9 Steering 削除 W2: 旧「車輪の較正値」の書き込みは削除した（Mac と ControllerType の属性、optionsStore の設定は、これまでどおり）
                 device.OptionsStore?.PersistSettings(xmlDoc, node);
 
                 // Remove old elements

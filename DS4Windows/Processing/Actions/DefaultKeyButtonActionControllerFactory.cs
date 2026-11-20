@@ -4,7 +4,7 @@ namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// <see cref="IKeyButtonActionControllerFactory"/> の既定の実装。
-    /// Phase13-Step4: 旧 <c>ServiceProviderHolder.Provider</c> による <see cref="IControllerRegistry"/> の解決をやめ、コンストラクターで受ける。
+    /// 旧 <c>ServiceProviderHolder.Provider</c> による <see cref="IControllerRegistry"/> の解決をやめ、コンストラクターで受ける。
     /// 生成した <see cref="KeyButtonActionController"/> には、トグル状態の管理役（<see cref="IManagedActionManager"/>）を渡す。
     /// </summary>
     public class DefaultKeyButtonActionControllerFactory : IKeyButtonActionControllerFactory

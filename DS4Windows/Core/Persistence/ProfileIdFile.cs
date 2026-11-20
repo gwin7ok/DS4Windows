@@ -5,7 +5,7 @@ using System.Xml;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3.1）: プロファイルのファイルの固定 ID（<c>&lt;ProfileId&gt;</c>）の読み書き。状態を持たない。
+    /// プロファイルのファイルの固定 ID（<c>&lt;ProfileId&gt;</c>）の読み書き。状態を持たない。
     /// ID は GUID の <c>N</c> 形式（32 文字の 16 進数）で、ルート要素の直下に置く。名前の変更（ファイル名の変更）では変わらない。
     /// 古いバージョンは、この要素を未知の要素として読み飛ばす。<see cref="LegacyProfileXmlSerializer"/>（保存）と <see cref="ProfileIdentityService"/>（登録簿）が使う。
     /// </summary>

@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step3 W1: <see cref="IInputAction.Evaluate"/> の結果（値型。毎フレームの割り当て 0）。
+    /// <see cref="IInputAction.Evaluate"/> の結果（値型。毎フレームの割り当て 0）。
     /// <see cref="Gesture"/> は、タップ・長押し・ダブルタップを返す入力アクション（MultiTapInputAction。Phase8-Step7.7）用の欄で、
     /// <c>ComboTriggerInputAction</c> は常に 0 を返す（契約を後から変えないために、先に用意した。Step3 計画書 Q1＝A）。
     /// </summary>

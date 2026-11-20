@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4Windows.UI
 {
     /// <summary>
-    /// Phase10-Step1 W2（Phase10-Step1-Plan.md §3.1）: マクロの再生オプション（Execute Mode、Scan Code）の共通の画面部品。
+    /// マクロの再生オプション（Execute Mode、Scan Code）の共通の画面部品。
     /// <see cref="MacroPlaybackOptions"/> を DataContext に受ける。Controls の <c>RecordBox</c>（W2）と、SA の Macro タブ（W3）が使う。
     /// <para>
     /// XAML を持たない（コードだけで組み立てる）。XAML の部品を、同じプロジェクトの別の XAML（<c>RecordBox.xaml</c>、<c>AssignmentEditor.xaml</c>）から

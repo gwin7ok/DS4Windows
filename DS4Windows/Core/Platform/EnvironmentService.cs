@@ -47,7 +47,7 @@ namespace DS4Windows.Core.Platform
 
         public string? ApplicationVersion => PathService.ExecutableVersionState;
 
-        // ---- Phase7-Step4 W1: 導入状態の保持（旧 Global の static フィールド）----
+        // ---- 導入状態の保持----
         // ViGEmBus の既定値は「未導入」。RefreshViGEmBusInfo で更新される。
         private const string BlankViGEmBusVersion = "0.0.0.0";
         private const string MinSupportedViGEmBusVersion = "1.16.112.0";
@@ -106,7 +106,7 @@ namespace DS4Windows.Core.Platform
             FakerInputVersionState = QueryFakerInputVersion();
         }
 
-        // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消 ----
+        // ---- ControlService の Global 直接参照解消 ----
         public bool HidHideInstalled => HidHideInstalledState;
 
         public string HidHideVersion => s_hidHideVersion;
@@ -128,7 +128,7 @@ namespace DS4Windows.Core.Platform
         // 旧 ControlService.CURRENT_DS4_CONTROLLER_LIMIT の計算（純粋な OS 判定＋ビルド定義）をここへ移設した。
         // 技術的負債: 以前は ControlService の static 互換シム（CURRENT_DS4_CONTROLLER_LIMIT / USING_MAX_CONTROLLERS）が
         // 本値を共有するため static だった。シムは Phase7-Step10e W2 で削除済みで、現在の参照は ControllerSlotLimit のみ。
-        // static のまま残してあり（Phase7c W3 の調査時点）、インスタンスフィールドへ戻すかは Phase8 以降で判断する
+        // static のまま残してあり、インスタンスフィールドへ戻すかは Phase8 以降で判断する
         // （EnvironmentServiceStaticInitGuardTests が静的初期化の形を固定している）。
         internal static readonly int ProcessControllerSlotLimit = CalculateControllerSlotLimit();
 
@@ -136,7 +136,7 @@ namespace DS4Windows.Core.Platform
 
         public bool UsingMaxControllers => ProcessControllerSlotLimit == DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;
 
-        // ---- Phase6-Step2-3 (PR-3): FakerInput 導入バージョン ----
+        // ---- FakerInput 導入バージョン ----
         public string FakerInputVersion => FakerInputVersionState;
 
         // ---- Phase6-Step9-1／Phase7-Step4 W1: ViGEmBus の導入状態 ----
@@ -161,7 +161,7 @@ namespace DS4Windows.Core.Platform
 
         public bool IsHidHideInstalled() => CheckForSysDevice(@"root\HidHide");
 
-        // Phase6-Step10-4-3a: OutputSlotManager が都度読み取る（RefreshViGEmBusInfo で更新されるため、キャッシュしない）
+        // OutputSlotManager が都度読み取る（RefreshViGEmBusInfo で更新されるため、キャッシュしない）
         public Version ViGEmBusVersion => s_vigemBusVersionInfo;
 
         public void RefreshViGEmBusInfo() => FindViGEmDeviceInfo();
@@ -181,7 +181,7 @@ namespace DS4Windows.Core.Platform
 #endif
         }
 
-        // Phase7-Step4 W1: 旧 Global.IsWin8OrGreater（削除済み）の判定。静的初期化の中からも呼ぶため、Global を経由しない。
+        // 旧 Global.IsWin8OrGreater（削除済み）の判定。静的初期化の中からも呼ぶため、Global を経由しない。
         private static bool IsWin8OrGreaterCore()
         {
             bool result = false;
@@ -198,7 +198,7 @@ namespace DS4Windows.Core.Platform
             return result;
         }
 
-        // ---- Phase7-Step4 W1: 旧 Global の ViGEmBus／システムデバイスの調べ物（処理は移しただけで、変更していない）----
+        // ---- 旧 Global の ViGEmBus／システムデバイスの調べ物（処理は移しただけで、変更していない）----
 
         private class ViGEmBusInfo
         {

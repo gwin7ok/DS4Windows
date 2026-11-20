@@ -10,7 +10,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: <see cref="IDeviceConnector"/> の実装（DI の Singleton。状態なし）。
+    /// <see cref="IDeviceConnector"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService</c> の <c>PrepareConnectedInputControllerSettingEvents</c>／<c>BeginPrepareConnectedInputController</c>／<c>CheckQuickCharge</c> を、そのまま移したもの
     /// （E-6a〜E-6e で部品へ移した処理は、その部品を呼ぶ。スロットの配列と接続中の数は <see cref="IDeviceSlotState"/>、入力レポートの処理は <see cref="IInputReportProcessor"/> を直接注入で受ける［Phase13-Step5b。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>］。呼び出しの順序は変えない）。
     /// </summary>
@@ -25,8 +25,8 @@ namespace DS4Windows.Processing.Services.Connection
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
         private readonly IInputDeviceModuleRegistry _deviceModules;
         private readonly IHidHideService _hidHideService;
-        private readonly IDeviceSlotState _slots;   // Phase13-Step5: スロットの配列（直接注入）
-        private readonly IInputReportProcessor _inputReport;   // Phase13-Step5b: 旧 Func<IDeviceSlotHost>.OnReport（入力レポートの処理）
+        private readonly IDeviceSlotState _slots;   // スロットの配列（直接注入）
+        private readonly IInputReportProcessor _inputReport;   // 旧 Func<IDeviceSlotHost>.OnReport（入力レポートの処理）
         private readonly ITouchpadMouseFactory _mouseFactory;
         private readonly IConnectedDeviceOutputs _outputs;
 
@@ -97,14 +97,14 @@ namespace DS4Windows.Processing.Services.Connection
             device.ChargingChanged += OnChargingChanged;
 
             touchPads[index] = _mouseFactory.Create(index, device);
-            // Phase11 W6 K-W6-3: プロファイルの適用のログ・通知が電池残量を使うため、その前に、最初の入力レポートから電池残量を取り込む
+            // プロファイルの適用のログ・通知が電池残量を使うため、その前に、最初の入力レポートから電池残量を取り込む
             // （StartUpdate はこのあとのため、読み取りのスレッドはまだ動いていない）
             device.PrimeBatteryReading();
 
             bool profileLoaded = false;
             bool useAutoProfile = _profileSettings.GetUseTempProfile(index);
 
-            // Phase9 9-E E-6a: プロファイルの選択と適用（初回接続／再接続、Linked、一時プロファイル）は ConnectionProfileSelector へ移した
+            // プロファイルの選択と適用（初回接続／再接続、Linked、一時プロファイル）は ConnectionProfileSelector へ移した
             bool IsValidSerial = device.IsValidSerial();
             profileLoaded = _connectionProfileSelector.ApplyOnConnect(index, useAutoProfile, IsValidSerial, IsValidSerial ? device.GetMacAddress() : null);
 

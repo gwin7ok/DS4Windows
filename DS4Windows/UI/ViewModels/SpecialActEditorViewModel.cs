@@ -23,7 +23,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// SA の編集画面（<c>AssignmentEditor</c>）の ViewModel。Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）で、中身を
+    /// SA の編集画面（<c>AssignmentEditor</c>）の ViewModel。Phase10-Step2 W1で、中身を
     /// <see cref="ActionEditorViewModel"/>（共通の土台）へ移し、これは、SA のモードの部品（<see cref="SpecialActionTriggerSource"/>、
     /// <see cref="SpecialActionEditTarget"/>、<see cref="ActionTypeCatalog"/>）を組み合わせるだけの薄い派生クラスにした。
     /// 公開メンバー・検証・エラーの文言は、従来と同じ。
@@ -32,7 +32,7 @@ namespace DS4Windows.UI.ViewModels
     {
         private readonly SpecialActionTriggerSource specialTriggers;
 
-        // Phase6-Step10-3-2: Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
+        // Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
         public SpecialActEditorViewModel(int deviceNum, SpecialAction action, ISpecialActionRepository specialActionRepository)
             : this(deviceNum, new SpecialActionTriggerSource(), new SpecialActionEditTarget(specialActionRepository, action))
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: SA のモードのトリガーの供給元。従来の <c>SpecialActEditorViewModel</c> の
+    /// SA のモードのトリガーの供給元。従来の <c>SpecialActEditorViewModel</c> の
     /// <c>controlTriggerList</c>／<c>controlUnloadTriggerList</c>（名前のリスト）と、「トリガーが 1 つ以上」の検証を、そのまま持つ。
     /// 画面（チェックボックス）が、リストを直接書き換える従来の経路のために、リストを公開する（W2 でデータ駆動の部品に置き換えるまで）。
     /// </summary>

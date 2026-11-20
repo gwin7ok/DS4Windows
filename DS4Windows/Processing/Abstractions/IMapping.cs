@@ -8,7 +8,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase7-Step8 W2（Q1＝A）: 入力の評価（<c>Mapping</c>）の窓口。外部の利用者が使うメンバーだけを持つ。
+    /// 入力の評価（<c>Mapping</c>）の窓口。外部の利用者が使うメンバーだけを持つ。
     /// 実装は <c>DS4Windows.Processing.Mapping</c>（DI の Singleton。旧: メンバーのほぼすべてが static だった）。
     /// 状態を持たない純粋な関数（<c>getBool*Mapping</c>、<c>RemainderCutoff</c> ほか）と定数は、<c>Mapping</c> の static のまま残す（Q2＝A）。
     /// </summary>
@@ -39,12 +39,12 @@ namespace DS4Windows.Processing.Abstractions
         void HandleDeviceDisconnect(int device);
 
         /// <summary>
-        /// Phase7b W1: プロファイル切替のスペシャルアクションの「復帰の合図」（<c>UntriggerAction</c>／<c>UntriggerIndex</c>）を取り出す。
+        /// プロファイル切替のスペシャルアクションの「復帰の合図」（<c>UntriggerAction</c>／<c>UntriggerIndex</c>）を取り出す。
         /// <c>ActionManager.ClearDeviceState</c> が <see cref="HandleDeviceDisconnect"/> を通じて合図を消す前に退避するために使う。
         /// </summary>
         ProfileUntriggerSnapshot CaptureProfileUntrigger(int device);
 
-        /// <summary>Phase7b W1: <see cref="CaptureProfileUntrigger"/> で退避した合図を戻す。合図が無かった（Action が null）ときは何もしない。</summary>
+        /// <summary><see cref="CaptureProfileUntrigger"/> で退避した合図を戻す。合図が無かった（Action が null）ときは何もしない。</summary>
         void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot);
 
         /// <summary>スペシャルアクションのマクロを再生する（<c>IMacroPlayer</c> 用）。</summary>

@@ -6,7 +6,7 @@ using DS4Windows.UI.ViewModels.Util;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 共通の編集画面の ViewModel の土台。名前・トリガー・種別の添字と、その検証を持つ。
+    /// 共通の編集画面の ViewModel の土台。名前・トリガー・種別の添字と、その検証を持つ。
     /// 従来の <c>SpecialActEditorViewModel</c> の中身を、「トリガーの供給元」（<see cref="IActionTriggerSource"/>）、「編集の対象」
     /// （<see cref="IActionEditTarget"/>）、「種別の一覧」（<see cref="ActionTypeCatalog"/>）に分けて、委譲する形にした。
     /// SA のモードは <see cref="SpecialActEditorViewModel"/>（従来と同じ公開メンバー・同じ検証・同じエラーの文言）。
@@ -34,7 +34,7 @@ namespace DS4Windows.UI.ViewModels
             this.triggerCatalog = triggerCatalog ?? throw new System.ArgumentNullException(nameof(triggerCatalog));
             this.mode = mode;
 
-            // Phase10-Step2 W2: トリガーの一覧は、データ駆動（旧: 名前つきのチェックボックス 49 個）。チェックの状態は、供給元が持つ
+            // トリガーの一覧は、データ駆動。チェックの状態は、供給元が持つ
             triggerOptions = triggerCatalog.Items.Select(item => new TriggerOptionViewModel(item, triggerSource)).ToArray();
         }
 
@@ -111,7 +111,7 @@ namespace DS4Windows.UI.ViewModels
                 }
             }
 
-            // 一覧にない名前は、外す（旧: コードビハインドが、対応するチェックボックスがなければ、リストから外していた）
+            // 一覧にない名前は、外す
             foreach (string name in triggerSource.Triggers.ToArray())
             {
                 if (!triggerCatalog.Contains(name)) triggerSource.SetTrigger(name, false);
@@ -146,7 +146,7 @@ namespace DS4Windows.UI.ViewModels
 
             action.typeID = typeCatalog.TypeIds[actionTypeIndex];
 
-            // Phase10-Step4d W2: 保存済みの SA を編集するときは、その ID を引き継ぐ（名前を変えると、古い名前を削除して作り直すため、渡さないと ID が変わる）
+            // 保存済みの SA を編集するときは、その ID を引き継ぐ（名前を変えると、古い名前を削除して作り直すため、渡さないと ID が変わる）
             if (editTarget.SavedAction != null) action.id = editTarget.SavedAction.id;
         }
 

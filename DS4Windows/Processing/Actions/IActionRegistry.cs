@@ -2,10 +2,10 @@ using System.Collections.Generic;
 
 namespace DS4Windows.Processing.Actions
 {
-    // Phase8-Step4 W1 で改訂した（旧: Register／Unregister／GetBindingsForDevice。実装がなく、呼び出し元は 0 件だった）。
+    // Register／Unregister／GetBindingsForDevice。実装がなく、呼び出し元は 0 件だった）。
     // 実装は ActionBindingRegistry。束縛の組み立てと Replace の呼び出し（プロファイルの読込・適用の完了後）は Step5、切断時の Clear は Step6。
     /// <summary>
-    /// デバイスごとの束縛の一覧の置き場（Phase8-Step2-Design.md §8）。一覧は不変のスナップショットで、参照ごと差し替える（アトミック）。
+    /// デバイスごとの束縛の一覧の置き場。一覧は不変のスナップショットで、参照ごと差し替える（アトミック）。
     /// 読み出し側（エンジン）は、フレームの先頭で <see cref="GetBindings"/> を 1 回だけ呼び、そのフレームは古い一覧で最後まで処理する。
     /// </summary>
     public interface IActionRegistry

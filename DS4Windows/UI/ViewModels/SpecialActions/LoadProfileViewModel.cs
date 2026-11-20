@@ -72,7 +72,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             }
         }
 
-        // Phase10-Step6 I6b: Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
+        // Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
         public void LoadControlItem(ControlSpecialItem item)
         {
             if (item == null) return;
@@ -82,7 +82,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             AutoUntrigger = item.AutomaticUntrigger;
         }
 
-        // Phase10-Step4 W6: Load Profile。未選択のときは、空の名前（束縛は作られない。割り当て編集画面は、未選択の Save を許さない）
+        // Load Profile。未選択のときは、空の名前（束縛は作られない。割り当て編集画面は、未選択の Save を許さない）
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
         {
             return new ControlSpecialItem
@@ -122,7 +122,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             UnloadEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        // Phase6-Step10-3-2: Global.SaveAction の置換先（必須引数）
+        // Global.SaveAction の置換先（必須引数）
         private readonly ISpecialActionRepository specialActionRepository;
 
         public void SaveAction(SpecialAction action, bool edit = false)
@@ -150,7 +150,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
             if (profileIndex == 0)
             {
-                valid = false;   // Phase10-Step4c W3: 必須の値がないエラーは、保存を止める
+                valid = false;   // 必須の値がないエラーは、保存を止める
                 profileIndexErrors.Add("No profile given");
                 errors["ProfileIndex"] = profileIndexErrors;
                 RaiseErrorsChanged("ProfileIndex");

@@ -24,7 +24,7 @@ namespace DS4Windows.UI.ViewModels
 {
     public class TouchButtonUserControlViewModel
     {
-        // Phase6-Step10-2-5: Global.TouchpadButtonMode の置換先（必須引数）
+        // Global.TouchpadButtonMode の置換先（必須引数）
         private readonly DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService;
         private int deviceIndex;
         public int DeviceIndex

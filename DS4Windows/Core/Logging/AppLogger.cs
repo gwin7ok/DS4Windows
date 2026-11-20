@@ -31,7 +31,7 @@ namespace DS4Windows.Core.Logging
         public static event EventHandler<ProfileChangedEventArgs>? ProfileChanged;
 
         // GUI表示用ログ（LoggerHolderがGuiLogイベントを受け取ってファイル出力）
-        // Phase13b-Step1: 汎用のログ API（Log-Policy.md §1・§7）。レベル名付きの短縮形（LogTrace／LogDebug／LogInfo／LogWarn／LogError）は、
+        // 汎用のログ API（Log-Policy.md §1・§7）。レベル名付きの短縮形（LogTrace／LogDebug／LogInfo／LogWarn／LogError）は、
         // この API へ委譲する（決定: 2026-11-04。LogToGui とトレイ用の TrayIconLog イベントは Phase13b-Step9 で削除した）。
         //  - options が利用者向け（IsUserFacing）: GuiLog を発火する。ファイルへの出力は LoggerHolder が行う（一時表示は出さない）。画面の購読者は従来どおり GuiLog を受ける。
         //  - それ以外: ファイル（NLog）のみ。
@@ -109,7 +109,7 @@ namespace DS4Windows.Core.Logging
         // Expose trace-enabled flag to avoid expensive string formatting when trace is off
         public static bool IsTraceEnabled => Logger.IsTraceEnabled;
 
-        // Phase10-Step4c W2: Debug の文字列の組み立て（割り当てを伴う）を、無効のときに省くため
+        // Debug の文字列の組み立て（割り当てを伴う）を、無効のときに省くため
         public static bool IsDebugEnabled => Logger.IsDebugEnabled;
 
         // Errorレベルログ専用メソッド（エラー情報用）
@@ -129,9 +129,9 @@ namespace DS4Windows.Core.Logging
             Log(AppLogLevel.Info, data);
         }
 
-        // Phase7-Step5 W3（Q7＝A）: 旧 Global.NotificationServiceInstance。静的なロガーは注入できないため、App が起動時に
+        // 旧 Global.NotificationServiceInstance。静的なロガーは注入できないため、App が起動時に
         // DI のシングルトンを設定する。設定前（ホスト構築より前、テスト）は、何もしない実装（NullNotificationService）を返す。
-        // Phase14b-Step3（R-03）: 旧フォールバックは new AppNotificationService(new BackingStore(new EnvironmentService())) で、
+        // 旧フォールバックは new AppNotificationService(new BackingStore(new EnvironmentService())) で、
         // 2 つ目の BackingStore を作っていた（購読者がいないため通知は表示されず、表示の挙動は同じ）。
         private static DS4Windows.Core.Abstractions.INotificationService? _notificationService;
 

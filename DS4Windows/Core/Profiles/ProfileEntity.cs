@@ -25,7 +25,7 @@ using System.IO;
 
 namespace DS4Windows.Core.Profiles
 {
-    // Phase11 W6 K-W6-9: INotifyPropertyChanged を実装した。以前は旧式の NameChanged イベントだけで名前の変更を通知しており、
+    // INotifyPropertyChanged を実装した。以前は旧式の NameChanged イベントだけで名前の変更を通知しており、
     // WPF は {Binding Name} に、リフレクションによる旧式の購読（ValueChangedEventManager）を使っていた。リンクのコンボの選択項目が
     // 一覧から削除されると、選択欄の中身の型が入れ替わる途中で、この購読が TargetException（Object does not match target type）で
     // 失敗し、アプリが落ちた。NameChanged は、既存の購読先のために残す。
@@ -45,7 +45,7 @@ namespace DS4Windows.Core.Profiles
         }
 
         public event EventHandler? NameChanged;
-        // Phase6-Step10-4-1: Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
+        // Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 
         public ProfileEntity(DS4Windows.Core.Abstractions.IPathService pathService)

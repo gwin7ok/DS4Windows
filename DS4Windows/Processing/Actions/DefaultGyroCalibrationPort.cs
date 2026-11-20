@@ -5,7 +5,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6a: <see cref="IGyroCalibrationPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作する。
+    /// <see cref="IGyroCalibrationPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作する。
     /// ControlService は後から作られるため、遅延（<c>Func</c>）で受ける（<c>Mapping</c> と同じ方式）。
     /// 旧 <c>Mapping.MapCustomAction</c> の GyroCalibrate の分岐と同じ処理（結合デバイスも含む）。旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>

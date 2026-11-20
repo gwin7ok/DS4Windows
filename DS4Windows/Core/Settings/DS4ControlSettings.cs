@@ -30,20 +30,20 @@ namespace DS4Windows.Core.Settings
         public DS4Controls control;
         public string extras = null;
         public DS4KeyType keyType = DS4KeyType.None;
-        // Phase10-Step4 W1: Special は、SA 専用の種別（Program、Profile、DisconnectBT、BatteryCheck、MultiAction、較正）の割り当て。内容は special（型のある項目）が持つ
+        // Special は、SA 専用の種別（Program、Profile、DisconnectBT、BatteryCheck、MultiAction、較正）の割り当て。内容は special（型のある項目）が持つ
         public enum ActionType : byte { Default, Key, Button, Macro, Special };
         public ActionType actionType = ActionType.Default;
         public ControlActionData action = new ControlActionData();
 
         /// <summary>
-        /// Phase10-Step4 W1（Phase10-Step4-Plan.md §3.1）: SA 専用の種別と項目（型のある項目）。<see cref="actionType"/> が <c>Special</c> のとき、その割り当ての内容。
+        /// SA 専用の種別と項目（型のある項目）。<see cref="actionType"/> が <c>Special</c> のとき、その割り当ての内容。
         /// <c>Macro</c> のときは、Macro の SA 専用の 3 項目（Run on release／Synchronized／Keep key state）の入れ物。それ以外は null。
         /// </summary>
         public ControlSpecialItem special;
 
-        // Phase8-Step7 7.8e: 「Lightbar マクロ」機能は廃止した（Phase8-Step7-8e-Plan.md Q8＝B。プロファイルに保存されず、実質使えなかった）。
+        // 「Lightbar マクロ」機能は廃止した（Phase8-Step7-8e-Plan.md Q8＝B。プロファイルに保存されず、実質使えなかった）。
 
-        // Phase8-Step7 7.8d: 「シフト」機能は廃止した（Phase8-Step7-8d-Plan.md）。プロファイルに残っているシフトの設定は、解釈せず、RemovedShiftSettings に保持する。
+        // 「シフト」機能は廃止した。プロファイルに残っているシフトの設定は、解釈せず、RemovedShiftSettings に保持する。
 
         public bool IsDefault { get => actionType == ActionType.Default; }
 

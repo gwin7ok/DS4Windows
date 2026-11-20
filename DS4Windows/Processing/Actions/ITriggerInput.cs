@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step3 W1: トリガー条件の判定に渡す、読み取り専用の入力（Phase8-Step2-Design.md §3。Q1＝A）。
+    /// トリガー条件の判定に渡す、読み取り専用の入力。
     /// <c>Mapping</c> が毎フレーム、デバイスごとに再利用するオブジェクトを更新して渡す（割り当て 0）。
     /// タッチ・スワイプ・ジャイロの判定は <c>ControllerState</c> だけでは足りないため、<c>ControllerStateFieldMapping</c> を含む入力をまとめて表す。
     /// </summary>
@@ -24,7 +24,7 @@ namespace DS4Windows.Processing.Actions
         /// <summary>
         /// R-5（Release-Backlog.md。ユーザー決定 2026-10-23）: SA タブの割り当ての、デジタルな押下の判定（閾値なし）。<see cref="IsActive"/> との違いは、スティックの軸と L2・R2 だけ:
         /// 軸は中心（128）から少しでも傾いたら、L2・R2 は 0 を超えたら成立する（値は、デッドゾーンの補正の後の値）。ボタン、タッチ、スワイプ、ジャイロは <see cref="IsActive"/> と同じ。
-        /// Controls タブの割り当てのうち、デジタルな出力（Phase10-Step4c W4 で SA と同じ判定にしたもの）も、この判定を使う（ユーザー決定 2026-10-23）。
+        /// Controls タブの割り当てのうち、デジタルな出力も、この判定を使う（ユーザー決定 2026-10-23）。
         /// アナログな出力は、従来の Controls の判定（<c>IControlTriggerInput.IsControlActive</c>）のまま。既定の実装は <see cref="IsActive"/>（テスト用の偽物は、そのまま動く）。
         /// </summary>
         bool IsDigitalActive(DS4Controls control) => IsActive(control);

@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Services.Devices
 {
     public class DeviceStateService : IDeviceStateService
     {
-        // Phase7-Step3 W5: Global の転送（IsFirstConnection／MarkConnected／ResetConnectionFlags）を削除し、
+        // Global の転送（IsFirstConnection／MarkConnected／ResetConnectionFlags）を削除し、
         // 注入された BackingStore のフラグ配列を直接使う。
         private readonly BackingStore _config;
 
@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Services.Devices
             _config = config;
         }
 
-        // ---- Phase6-Step2-2 (PR-2): 起動後の初回接続判定 ----
+        // ---- 起動後の初回接続判定 ----
         public bool IsFirstConnection(int slotIndex) => _config.firstConnectionAfterStartup[slotIndex];
 
         public void MarkConnected(int slotIndex) => _config.firstConnectionAfterStartup[slotIndex] = false;
@@ -72,7 +72,7 @@ namespace DS4Windows.Processing.Services.Devices
             }
         }
 
-        // ---- Phase6-Step7-1: 起動時の初回接続フラグの一括リセット（App.xaml.cs から使用）----
+        // ---- 起動時の初回接続フラグの一括リセット（App.xaml.cs から使用）----
         public void ResetConnectionFlags()
         {
             for (int i = 0; i < ControllerLimits.TestProfileItemCount; i++)
@@ -87,9 +87,8 @@ namespace DS4Windows.Processing.Services.Devices
             }
         }
 
-        // ---- Phase6-Step2-4 (PR-4): デバイスのシリアル変更通知 ----
-        // Phase7-Step10d W4: 旧 Global.DeviceSerialChange（static イベント）の実体をこのサービスへ移した（通知の内容は同一）。
-        // 本体に購読者はいない（旧 Global のイベントも同様）。
+        // ---- デバイスのシリアル変更通知 ----
+        // 本体に購読者はいない。
         public event EventHandler<SerialChangeArgs>? DeviceSerialChange;
 
         public void OnDeviceSerialChange(object sender, int slotIndex, string serial)

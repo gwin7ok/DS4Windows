@@ -22,9 +22,9 @@ namespace DS4Windows.Processing.Actions
         private readonly SpecialAction assignedActionDef;
         private readonly IKeyController impl;
         private readonly Action<SpecialAction, int, bool, bool> toggledOnHandler;
-        // Phase13-Step4: 旧 静的 ActionManager の代わりに、トグル状態の管理役をコンストラクターで受ける
+        // 旧 静的 ActionManager の代わりに、トグル状態の管理役をコンストラクターで受ける
         private readonly IManagedActionManager _manager;
-        // Phase14c-Step3（R-06）: 合成キーの送出（旧: 静的な橋渡し SyntheticDispatcher）。生成する側（登録簿・ファクトリー）が渡す
+        // 合成キーの送出。生成する側（登録簿・ファクトリー）が渡す
         private readonly ISyntheticDispatcher _dispatcher;
         // 長押しのリピートの開始待ち・間隔の時計。テストが仮想の時計を渡す
         private readonly TimeProvider _time;
@@ -488,7 +488,7 @@ namespace DS4Windows.Processing.Actions
                 impl.ClearAll();
             }
             catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
-            // Phase13-Step4: 静的イベントでは購読が残り続けていた。破棄後は反応しないよう、注入された管理役の購読を解除する
+            // 静的イベントでは購読が残り続けていた。破棄後は反応しないよう、注入された管理役の購読を解除する
             try { _manager.ToggledOnChanged -= toggledOnHandler; } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KeyButtonActionController destroyed: device={device} assignedAction={this.assignedActionName}");
         }

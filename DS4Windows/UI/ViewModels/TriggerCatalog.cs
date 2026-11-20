@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2）: トリガーの一覧。引数なしの構築は、SA のモードの全トリガー（51 項目）。並び・名前・表示名は、
+    /// トリガーの一覧。引数なしの構築は、SA のモードの全トリガー（51 項目）。並び・名前・表示名は、
     /// 従来の <c>AssignmentEditor.xaml</c> の、名前つきのチェックボックス 49 個（と、その <c>Tag</c>／<c>Content</c>）と同じ。
-    /// Phase10-Step4c W5（項目 9、ユーザー承認 2026-10-21）: 末尾に LS Outer／RS Outer を足した（Controls の一覧と入力の集合を同じにするため。既存の並びは変えない）。
+    /// 末尾に LS Outer／RS Outer を足した（Controls の一覧と入力の集合を同じにするため。既存の並びは変えない）。
     /// Controls のモード（W3）は、対象のボタン 1 つだけの一覧を、引数つきで作る。状態を持たない（不変）。
     /// </summary>
     public sealed class TriggerCatalog
@@ -20,7 +20,7 @@ namespace DS4Windows.UI.ViewModels
         {
         }
 
-        // Phase9 UI 変更: 並びと表示名は、InputControlCatalog（Controls の一覧と共通）。保存する名前（Name）は、従来のまま
+        // 並びと表示名は、InputControlCatalog（Controls の一覧と共通）。保存する名前（Name）は、従来のまま
         private static TriggerItem[] FromInputControls()
         {
             var result = new TriggerItem[InputControlCatalog.Entries.Count];

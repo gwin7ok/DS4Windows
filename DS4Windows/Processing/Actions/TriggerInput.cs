@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step3 W2: <see cref="ITriggerInput"/> の実装（デバイスごとに 1 つ。<c>Mapping</c> が保持して毎フレーム <see cref="Update"/> する。Step4 で配線）。
+    /// <see cref="ITriggerInput"/> の実装（デバイスごとに 1 つ。<c>Mapping</c> が保持して毎フレーム <see cref="Update"/> する。Step4 で配線）。
     /// <see cref="IsActive"/> の本体は、現行の <c>Mapping.getBoolSpecialActionMapping</c> をそのまま移したもの（意味は同じ。<c>TriggerInputTests</c> が全コントロールで比較する）。
     /// 割り当て 0: 判定は表の参照のみ。前フレームの表（<c>_previousFields</c>）は、コンストラクターで 1 回だけ作り、最初に <see cref="WasActive"/> が呼ばれたときだけ展開する（遅延）。
     /// </summary>
@@ -66,7 +66,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8f-3: マウスの移動の生の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。引数は（コントロール、向き）。
+        /// マウスの移動の生の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。引数は（コントロール、向き）。
         /// 計算が感度・加速・デッドゾーン・経過時間を使うため、<c>Mapping.getMouseMapping</c> を呼ぶ。
         /// </summary>
         public Func<DS4Controls, int, double> MouseSampler { get; set; }
@@ -78,7 +78,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase10-Step6 後の Step5: SA のマウス移動（強さの固定値）の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。
+        /// SA のマウス移動（強さの固定値）の量の計算の借り先（<c>Mapping</c> が、デバイスごとに 1 回だけ設定する）。
         /// 引数は、方向（0＝Up、1＝Down、2＝Left、3＝Right）と強さ（0〜1）。
         /// </summary>
         public Func<int, double, double> FixedMouseSampler { get; set; }
@@ -129,7 +129,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8b: 現行の <c>Mapping.GetBoolActionMapping</c>（Controls タブの割り当て用）と同じ判定。スティックは角度の扇形（<c>LSAngle</c>／<c>RSAngle</c>）、
+        /// 現行の <c>Mapping.GetBoolActionMapping</c>（Controls タブの割り当て用）と同じ判定。スティックは角度の扇形（<c>LSAngle</c>／<c>RSAngle</c>）、
         /// L2／R2 は 0 より大きい、ジャイロは 0 より大きい／小さい（<c>GyroOutputMode</c> が Controls のときだけ）。
         /// </summary>
         public bool IsControlActive(DS4Controls control)
@@ -196,8 +196,8 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8f-1（Q4＝A）: 現行の <c>Mapping.GetXYAxisMapping</c> と同じ値。128 が中立。
-        /// <paramref name="positive"/> は、出力先が正の向きの軸か（旧 <c>alt</c>）。割り当て 0。
+        /// 現行の <c>Mapping.GetXYAxisMapping</c> と同じ値。128 が中立。
+        /// <paramref name="positive"/> は、出力先が正の向きの軸か。割り当て 0。
         /// </summary>
         public byte GetAxisValue(DS4Controls control, bool positive)
         {
@@ -278,7 +278,7 @@ namespace DS4Windows.Processing.Actions
             return result;
         }
 
-        /// <summary>Phase8-Step7 7.8f-1（Q4＝A）: 現行の <c>Mapping.GetByteMapping</c> と同じ値（0〜255）。割り当て 0。</summary>
+        /// <summary>現行の <c>Mapping.GetByteMapping</c> と同じ値（0〜255）。割り当て 0。</summary>
         public byte GetByteValue(DS4Controls control)
         {
             if (_fields == null) return 0;

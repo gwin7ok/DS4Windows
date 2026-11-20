@@ -4,7 +4,7 @@ namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
     /// ログ設定（保存するログの数・最小ログレベル）の変更を、ログ機能（NLog の構成）へ反映する窓口。
-    /// Phase6-Step10-1-5（決定D7＝A）: 設定画面（SettingsViewModel）が静的フィールド <c>App.logHolder</c> を
+    /// 設定画面（SettingsViewModel）が静的フィールド <c>App.logHolder</c> を
     /// 直接参照していたため、実装（LoggerHolder）への依存を、この契約へ置き換えた。
     /// </summary>
     public interface ILogSettingsApplier

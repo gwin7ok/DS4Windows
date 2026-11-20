@@ -3,7 +3,7 @@
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase14b-Step15（決定 D12）: Windows のスタートアップ登録の契約（実装は <c>Core/Platform/StartupEntryService</c>）。
+    /// Windows のスタートアップ登録の契約（実装は <c>Core/Platform/StartupEntryService</c>）。
     /// 設定画面（<c>SettingsViewModel</c>）が使う。旧 静的クラス <c>StartupMethods</c> のメソッドと同じ並び・意味。
     /// </summary>
     public interface IStartupEntryService

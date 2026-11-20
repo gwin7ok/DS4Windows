@@ -4,7 +4,7 @@ using System;
 
 namespace DS4Windows.Processing.Abstractions
 {
-    /// <summary>コントローラーが接続されスロットに入ったことの通知（旧: <c>ControlService.HotplugController</c>）。</summary>
+    /// <summary>コントローラーが接続されスロットに入ったことの通知。</summary>
     public sealed class ControllerSlotChangedEventArgs : EventArgs
     {
         public ControllerSlotChangedEventArgs(IControllerSlotView view, int slotIndex)

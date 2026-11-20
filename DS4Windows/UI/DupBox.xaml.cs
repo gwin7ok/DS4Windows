@@ -45,7 +45,7 @@ namespace DS4Windows.UI
         public delegate void SaveHandler(DupBox sender, string profilename);
         public event SaveHandler Save;
 
-        // Phase6-Step10-2-3: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
+        // 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが 1 回だけ呼ぶ）。
         // プロファイルの複製（複製元の名前, 複製先の名前）。ファイルのコピーと新しい ProfileId の割り当ては、渡す側（Composition）が行う。
         private Action<string, string> duplicateProfile;

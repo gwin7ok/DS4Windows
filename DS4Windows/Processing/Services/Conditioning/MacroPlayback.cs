@@ -12,10 +12,10 @@ using DS4Windows.Processing.Actions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="IMacroPlayback"/> の実装（DI の Singleton）。
+    /// <see cref="IMacroPlayback"/> の実装（DI の Singleton）。
     /// 旧 <c>Mapping.PlayMacro</c>／<c>PlayMacroTask</c>／<c>RunMacroOnce</c>（予約、同期キュー、押している間の繰り返し、1 回分の再生、後始末）を、そのまま移したもの。
     /// 1 つのマクロ値の実行は <see cref="IMacroStepExecutor"/> へ、同期キューの Task の連鎖は <c>MacroRuntimeState.TaskQueue</c> に持つ。
-    /// Phase13-Step4: 旧 静的な <c>ActionManager.GetStateFor</c>／<c>IsBeingTriggered</c> は、注入された <c>IManagedActionManager</c> を使う（<c>IsBeingTriggered</c> を契約へ追加した）。
+    /// 旧 静的な <c>ActionManager.GetStateFor</c>／<c>IsBeingTriggered</c> は、注入された <c>IManagedActionManager</c> を使う（<c>IsBeingTriggered</c> を契約へ追加した）。
     /// ライトバーの強制色の復帰（<c>DS4LightBar.forcedFlash</c>／<c>forcelight</c>）も、静的な配列へ直接書く（ライトバーのサービス化で置き換える）。
     /// 実際の挙動は、入口の <c>PlayMacroDirect</c>／<c>PlayMacroString</c> を通る既存の挙動テスト（<c>Phase8Step78cW2ControlsMacroTests</c> ほか）が守る。
     /// </summary>
@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         private readonly MacroRuntimeState _macroRuntime;
         private readonly DS4Windows.Processing.Actions.IManagedActionManager _manager;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public MacroPlayback(DS4Windows.Core.Model.LightbarOverrides lightbar, IMacroStepExecutor stepExecutor, MacroRuntimeState macroRuntime, DS4Windows.Processing.Actions.IManagedActionManager manager, TimeProvider timeProvider)
@@ -63,7 +63,7 @@ namespace DS4Windows.Processing.Services.Conditioning
         // Play macro as a background task. Optionally the new macro play waits for completion of a previous macro execution (synchronized macro special action).
         // Macro steps are defined either as macrostr string value, macroLst list<int> object or as macroArr integer array. Only one of these should have a valid macro definition when this method is called.
         // If the macro definition is a macroStr string value then it will be converted as integer array on the fl. If steps are already defined as list or array of integers then there is no need to do type cast conversion.
-        // Phase8-Fix-MacroRepeatUnify（D5）: 呼び出しは常に control == DS4Controls.None（SA・Controls タブ・MultiAction のすべて）だったため、control 単位の経路
+        // 呼び出しは常に control == DS4Controls.None（SA・Controls タブ・MultiAction のすべて）だったため、control 単位の経路
         // （macrodone、macroDispatchInFlight／TryBeginDispatch）と、未使用の引数 control／macrocontrol を削除した。二重起動の防止は ActionInstanceState.IsMacroRunning が担う。
         public void Play(int device, string macroStr, List<int>? macroLst, int[]? macroArr, DS4KeyType keyType, SpecialAction? action = null, ActionInstanceState? actionDoneState = null)
         {
@@ -107,7 +107,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 Task.Factory.StartNew(() => PlayMacroTask(device, macroStr, macroLst, macroArr, keyType, action, actionDoneState));
         }
 
-        /// <summary>Phase10-Step3: 手順が空のマクロを「押している間繰り返す」ときの、1 回ごとの間隔（ミリ秒）。手順のあるマクロの 1 回の再生時間（約 50ms）に合わせた。</summary>
+        /// <summary>手順が空のマクロを「押している間繰り返す」ときの、1 回ごとの間隔（ミリ秒）。手順のあるマクロの 1 回の再生時間（約 50ms）に合わせた。</summary>
         private const int EmptyMacroRepeatIntervalMs = 50;
         // 待ち（手順の待ち時間、空のマクロの繰り返しの間隔）の時計。テストが仮想の時計を渡して、実時間で待たずに済ませる
         private readonly TimeProvider _time;
@@ -144,8 +144,8 @@ namespace DS4Windows.Processing.Services.Conditioning
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"PlayMacroTask START: action={action?.name} device={device} IsMacroRunning={(actionDoneState != null ? actionDoneState.IsMacroRunning : false)} IsBeingTriggered={(action != null ? _manager.IsBeingTriggered(action, device) : false)} keyType={keyType}");
 
-                // Phase8-Step7-3a（機能廃止。ユーザー承認済み）: Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
-                // この並びのマクロも、他のマクロと同じく、手順どおりに再生する（Phase8-Step7-3a-AltTab-Removal-Plan.md）。
+                // Alt-Tab の並び（Alt 押す・Tab 押す・Tab 離す・Alt 離す）で始まるマクロの特別扱いを廃止した。
+                // この並びのマクロも、他のマクロと同じく、手順どおりに再生する。
                 // 最初の 1 回は、IsMacroRunning を立てずに再生する（従来どおり）。
                 RunMacroOnce(device, macroLst, macroArr, keyType, action, actionDoneState, markRunning: false);
 
@@ -153,7 +153,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 // additional macro runs), perform repeat-in-place. After a macro run completes, check the
                 // per-action BeingTriggered flag; if it remains true (trigger still held), run the macro again.
                 // This avoids accumulating a queue of runs that would execute after physical release.
-                // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro に統合した（SA と Controls タブで共通。旧 HoldMacro は読込時に RepeatMacro になる）。
+                // 「押している間繰り返す」は RepeatMacro に統合した（SA と Controls タブで共通。旧 HoldMacro は読込時に RepeatMacro になる）。
                 // R-2: Repeat (Toggle) は、押している間（BeingTriggered）ではなく、トグルの状態（IsToggledOn）が ON の間、繰り返す
                 if (action != null && (keyType.HasFlag(DS4KeyType.RepeatMacro) || latch) && actionDoneState != null)
                 {
@@ -174,7 +174,7 @@ namespace DS4Windows.Processing.Services.Conditioning
 
                         if (!keepRunning) break;
 
-                        // Phase10-Step3: 手順が空のマクロも、押している間は繰り返す。ただし、1 回の再生に時間がかからず、待ちなしの空回りになるため、
+                        // 手順が空のマクロも、押している間は繰り返す。ただし、1 回の再生に時間がかからず、待ちなしの空回りになるため、
                         // 繰り返しの間に、短い間隔（EmptyMacroRepeatIntervalMs）を置く（手順のあるマクロは、手順そのものの時間が間隔になる）
                         if ((macroLst == null || macroLst.Count == 0) && (macroArr == null || macroArr.Length == 0))
                             Task.Delay(TimeSpan.FromMilliseconds(EmptyMacroRepeatIntervalMs), _time).Wait(); // 待機の理由: マクロの専用スレッドの中の待機（UI・読み取りスレッドではない）
@@ -203,7 +203,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             catch { return false; }
         }
 
-        // Phase8-Fix-MacroRepeatUnify（D5）: 旧 PlayMacroTask の「最初の 1 回」と「繰り返しの 1 回」は、ほぼ同じコードが 2 つあったため、1 つにまとめた（挙動は同じ）。
+        // 旧 PlayMacroTask の「最初の 1 回」と「繰り返しの 1 回」は、ほぼ同じコードが 2 つあったため、1 つにまとめた（挙動は同じ）。
         // markRunning: 繰り返しの 1 回は、実行中に IsMacroRunning を立てる（最初の 1 回は、従来どおり立てない）。
         private void RunMacroOnce(int device, List<int>? macroLst, int[]? macroArr, DS4KeyType keyType, SpecialAction? action, ActionInstanceState? actionDoneState, bool markRunning)
         {

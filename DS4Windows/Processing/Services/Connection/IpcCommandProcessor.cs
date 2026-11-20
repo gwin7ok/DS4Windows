@@ -11,7 +11,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// <see cref="IIpcCommandProcessor"/> の実装（Phase13-Step11 11-b）。旧 <c>MainWindow.Ipc.cs</c> の 9 個の <c>Ipc*</c> を、そのまま移したもの
+    /// <see cref="IIpcCommandProcessor"/> の実装。旧 <c>MainWindow.Ipc.cs</c> の 9 個の <c>Ipc*</c> を、そのまま移したもの
     /// （受け付けの順序、引数の個数の条件、範囲の検査、ログの文言、query の結果の書き込みは従来のまま）。UI に頼む操作は <see cref="IIpcCommandHost"/> 経由。
     /// </summary>
     public class IpcCommandProcessor : IIpcCommandProcessor
@@ -213,7 +213,7 @@ namespace DS4Windows.Processing.Services.Connection
             if (tdevice >= 0 && tdevice < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount)
             {
                 strData[2] = strData[2].ToLower();
-                // Phase6-Step10-5: 抜き差しの正式な入口（IOutputSlotService）経由。事前条件の確認と UI スレッドへの切り替えは、サービスが行う
+                // 抜き差しの正式な入口（IOutputSlotService）経由。事前条件の確認と UI スレッドへの切り替えは、サービスが行う
                 if (strData[2] == "unplug")
                     _outputSlotService.UnplugSlot(tdevice);
                 else if (OutContTypeInfo.TryFromIpcPlugName(strData[2], out OutContType plugType))
@@ -243,7 +243,7 @@ namespace DS4Windows.Processing.Services.Connection
                         propValue = _profileRepo.ProfilePath[tdevice];
                 }
                 else if (propName == "outconttype")
-                    // Phase6-Step5-1: 正本であるプロファイル設定（永続設定の OutContType）を返す
+                    // 正本であるプロファイル設定（永続設定の OutContType）を返す
                     propValue = _profileSettings.OutputType(tdevice).ContType.ToString();
                 else if (propName == "activeoutdevtype")
                     propValue = _outputSlotService.ActiveOutDevType[tdevice].ToString();

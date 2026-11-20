@@ -45,8 +45,8 @@ namespace DS4Windows.UI
         private BindingWindowViewModel bindingVM;
         // 振動テストボタンの動作（画面に依存しない判断）
         private readonly ActionRumbleTestController rumbleTest;
-        // Phase6-Step10-2-4b: Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
-        // Phase6-Step10-2-4a: RecordBox の生成を窓口へ依頼する（必須引数）
+        // Global.defaultButtonMapping／InverseRumbleMotors の置換先（必須引数）
+        // RecordBox の生成を窓口へ依頼する（必須引数）
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // コントローラーの図のボタンは、ControllerVisualizerControl が配置表から生成する。元の名前のまま持つ
         private Button guideBtn, aBtn, bBtn, xBtn, yBtn, lbBtn, rbBtn, ltBtn, rtBtn, backBtn, startBtn, lsbBtn, lsuBtn, lsrBtn, lsdBtn, lslBtn, rsbBtn, rsuBtn, rsrBtn, rsdBtn, rslBtn, dpadUBtn, dpadRBtn, dpadDBtn, dpadLBtn, touchpadClickBtn;
@@ -56,21 +56,21 @@ namespace DS4Windows.UI
 
         public enum ExposeMode : uint
         {
-            // SA の Press Key 用（旧 ForPressToggle）。Default／Unbound を出さない（SA の Press Key に「Default」はない）。
-            // Phase10-Step6 I5c: Extras は、SA に保存先（SpecialAction.outputExtras）ができたため、Control と同じく出す。
-            //   2 つのモードの違いは Default／Unbound の表示だけ（Phase10-Step3-Plan.md §3.1 の最終形）
+            // SA の Press Key 用。Default／Unbound を出さない（SA の Press Key に「Default」はない）。
+            // Extras は、SA に保存先（SpecialAction.outputExtras）ができたため、Control と同じく出す。
+            //   2 つのモードの違いは Default／Unbound の表示だけ
             SpecialAction,
-            // Controls の割り当てエディターの Press Key 用（Phase10-Step3 W1）。Default／Unbound と Extras を出す。
+            // Controls の割り当てエディターの Press Key 用。Default／Unbound と Extras を出す。
             // どのモードでも、Record A Macro・Toggle・Scan Code は出さない（割り当てエディターで設定する）
             Control,
         }
 
         /// <param name="deviceNum">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
         /// <param name="targetDevice">
-        /// Phase6-Step7b: ランブルテスト・ライトバーのプレビュー・マクロ記録で使う実機のスロット番号。-1 は実機なし。
-        /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
+        /// ランブルテスト・ライトバーのプレビュー・マクロ記録で使う実機のスロット番号。-1 は実機なし。
+        /// 渡し忘れをコンパイルで検出するため必須引数とする
         /// </param>
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
 
         public BindingWindow(int deviceNum, int targetDevice,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory,
@@ -114,7 +114,7 @@ namespace DS4Windows.UI
             bindingVM.ActionBinding = bindingVM.CurrentOutBind;
             if (expose == ExposeMode.Control)
             {
-                // Phase10-Step3 W1: Default／Unbound（modePanel）と Extras（extrasSidePanel）は出す。
+                // Default／Unbound（modePanel）と Extras（extrasSidePanel）は出す。
                 // Record A Macro・Toggle・Scan Code（topOptsPanel）・マクロの表示は、どのモードでも、割り当てエディターで設定するため出さない
                 recordMacroBtn.Visibility = Visibility.Collapsed;
                 topOptsPanel.Visibility = Visibility.Collapsed;
@@ -124,10 +124,10 @@ namespace DS4Windows.UI
             {
                 // For Press/Toggle selection: show keyboard, mouse and controller areas,
                 // but hide auxiliary UI panels (mode panel and record macro).
-                // Phase10-Step6 I5c: Extras（extrasSidePanel）は、Controls のモードと同じく出す（SA に保存先ができたため。2 つのモードの違いは Default／Unbound［modePanel］の表示だけ）
+                // Extras（extrasSidePanel）は、Controls のモードと同じく出す（SA に保存先ができたため。2 つのモードの違いは Default／Unbound［modePanel］の表示だけ）
                 modePanel.Visibility = Visibility.Collapsed;
                 recordMacroBtn.Visibility = Visibility.Collapsed;
-                // Phase10-Step1 W4: Toggle（Switch Mode）と Scan Code は、Press Key タブで設定する。ダイアログは、値を通過させるだけ
+                // Toggle（Switch Mode）と Scan Code は、Press Key タブで設定する。ダイアログは、値を通過させるだけ
                 topOptsPanel.Visibility = Visibility.Collapsed;
             }
 
@@ -184,7 +184,7 @@ namespace DS4Windows.UI
             }
             else if (expose == ExposeMode.SpecialAction)
             {
-                // Phase10-Step6 I5c: SA のモードも Extras を出す。結びつけるのは Extras だけ（Default／Unbound と、マクロの表示は出さない）
+                // SA のモードも Extras を出す。結びつけるのは Extras だけ（Default／Unbound と、マクロの表示は出さない）
                 extrasGB.DataContext = bind;
             }
 

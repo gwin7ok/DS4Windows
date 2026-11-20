@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="DS4Windows.Processing.Abstractions.IControlActivityReader"/> の実装（DI の Singleton。状態は持たない）。
+    /// <see cref="DS4Windows.Processing.Abstractions.IControlActivityReader"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.GetBoolMappingExternal</c>（と、その補助 <c>IsUsingGyroForControls</c>）を、そのまま移したもの（設定は引数で受ける）。
     /// 値の特性化は <c>Phase9BControlActivityReaderTests</c> が守る。
     /// </summary>
@@ -96,7 +96,7 @@ namespace DS4Windows.Processing.Services.Slots
 
                 switch (control)
                 {
-                    // Phase6-Step3-6b（決定P2）: 呼び出し元が ctrl を持たないため、引数の settings［Mapping が保持する profileSettings］から読む。Phase7-Step8 W2 で instance 化済み（Phase7c W3 でコメントを訂正）。
+                    // 呼び出し元が ctrl を持たないため、引数の settings［Mapping が保持する profileSettings］から読む。Phase7-Step8 W2 で instance 化済み。
                     case DS4Controls.GyroXPos: result = saControls ? settings.ForSlot(device).SixAxis.SXSens * -eState.AccelX > 67 : false; break;
                     case DS4Controls.GyroXNeg: result = saControls ? settings.ForSlot(device).SixAxis.SXSens * -eState.AccelX < -67 : false; break;
                     case DS4Controls.GyroZPos: result = saControls ? settings.ForSlot(device).SixAxis.SZSens * eState.AccelZ > 67 : false; break;

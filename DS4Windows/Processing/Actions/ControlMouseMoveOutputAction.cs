@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-3（Phase8-Step7-8f-Plan.md §3.2。Q6＝A）: Controls タブの Button のうち、マウスの移動（MouseUp／Down／Left／Right）への割り当ての出力。
+    /// Controls タブの Button のうち、マウスの移動（MouseUp／Down／Left／Right）への割り当ての出力。
     /// 旧経路は、dcs を処理するごとに <c>getMouseMapping</c>（感度・加速・デッドゾーン・経過時間を使うアナログの量。押下の判定なし）を呼び、
     /// 局所変数 <c>tempMouseDeltaX／Y</c> が 0 のときだけ、符号をそろえた値を書いた。同じく、量は <see cref="IAnalogTriggerInput.GetMouseMovement"/> で借り、
     /// 加算器（<see cref="IMouseMoveFrameOutput"/>）へ「0 のときだけ」書く。評価されたフレームだけ呼ばれる（<see cref="IEvaluatedFrameOutputAction"/>）。
@@ -14,7 +14,7 @@ namespace DS4Windows.Processing.Actions
     {
         private readonly SpecialAction _identity;
         private readonly DS4Controls _source;
-        private readonly int _direction;   // 0＝Up、1＝Down、2＝Left、3＝Right（旧 getMouseMapping の mnum）
+        private readonly int _direction;   // 0＝Up、1＝Down、2＝Left、3＝Right
 
         public ControlMouseMoveOutputAction(SpecialAction identity, DS4Controls source, int direction)
         {

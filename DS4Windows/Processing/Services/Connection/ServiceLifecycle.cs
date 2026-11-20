@@ -15,7 +15,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// Phase9 9-E E-6f2（Phase9-E6-Plan.md §9）: <see cref="IServiceLifecycle"/> の実装（DI の Singleton）。
+    /// <see cref="IServiceLifecycle"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の <c>Start</c>／<c>Stop</c>／<c>HotPlug</c>／<c>PrepareAbort</c> と、その状態
     /// （<c>running</c>／<c>loopControllers</c>／<c>inServiceTask</c>／<c>activeControllers</c>／<c>suspending</c>）、イベントを、そのまま移したもの。
     /// 安全弁（ViGEm の開始・破棄順序、<c>inServiceTask</c> による直列化、<c>Thread.Sleep</c>、イベントの発火順序）は、逐語で保つ（順序はソース走査のテストで固定）。
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Services.Connection
 
         public bool InServiceTask { get; set; }
 
-        public int ActiveControllers { get => _slots.ActiveControllers; set => _slots.ActiveControllers = value; }   // Phase13-Step5b: 実体は IDeviceSlotState（DeviceConnector も直接読む）
+        public int ActiveControllers { get => _slots.ActiveControllers; set => _slots.ActiveControllers = value; }   // 実体は IDeviceSlotState（DeviceConnector も直接読む）
 
         private bool _suspending;
 
@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Services.Connection
 
         public event Action<InputDeviceCore, int>? HotplugController;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
         private readonly ILightbarService _lightbarService;
 
@@ -121,7 +121,7 @@ namespace DS4Windows.Processing.Services.Connection
                 try
                 {
                     LoopControllers = true;
-                    _virtualPad.AssignInitialDevices();   // Phase9 9-E E-4: 旧 AssignInitialDevices（恒久スロットの割り当て）は VirtualPadService へ移した
+                    _virtualPad.AssignInitialDevices();   // 旧 AssignInitialDevices（恒久スロットの割り当て）は VirtualPadService へ移した
 
                     _eventThread.Invoke(() =>
                     {

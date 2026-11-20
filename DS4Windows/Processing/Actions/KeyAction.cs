@@ -30,7 +30,7 @@ namespace DS4Windows.Processing.Actions
         private readonly bool useScan;
         // No per-action repeater here; RepeatHelper should be used only by controllers.
 
-        // Phase13-Step4: 旧 静的 ActionManager（ServiceProviderHolder 経由の解決）の代わりに、状態の管理役とコントローラーの登録簿をコンストラクターで受ける
+        // 旧 静的 ActionManager（ServiceProviderHolder 経由の解決）の代わりに、状態の管理役とコントローラーの登録簿をコンストラクターで受ける
         private readonly IManagedActionManager manager;
         private readonly IKeyButtonControllerRegistry controllers;
 
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8a（Q9＝A）: 解釈済みの値（論理キー、ScanCode）を受け取る。<paramref name="action"/> は、状態の鍵と系統 B（コントローラー）への入力として使う。
+        /// 解釈済みの値（論理キー、ScanCode）を受け取る。<paramref name="action"/> は、状態の鍵と系統 B（コントローラー）への入力として使う。
         /// </summary>
         public KeyAction(SpecialAction action, int index, ushort keyId, bool useScan, IManagedActionManager manager, IKeyButtonControllerRegistry controllers)
         {
@@ -51,7 +51,7 @@ namespace DS4Windows.Processing.Actions
             this.action = action;
             this.index = index;
             this.keyId = keyId;
-            try { nativeKey = this.controllers.Dispatcher.ResolveNativeKey(keyId); } catch { nativeKey = 0; }   // Phase14c-Step3（R-06）: 旧 静的 SyntheticDispatcher
+            try { nativeKey = this.controllers.Dispatcher.ResolveNativeKey(keyId); } catch { nativeKey = 0; }   // 旧 静的 SyntheticDispatcher
             this.useScan = useScan;
             // Do not parse repeater options here; controllers handle repeat behavior.
         }

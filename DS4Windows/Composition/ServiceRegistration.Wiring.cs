@@ -50,8 +50,8 @@ namespace DS4Windows.Composition
                 return service;
             });
 
-            // 出力種別の 2 本の配列の持ち主（依存なし）。BackingStore へは、本サービスの生成時に ActiveOutDevType の同じ配列を渡す
-            // 。BackingStore の登録側から IOutputSlotService を解決してはならない
+            // 出力種別の 2 本の配列の持ち主（依存なし）。BackingStore へは、本サービスの生成時に ActiveOutDevType の同じ配列を渡す。
+            // BackingStore の登録側から IOutputSlotService を解決してはならない
             // （IOutputSlotStore → IPathService → BackingStore と循環し、実行時にスタックオーバーフローになる）が、このホルダーは依存がなく、循環しない。
             services.AddSingleton<IOutputDeviceTypeState>(sp =>
             {

@@ -3,20 +3,20 @@
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase13-Step6 6-d（Phase13-Step6-Plan.md §4.1）: プロファイル読込の鎖（<c>ProfileRepository.LoadProfile</c> → <c>IProfileXmlStore</c> →
+    /// プロファイル読込の鎖（<c>ProfileRepository.LoadProfile</c> → <c>IProfileXmlStore</c> →
     /// <c>LegacyProfileXmlSerializer</c> → <c>ProfileLoadContext</c> → <c>Profile*LoadSection</c> → <c>BackingStore.SetGyro*</c> ほか）が、
     /// 引数 <c>control</c>（以前は <c>ControlService</c>）から実際に使う 8 つのメンバーだけを切り出した窓口。
     /// 6-e で、鎖の <c>ControlService control</c> 引数の型をこの型に置き換える（<c>BackingStore</c> に新しい依存を足さず、引数のまま型だけ替える）。
     /// </summary>
     public interface IProfileLoadTarget
     {
-        /// <summary>スロットのコントローラー（旧: <c>control.Controllers[ind]</c> と同じ。範囲外は元と同じく例外。鎖の呼び出しの一部は範囲の検査をしないため、挙動を変えない）。</summary>
+        /// <summary>スロットのコントローラー。</summary>
         IConfigurableDevice GetController(int ind);
 
-        /// <summary>スロットのタッチパッドのマウス（旧: <c>control.touchPad[ind]</c>。範囲外は元と同じく例外）。Phase14b-Step7: <c>Mouse</c> ではなく、プロファイルの読込が使う操作だけの <see cref="ITouchPadGyroToggles"/> を返す（同じインスタンス）。</summary>
+        /// <summary>スロットのタッチパッドのマウス。Phase14b-Step7: <c>Mouse</c> ではなく、プロファイルの読込が使う操作だけの <see cref="ITouchPadGyroToggles"/> を返す（同じインスタンス）。</summary>
         ITouchPadGyroToggles GetTouchPad(int ind);
 
-        /// <summary>スロットの仮想パッド（旧: <c>control.outputDevices[ind]</c>。範囲外は元と同じく例外）。</summary>
+        /// <summary>スロットの仮想パッド。</summary>
         bool HasOutputDevice(int ind);
 
         /// <summary>仮想パッドを接続する（<c>IVirtualPadService.PluginOutDev</c> への転送）。</summary>
@@ -38,8 +38,7 @@ namespace DS4Windows.Core.Abstractions
         void StartTPOff(int deviceID);
 
         /// <summary>
-        /// プロファイルを読み込む前に、前のプロファイルのフリックスティックの進行・デルタ加速・マウスの状態をリセットする
-        /// （旧 <c>ControlService.PreLoadReset</c>。テストプロファイルの添字では何もしない）。
+        /// プロファイルを読み込む前に、前のプロファイルのフリックスティックの進行・デルタ加速・マウスの状態をリセットする。
         /// </summary>
         void PreLoadReset(int ind);
     }

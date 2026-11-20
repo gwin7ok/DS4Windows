@@ -5,7 +5,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-2（Phase9-E-Plan.md）: HidHide（コントローラーを他のアプリから隠すドライバー）との連携。
+    /// HidHide（コントローラーを他のアプリから隠すドライバー）との連携。
     /// 以前は <c>ControlService</c> の HidHide 系のメンバー（ホワイトリストへの自分の登録、影響を受けるデバイスの一覧の更新と判定、状態 <c>hidDeviceHiding*</c>）だった。
     /// <c>ControlService.CheckHidHidePresence</c>／<c>UpdateHidHiddenAttributes</c> は、薄い委譲として残す（呼び出し側は 9-F まで変えない）。
     /// </summary>
@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Abstractions
         /// </summary>
         void CheckPresence(string ExePath = "", string ExeName = "Autoprofile Exe", bool AddExe = true);
 
-        /// <summary>HidHide の有効状態と、非表示のデバイスの一覧を読み直す（旧 <c>UpdateHidHideAttributes</c>／<c>UpdateHidHiddenAttributes</c>）。</summary>
+        /// <summary>HidHide の有効状態と、非表示のデバイスの一覧を読み直す。</summary>
         void UpdateAttributes();
 
         /// <summary>デバイスが HidHide の非表示の対象か（HidHide が有効なときだけ判定する）。</summary>

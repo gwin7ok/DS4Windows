@@ -387,7 +387,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 settings.action.actionMacro = macro;
                 settings.actionType = DS4ControlSettings.ActionType.Macro;
-                // Phase8-Fix-MacroRepeatUnify（D1）: 「押している間繰り返す」は RepeatMacro に統合した（Macro の印は常に立てる）
+                // 「押している間繰り返す」は RepeatMacro に統合した（Macro の印は常に立てる）
                 settings.keyType |= DS4KeyType.Macro;
                 if (macroType.HasFlag(DS4KeyType.RepeatMacro))
                 {

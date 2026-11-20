@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2。Q9＝A の考え方）: Controls タブの Extras の出力（<see cref="ControlExtrasOutputAction"/>）が受け取る「解釈済みの値」。
+    /// Controls タブの Extras の出力（<see cref="ControlExtrasOutputAction"/>）が受け取る「解釈済みの値」。
     /// 設定の文字列（<c>DS4ControlSettings.extras</c>。カンマ区切りの 9 個）を読む解釈は変換層（<c>ControlBindingBuilder.TryInterpretExtras</c>）が行い、出力は実行するだけにする。
     /// 値は <c>int</c> のまま持つ。出力のとき、旧経路と同じ <c>(byte)</c> のキャストをする（範囲外の値も、旧経路と同じ結果になる）。
     /// </summary>

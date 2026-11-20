@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-A(1) (c)（Phase9-A1-Plan.md §2）: <see cref="IOutputCurveProcessor"/> の実装（DI の Singleton。状態は持たない）。
+    /// <see cref="IOutputCurveProcessor"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.SetCurveAndDeadzone</c> の左スティックの出力カーブとスクエアスティック、L2 の出力カーブを、そのまま移したもの
     /// （右スティックと R2 のコードは、名前以外は同じだったため、統合した。計算結果は変わらない）。
     /// スクエアスティックは、旧 <c>Mapping.DS4SquareStick</c>（デバイスごとの作業用オブジェクト）の計算を、ローカル変数で行う（割り当て 0。結果は同じ）。

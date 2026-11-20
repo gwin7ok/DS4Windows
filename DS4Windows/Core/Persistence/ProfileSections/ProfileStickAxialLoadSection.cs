@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W3（Phase8-Step4b-Plan.md §3.2）: スティックの軸別の不感帯・デルタ加速（LSAxialDeadOptions〜RSDeltaAccelSettings）の読込。右スティックのデルタ加速の条件は、旧コードのまま左スティックの要素を見る（挙動を変えない）。
+    /// スティックの軸別の不感帯・デルタ加速（LSAxialDeadOptions〜RSDeltaAccelSettings）の読込。右スティックのデルタ加速の条件は、旧コードのまま左スティックの要素を見る（挙動を変えない）。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileStickAxialLoadSection : IProfileLoadSection

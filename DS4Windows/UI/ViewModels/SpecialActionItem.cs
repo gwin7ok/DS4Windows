@@ -103,7 +103,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase9 UI 変更: 一覧の「アクション」列の表示（種別名に、詳細を続ける）。Controls タブの一覧、出力ピッカーのボタンと同じ書式（<see cref="AssignmentDescriber"/>）。
+        /// 一覧の「アクション」列の表示（種別名に、詳細を続ける）。Controls タブの一覧、出力ピッカーのボタンと同じ書式（<see cref="AssignmentDescriber"/>）。
         /// 並べ替えは、これまでどおり <see cref="TypeName"/> を使う。
         /// </summary>
         public string ActionDescription

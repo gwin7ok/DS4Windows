@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
-    /// Phase9 9-E E-6a（Phase9-E6-Plan.md）: <see cref="IConnectionProfileSelector"/> の実装（DI の Singleton。状態なし）。
+    /// <see cref="IConnectionProfileSelector"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService.PrepareConnectedInputControllerSettingEvents</c> の、プロファイルの選択と適用の部分
     /// （初回接続／再接続、Linked、適用、一時プロファイルのときの束縛の差し替え）を、そのまま移したもの。
     /// 値の特性化は <c>Phase9E6ConnectionProfileSelectorTests</c>（偽物の依存を使った差分テスト）が守る。
@@ -102,7 +102,7 @@ namespace DS4Windows.Processing.Services.Slots
             }
             else
             {
-                // Phase8-Step6 W2: 一時プロファイル／AutoProfile を使う接続は、プロファイルを適用し直さない。切断で空になった束縛を、ここで差し替える
+                // 一時プロファイル／AutoProfile を使う接続は、プロファイルを適用し直さない。切断で空になった束縛を、ここで差し替える
                 _profileSlotApplier.PublishSlot(index);
             }
 

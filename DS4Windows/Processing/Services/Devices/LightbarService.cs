@@ -38,7 +38,7 @@ namespace DS4Windows.Processing.Services.Devices
 
         private readonly double[] counters = new double[ControllerLimits.MaxControllerCount];
         private readonly bool[] fadedirection = new bool[ControllerLimits.MaxControllerCount];
-        // フェードの計測（旧 Stopwatch の IsRunning／Restart／ElapsedMilliseconds／Stop と同じ意味）
+        // フェードの計測
         private readonly bool[] fadeRunning = new bool[ControllerLimits.MaxControllerCount];
         private readonly long[] fadeStart = new long[ControllerLimits.MaxControllerCount];
         private readonly DateTime[] oldnow = new DateTime[ControllerLimits.MaxControllerCount];

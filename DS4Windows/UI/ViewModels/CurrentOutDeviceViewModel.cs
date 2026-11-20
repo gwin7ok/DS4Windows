@@ -104,7 +104,7 @@ namespace DS4Windows.UI.ViewModels
 
         public List<SlotDeviceEntry> SlotDeviceEntries { get => slotDeviceEntries; }
 
-        // Phase6-Step10-5: ControlService の直接呼び出しを廃止し、抜き差しの正式な入口（IOutputSlotService）を使う
+        // ControlService の直接呼び出しを廃止し、抜き差しの正式な入口（IOutputSlotService）を使う
         private readonly DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService;
 
         public CurrentOutDeviceViewModel(DS4Windows.Processing.Abstractions.IOutputSlotService outputSlotService)

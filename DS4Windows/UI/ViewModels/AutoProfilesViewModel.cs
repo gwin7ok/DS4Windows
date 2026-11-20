@@ -44,7 +44,7 @@ namespace DS4Windows.UI.ViewModels
         private HashSet<string> existingapps;
         private readonly IAppSettingsService _appSettings;
         private readonly IAutoProfileService _autoProfileService;
-        private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
+        private readonly IRuntimeFeatureSwitch _runtimeFeatures;   // 旧 ControlService.CheckHidHidePresence の転送
 
         public ObservableCollection<ProgramItem> ProgramColl { get => programColl; }
 
@@ -76,7 +76,7 @@ namespace DS4Windows.UI.ViewModels
             set => _appSettings.AutoProfileRevertDefaultProfile = value;
         }
 
-        // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）を IEnvironmentService.UsingMaxControllers に置き換えた。
+        // 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）を IEnvironmentService.UsingMaxControllers に置き換えた。
         private readonly IEnvironmentService _environmentService;
 
         public bool UsingExpandedControllers
@@ -101,7 +101,7 @@ namespace DS4Windows.UI.ViewModels
             set => _autoProfileService.AutoProfileSwitchNotifyChoice = value;
         }
 
-        // Phase6-Step10-2-3: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
+        // 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
         // 置換前は任意引数（= null）と、AppHost/Program.rootHub/Global のフォールバックだった。
         /// <summary>
         /// 一致した自動プロファイルが持つプロファイル名を、各コントローラーの選択位置（0 は none、1 からがプロファイル一覧の位置）へ反映する。

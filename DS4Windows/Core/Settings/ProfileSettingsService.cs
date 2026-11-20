@@ -16,13 +16,13 @@ namespace DS4Windows.Core.Settings
         private readonly BackingStore _config;
         private BackingStore SafeConfig => _config;
 
-        // Phase6-Step2-1c (決定O2=C/O3=A): スロット上限（現在接続台数ではない）を IEnvironmentService から取得する。
+        // スロット上限（現在接続台数ではない）を IEnvironmentService から取得する。
         // 既存の生成箇所（テスト・Global のフォールバック）を変更しないよう省略可能とし、
         // 省略時は状態を持たない既定実装を用いる（AppHost.Services は使用しない）。
         private readonly IEnvironmentService _environmentService;
 
-        // Phase6-Step10-4-2c: 全ての依存を必須化（Global.store／new EnvironmentService／Program.rootHub の参照を廃止）。
-        // Phase13-Step6 6-b: 旧 Func<ControlService>（ControlService → IProfileSettingsService の依存循環を避ける遅延。決定 D4-3）。使うのは GetController だけだったため、依存のない IDeviceStateAccessor を直接受ける
+        // 全ての依存を必須化（Global.store／new EnvironmentService／Program.rootHub の参照を廃止）。
+        // 旧 Func<ControlService>（ControlService → IProfileSettingsService の依存循環を避ける遅延。決定 D4-3）。使うのは GetController だけだったため、依存のない IDeviceStateAccessor を直接受ける
         private readonly IConfigurableDeviceLookup _deviceState;
 
         public ProfileSettingsService(BackingStore backingStore,
@@ -35,7 +35,7 @@ namespace DS4Windows.Core.Settings
             _environmentService = environmentService;
             ArgumentNullException.ThrowIfNull(deviceState);
             _deviceState = deviceState;
-            // Phase7-Step10d W5（Q8＝A）: BackingStore が、一時プロファイル・DInput のみ・出力 KBM のマッピングを読むための登録（最初の 1 つが有効）
+            // BackingStore が、一時プロファイル・DInput のみ・出力 KBM のマッピングを読むための登録（最初の 1 つが有効）
             _config.LinkProfileSettings(this);
         }
 
@@ -43,10 +43,10 @@ namespace DS4Windows.Core.Settings
 
         private bool[] _touchpadActive = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
         private bool[] _useTempProfile = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
-        // Phase10-Step4d W5c: 一時プロファイルの名前の保管は、プロファイルの固定 ID（名前を読み書きする窓口。ProfileSlotNames）。名前を変えても、読み出す名前は現在の名前になる
+        // 一時プロファイルの名前の保管は、プロファイルの固定 ID（名前を読み書きする窓口。ProfileSlotNames）。名前を変えても、読み出す名前は現在の名前になる
         private ProfileSlotNames _tempProfileName = new ProfileSlotNames(TEST_PROFILE_ITEM_COUNT);
 
-        /// <summary>Phase10-Step4d W5c: 登録簿を結ぶ（DI の登録が、登録簿を作るときに呼ぶ。BackingStore のスロットの保管と同じ）。</summary>
+        /// <summary>登録簿を結ぶ（DI の登録が、登録簿を作るときに呼ぶ。BackingStore のスロットの保管と同じ）。</summary>
         public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService identity) => _tempProfileName.AttachIdentity(identity);
         private bool[] _tempProfileDistance = new bool[TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         private bool[] _useDInputOnly = new bool[TEST_PROFILE_ITEM_COUNT] { true, true, true, true, true, true, true, true, true };
@@ -291,7 +291,6 @@ namespace DS4Windows.Core.Settings
             return (X360Controls[])X360ControlTables.defaultButtonMapping.Clone();
         }
 
-        // Phase6-Step9-1／Phase7-Step10d W5: 旧 Global.RefreshActionAlias の本体をここへ移した（内容は同一。OutputKBMMapping はこのサービス自身のもの）。
         /// <summary>Windows の仮想キーの値から、現在の出力 KB+M のシステム用の別名（actionAlias）を更新する。</summary>
         public void RefreshActionAlias(DS4ControlSettings setting)
         {
@@ -302,14 +301,13 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        // コピーしない版（Phase6-Step3-6a、決定 R1）。Global.reverseX360ButtonMapping は起動時に作られて以後変化しない定数表。
+        // コピーしない版。Global.reverseX360ButtonMapping は起動時に作られて以後変化しない定数表。
         // 元の Global.reverseX360ButtonMapping（素の public static 配列）と同じく、参照をそのまま返す。
         public DS4Controls[] ReverseX360ButtonMapping => X360ControlTables.reverseX360ButtonMapping;
 
-        // ---- Phase6-Step2-2 (PR-2): 接続時のエクストラボタン再構築 ----
+        // ---- 接続時のエクストラボタン再構築 ----
         public void RefreshExtrasButtons(int deviceIndex, List<DS4Controls> buttons)
         {
-            // Phase7-Step3 W5: 旧 Global.RefreshExtrasButtons の処理をここへ移した。
             _config.ds4controlSettings[deviceIndex].ResetExtraButtons();
             if (buttons != null)
             {
@@ -317,13 +315,13 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        // ---- Phase6-Step2-5 (PR-5): カスタムアクション／エクストラの有無 ----
+        // ---- カスタムアクション／エクストラの有無 ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の配列を直接参照する（従来の Global.containsCustomAction／Extras と同一）。
         public bool ContainsCustomAction(int deviceIndex) => SafeConfig.containsCustomAction[deviceIndex];
 
         public bool ContainsCustomExtras(int deviceIndex) => SafeConfig.containsCustomExtras[deviceIndex];
 
-        // ---- Phase6-Step3-1: 入力→出力割り当てグループ ----
+        // ---- 入力→出力割り当てグループ ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の配列を直接参照する（従来の Global.GetControlSettingsGroup と同一）。
         public ControlSettingsGroup GetControlSettingsGroup(int deviceIndex) => SafeConfig?.ds4controlSettings[deviceIndex];
 

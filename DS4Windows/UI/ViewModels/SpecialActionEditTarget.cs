@@ -6,14 +6,14 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: SA のモードの編集の対象。従来の <c>SpecialActEditorViewModel</c> の、名前・新規／編集・
+    /// SA のモードの編集の対象。従来の <c>SpecialActEditorViewModel</c> の、名前・新規／編集・
     /// 名前の検証（空でないこと、重複していないこと）を、そのまま持つ。
     /// </summary>
     public sealed class SpecialActionEditTarget : IActionEditTarget
     {
         private readonly ISpecialActionRepository specialActionRepository;
 
-        // Phase6-Step10-3-2: Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
+        // Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
         public SpecialActionEditTarget(ISpecialActionRepository specialActionRepository, SpecialAction savedAction)
         {
             ArgumentNullException.ThrowIfNull(specialActionRepository);

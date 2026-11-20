@@ -28,7 +28,7 @@ namespace DS4Windows.UI.ViewModels
         private IOutputSlotView slot;
         public IOutputSlotView Slot { get => slot; }
 
-        // Phase6-Step10-5: スロット番号（IOutputSlotService.PluginSlot/UnplugSlot へ渡す）
+        // スロット番号（IOutputSlotService.PluginSlot/UnplugSlot へ渡す）
         public int Index { get => idx; }
 
         /// <summary>恒久（Permanent）の種類が決まっているなら、その種類で接続を要求して true を返す。決まっていなければ何もせず false。</summary>

@@ -73,7 +73,7 @@ namespace DS4Windows.UI.ViewModels
         private int deviceNum;
         private readonly IProfileSettingsService profileSettings;
 
-        // Phase6-Step9-4: 依存は必須引数（Pure DI）
+        // 依存は必須引数（Pure DI）
         public PresetMenuHelper(int device, IProfileSettingsService profileSettings)
         {
             deviceNum = device;

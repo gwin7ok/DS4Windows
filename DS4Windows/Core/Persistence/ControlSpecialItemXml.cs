@@ -10,7 +10,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase10-Step4 W1（Phase10-Step4-Plan.md §3.2）: <see cref="ControlSpecialItem"/> の、プロファイル XML（<c>&lt;Control&gt;&lt;Special&gt;</c>）への書き出しと読み込み。
+    /// <see cref="ControlSpecialItem"/> の、プロファイル XML（<c>&lt;Control&gt;&lt;Special&gt;</c>）への書き出しと読み込み。
     /// ボタンごとの要素（要素名＝ボタン名）に、<c>Type</c> 属性と、項目ごとの子要素を持つ。<b>既定の値の項目は、書かない</b>。
     /// 読み込みは、寛容: 種別が未知・Controls で使えない種別の要素は、読み飛ばす（<see cref="TryRead"/> が偽）。項目の値が壊れているときは、その項目だけ既定の値にする
     /// （ほかの項目、ほかのボタンの割り当ては、壊さない）。数値は、文化に依らない（インバリアント）。
@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Persistence
             if (item.AutomaticUntrigger) Child("AutomaticUntrigger", "true");
             if (!item.EmptyColor.Equals(default(DS4Color))) Child("EmptyColor", ColorText(item.EmptyColor));
             if (!item.FullColor.Equals(default(DS4Color))) Child("FullColor", ColorText(item.FullColor));
-            // Phase10-Step6 W7 相当: Check Battery の通知とライトバーの on／off。種別が Check Battery のときだけ、明示して書く（既定の値でも書く。入力の既定と項目の既定が違うため）
+            // Check Battery の通知とライトバーの on／off。種別が Check Battery のときだけ、明示して書く（既定の値でも書く。入力の既定と項目の既定が違うため）
             if (item.Type == SpecialAction.ActionTypeId.BatteryCheck)
             {
                 Child("BatteryNotification", item.BatteryNotification ? "true" : "false");
@@ -79,7 +79,7 @@ namespace DS4Windows.Core.Persistence
             string typeText = node.Attributes?["Type"]?.Value;
             if (typeText == "SASteeringWheelEmulationCalibrate")
             {
-                // Phase9 Steering 削除 W1: 廃止した種別。読み込まずに取り除く（次の保存でファイルから消え、そのボタンは既定に戻る）
+                // 廃止した種別。読み込まずに取り除く（次の保存でファイルから消え、そのボタンは既定に戻る）
                 AppLogger.Log(AppLogLevel.Info, string.Format(DS4Windows.Properties.Resources.ObsoleteAssignmentRemovedProfile, typeText, node.Name), LogOptions.UserFacing);
                 return false;
             }

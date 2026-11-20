@@ -7,7 +7,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Core.Utilities
 {
     /// <summary>
-    /// Phase7-Step10b W2（Q2＝A）: 色の純粋な計算（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。
+    /// 色の純粋な計算。
     /// <c>LightbarService</c>（ライトバーの色の遷移）と <c>Mapping</c>（ライトバーのマクロ）が使う。
     /// </summary>
     public static class ColorUtil
@@ -35,7 +35,6 @@ namespace DS4Windows.Core.Utilities
             return cs;
         }
 
-        // Phase7-Step10e W4（承認済み）: 旧 Global から移した孤立コード applyRatio(Color, Color, uint) と HuetoRGB(float, float, float) を削除した。
         // 移動前から呼び出し元が 0 件の WPF 色ブレンドの残骸で、本体のライトバーは HueToRgb(float, byte)（LightbarService が使う）を使う。
 
         public static DS4Color HueToRgb(float hue, byte sat)

@@ -211,7 +211,7 @@ namespace DS4Windows.UI
         private int lastProcDelayInt = -1;
         private long lastCalibrating = -1;
 
-        // Phase6-Step10-2-5: XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
+        // XAML から生成されるため、ControlService は Initialize で受け取る（AppHost/Program.rootHub の後退を廃止）。
         // Initialize の前は null（null の間は、ControlService を使う処理をすべてスキップする既存の null 検査が働く）。
         private DS4Windows.UI.Abstractions.IControllerReadingsFeed readingsSource;
 

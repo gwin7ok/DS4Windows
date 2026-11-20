@@ -32,7 +32,7 @@ namespace DS4Windows.Processing.Touchpad
         public int InstanceId => this.GetHashCode();
         private readonly int deviceNumber;
         private InputDeviceCore.GyroMouseSens gyroMouseSensSettings;
-        // Phase6-Step4-2: Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
+        // Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
 

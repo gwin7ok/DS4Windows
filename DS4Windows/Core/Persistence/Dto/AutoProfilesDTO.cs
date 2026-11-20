@@ -29,11 +29,11 @@ namespace DS4Windows.Core.Persistence.Dto
         [XmlElement("Program")] // Use XmlElement here to skip container element
         public List<AutoProfileEntrySerializer> programEntries;
 
-        /// <summary>Phase10-Step4d W4: 名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。ホルダーが設定する。</summary>
+        /// <summary>名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。ホルダーが設定する。</summary>
         [XmlIgnore]
         public System.Func<string, string> ProfileIdOf { get; set; }
 
-        /// <summary>Phase10-Step4d W4: ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。ホルダーが設定する。</summary>
+        /// <summary>ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。ホルダーが設定する。</summary>
         [XmlIgnore]
         public System.Func<string, string> ProfileNameOf { get; set; }
 
@@ -65,7 +65,7 @@ namespace DS4Windows.Core.Persistence.Dto
                     temp.Controller8 = entity.ProfileNames[7];
                 }
 
-                // Phase10-Step4d W4: プロファイルの固定 ID（Controller1〜8 と同じ並び。ないものは空）
+                // プロファイルの固定 ID（Controller1〜8 と同じ並び。ないものは空）
                 if (ProfileIdOf != null)
                 {
                     var ids = new string[entity.ProfileNames.Length];
@@ -96,7 +96,7 @@ namespace DS4Windows.Core.Persistence.Dto
                 autoprof.ProfileNames[2] = serializier.Controller3;
                 autoprof.ProfileNames[3] = serializier.Controller4;
 
-                // Phase7-Step10e W1: 旧 CURRENT_DS4_CONTROLLER_LIMIT >= MAX_DS4_CONTROLLER_COUNT（上限が 8 のとき）。MapFrom と同じ判定を使う
+                // 旧 CURRENT_DS4_CONTROLLER_LIMIT >= MAX_DS4_CONTROLLER_COUNT（上限が 8 のとき）。MapFrom と同じ判定を使う
                 if (destination.UsingMaxControllers)
                 {
                     autoprof.ProfileNames[4] = serializier.Controller5;
@@ -105,7 +105,7 @@ namespace DS4Windows.Core.Persistence.Dto
                     autoprof.ProfileNames[7] = serializier.Controller8;
                 }
 
-                // Phase10-Step4d W4: ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
+                // ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
                 if (ProfileNameOf != null && !string.IsNullOrEmpty(serializier.ControllerProfileIds))
                 {
                     string[] ids = serializier.ControllerProfileIds.Split('/');

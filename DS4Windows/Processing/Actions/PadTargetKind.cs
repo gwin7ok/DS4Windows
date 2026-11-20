@@ -1,6 +1,6 @@
 namespace DS4Windows.Processing.Actions
 {
-    /// <summary>Phase8-Step7 7.8f-1: パッド（X360）への割り当ての出力先の種類（旧 <c>customMapQueue</c> の処理の分岐）。</summary>
+    /// <summary>パッド（X360）への割り当ての出力先の種類。</summary>
     public enum PadTargetKind
     {
         /// <summary>軸（<c>LXNeg</c>〜<c>RYPos</c>）。値を、軸のペアの両方へ書く。</summary>

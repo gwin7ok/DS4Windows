@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 I1（Phase10-Step6-Plan.md §4。目標モデルは Phase10-Integration-Target-Model.md §3）: 共通の割り当て定義。
+    /// 共通の割り当て定義。
     /// Controls タブの割り当てと SpecialActions タブの割り当てを、<b>由来（<see cref="Origin"/>）の違いだけで</b>同じ形に表す。不変。
     /// <para>
     /// 種別（<see cref="Kind"/>）は、SA と共通の種別（<see cref="SpecialAction.ActionTypeId"/>）だけを持つ。

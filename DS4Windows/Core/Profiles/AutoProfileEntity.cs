@@ -26,13 +26,13 @@ namespace DS4Windows.Core.Profiles
 
     public class AutoProfileEntity
     {
-        // Phase12-Step2 2b-1: 対象の指定（Path／Title）と照合の規則は、WindowTargetMatcher へ取り出した（動作は変えない）。
+        // 対象の指定（Path／Title）と照合の規則は、WindowTargetMatcher へ取り出した（動作は変えない）。
         // 旧 public フィールド path／title は、ログ出力が読むため、読み取り専用のプロパティとして残す。
         private readonly WindowTargetMatcher matcher = new WindowTargetMatcher(string.Empty, string.Empty);
         public string path => matcher.Path;
         public string title => matcher.Title;
         private bool turnoff;
-        // Phase10-Step4d W5d: 各コントローラーのプロファイルの保管は ID（名前を読み書きする窓口）。登録簿は、ルールがホルダーに入るとき（AutoProfileHolder）に結ぶ
+        // 各コントローラーのプロファイルの保管は ID（名前を読み書きする窓口）。登録簿は、ルールがホルダーに入るとき（AutoProfileHolder）に結ぶ
         private ProfileSlotNames profileNames = new ProfileSlotNames(ControllerLimits.MaxControllerCount);
         public const string NONE_STRING = "(none)";
 
@@ -41,7 +41,7 @@ namespace DS4Windows.Core.Profiles
         public bool Turnoff { get => turnoff; set => turnoff = value; }
         public ProfileSlotNames ProfileNames { get => profileNames; set => profileNames = value; }
 
-        /// <summary>Phase10-Step4d W5d: 登録簿を結ぶ（ID ↔ 名前を引く）。null なら、結びを外す。</summary>
+        /// <summary>登録簿を結ぶ（ID ↔ 名前を引く）。null なら、結びを外す。</summary>
         public void AttachProfileIdentity(DS4Windows.Core.Abstractions.IProfileIdentityService? identity) => profileNames.AttachIdentity(identity);
 
         public AutoProfileEntity(string pathStr, string titleStr)

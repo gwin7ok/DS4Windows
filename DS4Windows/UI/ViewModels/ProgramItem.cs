@@ -204,7 +204,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>拡張したコントローラー数（5〜8 台目）の行を見せるか。表示への変換は View が行う。</summary>
         public bool ExpandedControllersShown => usingExpandedControllers;
 
-        // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。拡張コントローラー（8 台）の行を表示するかは、
+        // 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。拡張コントローラー（8 台）の行を表示するかは、
         // 生成元（AutoProfilesViewModel）が IEnvironmentService.UsingMaxControllers から得た値を渡す。
         private readonly bool usingExpandedControllers;
 

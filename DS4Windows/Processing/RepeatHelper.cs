@@ -34,7 +34,7 @@ namespace DS4Windows.Processing
         //                     if false, first KeyPress will be issued after intervalMillis
         public RepeatHelper(ISyntheticDispatcher dispatcher, int device, ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, TimeProvider timeProvider, int intervalMillis = 50, bool sendFirstImmediate = true, int controllerId = -1)
         {
-            // Phase14c-Step3（R-06）: 合成キーの送出（旧: 静的な橋渡し SyntheticDispatcher）
+            // 合成キーの送出
             ArgumentNullException.ThrowIfNull(dispatcher);
             _dispatcher = dispatcher;
             this.device = device;

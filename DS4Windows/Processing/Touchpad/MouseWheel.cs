@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Touchpad
     class MouseWheel
     {
         private readonly int deviceNumber;
-        // Phase6-Step4-1: Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
+        // Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
         private readonly IProfileSettingsService _profileSettings;
         private readonly IVirtualKBM _virtualKBM;
 

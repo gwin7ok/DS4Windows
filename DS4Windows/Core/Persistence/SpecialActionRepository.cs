@@ -14,13 +14,13 @@ namespace DS4Windows.Core.Persistence
         private readonly object _actionLock = new object();
         private readonly BackingStore _config;
         private readonly IPathService _pathService;
-        // Phase7-Step10c W2: Actions.xml の保存・読込（旧: BackingStore のメソッド）
+        // Actions.xml の保存・読込
         private readonly DS4Windows.Core.Persistence.SpecialActionsXmlSerializer _actionsXml;
 
         public event EventHandler ActionsChanged;
 
-        // Phase7-Step8 W1／Phase13-Step4: キー型スペシャルアクションの保存後に、そのキーの実行時状態（合成入力の押下、トグル）をリセットする。
-        // Phase14b-Step14（D14）: 旧 SyntheticInputState・IManagedActionManager（第2層）の代わりに、リセットだけの契約を受ける
+        // キー型スペシャルアクションの保存後に、そのキーの実行時状態（合成入力の押下、トグル）をリセットする。
+        // 旧 SyntheticInputState・IManagedActionManager（第2層）の代わりに、リセットだけの契約を受ける
         private readonly ISpecialActionRuntimeReset _runtimeReset;
 
         public SpecialActionRepository(BackingStore config, IPathService pathService,
@@ -67,7 +67,7 @@ namespace DS4Windows.Core.Persistence
             get => _config != null ? _config.actions : null;
         }
 
-        // Phase6-Step7-1（決定2＝L2）: Phase4-Step3（c06a1c9b）で作られたが App 側が未接続だった契約。
+        // Phase4-Step3（c06a1c9b）で作られたが App 側が未接続だった契約。
         // 従来は冒頭に「Actions.xml がなければ何もせず false を返す」判定があり、Global.LoadActions() と動作が違った
         // （BackingStore.LoadActions はファイルがなければ既定アクション「Disconnect Controller」を作って保存し true を返す）。
         // そのまま App から使うと、初回起動で CreateStandardActions が走り、全プロファイルの XML が書き換わってしまうため、
@@ -108,7 +108,7 @@ namespace DS4Windows.Core.Persistence
             return GetAction(actionName) != null;
         }
 
-        // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
+        // ---- App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         // Global.CreateStdActions への薄い委譲。プロファイル XML の書き換えと読み込み直しは Global 側が行う。
         public void CreateStandardActions()
         {
@@ -117,7 +117,7 @@ namespace DS4Windows.Core.Persistence
                 AppLogger.LogTrace("[DI] SpecialActionRepository.CreateStandardActions: standard actions created via DI");
         }
 
-        // ---- Phase6-Step8-1: ProfileEditor.xaml.cs の Global 直接参照解消 ----
+        // ---- ProfileEditor.xaml.cs の Global 直接参照解消 ----
         // Global.GetAction（m_Config.GetAction）と同じ実体 BackingStore.GetAction への薄い委譲。
         // 本リポジトリの _config は通常 Global.store（= m_Config）なので結果は Global.GetAction と一致する。
         public SpecialAction GetActionOrPlaceholder(string actionName)
@@ -128,8 +128,8 @@ namespace DS4Windows.Core.Persistence
             return _config.GetAction(actionName);
         }
 
-        // ---- Phase6-Step10-3-1: スペシャルアクション編集画面の Global 直接参照解消 ----
-        // Phase7-Step10c W2: 旧 Global.SaveAction / Global.RemoveAction の処理（本クラスのプライベートメソッド）。これらは、実行中のアクション状態のクリア、
+        // ---- スペシャルアクション編集画面の Global 直接参照解消 ----
+        // 旧 Global.SaveAction / Global.RemoveAction の処理（本クラスのプライベートメソッド）。これらは、実行中のアクション状態のクリア、
         // Actions.xml への書き込み、読み直しと検証（SaveAction ではキー種別のランタイム状態のリセットも）を行う。
         // （メモリ上のリストだけを変える旧 AddAction／RemoveAction は Phase7-Step2 で削除した。）
         // 対象は Global.store（Global.m_Config と同じ実体）。本リポジトリの _config が Global.store 以外の場合でも、
@@ -140,7 +140,7 @@ namespace DS4Windows.Core.Persistence
         {
             SaveActionAndReload(name, controls, mode, details, edit, delayTime, extras, actionId, macroExecuteMode, centerCursor);
 
-            // Phase7-Step8 W1: 旧 Global.SaveAction の末尾の処理。キー型（mode==4）を保存したときだけ、当該キーの実行時状態をリセットする
+            // 旧 Global.SaveAction の末尾の処理。キー型（mode==4）を保存したときだけ、当該キーの実行時状態をリセットする
             try
             {
                 if (mode == 4 && ushort.TryParse(details.Split(' ')[0], out ushort savedKey))   // Scan Code つきは「65 Scan Code」
@@ -154,7 +154,7 @@ namespace DS4Windows.Core.Persistence
             OnActionsChanged();
         }
 
-        // Phase10-Step6 I5a: SA の保存のあとに、SA に付ける Extras を設定して保存する。読み直しはしない（SA の保存の読み直しで、メモリは最新。ログを増やさない）
+        // SA の保存のあとに、SA に付ける Extras を設定して保存する。読み直しはしない（SA の保存の読み直しで、メモリは最新。ログを増やさない）
         public bool SaveActionExtras(string actionName, string outputExtras)
         {
             bool found = _actionsXml.SetActionExtras(actionName, outputExtras);
@@ -168,7 +168,7 @@ namespace DS4Windows.Core.Persistence
             return found;
         }
 
-        // Phase10-Step6 後の Step5: SA の保存のあとに、Button の SA のアナログな出力の強さを設定して保存する（SaveActionExtras と同じ形。読み直しはしない）
+        // SA の保存のあとに、Button の SA のアナログな出力の強さを設定して保存する（SaveActionExtras と同じ形。読み直しはしない）
         public bool SaveActionAnalogStrength(string actionName, int strength)
         {
             bool found = _actionsXml.SetActionAnalogStrength(actionName, strength);
@@ -230,13 +230,13 @@ namespace DS4Windows.Core.Persistence
             return candidate;
         }
 
-        // ---- Phase7-Step10c W2: 旧 Global.SaveAction／RemoveAction／ReloadActionsAndVerify（Actions.xml の保存・読込のシム）の移動先 ----
+        // ---- 旧 Global.SaveAction／RemoveAction／ReloadActionsAndVerify（Actions.xml の保存・読込のシム）の移動先 ----
         // 実行中のアクション状態のクリア → Actions.xml への書き込み（SpecialActionsXmlSerializer）→ 読み直しと件数の検証、の順序・ログは従来のまま。
         private void ClearAllActionEntries()
         {
             try
             {
-                try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }   // Phase14b-Step14（D14）: 旧 _actionManager.ClearAllEntries()
+                try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }   // 旧 _actionManager.ClearAllEntries()
             }
             catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
@@ -309,7 +309,7 @@ namespace DS4Windows.Core.Persistence
             }
         }
 
-        // Phase7-Step10c W2: 旧 Global.CreateStdActions（唯一の呼び出し元はこのクラス）。プロファイル XML へ既定のアクションを書き足し、Actions.xml を読み直す。
+        // 旧 Global.CreateStdActions（唯一の呼び出し元はこのクラス）。プロファイル XML へ既定のアクションを書き足し、Actions.xml を読み直す。
         private void CreateStdActions()
         {
             XmlDocument xDoc = new XmlDocument();

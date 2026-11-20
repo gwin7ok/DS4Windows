@@ -13,7 +13,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase7-Step10c W3（Q1＝A）: アプリ設定（<c>Profiles.xml</c>）の保存・読込。
+    /// アプリ設定（<c>Profiles.xml</c>）の保存・読込。
     /// 旧: <c>BackingStore</c> の <c>Load</c>／<c>Save</c>／<c>LoadFakeExeName</c>（移動のみ。ロジック・ログ・要素の順序は変えない。
     /// 旧形式の読込の互換を含む。<c>BackingStore</c> の公開状態を <c>store.</c> で読み書きする）。
     /// <c>PostProcessLoad</c>（読込後の値の丸め）は状態の整形のため <c>BackingStore</c> に残し、<c>store.PostProcessLoad()</c> として呼ぶ。
@@ -22,14 +22,14 @@ namespace DS4Windows.Core.Persistence
     public class AppSettingsXmlSerializer
     {
         private readonly BackingStore store;
-        // 偽の exe 名を保存するファイルの名前（旧: CustomExeConfigFileName。Global の同名の定数は、この値を指す別名）
+        // 偽の exe 名を保存するファイルの名前
         public const string CustomExeConfigFileName = "custom_exe_name.txt";
 
         private readonly DS4Windows.Core.Abstractions.IPathService _pathService;
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService _environment;
         private readonly XmlDocument m_Xdoc = new XmlDocument(); // 旧 BackingStore.m_Xdoc と同じ使い方（排他は呼び出し側のロック）
 
-        // Phase10-Step4d W4: スロットの選択のプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        // スロットの選択のプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
 
         public AppSettingsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IEnvironmentService environment,
@@ -97,7 +97,7 @@ namespace DS4Windows.Core.Persistence
 
                     if (dtoLoaded)
                     {
-                        // Phase7-Step1 W3（不具合 B の是正）: 旧形式の経路と同じ後処理を行う。
+                        // 旧形式の経路と同じ後処理を行う。
                         // これまでは「Post processing same as legacy path」とコメントされていたが、実際には何も実行されず、
                         // 偽の exe 名・スキップしたバージョンの数値・ポートの範囲・Distance プロファイルの判定が欠落していた
                         // （105575a7 〜。移行前から続く不具合で、回帰ではない）。

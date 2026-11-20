@@ -5,14 +5,14 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.7b（Phase8-Step7-7-Plan.md §3.2。Q2＝B）: MultiAction の入力アクション（独立した入力アクション）。
+    /// MultiAction の入力アクション（独立した入力アクション）。
     /// 成立（<see cref="TriggerState.IsEstablished"/>）は、<see cref="ComboTriggerInputAction"/>（トリガーの AND、<c>delayTime</c>）と同じ。トリガーのボタンの抑制・出力の消去を、エンジンの共通の方針で行うため。
     /// それに加えて、**毎フレーム（<see cref="Evaluate"/> を 1 フレームに 1 回呼ぶこと）**、<c>trigger[0]</c> の押下・解放のエッジ（<see cref="ITriggerInput.IsActive"/>／<see cref="ITriggerInput.WasActive"/>）と時刻
     /// （<see cref="ITriggerInput.UtcNow"/>）から、旧 <c>MapCustomAction</c> の MultiAction の枝と同じ状態機械を動かし、結果を <see cref="TriggerState.Gesture"/> で返す。
     ///  - 押した: 前回のタップの終わりから間隔（150ms）以内なら、ダブルタップの開始。そうでなければ最初の接触。
     ///  - 離した: ダブルタップの開始中なら戻す。最初の接触なら、押した時間が間隔以内でタップ成立（時刻を保存）。
     ///  - タップ（終わりから間隔を過ぎたら）→ <see cref="TriggerState.Tap"/>。長押し（最初の接触のまま 500ms を過ぎたら）→ <see cref="TriggerState.Hold"/>。ダブルタップの開始 → <see cref="TriggerState.DoubleTap"/>。
-    /// 状態（旧 <c>SpecialAction</c> の <c>tappedOnce</c>／<c>firstTouch</c>／<c>secondtouchbegin</c>／<c>pastTime</c>／<c>firstTap</c>／<c>TimeofEnd</c>）は、このインスタンスが持つ（Q3＝A）。
+    /// 状態は、このインスタンスが持つ（Q3＝A）。
     /// </summary>
     public sealed class MultiTapInputAction : IInputAction
     {

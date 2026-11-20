@@ -7,7 +7,7 @@ namespace DS4Windows.Core.Settings
     /// </summary>
     public class AppearanceSettingsService : DS4Windows.Core.Abstractions.IAppearanceSettingsService
     {
-        // Phase7-Step3 W5: Global 経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
+        // Global 経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
         private readonly BackingStore _config;
 
         public AppearanceSettingsService(BackingStore config)
@@ -27,10 +27,9 @@ namespace DS4Windows.Core.Settings
             set => _config.useIconChoice = value;
         }
 
-        // Phase14b-Step13（決定 D13）: 旧 GetIconResourcePath は外した（Core から UI の資源の表を参照しないため）。UI が TrayIconResources から引く
+        // 旧 GetIconResourcePath は外した（Core から UI の資源の表を参照しないため）。UI が TrayIconResources から引く
 
-        // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知 ----
-        // Phase7-Step10d W4: 旧 Global.BatteryChanged（static イベント）の実体をこのサービスへ移した。
+        // ---- バッテリー残量の変化通知 ----
         // 差: イベントの送信元が typeof(Global) から、このサービスのインスタンスになった（購読者は送信元を使っていない）。
         public void InvokeBatteryChanged(byte percentage) => BatteryChanged?.Invoke(this, percentage);
 
