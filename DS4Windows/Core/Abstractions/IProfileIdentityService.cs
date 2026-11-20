@@ -25,13 +25,13 @@ namespace DS4Windows.Core.Abstractions
         void Refresh();
 
         /// <summary>名前のプロファイルの ID を読む（メモリの索引から引く）。ファイルがない・ID がないときは null。</summary>
-        string GetId(string profileName);
+        string? GetId(string profileName);
 
         /// <summary>ID のプロファイルの名前を探す。見つからなければ null。</summary>
-        string GetName(string profileId);
+        string? GetName(string profileId);
 
         /// <summary>名前のプロファイルが ID を持つようにし、その ID を返す（なければ書く）。ファイルがない・書けないときは null。</summary>
-        string EnsurePersisted(string profileName);
+        string? EnsurePersisted(string profileName);
 
         /// <summary>
         /// 名前のプロファイルに、<b>新しい ID を振って書く</b>（すでに ID があっても置き換える）。アプリ内の複製（Duplicate）が、

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 
 namespace DS4Windows.Core.Settings
 {
@@ -9,10 +11,10 @@ namespace DS4Windows.Core.Settings
     /// </summary>
     public sealed class ControllerSetting
     {
-        private readonly Func<string> read;
-        private readonly Func<string, Action> parse;
+        private readonly Func<string?> read;
+        private readonly Func<string?, Action?> parse;
 
-        private ControllerSetting(string xmlName, bool isEnum, Func<string> read, Func<string, Action> parse)
+        private ControllerSetting(string xmlName, bool isEnum, Func<string?> read, Func<string?, Action?> parse)
         {
             XmlName = xmlName;
             IsEnum = isEnum;
@@ -24,10 +26,10 @@ namespace DS4Windows.Core.Settings
         public string XmlName { get; }
 
         /// <summary>画面での見せ方（画面に出さない項目は null）。</summary>
-        public SettingUi Ui { get; private set; }
+        public SettingUi? Ui { get; private set; }
 
         /// <summary>画面での見せ方を設定する。選択肢は列挙型の項目だけに付ける。</summary>
-        public ControllerSetting WithUi(string labelKey, string tooltipKey = null, bool appliesOnNewConnection = false, params SettingChoice[] choices)
+        public ControllerSetting WithUi(string labelKey, string? tooltipKey = null, bool appliesOnNewConnection = false, params SettingChoice[] choices)
         {
             Ui = new SettingUi(labelKey, tooltipKey, appliesOnNewConnection, choices != null && choices.Length > 0 ? choices : null);
             return this;
@@ -37,19 +39,19 @@ namespace DS4Windows.Core.Settings
         public bool IsEnum { get; }
 
         /// <summary>現在の値を保存用の文字列にする。</summary>
-        public string Read() => read();
+        public string Read() => read() ?? string.Empty;   // 真偽値・列挙型の ToString は null を返さない
 
         /// <summary>
         /// 保存された文字列（要素がないときは null）を解析し、適用の動作を返す。列挙型で解析できない値のときは null を返す（読み込み全体を取りやめる）。
         /// 従来の保存の読み込みと同じく、要素がないときと真偽値の解析に失敗したときは、その型の既定値（false、列挙型は 0）を適用する。
         /// </summary>
-        public Action Parse(string text) => parse(text);
+        public Action? Parse(string? text) => parse(text);
 
         /// <summary>
         /// 保存された文字列を、解析できたときだけ適用する動作にする（要素がない、または解析できないときは null。現在の値を保つ）。
         /// アプリ設定（機種の系統ごとの設定）の読み込みで使う。列挙型は、解析できないとき null を返す（呼び出し側が失敗にする）。
         /// </summary>
-        public Action ParseOrKeep(string text)
+        public Action? ParseOrKeep(string? text)
         {
             if (text == null)
             {

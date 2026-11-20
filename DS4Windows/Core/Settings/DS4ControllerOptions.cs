@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -37,7 +39,7 @@ namespace DS4Windows.Core.Settings
                 IsCopyCatChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler IsCopyCatChanged;
+        public event EventHandler? IsCopyCatChanged;
 
         public DS4ControllerOptions(InputDeviceType deviceType) : base(deviceType)
         {
@@ -45,7 +47,7 @@ namespace DS4Windows.Core.Settings
 
         protected override string SectionName => XML_ELEMENT_NAME;
 
-        private IReadOnlyList<ControllerSetting> schema;
+        private IReadOnlyList<ControllerSetting>? schema;
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {

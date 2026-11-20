@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Core.Settings
@@ -52,7 +54,7 @@ namespace DS4Windows.Core.Settings
             ButtonMouseInfoChanged += ButtonMouseInfo_ButtonMouseInfoChanged;
         }
 
-        private void ButtonMouseInfo_ButtonMouseInfoChanged(object sender, EventArgs e)
+        private void ButtonMouseInfo_ButtonMouseInfoChanged(object? sender, EventArgs e)
         {
             if (tempButtonSensitivity == DEFAULT_TEMP_SENS)
             {

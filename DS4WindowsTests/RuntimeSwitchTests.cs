@@ -149,7 +149,7 @@ namespace DS4WindowsTests
             int end = source.IndexOf("public bool RestoreFromAction(", start, StringComparison.Ordinal);
             string body = source.Substring(start, end - start);
 
-            Assert.Contains("string target = ResolveTarget(action);", body);
+            Assert.Contains("string target = ResolveTarget(action)!;", body);
             Assert.DoesNotContain("ApplyCore(deviceIndex, action.details", body);
         }
     }

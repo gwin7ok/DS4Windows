@@ -119,7 +119,7 @@ namespace DS4Windows.Processing.Services.Slots
         /// 9 個未満だと、旧経路は途中の欄の参照で例外になり、そこまでの効果だけが残る。その挙動を保つため、新経路は所有せず、偽を返す。
         /// 数値として読めない欄は 0。
         /// </summary>
-        public static bool TryInterpretExtras(string extras, out ExtrasBindingValues values)
+        public static bool TryInterpretExtras(string? extras, out ExtrasBindingValues values)
         {
             values = default;
             if (string.IsNullOrEmpty(extras) || extras == "0,0,0,0,0,0,0,0,0") return false;
@@ -256,7 +256,7 @@ namespace DS4Windows.Processing.Services.Slots
             if (ControllerStateFieldMapping.mappedType[control] != ControllerStateFieldMapping.ControlType.AxisDir) return false;
 
             int relation = control % 2 == 0 ? control - 1 : control + 1;
-            DS4ControlSettings partner = _profileSettings.GetDS4CSetting(device, (DS4Controls)relation);
+            DS4ControlSettings? partner = _profileSettings.GetDS4CSetting(device, (DS4Controls)relation);
             return partner != null && partner.actionType != DS4ControlSettings.ActionType.Default;
         }
 

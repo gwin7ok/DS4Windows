@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using Sensorit.Base;
 
@@ -105,7 +107,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event FlickStickSettingsEventHandler MinCutoffChanged;
+        public event FlickStickSettingsEventHandler? MinCutoffChanged;
 
         public double Beta
         {
@@ -118,7 +120,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event FlickStickSettingsEventHandler BetaChanged;
+        public event FlickStickSettingsEventHandler? BetaChanged;
 
         public void Reset()
         {

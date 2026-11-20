@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,7 +25,7 @@ namespace DS4Windows.Core.Settings
 
         private const string DirectionalSwipeModeText = "DirectionalSwipe";
 
-        private string _settingsOuterXml;
+        private string? _settingsOuterXml;
         private bool _hadDirectionalSwipeMode;
         private readonly List<(string Parent, string OuterXml)> _entries = new List<(string, string)>();
 
@@ -31,7 +33,7 @@ namespace DS4Windows.Core.Settings
         public bool HasContent => _settingsOuterXml != null || _entries.Count > 0 || _hadDirectionalSwipeMode;
 
         /// <summary>保持している <c>&lt;GyroSwipeSettings&gt;</c> ノードの XML（既定と異なるときだけ。なければ null）。</summary>
-        public string SettingsOuterXml => _settingsOuterXml;
+        public string? SettingsOuterXml => _settingsOuterXml;
 
         /// <summary>ジャイロの出力モードが、廃止された <c>DirectionalSwipe</c> だったか。</summary>
         public bool HadDirectionalSwipeMode => _hadDirectionalSwipeMode;
@@ -125,7 +127,7 @@ namespace DS4Windows.Core.Settings
             {
                 var holder = new XmlDocument();
                 holder.LoadXml(_settingsOuterXml);
-                root.AppendChild(document.ImportNode(holder.DocumentElement, true));
+                root.AppendChild(document.ImportNode(holder.DocumentElement!, true));   // 直前の LoadXml で、ルートの要素がある
                 return;
             }
 
@@ -151,7 +153,7 @@ namespace DS4Windows.Core.Settings
 
             foreach ((string parent, string outerXml) in _entries)
             {
-                XmlNode group = control.SelectSingleNode(parent);
+                XmlNode? group = control.SelectSingleNode(parent);
                 if (group == null)
                 {
                     group = document.CreateElement(parent);
@@ -160,7 +162,7 @@ namespace DS4Windows.Core.Settings
 
                 var holder = new XmlDocument();
                 holder.LoadXml(outerXml);
-                group.AppendChild(document.ImportNode(holder.DocumentElement, true));
+                group.AppendChild(document.ImportNode(holder.DocumentElement!, true));   // 同上
             }
         }
 

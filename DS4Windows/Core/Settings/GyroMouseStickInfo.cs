@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using Sensorit.Base;
 
@@ -83,7 +85,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event GyroMouseStickInfoEventHandler MinCutoffChanged;
+        public event GyroMouseStickInfoEventHandler? MinCutoffChanged;
 
         public double Beta
         {
@@ -96,7 +98,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event GyroMouseStickInfoEventHandler BetaChanged;
+        public event GyroMouseStickInfoEventHandler? BetaChanged;
 
         public bool JitterCompensation
         {

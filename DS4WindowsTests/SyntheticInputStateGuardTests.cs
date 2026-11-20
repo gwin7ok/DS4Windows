@@ -55,7 +55,7 @@ namespace DS4WindowsTests
             if (store == null) return;
 
             Assert.False(Regex.IsMatch(store, @"\bMapping\."), "BackingStore が Mapping を参照している");
-            Assert.Contains("public event Action ActionsLoaded;", store);
+            Assert.Contains("public event Action? ActionsLoaded;", store);
             // Actions.xml の読込（2 経路）は SpecialActionsXmlSerializer へ移した。発行元（イベントとメソッド）は BackingStore のまま
             Assert.Contains("public void RaiseActionsLoaded()", store);
             string actionsXml = SourceText.ReadCode("DS4Windows/Core/Persistence/SpecialActionsXmlSerializer.cs");

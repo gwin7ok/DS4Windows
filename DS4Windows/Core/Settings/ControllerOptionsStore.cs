@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -35,7 +37,7 @@ namespace DS4Windows.Core.Settings
         }
 
         /// <summary>XML の節の名前。null のとき（保存する設定がない機種）は、保存も読み込みも何もしない。</summary>
-        protected virtual string SectionName => null;
+        protected virtual string? SectionName => null;
 
         /// <summary>保存する設定項目の定義（保存する順）。</summary>
         protected virtual IReadOnlyList<ControllerSetting> Schema => Array.Empty<ControllerSetting>();
@@ -46,7 +48,7 @@ namespace DS4Windows.Core.Settings
         // 定義の並びを、親の節の下へ 1 つの節として置く（同名の節があれば置き換える）。保存形式は機種に関わらず同じ
         public void PersistSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            string name = SectionName;
+            string? name = SectionName;
             if (name == null)
                 return;
 
@@ -58,7 +60,7 @@ namespace DS4Windows.Core.Settings
                 section.AppendChild(item);
             }
 
-            XmlNode existing = node.SelectSingleNode(name);
+            XmlNode? existing = node.SelectSingleNode(name);
             if (existing != null)
             {
                 node.RemoveChild(existing);
@@ -70,15 +72,15 @@ namespace DS4Windows.Core.Settings
         // 親の節の下の該当の節を読み、適用する。節がない場合と、列挙型の値が解析できない場合は、何も適用しない（解析を終えてからまとめて適用する）
         public void LoadSettings(XmlDocument xmlDoc, XmlNode node)
         {
-            string name = SectionName;
-            XmlNode section = name == null ? null : node.SelectSingleNode(name);
+            string? name = SectionName;
+            XmlNode? section = name == null ? null : node.SelectSingleNode(name);
             if (section == null)
                 return;
 
             var applies = new List<Action>();
             foreach (ControllerSetting setting in Schema)
             {
-                Action apply = setting.Parse(section.SelectSingleNode(setting.XmlName)?.InnerText);
+                Action? apply = setting.Parse(section.SelectSingleNode(setting.XmlName)?.InnerText);
                 if (apply == null)
                     return;
 

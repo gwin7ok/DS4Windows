@@ -1,4 +1,6 @@
-﻿using DS4Windows.Core.Abstractions;
+﻿#nullable enable
+
+using DS4Windows.Core.Abstractions;
 
 namespace DS4Windows.Core.Settings
 {
@@ -41,7 +43,7 @@ namespace DS4Windows.Core.Settings
         }
 
         /// <summary>プロファイルと一緒に起動するプログラムのパス（なければ空）。</summary>
-        public string LaunchProgram
+        public string? LaunchProgram
         {
             get => _settings.BasicSlot(_slot).LaunchProgram;
             set => _settings.BasicSlot(_slot).LaunchProgram = value;

@@ -126,7 +126,7 @@ namespace DS4Windows.Processing.Services.Slots
             InputDeviceCore device = (InputDeviceCore)_control.GetController(deviceIndex);   // IConfigurableDevice の実装は InputDeviceCore だけ
 
             // 切り替え先の名前は、ID があれば ID から引く（プロファイルの名前を変えたあとも、SA を作り直さずに、現在の名前で切り替える）
-            string target = ResolveTarget(action);
+            string target = ResolveTarget(action)!;   // HasLoadableTarget が、空でない名前を確かめている
 
             string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
                 (deviceIndex + 1).ToString(), target, device != null ? $"{device.Battery}" : "N/A");
@@ -162,7 +162,7 @@ namespace DS4Windows.Processing.Services.Slots
         {
             if (action == null) return false;
 
-            string target = ResolveTarget(action);
+            string? target = ResolveTarget(action);
             if (string.IsNullOrWhiteSpace(target)) return false;
 
             if (_profileIdentity != null && !string.IsNullOrEmpty(action.profileId)
@@ -174,11 +174,11 @@ namespace DS4Windows.Processing.Services.Slots
 
         // Load Profile の切り替え先。SA の切り替え先の ID（profileId）が引ければ、現在の名前を返す（details も同じ名前に直す）。
         // 引けない・ID がないときは、details の名前（従来どおり）
-        public string ResolveTarget(SpecialAction action)
+        public string? ResolveTarget(SpecialAction action)
         {
             if (_profileIdentity != null && !string.IsNullOrEmpty(action.profileId))
             {
-                string current = _profileIdentity.GetName(action.profileId);
+                string? current = _profileIdentity.GetName(action.profileId);
                 if (current != null)
                 {
                     if (!string.Equals(action.details, current, StringComparison.Ordinal)) action.details = current;

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Core.Settings
@@ -37,6 +39,6 @@ namespace DS4Windows.Core.Settings
                 ModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler ModeChanged;
+        public event EventHandler? ModeChanged;
     }
 }

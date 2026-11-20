@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -193,7 +195,7 @@ namespace DS4Windows.Core.Settings
 
 
         // ---- Step10-2-A-2: トリガー(L2/R2)関連 (m_Config委譲) ----
-        public OutputTypeSlotSettings OutputType(int slot) => SafeConfig?.outputTypeSlots[slot];
+        public OutputTypeSlotSettings OutputType(int slot) => SafeConfig.outputTypeSlots[slot];
 
 
 
@@ -206,9 +208,9 @@ namespace DS4Windows.Core.Settings
 
 
         // ---- Step10-2-A-5: ライトバー・ランブル関連 (m_Config委譲) ----
-        public RumbleSlotSettings RumbleSlot(int slot) => SafeConfig?.rumbleSlots[slot];
+        public RumbleSlotSettings RumbleSlot(int slot) => SafeConfig.rumbleSlots[slot];
 
-        public DualSenseSlotSettings DualSenseSlot(int slot) => SafeConfig?.dualSenseSlots[slot];
+        public DualSenseSlotSettings DualSenseSlot(int slot) => SafeConfig.dualSenseSlots[slot];
 
 
         public byte GetRumbleBoost(int deviceIndex)
@@ -232,15 +234,15 @@ namespace DS4Windows.Core.Settings
             if (SafeConfig != null && index >= 0 && index < ControllerLimits.TestProfileItemCount)
             {
                 SafeConfig.rumbleSlots[index].AutostopTime = value;
-                IConfigurableDevice tempDev = _deviceState.GetConfigurableDevice(index);
+                IConfigurableDevice? tempDev = _deviceState.GetConfigurableDevice(index);
                 if (tempDev != null && tempDev.IsSynced())
                     tempDev.RumbleAutostopTime = value;
             }
         }
 
         // ---- Step10-2-A-6: ボタン/マウス出力関連 (m_Config委譲) ----
-        public ButtonMouseInfo[] ButtonMouseInfos => SafeConfig?.buttonMouseInfos;
-        public BasicSlotSettings BasicSlot(int slot) => SafeConfig?.basicSlots[slot];
+        public ButtonMouseInfo[] ButtonMouseInfos => SafeConfig.buttonMouseInfos;
+        public BasicSlotSettings BasicSlot(int slot) => SafeConfig.basicSlots[slot];
         public bool GetEnableTouchToggle(int deviceIndex) => SafeConfig != null && SafeConfig.basicSlots[deviceIndex].EnableTouchToggle;
 
         // ---- Step10-2-A-7: SA/デッドゾーン関連 (m_Config委譲) ----
@@ -256,9 +258,9 @@ namespace DS4Windows.Core.Settings
         }
 
         // 課題④: ProfileActions のインターフェース実装
-        public List<string>[] ProfileActions
+        public List<string>?[] ProfileActions
         {
-            get => SafeConfig?.profileActions;
+            get => SafeConfig.profileActions;
             set
             {
                 if (SafeConfig != null)
@@ -272,8 +274,8 @@ namespace DS4Windows.Core.Settings
         public bool GetDInputOnly(int deviceIndex) => SafeConfig != null && SafeConfig.basicSlots[deviceIndex].DinputOnly;
         public int GetIdleDisconnectTimeout(int deviceIndex) => SafeConfig != null ? SafeConfig.basicSlots[deviceIndex].IdleDisconnectTimeout : 0;
         public bool GetEnableOutputDataToDS4(int deviceIndex) => SafeConfig != null && SafeConfig.basicSlots[deviceIndex].EnableOutputDataToDS4;
-        public DS4ControlSettings GetDS4CSetting(int deviceIndex, string control) => SafeConfig?.GetDS4CSetting(deviceIndex, control);
-        public DS4ControlSettings GetDS4CSetting(int deviceIndex, DS4Controls control) => SafeConfig?.GetDS4CSetting(deviceIndex, control);
+        public DS4ControlSettings? GetDS4CSetting(int deviceIndex, string control) => SafeConfig.GetDS4CSetting(deviceIndex, control);
+        public DS4ControlSettings? GetDS4CSetting(int deviceIndex, DS4Controls control) => SafeConfig.GetDS4CSetting(deviceIndex, control);
 
         // ---- Step10-2-A-9: Mapping.cs専用 ----
         public bool ProfileChangedNotification
@@ -284,7 +286,7 @@ namespace DS4Windows.Core.Settings
                 if (SafeConfig != null) SafeConfig.profileChangedNotification = value;
             }
         }
-        public VirtualKBMMapping OutputKBMMapping { get; set; }
+        public VirtualKBMMapping OutputKBMMapping { get; set; } = null!;   // 出力 KBM のハンドラーの確立（OutputKBMHandlerLifecycle）が、マッピングを使う処理より前に必ず設定する
 
         public X360Controls[] GetDefaultButtonMapping()
         {
@@ -323,9 +325,9 @@ namespace DS4Windows.Core.Settings
 
         // ---- 入力→出力割り当てグループ ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の配列を直接参照する（従来の Global.GetControlSettingsGroup と同一）。
-        public ControlSettingsGroup GetControlSettingsGroup(int deviceIndex) => SafeConfig?.ds4controlSettings[deviceIndex];
+        public ControlSettingsGroup GetControlSettingsGroup(int deviceIndex) => SafeConfig.ds4controlSettings[deviceIndex];
 
-        public RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex) => SafeConfig?.removedShiftSettings[deviceIndex];
+        public RemovedShiftSettings GetRemovedShiftSettings(int deviceIndex) => SafeConfig.removedShiftSettings[deviceIndex];
 
         // 毎入力レポートの経路からも呼ばれるため、スロットごとに 1 度だけ作って使い回す（呼び出しごとに作らない）
         private readonly ProfileSlotSettings[] _slotSettings = new ProfileSlotSettings[ControllerLimits.TestProfileItemCount];

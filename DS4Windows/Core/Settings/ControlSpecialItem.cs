@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
 

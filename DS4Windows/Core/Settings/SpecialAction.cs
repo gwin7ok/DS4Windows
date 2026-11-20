@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -33,10 +35,10 @@ namespace DS4Windows.Core.Settings
         // （編集では、保存済みの SA の ID を引き継ぐ）。新しく作る SA は、ここで新しい ID になる。保存済みのものは、読み込みで、ファイルの ID に置き換える
         public string id = Guid.NewGuid().ToString("N");
         // 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（details は名前）。Actions.xml の ProfileId 要素に保存する。ない（古いファイル）ときは null
-        public string profileId;
+        public string? profileId;
         // SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras（DS4ControlSettings.extras）と同じ書式
         // （カンマ区切りの 9 個）。Actions.xml の OutputExtras 要素に保存する。付けないときは null。その SA が成立している間だけ有効（束縛は I5b で作る）
-        public string outputExtras;
+        public string? outputExtras;
         // Button の出力先がアナログ（パッドの軸・トリガー、マウス移動。AnalogOutputTargets）のときの強さ（0〜100%）。
         // SA の組み合わせトリガーはオン／オフのため、成立中はこの固定値で出す。Actions.xml の Button の Strength 要素（100 以外のときだけ）に保存する。既定は 100（古いファイルも 100 として読む）
         public int analogStrength = 100;
@@ -45,11 +47,11 @@ namespace DS4Windows.Core.Settings
         public ActionTypeId typeID;
         public string controls;
         public List<int> macro = new List<int>();
-        public string details;
+        public string? details;
         public List<DS4Controls> uTrigger = new List<DS4Controls>();
-        public string ucontrols;
+        public string? ucontrols;
         public double delayTime = 0;
-        public string extra;
+        public string? extra;
         /// <summary>FocusWindow で、前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する。他の種別では使わない。</summary>
         public bool centerCursor = false;
         // null when not applicable (type != Key && type != Button) or not set
@@ -63,7 +65,7 @@ namespace DS4Windows.Core.Settings
         public DateTime firstTap;
         public DateTime TimeofEnd;
         public bool automaticUntrigger = false;
-        public string prevProfileName;  // Name of the previous profile where automaticUntrigger would jump back to (could be regular or temporary profile. Empty name is the same as regular profile)
+        public string? prevProfileName;  // Name of the previous profile where automaticUntrigger would jump back to (could be regular or temporary profile. Empty name is the same as regular profile)
         public bool prevProfileWasTemporary;
         public bool synchronized = false; // If the same trigger has both "key down" and "key released" macros then run those synchronized if this attribute is TRUE (ie. key down macro fully completed before running the key release macro)
         public bool keepKeyState = false; // By default special action type "Macro" resets all keys used in the macro back to default "key up" state after completing the macro even when the macro itself doesn't do it explicitly. If this is TRUE then key states are NOT reset automatically (macro is expected to do it or to leave a key to down state on purpose)

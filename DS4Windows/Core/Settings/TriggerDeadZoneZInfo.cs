@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Core.Settings
@@ -38,16 +40,16 @@ namespace DS4Windows.Core.Settings
         public double maxOutput = DEFAULT_MAX_OUTPUT;
 
         public delegate void DeadZoneChangedHandler(TriggerDeadZoneZInfo sender, EventArgs args);
-        public event DeadZoneChangedHandler DeadZoneChanged;
+        public event DeadZoneChangedHandler? DeadZoneChanged;
 
         public delegate void AntiDeadZoneChangedHandler(TriggerDeadZoneZInfo sender, EventArgs args);
-        public event AntiDeadZoneChangedHandler AntiDeadZoneChanged;
+        public event AntiDeadZoneChangedHandler? AntiDeadZoneChanged;
 
         public delegate void MaxZoneChangedHandler(TriggerDeadZoneZInfo sender, EventArgs args);
-        public event MaxZoneChangedHandler MaxZoneChanged;
+        public event MaxZoneChangedHandler? MaxZoneChanged;
 
         public delegate void MaxOutputChangedHandler(TriggerDeadZoneZInfo sender, EventArgs args);
-        public event MaxOutputChangedHandler MaxOutputChanged;
+        public event MaxOutputChangedHandler? MaxOutputChanged;
 
         public byte DeadZone
         {

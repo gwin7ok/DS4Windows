@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -38,7 +40,7 @@ namespace DS4Windows.Core.Settings
                 EnableHomeLEDChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler EnableHomeLEDChanged;
+        public event EventHandler? EnableHomeLEDChanged;
 
         public SwitchProControllerOptions(InputDeviceType deviceType) : base(deviceType)
         {
@@ -46,7 +48,7 @@ namespace DS4Windows.Core.Settings
 
         protected override string SectionName => XML_ELEMENT_NAME;
 
-        private IReadOnlyList<ControllerSetting> schema;
+        private IReadOnlyList<ControllerSetting>? schema;
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {

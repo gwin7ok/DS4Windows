@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 
 namespace DS4Windows.Core.Settings
@@ -12,7 +14,7 @@ namespace DS4Windows.Core.Settings
     public abstract class DeviceOptionsBase
     {
         private bool enabled;
-        private IReadOnlyList<ControllerSetting> settings;
+        private IReadOnlyList<ControllerSetting>? settings;
 
         protected DeviceOptionsBase(bool defaultEnabled, string sectionName)
         {
@@ -31,7 +33,7 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public event EventHandler EnabledChanged;
+        public event EventHandler? EnabledChanged;
 
         /// <summary>アプリ設定の <c>DeviceOptions</c> の下の節の名前（保存形式。例: DS4SupportSettings）。</summary>
         public string SectionName { get; }

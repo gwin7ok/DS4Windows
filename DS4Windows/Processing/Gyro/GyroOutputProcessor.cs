@@ -248,13 +248,13 @@ namespace DS4Windows.Processing.Gyro
             }
             else if (mode == GyroOutMode.Mouse)
             {
-                triggers = GetParsedTriggers(1, _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers);
+                triggers = GetParsedTriggers(1, _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggers!);   // プロファイルの読み込み前の既定値で必ず設定される
                 andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseTriggerCondAnd;
             }
             else if (mode == GyroOutMode.MouseJoystick)
             {
                 useReverseRatchet = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerTurns;
-                triggers = GetParsedTriggers(2, _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers);
+                triggers = GetParsedTriggers(2, _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggers!);   // 同上
                 andCond = _profileSettings.ForSlot(deviceNum).Gyro.MouseStickTriggerCondAnd;
             }
             triggeractivated = andCond;

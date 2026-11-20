@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Model;
 namespace DS4Windows.Core.Settings
@@ -28,7 +30,7 @@ namespace DS4Windows.Core.Settings
 
 
         public DS4Controls control;
-        public string extras = null;
+        public string? extras = null;
         public DS4KeyType keyType = DS4KeyType.None;
         // Special は、SA 専用の種別（Program、Profile、DisconnectBT、BatteryCheck、MultiAction、較正）の割り当て。内容は special（型のある項目）が持つ
         public enum ActionType : byte { Default, Key, Button, Macro, Special };
@@ -39,7 +41,7 @@ namespace DS4Windows.Core.Settings
         /// SA 専用の種別と項目（型のある項目）。<see cref="actionType"/> が <c>Special</c> のとき、その割り当ての内容。
         /// <c>Macro</c> のときは、Macro の SA 専用の 3 項目（Run on release／Synchronized／Keep key state）の入れ物。それ以外は null。
         /// </summary>
-        public ControlSpecialItem special;
+        public ControlSpecialItem? special;
 
         // 「Lightbar マクロ」機能は廃止した（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8e-Plan.md Q8＝B。プロファイルに保存されず、実質使えなかった）。
 
@@ -63,7 +65,7 @@ namespace DS4Windows.Core.Settings
             //actionAlias = 0;
         }
 
-        public bool IsExtrasEmpty(string extraStr)
+        public bool IsExtrasEmpty(string? extraStr)
         {
             return string.IsNullOrEmpty(extraStr) || extraStr == "0,0,0,0,0,0,0,0,0";
         }

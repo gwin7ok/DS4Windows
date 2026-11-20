@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Xml;
 
@@ -10,22 +12,22 @@ namespace DS4Windows.Core.Settings
     /// </summary>
     public sealed class RemovedShiftSettings
     {
-        private string _outerXml;
+        private string? _outerXml;
 
         /// <summary>保持している内容があるか（<c>&lt;ShiftControl&gt;</c> に、項目［孫の要素］が 1 つ以上ある）。</summary>
         public bool HasContent => _outerXml != null;
 
         /// <summary>保持している <c>&lt;ShiftControl&gt;</c> ノードの XML（なければ null）。</summary>
-        public string OuterXml => _outerXml;
+        public string? OuterXml => _outerXml;
 
         /// <summary>
         /// 読み込んだ <c>&lt;ShiftControl&gt;</c> ノードから、内容を取り込む。項目がなければ（null、または空）、保持を空にする。
         /// 以前の内容は、常に置き換わる。
         /// </summary>
         /// <returns>保持する内容があるか。</returns>
-        public bool Capture(XmlNode shiftControl)
+        public bool Capture(XmlNode? shiftControl)
         {
-            if (shiftControl == null || shiftControl.SelectNodes("*/*").Count == 0)
+            if (shiftControl == null || shiftControl.SelectNodes("*/*")!.Count == 0)   // SelectNodes は、一致がなくても空のリストを返す
             {
                 _outerXml = null;
                 return false;
@@ -58,7 +60,7 @@ namespace DS4Windows.Core.Settings
 
             var holder = new XmlDocument();
             holder.LoadXml(_outerXml);
-            root.AppendChild(document.ImportNode(holder.DocumentElement, true));
+            root.AppendChild(document.ImportNode(holder.DocumentElement!, true));   // 直前の LoadXml で、ルートの要素がある
         }
     }
 }

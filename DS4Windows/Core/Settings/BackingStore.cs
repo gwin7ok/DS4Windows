@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -130,7 +132,7 @@ namespace DS4Windows.Core.Settings
         // Stick output curve consts in place more as a precaution
         // DEFAULT_STICK_OUTPUT_CURVE／_ID、DEFAULT_SA_OUTPUT_CURVE／_ID は削除した（廃止済みの ProfileDTO の既定値の残骸。参照 0 件）。
 
-        public String m_Profile = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName + "\\Profiles.xml";
+        public String m_Profile = Directory.GetParent(Assembly.GetExecutingAssembly().Location)!.FullName + "\\Profiles.xml";   // 実行中のアセンブリの場所には、親のフォルダーがある
         public String m_Actions = PathService.AppDataPathState + "\\Actions.xml";
         public string m_linkedProfiles = PathService.AppDataPathState + "\\LinkedProfiles.xml";
         public string m_controllerConfigs = PathService.AppDataPathState + "\\ControllerConfigs.xml";
@@ -270,7 +272,7 @@ namespace DS4Windows.Core.Settings
               new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>() };
         public ControlSettingsGroup[] ds4controlSettings;
 
-        public List<string>[] profileActions = new List<string>[ControllerLimits.TestProfileItemCount] { null, null, null, null, null, null, null, null, null };
+        public List<string>?[] profileActions = new List<string>?[ControllerLimits.TestProfileItemCount] { null, null, null, null, null, null, null, null, null };
         public int[] profileActionCount = new int[ControllerLimits.TestProfileItemCount] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public Dictionary<string, SpecialAction>[] profileActionDict = new Dictionary<string, SpecialAction>[ControllerLimits.TestProfileItemCount]
             { new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(), new Dictionary<string, SpecialAction>(),
@@ -315,7 +317,7 @@ namespace DS4Windows.Core.Settings
         public double udpSmoothingMincutoff = DEFAULT_UDP_SMOOTH_MINCUTOFF;
         public double udpSmoothingBeta = DEFAULT_UDP_SMOOTH_BETA;
         public bool useCustomSteamFolder;
-        public string customSteamFolder;
+        public string? customSteamFolder;
         public AppThemeChoice useCurrentTheme;
         public string fakeExeFileName = string.Empty;
 
@@ -374,7 +376,7 @@ namespace DS4Windows.Core.Settings
         // 通常の起動では、プロファイルの読込より前に BuildHostAndServices の CreateControlService が DI の ProfileSettingsService を結ぶため通らない。
         // 登録がないまま使われたら、組み立ての誤りとして例外にする。テストは明示的に設定する。
         private readonly object _profileSettingsLock = new object();
-        private DS4Windows.Core.Abstractions.IProfileSettingsService _profileSettings;
+        private DS4Windows.Core.Abstractions.IProfileSettingsService? _profileSettings;
 
         /// <summary>
         /// 設定ファイル（Profiles.xml）へ保存するスロットのプロファイル名。一時プロファイル（CLI の LoadTempProfile、自動プロファイル）を使っている間は、
@@ -466,7 +468,7 @@ namespace DS4Windows.Core.Settings
             // it for existing profiles on startup.
             if (profileActions[idx] != null)
             {
-                profileActionCount[idx] = profileActions[idx].Count;
+                profileActionCount[idx] = profileActions[idx]!.Count;   // 直前で null でないことを確かめている
                 return;
             }
 
@@ -513,7 +515,7 @@ namespace DS4Windows.Core.Settings
 
         public void CalculateProfileActionCount(int index)
         {
-            profileActionCount[index] = profileActions[index].Count;
+            profileActionCount[index] = profileActions[index]!.Count;   // 数えるのは、スロットのリストが作られたあと（プロファイルの読み込み）
         }
 
         public void CalculateProfileActionDicts(int device)
@@ -521,7 +523,7 @@ namespace DS4Windows.Core.Settings
             profileActionDict[device].Clear();
             profileActionIndexDict[device].Clear();
 
-            foreach (string actionname in profileActions[device])
+            foreach (string actionname in profileActions[device]!)   // 同上
             {
                 var actionObj = GetAction(actionname);
                 int index = GetActionIndexOf(actionname);
@@ -537,11 +539,11 @@ namespace DS4Windows.Core.Settings
         /// <param name="device">Device index</param>
         /// <param name="forceEmit">If true, ignore suppression and always emit logs</param>
         /// <param name="overrideProfileName">If provided, use this profile name instead of looking up profilePath[device]</param>
-        public void EmitMissingActionLogsForDevice(int device, bool forceEmit = false, string overrideProfileName = null)
+        public void EmitMissingActionLogsForDevice(int device, bool forceEmit = false, string? overrideProfileName = null)
         {
             if (profileActions == null || device < 0 || device >= profileActions.Length) return;
 
-            foreach (string actionname in profileActions[device])
+            foreach (string actionname in profileActions[device]!)   // 同上
             {
                 var actionObj = GetAction(actionname);
                 int index = GetActionIndexOf(actionname);
@@ -584,7 +586,7 @@ namespace DS4Windows.Core.Settings
                 var normExisting = Util.NormalizeActionName(sA?.name);
                 var normSearch = Util.NormalizeActionName(name);
                 if (string.Equals(normExisting, normSearch, StringComparison.OrdinalIgnoreCase))
-                    return sA;
+                    return sA!;   // 要素が null のまま空の名前を探したときも、従来どおりその要素を返す
             }
 
             return new SpecialAction("null", "null", "null", "null");
@@ -759,11 +761,11 @@ namespace DS4Windows.Core.Settings
 
         // Actions.xml の読み込み（または既定の作成）の後に発行する。BackingStore から Mapping への逆参照をなくすための通知。
         // コンテナ構築前の読み込みでは購読者がいないが、その時点では実行時状態は新品であり、結果は同じ。
-        public event Action ActionsLoaded;
+        public event Action? ActionsLoaded;
 
         // ActionsLoaded の購読者の差し替え。ブートストラップの BackingStore はコンテナより長く生きるため、
         // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を BackingStore 自身が覚えて外す
-        private Action _actionsLoadedHandler;
+        private Action? _actionsLoadedHandler;
 
         public void ReplaceActionsLoadedHandler(Action handler)
         {
@@ -831,7 +833,7 @@ namespace DS4Windows.Core.Settings
             }
         }
 
-        public DS4ControlSettings GetDS4CSetting(int deviceNum, string buttonName)
+        public DS4ControlSettings? GetDS4CSetting(int deviceNum, string buttonName)
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
@@ -850,7 +852,7 @@ namespace DS4Windows.Core.Settings
             return null;
         }
 
-        public DS4ControlSettings GetDS4CSetting(int deviceNum, DS4Controls dc)
+        public DS4ControlSettings? GetDS4CSetting(int deviceNum, DS4Controls dc)
         {
             int temp = (int)dc;
             if (temp > 0)
@@ -936,8 +938,8 @@ namespace DS4Windows.Core.Settings
                 bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
                 IConfigurableDevice tempDevice = control.GetController(device);
                 bool exists = tempBool = (tempDevice != null);
-                bool synced = tempBool = exists ? tempDevice.IsSynced() : false;
-                bool isAlive = tempBool = exists ? tempDevice.IsAlive() : false;
+                bool synced = tempBool = exists ? tempDevice!.IsSynced() : false;   // exists が true のときだけ評価される
+                bool isAlive = tempBool = exists ? tempDevice!.IsAlive() : false;   // 同上
                 if (basicSlots[device].DinputOnly != oldUseDInputOnly)
                 {
                     if (basicSlots[device].DinputOnly == true)

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 
 namespace DS4Windows.Core.Settings
@@ -38,7 +40,7 @@ namespace DS4Windows.Core.Settings
                 TwoStageModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler TwoStageModeChanged;
+        public event EventHandler? TwoStageModeChanged;
 
         public int hipFireMS = DEFAULT_HIP_TIME;
         public DS4Windows.Core.Model.TriggerEffects triggerEffect = DEFAULT_TRIGGER_EFFECT;
@@ -52,7 +54,7 @@ namespace DS4Windows.Core.Settings
                 TriggerEffectChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler TriggerEffectChanged;
+        public event EventHandler? TriggerEffectChanged;
 
         public DS4Windows.Core.Model.TriggerEffectSettings effectSettings = new DS4Windows.Core.Model.TriggerEffectSettings();
         public ref DS4Windows.Core.Model.TriggerEffectSettings TrigEffectSettings => ref effectSettings;

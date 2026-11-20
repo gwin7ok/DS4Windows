@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Core.Abstractions;
 
 namespace DS4Windows.Core.Settings
@@ -91,9 +93,9 @@ namespace DS4Windows.Core.Settings
         public bool MouseStickTriggerCondAnd { get; set; }
 
         /// <summary>カンマ区切りのトリガーの番号（-1＝常にオン）。</summary>
-        public string MouseTriggers { get; set; }
+        public string? MouseTriggers { get; set; }
 
-        public string MouseStickTriggers { get; set; }
+        public string? MouseStickTriggers { get; set; }
 
         /// <summary>廃止したジャイロのスワイプの設定（読み込み時に保持し、モードを選び直したら破棄する）。</summary>
         public RemovedGyroSwipeSettings RemovedSwipe { get; }
