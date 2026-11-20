@@ -104,11 +104,11 @@ namespace DS4Windows.Processing.Actions
         {
             if (!_valid || !_lightBar || !_port.HasController(dev)) return;
 
-            DS4Color trans = ColorUtil.getTransitionedColor(ref _empty, ref _full, _port.GetBattery(dev));
+            DS4Color trans = ColorUtil.GetTransitionedColor(ref _empty, ref _full, _port.GetBattery(dev));
             if (_fadeTimer < 100)
             {
                 _fadeTimer += 2;
-                _port.SetForcedColor(dev, ColorUtil.getTransitionedColor(ref _lastColor, ref trans, _fadeTimer));
+                _port.SetForcedColor(dev, ColorUtil.GetTransitionedColor(ref _lastColor, ref trans, _fadeTimer));
             }
         }
 

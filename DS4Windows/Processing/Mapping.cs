@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-// 見送り。getTransitionedColor（純粋計算、Step3対象外の除外51件の1つ、
+// 見送り。GetTransitionedColor（純粋計算、Step3対象外の除外51件の1つ、
 // docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
 // これ以外の Global 実利用箇所はすべて Global. 明示修飾（温存3件: ProfileSettingsServiceInstance／outputKBMHandler／ApplyProfile。
 // いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §6 完了判定チェックリスト）。

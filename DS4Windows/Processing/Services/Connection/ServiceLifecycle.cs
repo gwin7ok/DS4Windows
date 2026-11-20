@@ -187,14 +187,14 @@ namespace DS4Windows.Processing.Services.Connection
                     InputDeviceCore tempDevice = slots.Controllers[i];
                     if (tempDevice != null)
                     {
-                        if ((_appSettings.DCBTatStop && !tempDevice.isCharging()) || Suspending)
+                        if ((_appSettings.DCBTatStop && !tempDevice.IsCharging()) || Suspending)
                         {
-                            if (tempDevice.getConnectionType() == ConnectionType.BT)
+                            if (tempDevice.GetConnectionType() == ConnectionType.BT)
                             {
                                 tempDevice.StopUpdate();
                                 tempDevice.DisconnectBT(true);
                             }
-                            else if (tempDevice.getConnectionType() == ConnectionType.SONYWA)
+                            else if (tempDevice.GetConnectionType() == ConnectionType.SONYWA)
                             {
                                 // Controller disconnect will complete on next attempted read.
                                 // Do not use StopUpdate here

@@ -80,7 +80,7 @@ namespace DS4WindowsTests
 
             Assert.NotNull(control);
             Assert.Equal(new[] { "Button", "Macro", "Key", "Extras", "KeyType" }, control.ChildNodes.Cast<XmlNode>().Select(n => n.Name).ToArray());
-            Assert.Equal(X360ControlTables.getX360ControlString(X360Controls.A), doc.SelectSingleNode("/DS4Windows/Control/Button/Cross").InnerText);
+            Assert.Equal(X360ControlTables.GetX360ControlString(X360Controls.A), doc.SelectSingleNode("/DS4Windows/Control/Button/Cross").InnerText);
             Assert.Equal("350/256", doc.SelectSingleNode("/DS4Windows/Control/Macro/Square").InnerText);
             Assert.Equal("65", doc.SelectSingleNode("/DS4Windows/Control/Key/Circle").InnerText);
             Assert.Equal("1,2,0,0,0,0,0,0,0", doc.SelectSingleNode("/DS4Windows/Control/Extras/Triangle").InnerText);

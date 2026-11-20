@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public bool DisconnectDongle() => Device.DisconnectDongle();
 
-        public void QueueEvent(Action action) => Device.queueEvent(action);
+        public void QueueEvent(Action action) => Device.QueueEvent(action);
 
         public void HaltReportingRunAction(Action action) => Device.HaltReportingRunAction(action);
 

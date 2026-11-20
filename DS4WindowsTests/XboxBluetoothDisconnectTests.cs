@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         {
             InputDeviceCore device = NewDevice(BlePath, 0x0B22);
 
-            Assert.Equal(ConnectionType.BT, device.getConnectionType());
+            Assert.Equal(ConnectionType.BT, device.GetConnectionType());
             Assert.Equal("3C:FA:06:17:28:7C", device.GetMacAddress());
         }
 
@@ -65,15 +65,15 @@ namespace DS4WindowsTests
                 new IInputTransportSource[] { new XInputTransportSource(new FakeXInputApi(), interfaces) });
             registry.PreparePendingDevice = (device, info) => true;
 
-            registry.findControllers();
+            registry.FindControllers();
             InputDeviceCore first = Assert.Single(registry.GetControllers());
             registry.RemoveDevice(first);
             Assert.Empty(registry.GetControllers());
 
-            registry.findControllers();
+            registry.FindControllers();
 
             Assert.Single(registry.GetControllers());
-            registry.stopControllers();
+            registry.StopControllers();
         }
 
         [Fact]

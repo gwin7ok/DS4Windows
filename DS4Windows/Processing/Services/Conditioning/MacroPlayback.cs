@@ -243,7 +243,7 @@ namespace DS4Windows.Processing.Services.Conditioning
 
             // Commented out rumble reset. No need to zero out rumble after a macro because it may conflict with a game generated rumble events (ie. macro would stop a game generated rumble effect).
             // If macro generates rumble effects then the macro can stop the rumble as a last step or wait for rumble watchdog timer to do it after few seconds.
-            //Program.rootHub.Controllers[device].setRumble(0, 0);
+            //Program.rootHub.Controllers[device].SetRumble(0, 0);
 
             // Clear iteration-running so the log shows the iteration completed
             if (actionDoneState != null)

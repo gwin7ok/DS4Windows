@@ -165,10 +165,10 @@ namespace DS4Windows.Core.Utilities
         [DllImport("user32.dll", SetLastError = true)]
         protected static extern Boolean UnregisterDeviceNotification(IntPtr Handle);
 
-        [DllImport("winmm.dll")]
-        internal static extern uint timeBeginPeriod(uint period);
-        [DllImport("winmm.dll")]
-        internal static extern uint timeEndPeriod(uint period);
+        [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
+        internal static extern uint TimeBeginPeriod(uint period);
+        [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
+        internal static extern uint TimeEndPeriod(uint period);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern bool EnumDisplayDevicesW(string lpDevice, uint iDevNum, ref DISPLAY_DEVICE lpDisplayDevice, uint dwFlags);

@@ -114,7 +114,7 @@ namespace DS4Windows.Input.Devices
             //    CheckOutputReportTypes();
             //}
 
-            sendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
+            SendOutputReport(true, true, false); // initialize the output report (don't force disconnect the gamepad on initialization even if writeData fails because some fake DS4 gamepads don't support writeData over BT)
 
             // Mark PostInit complete so StartUpdate won't race with uninitialized buffers
             postInitDone = true;
@@ -165,7 +165,7 @@ namespace DS4Windows.Input.Devices
 
         protected override void KickWindowsToNoticeDisconnect()
         {
-            this.sendOutputReport(true, true);
+            this.SendOutputReport(true, true);
         }
 
         public override void RefreshCalibration()
@@ -219,8 +219,8 @@ namespace DS4Windows.Input.Devices
             try
             {
                 currentHap.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
-                setRumble(0, 0);
-                sendOutputReport(true, true, false);
+                SetRumble(0, 0);
+                SendOutputReport(true, true, false);
                 AppLogger.LogDebug("[DI] WriteOutputOffOnce: wrote lightbar off / rumble zero once before disabling output data");
             }
             catch (Exception ex)
@@ -370,7 +370,7 @@ namespace DS4Windows.Input.Devices
             }
         }
 
-        protected override void sendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
+        protected override void SendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
         {
             MergeStates();
             //setTestRumble();
@@ -411,7 +411,7 @@ namespace DS4Windows.Input.Devices
             {
                 // Workaround to a bug in ViGem driver. Force stop potentially stuck rumble motor on the next output report if there haven't been new rumble events within X seconds
                 if (rumbleAutostopTimer.ElapsedMilliseconds >= rumbleAutostopTime)
-                    setRumble(0, 0);
+                    SetRumble(0, 0);
             }
 
             if (synchronous)
@@ -448,13 +448,13 @@ namespace DS4Windows.Input.Devices
 
                     try
                     {
-                        if (!writeOutput())
+                        if (!WriteOutput())
                         {
                             if (quitOutputThreadOnError)
                             {
                                 int winError = Marshal.GetLastWin32Error();
 
-                                // Logfile notification that the gamepad is force disconnected because of writeOutput failed
+                                // Logfile notification that the gamepad is force disconnected because of WriteOutput failed
                                 if (quitOutputThread == false && !isDisconnecting)
                                     AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_WriteConnectionLost", winError);
 
@@ -596,7 +596,7 @@ namespace DS4Windows.Input.Devices
                             AppLogger.LogUser(AppLogLevel.Warn, "Log_Device_CrcFailedDisconnect", Mac.ToString(), CrcMaxConsecutiveFailures);
 
                             readWaitEv.Reset();
-                            sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
+                            SendOutputReport(true, true); // Kick Windows into noticing the disconnection.
                             StopAndRemove();
                             return FrameResult.Terminate;
                     }
@@ -615,7 +615,7 @@ namespace DS4Windows.Input.Devices
                     }
 
                     readWaitEv.Reset();
-                    sendOutputReport(true, true); // Kick Windows into noticing the disconnection.
+                    SendOutputReport(true, true); // Kick Windows into noticing the disconnection.
                     StopAndRemove();
                     return FrameResult.Terminate;
                 }
@@ -794,7 +794,7 @@ namespace DS4Windows.Input.Devices
 
         protected override void WriteOutputFrame()
         {
-            sendOutputReport(true, forceWrite);
+            SendOutputReport(true, forceWrite);
             forceWrite = false;
         }
     }

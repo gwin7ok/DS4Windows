@@ -123,6 +123,15 @@
 - 実機確認が必要: `Device-Check-Checklist.md` §9h（null のときの動きを変えた箇所。**未実施**）。
 - 次の Phase で動かす指標: オブジェクト指向（B。小文字始まりのメソッド 40、`BackingStore` の公開フィールド 107）、ソースの文字列を読むテスト（115）。
 
+### RV7b（2026-11-20）
+- 保存: `scorecard/RV7b.json`。基準の版: v1。直前の保存: `scorecard/RV9.json`。
+- 等級が変わった観点: なし。**オブジェクト指向 B（69.7%→72.1%、+2.4 点）、採用手段の統一 A−（87.2%→89.6%、+2.4 点）**。
+- 動いた指標: 小文字始まりの公開メソッド 40→1（残る 1 件は、計測の誤検出［`BindingWindowVisualizerButtons` のタプル配列］）。
+- 内容: 40 件を Pascal 形へ改名（呼び出し側とテストの文字列も同時）。呼び出し 0 件で、同名のプロパティと重複していた `isHidExclusive()`・`isExclusive()` は削除。`timeBeginPeriod`・`timeEndPeriod` は、`DllImport` の `EntryPoint` で元の名前を指定したまま改名。ログの文言（`sendOutputReport: …`、`[TAP] … touchesBegan`）は、そのまま。
+- 予想とのずれ: オブジェクト指向 B→B+ には届かなかった（72.1%。B+ は 80% 付近）。残る減点は `BackingStore` の公開フィールド 107、500 行以上のファイルなど。
+- 実機確認が必要: なし（名前の変更だけ。全 3,660 テスト通過）。
+- 次の Phase で動かす指標: `BackingStore` の公開フィールド（107）、500 行以上のファイル（32）、タイマーの種類（3）。
+
 ### RVn（完了日）
 - 保存: scorecard/RVn.json。基準の版: v1。直前の保存: …
 - 等級が変わった観点: 観点名 X→Y（点数 a%→b%）。…

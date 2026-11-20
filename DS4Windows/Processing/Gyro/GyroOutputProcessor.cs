@@ -169,9 +169,9 @@ namespace DS4Windows.Processing.Gyro
 
                 var triggerActive = IsTriggerActive(outMode);
                 if (useReverseRatchet && triggerActive)
-                    _cursor.sixaxisMoved(arg);
+                    _cursor.SixaxisMoved(arg);
                 else if (!useReverseRatchet && !triggerActive)
-                    _cursor.sixaxisMoved(arg);
+                    _cursor.SixaxisMoved(arg);
                 else
                     _cursor.MouseRemainderReset(arg);
 

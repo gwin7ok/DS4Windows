@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Services.Devices
 
         public IEnumerable<InputDeviceCore> FindControllers()
         {
-            _devices.findControllers();
+            _devices.FindControllers();
             return _devices.GetControllers();
         }
 
@@ -36,7 +36,7 @@ namespace DS4Windows.Processing.Services.Devices
 
         public void StopControllers()
         {
-            _devices.stopControllers();
+            _devices.StopControllers();
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] InputDeviceRegistryAdapter.StopControllers called");
         }
@@ -63,7 +63,7 @@ namespace DS4Windows.Processing.Services.Devices
         public void ReEnableDevice(string deviceInstanceId)
         {
             if (string.IsNullOrEmpty(deviceInstanceId)) return;
-            _devices.reEnableDevice(deviceInstanceId);
+            _devices.ReEnableDevice(deviceInstanceId);
         }
 
         public bool IsExclusiveMode

@@ -45,8 +45,8 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                     if (Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
-                        store.UpdateDS4CSetting(device, item.Name, X360ControlTables.getX360ControlsByName(item.InnerText), "", DS4KeyType.None);
-                        customMapButtons.Add(DS4ControlNames.getDS4ControlsByName(item.Name), X360ControlTables.getX360ControlsByName(item.InnerText));
+                        store.UpdateDS4CSetting(device, item.Name, X360ControlTables.GetX360ControlsByName(item.InnerText), "", DS4KeyType.None);
+                        customMapButtons.Add(DS4ControlNames.GetDS4ControlsByName(item.Name), X360ControlTables.GetX360ControlsByName(item.InnerText));
                     }
                 }
             }
@@ -63,7 +63,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                         continue;
                     }
 
-                    customMapMacros.Add(DS4ControlNames.getDS4ControlsByName(item.Name), item.InnerText);
+                    customMapMacros.Add(DS4ControlNames.GetDS4ControlsByName(item.Name), item.InnerText);
                     string[] skeys;
                     int[] keys;
                     if (!string.IsNullOrEmpty(item.InnerText))
@@ -102,7 +102,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (ushort.TryParse(item.InnerText, out wvk) && Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
                         store.UpdateDS4CSetting(device, item.Name, wvk, "", DS4KeyType.None);
-                        customMapKeys.Add(DS4ControlNames.getDS4ControlsByName(item.Name), wvk);
+                        customMapKeys.Add(DS4ControlNames.GetDS4ControlsByName(item.Name), wvk);
                     }
                 }
             }
@@ -122,7 +122,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     if (item.InnerText != string.Empty && Enum.TryParse(item.Name, out DS4Controls currentControl))
                     {
                         store.UpdateDS4CExtra(device, item.Name, item.InnerText);
-                        customMapExtras.Add(DS4ControlNames.getDS4ControlsByName(item.Name), item.InnerText);
+                        customMapExtras.Add(DS4ControlNames.GetDS4ControlsByName(item.Name), item.InnerText);
                     }
                     else
                         ParentItem.RemoveChild(item);
@@ -160,7 +160,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                         if (keyType != DS4KeyType.None && Enum.TryParse(item.Name, out DS4Controls currentControl))
                         {
                             store.UpdateDS4CKeyType(device, item.Name, keyType);
-                            customMapKeyTypes.Add(DS4ControlNames.getDS4ControlsByName(item.Name), keyType);
+                            customMapKeyTypes.Add(DS4ControlNames.GetDS4ControlsByName(item.Name), keyType);
                         }
                     }
                 }
@@ -182,7 +182,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                     DS4KeyType updated = MacroExecuteModes.ApplyTo(modeSetting.keyType, executeMode);
                     store.UpdateDS4CKeyType(device, item.Name, updated);
-                    customMapKeyTypes[DS4ControlNames.getDS4ControlsByName(item.Name)] = updated;
+                    customMapKeyTypes[DS4ControlNames.GetDS4ControlsByName(item.Name)] = updated;
                 }
             }
 

@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>そのスロットに機器が接続されているか。</summary>
         bool IsConnected(int slot);
 
-        /// <summary>2 つのモーターの強さを指定して振動させる（0 で停止）。引数の順は機器の <c>setRumble</c> と同じ。</summary>
+        /// <summary>2 つのモーターの強さを指定して振動させる（0 で停止）。引数の順は機器の <c>SetRumble</c> と同じ。</summary>
         bool SetRumble(int slot, byte rightLightFast, byte leftHeavySlow);
 
         /// <summary>重いモーターだけを変え、軽いモーターは今の強さのままにする。</summary>

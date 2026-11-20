@@ -161,11 +161,11 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                         string? btnName;
                         if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                         {
-                            btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
+                            btnName = X360ControlTables.GetX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                         }
                         else
                         {
-                            btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
+                            btnName = X360ControlTables.GetX360ControlString((X360Controls)lastActionBtn);
                         }
 
                         // Display mode suffix: (Toggle) or (Press)
@@ -204,8 +204,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 if (defaultOutputInput == DS4Controls.None) return null;
                 X360Controls output = profileSettingsService.GetDefaultButtonMapping()[(int)defaultOutputInput];
                 if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
-                    return X360ControlTables.getX360ControlString(output, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
-                return X360ControlTables.getX360ControlString(output);
+                    return X360ControlTables.GetX360ControlString(output, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
+                return X360ControlTables.GetX360ControlString(output);
             }
             catch
             {
@@ -223,11 +223,11 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                     string? buttonName;
                     if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                     {
-                        buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
+                        buttonName = X360ControlTables.GetX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
                     }
                     else
                     {
-                        buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn);
+                        buttonName = X360ControlTables.GetX360ControlString((X360Controls)lastActionBtn);
                     }
 
                     // 書式は AssignmentDescriber（Controls の一覧、SA の一覧と同じ）。Unbound は、モードを付けない
@@ -351,16 +351,16 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 {
                     if (deviceNum >= 0)
                     {
-                        btnName = X360ControlTables.getX360ControlString((X360Controls)settings.action.actionBtn, outputSlotService.OutDevTypeTemp[deviceNum]);
+                        btnName = X360ControlTables.GetX360ControlString((X360Controls)settings.action.actionBtn, outputSlotService.OutDevTypeTemp[deviceNum]);
                     }
                     else
                     {
-                        btnName = X360ControlTables.getX360ControlString((X360Controls)settings.action.actionBtn);
+                        btnName = X360ControlTables.GetX360ControlString((X360Controls)settings.action.actionBtn);
                     }
                 }
                 catch
                 {
-                    btnName = X360ControlTables.getX360ControlString((X360Controls)settings.action.actionBtn);
+                    btnName = X360ControlTables.GetX360ControlString((X360Controls)settings.action.actionBtn);
                 }
 
                 describeText = btnName;

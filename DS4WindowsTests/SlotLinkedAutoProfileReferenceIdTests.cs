@@ -111,7 +111,7 @@ namespace DS4WindowsTests
             BackingStore store = PersistenceHarness.NewStore();
             store.m_linkedProfiles = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
             var serializer = new LinkedProfilesXmlSerializer(store, identity);
-            Assert.True(serializer.createLinkedProfiles());
+            Assert.True(serializer.CreateLinkedProfiles());
             store.linkedProfiles["0123456789AB"] = "Target";
             store.linkedProfiles["BA9876543210"] = "Missing";
             Assert.True(serializer.SaveLinkedProfiles());
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
             BackingStore store = PersistenceHarness.NewStore();
             store.m_linkedProfiles = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
             var plain = new LinkedProfilesXmlSerializer(store);
-            Assert.True(plain.createLinkedProfiles());
+            Assert.True(plain.CreateLinkedProfiles());
             store.linkedProfiles["0123456789AB"] = "Target";
             Assert.True(plain.SaveLinkedProfiles());
             Assert.Null(LoadXml(store.m_linkedProfiles).SelectSingleNode("/LinkedControllers/MAC0123456789AB").Attributes["Id"]);

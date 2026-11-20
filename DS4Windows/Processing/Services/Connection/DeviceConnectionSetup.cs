@@ -65,7 +65,7 @@ namespace DS4Windows.Processing.Services.Connection
                 _profileSettings.ForSlot(ind).Triggers.R2Output.TrigEffectSettings);
 
             device.RumbleAutostopTime = _profileSettings.GetRumbleAutostopTime(ind);
-            device.setRumble(0, 0);
+            device.SetRumble(0, 0);
             device.LightBarColor = _profileSettings.GetMainColor(ind);
 
             // 種類ごとの設定（DualSense の振動エミュレーションと触覚の強さ）は、種類ごとの部品が反映する
@@ -146,17 +146,17 @@ namespace DS4Windows.Processing.Services.Connection
         public void AttachTouchpad(int ind, InputDeviceCore device, TouchpadMouse[] touchPads)
         {
             TouchpadMouse tPad = touchPads[ind];
-            device.Touchpad.TouchButtonDown += tPad.touchButtonDown;
-            device.Touchpad.TouchButtonUp += tPad.touchButtonUp;
-            device.Touchpad.TouchesBegan += tPad.touchesBegan;
+            device.Touchpad.TouchButtonDown += tPad.TouchButtonDown;
+            device.Touchpad.TouchButtonUp += tPad.TouchButtonUp;
+            device.Touchpad.TouchesBegan += tPad.TouchesBegan;
             device.Touchpad.TouchesBegan += tPad.TouchStartedOrEnded;
-            device.Touchpad.TouchesMoved += tPad.touchesMoved;
-            device.Touchpad.TouchesEnded += tPad.touchesEnded;
+            device.Touchpad.TouchesMoved += tPad.TouchesMoved;
+            device.Touchpad.TouchesEnded += tPad.TouchesEnded;
             device.Touchpad.TouchesEnded += tPad.TouchStartedOrEnded;
-            device.Touchpad.TouchUnchanged += tPad.touchUnchanged;
+            device.Touchpad.TouchUnchanged += tPad.TouchUnchanged;
             //device.Touchpad.PreTouchProcess += delegate { touchPads[ind].PopulatePriorButtonStates(); };
             device.Touchpad.PreTouchProcess += (sender, args) => { touchPads[ind].PopulatePriorButtonStates(); };
-            device.SixAxis.SixAccelMoved += tPad.sixaxisMoved;
+            device.SixAxis.SixAccelMoved += tPad.SixaxisMoved;
             //LogDebug("Touchpad mode for " + device.MacAddress + " is now " + tmode.ToString());
             //Log.LogToTray("Touchpad mode for " + device.MacAddress + " is now " + tmode.ToString());
         }

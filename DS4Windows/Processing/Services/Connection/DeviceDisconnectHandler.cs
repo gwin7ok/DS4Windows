@@ -106,8 +106,8 @@ namespace DS4Windows.Processing.Services.Connection
                     _profileSlotApplier.ReleaseSlot(ind);
 
                     string removed = DS4Windows.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
-                    if (device.getBattery() <= 20 &&
-                        device.getConnectionType() == ConnectionType.BT && !device.isCharging())
+                    if (device.GetBattery() <= 20 &&
+                        device.GetConnectionType() == ConnectionType.BT && !device.IsCharging())
                     {
                         removed += ". " + DS4Windows.Properties.Resources.ChargeController;
                     }

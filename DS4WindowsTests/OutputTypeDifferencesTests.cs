@@ -36,9 +36,9 @@ namespace DS4WindowsTests
             Assert.Same(X360ControlTables.ds4DefaultNames, OutContTypeInfo.ButtonNames(OutContType.DS4));
             Assert.Null(OutContTypeInfo.ButtonNames(OutContType.None));
 
-            Assert.Equal("A Button", X360ControlTables.getX360ControlString(X360Controls.A, OutContType.X360));
-            Assert.Equal("Cross", X360ControlTables.getX360ControlString(X360Controls.A, OutContType.DS4));
-            Assert.Equal(string.Empty, X360ControlTables.getX360ControlString(X360Controls.A, OutContType.None));
+            Assert.Equal("A Button", X360ControlTables.GetX360ControlString(X360Controls.A, OutContType.X360));
+            Assert.Equal("Cross", X360ControlTables.GetX360ControlString(X360Controls.A, OutContType.DS4));
+            Assert.Equal(string.Empty, X360ControlTables.GetX360ControlString(X360Controls.A, OutContType.None));
         }
 
         [Fact]

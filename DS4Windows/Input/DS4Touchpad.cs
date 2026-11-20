@@ -109,17 +109,17 @@ namespace DS4Windows.Input
                     {
                         if (sensors.Touch1 && sensors.Touch2)
                         {
-                            t0.populate(currentX1, currentY1, touchID1); t1.populate(currentX2, currentY2, touchID2);
+                            t0.Populate(currentX1, currentY1, touchID1); t1.Populate(currentX2, currentY2, touchID2);
                             args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0, t1);
                         }
                         else if (sensors.Touch1)
                         {
-                            t0.populate(currentX1, currentY1, touchID1);
+                            t0.Populate(currentX1, currentY1, touchID1);
                             args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                         }
                         else
                         {
-                            t0.populate(currentX2, currentY2, touchID2);
+                            t0.Populate(currentX2, currentY2, touchID2);
                             args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                         }
 
@@ -132,25 +132,25 @@ namespace DS4Windows.Input
 
                     if (sensors.Touch1 && sensors.Touch2)
                     {
-                        tPrev0.populate(lastTouchPadX1, lastTouchPadY1, lastTouchID1);
-                        t0.populate(currentX1, currentY1, touchID1, tPrev0);
+                        tPrev0.Populate(lastTouchPadX1, lastTouchPadY1, lastTouchID1);
+                        t0.Populate(currentX1, currentY1, touchID1, tPrev0);
                         currentT0 = t0;
 
-                        tPrev1.populate(lastTouchPadX2, lastTouchPadY2, lastTouchID2);
-                        t1.populate(currentX2, currentY2, touchID2, tPrev1);
+                        tPrev1.Populate(lastTouchPadX2, lastTouchPadY2, lastTouchID2);
+                        t1.Populate(currentX2, currentY2, touchID2, tPrev1);
                         currentT1 = t1;
                     }
                     else if (sensors.Touch1)
                     {
-                        tPrev0.populate(lastTouchPadX1, lastTouchPadY1, lastTouchID1);
-                        t0.populate(currentX1, currentY1, touchID1, tPrev0);
+                        tPrev0.Populate(lastTouchPadX1, lastTouchPadY1, lastTouchID1);
+                        t0.Populate(currentX1, currentY1, touchID1, tPrev0);
                         currentT0 = t0;
                         currentT1 = null;
                     }
                     else
                     {
-                        tPrev0.populate(lastTouchPadX2, lastTouchPadY2, lastTouchID2);
-                        t0.populate(currentX2, currentY2, touchID2, tPrev0);
+                        tPrev0.Populate(lastTouchPadX2, lastTouchPadY2, lastTouchID2);
+                        t0.Populate(currentX2, currentY2, touchID2, tPrev0);
                         currentT0 = t0;
                         currentT1 = null;
                     }
@@ -164,18 +164,18 @@ namespace DS4Windows.Input
                 {
                     if (sensors.Touch1 && sensors.Touch2)
                     {
-                        t0.populate(currentX1, currentY1, touchID1);
-                        t1.populate(currentX2, currentY2, touchID2);
+                        t0.Populate(currentX1, currentY1, touchID1);
+                        t1.Populate(currentX2, currentY2, touchID2);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0, t1);
                     }
                     else if (sensors.Touch1)
                     {
-                        t0.populate(currentX1, currentY1, touchID1);
+                        t0.Populate(currentX1, currentY1, touchID1);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                     }
                     else
                     {
-                        t0.populate(currentX2, currentY2, touchID2);
+                        t0.Populate(currentX2, currentY2, touchID2);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                     }
 
@@ -185,18 +185,18 @@ namespace DS4Windows.Input
                 {
                     if (sensors.Touch1 && sensors.Touch2)
                     {
-                        t0.populate(currentX1, currentY1, touchID1);
-                        t1.populate(currentX2, currentY2, touchID2);
+                        t0.Populate(currentX1, currentY1, touchID1);
+                        t1.Populate(currentX2, currentY2, touchID2);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0, t1);
                     }
                     else if (sensors.Touch1)
                     {
-                        t0.populate(currentX1, currentY1, touchID1);
+                        t0.Populate(currentX1, currentY1, touchID1);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                     }
                     else
                     {
-                        t0.populate(currentX2, currentY2, touchID2);
+                        t0.Populate(currentX2, currentY2, touchID2);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                     }
 
@@ -233,18 +233,18 @@ namespace DS4Windows.Input
                 {
                     if (lastIsActive1 && lastIsActive2)
                     {
-                        t0.populate(lastTouchPadX1, lastTouchPadY1, touchID1);
-                        t1.populate(lastTouchPadX2, lastTouchPadY2, touchID2);
+                        t0.Populate(lastTouchPadX1, lastTouchPadY1, touchID1);
+                        t1.Populate(lastTouchPadX2, lastTouchPadY2, touchID2);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0, t1);
                     }
                     else if (lastIsActive1)
                     {
-                        t0.populate(lastTouchPadX1, lastTouchPadY1, touchID1);
+                        t0.Populate(lastTouchPadX1, lastTouchPadY1, touchID1);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                     }
                     else
                     {
-                        t0.populate(lastTouchPadX2, lastTouchPadY2, touchID2);
+                        t0.Populate(lastTouchPadX2, lastTouchPadY2, touchID2);
                         args.Set(sensors.ReportTimeStamp, sensors.TouchButton, sensors.Touch1Finger, t0);
                     }
 

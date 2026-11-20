@@ -162,7 +162,7 @@ namespace DS4Windows.Input
         }
 
         // Enumerates ds4 controllers in the system
-        public void findControllers()
+        public void FindControllers()
         {
             lock (Devices)
             {
@@ -250,7 +250,7 @@ namespace DS4Windows.Input
                                 }
                                 else
                                 {
-                                    reEnableDevice(DevicePathProbe.GetInstanceIdFromDevicePath(hDevice.DevicePath));
+                                    ReEnableDevice(DevicePathProbe.GetInstanceIdFromDevicePath(hDevice.DevicePath));
                                     hDevice.OpenDevice(isExclusiveMode);
                                 }
                             }
@@ -319,7 +319,7 @@ namespace DS4Windows.Input
                                 DevicePaths.Add(hDevice.DevicePath);
                                 deviceSerials.Add(serial);
                                 serialDevices.Add(serial, ds4Device);
-                                string foundMsg = $"{DS4Windows.Properties.Resources.FoundController} {ds4Device.GetMacAddress()} ({ds4Device.getConnectionType()}) ({ds4Device.DisplayName}).";
+                                string foundMsg = $"{DS4Windows.Properties.Resources.FoundController} {ds4Device.GetMacAddress()} ({ds4Device.GetConnectionType()}) ({ds4Device.DisplayName}).";
                                 AppLogger.Log(AppLogLevel.Info, foundMsg, LogOptions.UserFacing);
                                 // 旧 UI.Services.NotificationService.ShowToast（中で AppLogger.LogToTray を呼ぶだけの静的な窓口）。
                                 // 第1層から UI への参照をなくすため、直接呼ぶ。LogToTray は通知の例外を自分で捕まえるので、挙動は同じ
@@ -342,7 +342,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public void stopControllers()
+        public void StopControllers()
         {
             lock (Devices)
             {
@@ -407,7 +407,7 @@ namespace DS4Windows.Input
                     {
                         deviceSerials.Remove(serial);
                         serialDevices.Remove(serial);
-                        device.updateSerial();
+                        device.UpdateSerial();
                         serial = device.GetMacAddress();
                         if (InputDeviceCore.IsValidSerial(serial))
                         {
@@ -463,7 +463,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public void reEnableDevice(string deviceInstanceId)
+        public void ReEnableDevice(string deviceInstanceId)
         {
             bool success;
             Guid hidGuid = new Guid();

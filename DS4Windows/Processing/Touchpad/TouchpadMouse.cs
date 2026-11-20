@@ -164,7 +164,7 @@ namespace DS4Windows.Processing.Touchpad
         int previousTouchDX = 0;
         int previousTouchDY = 0;
 
-        public virtual void sixaxisMoved(DS4SixAxis sender, SixAxisEventArgs arg)
+        public virtual void SixaxisMoved(DS4SixAxis sender, SixAxisEventArgs arg)
         {
             _gyro.SixaxisMoved(arg);
         }
@@ -217,7 +217,7 @@ namespace DS4Windows.Processing.Touchpad
             _touchStick.Apply(dx, dy, s.elapsedTime);
         }
 
-        private bool getDS4ControlsByName(int key) => TriggerButtonReader.IsPressed(s, key);
+        private bool GetDS4ControlsByName(int key) => TriggerButtonReader.IsPressed(s, key);
 
         private bool tempBool = false;
 
@@ -227,7 +227,7 @@ namespace DS4Windows.Processing.Touchpad
             int[] disArray = _profileSettings.ForSlot(deviceNum).Touchpad.DisInvertTriggers;
             for (int i = 0, arlen = disArray.Length; i < arlen; i++)
             {
-                if (getDS4ControlsByName(disArray[i]) == false)
+                if (GetDS4ControlsByName(disArray[i]) == false)
                     return false;
             }
 
@@ -246,8 +246,8 @@ namespace DS4Windows.Processing.Touchpad
                         _trackball.AddSample(arg.Touches![0].DeltaX, arg.Touches[0].DeltaY); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                     }
 
-                    cursor.touchesMoved(arg, dragging || dragging2, tempBool);
-                    wheel.touchesMoved(arg, dragging || dragging2);
+                    cursor.TouchesMoved(arg, dragging || dragging2, tempBool);
+                    wheel.TouchesMoved(arg, dragging || dragging2);
                 }
                 else
                 {
@@ -312,7 +312,7 @@ namespace DS4Windows.Processing.Touchpad
             
         }
 
-        public virtual void touchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
+        public virtual void TouchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
@@ -339,7 +339,7 @@ namespace DS4Windows.Processing.Touchpad
             synthesizeMouseButtons();
         }
 
-        public virtual void touchesBegan(DS4Touchpad sender, TouchpadEventArgs arg)
+        public virtual void TouchesBegan(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             TouchpadOutMode tempMode = touchpad.OutputMode;
@@ -348,8 +348,8 @@ namespace DS4Windows.Processing.Touchpad
             {
                 _trackball.Reset();
 
-                cursor.touchesBegan(arg);
-                wheel.touchesBegan(arg);
+                cursor.TouchesBegan(arg);
+                wheel.TouchesBegan(arg);
             }
             else if (tempMode == TouchpadOutMode.MouseJoystick)
             {
@@ -361,7 +361,7 @@ namespace DS4Windows.Processing.Touchpad
             previousUnchangedTouchJoyFrame = false;
             // 調査用 Trace（動作は変えない）: タッチ開始の検出
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TAP] device={deviceNum} touchesBegan touches={arg.Touches?.Length} buttonPressed={arg.TouchButtonPressed}");
-            firstTouch.populate(arg.Touches![0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID, // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
+            firstTouch.Populate(arg.Touches![0].HwX, arg.Touches[0].HwY, arg.Touches[0].TouchID, // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 arg.Touches[0].PreviousTouch);
 
             _tap.TouchBegan(arg.TimeStamp, arg.TouchButtonPressed,
@@ -375,7 +375,7 @@ namespace DS4Windows.Processing.Touchpad
             synthesizeMouseButtons();
         }
 
-        public virtual void touchesEnded(DS4Touchpad sender, TouchpadEventArgs arg)
+        public virtual void TouchesEnded(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             //Trace.WriteLine("TOUCHES ENDED");
@@ -522,7 +522,7 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
-        public virtual void touchUnchanged(DS4Touchpad sender, EventArgs unused)
+        public virtual void TouchUnchanged(DS4Touchpad sender, EventArgs unused)
         {
             //Trace.WriteLine("TOUCHES UNCHANGED");
 
@@ -666,7 +666,7 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
-        public virtual void touchButtonUp(DS4Touchpad sender, TouchpadEventArgs arg)
+        public virtual void TouchButtonUp(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             pushed = DS4Controls.None;
@@ -687,7 +687,7 @@ namespace DS4Windows.Processing.Touchpad
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TOUCHBTN] device={deviceNum} up mode={touchButtonMode} touches={arg.Touches?.Length} active={arg.TouchActive} pressed={arg.TouchButtonPressed} checked={checkedOnUp} L={leftDown} R={rightDown} U={upperDown} M={multiDown}");
         }
 
-        public virtual void touchButtonDown(DS4Touchpad sender, TouchpadEventArgs arg)
+        public virtual void TouchButtonDown(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             if (arg.Touches != null &&

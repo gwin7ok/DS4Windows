@@ -164,14 +164,14 @@ namespace DS4Windows.Core.Model
             [X360Controls.Unbound] = "Unbound",
         };
 
-        public static string? getX360ControlString(X360Controls key, OutContType conType)
+        public static string? GetX360ControlString(X360Controls key, OutContType conType)
         {
             string? result = string.Empty;
             OutContTypeInfo.ButtonNames(conType)?.TryGetValue(key, out result);
             return result;
         }
 
-        public static string getX360ControlString(X360Controls key)
+        public static string GetX360ControlString(X360Controls key)
         {
             switch (key)
             {
@@ -222,8 +222,8 @@ namespace DS4Windows.Core.Model
             return "Unbound";
         }
 
-        // 旧 BackingStore.getX360ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
-        public static X360Controls getX360ControlsByName(string key)
+        // 旧 BackingStore.GetX360ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
+        public static X360Controls GetX360ControlsByName(string key)
         {
             X360Controls x3c;
             if (Enum.TryParse(key, true, out x3c))

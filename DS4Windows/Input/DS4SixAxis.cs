@@ -192,8 +192,8 @@ namespace DS4Windows.Input
                 {
                     if (SixAccelMoved != null)
                     {
-                        sPrev.copy(now);
-                        now.populate(yaw, pitch, roll,
+                        sPrev.Copy(now);
+                        now.Populate(yaw, pitch, roll,
                             accelX, accelY, accelZ, elapsedDelta, sPrev);
 
                         args = sharedArgs;

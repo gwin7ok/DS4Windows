@@ -160,19 +160,9 @@ namespace DS4Windows.Input
             }
         }
         public bool IsHidExclusive => HidDevice.IsExclusive;
-        public bool isHidExclusive()
-        {
-            return HidDevice.IsExclusive;
-        }
-
         public bool IsExclusive
         {
             get { return exclusiveStatus > DeviceExclusiveStatus.Shared; }
-        }
-
-        public bool isExclusive()
-        {
-            return exclusiveStatus > DeviceExclusiveStatus.Shared;
         }
 
         public DeviceExclusiveStatus CurrentExclusiveStatus
@@ -230,14 +220,14 @@ namespace DS4Windows.Input
 
         public ConnectionType ConnectionType => conType;
         // ILightbarDevice（ライトバーの色の計算が読む値）。既存のメソッドへ委譲する
-        bool DS4Windows.Input.Abstractions.ILightbarDevice.IsCharging => isCharging();
-        int DS4Windows.Input.Abstractions.ILightbarDevice.Battery => getBattery();
-        ConnectionType DS4Windows.Input.Abstractions.ILightbarDevice.ConnectionType => getConnectionType();
+        bool DS4Windows.Input.Abstractions.ILightbarDevice.IsCharging => IsCharging();
+        int DS4Windows.Input.Abstractions.ILightbarDevice.Battery => GetBattery();
+        ConnectionType DS4Windows.Input.Abstractions.ILightbarDevice.ConnectionType => GetConnectionType();
         DateTime DS4Windows.Input.Abstractions.ILightbarDevice.LastActive => lastActive;
         byte DS4Windows.Input.Abstractions.ILightbarDevice.LeftHeavySlowRumble => GetLeftHeavySlowRumble();
         byte DS4Windows.Input.Abstractions.ILightbarDevice.LightBarOnDuration => GetLightBarOnDuration();
 
-        public ConnectionType getConnectionType()
+        public ConnectionType GetConnectionType()
         {
             return this.conType;
         }
@@ -294,7 +284,7 @@ namespace DS4Windows.Input
         // 通知用のイベントは基底の 1 組だけ（各機種の override 再宣言は廃止）。
         // 書き込みは UpdateBattery／UpdateCharging を通す（値が変わったときだけ通知する）
         public event EventHandler? BatteryChanged;
-        public int getBattery()
+        public int GetBattery()
         {
             return battery;
         }
@@ -307,17 +297,17 @@ namespace DS4Windows.Input
             BatteryChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected void UpdateCharging(bool isCharging)
+        protected void UpdateCharging(bool IsCharging)
         {
-            if (isCharging == charging) return;
+            if (IsCharging == charging) return;
 
-            charging = isCharging;
+            charging = IsCharging;
             ChargingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool Charging => charging;
         public event EventHandler? ChargingChanged;
-        public bool isCharging()
+        public bool IsCharging()
         {
             return charging;
         }
@@ -409,7 +399,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public int getBTPollRate()
+        public int GetBTPollRate()
         {
             return btPollRate;
         }
@@ -626,7 +616,7 @@ namespace DS4Windows.Input
             }
         }
 
-        protected bool writeOutput()
+        protected bool WriteOutput()
         {
             if (conType == ConnectionType.BT)
             {
@@ -712,7 +702,7 @@ namespace DS4Windows.Input
         protected void RaiseSyncChange() => SyncChange?.Invoke(this, EventArgs.Empty);
 
 
-        protected virtual void sendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
+        protected virtual void SendOutputReport(bool synchronous, bool force = false, bool quitOutputThreadOnError = true)
         {
         }
 
@@ -831,7 +821,7 @@ namespace DS4Windows.Input
 
         protected DS4HapticState testRumble = new DS4HapticState();
 
-        public void setRumble(byte rightLightFastMotor, byte leftHeavySlowMotor)
+        public void SetRumble(byte rightLightFastMotor, byte leftHeavySlowMotor)
         {
             testRumble.rumbleState.RumbleMotorStrengthRightLightFast = rightLightFastMotor;
             testRumble.rumbleState.RumbleMotorStrengthLeftHeavySlow = leftHeavySlowMotor;
@@ -1037,7 +1027,7 @@ namespace DS4Windows.Input
         /// <summary>登録済みの <c>Report</c> の購読者を全て外す。</summary>
         public abstract void RemoveReportHandlers();
 
-        public void queueEvent(Action act)
+        public void QueueEvent(Action act)
         {
             lock (eventQueueLock)
             {
@@ -1075,7 +1065,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public void updateSerial()
+        public void UpdateSerial()
         {
             hDevice.ResetSerial();
             string tempMac = hDevice.ReadSerial(SerialReportID);

@@ -68,7 +68,7 @@ namespace DS4WindowsTests
             Assert.True(cross);   // A → Cross
             Assert.Equal(255, l2);
             Assert.Equal(InputDeviceType.Xbox, device.DeviceType);
-            Assert.Equal(ConnectionType.USB, device.getConnectionType());
+            Assert.Equal(ConnectionType.USB, device.GetConnectionType());
         }
 
         [Fact]
@@ -84,12 +84,12 @@ namespace DS4WindowsTests
                 return true;
             };
 
-            registry.findControllers();
+            registry.FindControllers();
 
             InputDeviceCore found = Assert.Single(registry.GetControllers());
             Assert.Equal(InputDeviceType.Xbox, found.DeviceType);
             Assert.Equal(InputDeviceType.Xbox, seen.inputDevType);
-            registry.stopControllers();
+            registry.StopControllers();
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace DS4WindowsTests
                 new IInputTransportSource[] { new XInputTransportSource(api, interfaces) });
             registry.PreparePendingDevice = (device, info) => false;
 
-            registry.findControllers();
+            registry.FindControllers();
 
             Assert.Empty(registry.GetControllers());
         }
@@ -113,11 +113,11 @@ namespace DS4WindowsTests
                 new IInputTransportSource[] { new XInputTransportSource(api, interfaces) });
             registry.PreparePendingDevice = (device, info) => true;
 
-            registry.findControllers();
-            registry.findControllers();
+            registry.FindControllers();
+            registry.FindControllers();
 
             Assert.Single(registry.GetControllers());
-            registry.stopControllers();
+            registry.StopControllers();
         }
     }
 }

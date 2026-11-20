@@ -11,7 +11,7 @@ namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// リンクプロファイル（<c>LinkedProfiles.xml</c>）の保存・読込。
-    /// 旧: <c>BackingStore</c> の <c>createLinkedProfiles</c>／<c>LoadLinkedProfiles</c>／<c>SaveLinkedProfiles</c>（移動のみ）。
+    /// 旧: <c>BackingStore</c> の <c>CreateLinkedProfiles</c>／<c>LoadLinkedProfiles</c>／<c>SaveLinkedProfiles</c>（移動のみ）。
     /// </summary>
     public class LinkedProfilesXmlSerializer
     {
@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Persistence
             profileIdentity = profileIdentityService;
         }
 
-        public bool createLinkedProfiles()
+        public bool CreateLinkedProfiles()
         {
             bool saved = true;
 
@@ -192,7 +192,7 @@ namespace DS4Windows.Core.Persistence
             }
             else
             {
-                saved = createLinkedProfiles();
+                saved = CreateLinkedProfiles();
             }
 
             return saved;
@@ -232,7 +232,7 @@ namespace DS4Windows.Core.Persistence
             //}
             //else
             //{
-            //    saved = createLinkedProfiles();
+            //    saved = CreateLinkedProfiles();
             //    saved = saved && SaveLinkedProfiles();
             //}
 

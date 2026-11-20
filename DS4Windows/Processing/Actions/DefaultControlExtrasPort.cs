@@ -9,7 +9,7 @@ namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// <see cref="IControlExtrasPort"/> の本番の実装。旧 <c>Mapping.ProcessControlSettingAction</c> の Extras の枝と同じ操作を、この窓口の内側に閉じ込める。
-    /// 振動は <see cref="IDeviceRumbleService"/>（ブースト込み。旧 <c>ControlService.setRumble</c> と同じ、スロット上限・コントローラーの有無の検査つき。コントローラーがいなければ何もしない）、ライトバーは静的な <c>DS4LightBar</c> の配列、感度は <c>ButtonMouseInfo</c>。
+    /// 振動は <see cref="IDeviceRumbleService"/>（ブースト込み。旧 <c>ControlService.SetRumble</c> と同じ、スロット上限・コントローラーの有無の検査つき。コントローラーがいなければ何もしない）、ライトバーは静的な <c>DS4LightBar</c> の配列、感度は <c>ButtonMouseInfo</c>。
     /// <c>Func&lt;ControlService&gt;</c> をやめ、狭い窓口を直接注入で受ける。
     /// </summary>
     public sealed class DefaultControlExtrasPort : IControlExtrasPort
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Actions
         public void SetRumble(int deviceIndex, byte heavy, byte light)
         {
             if (!InRange(deviceIndex)) return;
-            // 旧 ControlService.setRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
+            // 旧 ControlService.SetRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
             if (deviceIndex < _environment.ControllerSlotLimit)
             {
                 InputDeviceCore? device = _devices.GetController(deviceIndex);

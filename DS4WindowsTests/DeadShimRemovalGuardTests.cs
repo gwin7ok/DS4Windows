@@ -28,7 +28,7 @@ namespace DS4WindowsTests
             "IsUsingUDPServerSmoothing", "NormalizeActionName",
             // Wave 2（ProfileSettings 系の互換アクセサ。TouchActive／GetTouchActive は touchpadActive の参照元のため含む）
             "BTPollRate", "ButtonMouseInfos", "DinputOnly", "DoubleTap", "DualSenseHapticPowerLevel", "DualSenseRumbleEmulationMode",
-            "EnableOutputDataToDS4", "EnableTouchToggle", "getBTPollRate", "getChargingColor", "getCustomColor", "getDInputOnly",
+            "EnableOutputDataToDS4", "EnableTouchToggle", "GetBTPollRate", "getChargingColor", "getCustomColor", "getDInputOnly",
             "getDoubleTap", "GetDS4CSetting", "getDS4CSettings", "getEnableOutputDataToDS4", "getEnableTouchToggle", "getFlashColor",
             "GetGyroControlsInfo", "getGyroInvert", "GetGyroMouseDeadZone", "getGyroMouseHorizontalAxis",
             "getGyroMouseStickHorizontalAxis", "GetGyroMouseStickInfo", "GetGyroMouseStickTriggerTurns", "GetGyroOutMode",
@@ -69,15 +69,15 @@ namespace DS4WindowsTests
             "IsUsingTouchpadForControls", "Save", "SaveAsProfile", "SaveProfile", "SXAntiDeadzone", "SZAntiDeadzone", "UpdateDS4CSetting",
             "UpdateDS4Extra",
             // Wave 6（プロファイル用 DTO の削除で、呼び出し元が 0 件になった名前引きの転送）
-            "getDS4ControlsByName", "getX360ControlsByName",
+            "GetDS4ControlsByName", "GetX360ControlsByName",
             // デバウンス時間の通知経路（案 A の是正後に不要）
             "DebouncingMsHasChanged", "DebouncingMsChanged",
             // Phase7-Step10a W4（定数 5 つ・資源パスの定数 2 つ・Clamp。移し先は ControllerLimits／ResourcePaths／NumericUtil）
             "MAX_DS4_CONTROLLER_COUNT", "TEST_PROFILE_ITEM_COUNT", "TEST_PROFILE_INDEX", "OLD_XINPUT_CONTROLLER_COUNT",
             "DS4_STICK_AXIS_MIDPOINT", "ASSEMBLY_RESOURCE_PREFIX", "RESOURCES_PREFIX", "Clamp",
             // Phase7-Step10b W1（表と変換。移し先は X360ControlTables／DS4ControlNames）
-            "defaultButtonMapping", "reverseX360ButtonMapping", "xboxDefaultNames", "ds4DefaultNames", "ds4inputNames", "macroDS4Values", "getX360ControlString",
-            "getTransitionedColor", "HuetoRGB", "applyRatio", "iconChoiceResources",
+            "defaultButtonMapping", "reverseX360ButtonMapping", "xboxDefaultNames", "ds4DefaultNames", "ds4inputNames", "macroDS4Values", "GetX360ControlString",
+            "GetTransitionedColor", "HuetoRGB", "applyRatio", "iconChoiceResources",
             // Phase7-Step10c W2（Actions.xml の保存・読込のシム。移し先は SpecialActionsXmlSerializer／SpecialActionRepository）
             "SaveAction", "SaveActions", "RemoveAction", "ReloadActionsAndVerify", "LoadActions", "CreateStdActions",
             // Phase7-Step10c W3（バージョンの数値化。移し先は VersionUtil）

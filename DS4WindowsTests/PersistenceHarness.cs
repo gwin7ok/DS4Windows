@@ -171,7 +171,7 @@ namespace DS4WindowsTests
             string path = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
             store.m_linkedProfiles = path;
             var linked = new DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer(store);
-            Assert.True(linked.createLinkedProfiles(), "リンクプロファイルの新規作成に失敗した");
+            Assert.True(linked.CreateLinkedProfiles(), "リンクプロファイルの新規作成に失敗した");
             store.linkedProfiles["0123456789AB"] = "Golden_ProfileA";
             store.linkedProfiles["BA9876543210"] = "Golden_ProfileB";
             Assert.True(linked.SaveLinkedProfiles(), "リンクプロファイルの保存に失敗した");

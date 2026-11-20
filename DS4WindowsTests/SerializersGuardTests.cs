@@ -23,8 +23,8 @@ namespace DS4WindowsTests
         private static readonly string[] MovedMethods =
         {
             "CreateAction", "PrepareActionsXml", "SaveActions", "SaveActionNew", "RemoveAction", "LoadActions",
-            "createLinkedProfiles", "LoadLinkedProfiles", "SaveLinkedProfiles",
-            "createControllerConfigs", "LoadControllerConfigsForDevice", "SaveControllerConfigsForDevice",
+            "CreateLinkedProfiles", "LoadLinkedProfiles", "SaveLinkedProfiles",
+            "CreateControllerConfigs", "LoadControllerConfigsForDevice", "SaveControllerConfigsForDevice",
         };
 
         private readonly ITestOutputHelper _output;

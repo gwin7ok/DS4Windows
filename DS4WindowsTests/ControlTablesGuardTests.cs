@@ -9,7 +9,7 @@ using DS4Windows.Core.Model;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// 既定のボタン割り当て・名前の表・<c>getX360ControlString</c>を
+    /// 既定のボタン割り当て・名前の表・<c>GetX360ControlString</c>を
     /// <c>X360ControlTables</c>／<c>DS4ControlNames</c> へ移したことの回帰ガード。表の内容は従来と同じでなければならない。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
@@ -53,10 +53,10 @@ namespace DS4WindowsTests
         {
             Assert.Equal("A Button", X360ControlTables.xboxDefaultNames[X360Controls.A]);
             Assert.Equal(X360ControlTables.xboxDefaultNames[X360Controls.A],
-                X360ControlTables.getX360ControlString(X360Controls.A, OutContType.X360));
+                X360ControlTables.GetX360ControlString(X360Controls.A, OutContType.X360));
             Assert.Equal(X360ControlTables.ds4DefaultNames[X360Controls.A],
-                X360ControlTables.getX360ControlString(X360Controls.A, OutContType.DS4));
-            Assert.Equal(string.Empty, X360ControlTables.getX360ControlString(X360Controls.A, OutContType.None));
+                X360ControlTables.GetX360ControlString(X360Controls.A, OutContType.DS4));
+            Assert.Equal(string.Empty, X360ControlTables.GetX360ControlString(X360Controls.A, OutContType.None));
         }
 
         [Theory]
@@ -71,13 +71,13 @@ namespace DS4WindowsTests
         [InlineData(X360Controls.Unbound, "Unbound")]
         public void GetX360ControlString_ForTheXmlName_IsUnchanged(X360Controls key, string expected)
         {
-            Assert.Equal(expected, X360ControlTables.getX360ControlString(key));
+            Assert.Equal(expected, X360ControlTables.GetX360ControlString(key));
         }
 
         [Fact]
         public void GetX360ControlString_ForTheXmlName_FallsBackToUnbound()
         {
-            Assert.Equal("Unbound", X360ControlTables.getX360ControlString((X360Controls)255));
+            Assert.Equal("Unbound", X360ControlTables.GetX360ControlString((X360Controls)255));
         }
 
         [Fact]
