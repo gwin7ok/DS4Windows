@@ -51,7 +51,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 return result;
             }
         }
-        public event EventHandler TapMacroTextChanged;
+        public event EventHandler? TapMacroTextChanged;
 
         public string HoldMacroText
         {
@@ -66,7 +66,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 return result;
             }
         }
-        public event EventHandler HoldMacroTextChanged;
+        public event EventHandler? HoldMacroTextChanged;
 
         public string DoubleTapMacroText
         {
@@ -81,7 +81,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 return result;
             }
         }
-        public event EventHandler DoubleTapMacroTextChanged;
+        public event EventHandler? DoubleTapMacroTextChanged;
 
         public MultiActButtonViewModel(ISpecialActionRepository specialActionRepository)
         {
@@ -92,7 +92,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void LoadAction(SpecialAction action)
         {
-            string[] dets = action.details.Split(',');
+            string[] dets = action.details!.Split(',');   // MultiAction は、必ず details を持つ
             for (int i = 0; i < 3; i++)
             {
                 string[] macs = dets[i].Split('/');

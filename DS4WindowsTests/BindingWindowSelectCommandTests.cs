@@ -56,8 +56,8 @@ namespace DS4WindowsTests
 
             vm.SelectKeyCommand.Execute("0x44");
 
-            Assert.Equal(OutBinding.OutType.Key, vm.ActionBinding.outputType);
-            Assert.Equal(0x44, vm.ActionBinding.outkey);
+            Assert.Equal(OutBinding.OutType.Key, vm.ActionBinding!.outputType);
+            Assert.Equal(0x44, vm.ActionBinding!.outkey);
             Assert.Equal(1, st.Closed);
         }
 
@@ -65,12 +65,12 @@ namespace DS4WindowsTests
         public void SelectButtonCommand_SetsButtonOutput_WhenItDiffersFromTheDefault()
         {
             var vm = Open(out var st);
-            X360Controls other = vm.DefaultMappingFor(vm.ActionBinding.input) == X360Controls.LT ? X360Controls.RT : X360Controls.LT;
+            X360Controls other = vm.DefaultMappingFor(vm.ActionBinding!.input) == X360Controls.LT ? X360Controls.RT : X360Controls.LT;
 
             vm.SelectButtonCommand.Execute(other.ToString());
 
-            Assert.Equal(OutBinding.OutType.Button, vm.ActionBinding.outputType);
-            Assert.Equal(other, vm.ActionBinding.control);
+            Assert.Equal(OutBinding.OutType.Button, vm.ActionBinding!.outputType);
+            Assert.Equal(other, vm.ActionBinding!.control);
             Assert.False(vm.DefaultPicked);
             Assert.Equal(1, st.Closed);
         }
@@ -79,11 +79,11 @@ namespace DS4WindowsTests
         public void SelectButtonCommand_TreatsTheDefaultMappingAsDefault()
         {
             var vm = Open(out var st);
-            X360Controls def = vm.DefaultMappingFor(vm.ActionBinding.input);
+            X360Controls def = vm.DefaultMappingFor(vm.ActionBinding!.input);
 
             vm.SelectButtonCommand.Execute(def.ToString());
 
-            Assert.Equal(OutBinding.OutType.Default, vm.ActionBinding.outputType);
+            Assert.Equal(OutBinding.OutType.Default, vm.ActionBinding!.outputType);
             Assert.True(vm.DefaultPicked);
         }
 
@@ -94,8 +94,8 @@ namespace DS4WindowsTests
 
             vm.PickUnboundCommand.Execute(null);
 
-            Assert.Equal(OutBinding.OutType.Button, vm.ActionBinding.outputType);
-            Assert.Equal(X360Controls.Unbound, vm.ActionBinding.control);
+            Assert.Equal(OutBinding.OutType.Button, vm.ActionBinding!.outputType);
+            Assert.Equal(X360Controls.Unbound, vm.ActionBinding!.control);
             Assert.False(vm.DefaultPicked);
         }
 
@@ -106,7 +106,7 @@ namespace DS4WindowsTests
 
             vm.PickDefaultCommand.Execute(null);
 
-            Assert.Equal(OutBinding.OutType.Default, vm.ActionBinding.outputType);
+            Assert.Equal(OutBinding.OutType.Default, vm.ActionBinding!.outputType);
             Assert.True(vm.DefaultPicked);
         }
 

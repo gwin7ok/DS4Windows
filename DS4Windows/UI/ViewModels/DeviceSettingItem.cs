@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.Services;
@@ -17,7 +18,7 @@ namespace DS4Windows.UI.ViewModels
         public DeviceSettingItem(ControllerSetting setting)
         {
             this.setting = setting;
-            SettingUi ui = setting.Ui;
+            SettingUi ui = setting.Ui ?? throw new ArgumentException("設定の画面の定義がない", nameof(setting));
             Label = LocalizedText.Get(ui.LabelKey);
             Tooltip = ui.TooltipKey == null ? null : LocalizedText.Get(ui.TooltipKey);
             AppliesOnNewConnection = ui.AppliesOnNewConnection;
@@ -26,12 +27,12 @@ namespace DS4Windows.UI.ViewModels
 
         public string Label { get; }
 
-        public string Tooltip { get; }
+        public string? Tooltip { get; }
 
         public bool AppliesOnNewConnection { get; }
 
         /// <summary>列挙型の項目の選択肢（真偽値の項目は null）。</summary>
-        public IReadOnlyList<SettingChoice> Choices { get; }
+        public IReadOnlyList<SettingChoice>? Choices { get; }
 
         public bool IsChoice => Choices != null;
 

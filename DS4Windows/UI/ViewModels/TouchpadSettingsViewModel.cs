@@ -70,7 +70,7 @@ namespace DS4Windows.UI.ViewModels
                 OnPropertyChanged(nameof(TouchpadOutputIndex));
             }
         }
-        public event PropertyChangingHandler<TouchpadOutMode> TouchpadOutputIndexChanging;
+        public event PropertyChangingHandler<TouchpadOutMode>? TouchpadOutputIndexChanging;
         public bool TouchSenExists
         {
             get => touchpad.TouchSensitivity != 0;

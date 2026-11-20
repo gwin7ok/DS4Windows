@@ -47,16 +47,16 @@ namespace DS4Windows.UI.ViewModels
         public DS4Controls Control => original.control;
 
         /// <summary>編集用のコピー（Save までは、元と別物）。</summary>
-        public DS4ControlSettings Working => working;
+        public DS4ControlSettings? Working => working;
 
         /// <summary>編集の元。<see cref="Apply"/> のときだけ書き換わる。</summary>
-        public DS4ControlSettings Original => original;
+        public DS4ControlSettings? Original => original;
 
         /// <summary>
         /// 編集用のコピーの Extras（振動・ライトバー・マウス感度の文字列）。出力ピッカーで編集した結果を取り込む。
         /// <see cref="WriteFrom"/> は、変えない。<see cref="Apply"/> で、元へ反映される（Cancel なら、反映されない）。
         /// </summary>
-        public string Extras
+        public string? Extras
         {
             get => working.extras;
             set => working.extras = value ?? string.Empty;
@@ -64,7 +64,7 @@ namespace DS4Windows.UI.ViewModels
 
         // ---- IActionEditTarget（名前は、ボタンの表示名で固定。検査なし）----
 
-        public string Name
+        public string? Name
         {
             get => nameTarget.Name;
             set { }
@@ -74,7 +74,7 @@ namespace DS4Windows.UI.ViewModels
 
         public bool EditMode => true;
 
-        public SpecialAction SavedAction => null;
+        public SpecialAction? SavedAction => null;
 
         public IReadOnlyList<string> ValidateName(out bool alreadyExists) => nameTarget.ValidateName(out alreadyExists);
 
@@ -116,7 +116,7 @@ namespace DS4Windows.UI.ViewModels
         /// <param name="editors">
         /// SA 専用の種別ごとの入力の一式（押し続ける秒数、Launch Program、Load Profile ほか）。省略可（なければ、その種別の値は読み書きしない）。
         /// </param>
-        public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet editors = null)
+        public void LoadInto(PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet? editors = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -143,7 +143,7 @@ namespace DS4Windows.UI.ViewModels
                     macro.Macro.AddRange(working.action.actionMacro ?? new int[0]);
                     macro.PlaybackOptions.LoadFrom(working.keyType);
                     // Macro の SA 専用の 3 項目（型のある項目）。なければ、すべて偽
-                    ControlSpecialItem options = working.special != null && working.special.Type == SpecialAction.ActionTypeId.Macro ? working.special : null;
+                    ControlSpecialItem? options = working.special != null && working.special.Type == SpecialAction.ActionTypeId.Macro ? working.special : null;
                     macro.RunTriggerRelease = options != null && options.RunOnRelease;
                     macro.SyncRun = options != null && options.Synchronized;
                     macro.KeepKeyState = options != null && options.KeepKeyState;
@@ -158,7 +158,7 @@ namespace DS4Windows.UI.ViewModels
         /// 種別の添字（<see cref="ActionTypeCatalog"/>）に対応する入力から、編集用のコピーへ書き出す。<c>extras</c> は、変えない。
         /// 0 は、既定（割り当てなし）。Controls で、現在保存できない種別（Step3 まで）は、例外。
         /// </summary>
-        public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet editors = null)
+        public void WriteFrom(int typeIndex, PressKeyViewModel pressKey, MacroViewModel macro, ActionTypeEditorSet? editors = null)
         {
             if (pressKey == null) throw new ArgumentNullException(nameof(pressKey));
             if (macro == null) throw new ArgumentNullException(nameof(macro));
@@ -285,7 +285,7 @@ namespace DS4Windows.UI.ViewModels
 
         // SA 専用の種別（Disconnect BT、較正 2 種、Launch Program、Load Profile）。型のある項目は、種別ごとの入力（ActionTypeEditorSet）が作る
         // （以前は、種別ごとの書き出しを、この型が持っていた）。通常の割り当て（キー・マクロの手順）は残さない。入力がなければ（テスト）、種別だけの項目
-        private void WriteSpecial(SpecialAction.ActionTypeId type, ActionTypeEditorSet editors)
+        private void WriteSpecial(SpecialAction.ActionTypeId type, ActionTypeEditorSet? editors)
         {
             working.special = editors != null ? editors.ToControlItem(type) : new ControlSpecialItem { Type = type };
             working.actionType = DS4ControlSettings.ActionType.Special;
@@ -294,7 +294,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         // 読み込み: SA 専用の種別の項目を、種別ごとの入力へ入れる
-        private void LoadSpecial(ActionTypeEditorSet editors)
+        private void LoadSpecial(ActionTypeEditorSet? editors)
         {
             if (working.special == null || editors == null) return;
 
@@ -355,7 +355,7 @@ namespace DS4Windows.UI.ViewModels
                 actionKey = from.action.actionKey,
                 actionAlias = from.action.actionAlias,
                 actionBtn = from.action.actionBtn,
-                actionMacro = from.action.actionMacro != null ? (int[])from.action.actionMacro.Clone() : null,
+                actionMacro = from.action.actionMacro != null ? (int[])from.action.actionMacro.Clone() : new int[1],
             };
         }
     }

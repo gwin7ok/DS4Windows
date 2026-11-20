@@ -43,7 +43,7 @@ namespace DS4Windows.UI.ViewModels
         }
         public int DeviceNum { get => deviceNum; }
         public OutBinding CurrentOutBind { get => currentOutBind; }
-        public OutBinding ActionBinding { get; set; }
+        public OutBinding? ActionBinding { get; set; }
 
         public bool RumbleActive { get => rumbleActive; set => rumbleActive = value; }
         public DS4ControlSettings Settings { get => settings; }
@@ -189,7 +189,7 @@ namespace DS4Windows.UI.ViewModels
         // ---- 出力ピッカーの選択（ボタンの Command）。選んだら、ピッカーを閉じる ----
 
         /// <summary>選択が終わり、ピッカーを閉じてよいときに発生する。</summary>
-        public event EventHandler CloseRequested;
+        public event EventHandler? CloseRequested;
 
         /// <summary>
         /// ユーザーが「Default」を選んだ（Default ボタン、または既定の割り当てと同じ Pad のボタン）か。
@@ -197,10 +197,10 @@ namespace DS4Windows.UI.ViewModels
         /// </summary>
         public bool DefaultPicked { get; private set; }
 
-        private RelayCommand<string> _selectKeyCommand;
-        private RelayCommand<string> _selectButtonCommand;
-        private RelayCommand _pickDefaultCommand;
-        private RelayCommand _pickUnboundCommand;
+        private RelayCommand<string>? _selectKeyCommand;
+        private RelayCommand<string>? _selectButtonCommand;
+        private RelayCommand? _pickDefaultCommand;
+        private RelayCommand? _pickUnboundCommand;
 
         /// <summary>キーのボタン。<c>CommandParameter</c> は仮想キーコード（<c>0x44</c> の形）。</summary>
         public RelayCommand<string> SelectKeyCommand => _selectKeyCommand ??= CommandGuard.CreateSync<string>(SelectKey, name: nameof(SelectKeyCommand));
@@ -216,9 +216,9 @@ namespace DS4Windows.UI.ViewModels
         public static int ParseKeyCode(string text)
             => Convert.ToInt32(text.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? text.Substring(2) : text, 16);
 
-        private void SelectKey(string parameter)
+        private void SelectKey(string? parameter)
         {
-            OutBinding binding = ActionBinding;
+            OutBinding binding = ActionBinding!;   // 出力ピッカーを開く前に、必ず設定される
             binding.outputType = OutBinding.OutType.Key;
             if (!string.IsNullOrEmpty(parameter))
             {
@@ -228,9 +228,9 @@ namespace DS4Windows.UI.ViewModels
             CloseRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SelectButton(string parameter)
+        private void SelectButton(string? parameter)
         {
-            OutBinding binding = ActionBinding;
+            OutBinding binding = ActionBinding!;   // 出力ピッカーを開く前に、必ず設定される
             if (!string.IsNullOrEmpty(parameter))
             {
                 X360Controls selected = (X360Controls)Enum.Parse(typeof(X360Controls), parameter);
@@ -251,7 +251,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void PickDefault()
         {
-            OutBinding binding = ActionBinding;
+            OutBinding binding = ActionBinding!;   // 出力ピッカーを開く前に、必ず設定される
             DefaultPicked = true;
             binding.outputType = OutBinding.OutType.Default;
             binding.control = DefaultMappingFor(binding.input);
@@ -260,7 +260,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void PickUnbound()
         {
-            OutBinding binding = ActionBinding;
+            OutBinding binding = ActionBinding!;   // 出力ピッカーを開く前に、必ず設定される
             binding.outputType = OutBinding.OutType.Button;
             binding.control = X360Controls.Unbound;
             CloseRequested?.Invoke(this, EventArgs.Empty);

@@ -32,11 +32,11 @@ namespace DS4Windows.UI.ViewModels
 
         public bool SetUnloadTrigger(string name, bool selected) => false;
 
-        public string TriggersText => triggers[0];
+        public string? TriggersText => triggers[0];
 
-        public string UnloadTriggersText => null;
+        public string? UnloadTriggersText => null;
 
-        public bool Validate(out string error)
+        public bool Validate(out string? error)
         {
             error = null;
             return true;

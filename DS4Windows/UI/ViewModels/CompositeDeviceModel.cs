@@ -38,13 +38,13 @@ namespace DS4Windows.UI.ViewModels
         private IControllerSlotView device;
         private string selectedProfile;
         private ProfileList profileListHolder;
-        private ProfileEntity selectedEntity;
+        private ProfileEntity? selectedEntity;
         private int selectedIndex = -1;
         internal bool suppressSelectedIndexChanged = false; // ★統合抑制フラグ（Global_SelectedProfileChangedからアクセス可能）
         private int devIndex;
         private readonly IProfileSettingsService profileSettingsService;
         // 領域の窓口は呼ぶたびに作られるため、ライトバーの窓口だけ一度作って使い回す（色の取得は画面の更新で頻繁に呼ばれる）
-        private DS4Windows.Core.Settings.LightbarSlotSettings lightbarWindow;
+        private DS4Windows.Core.Settings.LightbarSlotSettings? lightbarWindow;
         private DS4Windows.Core.Settings.LightbarSlotSettings LightbarWindow =>
             lightbarWindow ??= profileSettingsService.ForSlot(devIndex).Lightbar;
         private readonly IProfileRepository profileRepo;
@@ -75,7 +75,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public event EventHandler LightColorChanged;
+        public event EventHandler? LightColorChanged;
 
         public DS4Color CustomLightColor => LightbarWindow.Info.ds4winSettings.m_CustomLed;
 
@@ -87,11 +87,11 @@ namespace DS4Windows.UI.ViewModels
                 return temp;
             }
         }
-        public event EventHandler BatteryStateChanged;
+        public event EventHandler? BatteryStateChanged;
 
         /// <summary>電池表示を読み直す間隔（ミリ秒。ユーザー指定: 60 秒）。</summary>
         public const int BatteryRefreshIntervalMs = 60000;
-        private ITimer batteryRefreshTimer;
+        private ITimer? batteryRefreshTimer;
         private string lastBatteryState;
 
         private void RaiseBatteryStateChanged(EventArgs e)
@@ -117,7 +117,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void StopBatteryRefresh()
         {
-            ITimer timer = Interlocked.Exchange(ref batteryRefreshTimer, null);
+            ITimer? timer = Interlocked.Exchange(ref batteryRefreshTimer, null);
             timer?.Dispose();
         }
 
@@ -137,7 +137,7 @@ namespace DS4Windows.UI.ViewModels
                 }
             }
         }
-        public event EventHandler SelectedIndexChanged;
+        public event EventHandler? SelectedIndexChanged;
 
         public string StatusSource
         {
@@ -188,7 +188,7 @@ namespace DS4Windows.UI.ViewModels
                 SaveLinked(value);
             }
         }
-        public event EventHandler LinkedProfileChanged;
+        public event EventHandler? LinkedProfileChanged;
 
         public void RaiseLinkedProfileChanged()
         {
@@ -207,9 +207,9 @@ namespace DS4Windows.UI.ViewModels
                 SelectedProfileChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler SelectedProfileChanged;
+        public event EventHandler? SelectedProfileChanged;
 
-        public ProfileEntity LinkedProfileName
+        public ProfileEntity? LinkedProfileName
         {
             get
             {
@@ -239,7 +239,7 @@ namespace DS4Windows.UI.ViewModels
                 LinkedProfileNameChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler LinkedProfileNameChanged;
+        public event EventHandler? LinkedProfileNameChanged;
 
         public bool LinkEnabled
         {
@@ -306,7 +306,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public event EventHandler TooltipIDTextChanged;
+        public event EventHandler? TooltipIDTextChanged;
 
         private bool useCustomColor;
         public bool UseCustomColor { get => useCustomColor; set => useCustomColor = value; }
@@ -316,7 +316,7 @@ namespace DS4Windows.UI.ViewModels
         {
             get => $"{device.DisplayName} ({device.MacAddress})";
         }
-        public event EventHandler IdTextChanged;
+        public event EventHandler? IdTextChanged;
 
         public string IsExclusiveText
         {
@@ -340,16 +340,16 @@ namespace DS4Windows.UI.ViewModels
         }
 
         public delegate void CustomColorHandler(CompositeDeviceModel sender);
-        public event CustomColorHandler RequestColorPicker;
+        public event CustomColorHandler? RequestColorPicker;
 
         // 画像の資源名の引き当て（テーマで差し替わる。null のときは名前を空として扱う）
-        private readonly DS4Windows.UI.Abstractions.IImageResourceLookup imageResources;
+        private readonly DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources;
 
         private string ImageName(string key) => imageResources?.Find(key) ?? string.Empty;
 
         public CompositeDeviceModel(IControllerSlotView device, int devIndex, string profile,
             ProfileList collection, IProfileSettingsService profileSettingsService,
-            IProfileRepository profileRepo, DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
+            IProfileRepository profileRepo, DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources = null)
         {
             this.imageResources = imageResources;
             // 必須引数（null は拒否する）
@@ -385,6 +385,7 @@ namespace DS4Windows.UI.ViewModels
 
         public void HookEvents(bool state)
         {
+            if (selectedEntity == null) return;
             if (state)
             {
                 selectedEntity.ProfileDeleted += SelectedEntity_ProfileDeleted;
@@ -395,10 +396,10 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void SelectedEntity_ProfileDeleted(object sender, EventArgs e)
+        private void SelectedEntity_ProfileDeleted(object? sender, EventArgs e)
         {
             HookEvents(false);
-            ProfileEntity entity = profileListHolder.ProfileListCol.FirstOrDefault();
+            ProfileEntity? entity = profileListHolder.ProfileListCol.FirstOrDefault();
             if (entity != null)
             {
                 SelectedIndex = profileListHolder.ProfileListCol.IndexOf(entity);

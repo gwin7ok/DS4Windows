@@ -35,7 +35,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly SpecialActionTriggerSource specialTriggers;
 
         // Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
-        public SpecialActEditorViewModel(int deviceNum, SpecialAction action, ISpecialActionRepository specialActionRepository)
+        public SpecialActEditorViewModel(int deviceNum, SpecialAction? action, ISpecialActionRepository specialActionRepository)
             : this(deviceNum, new SpecialActionTriggerSource(), new SpecialActionEditTarget(specialActionRepository, action))
         {
         }

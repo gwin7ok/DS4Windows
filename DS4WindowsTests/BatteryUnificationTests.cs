@@ -84,8 +84,8 @@ namespace DS4WindowsTests
             string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/ControllerListViewModel.cs");
             if (code == null) return;
 
-            Assert.Contains("controllerDict.TryGetValue(index, out CompositeDeviceModel staleRow) && staleRow.Device != device", code);
-            Assert.Contains("controllerDict.TryGetValue(found.DevIndex, out CompositeDeviceModel registered) && registered == found", code);
+            Assert.Contains("controllerDict.TryGetValue(index, out CompositeDeviceModel? staleRow) && staleRow.Device != device", code);
+            Assert.Contains("controllerDict.TryGetValue(found.DevIndex, out CompositeDeviceModel? registered) && registered == found", code);
         }
     }
 }

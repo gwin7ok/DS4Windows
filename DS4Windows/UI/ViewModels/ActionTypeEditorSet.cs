@@ -31,20 +31,20 @@ namespace DS4Windows.UI.ViewModels
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
-            if (TryGet(action.typeID, out IActionTypeEditor editor))
+            if (TryGet(action.typeID, out IActionTypeEditor? editor))
                 editor.LoadAction(action);
         }
 
         /// <summary>種別に対応する入力を検証する。対応する入力がなければ、偽。</summary>
         public bool IsValid(SpecialAction.ActionTypeId typeId, SpecialAction action)
         {
-            return TryGet(typeId, out IActionTypeEditor editor) && editor.IsValid(action);
+            return TryGet(typeId, out IActionTypeEditor? editor) && editor.IsValid(action);
         }
 
         /// <summary>種別に対応する入力を保存する。対応する入力がなければ、何もしない。</summary>
         public void Save(SpecialAction.ActionTypeId typeId, SpecialAction action, bool edit)
         {
-            if (TryGet(typeId, out IActionTypeEditor editor))
+            if (TryGet(typeId, out IActionTypeEditor? editor))
                 editor.SaveAction(action, edit);
         }
 
@@ -56,7 +56,7 @@ namespace DS4Windows.UI.ViewModels
         {
             if (item == null) return;
 
-            if (TryGet(item.Type, out IActionTypeEditor editor))
+            if (TryGet(item.Type, out IActionTypeEditor? editor))
                 editor.LoadControlItem(item);
         }
 
@@ -65,12 +65,12 @@ namespace DS4Windows.UI.ViewModels
         /// </summary>
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId typeId)
         {
-            return TryGet(typeId, out IActionTypeEditor editor)
+            return TryGet(typeId, out IActionTypeEditor? editor)
                 ? editor.ToControlItem(typeId)
                 : new ControlSpecialItem { Type = typeId };
         }
 
-        private bool TryGet(SpecialAction.ActionTypeId typeId, out IActionTypeEditor editor)
+        private bool TryGet(SpecialAction.ActionTypeId typeId, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out IActionTypeEditor? editor)
         {
             if (typeId == SpecialAction.ActionTypeId.Button) typeId = SpecialAction.ActionTypeId.Key;
             return editors.TryGetValue(typeId, out editor);

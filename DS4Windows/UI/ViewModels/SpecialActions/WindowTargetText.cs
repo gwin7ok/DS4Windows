@@ -11,7 +11,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
     public static class WindowTargetText
     {
         /// <summary>保存用の文字列を、印を除いた本文と一致方法に分ける。照合の規則と同じ優先順位（<c>^</c>、<c>$</c>、<c>*</c>）。</summary>
-        public static string ParseTitle(string stored, out WindowTitleMatchMode mode)
+        public static string ParseTitle(string? stored, out WindowTitleMatchMode mode)
         {
             mode = WindowTitleMatchMode.Exact;
             if (string.IsNullOrEmpty(stored)) return string.Empty;
@@ -41,7 +41,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         }
 
         /// <summary>本文と一致方法から、保存用の文字列を作る。本文が空なら空（タイトルを指定しない）。</summary>
-        public static string ComposeTitle(string text, WindowTitleMatchMode mode)
+        public static string ComposeTitle(string? text, WindowTitleMatchMode mode)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;
 

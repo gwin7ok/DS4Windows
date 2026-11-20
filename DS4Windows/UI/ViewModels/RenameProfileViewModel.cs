@@ -34,8 +34,8 @@ namespace DS4Windows.UI.ViewModels
             this.pathService = pathService;
         }
 
-        private string profileName;
-        public string ProfileName
+        private string? profileName;
+        public string? ProfileName
         {
             get => profileName;
             set
@@ -44,7 +44,7 @@ namespace DS4Windows.UI.ViewModels
                 ProfileNameChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler ProfileNameChanged;
+        public event EventHandler? ProfileNameChanged;
 
         public bool ProfileFileExists()
         {

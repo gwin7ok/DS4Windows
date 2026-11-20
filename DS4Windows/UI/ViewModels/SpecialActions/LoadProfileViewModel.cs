@@ -49,7 +49,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public event EventHandler ProfileIndexChanged;
 
         public bool UnloadEnabled { get => profileIndex > 0; }
-        public event EventHandler UnloadEnabledChanged;
+        public event EventHandler? UnloadEnabledChanged;
 
         public ProfileList ProfileList { get => profileList; }
         public bool NormalTrigger { get => normalTrigger; set => normalTrigger = value; }
@@ -66,8 +66,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public void LoadAction(SpecialAction action)
         {
             autoUntrigger = action.automaticUntrigger;
-            string profilename = action.details;
-            ProfileEntity item = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profilename);
+            string? profilename = action.details;
+            ProfileEntity? item = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profilename);
             if (item != null)
             {
                 profileIndex = profileList.ProfileListCol.IndexOf(item) + 1;
@@ -111,7 +111,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         }
 
         // 選んでいるプロファイルの名前。未選択（添字 0）、一覧の範囲外のときは null
-        private string SelectedProfileName()
+        private string? SelectedProfileName()
         {
             var list = ProfileList?.ProfileListCol;
             if (list == null || ProfileIndex <= 0 || ProfileIndex > list.Count) return null;
@@ -119,7 +119,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             return list[ProfileIndex - 1].Name;
         }
 
-        private void LoadProfileViewModel_ProfileIndexChanged(object sender, EventArgs e)
+        private void LoadProfileViewModel_ProfileIndexChanged(object? sender, EventArgs e)
         {
             UnloadEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -131,13 +131,13 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         {
             if (profileIndex > 0)
             {
-                string profilename = profileList.ProfileListCol[profileIndex - 1].Name;
+                string? profilename = profileList.ProfileListCol[profileIndex - 1].Name;
                 if (action.ucontrols == null)
                 {
                     action.ucontrols = string.Empty;
                 }
 
-                specialActionRepository.SaveAction(action.name, action.controls, 3, profilename, edit,
+                specialActionRepository.SaveAction(action.name, action.controls, 3, profilename ?? string.Empty, edit,
                     extras: action.ucontrols +
                     (autoUntrigger ? (action.ucontrols.Length > 0 ? "/" : "") + "AutomaticUntrigger" : ""), actionId: action.id);
             }

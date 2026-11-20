@@ -27,7 +27,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             path = string.Empty;
             title = string.Empty;
 
-            CapturedWindow window = windowSystem.GetWindowUnderCursor();
+            CapturedWindow? window = windowSystem.GetWindowUnderCursor();
             if (window == null || window.ProcessId == ownProcessId) return false;
             if (string.IsNullOrEmpty(window.ProcessPath) && string.IsNullOrEmpty(window.Title)) return false;
 

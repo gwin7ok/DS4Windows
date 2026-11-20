@@ -86,21 +86,21 @@ namespace DS4Windows.UI.ViewModels
                 MacroStepIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MacroStepIndexChanged;
+        public event EventHandler? MacroStepIndexChanged;
         public Stopwatch Sw { get => sw; }
         public bool Toggle4thMouse { get => toggle4thMouse; set => toggle4thMouse = value; }
         public bool Toggle5thMouse { get => toggle5thMouse; set => toggle5thMouse = value; }
         public int AppendIndex { get => appendIndex; set => appendIndex = value; }
         public int EditMacroIndex { get => editMacroIndex; set => editMacroIndex = value; }
         public Dictionary<int, bool> KeysdownMap { get => keysdownMap; }
-        public static HashSet<int> KeydownOverrides { get => keydownOverrides; }
+        public static HashSet<int> KeydownOverrides { get => keydownOverrides!; }   // 最初の RecordBoxViewModel の生成で作られる
 
         private int editMacroIndex = -1;
         /// <summary>
         /// (Output value, active bool)
         /// </summary>
         private Dictionary<int, bool> keysdownMap = new Dictionary<int, bool>();
-        private static HashSet<int> keydownOverrides;
+        private static HashSet<int>? keydownOverrides;
 
         private Dictionary<int, bool> ds4InputMap = new Dictionary<int, bool>();
 
@@ -120,7 +120,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly IEnvironmentService environmentService;
         private readonly IMacroRecordingState macroRecording;
         // マクロのプリセットを置くフォルダ（プリセットの選択の初期位置）。null は指定なし（単体テスト）
-        private readonly Func<string> macrosFolder;
+        private readonly Func<string>? macrosFolder;
 
         // 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
         // 記録中のタッチパッド Passthru で実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」。
@@ -143,12 +143,12 @@ namespace DS4Windows.UI.ViewModels
             IEnvironmentService environmentService,
             IMacroRecordingState macroRecording,
             int targetDevice = -1,
-            IDialogService dialogs = null,
-            DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher = null,
-            Func<string> macrosFolder = null,
-            DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
+            IDialogService? dialogs = null,
+            DS4Windows.UI.Abstractions.IUiDispatcher? uiDispatcher = null,
+            Func<string>? macrosFolder = null,
+            DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources = null)
         {
-            this.dialogs = dialogs;
+            this.dialogs = dialogs!;   // 窓口は、窓を使う操作のときだけ渡される（一覧の読み書きだけなら省略できる）
             this.macrosFolder = macrosFolder;
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             ArgumentNullException.ThrowIfNull(environmentService);
@@ -247,9 +247,9 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>プリセットのファイルを選ばせ、選ばれたら今の手順を置き換えて読み込む。</summary>
         /// <returns>読み込んだら true。取り消しなら false</returns>
-        public bool PickAndLoadPreset(string initialDirectory)
+        public bool PickAndLoadPreset(string? initialDirectory)
         {
-            string file = dialogs.PickOpenFile(new FileDialogOptions
+            string? file = dialogs.PickOpenFile(new FileDialogOptions
             {
                 Title = "Select Preset File",
                 Filter = "Text Documents (*.txt)|*.txt",
@@ -265,9 +265,9 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>保存先を選ばせ、選ばれたら今の手順を書き出す。</summary>
         /// <returns>保存したら true。取り消しなら false</returns>
-        public bool PickAndSavePreset(string initialDirectory)
+        public bool PickAndSavePreset(string? initialDirectory)
         {
-            string file = dialogs.PickSaveFile(new FileDialogOptions
+            string? file = dialogs.PickSaveFile(new FileDialogOptions
             {
                 Title = "Select Export File",
                 Filter = "Text Documents (*.txt)|*.txt",
@@ -421,7 +421,7 @@ namespace DS4Windows.UI.ViewModels
         /// 指定した位置の行を、元の並びのまま 1 かたまりにして、<paramref name="targetIndex"/>（移す前の並びでの、挿入先の行の位置。末尾は行数）の前へ移す。
         /// 移した行の、新しい位置を返す。並びが変わらないとき（かたまりの中・すぐ前後へ落とす）は、何も変えず null。
         /// </summary>
-        public int[] MoveSteps(IEnumerable<int> sourceIndexes, int targetIndex)
+        public int[]? MoveSteps(IEnumerable<int> sourceIndexes, int targetIndex)
         {
             List<int> sources = sourceIndexes.Where(i => i >= 0 && i < macroSteps.Count).Distinct().OrderBy(i => i).ToList();
             if (sources.Count == 0) return null;

@@ -38,7 +38,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>古い ViGEm では、一部の機能が使えない旨の注意を出すための判定。</summary>
         public bool UsingMinViGEm173333 => environmentService.IsUsingMinViGEm117333();
 
-        private void OnOwnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnOwnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -62,7 +62,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void ProfileSettingsViewModel_MainColorChanged(object sender, EventArgs e)
+        private void ProfileSettingsViewModel_MainColorChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(MainColorString));
             OnPropertyChanged(nameof(MainColorR));

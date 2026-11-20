@@ -33,12 +33,12 @@ namespace DS4Windows.UI.ViewModels.Util
 
         public bool HasErrors => errors.Count > 0;
 
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 
-        public IEnumerable GetErrors(string propertyName)
+        public IEnumerable GetErrors(string? propertyName)
         {
-            errors.TryGetValue(propertyName, out List<string> errorsForName);
-            return errorsForName;
+            errors.TryGetValue(propertyName ?? string.Empty, out List<string>? errorsForName);
+            return errorsForName!;   // INotifyDataErrorInfo は、エラーがないとき null を返してよい
         }
 
         public void RaiseErrorsChanged(string propertyName)

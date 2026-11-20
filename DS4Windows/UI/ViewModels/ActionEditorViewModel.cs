@@ -44,7 +44,7 @@ namespace DS4Windows.UI.ViewModels
         public int ActionTypeIndex { get => actionTypeIndex; set => actionTypeIndex = value; }
 
         /// <summary>名前。編集できない対象（Controls のモード）では、書き込みを無視する。</summary>
-        public string ActionName
+        public string? ActionName
         {
             get => editTarget.Name;
             set
@@ -81,14 +81,14 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>添字 → 種別の ID の配列（従来の <c>typeAssoc</c> と同じ並び）。</summary>
         public SpecialAction.ActionTypeId[] TypeAssoc { get => typeCatalog.TypeIds; }
-        public SpecialAction SavedAction { get => editTarget.SavedAction; }
+        public SpecialAction? SavedAction { get => editTarget.SavedAction; }
         public bool EditMode { get => editTarget.EditMode; }
 
         public bool TriggerError
         {
             get
             {
-                return errors.TryGetValue("TriggerError", out List<string> _);
+                return errors.TryGetValue("TriggerError", out List<string>? _);
             }
         }
 
@@ -138,9 +138,9 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>画面の入力を、SA に書き出す（名前、トリガー、解除トリガー［あれば］、種別）。</summary>
         public void SetAction(SpecialAction action)
         {
-            action.name = editTarget.Name;
-            action.controls = triggerSource.TriggersText;
-            string unload = triggerSource.UnloadTriggersText;
+            action.name = editTarget.Name ?? string.Empty;
+            action.controls = triggerSource.TriggersText ?? string.Empty;
+            string? unload = triggerSource.UnloadTriggersText;
             if (unload != null)
             {
                 action.ucontrols = unload;
@@ -169,10 +169,10 @@ namespace DS4Windows.UI.ViewModels
                 if (alreadyExists) existingName = true;
             }
 
-            if (!triggerSource.Validate(out string triggerError))
+            if (!triggerSource.Validate(out string? triggerError))
             {
                 valid = false;
-                triggerErrors.Add(triggerError);
+                triggerErrors.Add(triggerError!);   // 失敗のときは、必ず理由がある
             }
 
             if (ActionTypeIndex == 0)

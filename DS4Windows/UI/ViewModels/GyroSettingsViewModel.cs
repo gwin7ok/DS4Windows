@@ -89,7 +89,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public event PropertyChangingHandler<GyroOutMode> GyroOutModeIndexChanging;
+        public event PropertyChangingHandler<GyroOutMode>? GyroOutModeIndexChanging;
 
         public bool GyroMouseTurns
         {
@@ -537,9 +537,9 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>保存された番号（カンマ区切り）をメニューのチェックへ反映し（<paramref name="entries"/> を書き換え）、表示の文字列を返す。</summary>
-        private static string ApplyToMenu(IReadOnlyList<TriggerMenuEntry> entries, string savedTriggers)
+        private static string ApplyToMenu(IReadOnlyList<TriggerMenuEntry> entries, string? savedTriggers)
         {
-            string[] triggers = savedTriggers.Split(",");
+            string[] triggers = savedTriggers?.Split(",") ?? Array.Empty<string>();
             int itemCount = entries.Count;
             List<string> triggerName = new List<string>();
             foreach (string trig in triggers)

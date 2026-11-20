@@ -68,7 +68,7 @@ namespace DS4Windows.UI.Services
             if (ControlMode)
             {
                 // 対象のボタンの設定は、編集用のコピーを編集し、Save で元へ反映する（Cancel では、元は変わらない）
-                controlTarget = new ControlSettingsEditTarget(controlSettings, profileSettingsService);
+                controlTarget = new ControlSettingsEditTarget(controlSettings!, profileSettingsService);   // ControlMode は、controlSettings があるときだけ真
                 ActionVM = viewModelFactory.CreateControlActionEditorViewModel(deviceNum, controlTarget);
             }
             else
@@ -183,7 +183,7 @@ namespace DS4Windows.UI.Services
 
             detachBindings?.Invoke();
             bool editMode = ActionVM.EditMode;
-            if (editMode && ActionVM.SavedAction.name != ActionVM.ActionName)
+            if (editMode && ActionVM.SavedAction!.name != ActionVM.ActionName)   // EditMode のときは、保存済みの項目がある
             {
                 // Actions.xml への保存と読み直しを含む削除
                 specialActionRepository.RemoveActionAndSave(ActionVM.SavedAction.name);

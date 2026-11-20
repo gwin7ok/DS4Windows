@@ -26,7 +26,7 @@ namespace DS4Windows.UI.ViewModels
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
             if (uiDispatcher == null) throw new ArgumentNullException(nameof(uiDispatcher));
 
-            string version = environmentService.ApplicationVersion;
+            string? version = environmentService.ApplicationVersion;
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows version {version}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"DS4Windows Assembly Architecture: {(Environment.Is64BitProcess ? "x64" : "x86")}" });
             logItems.Add(new LogItem { Datetime = DateTime.Now, Message = $"OS Version: {Environment.OSVersion}" });
@@ -56,7 +56,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void AddLogMessage(object sender, DS4Windows.Core.Logging.DebugEventArgs e)
+        private void AddLogMessage(object? sender, DS4Windows.Core.Logging.DebugEventArgs e)
         {
             // 一時ログや [DI]/[Legacy] トレースログは GUI 画面には表示せずファイル出力のみとする
             if (e.Temporary)

@@ -142,8 +142,8 @@ namespace DS4Windows.UI.ViewModels
         // 生成側の ViewModelFactory が IProfileLoadTarget を直接渡す）。
         // targetDevice は、編集スロット（device）と実機を分けて渡す引数。変更しない。
         // 廃止された設定が残るプロファイルを開いたときの警告の画面（null は警告を出さない。単体テスト）
-        private readonly IRemovedShiftPrompt removedShiftPrompt;
-        private readonly IRemovedGyroSwipePrompt removedGyroSwipePrompt;
+        private readonly IRemovedShiftPrompt? removedShiftPrompt;
+        private readonly IRemovedGyroSwipePrompt? removedGyroSwipePrompt;
 
         /// <summary>
         /// 編集用のスロットへプロファイルを読み込んだ直後に呼ぶ。廃止された「シフト」「ジャイロスワイプ」の設定が残っていれば、
@@ -165,8 +165,8 @@ namespace DS4Windows.UI.ViewModels
             IEnvironmentService environmentService,
             IPathService pathService,
             int targetDevice = -1,
-            IRemovedShiftPrompt removedShiftPrompt = null,
-            IRemovedGyroSwipePrompt removedGyroSwipePrompt = null)
+            IRemovedShiftPrompt? removedShiftPrompt = null,
+            IRemovedGyroSwipePrompt? removedGyroSwipePrompt = null)
         {
             this.removedShiftPrompt = removedShiftPrompt;
             this.removedGyroSwipePrompt = removedGyroSwipePrompt;
@@ -215,7 +215,7 @@ namespace DS4Windows.UI.ViewModels
             SetupEvents();
         }
 
-        private void CalcProfileFlags(object sender, EventArgs e)
+        private void CalcProfileFlags(object? sender, EventArgs e)
         {
             profileRepo.CacheProfileCustomsFlags(device);
         }
@@ -246,22 +246,22 @@ namespace DS4Windows.UI.ViewModels
         {
             // Custom curve editor web link clicked. Open the bezier curve editor web app usign the default browser app and pass on current custom definition as a query string parameter.
             // The Process.Start command using HTML page doesn't support query parameters, so if there is a custom curve definition then lookup the default browser executable name from a sysreg.
-            string defaultBrowserCmd = String.Empty;
+            string? defaultBrowserCmd = String.Empty;
             try
             {
                 if (!String.IsNullOrEmpty(customDefinition))
                 {
-                    string progId = String.Empty;
-                    using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice"))
+                    string? progId = String.Empty;
+                    using (RegistryKey? userChoiceKey = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice"))
                     {
                         progId = userChoiceKey?.GetValue("Progid")?.ToString();
                     }
 
                     if (!String.IsNullOrEmpty(progId))
                     {
-                        using (RegistryKey browserPathCmdKey = Registry.ClassesRoot.OpenSubKey($"{progId}\\shell\\open\\command"))
+                        using (RegistryKey? browserPathCmdKey = Registry.ClassesRoot.OpenSubKey($"{progId}\\shell\\open\\command"))
                         {
-                            defaultBrowserCmd = browserPathCmdKey?.GetValue(null).ToString().ToLower();
+                            defaultBrowserCmd = browserPathCmdKey?.GetValue(null)?.ToString()?.ToLower();
                         }
 
                         if (!String.IsNullOrEmpty(defaultBrowserCmd))
@@ -288,7 +288,7 @@ namespace DS4Windows.UI.ViewModels
                 {
                     System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo($"{pathService.ProgramDirectory}\\BezierCurveEditor\\index.html");
                     startInfo.UseShellExecute = true;
-                    using (System.Diagnostics.Process temp = System.Diagnostics.Process.Start(startInfo))
+                    using (System.Diagnostics.Process? temp = System.Diagnostics.Process.Start(startInfo))
                     {
                     }
                 }

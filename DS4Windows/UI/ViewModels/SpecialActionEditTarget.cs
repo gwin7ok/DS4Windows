@@ -16,7 +16,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly ISpecialActionRepository specialActionRepository;
 
         // Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
-        public SpecialActionEditTarget(ISpecialActionRepository specialActionRepository, SpecialAction savedAction)
+        public SpecialActionEditTarget(ISpecialActionRepository specialActionRepository, SpecialAction? savedAction)
         {
             ArgumentNullException.ThrowIfNull(specialActionRepository);
             this.specialActionRepository = specialActionRepository;
@@ -24,13 +24,13 @@ namespace DS4Windows.UI.ViewModels
             EditMode = savedAction != null;
         }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public bool NameEditable => true;
 
         public bool EditMode { get; }
 
-        public SpecialAction SavedAction { get; }
+        public SpecialAction? SavedAction { get; }
 
         public IReadOnlyList<string> ValidateName(out bool alreadyExists)
         {
@@ -41,7 +41,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 errors.Add("No name provided");
             }
-            else if (!EditMode || SavedAction.name != Name)
+            else if (!EditMode || SavedAction?.name != Name)
             {
                 // Perform existing name check when creating a new action
                 // or if the action name has changed. Use normalized names so

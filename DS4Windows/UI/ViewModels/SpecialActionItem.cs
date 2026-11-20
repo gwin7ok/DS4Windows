@@ -33,8 +33,8 @@ namespace DS4Windows.UI.ViewModels
         private bool active;
         private string actionName;
         private int index;
-        private string typeName;
-        private string controls;
+        private string? typeName;
+        private string? controls;
         private SpecialAction specialAction;
 
         public bool IsMissing { get; set; }
@@ -91,7 +91,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public string TypeName
+        public string? TypeName
         {
             get => typeName;
             set
@@ -108,15 +108,15 @@ namespace DS4Windows.UI.ViewModels
         /// 一覧の「アクション」列の表示（種別名に、詳細を続ける）。Controls タブの一覧、出力ピッカーのボタンと同じ書式（<see cref="AssignmentDescriber"/>）。
         /// 並べ替えは、これまでどおり <see cref="TypeName"/> を使う。
         /// </summary>
-        public string ActionDescription
+        public string? ActionDescription
             => specialAction != null
                 ? AssignmentDescriber.ForSpecialAction(specialAction, x => X360ControlTables.getX360ControlString(x), ProfileExists)
                 : typeName;
 
         /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。設定されていなければ確認しない。</summary>
-        public Func<string, bool> ProfileExists { get; set; }
+        public Func<string, bool>? ProfileExists { get; set; }
 
-        public string Controls
+        public string? Controls
         {
             get => controls;
             set
@@ -130,7 +130,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>編集前のスペシャルアクションの名前（なければ null）。</summary>
-        public string OriginalName => specialAction?.name;
+        public string? OriginalName => specialAction?.name;
 
         public SpecialAction SpecialAction
         {

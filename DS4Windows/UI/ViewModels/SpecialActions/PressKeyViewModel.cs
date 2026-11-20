@@ -48,7 +48,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private int editorDeviceNum = -1;
         private DS4ControlSettings.ActionType lastActionType = DS4ControlSettings.ActionType.Key;
         private int lastActionBtn = -1;
-        private string describeText;
+        private string? describeText;
         private DS4KeyType keyType;
         private int value;
         private int pressReleaseIndex = 0;
@@ -83,7 +83,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         /// <summary>選ばれているボタン（<c>X360Controls</c> の整数値）。キーのときは -1。</summary>
         public int SelectedButton => lastActionBtn;
-        public event EventHandler IsToggleChanged;
+        public event EventHandler? IsToggleChanged;
 
         public bool ShowToggleControls
         {
@@ -92,7 +92,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 return (keyType & DS4KeyType.Toggle) != 0;
             }
         }
-        public event EventHandler ShowToggleControlsChanged;
+        public event EventHandler? ShowToggleControlsChanged;
 
         // 出力先がアナログ（パッドの軸・トリガー、マウス移動）のときの強さ（0〜100%）。
         // SA の組み合わせトリガーはオン／オフのため、成立中はこの固定値で出す。Controls のモードには出さない（Controls は、入力のアナログ値で強さが決まる）
@@ -131,7 +131,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 return result;
             }
         }
-        public event EventHandler DescribeTextChanged;
+        public event EventHandler? DescribeTextChanged;
         public DS4KeyType KeyType { get => keyType; set => keyType = value; }
         public int Value { get => value; set => this.value = value; }
         public int PressReleaseIndex { get => pressReleaseIndex; set => pressReleaseIndex = value; }
@@ -160,7 +160,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                     try
                     {
                         // Prefer using editor's device-specific output type when available
-                        string btnName;
+                        string? btnName;
                         if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                         {
                             btnName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
@@ -199,7 +199,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         private DS4Controls defaultOutputInput = DS4Controls.None;
 
-        private string GetDefaultOutputName()
+        private string? GetDefaultOutputName()
         {
             try
             {
@@ -222,7 +222,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 try
                 {
-                    string buttonName;
+                    string? buttonName;
                     if (editorDeviceNum >= 0 && editorDeviceNum < DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount)
                     {
                         buttonName = X360ControlTables.getX360ControlString((X360Controls)lastActionBtn, profileSettingsService.ForSlot(editorDeviceNum).Output.OutContType);
@@ -245,7 +245,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             else if (lastActionType == DS4ControlSettings.ActionType.Default)
             {
                 // 「Default (A)」のように、そのボタンの既定の出力名を添える。取得できなければ「Default」のみ
-                string defaultName = GetDefaultOutputName();
+                string? defaultName = GetDefaultOutputName();
                 // Toggle のときは、保存すると「既定の出力への Button ＋ Toggle」になる（ControlSettingsEditTarget.WriteFrom）
                 describeText = AssignmentDescriber.ForDefault(defaultName, string.Equals(switchMode, "Toggle", StringComparison.OrdinalIgnoreCase));
             }
@@ -277,7 +277,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         /// （ピッカーの Default ボタンが、そのボタンの既定値を使い、Extras のパネルに、いまの値が出るように）。
         /// <paramref name="control"/> が <c>None</c>（SA のモード）のときは、従来どおり（キーの割り当てとして渡す）。
         /// </summary>
-        public DS4ControlSettings PrepareSettings(DS4Controls control = DS4Controls.None, string extras = null)
+        public DS4ControlSettings PrepareSettings(DS4Controls control = DS4Controls.None, string? extras = null)
         {
             DS4ControlSettings settings = new DS4ControlSettings(control);
             if (control != DS4Controls.None && extras != null)
@@ -348,7 +348,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 lastActionType = DS4ControlSettings.ActionType.Button;
                 lastActionBtn = (int)settings.action.actionBtn;
                 // Try to use device-specific output type when available
-                string btnName;
+                string? btnName;
                 try
                 {
                     if (deviceNum >= 0)

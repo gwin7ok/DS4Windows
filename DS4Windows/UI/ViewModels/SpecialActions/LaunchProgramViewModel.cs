@@ -30,11 +30,11 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     public class LaunchProgramViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
-        private string filepath;
+        private string? filepath;
         private double delay;
-        private string arguments;
+        private string? arguments;
 
-        public string Filepath
+        public string? Filepath
         {
             get => filepath;
             set
@@ -46,18 +46,18 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         }
         public event EventHandler FilepathChanged;
         public double Delay { get => delay; set => delay = value; }
-        public string Arguments { get => arguments; set => arguments = value; }
+        public string? Arguments { get => arguments; set => arguments = value; }
 
         /// <summary>起動するプログラム（.exe が実在するとき）のパス。View がこのパスからアイコンの画像を作る（ない／.exe でないときは null）。</summary>
-        public string ProgramIconPath
+        public string? ProgramIconPath
         {
             get
             {
-                string path = filepath;
+                string? path = filepath;
                 return File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe" ? path : null;
             }
         }
-        public event EventHandler ProgramIconChanged;
+        public event EventHandler? ProgramIconChanged;
 
         public string ProgramName
         {
@@ -72,19 +72,19 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 return temp;
             }
         }
-        public event EventHandler ProgramNameChanged;
+        public event EventHandler? ProgramNameChanged;
 
         private readonly DS4Windows.UI.Abstractions.IDialogService dialogs;
 
-        public LaunchProgramViewModel(ISpecialActionRepository specialActionRepository, DS4Windows.UI.Abstractions.IDialogService dialogs = null)
+        public LaunchProgramViewModel(ISpecialActionRepository specialActionRepository, DS4Windows.UI.Abstractions.IDialogService? dialogs = null)
         {
-            this.dialogs = dialogs;
+            this.dialogs = dialogs!;   // 窓口は、窓を使う操作のときだけ渡される（一覧の読み書きだけなら省略できる）
             ArgumentNullException.ThrowIfNull(specialActionRepository);
             this.specialActionRepository = specialActionRepository;
             FilepathChanged += LaunchProgramViewModel_FilepathChanged;
         }
 
-        private RelayCommand _browseCommand;
+        private RelayCommand? _browseCommand;
 
         /// <summary>「参照」ボタン。プログラムの選択の窓を、Program Files から開く。</summary>
         public RelayCommand BrowseCommand => _browseCommand ??= CommandGuard.CreateSync(
@@ -93,7 +93,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         /// <summary>起動するプログラムを選ばせ、選ばれたら <see cref="Filepath"/> へ入れる（実行ファイル・バッチ・すべて）。</summary>
         public bool PickProgram(string initialDirectory)
         {
-            string file = dialogs.PickOpenFile(new DS4Windows.UI.Abstractions.FileDialogOptions
+            string? file = dialogs.PickOpenFile(new DS4Windows.UI.Abstractions.FileDialogOptions
             {
                 Title = "Select Program",
                 Filter = "Exe (*.exe)|*.exe|Batch (*.bat,*.cmd)|*.bat;*.cmd|All Files (*.*)|*.*",
@@ -106,7 +106,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             return true;
         }
 
-        private void LaunchProgramViewModel_FilepathChanged(object sender, EventArgs e)
+        private void LaunchProgramViewModel_FilepathChanged(object? sender, EventArgs e)
         {
             ProgramIconChanged?.Invoke(this, EventArgs.Empty);
             ProgramNameChanged?.Invoke(this, EventArgs.Empty);
@@ -147,7 +147,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         /// 引数の欄の文字列から、ウィンドウを隠す語（<c>$hidden</c>。大文字小文字不問）を、SA の起動処理と同じく 1 回だけ取り除く。
         /// 語があれば <paramref name="hideWindow"/> が真で、<paramref name="arguments"/> は、取り除いた残り（空白はそのまま）。
         /// </summary>
-        public static void SplitArguments(string text, out string arguments, out bool hideWindow)
+        public static void SplitArguments(string? text, out string arguments, out bool hideWindow)
         {
             text = text ?? string.Empty;
             int pos = text.IndexOf(DS4Windows.Processing.Services.Slots.ControlBindingBuilder.HiddenKeyword, StringComparison.OrdinalIgnoreCase);
@@ -164,7 +164,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            specialActionRepository.SaveAction(action.name, action.controls, 2, $"{filepath}?{delay.ToString("#.##", ConfigFileCulture.DecimalCulture)}", edit, delay, arguments, actionId: action.id);
+            specialActionRepository.SaveAction(action.name, action.controls, 2, $"{filepath}?{delay.ToString("#.##", ConfigFileCulture.DecimalCulture)}", edit, delay, arguments ?? string.Empty, actionId: action.id);
         }
 
         public override bool IsValid(SpecialAction action)

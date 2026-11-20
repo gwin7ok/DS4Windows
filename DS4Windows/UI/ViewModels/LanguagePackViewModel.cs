@@ -37,12 +37,12 @@ namespace DS4Windows.UI.ViewModels
         private const string ProbingPath = "Lang";
         private const string LanguageAssemblyName = "DS4Windows.resources.dll";
 
-        private List<LangPackItem> langPackList;
+        private List<LangPackItem>? langPackList;
         private const string invariantCultureTextValue = "No (English UI)";
 
         private int selectedIndex;
 
-        public List<LangPackItem> LangPackList { get => langPackList; }
+        public List<LangPackItem>? LangPackList { get => langPackList; }
         public int SelectedIndex
         {
             get => selectedIndex;
@@ -53,8 +53,8 @@ namespace DS4Windows.UI.ViewModels
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler ScanFinished;
+        public event EventHandler? SelectedIndexChanged;
+        public event EventHandler? ScanFinished;
 
         // Global.UseLang の置換先（必須引数。null は拒否する）
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;
@@ -74,7 +74,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 CreateLanguageAssembliesBindingSource();
 
-                int index = langPackList.Select((item, idx) => new { item, idx })
+                int index = langPackList!.Select((item, idx) => new { item, idx })   // 直前の CreateLanguageAssembliesBindingSource が作る
                                         .Where(x => x.item.Name == tempculture)
                                         .Select(x => x.idx)
                                         .DefaultIfEmpty(-1)
@@ -94,7 +94,7 @@ namespace DS4Windows.UI.ViewModels
             bool result = false;
             if (selectedIndex > -1)
             {
-                LangPackItem item = langPackList[selectedIndex];
+                LangPackItem item = langPackList![selectedIndex];   // 選択があるのは、一覧ができた後
                 string newValue = item.Name;
                 if (newValue != _appSettingsService.UseLang)
                 {
@@ -110,7 +110,7 @@ namespace DS4Windows.UI.ViewModels
         private void CreateLanguageAssembliesBindingSource()
         {
             // Find the location where application installed.
-            string exeLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string exeLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;   // 実行中のアセンブリは、必ずフォルダーを持つ
             List<string> lookupPaths = ProbingPath.Split(';')
                 .Select(path => Path.Combine(exeLocation, path))
                 .Where(path => path != exeLocation)

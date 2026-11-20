@@ -27,12 +27,12 @@ namespace DS4Windows.UI.ViewModels
         bool SetUnloadTrigger(string name, bool selected);
 
         /// <summary>トリガーを <c>/</c> で連結した文字列（<c>SpecialAction.controls</c> と同じ書式）。</summary>
-        string TriggersText { get; }
+        string? TriggersText { get; }
 
         /// <summary>解除トリガーを <c>/</c> で連結した文字列。1 つもなければ <c>null</c>（<c>SpecialAction.ucontrols</c> を、書き換えない）。</summary>
-        string UnloadTriggersText { get; }
+        string? UnloadTriggersText { get; }
 
         /// <summary>トリガーの検証。有効なら真。無効なら、偽と、エラーの文言。</summary>
-        bool Validate(out string error);
+        bool Validate(out string? error);
     }
 }

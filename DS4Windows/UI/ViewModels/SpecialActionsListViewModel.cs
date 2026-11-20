@@ -38,7 +38,7 @@ namespace DS4Windows.UI.ViewModels
     {
         private ObservableCollection<SpecialActionItem> actionCol = new ObservableCollection<SpecialActionItem>();
         private int specialActionIndex = -1;
-        private SpecialActionItem currentSAItem;
+        private SpecialActionItem? currentSAItem;
         private int deviceNum;
         private readonly ISpecialActionRepository specialActionRepo;
         private readonly IProfileRepository profileRepo;
@@ -48,8 +48,8 @@ namespace DS4Windows.UI.ViewModels
         private string _profileActions = string.Empty;
         private bool _isInternalSync = false;
 
-        public event EventHandler SpecialActionIndexChanged;
-        public event EventHandler ItemSelectedChanged;
+        public event EventHandler? SpecialActionIndexChanged;
+        public event EventHandler? ItemSelectedChanged;
 
         /// <summary>
         /// プロファイル XML に保存されるスラッシュ区切りの Special Actions 文字列 (例: "Action1/Action2")
@@ -74,9 +74,9 @@ namespace DS4Windows.UI.ViewModels
         public SpecialActionsListViewModel(int deviceNum,
             ISpecialActionRepository specialActionRepo,
             IProfileRepository profileRepo,
-            IDialogService dialogs = null)
+            IDialogService? dialogs = null)
         {
-            this.dialogs = dialogs;
+            this.dialogs = dialogs!;   // 窓口は、窓を使う操作のときだけ渡される（一覧の読み書きだけなら省略できる）
             this.deviceNum = deviceNum;
             ArgumentNullException.ThrowIfNull(specialActionRepo);
             this.specialActionRepo = specialActionRepo;
@@ -101,7 +101,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public SpecialActionItem CurrentSpecialActionItem
+        public SpecialActionItem? CurrentSpecialActionItem
         {
             get => currentSAItem;
             set
@@ -173,12 +173,12 @@ namespace DS4Windows.UI.ViewModels
             List<SpecialActionItem> items = actionCol.ToList();
             actionCol.Clear();
 
-            Comparison<SpecialActionItem> primary = GetColumnComparison(propertyName, direction);
+            Comparison<SpecialActionItem>? primary = GetColumnComparison(propertyName, direction);
 
             // 直前にソートしていた列が今回と異なる場合、それを第2ソートキーとして使う
             // （直前の方向をそのまま維持する）。例: 名前昇順の状態から Active 列をクリックすると、
             // Active（クリックした方向）→ 名前昇順 の順で並ぶ。
-            Comparison<SpecialActionItem> secondary =
+            Comparison<SpecialActionItem>? secondary =
                 (lastSortedPropertyName != propertyName)
                     ? GetColumnComparison(lastSortedPropertyName, lastSortedDirection)
                     : null;
@@ -216,7 +216,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>
         /// 指定した列・方向に対応する比較関数を返す。未知の列名の場合は null（比較なし＝同値扱い）。
         /// </summary>
-        private static Comparison<SpecialActionItem> GetColumnComparison(string propertyName, ListSortDirection direction)
+        private static Comparison<SpecialActionItem>? GetColumnComparison(string propertyName, ListSortDirection direction)
         {
             bool asc = direction == ListSortDirection.Ascending;
             switch (propertyName)
@@ -266,7 +266,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。一覧に加わる項目へ渡す。</summary>
-        public Func<string, bool> ProfileExists { get; set; }
+        public Func<string, bool>? ProfileExists { get; set; }
 
         public SpecialActionItem CreateActionItem(SpecialAction action)
         {
@@ -280,7 +280,7 @@ namespace DS4Windows.UI.ViewModels
             return item;
         }
 
-        private void ActionCol_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void ActionCol_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.OldItems != null)
             {
@@ -302,7 +302,7 @@ namespace DS4Windows.UI.ViewModels
             SyncProfileActionsString();
         }
 
-        private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SpecialActionItem.Active) && !_isInternalSync)
             {
@@ -317,7 +317,7 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(ItemSelected));
         }
 
-        public void LoadActions(bool direct = false, string profileActionsString = null)
+        public void LoadActions(bool direct = false, string? profileActionsString = null)
         {
             _isInternalSync = true;
             try
@@ -346,7 +346,7 @@ namespace DS4Windows.UI.ViewModels
                 // グレーの項目として表示する（チェックを外して保存する、または「除去」で取り除ける）。
                 // 40011c12 で実装され、36d124a6 のリファクタ（Actions.xml の一覧だけから一覧を作る形）で失われていた。
                 // チェックしたままのものは、保存してもプロファイルに残る（GetEnabledActionNames）。
-                IEnumerable<string> profileNames = !string.IsNullOrEmpty(profileActionsString)
+                IEnumerable<string>? profileNames = !string.IsNullOrEmpty(profileActionsString)
                     ? profileActionsString.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
                     : (profileRepo.ProfileActions != null && deviceNum >= 0 && deviceNum < profileRepo.ProfileActions.Length
                         ? profileRepo.ProfileActions[deviceNum] : null);
@@ -469,11 +469,11 @@ namespace DS4Windows.UI.ViewModels
         /// Actions.xml に無い項目（グレーの項目）は複製できない。
         /// </summary>
         /// <returns>追加した項目。複製できなかったときは null</returns>
-        public SpecialActionItem DuplicateAction(SpecialActionItem item)
+        public SpecialActionItem? DuplicateAction(SpecialActionItem item)
         {
             if (item == null || item.IsMissing) return null;
 
-            string newName = specialActionRepo.DuplicateAction(item.ActionName);
+            string? newName = specialActionRepo.DuplicateAction(item.ActionName);
             if (newName == null) return null;
 
             SpecialAction action = specialActionRepo.GetActionOrPlaceholder(newName);
@@ -487,7 +487,7 @@ namespace DS4Windows.UI.ViewModels
         /// <returns>コピーしたら true。取り消しなら false</returns>
         public bool PickAndExportActions()
         {
-            string file = dialogs.PickSaveFile(new FileDialogOptions
+            string? file = dialogs.PickSaveFile(new FileDialogOptions
             {
                 Filter = "DS4Windows Special Actions (*.xml)|*.xml",
                 DefaultExtension = ".xml",
@@ -504,9 +504,9 @@ namespace DS4Windows.UI.ViewModels
         /// 選んだ項目を、確認のうえ取り除く（Actions.xml も更新）。プロファイルの XML からの参照の削除は呼び出し側が行う。
         /// </summary>
         /// <returns>取り除いた項目の名前。選択なし・確認で「いいえ」のときは null</returns>
-        public string RemoveSelectedWithConfirm()
+        public string? RemoveSelectedWithConfirm()
         {
-            SpecialActionItem item = specialActionIndex >= 0 ? currentSAItem : null;
+            SpecialActionItem? item = specialActionIndex >= 0 ? currentSAItem : null;
             if (item == null) return null;
 
             if (!dialogs.Confirm(AppLogger.UserText("SpecialAction_RemoveConfirm", item.ActionName), "DS4Windows", DialogIcon.Question))
@@ -522,7 +522,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>選んだ項目を複製する。複製できない項目（Actions.xml に無い）のときは、通知の窓を出して false を返す。</summary>
         public bool DuplicateSelectedWithNotice()
         {
-            SpecialActionItem item = specialActionIndex >= 0 ? currentSAItem : null;
+            SpecialActionItem? item = specialActionIndex >= 0 ? currentSAItem : null;
             if (item == null) return false;
 
             if (DuplicateAction(item) == null)

@@ -29,9 +29,9 @@ namespace DS4Windows.UI.ViewModels
         private string path;
         private string path_lowercase;
         private string filename;
-        private string title;
-        private string title_lowercase;
-        private AutoProfileEntity matchedAutoProfile;
+        private string? title;
+        private string? title_lowercase;
+        private AutoProfileEntity? matchedAutoProfile;
         private bool turnoff;
 
         public string Path
@@ -48,7 +48,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public string Title
+        public string? Title
         {
             get => title;
             set
@@ -57,15 +57,15 @@ namespace DS4Windows.UI.ViewModels
                 title = value;
                 if (matchedAutoProfile != null)
                 {
-                    matchedAutoProfile.Title = value;
+                    matchedAutoProfile.Title = value ?? string.Empty;
                 }
 
                 TitleChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        public event EventHandler TitleChanged;
-        public AutoProfileEntity MatchedAutoProfile
+        public event EventHandler? TitleChanged;
+        public AutoProfileEntity? MatchedAutoProfile
         {
             get => matchedAutoProfile;
             set
@@ -108,13 +108,13 @@ namespace DS4Windows.UI.ViewModels
                 TurnoffChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler TurnoffChanged;
+        public event EventHandler? TurnoffChanged;
 
         public bool Exists
         {
             get => matchedAutoProfile != null;
         }
-        public event EventHandler ExistsChanged;
+        public event EventHandler? ExistsChanged;
 
         private int selectedIndexCon1 = 0;
         private int selectedIndexCon2 = 0;
@@ -210,7 +210,7 @@ namespace DS4Windows.UI.ViewModels
         // 生成元（AutoProfilesViewModel）が IEnvironmentService.UsingMaxControllers から得た値を渡す。
         private readonly bool usingExpandedControllers;
 
-        public ProgramItem(string path, bool usingExpandedControllers, AutoProfileEntity autoProfileEntity = null)
+        public ProgramItem(string path, bool usingExpandedControllers, AutoProfileEntity? autoProfileEntity = null)
         {
             this.path = path;
             this.usingExpandedControllers = usingExpandedControllers;
@@ -227,7 +227,7 @@ namespace DS4Windows.UI.ViewModels
             MatchedAutoProfileChanged += ProgramItem_MatchedAutoProfileChanged;
         }
 
-        private void ProgramItem_MatchedAutoProfileChanged(object sender, EventArgs e)
+        private void ProgramItem_MatchedAutoProfileChanged(object? sender, EventArgs e)
         {
             if (matchedAutoProfile == null)
             {
