@@ -162,11 +162,11 @@ namespace DS4Windows.UI.ViewModels
                 {
                     case 0:
                         info.ResetSmoothingMethods();
-                        info.smoothingMethod = GyroMouseInfo.SmoothingMethod.OneEuro;
+                        info.smoothingMethod = GyroSmoothingMethod.OneEuro;
                         break;
                     case 1:
                         info.ResetSmoothingMethods();
-                        info.smoothingMethod = GyroMouseInfo.SmoothingMethod.WeightedAverage;
+                        info.smoothingMethod = GyroSmoothingMethod.WeightedAverage;
                         break;
                     default:
                         break;
@@ -181,11 +181,11 @@ namespace DS4Windows.UI.ViewModels
         }
 
         public bool GyroMouseWeightAvgPanelShown =>
-            gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.WeightedAverage;
+            gyro.Mouse.smoothingMethod == GyroSmoothingMethod.WeightedAverage;
 
         public bool GyroMouseOneEuroPanelShown =>
-            gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.OneEuro
-            || gyro.Mouse.smoothingMethod == GyroMouseInfo.SmoothingMethod.None;
+            gyro.Mouse.smoothingMethod == GyroSmoothingMethod.OneEuro
+            || gyro.Mouse.smoothingMethod == GyroSmoothingMethod.None;
 
         public double GyroMouseSmoothWeight
         {
@@ -218,11 +218,11 @@ namespace DS4Windows.UI.ViewModels
                 {
                     case 0:
                         info.ResetSmoothingMethods();
-                        info.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.OneEuro;
+                        info.smoothingMethod = GyroSmoothingMethod.OneEuro;
                         break;
                     case 1:
                         info.ResetSmoothingMethods();
-                        info.smoothingMethod = GyroMouseStickInfo.SmoothingMethod.WeightedAverage;
+                        info.smoothingMethod = GyroSmoothingMethod.WeightedAverage;
                         break;
                     default:
                         break;
@@ -236,11 +236,11 @@ namespace DS4Windows.UI.ViewModels
         }
 
         public bool GyroMouseStickWeightAvgPanelShown =>
-            gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.WeightedAverage;
+            gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.WeightedAverage;
 
         public bool GyroMouseStickOneEuroPanelShown =>
-            gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.OneEuro
-            || gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.None;
+            gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.OneEuro
+            || gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.None;
 
         public double GyroMouseStickSmoothWeight
         {
@@ -564,13 +564,13 @@ namespace DS4Windows.UI.ViewModels
         }
         private int FindGyroMouseSmoothMethodIndex()
         {
-            GyroMouseInfo.SmoothingMethod method = gyro.Mouse.smoothingMethod;
-            return method == GyroMouseInfo.SmoothingMethod.WeightedAverage ? 1 : 0;
+            GyroSmoothingMethod method = gyro.Mouse.smoothingMethod;
+            return method == GyroSmoothingMethod.WeightedAverage ? 1 : 0;
         }
 
         private int FindGyroMouseStickSmoothMethodIndex()
         {
-            return gyro.MouseStick.smoothingMethod == GyroMouseStickInfo.SmoothingMethod.WeightedAverage ? 1 : 0;
+            return gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.WeightedAverage ? 1 : 0;
         }
     }
 }

@@ -24,13 +24,6 @@ namespace DS4Windows.Core.Settings
 
     public class GyroMouseInfo : ProfileSubSettingBase
     {
-        public enum SmoothingMethod : byte
-        {
-            None,
-            OneEuro,
-            WeightedAverage,
-        }
-
         public const double DEFAULT_MINCUTOFF = 1.0;
         public const double DEFAULT_BETA = 0.7;
         public const string DEFAULT_SMOOTH_TECHNIQUE = "one-euro";
@@ -39,7 +32,7 @@ namespace DS4Windows.Core.Settings
 
         public bool enableSmoothing = false;
         public double smoothingWeight = 0.5;
-        public SmoothingMethod smoothingMethod;
+        public GyroSmoothingMethod smoothingMethod;
 
         public double minCutoff = DEFAULT_MINCUTOFF;
         public double beta = DEFAULT_BETA;
@@ -90,7 +83,7 @@ namespace DS4Windows.Core.Settings
             minCutoff = DEFAULT_MINCUTOFF;
             beta = DEFAULT_BETA;
             enableSmoothing = false;
-            smoothingMethod = SmoothingMethod.None;
+            smoothingMethod = GyroSmoothingMethod.None;
             smoothingWeight = 0.5;
             minThreshold = DEFAULT_MIN_THRESHOLD;
             jitterCompensation = JITTER_COMPENSATION_DEFAULT;
@@ -106,7 +99,7 @@ namespace DS4Windows.Core.Settings
 
         public void ResetSmoothingMethods()
         {
-            smoothingMethod = SmoothingMethod.None;
+            smoothingMethod = GyroSmoothingMethod.None;
             RaisePropertyChanged(nameof(smoothingMethod));
         }
 
@@ -117,37 +110,9 @@ namespace DS4Windows.Core.Settings
             RaisePropertyChanged(nameof(smoothingMethod));
         }
 
-        public static SmoothingMethod SmoothingMethodParse(string identifier)
-        {
-            SmoothingMethod result = SmoothingMethod.None;
-            switch (identifier)
-            {
-                case "weighted-average":
-                    result = SmoothingMethod.WeightedAverage;
-                    break;
-                case "one-euro":
-                    result = SmoothingMethod.OneEuro;
-                    break;
-                default:
-                    result = SmoothingMethod.None;
-                    break;
-            }
-            return result;
-        }
+        public static GyroSmoothingMethod SmoothingMethodParse(string identifier) => GyroSmoothingMethods.Parse(identifier);
 
-        public string SmoothMethodIdentifier()
-        {
-            string result = "none";
-            if (smoothingMethod == SmoothingMethod.OneEuro)
-            {
-                result = "one-euro";
-            }
-            else if (smoothingMethod == SmoothingMethod.WeightedAverage)
-            {
-                result = "weighted-average";
-            }
-            return result;
-        }
+        public string SmoothMethodIdentifier() => GyroSmoothingMethods.Identifier(smoothingMethod);
 
         public void SetRefreshEvents(OneEuroFilter euroFilter)
         {
