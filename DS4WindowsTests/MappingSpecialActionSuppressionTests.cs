@@ -42,16 +42,8 @@ namespace DS4WindowsTests
 
         private static bool InvokeCheckForSpecialActionSuppression(int device, DS4Controls control)
         {
-            MethodInfo method = typeof(Mapping).GetMethod(
-                "CheckForSpecialActionSuppression",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-
-            Assert.NotNull(method); // メソッド名変更等でシグネチャが失われた場合に検出する
-
-            // Issue8-1(3)是正後の実装は cState/eState/tp/fieldMap を一切参照しないため、
-            // null を渡しても安全に呼び出せる（抑制の集合の内容のみで判定する）。
-            object result = method.Invoke(Mapper, new object[] { device, control, null, null, null, null });
-            return (bool)result;
+            // 通常の割り当ての抑制は、ControlFrameProcessor.ProcessControl がエンジンの IsSuppressed で判定する（旧 CheckForSpecialActionSuppression と同じ）
+            return Engine.IsSuppressed(device, control);
         }
 
         [Fact]

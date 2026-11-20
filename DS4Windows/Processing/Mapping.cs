@@ -159,6 +159,9 @@ namespace DS4Windows.Processing
             l2TwoStageMappingData = stickMotion.L2TwoStageMappingData;
             r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
             deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
+            for (int i = 0; i < _mapFrames.Length; i++) _mapFrames[i] = new MapFrame();
+            _controlFrame = new ControlFrameProcessor(slots, triggerEngine, mouseConversion, twoStageTrigger, stickMotion.DeltaAccelProcessors,
+                stickMotion.FlickMappingData, _triggerInputs, _frameOutputs);
             _specialActions = new SpecialActionFrameRunner(profileActionProvider, triggerEngine, _triggerInputs, _frameOutputs);
         }
 
@@ -241,6 +244,8 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Processing.Actions.TriggerInput[] _triggerInputs;
         private readonly DS4Windows.Processing.Actions.FrameOutput[] _frameOutputs;
 
+        private readonly MapFrame[] _mapFrames = new MapFrame[ControllerLimits.MaxControllerCount];   // デバイスごとの 1 フレームぶんの作業の表（使い回し）
+        private readonly ControlFrameProcessor _controlFrame;   // スティック・トリガー・各ボタンの割り当ての処理
         private readonly ButtonMouseSampler _mouseSampler;   // 新経路のマウスの移動が借りる、ボタンからのマウス移動量の計算
         private readonly SpecialActionFrameRunner _specialActions;   // 1 フレームぶんのスペシャルアクションの評価
         // 旧 _sampleControl（MapCustom が毎フレーム受け取る ControlService の保持）は削除した。必要なものはコンストラクターで受ける（逆依存の解消）
