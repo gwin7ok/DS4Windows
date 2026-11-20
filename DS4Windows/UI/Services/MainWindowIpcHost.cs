@@ -50,7 +50,7 @@ namespace DS4Windows.UI.Services
 
         public void DisconnectController(int index)
         {
-            if (_controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel model))
+            if (_controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel? model))
             {
                 model.RequestDisconnect();
             }
@@ -59,7 +59,7 @@ namespace DS4Windows.UI.Services
         // 番号は入力スロット（Disconnect などと同じ）。一覧の並び順では引かない（途中のスロットが空だと、別のコントローラーの色が変わる）
         public void SetLightColor(int index, byte red, byte green, byte blue)
         {
-            if (_controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel model))
+            if (_controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel? model))
             {
                 model.ForceCustomLightColor(new DS4Windows.Core.Model.DS4Color(red, green, blue));
             }
@@ -69,12 +69,12 @@ namespace DS4Windows.UI.Services
             => _profiles.ProfileListCol.Select((item, index) => new { item, index }).
                 Where(x => string.Equals(x.item.Name, profileName, StringComparison.OrdinalIgnoreCase)).Select(x => x.index).DefaultIfEmpty(-1).First();
 
-        public string GetProfileName(int index)
+        public string? GetProfileName(int index)
             => index >= 0 && index < _profiles.ProfileListCol.Count ? _profiles.ProfileListCol[index].Name : null;
 
         // 番号は入力スロット（一覧の並び順ではない）。接続していなければ null
-        public IControllerSlotView GetControllerDevice(int index)
-            => _controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel model) ? model.Device : null;
+        public IControllerSlotView? GetControllerDevice(int index)
+            => _controllers.ControllerDict.TryGetValue(index, out CompositeDeviceModel? model) ? model.Device : null;
 
         public void LogDebug(string message) => AppLogger.Log(AppLogLevel.Info, message, LogOptions.UserFacing);
     }

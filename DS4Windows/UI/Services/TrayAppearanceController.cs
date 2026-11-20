@@ -40,7 +40,7 @@ namespace DS4Windows.UI.Services
             _notificationService.NotificationTriggered += ShowSystemNotification;
         }
 
-        private void ShowSystemNotification(object sender, NotificationEventArgs e)
+        private void ShowSystemNotification(object? sender, NotificationEventArgs e)
         {
             ShowSystemNotification(e.Message, e.Warning);
         }

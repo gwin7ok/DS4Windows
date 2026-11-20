@@ -147,12 +147,12 @@ namespace DS4Windows.Processing.Services.Connection
                     // 一覧にある正式な名前（大文字小文字）へ揃える（Windows のファイルは区別しないが、一覧・選択状態は区別するため）
                     if (idx >= 0)
                     {
-                        string canonical = host.GetProfileName(idx);
+                        string? canonical = host.GetProfileName(idx);
                         if (!string.IsNullOrEmpty(canonical)) strData[2] = canonical;
                     }
 
                     // 番号は入力スロット（ほかのコマンドと同じ）。その番号のコントローラーが接続中なら、いま適用する
-                    IControllerSlotView devitem = host.GetControllerDevice(tdevice);
+                    IControllerSlotView? devitem = host.GetControllerDevice(tdevice);
                     if (idx >= 0 && devitem != null)
                     {
                         string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
@@ -175,11 +175,11 @@ namespace DS4Windows.Processing.Services.Connection
                     int idx = host.FindProfileIndex(strData[2]);
                     if (idx >= 0)
                     {
-                        string canonical = host.GetProfileName(idx);
+                        string? canonical = host.GetProfileName(idx);
                         if (!string.IsNullOrEmpty(canonical)) strData[2] = canonical;
                     }
 
-                    IControllerSlotView devitem = host.GetControllerDevice(tdevice);
+                    IControllerSlotView? devitem = host.GetControllerDevice(tdevice);
                     if (devitem != null)
                     {
                         string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile,
@@ -194,7 +194,7 @@ namespace DS4Windows.Processing.Services.Connection
                     }
                 }
 
-                IControllerSlotView device = host.GetControllerDevice(tdevice);
+                IControllerSlotView? device = host.GetControllerDevice(tdevice);
                 if (device != null)
                 {
                     string prolog = string.Format(DS4Windows.Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");

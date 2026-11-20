@@ -58,7 +58,7 @@ namespace DS4Windows.UI.Services
                 ? System.IO.Path.Combine(_pathService.AppDataPath, "Profiles")
                 : System.IO.Path.Combine(_pathService.ExecutableDirectory, "Profiles");
 
-            string file = _dialogs.PickOpenFile(new FileDialogOptions
+            string? file = _dialogs.PickOpenFile(new FileDialogOptions
             {
                 Title = "Select Profile to Import File",
                 Filter = "DS4Windows Profile (*.xml)|*.xml",
@@ -77,7 +77,7 @@ namespace DS4Windows.UI.Services
             if (index < 0) return;
 
             string source = System.IO.Path.Combine(_pathService.AppDataPath, "Profiles", profileList.ProfileListCol[index].Name + ".xml");
-            string target = _dialogs.PickSaveFile(new FileDialogOptions
+            string? target = _dialogs.PickSaveFile(new FileDialogOptions
             {
                 Title = "Select Profile to Export File",
                 Filter = "DS4Windows Profile (*.xml)|*.xml",
@@ -116,7 +116,7 @@ namespace DS4Windows.UI.Services
 
             if (item.SelectedIndex > -1 && item.SelectedIndex < item.ProfileListCol.Count)
             {
-                string prof = item.ProfileListCol[item.SelectedIndex].Name;
+                string? prof = item.ProfileListCol[item.SelectedIndex].Name;
 
                 // 既に同じプロファイルが適用されていればスキップ
                 if (_profileRepo.SelectedProfile[idx] == prof)
@@ -128,7 +128,7 @@ namespace DS4Windows.UI.Services
                 AppLogger.LogDebug($"SelectProfCombo_SelectionChanged: Applying profile '{prof}' for device {idx}");
 
                 // ★共通適用窓口 ApplyProfileToSlot を呼び出す（すべての切り替え手段を統一）
-                _profileSlotApplier.ApplyToSlot(idx, prof, ProfileChangeSource.Manual, launchProgram: true);
+                _profileSlotApplier.ApplyToSlot(idx, prof!, ProfileChangeSource.Manual, launchProgram: true);   // 一覧に載るプロファイルは、必ず名前を持つ
                 return true;
             }
             return false;
@@ -155,7 +155,7 @@ namespace DS4Windows.UI.Services
             {
                 // Force emitting missing-action logs for this editor open (ignore suppression).
                 // Pass explicit profile name to avoid confusion with device's currently-assigned profile.
-                string profileNameForLog = entity != null ? entity.Name : "(new profile)";
+                string? profileNameForLog = entity != null ? entity.Name : "(new profile)";
                 // 読み込んだプロファイルのアクションを調べるため、実機ではなく作業スロットを渡す
                 _profileRepo.EmitMissingActionLogsForDevice(ControllerLimits.TestProfileIndex, true, profileNameForLog);
             }
@@ -178,7 +178,7 @@ namespace DS4Windows.UI.Services
         /// <param name="profileListHolder">画面のプロファイル一覧</param>
         /// <param name="saveAutoProfiles">自動プロファイルの設定の保存（名前変更の直後に呼ぶ。自動プロファイルがなければ null）</param>
         public void SyncProfileListAndControllers(ProfileList profileListHolder, Action saveAutoProfiles,
-            string oldProfile = null, string newProfile = null, IReadOnlyCollection<string> targetProfiles = null)
+            string? oldProfile = null, string? newProfile = null, IReadOnlyCollection<string>? targetProfiles = null)
         {
             int slotCount = _environmentService.ControllerSlotLimit;
 
@@ -201,10 +201,10 @@ namespace DS4Windows.UI.Services
                     saveAutoProfiles?.Invoke();
                     _appSettings.Save();
                     // SA（Actions.xml）の切り替え先は、ID から現在の名前に引き直して保存する
-                    _profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);
+                    _profileRepo.RefreshProfileSwitchTargets(oldProfile!, newProfile!);   // isRename のときだけ（両方が空白でない）
                     // Controls の Load Profile の切り替え先（各プロファイルの <Control><Special>）は、ID のない古いプロファイルのファイルのため、旧名を新名へ書き換える処理を残す
                     // （TODO（Phase10-Step4d W7）: 全プロファイルのファイルに ID を書き足す移行ができたら撤去する。ReplaceActionReference も同じ）
-                    _profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);
+                    _profileRepo.ReplaceControlProfileSwitchTarget(oldProfile!, newProfile!);   // isRename のときだけ（両方が空白でない）
                 }
 
                 // ディスク全XMLを正（SSOT）としてプロファイル一覧を再構築
@@ -227,7 +227,7 @@ namespace DS4Windows.UI.Services
 
             // ④ 【再適用・ホットリロード (Re-apply)】
             // 保存またはリネームの影響を受けたスロットに対し、共通窓口経由で再適用を実行
-            string targetProfile = !string.IsNullOrWhiteSpace(newProfile) ? newProfile : oldProfile;
+            string? targetProfile = !string.IsNullOrWhiteSpace(newProfile) ? newProfile : oldProfile;
             for (int i = 0; i < slotCount; i++)
             {
                 bool matches = targetProfiles != null

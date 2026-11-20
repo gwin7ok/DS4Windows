@@ -33,17 +33,17 @@ namespace DS4Windows.UI.Services
         private readonly IEditorWindowFactory editorWindowFactory;
         private readonly ISpecialActionRepository specialActionRepository;
         private readonly IEnvironmentService environmentService;
-        private readonly ControlSettingsEditTarget controlTarget;
+        private readonly ControlSettingsEditTarget? controlTarget;
         private readonly ActionTypeEditorSet typeEditors;
 
         // SA のモードで編集中の SA に付ける Extras（SpecialAction.outputExtras と同じ書式。付けないときは null）。
         // Press Key の出力ピッカーで編集し、SA の保存のあとに SaveActionExtras で書く
-        private string saExtras;
+        private string? saExtras;
 
         /// <param name="deviceNum">設定を読み書きするスロット（編集用の作業スロット）。</param>
         /// <param name="controlSettings">Controls のモードで編集するボタンの設定。SA のモードは null。</param>
         /// <param name="targetDevice">実機のスロット番号。-1 は実機なし。</param>
-        public AssignmentEditorSession(int deviceNum, DS4ControlSettings controlSettings, SpecialAction specialAction, ProfileList profileList, int targetDevice,
+        public AssignmentEditorSession(int deviceNum, DS4ControlSettings? controlSettings, SpecialAction? specialAction, ProfileList profileList, int targetDevice,
             IEditorWindowFactory editorWindowFactory, IProfileEditViewModelFactory viewModelFactory, IActionViewModelFactory actionViewModelFactory,
             ISpecialActionRepository specialActionRepository, IProfileSettingsService profileSettingsService, IEnvironmentService environmentService,
             IWindowSystem windowSystem)
@@ -114,7 +114,7 @@ namespace DS4Windows.UI.Services
             if (ControlMode)
             {
                 // 保存済みの割り当てを、種別ごとの入力へ読み込む。種別の一覧の初期の選択も、割り当てに合わせる
-                controlTarget.LoadInto(PressKeyVM, MacroVM, typeEditors);
+                controlTarget!.LoadInto(PressKeyVM, MacroVM, typeEditors);   // 割り当ての対象がコントロールのときだけ呼ばれる
                 ActionVM.ActionTypeIndex = controlTarget.InitialTypeIndex;
             }
         }
@@ -153,7 +153,7 @@ namespace DS4Windows.UI.Services
             bool hasInput = typeIndex != ActionVM.TypeCatalog.DefaultIndex && typeIndex != ActionVM.TypeCatalog.UnboundIndex;
             if (hasInput && !typeEditors.IsValid(ActionVM.TypeAssoc[typeIndex], tempAct)) return false;
 
-            controlTarget.WriteFrom(ActionVM.ActionTypeIndex, PressKeyVM, MacroVM, typeEditors);
+            controlTarget!.WriteFrom(ActionVM.ActionTypeIndex, PressKeyVM, MacroVM, typeEditors);   // 同上
             controlTarget.Apply();
             return true;
         }
@@ -162,7 +162,7 @@ namespace DS4Windows.UI.Services
         /// SA のモードの保存。無効なときは、結びつきを保ったまま戻る（修正できるように）。保存できるときだけ、
         /// <paramref name="detachBindings"/> でデータの結びつきを外してから、旧名の削除→種別ごとの保存→Extras の保存の順に行う。
         /// </summary>
-        public SaveOutcome TrySaveSpecialAction(Action detachBindings, out string savedName)
+        public SaveOutcome TrySaveSpecialAction(Action detachBindings, out string? savedName)
         {
             savedName = null;
             SpecialAction.ActionTypeId typeId = ActionVM.TypeAssoc[ActionVM.ActionTypeIndex];
@@ -200,10 +200,10 @@ namespace DS4Windows.UI.Services
         }
 
         // 記録の画面を開く操作。画面は Command で結ぶ（クリックのハンドラーを持たない）
-        private RelayCommand _recordMacroCommand;
-        private RelayCommand _recordMultiTapCommand;
-        private RelayCommand _recordMultiHoldCommand;
-        private RelayCommand _recordMultiDoubleTapCommand;
+        private RelayCommand? _recordMacroCommand;
+        private RelayCommand? _recordMultiTapCommand;
+        private RelayCommand? _recordMultiHoldCommand;
+        private RelayCommand? _recordMultiDoubleTapCommand;
 
         public RelayCommand RecordMacroCommand => _recordMacroCommand ??= DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync(RecordMacro, name: nameof(RecordMacroCommand));
 
@@ -281,7 +281,7 @@ namespace DS4Windows.UI.Services
             {
                 // 対象のボタンと Extras を載せた一時設定を、Control のモードの出力ピッカーへ渡す。
                 // 結果は、Press Key の状態（Default を含む）と、編集用のコピーの Extras へ取り込む（元の設定は、Save まで変わらない）
-                DS4ControlSettings controlSettings = PressKeyVM.PrepareSettings(controlTarget.Control, controlTarget.Extras);
+                DS4ControlSettings controlSettings = PressKeyVM.PrepareSettings(controlTarget!.Control, controlTarget.Extras);   // 同上
                 BindingWindow controlWindow = editorWindowFactory.CreateBindingWindow(DeviceNum, controlSettings, TargetDevice,
                     BindingWindow.ExposeMode.Control);
                 controlWindow.Owner = Application.Current.MainWindow;

@@ -169,8 +169,8 @@ namespace DS4WindowsTests
             Assert.Contains("_profileRepo.SaveLinkedProfiles();", block);
             Assert.Contains("saveAutoProfiles?.Invoke();", block);
             Assert.Contains("_appSettings.Save();", block);
-            Assert.Contains("_profileRepo.RefreshProfileSwitchTargets(oldProfile, newProfile);", block);
-            Assert.Contains("_profileRepo.ReplaceControlProfileSwitchTarget(oldProfile, newProfile);", block);   // 古いプロファイルのために残す
+            Assert.Contains("_profileRepo.RefreshProfileSwitchTargets(oldProfile!, newProfile!);", block);
+            Assert.Contains("_profileRepo.ReplaceControlProfileSwitchTarget(oldProfile!, newProfile!);", block);   // 古いプロファイルのために残す
             Assert.DoesNotContain("ProfilePath[i] =", block);        // スロットの配列の書き換えは、窓口が追従するため、不要
             Assert.DoesNotContain("OlderProfilePath[i] =", block);
             Assert.DoesNotContain("ReplaceLinkedProfileName", block);

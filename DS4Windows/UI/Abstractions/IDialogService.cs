@@ -10,18 +10,18 @@ namespace DS4Windows.UI.Abstractions
     public interface IDialogService
     {
         /// <summary>OK だけの通知の窓を出す。</summary>
-        void ShowMessage(string message, string title = null, DialogIcon icon = DialogIcon.None);
+        void ShowMessage(string message, string? title = null, DialogIcon icon = DialogIcon.None);
 
         /// <summary>はい／いいえの確認の窓を出す。はい なら true。</summary>
-        bool Confirm(string message, string title = null, DialogIcon icon = DialogIcon.Question);
+        bool Confirm(string message, string? title = null, DialogIcon icon = DialogIcon.Question);
 
         /// <summary>開くファイルを選ばせる。取り消したら null。</summary>
-        string PickOpenFile(FileDialogOptions options);
+        string? PickOpenFile(FileDialogOptions options);
 
         /// <summary>フォルダーを選ばせる。取り消したら null。</summary>
-        string PickFolder();
+        string? PickFolder();
 
         /// <summary>保存先のファイルを選ばせる。取り消したら null。</summary>
-        string PickSaveFile(FileDialogOptions options);
+        string? PickSaveFile(FileDialogOptions options);
     }
 }

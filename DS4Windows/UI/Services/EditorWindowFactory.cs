@@ -50,7 +50,7 @@ namespace DS4Windows.UI.Services
             => _assignments.CreateStickCalibrationWindow(stick, device, profileSettingsViewModel);
 
         public AssignmentEditor CreateAssignmentEditor(int deviceNum, ProfileList profileList, int targetDevice,
-            SpecialAction specialAction = null)
+            SpecialAction? specialAction = null)
             => _assignments.CreateAssignmentEditor(deviceNum, profileList, targetDevice, specialAction, this);
 
         public AssignmentEditor CreateAssignmentEditorFor(int deviceNum, ProfileList profileList, int targetDevice, SpecialActionItem item)

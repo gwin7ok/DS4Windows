@@ -10,7 +10,7 @@ namespace DS4Windows.UI.Abstractions
     /// <summary>ViewModel の生成のうち、スペシャルアクションの編集と、割り当て編集画面の種別ごとの ViewModelを作る窓口。</summary>
     public interface IActionViewModelFactory
     {
-        SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction action = null);
+        SpecialActEditorViewModel CreateSpecialActEditorViewModel(int device, SpecialAction? action = null);
         /// <param name="device">設定を読み書きするスロット（プロファイル編集画面では編集用の作業スロット）</param>
         SpecialActionsListViewModel CreateSpecialActionsListViewModel(int device);
         MacroViewModel CreateMacroViewModel();

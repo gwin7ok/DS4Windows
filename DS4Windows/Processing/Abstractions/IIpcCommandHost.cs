@@ -28,10 +28,10 @@ namespace DS4Windows.Processing.Abstractions
         int FindProfileIndex(string profileName);
 
         /// <summary>プロファイル一覧のその位置の、正式なプロファイル名（大文字小文字は一覧のとおり）。範囲外は null。</summary>
-        string GetProfileName(int index);
+        string? GetProfileName(int index);
 
         /// <summary>指定の入力スロットのデバイス（行が無い・未接続・範囲外なら null）。</summary>
-        IControllerSlotView GetControllerDevice(int index);
+        IControllerSlotView? GetControllerDevice(int index);
 
         /// <summary>ログ（GUI のログ、ログファイル。旧 <c>ControlService.LogDebug</c>）。</summary>
         void LogDebug(string message);

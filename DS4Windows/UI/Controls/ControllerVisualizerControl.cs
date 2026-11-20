@@ -99,7 +99,7 @@ namespace DS4Windows.UI.Controls
             foreach (HitboxRegion region in layout.Regions)
             {
                 inLayout.Add(region.Id);
-                if (!_buttons.TryGetValue(region.Id, out Button button))
+                if (!_buttons.TryGetValue(region.Id, out Button? button))
                 {
                     button = new Button { Tag = region.Tag };
                     if (ButtonStyle != null)

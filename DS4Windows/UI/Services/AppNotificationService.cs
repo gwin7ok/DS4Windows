@@ -9,7 +9,7 @@ namespace DS4Windows.UI.Services
 {
     public class AppNotificationService : INotificationService
     {
-        public event EventHandler<NotificationEventArgs> NotificationTriggered;
+        public event EventHandler<NotificationEventArgs>? NotificationTriggered;
 
         // INotificationService.NotificationsEnabled／FlashTaskbar は削除した（設定の読み書きは
         // IAppSettingsService.Notifications／FlashWhenLate が担う重複）。通知の有無の判定は、実装の内部判定として残す。

@@ -8,7 +8,7 @@ namespace DS4Windows.UI.Controls
     /// </summary>
     public sealed class HitboxRegion
     {
-        public HitboxRegion(string id, string tag, double left, double top, double width, double height, bool isVisible = true)
+        public HitboxRegion(string id, string? tag, double left, double top, double width, double height, bool isVisible = true)
         {
             Id = id;
             Tag = tag;
@@ -23,7 +23,7 @@ namespace DS4Windows.UI.Controls
         public string Id { get; }
 
         /// <summary>ボタンの Tag に入れる表示用の名前。</summary>
-        public string Tag { get; }
+        public string? Tag { get; }
 
         public double Left { get; }
 

@@ -17,7 +17,7 @@ namespace DS4Windows.UI.Converters
     {
         public static readonly LightbarFillConverter Instance = new LightbarFillConverter();
 
-        private static ImageBrush rainbowBrush;
+        private static ImageBrush? rainbowBrush;
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
