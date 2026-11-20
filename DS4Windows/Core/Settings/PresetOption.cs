@@ -31,8 +31,8 @@ namespace DS4Windows.Core.Settings
             DualShock4,
         }
 
-        protected string name;
-        protected string description;
+        protected string? name;
+        protected string? description;
         protected bool outputControllerChoice;
         protected OutputContChoice outputCont;
         // 全サブクラス共通のControlService注入(Program.rootHubフォールバック)。
@@ -42,8 +42,8 @@ namespace DS4Windows.Core.Settings
         // Global.Load…Profile への直接呼び出しを、プリセット読み込みの契約経由に置き換えた（必須引数）。
         protected readonly DS4Windows.Core.Abstractions.IProfilePresetLoader presetLoader;
 
-        public string Name { get => name; }
-        public string Description { get => description; }
+        public string? Name { get => name; }
+        public string? Description { get => description; }
         public bool OutputControllerChoice { get => outputControllerChoice; }
         public OutputContChoice OutputCont
         {

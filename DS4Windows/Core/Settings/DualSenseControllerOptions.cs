@@ -55,7 +55,7 @@ namespace DS4Windows.Core.Settings
                 LedModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler LedModeChanged;
+        public event EventHandler? LedModeChanged;
 
         private MuteLEDMode muteLedMode = MuteLEDMode.Off;
         public MuteLEDMode MuteLedMode
@@ -68,7 +68,7 @@ namespace DS4Windows.Core.Settings
                 MuteLedModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MuteLedModeChanged;
+        public event EventHandler? MuteLedModeChanged;
 
         public DualSenseControllerOptions(InputDeviceType deviceType) :
             base(deviceType)
@@ -77,7 +77,7 @@ namespace DS4Windows.Core.Settings
 
         protected override string SectionName => XML_ELEMENT_NAME;
 
-        private IReadOnlyList<ControllerSetting> schema;
+        private IReadOnlyList<ControllerSetting>? schema;
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {

@@ -14,11 +14,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             ProfileSetting.Text("MouseAcceleration", (store, device, c) => store.buttonMouseInfos[device].mouseAccel.ToString()),
             ProfileSetting.Text("ButtonMouseVerticalScale", (store, device, c) => Convert.ToInt32(store.buttonMouseInfos[device].buttonVerticalScale * 100).ToString()),
             //XmlNode xmlShiftMod = m_Xdoc.CreateNode(XmlNodeType.Element, "ShiftModifier", null); xmlShiftMod.InnerText = shiftModifier[device].ToString(); rootElement.AppendChild(xmlShiftMod);
-            ProfileSetting.Text("LaunchProgram", (store, device, c) => store.basicSlots[device].LaunchProgram.ToString()),
+            ProfileSetting.Text("LaunchProgram", (store, device, c) => store.basicSlots[device].LaunchProgram!.ToString()),   // プロファイルの読み込み前の既定値（ResetForProfileLoad）で必ず設定される
             ProfileSetting.Text("DinputOnly", (store, device, c) => store.basicSlots[device].DinputOnly.ToString()),
             ProfileSetting.Text("StartTouchpadOff", (store, device, c) => store.touchpadSlots[device].StartOff.ToString()),
             ProfileSetting.Text("TouchpadOutputMode", (store, device, c) => store.touchpadSlots[device].OutputMode.ToString()),
-            ProfileSetting.Text("SATriggers", (store, device, c) => store.gyroSlots[device].MouseTriggers.ToString()),
+            ProfileSetting.Text("SATriggers", (store, device, c) => store.gyroSlots[device].MouseTriggers!.ToString()),   // 読み込み前の既定値で必ず設定される
             ProfileSetting.Text("SATriggerCond", (store, device, c) => BackingStore.SaTriggerCondString(store.gyroSlots[device].MouseTriggerCondAnd)),
             ProfileSetting.Text("TouchDisInvTriggers", (store, device, c) => string.Join(",", store.touchpadSlots[device].DisInvertTriggers)),
             ProfileSetting.Text("GyroSensitivity", (store, device, c) => store.gyroSlots[device].Sensitivity.ToString()),
@@ -41,7 +41,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             ProfileSetting.Text("GyroMouseMinThreshold", (store, device, c) => store.gyroSlots[device].Mouse.minThreshold.ToString()),
             ProfileSetting.Text("GyroMouseToggle", (store, device, c) => store.gyroSlots[device].MouseToggle.ToString()),
             ProfileSetting.Text("GyroOutputMode", (store, device, c) => store.gyroSlots[device].RemovedSwipe.GyroOutputModeTextForSave(store.gyroSlots[device].OutputMode.ToString())),
-            ProfileSetting.Text("GyroMouseStickTriggers", (store, device, c) => store.gyroSlots[device].MouseStickTriggers.ToString()),
+            ProfileSetting.Text("GyroMouseStickTriggers", (store, device, c) => store.gyroSlots[device].MouseStickTriggers!.ToString()),   // 読み込み前の既定値で必ず設定される
             ProfileSetting.Text("GyroMouseStickTriggerCond", (store, device, c) => BackingStore.SaTriggerCondString(store.gyroSlots[device].MouseStickTriggerCondAnd)),
             ProfileSetting.Text("GyroMouseStickTriggerTurns", (store, device, c) => store.gyroSlots[device].MouseStickTriggerTurns.ToString()),
             ProfileSetting.Text("GyroMouseStickHAxis", (store, device, c) => store.gyroSlots[device].MouseStickHorizontalAxis.ToString()),

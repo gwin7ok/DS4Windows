@@ -39,6 +39,7 @@ namespace DS4WindowsTests
             "Core/Updater/",
             "Core/Profiles/",
             "Core/Platform/",
+            "Core/Settings/",
             "Input/",
             "Output/",
             "Processing/Abstractions/",

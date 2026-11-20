@@ -54,7 +54,7 @@ namespace DS4Windows.Core.Settings
             ButtonMouseInfoChanged += ButtonMouseInfo_ButtonMouseInfoChanged;
         }
 
-        private void ButtonMouseInfo_ButtonMouseInfoChanged(object sender, EventArgs e)
+        private void ButtonMouseInfo_ButtonMouseInfoChanged(object? sender, EventArgs e)
         {
             if (tempButtonSensitivity == DEFAULT_TEMP_SENS)
             {

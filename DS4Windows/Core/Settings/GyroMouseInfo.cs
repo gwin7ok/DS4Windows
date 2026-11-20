@@ -54,7 +54,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event GyroMouseInfoEventHandler MinCutoffChanged;
+        public event GyroMouseInfoEventHandler? MinCutoffChanged;
 
         public double Beta
         {
@@ -67,7 +67,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event GyroMouseInfoEventHandler BetaChanged;
+        public event GyroMouseInfoEventHandler? BetaChanged;
 
         public bool JitterCompensation
         {

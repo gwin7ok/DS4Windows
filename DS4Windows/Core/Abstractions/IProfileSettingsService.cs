@@ -86,14 +86,14 @@ namespace DS4Windows.Core.Abstractions
 
 
         // ---- 課題④: ProfileActions インターフェースプロパティ ----
-        List<string>[] ProfileActions { get; set; }
+        List<string>?[] ProfileActions { get; set; }
 
         int GetBTPollRate(int deviceIndex);
         bool GetDInputOnly(int deviceIndex);
         int GetIdleDisconnectTimeout(int deviceIndex);
         bool GetEnableOutputDataToDS4(int deviceIndex);
-        DS4ControlSettings GetDS4CSetting(int deviceIndex, string control);
-        DS4ControlSettings GetDS4CSetting(int deviceIndex, DS4Controls control);
+        DS4ControlSettings? GetDS4CSetting(int deviceIndex, string control);
+        DS4ControlSettings? GetDS4CSetting(int deviceIndex, DS4Controls control);
 
         // ---- Step10-2-A-9: Mapping.cs専用 ----
         bool ProfileChangedNotification { get; set; }

@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Settings
         public int BTPollRate { get; set; }
 
         /// <summary>プロファイルと一緒に起動するプログラムのパス（なければ空）。</summary>
-        public string LaunchProgram { get; set; }
+        public string? LaunchProgram { get; set; }
 
         public bool DinputOnly { get; set; }
 

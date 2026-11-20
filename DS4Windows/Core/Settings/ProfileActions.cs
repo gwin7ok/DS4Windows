@@ -32,7 +32,7 @@ namespace DS4Windows.Core.Settings
         public string[] actions = new string[MAX_ACTIONS];
         public string[] actionExtras = new string[MAX_ACTIONS];
 
-        public event EventHandler ActionsChanged;
+        public event EventHandler? ActionsChanged;
 
         public string GetAction(int index) => index >= 0 && index < MAX_ACTIONS ? actions[index] : string.Empty;
 

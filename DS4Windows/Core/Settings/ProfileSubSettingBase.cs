@@ -16,7 +16,7 @@ namespace DS4Windows.Core.Settings
     public abstract class ProfileSubSettingBase : ObservableObject
     {
 
-        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             OnPropertyChanged(propertyName);
         }

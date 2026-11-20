@@ -107,7 +107,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event FlickStickSettingsEventHandler MinCutoffChanged;
+        public event FlickStickSettingsEventHandler? MinCutoffChanged;
 
         public double Beta
         {
@@ -120,7 +120,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event FlickStickSettingsEventHandler BetaChanged;
+        public event FlickStickSettingsEventHandler? BetaChanged;
 
         public void Reset()
         {

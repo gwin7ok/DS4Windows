@@ -17,7 +17,7 @@ namespace DS4Windows.Core.Settings
     public sealed class LinkedProfileMap : IEnumerable<KeyValuePair<string, string>>
     {
         private readonly Dictionary<string, ProfileSlotNames> _cells = new Dictionary<string, ProfileSlotNames>();
-        private IProfileIdentityService _identity;
+        private IProfileIdentityService? _identity;
 
         public int Count => _cells.Count;
 
@@ -35,13 +35,13 @@ namespace DS4Windows.Core.Settings
         {
             get
             {
-                if (!_cells.TryGetValue(serial, out ProfileSlotNames cell)) throw new KeyNotFoundException(serial);
+                if (!_cells.TryGetValue(serial, out ProfileSlotNames? cell)) throw new KeyNotFoundException(serial);
                 return cell[0];
             }
 
             set
             {
-                if (!_cells.TryGetValue(serial, out ProfileSlotNames cell))
+                if (!_cells.TryGetValue(serial, out ProfileSlotNames? cell))
                 {
                     cell = new ProfileSlotNames(1);
                     cell.AttachIdentity(_identity);
@@ -58,9 +58,9 @@ namespace DS4Windows.Core.Settings
 
         public void Clear() => _cells.Clear();
 
-        public bool TryGetValue(string serial, out string profile)
+        public bool TryGetValue(string serial, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out string profile)
         {
-            if (_cells.TryGetValue(serial, out ProfileSlotNames cell))
+            if (_cells.TryGetValue(serial, out ProfileSlotNames? cell))
             {
                 profile = cell[0];
                 return true;

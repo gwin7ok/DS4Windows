@@ -35,6 +35,6 @@ namespace DS4Windows.Core.Settings
         // 差: イベントの送信元が typeof(Global) から、このサービスのインスタンスになった（購読者は送信元を使っていない）。
         public void InvokeBatteryChanged(byte percentage) => BatteryChanged?.Invoke(this, percentage);
 
-        public event System.EventHandler<byte> BatteryChanged;
+        public event System.EventHandler<byte>? BatteryChanged;
     }
 }

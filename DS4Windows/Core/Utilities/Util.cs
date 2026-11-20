@@ -113,7 +113,7 @@ namespace DS4Windows.Core.Utilities
         public const uint EDD_GET_DEVICE_INTERFACE_NAME = 0x00000001;
 
         // Common helper to normalize action names for comparison (Trim by default)
-        public static string NormalizeActionName(string name)
+        public static string NormalizeActionName(string? name)
         {
             if (name == null) return string.Empty;
             return name.Trim();

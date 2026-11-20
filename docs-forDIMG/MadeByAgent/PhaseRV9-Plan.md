@@ -55,7 +55,7 @@
 | RV9-4 | A 組 `Output`（98 件。`UdpServer`、`Kbm`、`Backend`。ViGEm の型を参照する範囲は `Output/Backend` の中だけ［規約］のまま） | Debug ALL | RV9-3 | 完了（2026-11-19） |
 | RV9-5 | A 組 `Processing`（`Actions` を除く 156 件。`Services`・`Macro`・`Touchpad`・`Gyro`・直下） | Debug ALL | RV9-4 | 完了（2026-11-19） |
 | RV9-6 | A 組 ルート（`App.xaml.cs`。起動・終了の流れはガードを足さない）と `DS4WindowsCli`（5 件） | Debug ALL、`AppShutdownSequenceTests`、`AppHostStartupShutdownGuardTests` | RV9-5 | 完了（2026-11-19） |
-| RV9-7 | **B 組** `Core/Settings`（110 件） | Debug ALL、`BackingStore*Tests`、黄金テスト | RV5・RV6 の完了 | 未着手 |
+| RV9-7 | **B 組** `Core/Settings`（110 件） | Debug ALL、`BackingStore*Tests`、黄金テスト | RV5・RV6 の完了 | 完了（2026-11-20。警告 0。`!` は理由コメントつき 11 件。動きを変えたガードの追加はなし） |
 | RV9-8 | B 組 `Core/Persistence`（677 件。RV5 の宣言化のあとに残る分。新しい宣言型の部品は、RV5 のなかで `#nullable enable` で書いてある前提） | Debug ALL、黄金テスト（保存の形が変わらないこと） | RV5 の完了 | 未着手 |
 | RV9-9 | B 組 `Processing/Actions`（144 件） | Debug ALL、`TriggerDispatchEngine`・アクションのテスト | RV6 の完了 | 未着手 |
 | RV9-10 | B 組 `UI/Abstractions`・`UI/Converters`・`UI/Services`・`UI/Controls`（125 件） | Debug ALL | RV3 の完了 | 未着手 |

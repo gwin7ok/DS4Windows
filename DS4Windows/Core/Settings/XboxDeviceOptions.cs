@@ -12,7 +12,7 @@ namespace DS4Windows.Core.Settings
     {
         public const bool DEFAULT_ENABLE = false;
 
-        private IReadOnlyList<ControllerSetting> extraSettings;
+        private IReadOnlyList<ControllerSetting>? extraSettings;
 
         public XboxDeviceOptions() : base(DEFAULT_ENABLE, "XboxSupportSettings")
         {

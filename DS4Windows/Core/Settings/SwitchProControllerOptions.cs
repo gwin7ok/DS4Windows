@@ -40,7 +40,7 @@ namespace DS4Windows.Core.Settings
                 EnableHomeLEDChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler EnableHomeLEDChanged;
+        public event EventHandler? EnableHomeLEDChanged;
 
         public SwitchProControllerOptions(InputDeviceType deviceType) : base(deviceType)
         {
@@ -48,7 +48,7 @@ namespace DS4Windows.Core.Settings
 
         protected override string SectionName => XML_ELEMENT_NAME;
 
-        private IReadOnlyList<ControllerSetting> schema;
+        private IReadOnlyList<ControllerSetting>? schema;
 
         protected override IReadOnlyList<ControllerSetting> Schema => schema ??= new[]
         {

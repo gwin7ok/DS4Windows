@@ -22,21 +22,21 @@ namespace DS4Windows.Core.Settings
     public sealed class ProfileSlotNames : IEnumerable<string>
     {
         private readonly string[] _names;
-        private readonly string[] _ids;
-        private volatile IProfileIdentityService _identity;
+        private readonly string?[] _ids;
+        private volatile IProfileIdentityService? _identity;
 
         public ProfileSlotNames(int length)
         {
             if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
             _names = new string[length];
-            _ids = new string[length];
+            _ids = new string?[length];
             for (int i = 0; i < length; i++) _names[i] = string.Empty;
         }
 
         public int Length => _names.Length;
 
         /// <summary>登録簿を結ぶ。すでに入っている名前の ID を、引き直す。null なら、結びを外す（名前の控えだけになる）。</summary>
-        public void AttachIdentity(IProfileIdentityService identity)
+        public void AttachIdentity(IProfileIdentityService? identity)
         {
             _identity = identity;
             for (int i = 0; i < _names.Length; i++)
@@ -47,13 +47,13 @@ namespace DS4Windows.Core.Settings
         {
             get
             {
-                IProfileIdentityService identity = _identity;
+                IProfileIdentityService? identity = _identity;
                 if (identity == null) return _names[index];
 
-                string id = _ids[index];
+                string? id = _ids[index];
                 if (id != null)
                 {
-                    string current = identity.GetName(id);
+                    string? current = identity.GetName(id);
                     if (current != null)
                     {
                         if (!string.Equals(_names[index], current, StringComparison.Ordinal)) _names[index] = current;   // 控えも更新する（削除されたとき、最後の名前が残る）
@@ -70,13 +70,13 @@ namespace DS4Windows.Core.Settings
             set
             {
                 _names[index] = value;
-                IProfileIdentityService identity = _identity;
+                IProfileIdentityService? identity = _identity;
                 _ids[index] = identity != null && !string.IsNullOrEmpty(value) ? identity.GetId(value) : null;
             }
         }
 
         /// <summary>保管している ID。ない（登録簿がない、プロファイルが見つからない）ときは null。</summary>
-        public string IdAt(int index) => _ids[index];
+        public string? IdAt(int index) => _ids[index];
 
         /// <summary>名前の配列（その時点の現在の名前）。</summary>
         public string[] ToArray()

@@ -39,6 +39,6 @@ namespace DS4Windows.Core.Settings
                 ModeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler ModeChanged;
+        public event EventHandler? ModeChanged;
     }
 }

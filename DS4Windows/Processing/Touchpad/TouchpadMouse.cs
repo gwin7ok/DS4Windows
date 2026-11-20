@@ -618,7 +618,8 @@ namespace DS4Windows.Processing.Touchpad
                 return;
             }
 
-            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchLeft).IsDefault &&
+            // 実在するコントロール（DS4Controls.TouchLeft）の設定は、必ずある
+            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchLeft)!.IsDefault &&
                 leftDown)
             {
                 _syntheticInput.CountClick(deviceNum, Click.Left);
@@ -629,19 +630,22 @@ namespace DS4Windows.Processing.Touchpad
                 dragging2 = false;
             }
 
-            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchUpper).IsDefault &&
+            // 実在するコントロール（DS4Controls.TouchUpper）の設定は、必ずある
+            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchUpper)!.IsDefault &&
                 upperDown)
             {
                 _syntheticInput.CountClick(deviceNum, Click.Middle);
             }
 
-            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchRight).IsDefault &&
+            // 実在するコントロール（DS4Controls.TouchRight）の設定は、必ずある
+            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchRight)!.IsDefault &&
                 rightDown)
             {
                 _syntheticInput.CountClick(deviceNum, Click.Left);
             }
 
-            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchMulti).IsDefault &&
+            // 実在するコントロール（DS4Controls.TouchMulti）の設定は、必ずある
+            if (_profileSettings.GetDS4CSetting(deviceNum, DS4Controls.TouchMulti)!.IsDefault &&
                 multiDown)
             {
                 _syntheticInput.CountClick(deviceNum, Click.Right);

@@ -95,7 +95,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event TouchMouseStickInfoEventHandler MinCutoffChanged;
+        public event TouchMouseStickInfoEventHandler? MinCutoffChanged;
 
         public double Beta
         {
@@ -108,7 +108,7 @@ namespace DS4Windows.Core.Settings
                 RaisePropertyChanged();
             }
         }
-        public event TouchMouseStickInfoEventHandler BetaChanged;
+        public event TouchMouseStickInfoEventHandler? BetaChanged;
 
         public bool UseSmoothing
         {

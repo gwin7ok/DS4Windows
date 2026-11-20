@@ -11,12 +11,12 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Core.Settings
 {
     // ★ IDE0290 根本解決: C# 12 プライマリコンストラクタ構文を適用
-    public class AppSettingsService(BackingStore config, IProfileXmlStore xmlStore = null, IPathService pathService = null) : IAppSettingsService
+    public class AppSettingsService(BackingStore config, IProfileXmlStore? xmlStore = null, IPathService? pathService = null) : IAppSettingsService
     {
         // Global の転送プロパティ経由をやめ、注入された BackingStore（設定の唯一の実体）を直接使う。
         private readonly BackingStore _config = config ?? throw new ArgumentNullException(nameof(config));
-        private readonly IProfileXmlStore _xmlStore = xmlStore;
-        private readonly IPathService _pathService = pathService;
+        private readonly IProfileXmlStore? _xmlStore = xmlStore;
+        private readonly IPathService? _pathService = pathService;
 
         // StartMinimized等はGlobal(m_Config/BackingStore)への
         // 正規シムとし、UI層(MainWindow.xaml.cs等)からGlobal直参照した場合と完全に同一の実体を
@@ -24,12 +24,12 @@ namespace DS4Windows.Core.Settings
         // 「孤立した重複状態」バグがあった(Step13投入時に発覚)。
         // 非連動プロパティ CheckWhenを削除した。
 
-        public event EventHandler<string> SettingChanged;
+        public event EventHandler<string>? SettingChanged;
 
         // (※旧コンストラクタ public AppSettingsService(...) { ... } は削除)
         public bool Save()
         {
-            bool success = _xmlStore.SaveAppSettingsXml();
+            bool success = _xmlStore!.SaveAppSettingsXml();   // 保存・読み込みを使う生成（DI の登録）では、必ず渡される
             if (success)
             {
                 if (AppLogger.IsTraceEnabled)
@@ -46,7 +46,7 @@ namespace DS4Windows.Core.Settings
 
         public bool Load()
         {
-            bool success = _xmlStore.LoadAppSettingsXml();
+            bool success = _xmlStore!.LoadAppSettingsXml();   // 同上
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace($"[DI] AppSettingsService.Load: success={success}");
             return success;
@@ -61,11 +61,11 @@ namespace DS4Windows.Core.Settings
         /// 値が変わったときだけ、設定を書き換えて <see cref="SettingChanged"/> を出す（設定の後。通知の名前は呼び出したプロパティの名前）。
         /// 比較は <see cref="EqualityComparer{T}.Default"/>（bool・int・string・列挙型は、元の <c>!=</c> と同じ結果になる）。
         /// </summary>
-        private void SetIfChanged<T>(ref T field, T value, [CallerMemberName] string settingName = null)
+        private void SetIfChanged<T>(ref T field, T value, [CallerMemberName] string? settingName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return;
             field = value;
-            NotifyChanged(settingName);
+            NotifyChanged(settingName!);   // CallerMemberName が、プロパティの中からの呼び出しで名前を埋める
         }
 
         public bool StartMinimized
@@ -482,9 +482,9 @@ namespace DS4Windows.Core.Settings
 
         // 静的イベントだった UDPServerSmoothing*Changed を、このサービスのインスタンスイベントにした
         // （購読者は ControlService のみ。発火の条件と順序は従来と同一で、発火元だけが Global の静的イベントから this に変わった）。
-        public event EventHandler UDPServerSmoothingMincutoffChanged;
+        public event EventHandler? UDPServerSmoothingMincutoffChanged;
 
-        public event EventHandler UDPServerSmoothingBetaChanged;
+        public event EventHandler? UDPServerSmoothingBetaChanged;
 
         // ---- UDP サーバ平滑化パラメータ ----
         public double UDPServerSmoothingMincutoff
@@ -543,7 +543,7 @@ namespace DS4Windows.Core.Settings
             set => SetIfChanged(ref _config.useCustomSteamFolder, value);
         }
 
-        public string CustomSteamFolder
+        public string? CustomSteamFolder
         {
             get => _config.customSteamFolder;
             set => SetIfChanged(ref _config.customSteamFolder, value);
