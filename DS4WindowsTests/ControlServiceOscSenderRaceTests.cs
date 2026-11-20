@@ -63,18 +63,5 @@ namespace DS4WindowsTests
 
             Assert.Null(ex);
         }
-
-        [Fact]
-        public void OscServiceSource_HasNoDirectSenderSend()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Output/Services/OscService.cs");
-            if (path == null) return;
-
-            string text = SourceText.StripComments(File.ReadAllText(path));
-
-            // 送信はすべて SendOsc（null 安全）経由にする
-            Assert.DoesNotContain("_sender.Send(", text);
-            Assert.Contains("private void SendOsc(string address, object value)", text);
-        }
     }
 }

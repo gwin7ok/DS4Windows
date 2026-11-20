@@ -120,6 +120,15 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void Query_OutContType_ReturnsThePersistentProfileSetting()
+        {
+            // UDP 診断・コマンドラインの query は、画面の状態ではなく、プロファイル設定の出力の種類（正本）を返す
+            string expected = TestHost.GetService<IProfileSettingsService>().OutputType(0).ContType.ToString();
+
+            Assert.Equal(expected, Run("query", "1", "outconttype").QueryResult);
+        }
+
+        [Fact]
         public void UnknownOrEmptyCommands_DoNothing()
         {
             Assert.Empty(Run("nosuchcommand").Calls);

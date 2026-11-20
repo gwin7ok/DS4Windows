@@ -28,13 +28,25 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TrayIconViewModel_SubscribesBatteryChangedViaAppearanceService()
+        public void TrayIconViewModel_FollowsBatteryChangedOfTheAppearanceService()
         {
-            string text = SourceText.ReadCode(TrayVmPath);
-            if (text == null) return;
+            var appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
+            var vm = new TrayIconViewModel(TestHost.GetService<DS4Windows.Processing.Abstractions.IControllerSlotQuery>(), TestHost.GetService<DS4Windows.Processing.Abstractions.IServiceLifecycle>(), new DS4Windows.Core.Profiles.ProfileList(new PathService()),
+                appearance, TestRepositoryFactory.CreateProfileRepository(), new EnvironmentService(), new PathService(), new DS4Windows.UI.Services.WpfUiDispatcher());
 
-            Assert.Contains("appearanceSettings.BatteryChanged += UpdateTrayBattery;", text);
-            Assert.DoesNotMatch(@"static\s+string\s+trayTitle", text);
+            appearance.InvokeBatteryChanged(55);
+
+            Assert.EndsWith("/50.ico", vm.IconSource);
+        }
+
+        [Fact]
+        public void TrayIconViewModel_TrayTitleIsAnInstanceField()
+        {
+            // 以前は static で、複数の生成のたびに上書きされていた
+            var field = typeof(TrayIconViewModel).GetField("trayTitle",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+            Assert.NotNull(field);
+            Assert.False(field.IsStatic);
         }
 
         [Fact]
