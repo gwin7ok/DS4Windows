@@ -35,3 +35,6 @@
 ## 4. 承認をお願いする点
 1. A: 残る小文字のメソッドの改名を、続きの作業（型ごと）として行うか。プロパティ化は、その後に別の Phase として扱うか。
 2. B: タイマーを「UI／非 UI の 2 種類」へ揃える案でよいか（D3＝(B) の「1 種類」から変更の提案）。別名の廃止だけを先に行ってよいか。
+
+## 5. 承認の結果（2026-11-20）
+タイマーは「UI／非 UI の 2 種類」で承認。実施: 別名 `NonFormTimer`（5 ファイル）を `System.Timers.Timer` の直接の記述へ。`System.Threading.Timer`（`App` の GC、`BatteryStatusLogger`、`CompositeDeviceModel`）を `TimeProvider.System.CreateTimer` へ。検査は `UnifiedCodingPracticeRuleTests`。規約への追記（§3.1 に 1〜2 行）の文面は、承認を得てから足す。実機確認は `Device-Check-Checklist.md` §9g。

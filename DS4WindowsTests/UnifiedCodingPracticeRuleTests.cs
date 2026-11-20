@@ -35,5 +35,18 @@ namespace DS4WindowsTests
                 .Select(Path.GetFileName).ToList();
             Assert.True(offenders.Count == 0, "INotifyPropertyChanged の直接実装がある（ObservableObject を使う）: " + string.Join(", ", offenders));
         }
+
+        [Fact]
+        public void Timers_AreOfTwoKindsOnly_UiTimersAndTimeProviderTimers()
+        {
+            // UI を触る周期は System.Timers.Timer（別名なし。UI への戻しは IUiDispatcher と GuardedTimerTick）、
+            // UI を触らない周期は TimeProvider.CreateTimer（時間を差し替えてテストできる）。System.Threading.Timer と別名は使わない。
+            var alias = new Regex(@"^[ 	]*using\s+NonFormTimer\s*=", RegexOptions.Multiline);
+            var threadingTimer = new Regex(@"new\s+(?:System\.Threading\.)?Timer\s*\(");
+            var offenders = SourceText.ProductionFiles()
+                .Where(f => { string s = File.ReadAllText(f); return alias.IsMatch(s) || threadingTimer.IsMatch(s); })
+                .Select(Path.GetFileName).ToList();
+            Assert.True(offenders.Count == 0, "別名 NonFormTimer、または System.Threading.Timer の生成がある: " + string.Join(", ", offenders));
+        }
     }
 }

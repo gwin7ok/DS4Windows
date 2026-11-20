@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using NonFormTimer = System.Timers.Timer;
 using System.ComponentModel;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
@@ -108,7 +107,7 @@ namespace DS4Windows.UI
             get => keepsize;
         }
 
-        private NonFormTimer inputTimer;
+        private System.Timers.Timer inputTimer;
 
         private TouchButtonUserControl touchButtonUC;
 
@@ -210,7 +209,7 @@ namespace DS4Windows.UI
             AssignTriggerFullPullAssociation();
             AssignStickOuterBindAssociation();
 
-            inputTimer = new NonFormTimer(100);
+            inputTimer = new System.Timers.Timer(100);
             inputTimer.Elapsed += InputDS4;
             SetupEvents();
 

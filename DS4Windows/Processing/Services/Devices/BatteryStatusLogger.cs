@@ -21,7 +21,7 @@ namespace DS4Windows.Processing.Services.Devices
         private readonly IDeviceSlotState _slots;
         private readonly TimeSpan _interval;
         private readonly object _gate = new object();
-        private Timer? _timer;
+        private ITimer? _timer;
 
         public BatteryStatusLogger(IDeviceSlotState slots)
             : this(slots, DefaultInterval)
@@ -40,7 +40,7 @@ namespace DS4Windows.Processing.Services.Devices
             lock (_gate)
             {
                 if (_timer != null) return;
-                _timer = new Timer(_ => LogOnce(), null, _interval, _interval);
+                _timer = TimeProvider.System.CreateTimer(_ => LogOnce(), null, _interval, _interval);
             }
         }
 

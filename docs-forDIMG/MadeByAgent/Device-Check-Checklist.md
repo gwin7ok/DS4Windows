@@ -115,6 +115,12 @@
 - 壊れた値（数値でない要素）を持つプロファイルは、読み込み後の値が既定値になる（`PhaseRV5-ParseFailure-Changes.md` の 13 要素）。該当するプロファイルが実機にあれば、見え方を確かめる（走査では 0 件）。
 - 疑う場所: `ProfileSetting`（`Core/Persistence/ProfileSections`）と `ProfileLoadContext` の補助。
 
+## 9g. 変更通知・タイマー・連打（PhaseRV7・RV6）
+- 画面の表示更新: 設定画面・割り当て編集・コントローラー一覧で、値を変えると表示が更新される（`ObservableObject` の付け替え）。電池の表示が、約 60 秒ごとに読み直される（`TimeProvider` のタイマー）。
+- バッテリーのログ（周期）、GC の周期（30 秒。長時間の稼働でメモリが増え続けない）、トレイ・自動プロファイル・ホットキーの周期処理が止まらない。
+- 連打（`RepeatHelper`）: キーの連打が始まり、離すと止まる（`IRepeater.Start()` の整理）。FakerInput・SendInput のキー・マウスの入力。
+- 疑う場所: `CompositeDeviceModel`、`BatteryStatusLogger`、`App.xaml.cs` の `collectTimer`、`RepeatHelperToIRepeaterAdapter`、`XmlDtoText`（設定ファイルの書き出し）。
+
 ## 10. 実機がなく、未確認のまま残す項目
 - DualSense: 出力レポート（ライトバー、プレイヤー LED、トリガーの効果、振動、触覚の強さ。USB・Bluetooth）、振動エミュレーションの方式の切替。
 - Switch Pro: スティック・加速度・ジャイロの校正、振動。

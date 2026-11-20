@@ -4,14 +4,14 @@
  "date": "2026-11-20",
  "metrics": {
   "files_total": 986,
-  "lines_total": 102380,
+  "lines_total": 102375,
   "big_files": 32,
   "xaml_command": 260,
   "xaml_click": 29,
   "xaml_other_events": 40,
   "xaml_binding": 1065,
   "xaml_xname": 686,
-  "codebehind_lines": 9681,
+  "codebehind_lines": 9676,
   "viewmodel_lines": 15223,
   "direct_assign": 248,
   "handwire": 75,
@@ -37,10 +37,10 @@
   "pub_fields_total": 700,
   "backingstore_fields": 107,
   "lower_camel": 40,
-  "timer_kind_count": 4,
-  "timer_alias_lines": 5,
+  "timer_kind_count": 3,
+  "timer_alias_lines": 0,
   "test_files": 645,
-  "test_facts": 2571,
+  "test_facts": 2572,
   "test_theories": 248,
   "test_to_src_pct": 75,
   "srctext_tests": 135,
@@ -66,7 +66,7 @@
   "appsettings_clone_pct": 49,
   "commands_rate": 0.790273556231003,
   "binding_rate": 0.6082238720731011,
-  "viewmodel_share": 0.611267266302602,
+  "viewmodel_share": 0.6113900156632797,
   "blocking_calls": 34
  },
  "viewpoints": [
@@ -200,8 +200,8 @@
     {
      "id": "mv_viewmodel_share",
      "label": "ViewModel の行の割合",
-     "value": 0.611267266302602,
-     "score": 0.6036,
+     "value": 0.6113900156632797,
+     "score": 0.604,
      "weight": 1,
      "unit": "",
      "kind": "metric"
@@ -420,8 +420,8 @@
   },
   {
    "name": "採用手段の統一",
-   "score": 0.8156,
-   "grade": "B+",
+   "score": 0.8719,
+   "grade": "A−",
    "indicators": [
     {
      "id": "un_inpc",
@@ -435,8 +435,8 @@
     {
      "id": "un_timer_kinds",
      "label": "タイマーの生成の種類",
-     "value": 4,
-     "score": 0.4,
+     "value": 3,
+     "score": 0.6,
      "weight": 1,
      "unit": "種類",
      "kind": "metric"
@@ -444,8 +444,8 @@
     {
      "id": "un_timer_alias",
      "label": "別名 using NonFormTimer の行",
-     "value": 5,
-     "score": 0.75,
+     "value": 0,
+     "score": 1.0,
      "weight": 1,
      "unit": "行",
      "kind": "metric"
