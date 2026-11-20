@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         public void ResetTriggerControl_MatchesTheCurrentMappingMethod_ForEveryControl()
         {
             Mapping mapping = TestMappingFactory.Create();
-            MethodInfo legacy = typeof(Mapping).GetMethod("ResetToDefaultValue", BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo legacy = typeof(ControlFrameProcessor).GetMethod("ResetToDefaultValue", BindingFlags.Static | BindingFlags.NonPublic);
             Assert.NotNull(legacy);
 
             var random = new Random(8401);
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
                     ControllerStateFieldMapping expected = RandomFields(random);
                     ControllerStateFieldMapping actual = Clone(expected);
 
-                    legacy.Invoke(mapping, new object[] { control, new ControllerState(), expected });
+                    legacy.Invoke(null, new object[] { control, expected });
                     var frame = new FrameOutput();
                     frame.Bind(actual, new SyntheticState());
                     frame.ResetTriggerControl(control);

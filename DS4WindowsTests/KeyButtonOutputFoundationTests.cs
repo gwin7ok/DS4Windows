@@ -246,7 +246,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheMapping_ConsultsTheEngine_OnceBeforeTheLegacyBody()
         {
-            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
+            string mapping = SourceFileLocator.Find("DS4Windows/Processing/ControlFrameProcessor.cs");
             if (mapping == null) return;
 
             string text = SourceText.ReadFileWithPartials(mapping);

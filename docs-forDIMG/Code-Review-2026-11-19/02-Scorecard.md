@@ -163,6 +163,12 @@
 - 予想とのずれ: 目標（33→25 前後）に届かなかった。`TouchpadMouse`・`GyroOutputProcessor`・設定の 3 型は、状態の絡みや呼び出しの広さに対し、切り出しの効果が小さく見送った。`Mapping.MapCustom`（約 250 行の 1 メソッド）の分解が、型の大きさに最も効く残りの課題。
 - 実機確認: `Device-Check-Checklist.md` §9j（未実施）。
 
+### RV12b（2026-11-21。`Mapping.MapCustom` の分解）
+- 保存: `scorecard/RV12b.json`。直前の保存: `scorecard/RV12.json`。
+- 等級の変化はない（オブジェクト指向 87.5%→87.4%。`MapFrame` の `ref` 用の可変フィールド 2 件が増えたため）。500 行以上は 31 件のまま。
+- 切り出し: `ControlFrameProcessor`（スティック・トリガー・各ボタンの処理）と `MapFrame`（フレームの作業の表）。`MapCustom` は、流れの組み立てだけになった。構造としては、10 個前後の引数と `ref` の受け渡しがなくなった。指標には現れない。
+- 次: `TouchpadMouse`・`GyroOutputProcessor` の状態の絡みの整理（`PhaseRV13-Analysis-StateEntanglement.md`）。
+
 ### RVn（完了日）
 - 保存: scorecard/RVn.json。基準の版: v1。直前の保存: …
 - 等級が変わった観点: 観点名 X→Y（点数 a%→b%）。…
