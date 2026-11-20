@@ -94,35 +94,10 @@ namespace DS4Windows.Core.Profiles
             string output_path = m_Profile;
             string testStr = string.Empty;
             XmlSerializer serializer = new XmlSerializer(typeof(AutoProfilesDTO));
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = true,
-                    });
-
-                // Write header explicitly
-                //xmlWriter.WriteStartDocument();
-                xmlWriter.WriteComment(string.Format(" Auto-Profile Configuration Data. {0} ", DateTime.Now));
-                xmlWriter.WriteWhitespace("\r\n");
-                xmlWriter.WriteWhitespace("\r\n");
-
-                // Write root element and children
-                AutoProfilesDTO dto = new AutoProfilesDTO();
-                if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
-                dto.MapFrom(this);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
+            AutoProfilesDTO dto = new AutoProfilesDTO();
+            if (profileIdentity != null) dto.ProfileIdOf = profileIdentity.EnsurePersisted;   // Phase10-Step4d W4
+            dto.MapFrom(this);
+            testStr = XmlDtoText.Serialize(serializer, dto, string.Format(" Auto-Profile Configuration Data. {0} ", DateTime.Now));
 
             try
             {

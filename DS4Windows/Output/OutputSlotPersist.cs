@@ -62,34 +62,9 @@ namespace DS4Windows.Output
             string output_path = Path.Combine(configDirectory, CONFIG_FILENAME);
             string testStr = string.Empty;
             XmlSerializer serializer = new XmlSerializer(typeof(OutputSlotPersistDTO));
-            using (Utf8StringWriter strWriter = new Utf8StringWriter())
-            {
-                using XmlWriter xmlWriter = XmlWriter.Create(strWriter,
-                    new XmlWriterSettings()
-                    {
-                        Encoding = Encoding.UTF8,
-                        Indent = true,
-                    });
-
-                // Write header explicitly
-                xmlWriter.WriteStartDocument();
-                xmlWriter.WriteComment(string.Format(" Made with DS4Windows version {0} ", DS4Windows.Core.Platform.PathService.ExecutableVersionState));
-                xmlWriter.WriteWhitespace("\r\n");
-                xmlWriter.WriteWhitespace("\r\n");
-
-                // Write root element and children
-                OutputSlotPersistDTO dto = new OutputSlotPersistDTO();
-                dto.MapFrom(slotManager);
-                // Omit xmlns:xsi and xmlns:xsd from output
-                serializer.Serialize(xmlWriter, dto,
-                    new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty }));
-                xmlWriter.Flush();
-                xmlWriter.Close();
-
-                testStr = strWriter.ToString();
-                //Trace.WriteLine("TEST OUTPUT");
-                //Trace.WriteLine(testStr);
-            }
+            OutputSlotPersistDTO dto = new OutputSlotPersistDTO();
+            dto.MapFrom(slotManager);
+            testStr = XmlDtoText.Serialize(serializer, dto, string.Format(" Made with DS4Windows version {0} ", DS4Windows.Core.Platform.PathService.ExecutableVersionState), writeStartDocument: true);
 
             try
             {
