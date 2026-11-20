@@ -160,3 +160,17 @@ K4 の 47 件のうち、次の 10 件を、挙動・リフレクション・表
 - `SlotLinkedAutoProfileReferenceIdTests`: 3 つのシリアライザーが `IProfileIdentityService` をコンストラクターで受けることの検査へ。
 
 残り 37 件の K4 は、挙動のテストにするには、対象の準備が大きい（`MainWindow`・`ProfileEditor` などの画面、`App.xaml.cs` の起動、`Mapping`・`AutoProfileService` などの組み立て）。1 件ずつ負の確認をしながら、別の Phase で進める。
+
+## K4 の書き換え（RV8f）
+
+残り 37 件の K4 のうち、次を書き換えた（すべて負の確認済み。注入 → 失敗を確認 → 復元）。
+
+- `ActionIdTests`: 8 つのエディター VM を、記録する偽のリポジトリで作り、保存の引数の ID が `action.id` であることを確かめる。
+- `OutputTypeOwnershipGuardTests`・`FourTwoGlobalReferenceGuardTests`: 挙動・反射の検査へ。
+- `AutoRevertBatteryTests`: 実際に動かして、通知のバッテリー表示（`N/A%` と数値）を確かめる（`TestDs4Device.SetBattery` を追加）。
+- `SettingsViewModelGlobalReferenceGuardTests`: 文字列 1 行の検査を撤去（型の検査が覆う）。
+- `AppPostHostContractTests`: `LoadActions` の「ファイルがなければ既定のアクションを作る」を挙動の検査にした（`File.Exists` の正規表現を撤去）。
+
+`CreateStandardActions` は、実行すると利用者の Profiles フォルダーを書き換えるため、委譲の検査のまま残した（OS の状態に触れない規則）。
+
+結果: ソースの文字列を読むテストは 121 → 119 ファイル。全 3,664 件合格。残りの K4 は、画面（`MainWindow`・`ProfileEditor`）・`App.xaml.cs` の起動・`Mapping` などの組み立てが必要で、準備が大きいか、実プロセスの OS 状態に触れるため、書き換えていない。
