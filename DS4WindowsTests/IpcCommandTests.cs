@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// <c>MainWindow.WndProc</c> の分割。F-2a: コマンドの読み取りの値、F-2b: 分岐の順序とコマンド名の集合（ソースの照合）。
+    /// <c>MainWindow.WndProc</c> の分割。F-2a: コマンドの読み取りの値、F-2b: ウィンドウ手続きの分岐と、受け取りの握りつぶし（ソースの照合）。コマンドの順序と条件は `IpcCommandProcessorTests` が挙動で確かめる。
     /// </summary>
     public class IpcCommandTests
     {
@@ -53,35 +53,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheCommands_AreDispatchedInTheOriginalOrder_WithTheOriginalConditions()
-        {
-            // コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序と条件は同じ）
-            string ipc = SourceText.Read("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");
-            if (ipc == null) return;
-
-            string[] order =
-            {
-                "strData[0] == \"start\"",
-                "strData[0] == \"stop\"",
-                "strData[0] == \"cycle\"",
-                "strData[0] == \"shutdown\"",
-                "strData[0] == \"disconnect\"", "Disconnect(host, strData);",
-                "(strData[0] == \"changeledcolor\") && strData.Length >= 5", "ChangeLedColor(host, strData);",
-                "(strData[0] == \"loadprofile\" || strData[0] == \"loadtempprofile\") && strData.Length >= 3", "LoadProfile(host, strData);",
-                "strData[0] == \"outputslot\" && strData.Length >= 3", "OutputSlot(strData);",
-                "strData[0] == \"query\" && strData.Length >= 3", "Query(host, strData);",
-            };
-
-            int at = -1;
-            foreach (string token in order)
-            {
-                int next = ipc.IndexOf(token, at + 1, System.StringComparison.Ordinal);
-                Assert.True(next > at, token + " が、期待の順序にない");
-                at = next;
-            }
-        }
-
-        [Fact]
         public void TheCopyData_StillEatsEveryException_AndChecksTheSizeFirst()
         {
             string ipc = SourceText.Read("DS4Windows/UI/MainWindow.Ipc.cs");
@@ -93,14 +64,5 @@ namespace DS4WindowsTests
             Assert.True(body.IndexOf("IpcCommandParser.IsValidSize(", System.StringComparison.Ordinal) < body.IndexOf("Marshal.Copy(", System.StringComparison.Ordinal), "サイズの検査が、バッファの読み取りより先");
         }
 
-        [Fact]
-        public void TheOldWndProcBody_IsGone()
-        {
-            string main = SourceText.Read("DS4Windows/UI/MainWindow.xaml.cs");
-            if (main == null) return;
-
-            Assert.DoesNotContain("strData[0]", main);
-            Assert.DoesNotContain("Encoding.ASCII.GetString(buffer)", main);
-        }
     }
 }

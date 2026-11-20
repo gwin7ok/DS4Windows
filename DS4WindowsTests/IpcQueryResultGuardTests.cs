@@ -1,29 +1,33 @@
 ﻿using System;
-using System.IO;
+using System.Threading;
+using DS4Windows.Core.Platform;
 using Xunit;
 
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// 不具合の修正（2026-10-23）: コマンドラインのクライアントが、query の結果を、結果の MMF（<c>resultDataMmf</c>。<c>IpcMemoryMap</c>）から読むこと。
-    /// 以前は、クラス名の MMF（<c>classNameMmf</c>。クライアントのプロセスでは null）から読んでいたため、例外が握りつぶされ、結果が常に空だった。
+    /// 不具合の修正（2026-10-23）: コマンドラインのクライアントが、query の結果を、結果の MMF（<c>IpcMemoryMap</c> の結果の領域）から読むこと。
+    /// 以前は、クラス名の MMF（クライアントのプロセスでは null）から読んでいたため、例外が握りつぶされ、結果が常に空だった。
+    /// 実際の名前付き MMF とイベントで、クライアント（結果の領域を作って待つ側）とサーバー（結果を書く側）を同じプロセスの 2 つの窓口で動かして確かめる。
+    /// 名前はプロセス間で共有されるため、実アプリを同時に動かしているとこのテストは失敗する。
     /// </summary>
+    [Collection(SharedHostStateCollection.Name)]
     public class IpcQueryResultGuardTests
     {
+        private const string ReadyEventName = "DS4Windows_IPCResultData_ReadyEvent";
+
         [Fact]
         public void TheClient_ReadsTheQueryResultFromTheResultMmf()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Core/Platform/IpcMemoryMap.cs");
-            if (path == null) return;
-            string text = File.ReadAllText(path);
+            using var ready = new EventWaitHandle(false, EventResetMode.ManualReset, ReadyEventName);
+            using var client = new IpcMemoryMap();
+            using var server = new IpcMemoryMap();
 
-            int start = text.IndexOf("public string WaitAndReadResult(", StringComparison.Ordinal);
-            Assert.True(start >= 0);
-            int end = text.IndexOf("public void DisposeResultBuffer(", start, StringComparison.Ordinal);
-            string body = text.Substring(start, end - start);
+            client.CreateResultBuffer();
+            server.WriteResult("プロファイル A");
 
-            Assert.Contains("resultDataMmf.CreateViewAccessor(", body);
-            Assert.DoesNotContain("classNameMmf.CreateViewAccessor(", body);
+            Assert.Equal("プロファイル A", client.WaitAndReadResult(ready));
+            client.DisposeResultBuffer();
         }
     }
 }
