@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -46,7 +48,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 EmptyColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler EmptyColorChanged;
+        public event EventHandler? EmptyColorChanged;
         public DS4Color FullColor
         {
             get => fullColor;
@@ -57,7 +59,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 FullColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler FullColorChanged;
+        public event EventHandler? FullColorChanged;
 
         public void UpdateForcedColor(DS4Color color, int device)
         {
@@ -91,7 +93,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void LoadAction(SpecialAction action)
         {
-            string[] details = action.details.Split(',');
+            string[] details = action.details!.Split(',');   // CheckBattery は、必ず details を持つ
             delay = action.delayTime;
             bool.TryParse(details[1], out notification);
             bool.TryParse(details[2], out lightbar);

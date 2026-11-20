@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,10 +30,10 @@ namespace DS4Windows.UI.ViewModels
             => $"{DS4Windows.UI.Services.VirtualKeyNames.Get(virtualKey)}{(scanCode ? " (SC)" : string.Empty)} ({Mode(toggle)})";
 
         /// <summary>ボタン（パッド、マウス、ホイール、マウス移動）: 「A (Press)」「Left Mouse Button (Toggle)」。</summary>
-        public static string ForButton(string buttonName, bool toggle) => $"{buttonName} ({Mode(toggle)})";
+        public static string ForButton(string? buttonName, bool toggle) => $"{buttonName} ({Mode(toggle)})";
 
         /// <summary>Default: 「Default (A)」。既定の出力名がなければ「Default」。Toggle のとき（保存すると、既定の出力への Button ＋ Toggle になる）は「 (Toggle)」を足す。</summary>
-        public static string ForDefault(string defaultOutputName, bool toggle = false)
+        public static string ForDefault(string? defaultOutputName, bool toggle = false)
             => (string.IsNullOrEmpty(defaultOutputName) ? DefaultText : $"{DefaultText} ({defaultOutputName})") + (toggle ? " (Toggle)" : string.Empty);
 
         /// <summary>Macro: 「Macro: 12 steps (Play once)」。再生の指定、Scan Code、SA 専用の 3 項目を、この順に足す。</summary>
@@ -60,8 +62,8 @@ namespace DS4Windows.UI.ViewModels
         /// <param name="isExtraControl">ジャイロ・スワイプなど、既定の出力を持たない入力か。</param>
         /// <param name="unassignedText">割り当てがない（既定の出力もない）ときの表示（アプリの言語の「未割り当て」）。</param>
         /// <param name="profileExists">Load Profile の参照先が今もあるか（null のときは確認しない）。ないときは「(none)」と表示する（割り当て編集画面の「未選択」と同じ扱い。S9-10）。</param>
-        public static string ForControl(DS4ControlSettings setting, Func<X360Controls, string> buttonName, X360Controls defaultOutput, bool isExtraControl, string unassignedText,
-            Func<string, bool> profileExists = null)
+        public static string ForControl(DS4ControlSettings setting, Func<X360Controls, string?> buttonName, X360Controls defaultOutput, bool isExtraControl, string unassignedText,
+            Func<string, bool>? profileExists = null)
         {
             if (setting == null) return unassignedText;
 
@@ -73,7 +75,7 @@ namespace DS4Windows.UI.ViewModels
                     text = ForKey(setting.action.actionKey, setting.keyType.HasFlag(DS4KeyType.ScanCode), toggle);
                     break;
                 case DS4ControlSettings.ActionType.Macro:
-                    ControlSpecialItem options = setting.special != null && setting.special.Type == SpecialAction.ActionTypeId.Macro ? setting.special : null;
+                    ControlSpecialItem? options = setting.special != null && setting.special.Type == SpecialAction.ActionTypeId.Macro ? setting.special : null;
                     text = ForMacro(setting.action.actionMacro?.Length ?? 0, setting.keyType,
                         options != null && options.RunOnRelease, options != null && options.Synchronized, options != null && options.KeepKeyState);
                     break;
@@ -93,7 +95,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>Controls の SA 専用の種別（型のある項目）。</summary>
-        public static string ForSpecialItem(ControlSpecialItem item, Func<string, bool> profileExists = null)
+        public static string ForSpecialItem(ControlSpecialItem item, Func<string, bool>? profileExists = null)
         {
             switch (item.Type)
             {
@@ -123,7 +125,7 @@ namespace DS4Windows.UI.ViewModels
         // ---- SA タブ ----
 
         /// <summary>SA タブの一覧の「アクション」列。種別名に、詳細を続ける。</summary>
-        public static string ForSpecialAction(SpecialAction sa, Func<X360Controls, string> buttonName, Func<string, bool> profileExists = null)
+        public static string ForSpecialAction(SpecialAction sa, Func<X360Controls, string?> buttonName, Func<string, bool>? profileExists = null)
         {
             if (sa == null) return string.Empty;
 
@@ -141,7 +143,7 @@ namespace DS4Windows.UI.ViewModels
                 case SpecialAction.ActionTypeId.Button:
                     {
                         bool toggle = sa.KeyButtonSwitchMode.HasValue && sa.KeyButtonSwitchMode.Value == SpecialAction.KeyButtonSwitchModeEnum.Toggle;
-                        string name = int.TryParse(sa.details, out int btn) ? buttonName((X360Controls)btn) : sa.details;
+                        string? name = int.TryParse(sa.details, out int btn) ? buttonName((X360Controls)btn) : sa.details;
                         text = "Button: " + ForButton(name, toggle) + (sa.analogStrength != 100 ? $" (Strength {sa.analogStrength}%)" : string.Empty);
                         break;
                     }
@@ -178,22 +180,22 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>Load Profile の参照先の表示。削除された（一覧にない）プロファイルは「(none)」。確認の関数がない、または名前が空のときは、名前をそのまま出す。</summary>
-        private static string ProfileLabel(string name, Func<string, bool> profileExists)
-            => profileExists != null && !string.IsNullOrEmpty(name) && !profileExists(name) ? NoProfileText : name;
+        private static string ProfileLabel(string? name, Func<string, bool>? profileExists)
+            => profileExists != null && !string.IsNullOrEmpty(name) && !profileExists(name) ? NoProfileText : name ?? string.Empty;
 
         public const string NoProfileText = "(none)";
 
         /// <summary>Focus Window の対象の表示。パスとタイトルを、書かれたまま（^ ... $ * の印を含む）出す。両方空なら "(none)"。</summary>
-        private static string FocusTargetOf(string path, string title)
+        private static string FocusTargetOf(string? path, string? title)
         {
             bool hasPath = !string.IsNullOrWhiteSpace(path);
             bool hasTitle = !string.IsNullOrWhiteSpace(title);
             if (hasPath && hasTitle) return path + " / " + title;
-            if (hasPath) return path;
-            return hasTitle ? title : "(none)";
+            if (hasPath) return path ?? string.Empty;
+            return hasTitle ? title ?? string.Empty : "(none)";
         }
 
-        private static string FileNameOf(string path)
+        private static string FileNameOf(string? path)
         {
             if (string.IsNullOrEmpty(path)) return string.Empty;
             try { return Path.GetFileName(path); }

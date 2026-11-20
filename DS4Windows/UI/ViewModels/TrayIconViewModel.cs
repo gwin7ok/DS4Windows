@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.UI.Services;
 using System;
 using System.Collections.Generic;
@@ -67,7 +69,7 @@ namespace DS4Windows.UI.ViewModels
                 catch (InvalidOperationException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
         }
-        public event EventHandler TooltipTextChanged;
+        public event EventHandler? TooltipTextChanged;
 
         public string IconSource { get => iconSource;
             set
@@ -82,13 +84,13 @@ namespace DS4Windows.UI.ViewModels
         public IReadOnlyList<TrayMenuItemModel> MenuItems => menuItems;
 
         /// <summary>メニューの項目か状態が変わった。UI のスレッドで起きる（呼び出しもとのスレッドによらず、View 側で受け直す）。</summary>
-        public event EventHandler MenuChanged;
+        public event EventHandler? MenuChanged;
 
-        public event EventHandler IconSourceChanged;
-        public event EventHandler RequestShutdown;
-        public event EventHandler RequestOpen;
-        public event EventHandler RequestMinimize;
-        public event EventHandler RequestServiceChange;
+        public event EventHandler? IconSourceChanged;
+        public event EventHandler? RequestShutdown;
+        public event EventHandler? RequestOpen;
+        public event EventHandler? RequestMinimize;
+        public event EventHandler? RequestServiceChange;
 
         private ReaderWriterLockSlim _colLocker = new ReaderWriterLockSlim();
         private List<ControllerHolder> controllerList = new List<ControllerHolder>();
@@ -102,8 +104,8 @@ namespace DS4Windows.UI.ViewModels
         private readonly IUiDispatcher uiDispatcher;
 
         public delegate void ProfileSelectedHandler(TrayIconViewModel sender,
-            ControllerHolder item, string profile);
-        public event ProfileSelectedHandler ProfileSelected;
+            ControllerHolder item, string? profile);
+        public event ProfileSelectedHandler? ProfileSelected;
 
         //public TrayIconViewModel(Tester tester)
         public TrayIconViewModel(IControllerSlotQuery slots, DS4Windows.Processing.Abstractions.IServiceLifecycle lifecycle, ProfileList profileListHolder,
@@ -160,7 +162,7 @@ namespace DS4Windows.UI.ViewModels
             */
         }
 
-        private void Service_RunningChanged(object sender, EventArgs e)
+        private void Service_RunningChanged(object? sender, EventArgs e)
         {
             string temp = lifecycle.Running ? "Stop" : "Start";
             uiDispatcher.BeginInvoke((Action)(() =>
@@ -171,14 +173,14 @@ namespace DS4Windows.UI.ViewModels
             }));
         }
 
-        private void ClearControllerList(object sender, EventArgs e)
+        private void ClearControllerList(object? sender, EventArgs e)
         {
             _colLocker.EnterWriteLock();
             controllerList.Clear();
             _colLocker.ExitWriteLock();
         }
 
-        private void UnhookEvents(object sender, EventArgs e)
+        private void UnhookEvents(object? sender, EventArgs e)
         {
             _colLocker.EnterReadLock();
             foreach (ControllerHolder holder in controllerList)
@@ -189,7 +191,7 @@ namespace DS4Windows.UI.ViewModels
             _colLocker.ExitReadLock();
         }
 
-        private void Service_HotplugController(object sender, ControllerSlotChangedEventArgs args)
+        private void Service_HotplugController(object? sender, ControllerSlotChangedEventArgs args)
         {
             IControllerSlotView device = args.View;
             int index = args.SlotIndex;
@@ -201,18 +203,18 @@ namespace DS4Windows.UI.ViewModels
 
         // プロファイルを適用したとき（トレイ・一覧・ホットキー・自動プロファイルのどれから選んでも）、チェックを移すために組み直す。
         // 適用は別のスレッドから来るため、項目の組み直しは UI のスレッドで行う
-        private void ProfileRepository_SelectedProfileChanged(object sender, SelectedProfileChangedEventArgs e)
+        private void ProfileRepository_SelectedProfileChanged(object? sender, SelectedProfileChangedEventArgs e)
         {
             uiDispatcher.BeginInvoke(PopulateContextMenu);
         }
 
-        private void ProfileListCol_CollectionChanged(object sender,
+        private void ProfileListCol_CollectionChanged(object? sender,
             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             PopulateContextMenu();
         }
 
-        private void BuildControllerList(object sender, EventArgs e)
+        private void BuildControllerList(object? sender, EventArgs e)
         {
             PopulateControllerList();
         }
@@ -232,7 +234,7 @@ namespace DS4Windows.UI.ViewModels
                     string currentProfile = profileRepository.ProfilePath[idx];
                     foreach (ProfileEntity entry in profileListHolder.ProfileListCol)
                     {
-                        string profileName = entry.Name;
+                        string? profileName = entry.Name;
                         item.Children.Add(new TrayMenuItemModel()
                         {
                             Header = profileName,
@@ -286,7 +288,7 @@ namespace DS4Windows.UI.ViewModels
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(pathService.ProgramDirectory);
             startInfo.UseShellExecute = true;
-            using (Process temp = Process.Start(startInfo))
+            using (Process? temp = Process.Start(startInfo))
             {
             }
         }
@@ -301,7 +303,7 @@ namespace DS4Windows.UI.ViewModels
             RequestMinimize?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ProfileItem_Click(int idx, string profileName)
+        private void ProfileItem_Click(int idx, string? profileName)
         {
             ControllerHolder holder = controllerList[idx];
             ProfileSelected?.Invoke(this, holder, profileName);
@@ -310,7 +312,7 @@ namespace DS4Windows.UI.ViewModels
         private void DisconnectMenuItem_Click(int idx)
         {
             ControllerHolder holder = controllerList[idx];
-            IControllerSlotView tempDev = holder?.Device;
+            IControllerSlotView? tempDev = holder?.Device;
             if (tempDev != null && tempDev.Synced && !tempDev.Charging)
             {
                 if (tempDev.ConnectionType == ConnectionType.BT)
@@ -332,7 +334,7 @@ namespace DS4Windows.UI.ViewModels
             //IEnumerable<InputDeviceCore> devices = InputDeviceRegistry.GetControllers();
             int idx = 0;
             _colLocker.EnterWriteLock();
-            foreach (ControllerSlotEntry entry in slots.Snapshot())
+            foreach (ControllerSlotEntry entry in slots.Snapshot() ?? Array.Empty<ControllerSlotEntry>())
             {
                 controllerList.Add(new ControllerHolder(entry.View, idx));
                 idx++;
@@ -340,7 +342,7 @@ namespace DS4Windows.UI.ViewModels
             _colLocker.ExitWriteLock();
         }
 
-        private void StartPopulateText(object sender, EventArgs e)
+        private void StartPopulateText(object? sender, EventArgs e)
         {
             uiDispatcher.BeginInvoke(() =>
             {
@@ -395,10 +397,10 @@ namespace DS4Windows.UI.ViewModels
             device.Removal -= CurrentDev_Removal;
         }
 
-        private void CurrentDev_Removal(object sender, EventArgs e)
+        private void CurrentDev_Removal(object? sender, EventArgs e)
         {
-            IControllerSlotView currentDev = sender as IControllerSlotView;
-            ControllerHolder item = null;
+            IControllerSlotView? currentDev = sender as IControllerSlotView;
+            ControllerHolder? item = null;
             int idx = 0;
 
             using (WriteLocker locker = new WriteLocker(_colLocker))
@@ -417,19 +419,19 @@ namespace DS4Windows.UI.ViewModels
                 if (item != null)
                 {
                     controllerList.RemoveAt(idx);
-                    RemoveDeviceEvents(currentDev);
+                    RemoveDeviceEvents(currentDev!);   // item が見つかったのは、currentDev と一致したとき
                 }
             }
 
             PopulateToolText();
         }
 
-        private void HookEvents(object sender, EventArgs e)
+        private void HookEvents(object? sender, EventArgs e)
         {
             SetupEvents();
         }
 
-        private void UpdateForBattery(object sender, EventArgs e)
+        private void UpdateForBattery(object? sender, EventArgs e)
         {
             // Force invoke from GUI thread
             uiDispatcher.BeginInvoke(() =>
@@ -438,7 +440,7 @@ namespace DS4Windows.UI.ViewModels
             });
         }
 
-        private void ClearToolText(object sender, EventArgs e)
+        private void ClearToolText(object? sender, EventArgs e)
         {
             uiDispatcher.BeginInvoke(() =>
             {
@@ -464,7 +466,7 @@ namespace DS4Windows.UI.ViewModels
             MenuChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void UpdateTrayBattery(object sender, byte percentage)
+        private void UpdateTrayBattery(object? sender, byte percentage)
         {
             IconSource = percentage switch
             {

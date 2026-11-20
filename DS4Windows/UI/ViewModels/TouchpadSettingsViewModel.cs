@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -68,7 +70,7 @@ namespace DS4Windows.UI.ViewModels
                 OnPropertyChanged(nameof(TouchpadOutputIndex));
             }
         }
-        public event PropertyChangingHandler<TouchpadOutMode> TouchpadOutputIndexChanging;
+        public event PropertyChangingHandler<TouchpadOutMode>? TouchpadOutputIndexChanging;
         public bool TouchSenExists
         {
             get => touchpad.TouchSensitivity != 0;

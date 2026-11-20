@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +82,7 @@ namespace DS4Windows.UI.ViewModels
                 ControllerSelectedIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler ControllerSelectedIndexChanged;
+        public event EventHandler? ControllerSelectedIndexChanged;
 
         // Global.UseMoonlight／UseAdvancedMoonlight／SaveControllerConfigs の置換先（必須引数。null は拒否する）
         private readonly IAppSettingsService appSettings;
@@ -97,7 +99,7 @@ namespace DS4Windows.UI.ViewModels
 
             for (int slot = 0; slot < slots.SlotCount; slot++)
             {
-                IControllerSlotView device = slots.GetSlot(slot);
+                IControllerSlotView? device = slots.GetSlot(slot);
                 if (device != null)
                 {
                     currentInputDevices.Add(new DeviceListItem(device));

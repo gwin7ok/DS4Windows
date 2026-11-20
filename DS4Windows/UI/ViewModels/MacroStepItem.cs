@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 using DS4Windows.Processing.Macro;
 using System;
@@ -28,7 +30,7 @@ namespace DS4Windows.UI.ViewModels
         // 手順の種類ごとの画像のパス（RecordBoxViewModel が、画面の資源から引いて設定する。未設定のときは空）
         private static string[] imageSources = new string[] { string.Empty, string.Empty, string.Empty };
 
-        public static void CacheImgLocations(DS4Windows.UI.Abstractions.IImageResourceLookup imageResources)
+        public static void CacheImgLocations(DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources)
         {
             if (imageResources == null) return;
 

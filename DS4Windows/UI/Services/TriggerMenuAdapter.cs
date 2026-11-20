@@ -14,7 +14,7 @@ namespace DS4Windows.UI.Services
         {
             var entries = new List<TriggerMenuEntry>();
             foreach (MenuItem item in menu.Items)
-                entries.Add(new TriggerMenuEntry(item.Header?.ToString(), item.IsChecked));
+                entries.Add(new TriggerMenuEntry(item.Header?.ToString() ?? string.Empty, item.IsChecked));
             return entries;
         }
 

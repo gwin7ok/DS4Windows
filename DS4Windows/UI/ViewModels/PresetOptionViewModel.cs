@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Processing.Gyro;
 using System;
 using System.Collections.Generic;
@@ -43,19 +45,19 @@ namespace DS4Windows.UI.ViewModels
         public event EventHandler PresetIndexChanged;
 
         private List<PresetOption> presetList;
-        public List<PresetOption> PresetsList { get => presetList; }
+        public List<PresetOption>? PresetsList { get => presetList; }
 
-        public string PresetDescription
+        public string? PresetDescription
         {
             get => presetList[presetIndex].Description;
         }
-        public event EventHandler PresetDescriptionChanged;
+        public event EventHandler? PresetDescriptionChanged;
 
         public bool PresetDisplayOutputCont
         {
             get => presetList[presetIndex].OutputControllerChoice;
         }
-        public event EventHandler PresetDisplayOutputContChanged;
+        public event EventHandler? PresetDisplayOutputContChanged;
 
         public PresetOption.OutputContChoice ControllerChoice
         {
@@ -87,7 +89,7 @@ namespace DS4Windows.UI.ViewModels
             PresetIndexChanged += PresetOptionViewModel_PresetIndexChanged;
         }
 
-        private void PresetOptionViewModel_PresetIndexChanged(object sender, EventArgs e)
+        private void PresetOptionViewModel_PresetIndexChanged(object? sender, EventArgs e)
         {
             PresetDescriptionChanged?.Invoke(this, EventArgs.Empty);
             PresetDisplayOutputContChanged?.Invoke(this, EventArgs.Empty);

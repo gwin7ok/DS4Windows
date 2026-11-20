@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -128,11 +130,11 @@ namespace DS4Windows.UI.ViewModels
 
         public List<DS4Controls> ModifySettingWithPreset(int baseTag, int subTag)
         {
-            List<object> actionBtns = new List<object>(5);
+            List<object?> actionBtns = new List<object?>(5);
             List<DS4Controls> inputControls = new List<DS4Controls>(5);
             if (baseTag == 0)
             {
-                actionBtns.AddRange(new object[5]
+                actionBtns.AddRange(new object?[5]
                 {
                     null, null, null, null, null,
                 });
@@ -142,42 +144,42 @@ namespace DS4Windows.UI.ViewModels
                 switch (subTag)
                 {
                     case 0:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.DpadUp, X360Controls.DpadDown,
                             X360Controls.DpadLeft, X360Controls.DpadRight, X360Controls.Unbound,
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.DpadDown, X360Controls.DpadUp,
                             X360Controls.DpadRight, X360Controls.DpadLeft, X360Controls.Unbound,
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.DpadUp, X360Controls.DpadDown,
                             X360Controls.DpadRight, X360Controls.DpadLeft, X360Controls.Unbound,
                         });
                         break;
                     case 3:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.DpadDown, X360Controls.DpadUp,
                             X360Controls.DpadLeft, X360Controls.DpadRight, X360Controls.Unbound,
                         });
                         break;
                     case 4:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.DpadRight, X360Controls.DpadLeft,
                             X360Controls.DpadUp, X360Controls.DpadDown, X360Controls.Unbound,
                         });
                         break;
                     case 5:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.DpadLeft, X360Controls.DpadRight,
                             X360Controls.DpadDown, X360Controls.DpadUp, X360Controls.Unbound,
@@ -192,42 +194,42 @@ namespace DS4Windows.UI.ViewModels
                 switch (subTag)
                 {
                     case 0:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.LYNeg, X360Controls.LYPos,
                             X360Controls.LXNeg, X360Controls.LXPos, X360Controls.LS,
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.LYPos, X360Controls.LYNeg,
                             X360Controls.LXPos, X360Controls.LXNeg, X360Controls.LS,
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.LYNeg, X360Controls.LYPos,
                             X360Controls.LXPos, X360Controls.LXNeg, X360Controls.LS,
                         });
                         break;
                     case 3:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.LYPos, X360Controls.LYNeg,
                             X360Controls.LXNeg, X360Controls.LXPos, X360Controls.LS,
                         });
                         break;
                     case 4:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.LXPos, X360Controls.LXNeg,
                             X360Controls.LYNeg, X360Controls.LYPos, X360Controls.LS,
                         });
                         break;
                     case 5:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.LXNeg, X360Controls.LXPos,
                             X360Controls.LYPos, X360Controls.LYNeg, X360Controls.LS,
@@ -242,42 +244,42 @@ namespace DS4Windows.UI.ViewModels
                 switch (subTag)
                 {
                     case 0:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.RYNeg, X360Controls.RYPos,
                             X360Controls.RXNeg, X360Controls.RXPos, X360Controls.RS,
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.RYPos, X360Controls.RYNeg,
                             X360Controls.RXPos, X360Controls.RXNeg, X360Controls.RS,
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.RYNeg, X360Controls.RYPos,
                             X360Controls.RXPos, X360Controls.RXNeg, X360Controls.RS,
                         });
                         break;
                     case 3:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.RYPos, X360Controls.RYNeg,
                             X360Controls.RXNeg, X360Controls.RXPos, X360Controls.RS,
                         });
                         break;
                     case 4:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.RXPos, X360Controls.RXNeg,
                             X360Controls.RYNeg, X360Controls.RYPos, X360Controls.RS,
                         });
                         break;
                     case 5:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.RXNeg, X360Controls.RXPos,
                             X360Controls.RYPos, X360Controls.RYNeg, X360Controls.RS,
@@ -293,19 +295,19 @@ namespace DS4Windows.UI.ViewModels
                 {
                     case 0:
                         // North, South, West, East
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.Y, X360Controls.A, X360Controls.X, X360Controls.B, X360Controls.Unbound,
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.B, X360Controls.X, X360Controls.Y, X360Controls.A, X360Controls.Unbound,
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.X, X360Controls.B, X360Controls.A, X360Controls.Y, X360Controls.Unbound,
                         });
@@ -320,7 +322,7 @@ namespace DS4Windows.UI.ViewModels
                 {
                     case 0:
                         // North, South, West, East
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             VkLetter('W'), VkLetter('S'),
                             VkLetter('A'), VkLetter('D'),
@@ -328,7 +330,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             VkLetter('D'), VkLetter('A'),
                             VkLetter('W'), VkLetter('S'),
@@ -336,7 +338,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             VkLetter('A'), VkLetter('D'),
                             VkLetter('S'), VkLetter('W'),
@@ -353,7 +355,7 @@ namespace DS4Windows.UI.ViewModels
                 {
                     case 0:
                         // North, South, West, East
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             VkUp, VkDown,
                             VkLeft, VkRight,
@@ -361,7 +363,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             VkRight, VkLeft,
                             VkUp, VkDown,
@@ -369,7 +371,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             VkLeft, VkRight,
                             VkDown, VkUp,
@@ -385,7 +387,7 @@ namespace DS4Windows.UI.ViewModels
                 switch (subTag)
                 {
                     case 0:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.MouseUp, X360Controls.MouseDown,
                             X360Controls.MouseLeft, X360Controls.MouseRight,
@@ -393,7 +395,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 1:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.MouseDown, X360Controls.MouseUp,
                             X360Controls.MouseRight, X360Controls.MouseLeft,
@@ -401,7 +403,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 2:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.MouseUp, X360Controls.MouseDown,
                             X360Controls.MouseRight, X360Controls.MouseLeft,
@@ -409,7 +411,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 3:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.MouseDown, X360Controls.MouseUp,
                             X360Controls.MouseLeft, X360Controls.MouseRight,
@@ -417,7 +419,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 4:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.MouseRight, X360Controls.MouseLeft,
                             X360Controls.MouseUp, X360Controls.MouseDown,
@@ -425,7 +427,7 @@ namespace DS4Windows.UI.ViewModels
                         });
                         break;
                     case 5:
-                        actionBtns.AddRange(new object[5]
+                        actionBtns.AddRange(new object?[5]
                         {
                             X360Controls.MouseLeft, X360Controls.MouseRight,
                             X360Controls.MouseDown, X360Controls.MouseUp,
@@ -438,7 +440,7 @@ namespace DS4Windows.UI.ViewModels
             }
             else if (baseTag == 8)
             {
-                actionBtns.AddRange(new object[5]
+                actionBtns.AddRange(new object?[5]
                 {
                     X360Controls.Unbound, X360Controls.Unbound,
                     X360Controls.Unbound, X360Controls.Unbound,
@@ -487,11 +489,11 @@ namespace DS4Windows.UI.ViewModels
             int idx = 0;
             foreach (DS4Controls dsControl in inputControls)
             {
-                DS4ControlSettings setting = profileSettings.GetDS4CSetting(deviceNum, dsControl);
+                DS4ControlSettings setting = profileSettings.GetDS4CSetting(deviceNum, dsControl)!;   // 設定の表は、全ボタン分ある
                 setting.Reset();
                 if (idx < actionBtns.Count && actionBtns[idx] != null)
                 {
-                    object outAct = actionBtns[idx];
+                    object outAct = actionBtns[idx]!;   // 直前の条件で null でないと確かめた
                     X360Controls defaultControl = defaultButtonMapping[(int)dsControl];
                     if (!(outAct is X360Controls) || defaultControl != (X360Controls)outAct)
                     {

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,14 +30,14 @@ namespace DS4Windows.UI.ViewModels
     {
         //private int devIndex;
         private ObservableCollection<MappedControl> mappings = new ObservableCollection<MappedControl>();
-        public ObservableCollection<MappedControl> Mappings { get => mappings; }
+        public ObservableCollection<MappedControl>? Mappings { get => mappings; }
 
         /// <summary>
         /// 一覧の<b>表示用</b>の並び。LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下に置く。
         /// <see cref="Mappings"/>（添字がコントローラーの入力による選択、ホバーの表などに使われる）の順序は、変えない。同じ <see cref="MappedControl"/> を、別の順で並べるだけ。
         /// </summary>
         private ObservableCollection<MappedControl> displayMappings = new ObservableCollection<MappedControl>();
-        public ObservableCollection<MappedControl> DisplayMappings { get => displayMappings; }
+        public ObservableCollection<MappedControl>? DisplayMappings { get => displayMappings; }
 
         private int selectedIndex = -1;
         public int SelectedIndex
@@ -49,10 +51,10 @@ namespace DS4Windows.UI.ViewModels
                 SelectedMappingChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler SelectedIndexChanged;
+        public event EventHandler? SelectedIndexChanged;
 
         /// <summary>選ばれている項目（<see cref="SelectedIndex"/> は <see cref="Mappings"/> の添字）。表示用の一覧の選択と結びつける。</summary>
-        public MappedControl SelectedMapping
+        public MappedControl? SelectedMapping
         {
             get => selectedIndex >= 0 && selectedIndex < mappings.Count ? mappings[selectedIndex] : null;
             set
@@ -63,7 +65,7 @@ namespace DS4Windows.UI.ViewModels
                 if (index >= 0) SelectedIndex = index;
             }
         }
-        public event EventHandler SelectedMappingChanged;
+        public event EventHandler? SelectedMappingChanged;
 
         private Dictionary<DS4Controls, MappedControl> controlMap =
             new Dictionary<DS4Controls, MappedControl>();
@@ -181,7 +183,7 @@ namespace DS4Windows.UI.ViewModels
             var added = new HashSet<MappedControl>();
             foreach (InputControlEntry entry in InputControlCatalog.Entries)
             {
-                if (controlMap.TryGetValue(entry.Control, out MappedControl mapped) && added.Add(mapped))
+                if (controlMap.TryGetValue(entry.Control, out MappedControl? mapped) && added.Add(mapped))
                 {
                     displayMappings.Add(mapped);
                 }

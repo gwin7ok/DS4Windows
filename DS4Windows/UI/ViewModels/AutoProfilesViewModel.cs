@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -40,7 +42,7 @@ namespace DS4Windows.UI.ViewModels
         private AutoProfileHolder autoProfileHolder;
         private ProfileList profileList;
         private int selectedIndex = -1;
-        private ProgramItem selectedItem;
+        private ProgramItem? selectedItem;
         private HashSet<string> existingapps;
         private readonly IAppSettingsService _appSettings;
         private readonly IAutoProfileService _autoProfileService;
@@ -51,7 +53,7 @@ namespace DS4Windows.UI.ViewModels
         public AutoProfileHolder AutoProfileHolder { get => autoProfileHolder; }
 
         public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
-        public ProgramItem SelectedItem
+        public ProgramItem? SelectedItem
         {
             get => selectedItem;
             set
@@ -63,12 +65,12 @@ namespace DS4Windows.UI.ViewModels
 
         public ProfileList ProfileList { get => profileList; }
 
-        public delegate void CurrentItemChangeHandler(AutoProfilesViewModel sender, ProgramItem item);
-        public event CurrentItemChangeHandler CurrentItemChange;
+        public delegate void CurrentItemChangeHandler(AutoProfilesViewModel sender, ProgramItem? item);
+        public event CurrentItemChangeHandler? CurrentItemChange;
 
-        public event EventHandler SearchFinished;
+        public event EventHandler? SearchFinished;
         public delegate void AutoProfileStateHandler(AutoProfilesViewModel sender, bool state);
-        public event AutoProfileStateHandler AutoProfileSystemChange;
+        public event AutoProfileStateHandler? AutoProfileSystemChange;
 
         public bool RevertDefaultProfileOnUnknown
         {
@@ -117,7 +119,7 @@ namespace DS4Windows.UI.ViewModels
                 string profileName = item.MatchedAutoProfile.ProfileNames[i];
                 if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
                 {
-                    ProfileEntity found = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
+                    ProfileEntity? found = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
                     if (found != null)
                     {
                         SetSelectedIndex(item, i, profileList.ProfileListCol.IndexOf(found) + 1);
@@ -176,8 +178,8 @@ namespace DS4Windows.UI.ViewModels
         // ---- 画面の操作（コマンド）と、その状態 ----
 
         private readonly DS4Windows.UI.Abstractions.IDialogService _dialogs;
-        private string autoProfilesFile;
-        private string steamGamesDir;
+        private string? autoProfilesFile;
+        private string? steamGamesDir;
         private bool _isBusy;
         private bool _steamMenuUsed;
         private bool _startMenuUsed;
@@ -220,29 +222,29 @@ namespace DS4Windows.UI.ViewModels
             set => SetProperty(ref _autoDebug, value);
         }
 
-        public AsyncRelayCommand AddFromSteamCommand { get; private set; }
+        public AsyncRelayCommand? AddFromSteamCommand { get; private set; }
 
-        public AsyncRelayCommand AddFromStartMenuCommand { get; private set; }
+        public AsyncRelayCommand? AddFromStartMenuCommand { get; private set; }
 
-        public AsyncRelayCommand AddFromFolderCommand { get; private set; }
+        public AsyncRelayCommand? AddFromFolderCommand { get; private set; }
 
-        public AsyncRelayCommand AddProgramFileCommand { get; private set; }
+        public AsyncRelayCommand? AddProgramFileCommand { get; private set; }
 
-        public RelayCommand HideUncheckedCommand { get; private set; }
+        public RelayCommand? HideUncheckedCommand { get; private set; }
 
-        public RelayCommand RemoveAutoCommand { get; private set; }
+        public RelayCommand? RemoveAutoCommand { get; private set; }
 
-        public RelayCommand SaveAutoCommand { get; private set; }
+        public RelayCommand? SaveAutoCommand { get; private set; }
 
-        public RelayCommand MoveUpCommand { get; private set; }
+        public RelayCommand? MoveUpCommand { get; private set; }
 
-        public RelayCommand MoveDownCommand { get; private set; }
+        public RelayCommand? MoveDownCommand { get; private set; }
 
         private void CreateCommands()
         {
             AddFromSteamCommand = CommandGuard.Create(async () =>
             {
-                await RunSearchAsync(() => AddProgramsFromSteam(steamGamesDir)).ConfigureAwait(true);
+                await RunSearchAsync(() => AddProgramsFromSteam(steamGamesDir!)).ConfigureAwait(true);   // Steam のメニューは、設定があるときだけ出る
                 _steamMenuUsed = true;
                 OnPropertyChanged(nameof(ShowSteamMenu));
             }, name: nameof(AddFromSteamCommand));
@@ -254,7 +256,7 @@ namespace DS4Windows.UI.ViewModels
             }, name: nameof(AddFromStartMenuCommand));
             AddFromFolderCommand = CommandGuard.Create(async () =>
             {
-                string dir = _dialogs.PickFolder();
+                string? dir = _dialogs.PickFolder();
                 if (dir != null)
                 {
                     await RunSearchAsync(() => AddProgramsFromDir(dir)).ConfigureAwait(true);
@@ -262,7 +264,7 @@ namespace DS4Windows.UI.ViewModels
             }, name: nameof(AddFromFolderCommand));
             AddProgramFileCommand = CommandGuard.Create(async () =>
             {
-                string file = _dialogs.PickOpenFile(new DS4Windows.UI.Abstractions.FileDialogOptions
+                string? file = _dialogs.PickOpenFile(new DS4Windows.UI.Abstractions.FileDialogOptions
                 {
                     Title = "Select Program",
                     Filter = "Program (*.exe)|*.exe",
@@ -314,7 +316,7 @@ namespace DS4Windows.UI.ViewModels
             if (SelectedItem == null) return;
             AddExeToHIDHideWhenSaving(SelectedItem, false);
             RemoveAutoProfileEntry(SelectedItem);
-            AutoProfileHolder.Save(autoProfilesFile);
+            AutoProfileHolder.Save(autoProfilesFile!);   // Configure の後でだけ呼ばれる
             SelectedItem = null;
         }
 
@@ -331,14 +333,14 @@ namespace DS4Windows.UI.ViewModels
             }
 
             AddExeToHIDHideWhenSaving(SelectedItem, SelectedItem.Turnoff);
-            AutoProfileHolder.Save(autoProfilesFile);
+            AutoProfileHolder.Save(autoProfilesFile!);   // Configure の後でだけ呼ばれる
         }
 
         private void MoveSelected(int direction)
         {
             if (SelectedItem != null && MoveItemUpDown(SelectedItem, direction))
             {
-                AutoProfileHolder.Save(autoProfilesFile);
+                AutoProfileHolder.Save(autoProfilesFile!);   // Configure の後でだけ呼ばれる
             }
         }
 
@@ -418,8 +420,8 @@ namespace DS4Windows.UI.ViewModels
             List<string> exepaths = new List<string>();
             foreach (string link in lnkpaths)
             {
-                string target = GetTargetPath(link);
-                exepaths.Add(target);
+                string? target = GetTargetPath(link);
+                if (target != null) exepaths.Add(target);
             }
 
             ScanApps(exepaths);
@@ -467,40 +469,40 @@ namespace DS4Windows.UI.ViewModels
         {
             if (item.MatchedAutoProfile == null)
             {
-                AutoProfileEntity tempEntry = new AutoProfileEntity(item.Path, item.Title);
+                AutoProfileEntity tempEntry = new AutoProfileEntity(item.Path, item.Title ?? string.Empty);
                 tempEntry.Turnoff = item.Turnoff;
                 int tempindex = item.SelectedIndexCon1;
-                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 tempindex = item.SelectedIndexCon2;
-                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 tempindex = item.SelectedIndexCon3;
-                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 tempindex = item.SelectedIndexCon4;
-                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 if (UsingExpandedControllers)
                 {
                     tempindex = item.SelectedIndexCon5;
-                    tempEntry.ProfileNames[4] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[4] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
 
                     tempindex = item.SelectedIndexCon6;
-                    tempEntry.ProfileNames[5] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[5] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
 
                     tempindex = item.SelectedIndexCon7;
-                    tempEntry.ProfileNames[6] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[6] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
 
                     tempindex = item.SelectedIndexCon8;
-                    tempEntry.ProfileNames[7] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[7] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
                 }
 
@@ -515,37 +517,37 @@ namespace DS4Windows.UI.ViewModels
             {
                 AutoProfileEntity tempEntry = item.MatchedAutoProfile;
                 int tempindex = item.SelectedIndexCon1;
-                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 tempindex = item.SelectedIndexCon2;
-                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 tempindex = item.SelectedIndexCon3;
-                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 tempindex = item.SelectedIndexCon4;
-                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                     AutoProfileEntity.NONE_STRING;
 
                 if (UsingExpandedControllers)
                 {
                     tempindex = item.SelectedIndexCon5;
-                    tempEntry.ProfileNames[4] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[4] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
 
                     tempindex = item.SelectedIndexCon6;
-                    tempEntry.ProfileNames[5] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[5] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
 
                     tempindex = item.SelectedIndexCon7;
-                    tempEntry.ProfileNames[6] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[6] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
 
                     tempindex = item.SelectedIndexCon8;
-                    tempEntry.ProfileNames[7] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name :
+                    tempEntry.ProfileNames[7] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
                         AutoProfileEntity.NONE_STRING;
                 }
             }
@@ -553,13 +555,13 @@ namespace DS4Windows.UI.ViewModels
 
         public void RemoveAutoProfileEntry(ProgramItem item)
         {
-            autoProfileHolder.AutoProfileColl.Remove(item.MatchedAutoProfile);
+            if (item.MatchedAutoProfile != null) autoProfileHolder.AutoProfileColl.Remove(item.MatchedAutoProfile);
             item.MatchedAutoProfile = null;
         }
 
-        private string GetTargetPath(string filePath)
+        private string? GetTargetPath(string filePath)
         {
-            string targetPath = ResolveMsiShortcut(filePath);
+            string? targetPath = ResolveMsiShortcut(filePath);
             if (targetPath == null)
             {
                 targetPath = ResolveShortcut(filePath);
@@ -568,11 +570,11 @@ namespace DS4Windows.UI.ViewModels
             return targetPath;
         }
 
-        public string ResolveShortcutAndArgument(string filePath)
+        public string? ResolveShortcutAndArgument(string filePath)
         {
-            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
-            dynamic shell = Activator.CreateInstance(t);
-            string result;
+            Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
+            dynamic shell = Activator.CreateInstance(t!)!;   // COM のクラスは必ず生成できる
+            string? result;
 
             try
             {
@@ -593,7 +595,7 @@ namespace DS4Windows.UI.ViewModels
             return result;
         }
 
-        public string ResolveMsiShortcut(string file)
+        public string? ResolveMsiShortcut(string file)
         {
             StringBuilder product = new StringBuilder(NativeMethods2.MaxGuidLength + 1);
             StringBuilder feature = new StringBuilder(NativeMethods2.MaxFeatureLength + 1);
@@ -615,11 +617,11 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public string ResolveShortcut(string filePath)
+        public string? ResolveShortcut(string filePath)
         {
-            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
-            dynamic shell = Activator.CreateInstance(t);
-            string result;
+            Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
+            dynamic shell = Activator.CreateInstance(t!)!;   // COM のクラスは必ず生成できる
+            string? result;
 
             try
             {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +12,7 @@ namespace DS4Windows.UI.ViewModels
     /// </summary>
     public sealed class TrayMenuItemModel
     {
-        public string Header { get; set; }
+        public string? Header { get; set; }
 
         public bool IsSeparator { get; set; }
 
@@ -21,7 +23,7 @@ namespace DS4Windows.UI.ViewModels
         public bool IsBold { get; set; }
 
         /// <summary>選ばれたときの処理。サブメニューだけの項目は null。</summary>
-        public Action Click { get; set; }
+        public Action? Click { get; set; }
 
         public List<TrayMenuItemModel> Children { get; } = new List<TrayMenuItemModel>();
 

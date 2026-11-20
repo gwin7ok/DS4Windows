@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Reflection;
 using DS4Windows.Core.Model;
@@ -18,7 +20,7 @@ namespace DS4Windows.UI.ViewModels
             ArgumentNullException.ThrowIfNull(options);
             this.options = options;
             Family = family;
-            var ui = typeof(InputDeviceFamily).GetField(family.ToString()).GetCustomAttribute<InputDeviceFamilyUiAttribute>()
+            var ui = typeof(InputDeviceFamily).GetField(family.ToString())!.GetCustomAttribute<InputDeviceFamilyUiAttribute>()   // InputDeviceFamily の値は、必ずフィールドを持つ
                 ?? throw new InvalidOperationException("InputDeviceFamily." + family + " に [InputDeviceFamilyUi] がない");
             SupportLabel = LocalizedText.Get(ui.SupportLabelKey);
             FirstLaunchLabel = LocalizedText.Get(ui.FirstLaunchLabelKey);
@@ -36,7 +38,7 @@ namespace DS4Windows.UI.ViewModels
         public string FirstLaunchText { get; }
 
         /// <summary>はじめの起動画面の補足のリンク（なければ null）。</summary>
-        public string HelpUrl { get; }
+        public string? HelpUrl { get; }
 
         public bool HasHelpUrl => HelpUrl != null;
 

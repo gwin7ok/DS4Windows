@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 
 namespace DS4Windows.UI.ViewModels
@@ -28,11 +30,11 @@ namespace DS4Windows.UI.ViewModels
 
         public bool SetUnloadTrigger(string name, bool selected) => Set(unloadTriggers, name, selected);
 
-        public string TriggersText => string.Join("/", triggers.ToArray());
+        public string? TriggersText => string.Join("/", triggers.ToArray());
 
-        public string UnloadTriggersText => unloadTriggers.Count > 0 ? string.Join("/", unloadTriggers.ToArray()) : null;
+        public string? UnloadTriggersText => unloadTriggers.Count > 0 ? string.Join("/", unloadTriggers.ToArray()) : null;
 
-        public bool Validate(out string error)
+        public bool Validate(out string? error)
         {
             if (triggers.Count == 0)
             {

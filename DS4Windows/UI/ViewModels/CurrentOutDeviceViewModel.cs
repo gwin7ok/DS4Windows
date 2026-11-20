@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -58,7 +60,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
         // WPF は、プロパティ名 + "Changed" のイベントを見て、バインディングを更新する（名前を変えると画面が更新されない）
-        public event EventHandler SidePanelShownChanged;
+        public event EventHandler? SidePanelShownChanged;
 
         public bool PluginEnabled
         {
@@ -78,7 +80,7 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler PluginEnabledChanged;
+        public event EventHandler? PluginEnabledChanged;
 
         public bool UnpluginEnabled
         {
@@ -98,7 +100,7 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler UnpluginEnabledChanged;
+        public event EventHandler? UnpluginEnabledChanged;
 
         private List<SlotDeviceEntry> slotDeviceEntries;
 
@@ -129,7 +131,7 @@ namespace DS4Windows.UI.ViewModels
             SelectedIndexChanged += CurrentOutDeviceViewModel_SelectedIndexChanged;
         }
 
-        private void CurrentOutDeviceViewModel_SelectedIndexChanged(object sender,
+        private void CurrentOutDeviceViewModel_SelectedIndexChanged(object? sender,
             EventArgs e)
         {
             SidePanelShownChanged?.Invoke(this, EventArgs.Empty);
@@ -137,26 +139,28 @@ namespace DS4Windows.UI.ViewModels
             UnpluginEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OutSlot_PluginRequest(object sender, EventArgs e)
+        private void OutSlot_PluginRequest(object? sender, EventArgs e)
         {
-            SlotDeviceEntry entry = sender as SlotDeviceEntry;
+            SlotDeviceEntry? entry = sender as SlotDeviceEntry;
+            if (entry == null) return;
             // 事前条件の確認と UI スレッドへの切り替えは、サービスが行う
             outputSlotService.PluginSlot(entry.Index, entry.Slot.CurrentType);
         }
 
-        private void OutSlot_UnplugRequest(object sender, EventArgs e)
+        private void OutSlot_UnplugRequest(object? sender, EventArgs e)
         {
-            SlotDeviceEntry entry = sender as SlotDeviceEntry;
+            SlotDeviceEntry? entry = sender as SlotDeviceEntry;
+            if (entry == null) return;
             outputSlotService.UnplugSlot(entry.Index);
         }
 
-        private void OutSlotManager_SlotUnassigned(object sender, OutputSlotAssignmentEventArgs e)
+        private void OutSlotManager_SlotUnassigned(object? sender, OutputSlotAssignmentEventArgs e)
         {
             slotDeviceEntries[e.SlotIndex].RemovedDevice();
             RefreshPanels();
         }
 
-        private void OutSlotManager_SlotAssigned(object sender, OutputSlotAssignmentEventArgs e)
+        private void OutSlotManager_SlotAssigned(object? sender, OutputSlotAssignmentEventArgs e)
         {
             slotDeviceEntries[e.SlotIndex].AssignedDevice();
             RefreshPanels();

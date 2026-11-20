@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,15 +49,15 @@ namespace DS4Windows.UI.ViewModels
         private readonly IProfileRepository profileRepo;
         private readonly IAppSettingsService appSettings;
         private readonly DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher;
-        private readonly DS4Windows.UI.Abstractions.IImageResourceLookup imageResources;
+        private readonly DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources;
         private int currentIndex;
         public int CurrentIndex { get => currentIndex; set => currentIndex = value; }
-        public CompositeDeviceModel CurrentItem
+        public CompositeDeviceModel? CurrentItem
         {
             get
             {
                 if (currentIndex == -1) return null;
-                controllerDict.TryGetValue(currentIndex, out CompositeDeviceModel item);
+                controllerDict.TryGetValue(currentIndex, out CompositeDeviceModel? item);
                 return item;
             }
         }
@@ -67,7 +69,7 @@ namespace DS4Windows.UI.ViewModels
             IProfileRepository profileRepo,
             IAppSettingsService appSettings,
             DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher,
-            DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
+            DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources = null)
         {
             this.imageResources = imageResources;
             ArgumentNullException.ThrowIfNull(uiDispatcher);
@@ -94,7 +96,7 @@ namespace DS4Windows.UI.ViewModels
             this.profileRepo.SelectedProfileChanged += Global_SelectedProfileChanged;
 
             int idx = 0;
-            foreach (ControllerSlotEntry entry in slots.Snapshot())
+            foreach (ControllerSlotEntry entry in slots.Snapshot() ?? Array.Empty<ControllerSlotEntry>())
             {
                 IControllerSlotView currentDev = entry.View;
                 CompositeDeviceModel temp = new CompositeDeviceModel(currentDev,
@@ -140,7 +142,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void Service_HotplugController(object sender, ControllerSlotChangedEventArgs args)
+        private void Service_HotplugController(object? sender, ControllerSlotChangedEventArgs args)
         {
             IControllerSlotView device = args.View;
             int index = args.SlotIndex;
@@ -148,7 +150,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 // 再接続の通知が、前のデバイスの Removal より先に来ても、前のデバイスの行を残さない
                 // （残ると、新しいデバイスの行が作られず、一覧が前の残量のまま止まっていた）
-                if (controllerDict.TryGetValue(index, out CompositeDeviceModel staleRow) && staleRow.Device != device)
+                if (controllerDict.TryGetValue(index, out CompositeDeviceModel? staleRow) && staleRow.Device != device)
                 {
                     AppLogger.LogDebug($"[DI] ControllerListViewModel: replacing stale row of slot {index} on hotplug");
                     staleRow.Device.Removal -= Controller_Removal;
@@ -168,7 +170,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void ClearControllerList(object sender, EventArgs e)
+        private void ClearControllerList(object? sender, EventArgs e)
         {
             _colListLocker.EnterReadLock();
             try
@@ -214,10 +216,10 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void ControllersChanged(object sender, EventArgs e)
+        private void ControllersChanged(object? sender, EventArgs e)
         {
             {
-                foreach (ControllerSlotEntry entry in slots.Snapshot())
+                foreach (ControllerSlotEntry entry in slots.Snapshot() ?? Array.Empty<ControllerSlotEntry>())
                 {
                     IControllerSlotView currentDev = entry.View;
                     bool found = false;
@@ -248,10 +250,10 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void Controller_Removal(object sender, EventArgs e)
+        private void Controller_Removal(object? sender, EventArgs e)
         {
-            IControllerSlotView currentDev = sender as IControllerSlotView;
-            CompositeDeviceModel found = null;
+            IControllerSlotView? currentDev = sender as IControllerSlotView;
+            CompositeDeviceModel? found = null;
             _colListLocker.EnterReadLock();
             foreach (CompositeDeviceModel temp in controllerCol)
             {
@@ -268,7 +270,7 @@ namespace DS4Windows.UI.ViewModels
                 _colListLocker.EnterWriteLock();
                 controllerCol.Remove(found);
                 // 同じスロットに新しいデバイスの行が先に入っていたら、その行は消さない
-                if (controllerDict.TryGetValue(found.DevIndex, out CompositeDeviceModel registered) && registered == found)
+                if (controllerDict.TryGetValue(found.DevIndex, out CompositeDeviceModel? registered) && registered == found)
                     controllerDict.Remove(found.DevIndex);
                 uiDispatcher.Invoke(() =>
                 {
@@ -280,7 +282,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         // Handle SelectedProfile change from special actions
-        private void Global_SelectedProfileChanged(object sender, SelectedProfileChangedEventArgs e)
+        private void Global_SelectedProfileChanged(object? sender, SelectedProfileChangedEventArgs e)
         {
             try
             {
@@ -301,7 +303,7 @@ namespace DS4Windows.UI.ViewModels
                             CompositeDeviceModel item = controllerDict[deviceIndex];
                             AppLogger.LogDebug($"Global_SelectedProfileChanged: Found controller item for device {deviceIndex}");
 
-                            ProfileEntity newProfile = profileListHolder.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
+                            ProfileEntity? newProfile = profileListHolder.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
                             if (newProfile != null)
                             {
                                 int newIndex = profileListHolder.ProfileListCol.IndexOf(newProfile);

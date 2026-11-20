@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
@@ -33,7 +35,7 @@ namespace DS4Windows.UI.ViewModels
         private readonly SpecialActionTriggerSource specialTriggers;
 
         // Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
-        public SpecialActEditorViewModel(int deviceNum, SpecialAction action, ISpecialActionRepository specialActionRepository)
+        public SpecialActEditorViewModel(int deviceNum, SpecialAction? action, ISpecialActionRepository specialActionRepository)
             : this(deviceNum, new SpecialActionTriggerSource(), new SpecialActionEditTarget(specialActionRepository, action))
         {
         }

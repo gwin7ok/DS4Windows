@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 namespace DS4Windows.UI.ViewModels.Util
 {
     public delegate void PropertyChangingHandler<TValue>(object sender, TValue oldValue, TValue newValue);

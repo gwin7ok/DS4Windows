@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -33,7 +35,7 @@ namespace DS4Windows.UI.ViewModels
         private DS4Controls control;
         private DS4ControlSettings setting;
         private string controlName;
-        private string mappingName;
+        private string? mappingName;
 
         public int DevIndex { get => devIndex; }
         public DS4Controls Control { get => control; }
@@ -46,7 +48,7 @@ namespace DS4Windows.UI.ViewModels
             UpdateMappingName();
         }
         public string ControlName { get => controlName; }
-        public string MappingName { get => mappingName; }
+        public string? MappingName { get => mappingName; }
         public OutContType DevType
         {
             get => devType;
@@ -57,9 +59,9 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public event EventHandler DevTypeChanged;
+        public event EventHandler? DevTypeChanged;
 
-        public event EventHandler MappingNameChanged;
+        public event EventHandler? MappingNameChanged;
 
         public MappedControl(int devIndex, DS4Controls control, string controlName,
             OutContType devType, IProfileSettingsService profileSettingsService, bool initMap = false)
@@ -70,7 +72,7 @@ namespace DS4Windows.UI.ViewModels
             this.devType = devType;
             this.control = control;
             this.controlName = controlName;
-            setting = profileSettingsService.GetDS4CSetting(devIndex, control);
+            setting = profileSettingsService.GetDS4CSetting(devIndex, control)!;   // 設定の表は、全ボタン分ある
             //mappingName = "?";
             if (initMap)
             {
@@ -80,7 +82,7 @@ namespace DS4Windows.UI.ViewModels
             DevTypeChanged += MappedControl_DevTypeChanged;
         }
 
-        private void MappedControl_DevTypeChanged(object sender, EventArgs e)
+        private void MappedControl_DevTypeChanged(object? sender, EventArgs e)
         {
             UpdateMappingName();
         }
@@ -93,7 +95,7 @@ namespace DS4Windows.UI.ViewModels
             IsCustomizedChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private static string SpecialTypeDisplayName(SpecialAction.ActionTypeId type)
+        private static string? SpecialTypeDisplayName(SpecialAction.ActionTypeId type)
         {
             switch (type)
             {
@@ -109,7 +111,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>
         /// 割り当ての説明文（<see cref="AssignmentDescriber"/>。出力ピッカーのボタンのラベル、SA タブの一覧と同じ書式）。
         /// </summary>
-        public string GetMappingString()
+        public string? GetMappingString()
         {
             bool extra = control >= DS4Controls.GyroXPos && control <= DS4Controls.SwipeDown;
             return AssignmentDescriber.ForControl(setting, x => X360ControlTables.getX360ControlString(x, devType),
@@ -117,12 +119,12 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>Load Profile の参照先が今もあるかの確認（S9-10）。設定されていなければ確認しない。</summary>
-        public Func<string, bool> ProfileExists { get; set; }
+        public Func<string, bool>? ProfileExists { get; set; }
 
         /// <summary>Default 以外の割り当て、または Extras があるか（一覧で太字にする）。</summary>
         public bool IsCustomized => setting.actionType != DS4ControlSettings.ActionType.Default || !setting.IsExtrasEmpty(setting.extras);
 
-        public event EventHandler IsCustomizedChanged;
+        public event EventHandler? IsCustomizedChanged;
 
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using DS4Windows.Core.Abstractions;
@@ -24,7 +26,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private double delay;
 
 
-        public string WindowPath
+        public string? WindowPath
         {
             get => windowPath;
             set
@@ -40,7 +42,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         /// 保存用のウインドウ名（Phase12-Step2 2h: 一致方法の印を含む。<c>^</c> 前方、<c>$</c> 後方、<c>*</c> 部分、印なし＝完全）。
         /// 画面の入力は、印を除いた <see cref="TitleText"/> と <see cref="TitleMatchMode"/> に分けて持ち、この値は両方から組み立てる。
         /// </summary>
-        public string WindowTitle
+        public string? WindowTitle
         {
             get => WindowTargetText.ComposeTitle(titleText, titleMatchMode);
             set
@@ -125,7 +127,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 Type = type,
                 WindowPath = windowPath,
-                WindowTitle = WindowTitle,
+                WindowTitle = WindowTitle ?? string.Empty,
                 HoldSeconds = Delay,
                 CenterCursor = CenterCursor,
             };
@@ -133,7 +135,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            specialActionRepository.SaveAction(action.name, action.controls, 11, windowPath, edit, delay, WindowTitle, actionId: action.id, centerCursor: CenterCursor);
+            specialActionRepository.SaveAction(action.name, action.controls, 11, windowPath ?? string.Empty, edit, delay, WindowTitle ?? string.Empty, actionId: action.id, centerCursor: CenterCursor);
         }
 
         public override bool IsValid(SpecialAction action)

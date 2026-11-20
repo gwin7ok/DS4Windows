@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
@@ -21,14 +23,14 @@ namespace DS4Windows.UI.ViewModels
         public ControlEditTarget(DS4Controls control)
         {
             Control = control;
-            name = DS4ControlNames.ds4inputNames.TryGetValue(control, out string displayName) ? displayName : control.ToString();
+            name = DS4ControlNames.ds4inputNames.TryGetValue(control, out string? displayName) ? displayName : control.ToString();
         }
 
         /// <summary>対象のボタン。</summary>
         public DS4Controls Control { get; }
 
         /// <summary>対象のボタンの表示名（例: <c>Circle</c>）。書き込みは無視する。</summary>
-        public string Name
+        public string? Name
         {
             get => name;
             set { }   // 名前は固定（書き込みは無視する）
@@ -38,7 +40,7 @@ namespace DS4Windows.UI.ViewModels
 
         public bool EditMode => true;
 
-        public SpecialAction SavedAction => null;
+        public SpecialAction? SavedAction => null;
 
         public IReadOnlyList<string> ValidateName(out bool alreadyExists)
         {

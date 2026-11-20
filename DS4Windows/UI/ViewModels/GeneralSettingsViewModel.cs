@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO;
 using DS4Windows.Core.Settings;
@@ -129,13 +131,13 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public string LaunchProgram => general.LaunchProgram;
+        public string? LaunchProgram => general.LaunchProgram;
 
         public string LaunchProgramName
         {
             get
             {
-                string temp = general.LaunchProgram;
+                string? temp = general.LaunchProgram;
                 if (!string.IsNullOrEmpty(temp))
                 {
                     temp = Path.GetFileNameWithoutExtension(temp);
@@ -150,11 +152,11 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>起動するプログラム（.exe が実在するとき）のパス。View がこのパスからアイコンの画像を作る（ない／.exe でないときは null）。</summary>
-        public string LaunchProgramIconPath
+        public string? LaunchProgramIconPath
         {
             get
             {
-                string path = general.LaunchProgram;
+                string? path = general.LaunchProgram;
                 return File.Exists(path) && Path.GetExtension(path).ToLower() == ".exe" ? path : null;
             }
         }
@@ -221,7 +223,7 @@ namespace DS4Windows.UI.ViewModels
             return mouseSpeed * Mapping.MOUSESPEEDFACTOR;
         }
 
-        private void OnOwnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnOwnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {

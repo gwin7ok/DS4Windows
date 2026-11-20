@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 
@@ -25,7 +27,7 @@ namespace DS4Windows.UI.ViewModels
     {
         // 変更履歴の取得
         private readonly DS4Windows.Core.Abstractions.IChangelogService _changelogService;
-        private string markdown;
+        private string? markdown;
 
         public ChangelogViewModel(DS4Windows.Core.Abstractions.IChangelogService changelogService)
         {
@@ -33,7 +35,7 @@ namespace DS4Windows.UI.ViewModels
             _changelogService = changelogService;
         }
 
-        public string Markdown
+        public string? Markdown
         {
             get => markdown;
             set
@@ -42,7 +44,7 @@ namespace DS4Windows.UI.ViewModels
                 MarkdownChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MarkdownChanged;
+        public event EventHandler? MarkdownChanged;
 
         public async Task DisplayChangelog()
         {

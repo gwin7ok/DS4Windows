@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Model;
 using DS4Windows.Processing.Abstractions;
@@ -62,7 +64,7 @@ namespace DS4Windows.UI.ViewModels
                 return slot.CurrentTypeName;
             }
         }
-        public event EventHandler CurrentTypeChanged;
+        public event EventHandler? CurrentTypeChanged;
 
         public string DesiredType
         {
@@ -78,13 +80,13 @@ namespace DS4Windows.UI.ViewModels
                 return temp;
             }
         }
-        public event EventHandler DesiredTypeChanged;
+        public event EventHandler? DesiredTypeChanged;
 
         public bool BoundInput
         {
             get => slot.InputBound == OutputSlotInputBound.Bound;
         }
-        public event EventHandler BoundInputChanged;
+        public event EventHandler? BoundInputChanged;
 
         private int desiredTypeChoiceIndex = -1;
         public int DesiredTypeChoice
@@ -97,7 +99,7 @@ namespace DS4Windows.UI.ViewModels
                 DesiredTypeChoiceChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler DesiredTypeChoiceChanged;
+        public event EventHandler? DesiredTypeChoiceChanged;
 
         private int reserveChoiceIndex = -1;
         public int ReserveChoice
@@ -110,7 +112,7 @@ namespace DS4Windows.UI.ViewModels
                 ReserveChoiceChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler ReserveChoiceChanged;
+        public event EventHandler? ReserveChoiceChanged;
 
         private bool dirty = false;
         public bool Dirty
@@ -123,10 +125,10 @@ namespace DS4Windows.UI.ViewModels
                 DirtyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler DirtyChanged;
+        public event EventHandler? DirtyChanged;
 
-        public event EventHandler PluginRequest;
-        public event EventHandler UnplugRequest;
+        public event EventHandler? PluginRequest;
+        public event EventHandler? UnplugRequest;
         int idx;
 
         /// <summary>画面に出す、1 から始まるスロット番号（行の位置で決まる固定の値）</summary>
@@ -146,7 +148,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        public event EventHandler InputSlotNumChanged;
+        public event EventHandler? InputSlotNumChanged;
 
         public string InputSlotDisplayString
         {
@@ -160,7 +162,7 @@ namespace DS4Windows.UI.ViewModels
                 return result;
             }
         }
-        public event EventHandler InputSlotDisplayStringChanged;
+        public event EventHandler? InputSlotDisplayStringChanged;
 
         public SlotDeviceEntry(IOutputSlotView slot, int idx)
         {
@@ -182,7 +184,7 @@ namespace DS4Windows.UI.ViewModels
             slot.InputBoundChanged += OutSlotDevice_CurrentInputBoundChanged;
         }
 
-        private void OutSlotDevice_CurrentInputBoundChanged(object sender, EventArgs e)
+        private void OutSlotDevice_CurrentInputBoundChanged(object? sender, EventArgs e)
         {
             BoundInputChanged?.Invoke(this, EventArgs.Empty);
             // 結び付け・解除のときは、結び付いた入力の表示も変わる
@@ -190,12 +192,12 @@ namespace DS4Windows.UI.ViewModels
             InputSlotNumChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OutSlotDevice_PermanentTypeChanged(object sender, EventArgs e)
+        private void OutSlotDevice_PermanentTypeChanged(object? sender, EventArgs e)
         {
             DesiredTypeChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SlotDeviceEntry_FormPropChanged(object sender, EventArgs e)
+        private void SlotDeviceEntry_FormPropChanged(object? sender, EventArgs e)
         {
             Dirty = true;
         }

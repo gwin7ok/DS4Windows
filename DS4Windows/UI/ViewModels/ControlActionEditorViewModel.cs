@@ -1,4 +1,6 @@
 
+#nullable enable
+
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.UI.ViewModels
@@ -29,7 +31,7 @@ namespace DS4Windows.UI.ViewModels
 
         private ControlActionEditorViewModel(int deviceNum, DS4Controls control, IActionEditTarget target)
             : base(deviceNum, new ControlTriggerSource(control.ToString()), target, new ActionTypeCatalog(includeControlOnlyItems: true),
-                new TriggerCatalog(new[] { new TriggerItem(control.ToString(), target.Name) }), ActionEditorModes.Control)
+                new TriggerCatalog(new[] { new TriggerItem(control.ToString(), target.Name ?? string.Empty) }), ActionEditorModes.Control)
         {
             this.control = control;
         }

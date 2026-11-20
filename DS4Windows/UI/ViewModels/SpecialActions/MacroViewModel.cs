@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using DS4Windows.Processing.Macro;
 using System;
 using System.Collections.Generic;
@@ -33,7 +35,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private bool syncRun;
         private bool keepKeyState;
         private List<int> macro = new List<int>(1);
-        private string macrostring;
+        private string? macrostring;
 
         // Execute Mode（繰り返し）と Scan Code は、共通の MacroPlaybackOptions に持つ
         public MacroPlaybackOptions PlaybackOptions { get; } = new MacroPlaybackOptions();
@@ -41,7 +43,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public bool SyncRun { get => syncRun; set { syncRun = value; OnPropertyChanged(nameof(SyncRun)); } }
         public bool KeepKeyState { get => keepKeyState; set { keepKeyState = value; OnPropertyChanged(nameof(KeepKeyState)); } }
         public List<int> Macro { get => macro; set { macro = value; OnPropertyChanged(nameof(Macro)); } }
-        public string Macrostring { get => macrostring;
+        public string? Macrostring { get => macrostring;
             set
             {
                 macrostring = value;
@@ -50,7 +52,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             }
         }
 
-        public event EventHandler MacrostringChanged;
+        public event EventHandler? MacrostringChanged;
 
         public void LoadAction(SpecialAction action)
         {
@@ -95,7 +97,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         /// </summary>
         public bool CanRunTriggerRelease => !PlaybackOptions.RepeatToggle;
 
-        private void OnPlaybackOptionsChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnPlaybackOptionsChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(MacroPlaybackOptions.RepeatToggle)) return;
 
@@ -106,7 +108,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void SaveAction(SpecialAction action, bool edit = false)
         {
-            List<string> extrasList = new List<string>();
+            List<string?> extrasList = new List<string?>();
             extrasList.Add(PlaybackOptions.UseScanCode ? "Scan Code" : null);
             extrasList.Add(runTriggerRelease && !PlaybackOptions.RepeatToggle ? "RunOnRelease" : null);   // R-2: Repeat (Toggle) とは併用しない
             extrasList.Add(syncRun ? "Sync" : null);

@@ -70,7 +70,7 @@ namespace DS4Windows.Core.Settings
             return string.IsNullOrEmpty(extraStr) || extraStr == "0,0,0,0,0,0,0,0,0";
         }
 
-        internal void UpdateSettings(object act, string exts, DS4KeyType kt)
+        internal void UpdateSettings(object act, string? exts, DS4KeyType kt)
         {
             if (act is int || act is ushort)
             {

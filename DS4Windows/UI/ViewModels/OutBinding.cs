@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -39,7 +41,7 @@ namespace DS4Windows.UI.ViewModels
         public bool hasScanCode;
         public OutType outputType;
         public int outkey;
-        public int[] macro;
+        public int[]? macro;
         public DS4KeyType macroType;
         public X360Controls control;
         private int heavyRumble = 0;
@@ -58,7 +60,7 @@ namespace DS4Windows.UI.ViewModels
                 CurrentIntervalChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler CurrentIntervalChanged;
+        public event EventHandler? CurrentIntervalChanged;
 
         private DS4Color currentColor;
         public DS4Color CurrentColor
@@ -71,8 +73,8 @@ namespace DS4Windows.UI.ViewModels
                 CurrentColorStringChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public string CurrentColorString { get; private set; }
-        public event EventHandler CurrentColorStringChanged;
+        public string? CurrentColorString { get; private set; }
+        public event EventHandler? CurrentColorStringChanged;
 
         public bool HasScanCode { get => hasScanCode; set => hasScanCode = value; }
         public bool Toggle { get => toggle; set => toggle = value; }
@@ -87,7 +89,7 @@ namespace DS4Windows.UI.ViewModels
                 FlashRateChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler FlashRateChanged;
+        public event EventHandler? FlashRateChanged;
 
         public int MouseSens
         {
@@ -98,7 +100,7 @@ namespace DS4Windows.UI.ViewModels
                 MouseSensChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MouseSensChanged;
+        public event EventHandler? MouseSensChanged;
 
         private bool useMouseSens;
         public bool UseMouseSens
@@ -113,7 +115,7 @@ namespace DS4Windows.UI.ViewModels
                 UseMouseSensChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler UseMouseSensChanged;
+        public event EventHandler? UseMouseSensChanged;
 
         private bool useExtrasColor;
         public bool UseExtrasColor {
@@ -148,7 +150,7 @@ namespace DS4Windows.UI.ViewModels
                 return temp;
             }
         }
-        public event EventHandler ExtrasColorRStringChanged;
+        public event EventHandler? ExtrasColorRStringChanged;
         public int ExtrasColorG
         {
             get => extrasColor.green;
@@ -168,7 +170,7 @@ namespace DS4Windows.UI.ViewModels
                 return temp;
             }
         }
-        public event EventHandler ExtrasColorGStringChanged;
+        public event EventHandler? ExtrasColorGStringChanged;
 
         public int ExtrasColorB
         {
@@ -189,13 +191,13 @@ namespace DS4Windows.UI.ViewModels
                 return temp;
             }
         }
-        public event EventHandler ExtrasColorBStringChanged;
+        public event EventHandler? ExtrasColorBStringChanged;
 
         public string ExtrasColorString
         {
             get => $"#FF{extrasColor.red.ToString("X2")}{extrasColor.green.ToString("X2")}{extrasColor.blue.ToString("X2")}";
         }
-        public event EventHandler ExtrasColorStringChanged;
+        public event EventHandler? ExtrasColorStringChanged;
 
         public DS4Color ExtrasColorValue
         {
@@ -236,25 +238,25 @@ namespace DS4Windows.UI.ViewModels
             CurrentColor = new DS4Color(255, 255, 255);
         }
 
-        private void OutBinding_ExtrasColorBChanged(object sender, EventArgs e)
+        private void OutBinding_ExtrasColorBChanged(object? sender, EventArgs e)
         {
             ExtrasColorStringChanged?.Invoke(this, EventArgs.Empty);
             ExtrasColorBStringChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OutBinding_ExtrasColorGChanged(object sender, EventArgs e)
+        private void OutBinding_ExtrasColorGChanged(object? sender, EventArgs e)
         {
             ExtrasColorStringChanged?.Invoke(this, EventArgs.Empty);
             ExtrasColorGStringChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OutBinding_ExtrasColorRChanged(object sender, EventArgs e)
+        private void OutBinding_ExtrasColorRChanged(object? sender, EventArgs e)
         {
             ExtrasColorStringChanged?.Invoke(this, EventArgs.Empty);
             ExtrasColorRStringChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OutBinding_UseExtrasColorChanged(object sender, EventArgs e)
+        private void OutBinding_UseExtrasColorChanged(object? sender, EventArgs e)
         {
             if (!useExtrasColor)
             {
@@ -385,7 +387,7 @@ namespace DS4Windows.UI.ViewModels
             }
             else if (outputType == OutType.Macro)
             {
-                settings.action.actionMacro = macro;
+                settings.action.actionMacro = macro ?? new int[1];
                 settings.actionType = DS4ControlSettings.ActionType.Macro;
                 // 「押している間繰り返す」は RepeatMacro に統合した（Macro の印は常に立てる）
                 settings.keyType |= DS4KeyType.Macro;

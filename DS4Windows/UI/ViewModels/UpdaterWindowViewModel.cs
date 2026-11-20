@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Threading.Tasks;
 namespace DS4Windows.UI.ViewModels
@@ -24,9 +26,9 @@ namespace DS4Windows.UI.ViewModels
     {
         private string Version { get; set; }
 
-        private string markdown;
+        private string? markdown;
 
-        public string Markdown
+        public string? Markdown
         {
             get => markdown;
             set
@@ -35,7 +37,7 @@ namespace DS4Windows.UI.ViewModels
                 MarkdownChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        public event EventHandler MarkdownChanged;
+        public event EventHandler? MarkdownChanged;
 
         // Global.LastVersionChecked の置換先（必須引数。null は拒否する）
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService _appSettingsService;

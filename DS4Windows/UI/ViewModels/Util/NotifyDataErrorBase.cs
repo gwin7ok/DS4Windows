@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections;
@@ -31,12 +33,12 @@ namespace DS4Windows.UI.ViewModels.Util
 
         public bool HasErrors => errors.Count > 0;
 
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 
-        public IEnumerable GetErrors(string propertyName)
+        public IEnumerable GetErrors(string? propertyName)
         {
-            errors.TryGetValue(propertyName, out List<string> errorsForName);
-            return errorsForName;
+            errors.TryGetValue(propertyName ?? string.Empty, out List<string>? errorsForName);
+            return errorsForName!;   // INotifyDataErrorInfo は、エラーがないとき null を返してよい
         }
 
         public void RaiseErrorsChanged(string propertyName)

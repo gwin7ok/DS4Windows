@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO;
@@ -319,7 +321,7 @@ namespace DS4Windows.UI.ViewModels
                 OnPropertyChanged(nameof(UseCustomSteamFolder));
             }
         }
-        public string CustomSteamFolder
+        public string? CustomSteamFolder
         {
             get => _appSettings.CustomSteamFolder;
             set
@@ -329,7 +331,7 @@ namespace DS4Windows.UI.ViewModels
                 // （TextBox には入力が残るため、保存されたように見えた）。使う側（AutoProfiles）は Directory.Exists で確かめ、
                 // 無ければ既定の Steam フォルダーへ戻るため、存在しないパスを保存しても害はない。
                 value ??= string.Empty;
-                string temp = _appSettings.CustomSteamFolder;
+                string? temp = _appSettings.CustomSteamFolder;
                 if (temp == value) return;
 
                 _appSettings.CustomSteamFolder = value;
@@ -490,7 +492,7 @@ namespace DS4Windows.UI.ViewModels
         /// 自分の値が変わったときの副作用（スタートアップの登録、偽装 exe の作成、UDP の表示の連動）。
         /// 値を設定した直後に同期して実行する。
         /// </summary>
-        private void OnOwnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnOwnPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -507,12 +509,12 @@ namespace DS4Windows.UI.ViewModels
         {
         }
 
-        private void SettingsViewModel_UseUDPServerChanged(object sender, EventArgs e)
+        private void SettingsViewModel_UseUDPServerChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(UdpServerOneEuroPanelShown));
         }
 
-        private void SettingsViewModel_UseUdpSmoothingChanged(object sender, EventArgs e)
+        private void SettingsViewModel_UseUdpSmoothingChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(UdpServerOneEuroPanelShown));
         }
@@ -554,7 +556,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void SettingsViewModel_FakeExeNameChanged(object sender, EventArgs e)
+        private void SettingsViewModel_FakeExeNameChanged(object? sender, EventArgs e)
         {
             string temp = FakeExeName;
             if (!string.IsNullOrEmpty(temp))
@@ -563,7 +565,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void SettingsViewModel_RunStartTaskChanged(object sender, EventArgs e)
+        private void SettingsViewModel_RunStartTaskChanged(object? sender, EventArgs e)
         {
             if (runStartTask)
             {
@@ -576,7 +578,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void SettingsViewModel_RunStartProgChanged(object sender, EventArgs e)
+        private void SettingsViewModel_RunStartProgChanged(object? sender, EventArgs e)
         {
             if (runStartProg)
             {
@@ -588,7 +590,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private void SettingsViewModel_RunAtStartupChanged(object sender, EventArgs e)
+        private void SettingsViewModel_RunAtStartupChanged(object? sender, EventArgs e)
         {
             if (runAtStartup)
             {
@@ -642,7 +644,7 @@ namespace DS4Windows.UI.ViewModels
         /// </summary>
         public static void CreateFakeExeFiles(string programDirectory, string exeLocation, string fakeName)
         {
-            string exeBase = Path.Combine(Path.GetDirectoryName(exeLocation),
+            string exeBase = Path.Combine(Path.GetDirectoryName(exeLocation) ?? string.Empty,
                 Path.GetFileNameWithoutExtension(exeLocation));
             string current_conf_file_path = $"{exeBase}.runtimeconfig.json";
             string current_deps_file_path = $"{exeBase}.deps.json";

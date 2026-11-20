@@ -1,3 +1,5 @@
+#nullable enable
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using DS4Windows.Core.Settings;

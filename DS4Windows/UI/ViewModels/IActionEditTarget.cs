@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 
@@ -11,7 +13,7 @@ namespace DS4Windows.UI.ViewModels
     public interface IActionEditTarget
     {
         /// <summary>名前（SA は、ユーザーが付けた名前。Controls は、対象のボタン名）。</summary>
-        string Name { get; set; }
+        string? Name { get; set; }
 
         /// <summary>名前を編集できるか（Controls のモードは偽）。</summary>
         bool NameEditable { get; }
@@ -20,7 +22,7 @@ namespace DS4Windows.UI.ViewModels
         bool EditMode { get; }
 
         /// <summary>編集前の、保存済みの SA（新規なら <c>null</c>）。</summary>
-        SpecialAction SavedAction { get; }
+        SpecialAction? SavedAction { get; }
 
         /// <summary>
         /// 名前の検証。エラーの文言を返す（空なら有効）。<paramref name="alreadyExists"/> は、重複で無効になったときだけ真
