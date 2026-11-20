@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         {
             string path = SourceFileLocator.Find("DS4Windows/DS4WinWPF.csproj");
             if (path == null) return;
-            string text = File.ReadAllText(path);
+            string text = SourceText.ReadFileWithPartials(path);
 
             Assert.Contains("git rev-parse --short=7 HEAD", text);
             Assert.Contains("git status --porcelain", text);
@@ -34,7 +34,7 @@ namespace DS4WindowsTests
             // 文言づくりは BuildStampReader へ移した（App.xaml.cs は、それを呼んでログに出す）
             string path = SourceFileLocator.Find("DS4Windows/Composition/Startup/BuildStampReader.cs");
             if (path == null) return;
-            string text = File.ReadAllText(path);
+            string text = SourceText.ReadFileWithPartials(path);
 
             Assert.Contains("commit=(?<hash>", text);
             Assert.Contains("(commit {commit.Groups[\"hash\"].Value})", text);

@@ -242,7 +242,7 @@ namespace DS4WindowsTests
                 if (file.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar)) continue;
                 if (allowed.Contains(Path.GetFileName(file))) continue;
 
-                string text = File.ReadAllText(file);
+                string text = SourceText.ReadFileWithPartials(file);
                 Assert.False(text.Contains("GyroSwipe") || text.Contains("gyroSwipe") || text.Contains("SixDirectionalSwipe"),
                     $"{file} がジャイロスワイプに言及している");
             }

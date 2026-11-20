@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         private static string SaveProfileWith(PersistenceGoldenContext ctx, BackingStore store, string name)
         {
             Assert.True(TestRepositoryFactory.CreateLegacyProfileXml(store).SaveProfile(Slot, name));
-            return File.ReadAllText(Path.Combine(ctx.AppData, "Profiles", name + ".xml"));
+            return SourceText.ReadFileWithPartials(Path.Combine(ctx.AppData, "Profiles", name + ".xml"));
         }
 
         private static BackingStore LoadProfileWith(PersistenceGoldenContext ctx, string xml, string name, params SpecialAction[] actions)
@@ -223,9 +223,9 @@ namespace DS4WindowsTests
             rig.Reload();
 
             Assert.Equal(id, rig.Node("Switch").SelectSingleNode("ProfileId").InnerText);
-            string before = File.ReadAllText(rig.Path);
+            string before = SourceText.ReadFileWithPartials(rig.Path);
             rig.Reload();
-            Assert.Equal(before, File.ReadAllText(rig.Path));   // 2 回目は書き換えない
+            Assert.Equal(before, SourceText.ReadFileWithPartials(rig.Path));   // 2 回目は書き換えない
         }
 
         [Fact]
@@ -327,7 +327,7 @@ namespace DS4WindowsTests
             string app = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
             if (app == null) return;
 
-            string source = File.ReadAllText(app);
+            string source = SourceText.ReadFileWithPartials(app);
             int ensure = source.IndexOf("_profileIdentityService.EnsureAllPersisted()", StringComparison.Ordinal);
             int load = source.IndexOf("_specialActionRepository.LoadActions()", StringComparison.Ordinal);
             Assert.True(ensure > 0 && load > ensure, "プロファイルの ID の割り当てが、SA の読み込みより前にない（Load Profile の切り替え先を ID で解決するため）");

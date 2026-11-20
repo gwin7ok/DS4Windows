@@ -82,7 +82,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = File.ReadAllText(path);
+            string text = SourceText.ReadFileWithPartials(path);
 
             Assert.Matches(new Regex(@"public bool SaveProfile\(string profileName\)\s*\{\s*return profileRepo\.SaveProfile\(device, profileName\);\s*\}"), text);
             Assert.Matches(new Regex(@"public void LoadBlankProfile\(\)\s*\{\s*presetLoader\.LoadBlank\(device, false, loadTarget, false\);\s*\}"), text);
@@ -105,7 +105,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string text = Regex.Replace(File.ReadAllText(path), @"//[^\r\n]*", string.Empty);
+            string text = Regex.Replace(SourceText.ReadFileWithPartials(path), @"//[^\r\n]*", string.Empty);
 
             // View から repository を直接呼ばず、ViewModel のメソッドを使う
             Assert.DoesNotContain("profileRepository.SaveProfile(", text);

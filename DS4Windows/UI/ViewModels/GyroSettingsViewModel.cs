@@ -12,7 +12,7 @@ namespace DS4Windows.UI.ViewModels
     /// プロパティ名は、タブの Binding と同じ名前のまま（画面の部品は、この ViewModel を DataContext にして、そのまま使える）。
     /// 値は設定サービスの配列にあり、保存・読込の経路は変わらない。
     /// </summary>
-    public class GyroSettingsViewModel : ObservableObject
+    public partial class GyroSettingsViewModel : ObservableObject
     {
         private const string AlwaysOn = "Always On";
 
@@ -420,39 +420,6 @@ namespace DS4Windows.UI.ViewModels
 
         // ---- トリガーの選択（メニュー）の表示と保存 ----
 
-        private string gyroControlsTrigDisplay = AlwaysOn;
-        public string GyroControlsTrigDisplay
-        {
-            get => gyroControlsTrigDisplay;
-            set
-            {
-                gyroControlsTrigDisplay = value;
-                OnPropertyChanged(nameof(GyroControlsTrigDisplay));
-            }
-        }
-
-        private string gyroMouseTrigDisplay = AlwaysOn;
-        public string GyroMouseTrigDisplay
-        {
-            get => gyroMouseTrigDisplay;
-            set
-            {
-                gyroMouseTrigDisplay = value;
-                OnPropertyChanged(nameof(GyroMouseTrigDisplay));
-            }
-        }
-
-        private string gyroMouseStickTrigDisplay = AlwaysOn;
-        public string GyroMouseStickTrigDisplay
-        {
-            get => gyroMouseStickTrigDisplay;
-            set
-            {
-                gyroMouseStickTrigDisplay = value;
-                OnPropertyChanged(nameof(GyroMouseStickTrigDisplay));
-            }
-        }
-
         /// <summary>トリガーのメニューに並べる見出し（最後の "Always On" は保存する番号 -1 に当たる）。View がこの並びでメニューを作る。</summary>
         public IReadOnlyList<string> TriggerItemNames => triggerItems;
 
@@ -487,88 +454,6 @@ namespace DS4Windows.UI.ViewModels
         public void PopulateGyroControlsTrig(IReadOnlyList<TriggerMenuEntry> entries)
         {
             GyroControlsTrigDisplay = ApplyToMenu(entries, gyro.Controls.triggers);
-        }
-
-        /// <summary>
-        /// メニューのチェックを読み、保存する文字列（カンマ区切りの番号。何も選ばなければ -1＝常にオン）と表示の文字列を返す。
-        /// 「Always On」を選んだら、ほかのチェックは外す（<paramref name="entries"/> のチェックを書き換える）。
-        /// </summary>
-        private static string ReadMenu(IReadOnlyList<TriggerMenuEntry> entries, bool alwaysOnChecked, out string display)
-        {
-            int index = 0;
-            List<int> triggerList = new List<int>();
-            List<string> triggerName = new List<string>();
-
-            int itemCount = entries.Count;
-            TriggerMenuEntry alwaysOnItem = entries[itemCount - 1];
-            if (alwaysOnChecked)
-            {
-                for (int i = 0; i < itemCount - 1; i++)
-                {
-                    entries[i].IsChecked = false;
-                }
-            }
-            else
-            {
-                alwaysOnItem.IsChecked = false;
-                foreach (TriggerMenuEntry item in entries)
-                {
-                    if (item.IsChecked)
-                    {
-                        triggerList.Add(index);
-                        triggerName.Add(item.Header);
-                    }
-
-                    index++;
-                }
-            }
-
-            if (triggerList.Count == 0)
-            {
-                triggerList.Add(-1);
-                triggerName.Add(AlwaysOn);
-                alwaysOnItem.IsChecked = true;
-            }
-
-            display = string.Join(", ", triggerName.ToArray());
-            return string.Join(",", triggerList.ToArray());
-        }
-
-        /// <summary>保存された番号（カンマ区切り）をメニューのチェックへ反映し（<paramref name="entries"/> を書き換え）、表示の文字列を返す。</summary>
-        private static string ApplyToMenu(IReadOnlyList<TriggerMenuEntry> entries, string? savedTriggers)
-        {
-            string[] triggers = savedTriggers?.Split(",") ?? Array.Empty<string>();
-            int itemCount = entries.Count;
-            List<string> triggerName = new List<string>();
-            foreach (string trig in triggers)
-            {
-                bool valid = int.TryParse(trig, out int trigid);
-                if (valid && trigid >= 0 && trigid < itemCount - 1)
-                {
-                    TriggerMenuEntry current = entries[trigid];
-                    current.IsChecked = true;
-                    triggerName.Add(current.Header);
-                }
-                else if (valid && trigid == -1)
-                {
-                    entries[itemCount - 1].IsChecked = true;
-                    triggerName.Add(AlwaysOn);
-                    break;
-                }
-            }
-
-            if (triggerName.Count == 0)
-            {
-                entries[itemCount - 1].IsChecked = true;
-                triggerName.Add(AlwaysOn);
-            }
-
-            return string.Join(", ", triggerName.ToArray());
-        }
-        private int FindGyroMouseSmoothMethodIndex()
-        {
-            GyroSmoothingMethod method = gyro.Mouse.smoothingMethod;
-            return method == GyroSmoothingMethod.WeightedAverage ? 1 : 0;
         }
 
         private int FindGyroMouseStickSmoothMethodIndex()

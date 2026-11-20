@@ -34,7 +34,7 @@ namespace DS4WindowsTests
                 return null;
             }
 
-            return File.ReadAllText(path).Replace("\r\n", "\n");
+            return SourceText.ReadFileWithPartials(path).Replace("\r\n", "\n");
         }
 
         private const string ProfileEditorXaml = "DS4Windows/UI/ProfileEditor.xaml";

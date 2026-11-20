@@ -32,7 +32,7 @@ namespace DS4WindowsTests
                 return;
             }
 
-            string code = SourceText.StripComments(File.ReadAllText(path));
+            string code = SourceText.StripComments(SourceText.ReadFileWithPartials(path));
             Assert.Contains("ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis", code);
             Assert.DoesNotMatch(@"ForSlot\(\s*0\s*\)\.Gyro\.MouseStickHorizontalAxis", code);
         }

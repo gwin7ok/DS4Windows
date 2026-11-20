@@ -249,7 +249,7 @@ namespace DS4WindowsTests
             string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
-            string text = File.ReadAllText(mapping);
+            string text = SourceText.ReadFileWithPartials(mapping);
             int count = 0;
             int index = 0;
             while ((index = text.IndexOf("_engine.OwnsControl(", index, StringComparison.Ordinal)) >= 0) { count++; index++; }

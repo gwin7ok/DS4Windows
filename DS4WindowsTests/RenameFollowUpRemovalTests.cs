@@ -161,7 +161,7 @@ namespace DS4WindowsTests
             string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (main == null || editor == null) return;
 
-            string source = File.ReadAllText(main);
+            string source = SourceText.ReadFileWithPartials(main);
             int start = source.IndexOf("if (isRename)", StringComparison.Ordinal);
             int end = source.IndexOf("profileListHolder.Refresh();", start, StringComparison.Ordinal);
             string block = source.Substring(start, end - start);
@@ -178,9 +178,9 @@ namespace DS4WindowsTests
 
             // プロファイル一覧からの名前変更は、この共通の経路を通る
             Assert.Contains("SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName)",
-                File.ReadAllText(SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs")));
+                SourceText.ReadFileWithPartials(SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs")));
             // SA の名前変更は、古いプロファイルのファイルのため、ReplaceActionReference を残している
-            Assert.Contains("backend.ReplaceActionReference(oldName, newName)", File.ReadAllText(editor));
+            Assert.Contains("backend.ReplaceActionReference(oldName, newName)", SourceText.ReadFileWithPartials(editor));
         }
     }
 }

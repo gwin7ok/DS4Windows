@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DS4WindowsTests
@@ -22,7 +24,7 @@ namespace DS4WindowsTests
         public static string Read(string relativePath, [CallerFilePath] string callerFile = "")
         {
             string path = SourceFileLocator.Find(relativePath, callerFile);
-            return path == null ? null : File.ReadAllText(path);
+            return path == null ? null : ReadFileWithPartials(path);
         }
 
         /// <summary>コメント（<c>/* */</c> と <c>//</c>）を除いた全文。ソースなしの環境では null。</summary>
@@ -30,6 +32,27 @@ namespace DS4WindowsTests
         {
             string text = Read(relativePath, callerFile);
             return text == null ? null : StripComments(text);
+        }
+
+        /// <summary>
+        /// コメントを除いた全文。<c>partial</c> で分けた型のため、<c>Name.cs</c> と同じ場所の <c>Name.*.cs</c> を続けて返す。ソースなしの環境では null。
+        /// </summary>
+        public static string ReadCodeWithPartials(string relativePath, [CallerFilePath] string callerFile = "") => ReadCode(relativePath, callerFile);
+
+        /// <summary>ファイルの全文に、<c>partial</c> で分けた同じ場所の <c>Name.*.cs</c> を続けた全文。</summary>
+        public static string ReadFileWithPartials(string path)
+        {
+            string text = File.ReadAllText(path);
+            if (!path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)) return text;
+            string name = Path.GetFileName(path);
+            string stem = name.EndsWith(".xaml.cs", StringComparison.OrdinalIgnoreCase) ? name.Substring(0, name.Length - ".xaml.cs".Length) : Path.GetFileNameWithoutExtension(name);
+            var sb = new StringBuilder(text);
+            foreach (string f in Directory.GetFiles(Path.GetDirectoryName(path), stem + ".*.cs").OrderBy(x => x, StringComparer.Ordinal))
+            {
+                if (string.Equals(f, path, StringComparison.OrdinalIgnoreCase) || f.EndsWith(".xaml.cs", StringComparison.OrdinalIgnoreCase)) continue;
+                sb.Append('\n').Append(File.ReadAllText(f));
+            }
+            return sb.ToString();
         }
 
         /// <summary>コメントを除き、空白（改行を含む）の連続を 1 つの空白にした全文（書式に依存しない照合用）。ソースなしの環境では null。</summary>

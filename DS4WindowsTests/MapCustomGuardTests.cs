@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_KeepsTheThinCommit_ForTheCallers()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCodeWithPartials("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.Contains("public void Commit(int device, DS4Windows.Core.Abstractions.IProfileSettingsService settings)", text);
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
         [InlineData(@"\bEngageButtonsMode\b")]
         public void Mapping_NoLongerContains_TheTwoStageStateMachine(string pattern)
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCodeWithPartials("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（Phase9 MapCustom の分割 M2 で TwoStageTriggerProcessor へ移した）");
@@ -79,7 +79,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MapCustom_CallsTheProcessor_ForL2AndR2_InTheOriginalOrder()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
+            string text = SourceText.ReadCodeWithPartials("DS4Windows/Processing/Mapping.cs");
             if (text == null) return;
 
             // M3b: L2／R2 は 1 つの private メソッド（ProcessTriggerWithTwoStage）を、この順で呼ぶ

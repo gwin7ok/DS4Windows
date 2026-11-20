@@ -254,111 +254,6 @@ namespace DS4Windows.UI
             timerThread.Join();
         }
 
-        public void LateChecks(ArgumentParser parser)
-        {
-            Task tempTask = Task.Run(() =>
-            {
-                mainWinVM.CheckDrivers();
-                if (!parser.Stop)
-                {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        mainWinVM.IsServiceBusy = true;
-                    }));
-                    Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
-                    mainWinVM.StartService();
-                    //root.rootHubtest.Start();
-                }
-            });
-
-            // Log exceptions that might occur
-            Util.LogAssistBackgroundTask(tempTask);
-#if !BETA_VERSION
-            tempTask = Task.Delay(100).ContinueWith(_ =>
-            {
-                // Use explicit startup-check settings persisted in Profiles.xml
-                if (updateCheckPolicy.IsStartupCheckDue())
-                {
-                    try
-                    {
-                        if (updateCheckPolicy.TryFindNewerVersion(startup: true, out var version) && version != null)
-                        {
-                            DisplayUpdaterWindow(version.ToString());
-                        }
-                    }
-                    catch
-                    {
-                        Dispatcher.Invoke(() => MessageBox.Show(Strings.FailedToRetrieveLatestVersion, "DS4Windows Updater"));
-                        // bubble the exception up to allow to see what's wrong in the log
-                        throw;
-                    }
-
-                    updateCheckPolicy.MarkChecked();
-                }
-
-                // Check if main window closing was requested from app update.
-                // Quit task early
-                //if (contextclose)
-                //{
-                //    return;
-                //}
-            });
-#endif
-            Util.LogAssistBackgroundTask(tempTask);
-        }
-
-        private void DisplayUpdaterWindow(string version)
-        {
-            MessageBoxResult result = MessageBoxResult.No;
-            Dispatcher.Invoke(() =>
-            {
-                var updaterWin = new UpdaterWindow(version, mainWinVM.IsAdministrator, _viewModelFactory.CreateUpdaterWindowViewModel(version));
-                updaterWin.ShowDialog();
-                result = updaterWin.Result;
-            });
-        }
-
-        private void Check_Version(bool showstatus = false)
-        {
-            string? version = mainWinVM.ApplicationVersion;
-            string newversion = string.Empty;
-            string versionFilePath = Path.Combine(mainWinVM.AppDataPath, "version.txt");
-            ulong lastVersionNum = mainWinVM.LastVersionCheckedNum;
-            //ulong lastVersion = Global.CompileVersionNumberFromString("2.1.1");
-
-            bool versionFileExists = File.Exists(versionFilePath);
-            if (versionFileExists)
-            {
-                newversion = File.ReadAllText(versionFilePath).Trim();
-                //newversion = "2.1.3";
-            }
-
-            // 判断は UpdateCheckPolicy が行い、ここは結果に応じた画面の表示と、記録ファイルの後始末だけをする
-            try
-            {
-                var outcome = updateCheckPolicy.Evaluate(version ?? string.Empty, newversion, out Version? latest);
-                if (outcome == UpdateCheckOutcome.UpdateAvailable)
-                {
-                    Dispatcher.Invoke(() => DisplayUpdaterWindow(latest!.ToString()));   // 新しい版があるときは、必ず版が返る
-                }
-                else if (outcome == UpdateCheckOutcome.UpToDate && showstatus)
-                {
-                    Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
-                }
-            }
-            catch
-            {
-                // 画面の表示で例外が出たときも、元の処理どおり、確認を求められたときは「最新です」と知らせる
-                if (showstatus)
-                    Dispatcher.Invoke(() => MessageBox.Show(Properties.Resources.UpToDate, "DS4Windows Updater"));
-            }
-            finally
-            {
-                if (versionFileExists)
-                    File.Delete(versionFilePath);
-            }
-        }
-
         private void TrayIconVM_MenuChanged(object? sender, EventArgs e)
         {
             // 項目の変更は別のスレッドからも起きるため、UI のスレッドで組み直す
@@ -381,84 +276,12 @@ namespace DS4Windows.UI
             profileSelection.ApplyFromTray(idx, profile, devitem);
         }
 
-        private void SetupEvents()
-        {
-            WPFLocalizeExtension.Engine.LocalizeDictionary.Instance.PropertyChanged += OnLocalizationCultureChanged;
-            mainWinVM.ServiceStarted += ControlServiceStarted;
-            mainWinVM.RunningChanged += ControlServiceChanged;
-            mainWinVM.PreServiceStop += PrepareForServiceStop;
-            //root.rootHubtest.RunningChanged += ControlServiceChanged;
-            conLvViewModel.ControllerCol.CollectionChanged += ControllerCol_CollectionChanged;
-            trayAppearance.SubscribeNotifications();
-
-            // 型付きプロファイル変更イベントを購読
-            AppLogger.ProfileChanged += OnProfileChanged;
-
-            AppLogger.GuiLog += UpdateLastStatusMessage;
-            logvm.LogItems.CollectionChanged += LogItems_CollectionChanged;
-            trayIconVM.RequestShutdown += TrayIconVM_RequestShutdown;
-            trayIconVM.ProfileSelected += TrayIconVM_ProfileSelected;
-            trayIconVM.RequestMinimize += TrayIconVM_RequestMinimize;
-            trayIconVM.RequestOpen += TrayIconVM_RequestOpen;
-            trayIconVM.RequestServiceChange += TrayIconVM_RequestServiceChange;
-            settingsWrapVM.PropertyChanged += SettingsWrapVM_PropertyChanged;
-            ApplyProcessPriorityFromSettings();
-
-            autoProfControl.AutoDebugChanged += AutoProfControl_AutoDebugChanged;
-            _autoProfileService.RequestServiceChange += AutoprofileChecker_RequestServiceChange;
-            // 自動プロファイルは接続中のスロットにだけ適用する。接続した直後に、最後の前景ウィンドウで照合し直す
-            _autoProfileService.AttachHotplugRecheck();
-            autoProfileHolder.AutoProfileColl.CollectionChanged += AutoProfileColl_CollectionChanged;
-            //autoProfControl.AutoProfVM.AutoProfileSystemChange += AutoProfVM_AutoProfileSystemChange;
-            mainWinVM.FullTabsEnabledChanged += MainWinVM_FullTabsEnabledChanged;
-
-            bool wmiConnected = false;
-            WqlEventQuery q = new WqlEventQuery();
-            ManagementScope scope = new ManagementScope("root\\CIMV2");
-            q.EventClassName = "Win32_PowerManagementEvent";
-
-            try
-            {
-                scope.Connect();
-            }
-            catch (COMException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
-            catch (ManagementException) { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
-
-            if (scope.IsConnected)
-            {
-                wmiConnected = true;
-                managementEvWatcher = new ManagementEventWatcher(scope, q);
-                managementEvWatcher.EventArrived += PowerEventArrive;
-                try
-                {
-                    managementEvWatcher.Start();
-                }
-                catch (ManagementException) { wmiConnected = false; }
-                catch (COMException) { wmiConnected = false; }
-            }
-
-            if (!wmiConnected)
-            {
-                AppLogger.LogUser(AppLogLevel.Warn, "Log_Ui_WmiFailed");
-            }
-        }
-
         private void SettingsWrapVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             trayAppearance.OnSettingsPropertyChanged(e.PropertyName ?? string.Empty, trayIconVM);
             if (e.PropertyName == nameof(SettingsViewModel.ProcessPriorityIndex))
             {
                 ApplyProcessPriorityFromSettings();
-            }
-        }
-
-        /// <summary>設定の優先度を、プロセスへ反映する。管理者でなく RealTime を選んだときは、High へ戻した番号を設定へ書き戻す。</summary>
-        private void ApplyProcessPriorityFromSettings()
-        {
-            int effective = mainWinVM.ApplyProcessPriority(settingsWrapVM.ProcessPriorityIndex);
-            if (effective != settingsWrapVM.ProcessPriorityIndex)
-            {
-                settingsWrapVM.ProcessPriorityIndex = effective;
             }
         }
 
@@ -472,51 +295,11 @@ namespace DS4Windows.UI
             await ChangeService();
         }
 
-        private void LogItems_CollectionChanged(object? sender,
-            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                Dispatcher.BeginInvoke((Action)(() =>
-                {
-                    int count = logListView.Items.Count;
-                    if (count > 0)
-                    {
-                        logListView.ScrollIntoView(logvm.LogItems[count - 1]);
-                    }
-                }));
-            }
-        }
-
-        private void ControlServiceStarted(object? sender, EventArgs e)
-        {
-            if (mainWinVM.SwipeProfiles)
-            {
-                ChangeHotkeysStatus(true);
-            }
-
-            CheckAutoProfileStatus();
-        }
-
         // 廃止済みの AutoProfileChecker を引数に持つオーバーロードを削除し、1 つに統合した
         private void AutoprofileChecker_RequestServiceChange(bool state)
         {
             // ChangeService は、サービスの開始・停止の失敗を自分でログへ出す。ここでは完了を待たない。
             _ = Dispatcher.InvokeAsync(ChangeService);
-        }
-
-        private void AutoProfVM_AutoProfileSystemChange(AutoProfilesViewModel sender, bool state)
-        {
-            if (state)
-            {
-                _autoProfileService.SetEnabled(true);
-                autoProfileHolder.AutoProfileColl.CollectionChanged += AutoProfileColl_CollectionChanged;
-            }
-            else
-            {
-                _autoProfileService.SetEnabled(false);
-                autoProfileHolder.AutoProfileColl.CollectionChanged -= AutoProfileColl_CollectionChanged;
-            }
         }
 
         private void AutoProfileColl_CollectionChanged(object? sender,
@@ -530,244 +313,14 @@ namespace DS4Windows.UI
             _autoProfileService.DebugLogLevel = autoProfControl.AutoDebug == true ? 1 : 0;
         }
 
-        private void PowerEventArrive(object sender, EventArrivedEventArgs e)
-        {
-            short evType = Convert.ToInt16(e.NewEvent.GetPropertyValue("EventType"));
-            switch (evType)
-            {
-                // Wakeup from Suspend
-                case POWER_RESUME:
-                    {
-                        mainWinVM.Suspending = false;
-
-                        if (wasrunning)
-                        {
-                            wasrunning = false;
-                            Dispatcher.Invoke(() =>
-                            {
-                                mainWinVM.IsServiceBusy = true;
-                            });
-
-                            AppLogger.Log(AppLogLevel.Info, DS4Windows.Translations.Strings.WakeupFromSuspend, LogOptions.UserFacing);
-                            //controlService.LogDebug($"{Thread.CurrentThread.ManagedThreadId}");
-
-                            //Thread.Sleep(60000);
-                            //controlService.Start();
-
-                            //Task startupTask = Task.Run(() =>
-                            Task startupTask = Task.Delay(5000).ContinueWith(t =>
-                            {
-                                mainWinVM.StartService();
-                            });
-
-                            // Log exceptions that might occur
-                            Util.LogAssistBackgroundTask(startupTask);
-                        }
-                    }
-
-                    break;
-                // Entering Suspend
-                case POWER_SUSPEND:
-                    {
-                        mainWinVM.Suspending = true;
-
-                        if (mainWinVM.ServiceRunning)
-                        {
-                            //Dispatcher.Invoke(() =>
-                            //{
-                            //    mainWinVM.IsServiceBusy = true;
-                            //});
-
-                            mainWinVM.StopService(immediateUnplug: true);
-                            wasrunning = true;
-
-                            Thread.Sleep(1000); // 待機の理由: サービスの再起動の間隔（バックグラウンドのスレッドの中）
-                        }
-                    }
-
-                    break;
-
-                default: break;
-            }
-        }
-
-        private void ChangeHotkeysStatus(bool state)
-        {
-            if (state)
-            {
-                hotkeysTimerActive = true;
-                if (hotkeysTimer == null) return;
-                hotkeysTimer.Elapsed += HotkeysTimer_Elapsed;
-                hotkeysTimer.Start();
-            }
-            else
-            {
-                hotkeysTimerActive = false;
-                if (hotkeysTimer == null) return;
-                hotkeysTimer.Stop();
-                hotkeysTimer.Elapsed -= HotkeysTimer_Elapsed;
-            }
-        }
-
-        private void HotkeysTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-        {
-            hotkeysTimer?.Stop();
-
-            // 例外が出ても始め直す（止まったままになると、スワイプでの切替が以後動かなくなる）。
-            // 終了のとき（hotkeysTimerActive が偽）は、始め直さない。
-            GuardedTimerTick.Run(
-                SwipeProfileTick,
-                () => hotkeysTimerActive,
-                () => hotkeysTimer?.Start(),
-                ex => DS4Windows.Core.Logging.AppLogger.LogError($"HotkeysTimer tick failed: {ex}"));
-        }
-
-        private void SwipeProfileTick()
-        {
-            if (!mainWinVM.SwipeProfiles) return;
-
-            // 一覧はホットプラグで別のスレッドから変わるため、読み取りロックの下で複製した行を列挙する
-            foreach (CompositeDeviceModel item in conLvViewModel.SnapshotRows())
-            {
-                string slide = mainWinVM.TouchpadSlide(item.DevIndex);
-                // 切替の通知は、プロファイルの適用処理（OnProfileChanged）が 1 回だけ出す
-                if (slide == "left" || slide == "right")
-                {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        item.SelectedIndex = swipeRule.NextIndex(item.SelectedIndex, item.ProfileListCol.Count, slide);
-                    }));
-                }
-            }
-        }
-
-        private void PrepareForServiceStop(object? sender, EventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                trayIconVM.ClearContextMenu();
-            }));
-
-            ChangeHotkeysStatus(false);
-        }
-
-        private void TrayIconVM_RequestOpen(object? sender, EventArgs e)
-        {
-            if (!showAppInTaskbar)
-            {
-                Show();
-            }
-
-            WindowState = WindowState.Normal;
-        }
-
         private void TrayIconVM_RequestShutdown(object? sender, EventArgs e)
         {
             contextclose = true;
             this.Close();
         }
 
-        private void UpdateLastStatusMessage(object? sender, DS4Windows.Core.Logging.DebugEventArgs e)
-        {
-            if (e.Temporary)
-                return;
-
-            if (!string.IsNullOrEmpty(e.Data) && (e.Data.StartsWith("[DI]") || e.Data.StartsWith("[Legacy]")))
-                return;
-
-            lastLogMsg.Message = e.Data;
-            lastLogMsg.Warning = e.Warning;
-        }
-
-        private void OnProfileChanged(object? sender, DS4Windows.Core.Logging.ProfileChangedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                try
-                {
-                    int devIndex = e.DeviceIndex;
-                    string prof = e.ProfileName ?? string.Empty;
-                    // 残量は一覧のモデルを経由せず、スロットのデバイスから直接読む
-                    // （再接続の直後は一覧の行がまだ無く、"0" と表示されていた）
-                    string battery = _autoProfileService.BatteryText(devIndex);
-
-                    CompositeDeviceModel? item = null;
-                    if (conLvViewModel != null && conLvViewModel.ControllerDict != null && conLvViewModel.ControllerDict.ContainsKey(devIndex))
-                        item = conLvViewModel.ControllerDict[devIndex];
-
-                    string prolog;
-                    // If the event is from AutoProfile, use the AutoTempProfile resource
-                    if (e.Source == DS4Windows.Core.Logging.ProfileChangeSource.AutoProfile)
-                        prolog = string.Format(DS4Windows.Properties.Resources.UsingAutoTempProfile, (devIndex + 1).ToString(), prof);
-                    else
-                        prolog = string.Format(Properties.Resources.UsingProfile, (devIndex + 1).ToString(), prof, battery);
-
-                    // 修正前:
-                    // if (mainWinVM.ProfileChangedNotification)
-                    // {
-                    //     ShowProfileSwitchNotification(message);
-                    // }
-
-                    // 修正後（判定をメソッド側に委譲し、シンプルに1行で呼ぶ）:
-                    // 2026-10-19: 自動プロファイル由来は AutoProfileSwitchNotifyChoice と接続の有無で判定する（AutoProfileNotificationPolicy）
-                    if (_autoProfileService.ShouldNotify(e.Source, item != null))
-                        trayAppearance.ShowProfileSwitchNotification(prolog);
-                }
-                catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[MainWindow:697] ignored {caught.GetType().Name}: {caught.Message}"); }
-            }));
-        }
-
-        private void ChangeControllerPanel()
-        {
-            if (conLvViewModel.ControllerCol.Count == 0)
-            {
-                controllerLV.Visibility = Visibility.Hidden;
-                noContLb.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                controllerLV.Visibility = Visibility.Visible;
-                noContLb.Visibility = Visibility.Hidden;
-            }
-        }
-
         private void CheckAutoProfileStatus()
             => _autoProfileService.UpdateStatus(autoProfileHolder.AutoProfileColl.Count);
-
-        private void ControllerCol_CollectionChanged(object? sender,
-            System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                ChangeControllerPanel();
-                System.Collections.IList? newitems = e.NewItems;
-                if (newitems != null)
-                {
-                    foreach (CompositeDeviceModel item in newitems)
-                    {
-                        item.SubscribeSyncChange(DS4Device_SyncChange);
-                        item.RequestColorPicker += Item_RequestColorPicker;
-                        //item.LightContext.Items.Add(new MenuItem() { Header = "Use Profile Color", IsChecked = !item.UseCustomColor });
-                        //item.LightContext.Items.Add(new MenuItem() { Header = "Use Custom Color", IsChecked = item.UseCustomColor });
-                    }
-                }
-
-                if (mainWinVM.ServiceRunning)
-                    trayIconVM.PopulateContextMenu();
-            }));
-        }
-
-        private void Item_RequestColorPicker(CompositeDeviceModel sender)
-        {
-            ColorPickerWindow dialog = new ColorPickerWindow();
-            dialog.Owner = this;
-            dialog.colorPicker.SelectedColor = MediaColors.ToMedia(sender.CustomLightColor);
-            dialog.ColorChanged += (sender2, color) =>
-            {
-                sender.UpdateCustomLightColor(MediaColors.ToDS4(color));
-            };
-            dialog.ShowDialog();
-        }
 
         private void DS4Device_SyncChange(object? sender, EventArgs e)
         {
@@ -791,32 +344,8 @@ namespace DS4Windows.UI
             Dispatcher.BeginInvoke((Action)UpdateStartStopText);
         }
 
-        private void ControlServiceChanged(object? sender, EventArgs e)
-        {
-            //Tester service = sender as Tester;
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                UpdateStartStopText();
-                mainWinVM.NotifyServiceStateChanged();
-                slotManControl.IsEnabled = mainWinVM.ServiceRunning;
-            }));
-        }
-
         /// <summary>サービスの開始・停止。ボタン・トレイ・IPC のどれから呼んでも、同じコマンドを通す（実行中の再入は拒む）。</summary>
         public Task ChangeService() => mainWinVM.ToggleServiceCommand.ExecuteAsync(null);
-
-        internal void ShowSelectedLogMessage()
-        {
-            int idx = logListView.SelectedIndex;
-            if (idx > -1)
-            {
-                LogItem temp = logvm.LogItems[idx];
-                LogMessageDisplay msgBox = new LogMessageDisplay(temp.Message ?? string.Empty);
-                msgBox.Owner = this;
-                msgBox.ShowDialog();
-                //MessageBox.Show(temp.Message, "Log");
-            }
-        }
 
         internal void ClearLog()
         {
@@ -829,71 +358,12 @@ namespace DS4Windows.UI
         // 本来は Log タブを隠す意図と思われるが、Output Slots タブが途中に入って番号がずれ、実際は Settings タブで隠れ、
         // Settings で出る警告が見えなかった。すべてのタブで表示する（ユーザー決定 2026-11-02）。
 
-        private void ContStatusImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is not Image img) return;
-            int tag = Convert.ToInt32(img.Tag);
-            conLvViewModel.CurrentIndex = tag;
-            CompositeDeviceModel? item = conLvViewModel.CurrentItem;
-            //CompositeDeviceModel item = conLvViewModel.ControllerDict[tag];
-            if (item != null)
-            {
-                item.RequestDisconnect();
-            }
-        }
-
-        internal void ExportLog()
-        {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = ".txt";
-            dialog.Filter = "Text Documents (*.txt)|*.txt";
-            dialog.Title = "Select Export File";
-            // TODO: Expose config dir
-            dialog.InitialDirectory = mainWinVM.AppDataPath;
-            if (dialog.ShowDialog() == true)
-            {
-                LogWriter logWriter = new LogWriter(dialog.FileName, logvm.LogItems.ToList());
-                logWriter.Process();
-            }
-        }
-
-        private void IdColumnTxtB_ToolTipOpening(object sender, ToolTipEventArgs e)
-        {
-            if (sender is not TextBlock statusBk) return;
-            int idx = Convert.ToInt32(statusBk.Tag);
-            if (idx >= 0)
-            {
-                CompositeDeviceModel item = conLvViewModel.ControllerDict[idx];
-                item.RequestUpdatedTooltipID();
-            }
-        }
-
         /// <summary>
         /// Clear and re-populate tray context menu
         /// </summary>
         private void NotifyIcon_TrayRightMouseUp(object sender, RoutedEventArgs e)
         {
             notifyIcon.ContextMenu = trayContextMenu;
-        }
-
-        /// <summary>
-        /// Change profile based on selection
-        /// </summary>
-        private void SelectProfCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox? box = sender as ComboBox;
-            if (box == null) return;
-
-            int idx = Convert.ToInt32(box.Tag);
-            if (idx > -1 && conLvViewModel.ControllerDict.ContainsKey(idx))
-            {
-                CompositeDeviceModel item = conLvViewModel.ControllerDict[idx];
-                if (profileSelection.ApplySelection(idx, item))
-                {
-                    trayIconVM.PopulateContextMenu();
-                }
-            }
         }
 
         /// <summary>
@@ -904,131 +374,6 @@ namespace DS4Windows.UI
 
         }
 
-        // ライトバーの色（プロファイルの色／カスタム色）を選ぶメニュー。開くたびに、いまの状態のチェックで作る
-        private static ContextMenu BuildLightContext(CompositeDeviceModel item)
-        {
-            var menu = new ContextMenu();
-            var profileItem = new MenuItem() { Header = "Use Profile Color", IsChecked = !item.UseCustomColor };
-            profileItem.Click += (s, e) => item.UseProfileLightColor();
-            var customItem = new MenuItem() { Header = "Use Custom Color", IsChecked = item.UseCustomColor };
-            customItem.Click += (s, e) => item.UseCustomLightColor();
-            menu.Items.Add(profileItem);
-            menu.Items.Add(customItem);
-            return menu;
-        }
-
-        private void LightColorBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Button button) return;
-            int idx = Convert.ToInt32(button.Tag);
-            CompositeDeviceModel item = conLvViewModel.ControllerDict[idx];
-            //(button.ContextMenu.Items[0] as MenuItem).IsChecked = conLvViewModel.ControllerCol[idx].UseCustomColor;
-            //(button.ContextMenu.Items[1] as MenuItem).IsChecked = !conLvViewModel.ControllerCol[idx].UseCustomColor;
-            button.ContextMenu = BuildLightContext(item);
-            button.ContextMenu.IsOpen = true;
-        }
-
-        private void MainDS4Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (editor != null)
-            {
-                editor.Close();
-                e.Cancel = true;
-                return;
-            }
-            else if (contextclose)
-            {
-                return;
-            }
-            else if (mainWinVM.CloseMinimizes)
-            {
-                WindowState = WindowState.Minimized;
-                e.Cancel = true;
-                return;
-            }
-
-            // If this method was called directly without sender object then skip the confirmation dialogbox
-            if (sender != null && conLvViewModel.ControllerCol.Count > 0)
-            {
-                MessageBoxResult result = MessageBox.Show(Properties.Resources.CloseConfirm, Properties.Resources.Confirm,
-                        MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-            }
-        }
-
-        private void MainDS4Window_Closed(object sender, EventArgs e)
-        {
-            hotkeysTimerActive = false;
-            hotkeysTimer?.Stop();
-            _autoProfileService.Stop();
-            //autoProfileHolder.Save();
-            Util.UnregisterNotify(regHandle);
-            if (regHandleXusb != IntPtr.Zero)
-            {
-                Util.UnregisterNotify(regHandleXusb);
-            }
-
-            // Phase5-Watchpoints-Investigation-Report Watchpoint 2対応:
-            // Singletonサービス(controlService/profileRepo, SystemEvents)へのイベント購読を
-            // 確実に解除する。二重呼び出しされる経路(1251行目)があるため冪等性を確保している。
-            conLvViewModel?.Dispose();
-            settingsWrapVM?.Dispose();
-
-            // Attempt to dispose of notify icon early
-            if (notifyIcon != null)
-            {
-                notifyIcon.Dispose();
-                notifyIcon = null;
-            }
-
-            Application.Current.Shutdown();
-        }
-
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            base.OnSourceInitialized(e);
-
-            if (!mainWinVM.FirstRun)
-            {
-                WindowPlacementHelper.ApplyPlacement(this, layout.FormLocationX, layout.FormLocationY, layout.FormWidth, layout.FormHeight, startMinimized);
-
-                // ApplyPlacement 後に WPF 側でサイズや位置が変更される可能性があるため、
-                // レイアウト完了後に実際のウィンドウ矩形と WPF プロパティをログに残す。
-                this.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    try
-                    {
-                        // WPF レベルのプロパティ
-                        AppLogger.LogTrace($"PostApply: WPF Left={this.Left} Top={this.Top} Width={this.Width} Height={this.Height} ActualWidth={this.ActualWidth} ActualHeight={this.ActualHeight} WindowState={this.WindowState}");
-
-                        // Win32 レベルの取得（物理ピクセル）
-                        var phys = WindowPlacementHelper.GetPlacement(this);
-                        AppLogger.LogTrace($"PostApply: GetPlacement physicalRect={phys}");
-
-                        // 論理座標としての取得
-                        var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                        AppLogger.LogTrace($"PostApply: GetLogicalPlacement => LogicalX={logical.LogicalX} LogicalY={logical.LogicalY} LogicalWidth={logical.LogicalWidth} LogicalHeight={logical.LogicalHeight}");
-                    }
-                    catch (Exception ex)
-                    {
-                        AppLogger.LogDebug($"PostApply: Failed to log post-apply window metrics: {ex.Message}");
-                    }
-                }), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
-            }
-
-            // Restore controller tab column widths
-            RestoreControllerColumnWidths();
-            RestoreLogColumnWidths();
-
-            if (PresentationSource.FromVisual(this) is not HwndSource source) return;
-            HookWindowMessages(source);
-            source.AddHook(WndProc);
-        }
-
         private bool inHotPlug = false;
         private int hotplugCounter = 0;
         private object hotplugCounterLock = new object();
@@ -1037,112 +382,6 @@ namespace DS4Windows.UI
         private const int DBT_DEVICEREMOVECOMPLETE = 0x8004;
         public const int WM_COPYDATA = 0x004A;
         private const int HOTPLUG_CHECK_DELAY = 2000;
-
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam,
-            IntPtr lParam, ref bool handled)
-        {
-            // メッセージの種類ごとの処理は、メソッドへ分けた（順序・条件は従来のまま）
-            switch (msg)
-            {
-                case Util.WM_DEVICECHANGE:
-                    HandleDeviceChange(wParam);
-                    break;
-                case WM_COPYDATA:
-                    HandleCopyData(lParam);   // MainWindow.Ipc.cs
-                    break;
-                default: break;
-            }
-
-            return IntPtr.Zero;
-        }
-
-
-        /// <summary>
-        /// デバイスの着脱（ホットプラグ）。カウンターのロックと、実行中のフラグ（inHotPlug）は、従来のまま。
-        /// </summary>
-        private void HandleDeviceChange(IntPtr wParam)
-        {
-            if (mainWinVM.RunHotPlug)
-            {
-                Int32 Type = wParam.ToInt32();
-                if (Type == DBT_DEVICEARRIVAL ||
-                    Type == DBT_DEVICEREMOVECOMPLETE)
-                {
-                    lock (hotplugCounterLock)
-                    {
-                        hotplugCounter++;
-                    }
-
-                    if (!inHotPlug)
-                    {
-                        inHotPlug = true;
-                        Task hotplugTask = Task.Run(() => { InnerHotplug2(); });
-                        // Log exceptions that might occur
-                        Util.LogAssistBackgroundTask(hotplugTask);
-                    }
-                }
-            }
-        }
-
-        private void InnerHotplug2()
-        {
-            inHotPlug = true;
-
-            bool loopHotplug = false;
-
-            lock (hotplugCounterLock)
-            {
-                loopHotplug = hotplugCounter > 0;
-                hotplugCounter = 0;
-            }
-
-            mainWinVM.UpdateHidHiddenAttributes();
-            while (loopHotplug == true)
-            {
-                Thread.Sleep(HOTPLUG_CHECK_DELAY); // 待機の理由: 機器の抜き差しの検出をまとめるための待ち（バックグラウンドのスレッドの中）
-                mainWinVM.HotPlug();
-
-                lock (hotplugCounterLock)
-                {
-                    loopHotplug = hotplugCounter > 0;
-                    hotplugCounter = 0;
-                }
-            }
-
-            inHotPlug = false;
-        }
-
-        private void HookWindowMessages(HwndSource source)
-        {
-            bool result = Util.RegisterNotify(source.Handle, mainWinVM.HidClassGuid, ref regHandle);
-            if (!result)
-            {
-                Application.Current.Shutdown();   // 旧 App.Current（同じもの）
-            }
-
-            // HID を持たない Xbox 系コントローラーは、XUSB のインターフェースの着脱でしか分からない（登録に失敗しても、HID の機種は動くので続ける）
-            try
-            {
-                Util.RegisterNotify(source.Handle, mainWinVM.XusbClassGuid, ref regHandleXusb);
-            }
-            catch (Exception)
-            {
-                regHandleXusb = IntPtr.Zero;
-            }
-        }
-
-        internal void EditDeviceProfile(int idx)
-        {
-            controllerLV.SelectedIndex = idx;
-            CompositeDeviceModel? item = conLvViewModel.CurrentItem;
-
-            if (item != null && item.SelectedIndex != -1)
-            {
-                ProfileEntity entity = profileListHolder.ProfileListCol[item.SelectedIndex];
-                ShowProfileEditor(idx, entity);
-                mainTabCon.SelectedIndex = 1;
-            }
-        }
 
         internal void NewDeviceProfile(int idx)
         {
@@ -1160,22 +399,6 @@ namespace DS4Windows.UI
         internal void ExportProfile()
         {
             profileSelection.ExportProfile(profileListHolder, profilesListBox.SelectedIndex);
-        }
-
-        internal void DuplicateProfile()
-        {
-            string filename = "";
-            if (profilesListBox.SelectedIndex >= 0)
-            {
-                int idx = profilesListBox.SelectedIndex;
-                filename = profileListHolder.ProfileListCol[idx].Name ?? string.Empty;
-                dupBox.OldFilename = filename;
-                mainWinVM.IsDuplicateBarVisible = true;
-                dupBox.Save -= DupBox_Save;
-                dupBox.Cancel -= DupBox_Cancel;
-                dupBox.Save += DupBox_Save;
-                dupBox.Cancel += DupBox_Cancel;
-            }
         }
 
         private void DupBox_Cancel(object? sender, EventArgs e)
@@ -1204,61 +427,6 @@ namespace DS4Windows.UI
             CheckMinStatus();
         }
 
-        public void CheckMinStatus()
-        {
-            bool minToTask = mainWinVM.MinimizeToTaskbar;
-            if (WindowState == WindowState.Minimized && !minToTask)
-            {
-                Hide();
-                showAppInTaskbar = false;
-            }
-            else if (WindowState == WindowState.Normal && !minToTask)
-            {
-                Show();
-                showAppInTaskbar = true;
-            }
-        }
-
-        private void MainDS4Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // プロフィール編集画面が開いている場合はKeepsizeで制御
-            if (WindowState != WindowState.Minimized && editor != null && editor.Keepsize && !IsInitialShow)
-            {
-                var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                layout.FormWidth = logical.LogicalWidth;
-                layout.FormHeight = logical.LogicalHeight;
-                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={layout.FormWidth} Height={layout.FormHeight}");
-            }
-            // 編集画面が開いていない場合は常に保存
-            else if (WindowState != WindowState.Minimized && editor == null && !IsInitialShow)
-            {
-                var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                layout.FormWidth = logical.LogicalWidth;
-                layout.FormHeight = logical.LogicalHeight;
-                AppLogger.LogTrace($"MainWindow.SizeChanged: Saved Logical Width={layout.FormWidth} Height={layout.FormHeight}");
-            }
-        }
-
-        private void MainDS4Window_LocationChanged(object sender, EventArgs e)
-        {
-            // プロフィール編集画面が開いている場合はKeepsizeで制御
-            if (WindowState != WindowState.Minimized && editor != null && editor.Keepsize && !IsInitialShow)
-            {
-                var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                layout.FormLocationX = logical.LogicalX;
-                layout.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={layout.FormLocationX} Y={layout.FormLocationY}");
-            }
-            // 編集画面が開いていない場合は常に保存
-            else if (WindowState != WindowState.Minimized && editor == null && !IsInitialShow)
-            {
-                var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                layout.FormLocationX = logical.LogicalX;
-                layout.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.LocationChanged: Saved Logical X={layout.FormLocationX} Y={layout.FormLocationY}");
-            }
-        }
-
         private void NotifyIcon_TrayMiddleMouseDown(object sender, RoutedEventArgs e)
         {
             contextclose = true;
@@ -1274,103 +442,12 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProfileEditor_Closed(object? sender, EventArgs e)
-        {
-            profDockPanel.Children.Remove(editor);
-            profOptsToolbar.Visibility = Visibility.Visible;
-            profilesListBox.Visibility = Visibility.Visible;
-            // preserveSizeの操作は不要
-            if (editor == null || !editor.Keepsize)
-            {
-                this.Width = oldSize.Width;
-                this.Height = oldSize.Height;
-            }
-            else
-            {
-                oldSize = new Size(Width, Height);
-                var logical = WindowPlacementHelper.GetLogicalPlacement(this);
-                layout.FormWidth = logical.LogicalWidth;
-                layout.FormHeight = logical.LogicalHeight;
-                layout.FormLocationX = logical.LogicalX;
-                layout.FormLocationY = logical.LogicalY;
-                AppLogger.LogTrace($"MainWindow.ProfileEditor_Closed: Saved Logical Rect X={layout.FormLocationX} Y={layout.FormLocationY} W={layout.FormWidth} H={layout.FormHeight}");
-            }
-            editor = null;
-            // Restore the tab that was active before opening the profile editor
-            try
-            {
-                if (previousTabIndex >= 0 && previousTabIndex < mainTabCon.Items.Count)
-                    mainTabCon.SelectedIndex = previousTabIndex;
-                else
-                    mainTabCon.SelectedIndex = 0;
-            }
-            catch
-            {
-                mainTabCon.SelectedIndex = 0;
-            }
-            mainWinVM.FullTabsEnabled = true;
-            //Task.Run(() => GC.Collect(0, GCCollectionMode.Forced, false));
-        }
-
         internal void NewProfile()
         {
             ShowProfileEditor(ProfileEditor.NoTargetDevice, null);
         }
 
-        /// <summary>
-        /// プロファイル編集画面を開く。
-        /// 編集は常に作業スロット（Global.TEST_PROFILE_INDEX）に対して行い、保存・適用を押すまで
-        /// コントローラーには反映しない。編集スロットは ProfileEditor の内部で決まり、呼び出し元は指定しない。
-        /// </summary>
-        /// <param name="targetDevice">
-        /// Edit／New Profile ボタンを押したコントローラーのスロット番号（ランブルテスト・ライトバーのプレビュー・校正・適用先）。
-        /// プロファイル一覧から開いた場合は ProfileEditor.NoTargetDevice
-        /// </param>
-        /// <param name="entity">編集するプロファイル。null は新規作成</param>
-        private void ShowProfileEditor(int targetDevice, ProfileEntity? entity)
-        {
-            if (editor == null)
-            {
-                // Remember current tab so we can restore it when editor closes
-                try { previousTabIndex = mainTabCon.SelectedIndex; } catch { previousTabIndex = 0; }
-                profOptsToolbar.Visibility = Visibility.Collapsed;
-                profilesListBox.Visibility = Visibility.Collapsed;
-                mainWinVM.FullTabsEnabled = false;
-
-                // 編集画面を開く前のサイズを保存（閉じる時に元に戻すため）
-                oldSize.Width = Width;
-                oldSize.Height = Height;
-
-                // 【仕様】プロフィール編集画面は開く直前のメインウィンドウと同じサイズ・ポジションで開く
-                // サイズ変更処理は不要（以前の最小サイズチェックロジックは無効化）
-                // if (this.Width < WindowLayoutDefaults.PROFILE_EDITOR_WIDTH)
-                // {
-                //     this.Width = WindowLayoutDefaults.PROFILE_EDITOR_WIDTH;
-                // }
-                //
-                // if (this.Height < WindowLayoutDefaults.PROFILE_EDITOR_HEIGHT)
-                // {
-                //     this.Height = WindowLayoutDefaults.PROFILE_EDITOR_HEIGHT;
-                // }
-
-                editor = profileSelection.CreateEditor(targetDevice);
-                editor.ProfileSaved += Editor_ProfileSaved;
-                editor.ProfilesUpdatedExternally += Editor_ProfilesUpdatedExternally;
-                editor.Closed += ProfileEditor_Closed;
-                profDockPanel.Children.Add(editor);
-                editor.Reload(entity);
-
-                // When the profile editor is opened, emit missing-action logs once
-                // per editor-open. We temporarily clear the per-load suppression set
-                // so the same missing-action messages will be logged every time the
-                // editor is opened (user expectation).
-                profileSelection.EmitMissingActionLogsForEditor(entity);
-            }
-
-        }
-
         #region Profile List & Controllers Synchronization (4-Stage Transaction)
-
 
         private void SyncProfileListAndControllers(string? oldProfile = null, string? newProfile = null,
             IReadOnlyCollection<string>? targetProfiles = null)
@@ -1378,16 +455,6 @@ namespace DS4Windows.UI
                 oldProfile, newProfile, targetProfiles);
 
         #endregion
-
-        /// <summary>
-        /// プロファイル編集画面で [保存] または [適用] が実行された際のコールバック。
-        /// 安全な4段階同期メソッドを経由することで、クラッシュを防ぎつつリスト同期とホットリロードを一括実行します。
-        /// </summary>
-        private void Editor_ProfileSaved(ProfileEditor sender, string profile)
-        {
-            // 保存されたプロファイルを対象として、安全にリスト再同期＆該当スロットのホットリロードを実行
-            SyncProfileListAndControllers(oldProfile: profile, newProfile: null);
-        }
 
         // アクションの除去・名前変更でプロファイルの XML が書き換わったときも、
         // 保存時と同じ経路（一覧の読み直し＋該当スロットへの再適用）を使う
@@ -1410,83 +477,5 @@ namespace DS4Windows.UI
                 layout.LogColumnWidths = new[] { (int)gridView.Columns[0].Width, (int)gridView.Columns[1].Width };
             }
         }
-
-        private void RestoreLogColumnWidths()
-        {
-            var gridView = logListView.View as GridView;
-            if (gridView != null && gridView.Columns.Count >= 2)
-            {
-                int[] widths = layout.LogColumnWidths;
-                gridView.Columns[0].Width = widths[0];
-                gridView.Columns[1].Width = widths[1];
-            }
-        }
-
-        private void SaveControllerColumnWidths()
-        {
-            var gridView = controllerLV.View as GridView;
-            if (gridView != null && gridView.Columns.Count >= 10)
-            {
-                int[] widths = new int[10];
-                for (int i = 0; i < widths.Length; i++) widths[i] = (int)gridView.Columns[i].Width;
-                layout.ControllerColumnWidths = widths;
-            }
-        }
-
-        private void RestoreControllerColumnWidths()
-        {
-            var gridView = controllerLV.View as GridView;
-            if (gridView != null && gridView.Columns.Count >= 10)
-            {
-                int[] widths = layout.ControllerColumnWidths;
-                for (int i = 0; i < widths.Length; i++) gridView.Columns[i].Width = widths[i];
-            }
-        }
-
-        private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
-        {
-            if (!showAppInTaskbar)
-            {
-                Show();
-            }
-
-            WindowState = WindowState.Normal;
-        }
-
-        internal void RenameProfile()
-        {
-            if (profilesListBox.SelectedIndex >= 0)
-            {
-                int idx = profilesListBox.SelectedIndex;
-                ProfileEntity entity = profileListHolder.ProfileListCol[idx];
-                string filename = Path.Combine(mainWinVM.AppDataPath,
-                    "Profiles", $"{entity.Name}.xml");
-
-                // Disallow renaming Default profile
-                if (entity.Name != "Default" &&
-                    File.Exists(filename))
-                {
-                    RenameProfileWindow renameWin = new RenameProfileWindow(_viewModelFactory.CreateRenameProfileViewModel());
-                    renameWin.ChangeProfileName(entity.Name ?? string.Empty);
-                    bool? result = renameWin.ShowDialog();
-                    if (result.HasValue && result.Value)
-                    {
-                        string oldProfileName = entity.Name ?? string.Empty;
-                        string? newProfileName = renameWin.RenameProfileVM.ProfileName;
-                        entity.RenameProfile(newProfileName ?? string.Empty);
-                        // 名前変更を、全スロットの現在のプロファイル名・リンクプロファイルへ反映し、再適用する
-                        // （従来はファイルと一覧の名前だけを変えていたため、サービスの再開後に Selected Profile が空欄になった）
-                        if (string.Equals(entity.Name, newProfileName, StringComparison.Ordinal) &&
-                            !string.Equals(oldProfileName, newProfileName, StringComparison.Ordinal))
-                        {
-                            SyncProfileListAndControllers(oldProfile: oldProfileName, newProfile: newProfileName);
-                        }
-
-                        trayIconVM.PopulateContextMenu();
-                    }
-                }
-            }
-        }
-
     }
 }

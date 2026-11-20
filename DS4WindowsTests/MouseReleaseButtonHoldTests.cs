@@ -15,7 +15,7 @@ namespace DS4WindowsTests
         {
             string path = SourceFileLocator.Find("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
             if (path == null) return;
-            string text = File.ReadAllText(path);
+            string text = SourceText.ReadFileWithPartials(path);
             text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
             text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
 

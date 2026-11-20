@@ -51,7 +51,7 @@ namespace DS4WindowsTests
             string path = SourceFileLocator.Find("DS4Windows/Composition/AppHost.cs");
             if (path == null) return;
 
-            string text = SourceText.StripComments(File.ReadAllText(path));
+            string text = SourceText.StripComments(SourceText.ReadFileWithPartials(path));
             // 既定の登録は RegisterServices(services, bootstrapBackingStore) になった（BackingStore は登録の中で配線する）
             var defaultsMatch = System.Text.RegularExpressions.Regex.Match(text, @"RegisterServices\(services, bootstrapBackingStore\);\s*services\.AddSingleton\(parser\);");
             int defaults = defaultsMatch.Success ? defaultsMatch.Index : -1;
@@ -69,9 +69,10 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             // ブートストラップは、Application_Startup の最初（FindConfigLocation より前）に作る
-            int create = text.IndexOf("_bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);", System.StringComparison.Ordinal);
-            int createEnv = text.IndexOf("_bootstrapEnvironmentService = new DS4Windows.Core.Platform.EnvironmentService();", System.StringComparison.Ordinal);
-            int find = text.IndexOf("_bootstrapPathService.FindConfigLocation();", System.StringComparison.Ordinal);
+            string boot = SourceText.ReadCode("DS4Windows/App.Bootstrap.cs");
+            int create = boot.IndexOf("_bootstrapPathService = new DS4Windows.Core.Platform.PathService(config: _bootstrapBackingStore);", System.StringComparison.Ordinal);
+            int createEnv = boot.IndexOf("_bootstrapEnvironmentService = new DS4Windows.Core.Platform.EnvironmentService();", System.StringComparison.Ordinal);
+            int find = boot.IndexOf("_bootstrapPathService.FindConfigLocation();", System.StringComparison.Ordinal);
             Assert.True(create >= 0 && createEnv >= 0 && find > create && find > createEnv, "ブートストラップの生成が、使用より前にない。");
 
             // 個別の new をしない（生成はブートストラップの 2 箇所だけ）

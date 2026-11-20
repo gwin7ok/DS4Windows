@@ -38,7 +38,7 @@ namespace DS4WindowsTests
             // 日本語は、サテライトのアセンブリの有無に依らないよう、リソースのソースで確かめる
             string japanese = SourceFileLocator.Find("DS4Windows/Properties/Resources.ja.resx");
             if (japanese == null) return;
-            string text = File.ReadAllText(japanese);
+            string text = SourceText.ReadFileWithPartials(japanese);
             int at = text.IndexOf("name=\"RemovedShiftWarning\"", StringComparison.Ordinal);
             Assert.True(at >= 0, "日本語のリソースに RemovedShiftWarning がない");
             Assert.Contains("{0}", text.Substring(at, Math.Min(600, text.Length - at)));
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             string editor = SourceFileLocator.Find("DS4Windows/UI/ProfileEditor.xaml.cs");
             if (editor == null) return;
 
-            string text = File.ReadAllText(editor);
+            string text = SourceText.ReadFileWithPartials(editor);
             int load = text.IndexOf("backend.LoadProfileForEditing(deviceNum, profile.Name ?? string.Empty);", StringComparison.Ordinal);
             int notice = text.IndexOf("profileSettingsVM.ApplyRemovedSettingNotices(profile.Name ?? string.Empty);", StringComparison.Ordinal);
             Assert.True(load >= 0, "プロファイルの読込の呼び出しが見つからない");
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
             Assert.Empty(System.Text.RegularExpressions.Regex.Matches(text, "RemovedShiftNotice\\.Apply\\("));
             string viewModel = SourceFileLocator.Find("DS4Windows/UI/ViewModels/ProfileSettingsViewModel.cs");
             if (viewModel == null) return;
-            Assert.Single(System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(viewModel), "RemovedShiftNotice\\.Apply\\("));
+            Assert.Single(System.Text.RegularExpressions.Regex.Matches(SourceText.ReadFileWithPartials(viewModel), "RemovedShiftNotice\\.Apply\\("));
         }
     }
 }

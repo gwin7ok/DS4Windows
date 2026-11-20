@@ -22,12 +22,13 @@ namespace DS4WindowsTests
         private static readonly Dictionary<string, (int Path, int Actions)> Baseline = new Dictionary<string, (int, int)>
         {
             ["DS4Windows/Processing/Actions/ActionBindingBuilder.cs"] = (0, 3),
-            ["DS4Windows/App.xaml.cs"] = (6, 0),
+            ["DS4Windows/App.FirstRun.cs"] = (6, 0),
             ["DS4Windows/Core/Abstractions/IProfileRepository.cs"] = (2, 1),
             ["DS4Windows/Core/Abstractions/IProfileSettingsService.cs"] = (0, 1),
-            ["DS4Windows/Core/Settings/BackingStore.cs"] = (10, 10),   // 窓口 GetRequiredProfileActions が 1 件増えた代わりに、呼び出し側（ProfilePresets など）が 15 件減った。保存するプロファイル名（GetPersistedProfileName）が、一時のあいだ通常のプロファイルを読む 1 件
+            ["DS4Windows/Core/Settings/BackingStore.cs"] = (7, 5),
+            ["DS4Windows/Core/Settings/BackingStore.Actions.cs"] = (3, 5),   // 窓口 GetRequiredProfileActions が 1 件増えた代わりに、呼び出し側（ProfilePresets など）が 15 件減った。保存するプロファイル名（GetPersistedProfileName）が、一時のあいだ通常のプロファイルを読む 1 件
             //   // Phase10-Step4d W5b: 保管を ID にした窓口（ProfileSlotNames）の宣言と、登録簿との結び（AttachProfileIdentity）で 2 件増えた。名前の配列そのものは、もうない
-            ["DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs"] = (18, 0),   // ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
+            ["DS4Windows/Core/Persistence/Dto/AppSettingsDTO.Mapping.cs"] = (18, 0),   // ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
             ["DS4Windows/Core/Settings/ProfileActions.cs"] = (0, 1),
             ["DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs"] = (6, 0),
             ["DS4Windows/Processing/Services/Slots/AutoProfileService.cs"] = (2, 0),

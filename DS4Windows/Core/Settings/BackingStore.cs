@@ -29,7 +29,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Core.Settings
 {
 
-    public class BackingStore
+    public partial class BackingStore
     {
         // ProfileEditor layout fields (DTOと統合)
         public const int DEFAULT_PROFILE_EDITOR_LEFT_WIDTH = WindowLayoutDefaults.PROFILE_EDITOR_LEFT_WIDTH;
@@ -80,8 +80,6 @@ namespace DS4Windows.Core.Settings
         /// <summary>言語・アイコン・テーマの設定。</summary>
         public AppearanceState Appearance { get; } = new AppearanceState();
         // SpecialActionDeleteColWidth フィールド削除
-
-
 
         public const double DEFAULT_UDP_SMOOTH_MINCUTOFF = 0.4;
         public const double DEFAULT_UDP_SMOOTH_BETA = 0.2;
@@ -159,25 +157,8 @@ namespace DS4Windows.Core.Settings
 
         // Rotation angle expressed in radians
 
-
-
-
-
-
-
-
-
-
-
         /// <summary>DualSense 固有の設定の持ち主（スロットごとに 1 つ）。</summary>
         public readonly DualSenseSlotSettings[] dualSenseSlots = new DualSenseSlotSettings[ControllerLimits.TestProfileItemCount];
-
-
-
-
-
-
-
 
         public const int DEFAULT_FORM_WIDTH = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
 
@@ -186,7 +167,6 @@ namespace DS4Windows.Core.Settings
         public const int DEFAULT_FORM_LOCATION_X = WindowLayoutDefaults.MAIN_WINDOW_LOCATION_X;
 
         public const int DEFAULT_FORM_LOCATION_Y = WindowLayoutDefaults.MAIN_WINDOW_LOCATION_Y;
-
 
         // Legacy CheckWhen removed. Store explicit defaults for the new fields.
         public const int DEFAULT_CHECK_EVERY_VALUE = 1;
@@ -246,8 +226,6 @@ namespace DS4Windows.Core.Settings
 
         public const int DEFAULT_OSC_SERV_PORT = 9000;
 
-
-
         public const int DEFAULT_OSC_SEND_PORT = 9001;
 
         public const string DEFAULT_OSC_SEND_ADDRESS = "127.0.0.1";
@@ -257,11 +235,7 @@ namespace DS4Windows.Core.Settings
         // 127.0.0.1=IPAddress.Loopback (default), 0.0.0.0=IPAddress.Any as all interfaces, x.x.x.x = Specific ipv4 interface address or hostname
         public const string DEFAULT_UDP_SERV_LISTEN_ADDR = "127.0.0.1";
 
-
-
         // debouncingMs（デバウンス時間）は機能廃止で削除した
-
-
 
         public ControlServiceDeviceOptions deviceOptions =
             new ControlServiceDeviceOptions();
@@ -272,15 +246,8 @@ namespace DS4Windows.Core.Settings
         // Cache whether profile has custom extras
         public bool[] containsCustomExtras = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
 
-
-
-
-
         //public bool[] touchStickTrackballMode = new bool[Global.TEST_PROFILE_ITEM_COUNT] { false, false, false, false, false, false, false, false, false };
         //public double[] touchStickTrackballFriction = new double[Global.TEST_PROFILE_ITEM_COUNT] { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 };
-
-
-
 
         /// <summary>出力の種類（保存される仮想コントローラーの種類、仮想のトリガーボタン、DS4 のトリガーの出力方式）の持ち主（スロットごとに 1 つ）。</summary>
         public readonly OutputTypeSlotSettings[] outputTypeSlots = new OutputTypeSlotSettings[ControllerLimits.TestProfileItemCount];
@@ -288,7 +255,6 @@ namespace DS4Windows.Core.Settings
         public const bool DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS = true;
 
         public const DS4TriggerOutputMode DEFAULT_DS4_TRIGGER_OUTPUT = DS4TriggerOutputMode.Default;
-
 
         // TRUE=AutoProfile reverts to default profile if current foreground process is unknown, FALSE=Leave existing profile active when a foreground proces is unknown (ie. no matching auto-profile rule)
         public const bool DEFAULT_AUTO_PROFILE_REVERT_DEFAULT_PROFILE = true;
@@ -415,132 +381,6 @@ namespace DS4Windows.Core.Settings
             profileActions[idx] = new List<string>();
         }
 
-        public void CacheProfileCustomsFlags(int device)
-        {
-            bool customAct = false;
-            containsCustomAction[device] = customAct = HasCustomActions(device);
-            containsCustomExtras[device] = HasCustomExtras(device);
-
-            {
-                customAct = gyroSlots[device].OutputMode == GyroOutMode.MouseJoystick;
-                customAct = customAct || stickSlots[device].LSOutput.mode != StickMode.Controls;
-                customAct = customAct || stickSlots[device].RSOutput.mode != StickMode.Controls;
-                containsCustomAction[device] = customAct;
-            }
-        }
-
-        private void SetupDefaultColors()
-        {
-            lightbarSlots[0].Info.ds4winSettings.m_Led = new DS4Color(Color.Blue);
-            lightbarSlots[1].Info.ds4winSettings.m_Led = new DS4Color(Color.Red);
-            lightbarSlots[2].Info.ds4winSettings.m_Led = new DS4Color(Color.Green);
-            lightbarSlots[3].Info.ds4winSettings.m_Led = new DS4Color(Color.Pink);
-            lightbarSlots[4].Info.ds4winSettings.m_Led = new DS4Color(Color.Blue);
-            lightbarSlots[5].Info.ds4winSettings.m_Led = new DS4Color(Color.Red);
-            lightbarSlots[6].Info.ds4winSettings.m_Led = new DS4Color(Color.Green);
-            lightbarSlots[7].Info.ds4winSettings.m_Led = new DS4Color(Color.Pink);
-            lightbarSlots[8].Info.ds4winSettings.m_Led = new DS4Color(Color.White);
-        }
-
-        public void CacheExtraProfileInfo(int device)
-        {
-            CalculateProfileActionCount(device);
-            CalculateProfileActionDicts(device);
-            CacheProfileCustomsFlags(device);
-        }
-
-        public void CalculateProfileActionCount(int index)
-        {
-            profileActionCount[index] = profileActions[index]!.Count;   // 数えるのは、スロットのリストが作られたあと（プロファイルの読み込み）
-        }
-
-        public void CalculateProfileActionDicts(int device)
-        {
-            profileActionDict[device].Clear();
-            profileActionIndexDict[device].Clear();
-
-            foreach (string actionname in profileActions[device]!)   // 同上
-            {
-                var actionObj = GetAction(actionname);
-                int index = GetActionIndexOf(actionname);
-                profileActionDict[device][actionname] = actionObj;
-                profileActionIndexDict[device][actionname] = index;
-            }
-        }
-
-        /// <summary>
-        /// Emit "Invalid action index" logs for missing actions in the profile for the given device.
-        /// Respects loggedInvalidActions unless forceEmit is true.
-        /// </summary>
-        /// <param name="device">Device index</param>
-        /// <param name="forceEmit">If true, ignore suppression and always emit logs</param>
-        /// <param name="overrideProfileName">If provided, use this profile name instead of looking up profilePath[device]</param>
-        public void EmitMissingActionLogsForDevice(int device, bool forceEmit = false, string? overrideProfileName = null)
-        {
-            if (profileActions == null || device < 0 || device >= profileActions.Length) return;
-
-            foreach (string actionname in profileActions[device]!)   // 同上
-            {
-                var actionObj = GetAction(actionname);
-                int index = GetActionIndexOf(actionname);
-                if (actionObj == null || actionObj.name == "null" || index < 0)
-                {
-                    if (forceEmit || !loggedInvalidActions.Contains(actionname))
-                    {
-                        string profName;
-                        if (overrideProfileName != null)
-                        {
-                            // Use explicitly provided profile name
-                            profName = overrideProfileName;
-                        }
-                        else
-                        {
-                            // Determine the profile name actually in use for this device (temporary or regular)
-                            profName = (ProfileSettings.GetUseTempProfile(device))
-                                ? ProfileSettings.GetTempProfileName(device)
-                                : (profilePath != null && device >= 0 && device < profilePath.Length ? profilePath[device] : string.Empty);
-                        }
-
-                        string displayProfile = string.IsNullOrEmpty(profName) ? "(unknown)" : profName;
-                        AppLogger.LogUser(AppLogLevel.Warn, "Log_Settings_InvalidSpecialAction", displayProfile, actionname);
-                        try
-                        {
-                            loggedInvalidActions.Add(actionname);
-                        }
-                        catch { /* 欠けた・壊れた値は、既定値のまま続ける */ }
-                    }
-                }
-            }
-        }
-
-        public SpecialAction GetAction(string name)
-        {
-            //foreach (SpecialAction sA in actions)
-            for (int i = 0, actionCount = actions.Count; i < actionCount; i++)
-            {
-                SpecialAction sA = actions[i];
-                var normExisting = Util.NormalizeActionName(sA?.name);
-                var normSearch = Util.NormalizeActionName(name);
-                if (string.Equals(normExisting, normSearch, StringComparison.OrdinalIgnoreCase))
-                    return sA!;   // 要素が null のまま空の名前を探したときも、従来どおりその要素を返す
-            }
-
-            return new SpecialAction("null", "null", "null", "null");
-        }
-
-        public int GetActionIndexOf(string name)
-        {
-            for (int i = 0, actionCount = actions.Count; i < actionCount; i++)
-            {
-                var normExisting = Util.NormalizeActionName(actions[i]?.name);
-                var normSearch = Util.NormalizeActionName(name);
-                if (string.Equals(normExisting, normSearch, StringComparison.OrdinalIgnoreCase))
-                    return i;
-            }
-
-            return -1;
-        }
-
         public string StickOutputCurveString(int id)
         {
             string result = "linear";
@@ -577,36 +417,6 @@ namespace DS4Windows.Core.Settings
             return id;
         }
 
-
-        public static bool SaTriggerCondValue(string text)
-        {
-            bool result = true;
-            switch (text)
-            {
-                case "and": result = true; break;
-                case "or": result = false; break;
-                default: result = true; break;
-            }
-
-            return result;
-        }
-
-        public static string SaTriggerCondString(bool value)
-        {
-            string result = value ? "and" : "or";
-            return result;
-        }
-
-        public void SetSaTriggerCond(int index, string text)
-        {
-            gyroSlots[index].MouseTriggerCondAnd = SaTriggerCondValue(text);
-        }
-
-        public void SetSaMouseStickTriggerCond(int index, string text)
-        {
-            gyroSlots[index].MouseStickTriggerCondAnd = SaTriggerCondValue(text);
-        }
-
         public void SetGyroMouseDZ(int index, int value, IProfileLoadTarget control) => gyroSlots[index].SetMouseDeadZone(value, control);
 
         public void SetGyroControlsToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetControlsToggle(value, control);
@@ -615,15 +425,11 @@ namespace DS4Windows.Core.Settings
 
         public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseStickToggle(value, control);
 
-
         // GetX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
-
 
         // Legacy Load implementation (formerly LoadOld) will be the canonical Load method below.
 
-
         // Load() の末尾にあった偽の exe 名の読み込みを切り出した
-
 
         public void PostProcessLoad()
         {
@@ -651,50 +457,6 @@ namespace DS4Windows.Core.Settings
             Network.udpSmoothingBeta = Math.Clamp(Network.udpSmoothingBeta, 0.0, 1.0);
         }
 
-        public static void ParseCustomLedString(string source, LightbarDS4WinInfo destination)
-        {
-            try
-            {
-                string[] ss = source.Split(':');
-                bool.TryParse(ss[0], out destination.useCustomLed);
-                DS4Color.TryParse(ss[1], ref destination.m_CustomLed);
-            }
-            catch
-            {
-                destination.useCustomLed = false;
-                destination.m_CustomLed = new DS4Color(Color.Blue);
-            }
-        }
-
-        public static string CompileCustomLedString(LightbarDS4WinInfo ledInfo)
-        {
-            string result = $"{ledInfo.useCustomLed}:{ledInfo.m_CustomLed.red},{ledInfo.m_CustomLed.green},{ledInfo.m_CustomLed.blue}";
-            return result;
-
-        }
-
-        public void PopulateLightbarDS4WinInfo(int index, LightbarDS4WinInfo source)
-        {
-            if (index < 0 && index > ControllerLimits.MaxControllerCount)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            lightbarSlots[index].Info.ds4winSettings.useCustomLed = source.useCustomLed;
-            lightbarSlots[index].Info.ds4winSettings.m_CustomLed = source.m_CustomLed;
-        }
-
-        public LightbarDS4WinInfo ObtainLightbarDS4WinInfo(int index)
-        {
-            if (index < 0 && index > ControllerLimits.MaxControllerCount)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            return lightbarSlots[index].Info.ds4winSettings;
-        }
-
-
         // Actions.xml の読み込み（または既定の作成）の後に発行する。BackingStore から Mapping への逆参照をなくすための通知。
         // コンテナ構築前の読み込みでは購読者がいないが、その時点では実行時状態は新品であり、結果は同じ。
         public event Action? ActionsLoaded;
@@ -703,91 +465,6 @@ namespace DS4Windows.Core.Settings
         // コンテナが作り直されても購読が 1 つになるよう、前回の購読者を BackingStore 自身が覚えて外す
         private Action? _actionsLoadedHandler;
 
-        public void ReplaceActionsLoadedHandler(Action handler)
-        {
-            if (_actionsLoadedHandler != null) ActionsLoaded -= _actionsLoadedHandler;
-            _actionsLoadedHandler = handler;
-            if (handler != null) ActionsLoaded += handler;
-        }
-
-        // Actions.xml の読込を担う SpecialActionsXmlSerializer が呼ぶため、公開にした（ActionsLoaded イベントの発行元は BackingStore のまま）
-        public void RaiseActionsLoaded()
-        {
-            ActionsLoaded?.Invoke();
-        }
-
-
-        public void UpdateDS4CSetting(int deviceNum, string buttonName, object action, string exts, DS4KeyType kt)
-        {
-            DS4Controls dc;
-            if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
-            else
-                dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
-
-            int temp = (int)dc;
-            if (temp > 0)
-            {
-                int index = temp - 1;
-                DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                dcs.UpdateSettings(action, exts, kt);
-                ProfileSettings.RefreshActionAlias(dcs);
-            }
-        }
-
-        public void UpdateDS4CExtra(int deviceNum, string buttonName, string exts)
-        {
-            DS4Controls dc;
-            if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
-            else
-                dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
-
-            int temp = (int)dc;
-            if (temp > 0)
-            {
-                int index = temp - 1;
-                DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                dcs.extras = exts;
-            }
-        }
-
-        public void UpdateDS4CKeyType(int deviceNum, string buttonName, DS4KeyType keyType)
-        {
-            DS4Controls dc;
-            if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
-            else
-                dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
-
-            int temp = (int)dc;
-            if (temp > 0)
-            {
-                int index = temp - 1;
-                DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                dcs.keyType = keyType;
-            }
-        }
-
-        public DS4ControlSettings? GetDS4CSetting(int deviceNum, string buttonName)
-        {
-            DS4Controls dc;
-            if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
-            else
-                dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
-
-            int temp = (int)dc;
-            if (temp > 0)
-            {
-                int index = temp - 1;
-                DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                return dcs;
-            }
-
-            return null;
-        }
-
         /// <summary>実在するコントロール（<see cref="DS4Controls.None"/> 以外）の設定を返す。プリセットの読み込みなど、コントロールが固定のときに使う（なければ例外）。</summary>
         /// <summary>スロットの有効なスペシャルアクション名のリスト。リストは、プロファイルの読み込み前の既定値の設定（ResetProfile）で作られるため、読み込み中・保存中は必ずある。</summary>
         public List<string> GetRequiredProfileActions(int device)
@@ -795,161 +472,7 @@ namespace DS4Windows.Core.Settings
             return profileActions[device] ?? throw new InvalidOperationException($"スロット {device} のスペシャルアクション名のリストがない");
         }
 
-        public DS4ControlSettings GetRequiredDS4CSetting(int deviceNum, DS4Controls dc)
-        {
-            return GetDS4CSetting(deviceNum, dc) ?? throw new InvalidOperationException($"コントロール {dc} の設定がない");
-        }
-
-        public DS4ControlSettings? GetDS4CSetting(int deviceNum, DS4Controls dc)
-        {
-            int temp = (int)dc;
-            if (temp > 0)
-            {
-                int index = temp - 1;
-                DS4ControlSettings dcs = ds4settings[deviceNum][index];
-                return dcs;
-            }
-
-            return null;
-        }
-
-        public bool HasCustomActions(int deviceNum)
-        {
-            List<DS4ControlSettings> ds4settingsList = ds4settings[deviceNum];
-            for (int i = 0, settingsLen = ds4settingsList.Count; i < settingsLen; i++)
-            {
-                DS4ControlSettings dcs = ds4settingsList[i];
-                if (dcs.actionType != DS4ControlSettings.ActionType.Default)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public bool HasCustomExtras(int deviceNum)
-        {
-            List<DS4ControlSettings> ds4settingsList = ds4settings[deviceNum];
-            for (int i = 0, settingsLen = ds4settingsList.Count; i < settingsLen; i++)
-            {
-                DS4ControlSettings dcs = ds4settingsList[i];
-                if (dcs.extras != null)
-                    return true;
-            }
-
-            return false;
-        }
-
         // 旧形式の保存・読込に欠けていた設定（ProfileDTO にあり、旧形式に無かった 10 要素）の読み書き。
-
-
-        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
-        public void ResetMouseProperties(int device, IProfileLoadTarget control)
-        {
-            if (device < ControllerLimits.MaxControllerCount &&
-                    control.GetTouchPad(device) != null)
-            {
-                control.GetTouchPad(device)?.ResetToggleGyroModes();
-            }
-        }
-
-        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
-        public void ResetProfile(int device)
-        {
-            // 領域ごとの設定は、各領域のオブジェクトが自分を既定へ戻す。ここは、順に呼ぶのと、領域に入っていない配列の項目の既定値だけ
-            removedShiftSettings[device].Clear();
-            buttonMouseInfos[device].Reset();
-
-
-            basicSlots[device].ResetForProfileLoad();
-            rumbleSlots[device].ResetForProfileLoad();
-            outputTypeSlots[device].ResetForProfileLoad();
-            gyroSlots[device].ResetForProfileLoad();
-            touchpadSlots[device].ResetForProfileLoad();
-            stickSlots[device].ResetForProfileLoad();
-            triggerSlots[device].ResetForProfileLoad();
-            sixAxisSlots[device].ResetForProfileLoad();
-            lightbarSlots[device].ResetForProfileLoad();
-
-            Behavior.ds4Mapping = false;
-        }
-
-
-        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
-        public void CheckOldDevicestatus(int device, IProfileLoadTarget control,
-            OutContType oldContType, out bool xinputPlug, out bool xinputStatus)
-        {
-            xinputPlug = false;
-            xinputStatus = false;
-
-            if (device < _environmentService.ControllerSlotLimit)
-            {
-                bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
-                IConfigurableDevice tempDevice = control.GetController(device);
-                bool exists = tempBool = (tempDevice != null);
-                bool synced = tempBool = exists ? tempDevice!.IsSynced() : false;   // exists が true のときだけ評価される
-                bool isAlive = tempBool = exists ? tempDevice!.IsAlive() : false;   // 同上
-                if (basicSlots[device].DinputOnly != oldUseDInputOnly)
-                {
-                    if (basicSlots[device].DinputOnly == true)
-                    {
-                        xinputPlug = false;
-                        xinputStatus = true;
-                    }
-                    else if (synced && isAlive)
-                    {
-                        xinputPlug = true;
-                        xinputStatus = true;
-                    }
-                }
-                else if (!basicSlots[device].DinputOnly &&
-                    oldContType != outputTypeSlots[device].ContType)
-                {
-                    xinputPlug = true;
-                    xinputStatus = true;
-                }
-            }
-        }
-
-        // プロファイルの読込を担う LegacyProfileXmlSerializer が呼ぶため公開にした（プリセットの読込も使う）
-        public void PostLoadSnippet(int device, IProfileLoadTarget control, bool xinputStatus, bool xinputPlug)
-        {
-            IConfigurableDevice tempDev = control.GetController(device);
-            if (tempDev != null && tempDev.IsSynced())
-            {
-                tempDev.QueueEvent(() =>
-                {
-                    //tempDev.SetIdleTimeout(idleDisconnectTimeout[device]);
-                    //tempDev.SetBTPollRate(btPollRate[device]);
-                    if (xinputStatus)
-                    {
-                        if (xinputPlug)
-                        {
-                            if (control.HasOutputDevice(device))
-                            {
-                                //Global.activeOutDevType[device] = OutContType.None;
-                                control.UnplugOutDev(device, tempDev);
-                            }
-
-                            OutContType tempContType = outputTypeSlots[device].ContType;
-                            control.PluginOutDev(device, tempDev);
-                            //Global.useDInputOnly[device] = false;
-                        }
-                        else
-                        {
-                            //Global.activeOutDevType[device] = OutContType.None;
-                            control.UnplugOutDev(device, tempDev);
-                        }
-                    }
-
-                    //tempDev.RumbleAutostopTime = rumbleAutostopTime[device];
-                    //tempDev.SetRumble(0, 0);
-                    //tempDev.LightBarColor = Global.getMainColor(device);
-                    control.CheckProfileOptions(device, tempDev, true);
-                });
-
-                //Program.rootHub.touchPad[device]?.ResetTrackAccel(touchpadSlots[device].TrackballFriction);
-            }
-        }
     }
 }
 

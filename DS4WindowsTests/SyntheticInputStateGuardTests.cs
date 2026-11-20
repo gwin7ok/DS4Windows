@@ -51,7 +51,7 @@ namespace DS4WindowsTests
         [Fact]
         public void BackingStore_DoesNotReferenceMapping_AndRaisesActionsLoadedInBothPaths()
         {
-            string store = SourceText.ReadCode("DS4Windows/Core/Settings/BackingStore.cs");
+            string store = SourceText.ReadCodeWithPartials("DS4Windows/Core/Settings/BackingStore.cs");
             if (store == null) return;
 
             Assert.False(Regex.IsMatch(store, @"\bMapping\."), "BackingStore が Mapping を参照している");
