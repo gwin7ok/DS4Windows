@@ -46,17 +46,20 @@ namespace DS4WindowsTests
         [Fact]
         public void Sections_AreInternalSealedAndNotRegisteredInTheContainer()
         {
-            string root = SourceFileLocator.RepoRoot();
-            // 登録は層ごとの partial ファイル（ServiceRegistration*.cs）に分かれている
-            string registration = string.Join(System.Environment.NewLine, Directory.GetFiles(Path.Combine(root, "DS4Windows", "Composition"), "ServiceRegistration*.cs").Select(File.ReadAllText));
-            Assert.DoesNotContain("LoadSection", registration);
-
-            foreach (string file in Directory.GetFiles(Path.Combine(root, "DS4Windows", "Core", "Persistence", "ProfileSections"), "Profile*LoadSection.cs"))
+            var sections = typeof(DS4Windows.Composition.AppHost).Assembly.GetTypes()
+                .Where(t => t.GetInterfaces().Any(i => i.Name == "IProfileLoadSection"))
+                .ToArray();
+            Assert.True(sections.Length >= 8, "節の型が少なすぎる: " + sections.Length);
+            foreach (Type section in sections)
             {
-                string text = File.ReadAllText(file);
-                string name = Path.GetFileNameWithoutExtension(file);
-                Assert.Contains("internal sealed class " + name + " : IProfileLoadSection", text);
+                Assert.True(section.IsNotPublic && section.IsSealed, section.Name + " は internal sealed にする");
             }
+
+            // 節は、コンテナへ登録しない（シリアライザーが自分で持つ）
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            DS4Windows.Composition.ServiceRegistration.RegisterServices(services);
+            Assert.DoesNotContain(services, d => d.ServiceType.Name.EndsWith("LoadSection", StringComparison.Ordinal)
+                || (d.ImplementationType?.Name.EndsWith("LoadSection", StringComparison.Ordinal) ?? false));
         }
 
         [Fact]

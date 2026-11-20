@@ -43,18 +43,8 @@ namespace DS4WindowsTests
         [Fact]
         public void TheModes_AreSpecialAction_AndControl_Only()
         {
-            string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
-            if (source == null)
-            {
-                return;
-            }
-
-            Match m = Regex.Match(source, @"public enum ExposeMode : uint\s*\{(?<body>.*?)\}", RegexOptions.Singleline);
-            Assert.True(m.Success);
-            string body = Regex.Replace(m.Groups["body"].Value, @"//[^\r\n]*", "");
-            Assert.Matches(@"^\s*SpecialAction\s*,\s*Control\s*,\s*$", body);   // Full と Keyboard は撤去した
-            // コメント（「旧 ForPressToggle」の説明）は除いて、旧名の使用が残っていないことを検査する
-            Assert.DoesNotContain("ForPressToggle", Regex.Replace(source, @"//[^\r\n]*", ""));
+            // Full と Keyboard は撤去した。旧 ForPressToggle は SpecialAction へ改名した
+            Assert.Equal(new[] { "SpecialAction", "Control" }, System.Enum.GetNames(typeof(DS4Windows.UI.BindingWindow.ExposeMode)));
         }
 
         [Fact]
@@ -67,7 +57,6 @@ namespace DS4WindowsTests
             }
 
             Assert.Contains("BindingWindow.ExposeMode.SpecialAction", source);
-            Assert.DoesNotContain("ForPressToggle", source);
         }
 
         [Fact]

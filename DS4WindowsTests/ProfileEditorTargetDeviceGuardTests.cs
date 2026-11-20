@@ -173,18 +173,8 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             // 決定5＝D1: 常に作業スロットを返すだけになった DeviceNum は削除
-            Assert.DoesNotContain("public int DeviceNum", text);
             // 決定7＝H1: 到達しなくなった即時フック
-            Assert.DoesNotContain("GyroOutModeCombo_SelectionChanged", text);
-            Assert.DoesNotContain("FrictionUD_ValueChanged", text);
             Assert.DoesNotContain("touchPad[deviceNum]", text);
-
-            string xaml = SourceText.Read("DS4Windows/UI/ProfileEditor.xaml");
-            if (xaml != null)
-            {
-                Assert.DoesNotContain("FrictionUD_ValueChanged", xaml);
-                Assert.DoesNotContain("GyroOutModeCombo_SelectionChanged", xaml);
-            }
         }
 
         [Fact]

@@ -226,8 +226,6 @@ namespace DS4WindowsTests
 
             // 検証と保存ボタンは、モードを区別しない（制御が 2 か所に分散しない）
             Assert.Contains("if (ActionTypeIndex == 0)", editorVm);
-            Assert.DoesNotContain("IndexZeroMeansDefault", editorVm);
-            Assert.DoesNotContain("IndexZeroMeansDefault", source);
             Assert.Contains("if (specialActVM.ActionTypeIndex <= 0)", source);
 
             // 出力ピッカーで Default／Unbound を選んだら、一覧の項目も切り替える

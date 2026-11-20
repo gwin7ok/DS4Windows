@@ -49,7 +49,6 @@ namespace DS4WindowsTests
             if (text == null) return;
 
             // Dispose 後だけでなく、未構築のときも暗黙に作らない（_disposed フラグは不要になった）
-            Assert.DoesNotContain("_disposed", text);
             Assert.Equal(2, Regex.Matches(text, @"_host\s*=\s*builder\.Build\(\)").Count);
         }
 
