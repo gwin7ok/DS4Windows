@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             string body = code.Substring(start, end - start);
 
             Assert.Contains("(featureSet & VidPidFeatureSet.NoOutputData) != 0", body);
-            Assert.Contains("sendOutputReport(true, true, false);", body);   // 書けなくても切断しない
+            Assert.Contains("SendOutputReport(true, true, false);", body);   // 書けなくても切断しない
             Assert.Contains("catch (Exception", body);
         }
 

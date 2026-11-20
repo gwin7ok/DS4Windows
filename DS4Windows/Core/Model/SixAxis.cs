@@ -42,10 +42,10 @@ namespace DS4Windows.Core.Model
             int aX, int aY, int aZ,
             double elapsedDelta, SixAxis? prevAxis = null)
         {
-            populate(X, Y, Z, aX, aY, aZ, elapsedDelta, prevAxis);
+            Populate(X, Y, Z, aX, aY, aZ, elapsedDelta, prevAxis);
         }
 
-        public void copy(SixAxis src)
+        public void Copy(SixAxis src)
         {
             gyroYaw = src.gyroYaw;
             gyroPitch = src.gyroPitch;
@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Model
             outputGyroControls = src.outputGyroControls;
         }
 
-        public void populate(int X, int Y, int Z,
+        public void Populate(int X, int Y, int Z,
             int aX, int aY, int aZ,
             double elapsedDelta, SixAxis? prevAxis = null)
         {

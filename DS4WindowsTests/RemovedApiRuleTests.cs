@@ -143,7 +143,7 @@ namespace DS4WindowsTests
             ("DS4ControlSettings", new[] { "shiftAction", "shiftExtras", "shiftActionType" }),
             ("OutputDevice", new[] { "GetSteeringWheelEmulationAxis", "SteeringWheelAxisProvider" }),
             // 名前から値を引く関数は DS4ControlNames／X360ControlTables へ移した
-            ("BackingStore", new[] { "getDS4ControlsByName", "getX360ControlsByName" }),
+            ("BackingStore", new[] { "GetDS4ControlsByName", "GetX360ControlsByName" }),
             // 状態の保持クラスの暫定の静的な窓口
             ("SyntheticInputState", new[] { "Shared" }),
             ("MacroRuntimeState", new[] { "Shared" }),

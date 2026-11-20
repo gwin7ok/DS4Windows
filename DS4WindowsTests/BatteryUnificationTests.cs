@@ -37,7 +37,7 @@ namespace DS4WindowsTests
             }
 
             Assert.Contains("protected void UpdateBattery(int percent) { if (percent == battery) return; battery = percent; BatteryChanged?.Invoke(this, EventArgs.Empty); }", code);
-            Assert.Contains("protected void UpdateCharging(bool isCharging) { if (isCharging == charging) return; charging = isCharging; ChargingChanged?.Invoke(this, EventArgs.Empty); }", code);
+            Assert.Contains("protected void UpdateCharging(bool IsCharging) { if (IsCharging == charging) return; charging = IsCharging; ChargingChanged?.Invoke(this, EventArgs.Empty); }", code);
         }
 
         [Fact]

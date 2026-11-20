@@ -42,13 +42,13 @@ namespace DS4Windows.Processing.Touchpad
         // Keep track of remainders when performing scrolls or we lose fractional parts.
         private double horizontalRemainder = 0.0, verticalRemainder = 0.0;
 
-        public void touchesBegan(TouchpadEventArgs arg)
+        public void TouchesBegan(TouchpadEventArgs arg)
         {
             if (arg.Touches!.Length == 2) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 horizontalRemainder = verticalRemainder = 0.0;
         }
 
-        public void touchesMoved(TouchpadEventArgs arg, bool dragging)
+        public void TouchesMoved(TouchpadEventArgs arg, bool dragging)
         {
             if (arg.Touches!.Length != 2 || dragging) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 return;

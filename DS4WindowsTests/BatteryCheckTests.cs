@@ -54,7 +54,7 @@ namespace DS4WindowsTests
             return sa;
         }
 
-        private static DS4Color Transition(DS4Color from, DS4Color to, double ratio) => ColorUtil.getTransitionedColor(ref from, ref to, ratio);
+        private static DS4Color Transition(DS4Color from, DS4Color to, double ratio) => ColorUtil.GetTransitionedColor(ref from, ref to, ratio);
 
         [Fact]
         public void TheRisingEdge_NotifiesSavesTheColorAndStartsTheFade()

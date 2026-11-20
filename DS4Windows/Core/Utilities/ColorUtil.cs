@@ -21,7 +21,7 @@ namespace DS4Windows.Core.Utilities
             return (byte)Math.Round((b1 * (1 - r)) + b2 * r, 0);
         }
 
-        public static DS4Color getTransitionedColor(ref DS4Color c1, ref DS4Color c2, double ratio)
+        public static DS4Color GetTransitionedColor(ref DS4Color c1, ref DS4Color c2, double ratio)
         {
             //Color cs = Color.FromArgb(c1.red, c1.green, c1.blue);
             DS4Color cs = new DS4Color

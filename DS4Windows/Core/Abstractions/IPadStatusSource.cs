@@ -16,12 +16,12 @@ namespace DS4Windows.Core.Abstractions
 
         bool IsAlive();
 
-        ConnectionType getConnectionType();
+        ConnectionType GetConnectionType();
 
         bool IsDS4Idle();
 
-        int getBattery();
+        int GetBattery();
 
-        bool isCharging();
+        bool IsCharging();
     }
 }

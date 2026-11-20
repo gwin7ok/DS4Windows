@@ -103,7 +103,7 @@ namespace DS4WindowsTests
 
             // 単一起動の通知は、ホストの構築より前
             AssertOrder(SourceText.Body(text, "private void InitializeProcessWideSettings("),
-                "timeBeginPeriod(1)", "LoadFromRegistry()", "RefreshViGEmBusInfo()", "_singleInstance.StartListening(");
+                "TimeBeginPeriod(1)", "LoadFromRegistry()", "RefreshViGEmBusInfo()", "_singleInstance.StartListening(");
 
             // ホストの構築 → ControlService → Post-Host のサービス
             AssertOrder(SourceText.Body(text, "private void BuildHostAndServices("),

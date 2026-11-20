@@ -100,8 +100,8 @@ namespace DS4Windows.Core.Model
             [DS4Controls.TouchEnded] = 288,
         };
 
-        // 旧 BackingStore.getDS4ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
-        public static DS4Controls getDS4ControlsByName(string key)
+        // 旧 BackingStore.GetDS4ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
+        public static DS4Controls GetDS4ControlsByName(string key)
         {
             if (!key.StartsWith("bn"))
                 return (DS4Controls)Enum.Parse(typeof(DS4Controls), key, true);

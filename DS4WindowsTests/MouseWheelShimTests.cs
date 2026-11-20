@@ -59,7 +59,7 @@ namespace DS4WindowsTests
 
         private static void InvokeTouchesMoved(object wheel, TouchpadEventArgs args)
         {
-            MethodInfo method = WheelType.GetMethod("touchesMoved");
+            MethodInfo method = WheelType.GetMethod("TouchesMoved");
             Assert.NotNull(method);
             method.Invoke(wheel, new object[] { args, false });
         }

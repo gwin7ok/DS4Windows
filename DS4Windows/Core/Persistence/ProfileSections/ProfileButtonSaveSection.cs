@@ -78,7 +78,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     }
                     else if (dcs.actionType == DS4ControlSettings.ActionType.Button)
                     {
-                        buttonNode.InnerText = X360ControlTables.getX360ControlString((X360Controls)dcs.action.actionBtn);
+                        buttonNode.InnerText = X360ControlTables.GetX360ControlString((X360Controls)dcs.action.actionBtn);
                         Button.AppendChild(buttonNode);
                     }
                 }

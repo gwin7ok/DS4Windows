@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             gyro.TriggerTurns = reverse;
             f.State.Motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.004);
 
-            f.Mouse.sixaxisMoved(null, Motion(0, 0));
+            f.Mouse.SixaxisMoved(null, Motion(0, 0));
 
             Assert.Equal(expected, f.State.Motion.outputGyroControls);
         }
@@ -82,14 +82,14 @@ namespace DS4WindowsTests
             gyro.MouseStickTriggerCondAnd = false;
             gyro.MouseStickTriggerTurns = false;
 
-            f.Mouse.sixaxisMoved(null, Motion(0, 0));
+            f.Mouse.SixaxisMoved(null, Motion(0, 0));
             Assert.Equal(128, f.Sticks.GyroStickX[Slot]);
             Assert.Equal(128, f.Sticks.GyroStickY[Slot]);
 
-            f.Mouse.sixaxisMoved(null, Motion(20000, 0));
+            f.Mouse.SixaxisMoved(null, Motion(20000, 0));
             Assert.True(f.Sticks.GyroStickX[Slot] > 128, $"X = {f.Sticks.GyroStickX[Slot]}");
 
-            f.Mouse.sixaxisMoved(null, Motion(-20000, 0));
+            f.Mouse.SixaxisMoved(null, Motion(-20000, 0));
             Assert.True(f.Sticks.GyroStickX[Slot] < 128, $"X = {f.Sticks.GyroStickX[Slot]}");
         }
 
@@ -104,7 +104,7 @@ namespace DS4WindowsTests
             gyro.TriggerTurns = false;
             f.State.Motion = new SixAxis(0, 0, 0, 0, 0, 0, 0.004);
 
-            f.Mouse.sixaxisMoved(null, Motion(0, 0));   // 部品が機器の現在の状態（L1 が押されている）を読み込む
+            f.Mouse.SixaxisMoved(null, Motion(0, 0));   // 部品が機器の現在の状態（L1 が押されている）を読み込む
             f.Mouse.ToggleGyroControls = true;
             // 立ち上がりでトグルが入る → 初期化で、押したままでもまた立ち上がりとして扱われる
             Assert.True(f.Mouse.IsGyroTriggerActive(GyroOutMode.Controls));

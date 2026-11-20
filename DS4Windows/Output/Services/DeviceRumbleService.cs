@@ -21,10 +21,10 @@ namespace DS4Windows.Output.Services
         {
             byte boost = _profileSettings.GetRumbleBoost(deviceNum);
             Adjust(heavyMotor, lightMotor, boost, _profileSettings.RumbleSlot(deviceNum).InverseMotors, out byte right, out byte left);
-            device.setRumble(right, left);
+            device.SetRumble(right, left);
         }
 
-        /// <summary>ブースト（百分率）と反転を適用した <c>setRumble</c> の引数（右の軽く速い、左の重く遅い）を求める。旧 <c>SetDevRumble</c> の式そのまま。</summary>
+        /// <summary>ブースト（百分率）と反転を適用した <c>SetRumble</c> の引数（右の軽く速い、左の重く遅い）を求める。旧 <c>SetDevRumble</c> の式そのまま。</summary>
         public static void Adjust(byte heavyMotor, byte lightMotor, byte boost, bool inverse, out byte rightLightFast, out byte leftHeavySlow)
         {
             uint lightBoosted = ((uint)lightMotor * (uint)boost) / 100;

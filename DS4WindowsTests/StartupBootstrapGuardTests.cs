@@ -90,7 +90,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (text == null) return;
 
-            Assert.DoesNotContain("InputDeviceRegistry.reEnableDevice", text);
+            Assert.DoesNotContain("InputDeviceRegistry.ReEnableDevice", text);
             Assert.Contains("new DS4Windows.Processing.Services.Devices.InputDeviceRegistryAdapter()", text);
             Assert.Contains(".ReEnableDevice(parser.DeviceInstanceId!)", text);
         }

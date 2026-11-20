@@ -6,7 +6,7 @@ namespace DS4Windows.Processing.Abstractions
     /// 画面（メイン画面、自動プロファイル画面、起動処理）が使う、実行中の機能の切り替えの窓口。
     /// OSC の受信・送信、UDP モーション、HidHide のホワイトリスト、タッチパッドのスライド表示を、それぞれの本物のサービスへ委譲するだけで、状態は持たない。
     /// 以前は <c>ControlService</c> の転送メンバー（<c>ChangeOSCListenerStatus</c>／<c>ChangeOSCSenderStatus</c>／<c>ChangeUDPStatus</c>／<c>ChangeMotionEventStatus</c>／
-    /// <c>CheckHidHidePresence</c>／<c>UpdateHidHiddenAttributes</c>／<c>TouchpadSlide</c>）と、プロファイル編集画面が使う <c>GetActiveInputControl</c>／<c>setRumble</c> の転送だった。
+    /// <c>CheckHidHidePresence</c>／<c>UpdateHidHiddenAttributes</c>／<c>TouchpadSlide</c>）と、プロファイル編集画面が使う <c>GetActiveInputControl</c>／<c>SetRumble</c> の転送だった。
     /// </summary>
     public interface IRuntimeFeatureSwitch
     {
@@ -26,7 +26,7 @@ namespace DS4Windows.Processing.Abstractions
         string TouchpadSlide(int ind);
         /// <summary>そのスロットで、いま操作されている入力（<see cref="IActiveInputProbe.GetActive"/>。旧 <c>ControlService.GetActiveInputControl</c>）。</summary>
         DS4Controls GetActiveInputControl(int ind);
-        /// <summary>そのスロットのコントローラーの振動を、ブースト込みで設定する（<see cref="IDeviceRumbleService.SetDevRumble"/>。旧 <c>ControlService.setRumble</c>。スロットの上限の外、コントローラーがいないときは何もしない）。</summary>
+        /// <summary>そのスロットのコントローラーの振動を、ブースト込みで設定する（<see cref="IDeviceRumbleService.SetDevRumble"/>。旧 <c>ControlService.SetRumble</c>。スロットの上限の外、コントローラーがいないときは何もしない）。</summary>
         void SetRumble(byte heavyMotor, byte lightMotor, int deviceNum);
     }
 }

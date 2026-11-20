@@ -154,7 +154,7 @@ namespace DS4Windows.Output.Services
                 foreach (IMotionSource dev in devices)
                 {
                     int tempIdx = i;
-                    dev.queueEvent(() =>
+                    dev.QueueEvent(() =>
                     {
                         if (i < UdpServer.NUMBER_SLOTS)
                         {
@@ -169,7 +169,7 @@ namespace DS4Windows.Output.Services
             {
                 foreach (IMotionSource dev in devices)
                 {
-                    dev.queueEvent(() => dev.StopMotionCallback());
+                    dev.QueueEvent(() => dev.StopMotionCallback());
                 }
             }
         }
@@ -186,7 +186,7 @@ namespace DS4Windows.Output.Services
             IEnumerable<IMotionSource> devices = _deviceRegistry.GetControllers();
             foreach (IMotionSource dev in devices)
             {
-                dev.queueEvent(() => dev.PauseMotionCallback());
+                dev.QueueEvent(() => dev.PauseMotionCallback());
             }
 
             await Task.Delay(100);
@@ -199,7 +199,7 @@ namespace DS4Windows.Output.Services
                 _udpServer!.Start(UDP_SERVER_PORT, UDP_SERVER_LISTEN_ADDRESS); // 作成した直後に呼ぶ
                 foreach (IMotionSource dev in devices)
                 {
-                    dev.queueEvent(() => dev.ResumeMotionCallback());
+                    dev.QueueEvent(() => dev.ResumeMotionCallback());
                 }
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Udp_Listening", UDP_SERVER_LISTEN_ADDRESS, UDP_SERVER_PORT);
             }
@@ -260,11 +260,11 @@ namespace DS4Windows.Output.Services
                     meta.PadState = DsState.Reserved;
             }
 
-            meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
+            meta.ConnectionType = (d.GetConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
             meta.IsActive = !d.IsDS4Idle();
 
-            int batteryLevel = d.getBattery();
-            if (d.isCharging() && batteryLevel >= 100)
+            int batteryLevel = d.GetBattery();
+            if (d.IsCharging() && batteryLevel >= 100)
                 meta.BatteryStatus = DsBattery.Charged;
             else
             {

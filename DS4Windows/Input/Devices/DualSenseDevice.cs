@@ -1001,7 +1001,7 @@ namespace DS4Windows.Input.Devices
                 throw new ArgumentOutOfRangeException("Invalid Trigger Id");
             }
 
-            queueEvent(() =>
+            QueueEvent(() =>
             {
                 outputDirty = true;
                 currentHap.dirty = true;
@@ -1046,7 +1046,7 @@ namespace DS4Windows.Input.Devices
                 }
             }
 
-            queueEvent(() =>
+            QueueEvent(() =>
             {
                 outputDirty = true;
                 //PrepareOutReport();
@@ -1060,13 +1060,13 @@ namespace DS4Windows.Input.Devices
                 nativeOptionsStore.MuteLedModeChanged += (sender, e) =>
                 {
                     PrepareMuteLEDByte();
-                    queueEvent(() => { outputDirty = true; });
+                    QueueEvent(() => { outputDirty = true; });
                 };
 
                 nativeOptionsStore.LedModeChanged += (sender, e) =>
                 {
                     PreparePlayerLEDBarByte();
-                    queueEvent(() => { outputDirty = true; });
+                    QueueEvent(() => { outputDirty = true; });
                 };
             }
         }

@@ -64,7 +64,7 @@ namespace DS4WindowsTests
             store.AttachProfileIdentity(identity);
             store.m_linkedProfiles = Path.Combine(ctx.AppData, "LinkedProfiles.xml");
             var serializer = new LinkedProfilesXmlSerializer(store, identity);
-            Assert.True(serializer.createLinkedProfiles());
+            Assert.True(serializer.CreateLinkedProfiles());
             store.linkedProfiles["0123456789AB"] = "LinkedBefore";
             Assert.True(serializer.SaveLinkedProfiles());
 

@@ -306,7 +306,7 @@ namespace DS4Windows
         private void InitializeProcessWideSettings()
         {
             // Allow sleep time durations less than 16 ms
-            DS4Windows.Core.Utilities.Util.timeBeginPeriod(1);
+            DS4Windows.Core.Utilities.Util.TimeBeginPeriod(1);
 
             // Load keyboard repeat settings from user registry so synthetic repeat matches OS behaviour
             try
@@ -826,7 +826,7 @@ namespace DS4Windows
             }
             else if (mode == StartupMode.ReenableDevice)
             {
-                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な InputDeviceRegistry.reEnableDevice の直接呼び出しをやめ、IInputDeviceRegistry の契約を通す。
+                // Phase7-Step4 W4（Q4＝A）: 第 1 層の静的な InputDeviceRegistry.ReEnableDevice の直接呼び出しをやめ、IInputDeviceRegistry の契約を通す。
                 // この分岐はホストを構築しない昇格した補助プロセスのため、状態を持たないアダプタを直接作る。
                 // 差: デバイスのインスタンス ID が空のときは、アダプタが何もせず戻る（旧: 例外で終了していた。不正な起動引数の場合のみ）。
                 DS4Windows.Processing.Abstractions.IInputDeviceRegistry reEnableRegistry = new DS4Windows.Processing.Services.Devices.InputDeviceRegistryAdapter();
@@ -922,7 +922,7 @@ namespace DS4Windows
                 _runtimeBootstrapper, _lifecycle,
                 skipSave ? (Action?)null : () => _appSettingsService?.Save(),
                 _ipc, TryResolvePostHostService<DS4Windows.Processing.Actions.IControllerRegistry>(), ControllerLimits.MaxControllerCount,
-                resetTimerResolution: () => DS4Windows.Core.Utilities.Util.timeEndPeriod(1),
+                resetTimerResolution: () => DS4Windows.Core.Utilities.Util.TimeEndPeriod(1),
                 stopSingleInstance: _singleInstance.Stop,
                 disposeHost: AppHost.Dispose,
                 flushLogs: () => { LogManager.Flush(); LogManager.Shutdown(); }).Run();

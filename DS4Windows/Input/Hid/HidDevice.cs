@@ -203,7 +203,7 @@ namespace DS4Windows.Input.Hid
         }
 
         [Obsolete("Unused.")]
-        public void flush_Queue()
+        public void FlushQueue()
         {
             if (SafeReadHandle != null)
             {

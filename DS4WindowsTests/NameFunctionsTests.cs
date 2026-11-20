@@ -22,16 +22,16 @@ namespace DS4WindowsTests
         [InlineData("bnTouchEnded", DS4Controls.TouchEnded)]
         public void DS4Controls_ByName_KeepsTheMapping(string name, DS4Controls expected)
         {
-            Assert.Equal(expected, DS4ControlNames.getDS4ControlsByName(name));
+            Assert.Equal(expected, DS4ControlNames.GetDS4ControlsByName(name));
         }
 
         [Fact]
         public void DS4Controls_ByName_UnknownBnName_IsZero_AndUnknownEnumNameThrowsLikeBefore()
         {
-            Assert.Equal((DS4Controls)0, DS4ControlNames.getDS4ControlsByName("bnNothing"));
-            Assert.Throws<ArgumentException>(() => DS4ControlNames.getDS4ControlsByName("NotAControl"));
+            Assert.Equal((DS4Controls)0, DS4ControlNames.GetDS4ControlsByName("bnNothing"));
+            Assert.Throws<ArgumentException>(() => DS4ControlNames.GetDS4ControlsByName("NotAControl"));
             // "sbn" で始まる旧シフト名は "bn" で始まらないため、旧コードと同じく列挙体の解析に回って例外になる（switch 内の sbn 系の case は、到達しない）
-            Assert.Throws<ArgumentException>(() => DS4ControlNames.getDS4ControlsByName("sbnShare"));
+            Assert.Throws<ArgumentException>(() => DS4ControlNames.GetDS4ControlsByName("sbnShare"));
         }
 
         [Theory]
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         [InlineData("Something Else", X360Controls.Unbound)]
         public void X360Controls_ByName_KeepsTheMapping(string name, X360Controls expected)
         {
-            Assert.Equal(expected, X360ControlTables.getX360ControlsByName(name));
+            Assert.Equal(expected, X360ControlTables.GetX360ControlsByName(name));
         }
 
     }

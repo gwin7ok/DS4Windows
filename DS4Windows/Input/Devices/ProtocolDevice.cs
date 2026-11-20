@@ -120,9 +120,9 @@ namespace DS4Windows.Input.Devices
             receivedFrame = true;
             protocol.Parser.Parse(inputReport, cState);
 
-            if (protocol.TryReadBattery(inputReport, out int percent, out bool isCharging))
+            if (protocol.TryReadBattery(inputReport, out int percent, out bool IsCharging))
             {
-                UpdateCharging(isCharging);
+                UpdateCharging(IsCharging);
                 if (percent != battery)
                 {
                     UpdateBattery(percent);

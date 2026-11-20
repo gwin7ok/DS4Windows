@@ -54,7 +54,7 @@ namespace DS4Windows.Output.Devices
                                     if ((outputData.featureFlags & DS4OutDevice.RUMBLE_FEATURE_FLAG) != 0)
                                     {
                                         useRumble = true;
-                                        device.setRumble(outputData.rightFastRumble, outputData.leftSlowRumble);
+                                        device.SetRumble(outputData.rightFastRumble, outputData.leftSlowRumble);
                                         //SetDevRumble(device, devour[4], devour[5], devIndex);
                                     }
 
@@ -112,9 +112,9 @@ namespace DS4Windows.Output.Devices
                                         {
                                             useRumble = true;
                                             if (_profileSettings.RumbleSlot(devIndex).InverseMotors)
-                                                device.setRumble(reportData[5], reportData[4]);
+                                                device.SetRumble(reportData[5], reportData[4]);
                                             else
-                                                device.setRumble(reportData[4], reportData[5]);
+                                                device.SetRumble(reportData[4], reportData[5]);
                                             //SetDevRumble(device, devour[4], devour[5], devIndex);
                                         }
 

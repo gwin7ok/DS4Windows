@@ -30,7 +30,7 @@ namespace DS4Windows.Core.Abstractions
         bool IsAlive();
 
         /// <summary>デバイスのイベントスレッドで実行する処理を積む。</summary>
-        void queueEvent(Action act);
+        void QueueEvent(Action act);
 
         /// <summary>ミリ秒。0 以下で自動停止を無効にする。</summary>
         int RumbleAutostopTime { get; set; }

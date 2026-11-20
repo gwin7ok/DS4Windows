@@ -112,7 +112,7 @@ namespace DS4Windows.UI.ViewModels
         public string? GetMappingString()
         {
             bool extra = control >= DS4Controls.GyroXPos && control <= DS4Controls.SwipeDown;
-            return AssignmentDescriber.ForControl(setting, x => X360ControlTables.getX360ControlString(x, devType),
+            return AssignmentDescriber.ForControl(setting, x => X360ControlTables.GetX360ControlString(x, devType),
                 profileSettingsService.GetDefaultButtonMapping()[(int)control], extra, Properties.Resources.Unassigned, ProfileExists);
         }
 

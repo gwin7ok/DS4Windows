@@ -7,6 +7,6 @@ namespace DS4Windows.Core.Abstractions
     public interface IRumbleTarget
     {
         /// <summary>右（軽い・速い）と左（重い・遅い）のモーターの強さを設定する。</summary>
-        void setRumble(byte rightLightFastMotor, byte leftHeavySlowMotor);
+        void SetRumble(byte rightLightFastMotor, byte leftHeavySlowMotor);
     }
 }

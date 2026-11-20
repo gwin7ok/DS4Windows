@@ -156,7 +156,7 @@ namespace DS4Windows.Core.Persistence
                     IConfigurableDevice tempDev = control.GetController(device);
                     if (tempDev != null)
                     {
-                        tempDev.queueEvent(() =>
+                        tempDev.QueueEvent(() =>
                         {
                             control.UnplugOutDev(device, tempDev);
                         });

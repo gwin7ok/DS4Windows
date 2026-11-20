@@ -81,7 +81,7 @@ namespace DS4Windows.Core.Settings
             delayTime = delay;
             string[] ctrls = controls.Split('/');
             foreach (string s in ctrls)
-                trigger.Add(getDS4ControlsByName(s));
+                trigger.Add(GetDS4ControlsByName(s));
 
             if (type == "Key")
             {
@@ -111,7 +111,7 @@ namespace DS4Windows.Core.Settings
                         this.ucontrols = exts[1];
                         string[] uctrls = exts[1].Split('/');
                         foreach (string s in uctrls)
-                            uTrigger.Add(getDS4ControlsByName(s));
+                            uTrigger.Add(GetDS4ControlsByName(s));
                     }
                 }
 
@@ -225,12 +225,12 @@ namespace DS4Windows.Core.Settings
                 foreach (string s in uctrls)
                 {
                     if (s == "AutomaticUntrigger") this.automaticUntrigger = true;
-                    else uTrigger.Add(getDS4ControlsByName(s));
+                    else uTrigger.Add(GetDS4ControlsByName(s));
                 }
             }
         }
 
-        private DS4Controls getDS4ControlsByName(string key)
+        private DS4Controls GetDS4ControlsByName(string key)
         {
             switch (key)
             {

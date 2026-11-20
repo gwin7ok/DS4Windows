@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         {
             var c1 = new DS4Color(10, 20, 30);
             var c2 = new DS4Color(200, 100, 50);
-            DS4Color result = ColorUtil.getTransitionedColor(ref c1, ref c2, ratio);
+            DS4Color result = ColorUtil.GetTransitionedColor(ref c1, ref c2, ratio);
             Assert.Equal(red, result.red);
             Assert.Equal(green, result.green);
             Assert.Equal(blue, result.blue);

@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public interface IControlExtrasPort
     {
-        /// <summary>振動を設定する（旧 <c>ControlService.setRumble(heavy, light, device)</c>）。</summary>
+        /// <summary>振動を設定する（旧 <c>ControlService.SetRumble(heavy, light, device)</c>）。</summary>
         void SetRumble(int deviceIndex, byte heavy, byte light);
 
         /// <summary>ライトバーの強制色と点滅を設定して、強制を有効にする。</summary>

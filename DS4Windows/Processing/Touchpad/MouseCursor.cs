@@ -94,7 +94,7 @@ namespace DS4Windows.Processing.Touchpad
         double tempDouble = 0.0;
         //bool tempBool = false;
 
-        public virtual void sixaxisMoved(SixAxisEventArgs arg)
+        public virtual void SixaxisMoved(SixAxisEventArgs arg)
         {
             int deltaX = 0, deltaY = 0;
             deltaX = _profileSettings.ForSlot(deviceNumber).Gyro.MouseHorizontalAxis == 0 ? arg.sixAxis!.gyroYawFull : // ジャイロのイベントは、6 軸の値を持って来る（null なら従来どおり NullReferenceException）
@@ -294,7 +294,7 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
-        public void touchesBegan(TouchpadEventArgs arg)
+        public void TouchesBegan(TouchpadEventArgs arg)
         {
             if (arg.Touches!.Length == 1) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             {
@@ -305,7 +305,7 @@ namespace DS4Windows.Processing.Touchpad
         }
 
         private byte lastTouchID;
-        public void touchesMoved(TouchpadEventArgs arg, bool dragging, bool disableInvert = false)
+        public void TouchesMoved(TouchpadEventArgs arg, bool dragging, bool disableInvert = false)
         {
             int touchesLen = arg.Touches!.Length; // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             if ((!dragging && touchesLen != 1) || (dragging && touchesLen < 1))

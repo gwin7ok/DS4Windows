@@ -442,7 +442,7 @@ namespace DS4Windows.Input.Devices
         protected override void WriteOutputFrame()
         {
             WriteReport();
-            pState.Motion.copy(cState.Motion);
+            pState.Motion.Copy(cState.Motion);
         }
 
         public void SetOperational()

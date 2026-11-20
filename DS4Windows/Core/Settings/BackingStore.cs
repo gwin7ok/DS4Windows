@@ -678,7 +678,7 @@ namespace DS4Windows.Core.Settings
         public void SetGyroMouseStickToggle(int index, bool value, IProfileLoadTarget control) => gyroSlots[index].SetMouseStickToggle(value, control);
 
 
-        // getX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
+        // GetX360ControlString（XML 保存用の名前）は X360ControlTables へ移した。
 
 
         // Legacy Load implementation (formerly LoadOld) will be the canonical Load method below.
@@ -783,7 +783,7 @@ namespace DS4Windows.Core.Settings
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -801,7 +801,7 @@ namespace DS4Windows.Core.Settings
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -818,7 +818,7 @@ namespace DS4Windows.Core.Settings
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -835,7 +835,7 @@ namespace DS4Windows.Core.Settings
         {
             DS4Controls dc;
             if (buttonName.StartsWith("bn"))
-                dc = DS4ControlNames.getDS4ControlsByName(buttonName);
+                dc = DS4ControlNames.GetDS4ControlsByName(buttonName);
             else
                 dc = (DS4Controls)Enum.Parse(typeof(DS4Controls), buttonName, true);
 
@@ -978,7 +978,7 @@ namespace DS4Windows.Core.Settings
             IConfigurableDevice tempDev = control.GetController(device);
             if (tempDev != null && tempDev.IsSynced())
             {
-                tempDev.queueEvent(() =>
+                tempDev.QueueEvent(() =>
                 {
                     //tempDev.SetIdleTimeout(idleDisconnectTimeout[device]);
                     //tempDev.SetBTPollRate(btPollRate[device]);
@@ -1004,7 +1004,7 @@ namespace DS4Windows.Core.Settings
                     }
 
                     //tempDev.RumbleAutostopTime = rumbleAutostopTime[device];
-                    //tempDev.setRumble(0, 0);
+                    //tempDev.SetRumble(0, 0);
                     //tempDev.LightBarColor = Global.getMainColor(device);
                     control.CheckProfileOptions(device, tempDev, true);
                 });

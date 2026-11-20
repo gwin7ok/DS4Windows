@@ -126,7 +126,7 @@ namespace DS4Windows.Processing.Services.Devices
                     {
                         ref DS4Color fullColor = ref lightModeInfo.m_Led; //ref getMainColor(deviceNum);
                         ref DS4Color lowColor = ref lightModeInfo.m_LowLed; //ref getLowColor(deviceNum);
-                        color = ColorUtil.getTransitionedColor(ref lowColor, ref fullColor, device.Battery);
+                        color = ColorUtil.GetTransitionedColor(ref lowColor, ref fullColor, device.Battery);
                     }
                     else
                     {
@@ -186,7 +186,7 @@ namespace DS4Windows.Processing.Services.Devices
                         }
 
                         DS4Color tempCol = new DS4Color(0, 0, 0);
-                        color = ColorUtil.getTransitionedColor(ref color, ref tempCol, ratio);
+                        color = ColorUtil.GetTransitionedColor(ref color, ref tempCol, ratio);
                     }
                 }
 
@@ -202,13 +202,13 @@ namespace DS4Windows.Processing.Services.Devices
                     if (ratio >= 50.0 && ratio < 100.0)
                     {
                         DS4Color emptyCol = new DS4Color(0, 0, 0);
-                        color = ColorUtil.getTransitionedColor(ref color, ref emptyCol,
+                        color = ColorUtil.GetTransitionedColor(ref color, ref emptyCol,
                             (uint)(-100.0 * (elapsed = 0.02 * (ratio - 50.0)) * (elapsed - 2.0)));
                     }
                     else if (ratio >= 100.0)
                     {
                         DS4Color emptyCol = new DS4Color(0, 0, 0);
-                        color = ColorUtil.getTransitionedColor(ref color, ref emptyCol, 100.0);
+                        color = ColorUtil.GetTransitionedColor(ref color, ref emptyCol, 100.0);
                     }
                         
                 }
@@ -265,7 +265,7 @@ namespace DS4Windows.Processing.Services.Devices
                             }
 
                             DS4Color emptyCol = new DS4Color(0, 0, 0);
-                            color = ColorUtil.getTransitionedColor(ref color, ref emptyCol, ratio);
+                            color = ColorUtil.GetTransitionedColor(ref color, ref emptyCol, ratio);
                             break;
                         }
                         case 2:
@@ -314,15 +314,15 @@ namespace DS4Windows.Processing.Services.Devices
                     {
                         DS4Color maxCol = new DS4Color(max, max, 0);
                         DS4Color redCol = new DS4Color(255, 0, 0);
-                        color = ColorUtil.getTransitionedColor(ref maxCol, ref redCol, rumble);
+                        color = ColorUtil.GetTransitionedColor(ref maxCol, ref redCol, rumble);
                     }
                     else
                     {
                         DS4Color maxCol = new DS4Color(max, max, 0);
                         DS4Color redCol = new DS4Color(255, 0, 0);
-                        DS4Color tempCol = ColorUtil.getTransitionedColor(ref maxCol,
+                        DS4Color tempCol = ColorUtil.GetTransitionedColor(ref maxCol,
                             ref redCol, 39.6078f);
-                        color = ColorUtil.getTransitionedColor(ref color, ref tempCol,
+                        color = ColorUtil.GetTransitionedColor(ref color, ref tempCol,
                             device.LeftHeavySlowRumble);
                     }
                 }

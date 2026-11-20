@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Services.Slots
             InputDeviceCore? device = DeviceAt(slot);
             if (device == null) return false;
 
-            device.setRumble(rightLightFast, leftHeavySlow);
+            device.SetRumble(rightLightFast, leftHeavySlow);
             return true;
         }
 
@@ -34,7 +34,7 @@ namespace DS4Windows.Processing.Services.Slots
             InputDeviceCore? device = DeviceAt(slot);
             if (device == null) return false;
 
-            device.setRumble(device.RightLightFastRumble, strength);
+            device.SetRumble(device.RightLightFastRumble, strength);
             return true;
         }
 
@@ -43,7 +43,7 @@ namespace DS4Windows.Processing.Services.Slots
             InputDeviceCore? device = DeviceAt(slot);
             if (device == null) return false;
 
-            device.setRumble(strength, device.LeftHeavySlowRumble);
+            device.SetRumble(strength, device.LeftHeavySlowRumble);
             return true;
         }
 

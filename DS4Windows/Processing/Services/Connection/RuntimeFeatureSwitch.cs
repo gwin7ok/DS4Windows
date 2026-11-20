@@ -61,7 +61,7 @@ namespace DS4Windows.Processing.Services.Connection
         public DS4Controls GetActiveInputControl(int ind)
             => _activeInputProbe.GetActive(_slots.CurrentStates[ind], _slots.TouchPads[ind], _slots.Controllers[ind] != null);
 
-        // 旧 ControlService.setRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
+        // 旧 ControlService.SetRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
         public void SetRumble(byte heavyMotor, byte lightMotor, int deviceNum)
         {
             if (deviceNum < _controllerSlotLimit)

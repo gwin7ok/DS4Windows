@@ -120,9 +120,9 @@ namespace DS4Windows.Processing.Services.Conditioning
                 byte heavy = (byte)(int.Parse(r[0].ToString()) * 100 + int.Parse(r[1].ToString()) * 10 + int.Parse(r[2].ToString()));
                 byte light = (byte)(int.Parse(r[3].ToString()) * 100 + int.Parse(r[4].ToString()) * 10 + int.Parse(r[5].ToString()));
                 if (_profileSettings.RumbleSlot(device).InverseMotors)
-                    d!.setRumble(heavy, light); // 実行中は設定済み（null なら従来どおり NullReferenceException）
+                    d!.SetRumble(heavy, light); // 実行中は設定済み（null なら従来どおり NullReferenceException）
                 else
-                    d!.setRumble(light, heavy); // 実行中は設定済み（null なら従来どおり NullReferenceException）
+                    d!.SetRumble(light, heavy); // 実行中は設定済み（null なら従来どおり NullReferenceException）
             }
             else
             {

@@ -9,7 +9,7 @@ namespace DS4Windows.Core.Persistence
 {
     /// <summary>
     /// コントローラー固有設定（<c>ControllerConfigs.xml</c>）の保存・読込。
-    /// 旧: <c>BackingStore</c> の <c>createControllerConfigs</c>／<c>LoadControllerConfigsForDevice</c>／<c>SaveControllerConfigsForDevice</c>（移動のみ）。
+    /// 旧: <c>BackingStore</c> の <c>CreateControllerConfigs</c>／<c>LoadControllerConfigsForDevice</c>／<c>SaveControllerConfigsForDevice</c>（移動のみ）。
     /// </summary>
     public class ControllerConfigsXmlSerializer
     {
@@ -21,7 +21,7 @@ namespace DS4Windows.Core.Persistence
             this.store = store;
         }
 
-        public bool createControllerConfigs()
+        public bool CreateControllerConfigs()
         {
             bool saved = true;
             XmlDocument configXdoc = new XmlDocument();
@@ -50,7 +50,7 @@ namespace DS4Windows.Core.Persistence
             bool loaded = false;
 
             if (device == null) return false;
-            if (!File.Exists(store.m_controllerConfigs)) createControllerConfigs();
+            if (!File.Exists(store.m_controllerConfigs)) CreateControllerConfigs();
 
             try
             {
@@ -81,7 +81,7 @@ namespace DS4Windows.Core.Persistence
             bool saved = true;
 
             if (device == null) return false;
-            if (!File.Exists(store.m_controllerConfigs)) createControllerConfigs();
+            if (!File.Exists(store.m_controllerConfigs)) CreateControllerConfigs();
 
             try
             {
