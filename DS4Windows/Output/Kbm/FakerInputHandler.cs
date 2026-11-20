@@ -173,40 +173,7 @@ namespace DS4Windows.Output.Kbm
         /// Just use normal routine
         /// </summary>
         /// <param name="key"></param>
-        public override void PerformKeyPressAlt(uint key)
-        {
-            //Console.WriteLine("PerformKeyPressAlt {0}", key);
-            eventLock.EnterWriteLock();
-
-            if (key < MODIFIER_MASK)
-            {
-                KeyboardKey temp = (KeyboardKey)key;
-                if (!pressedKeys.Contains(temp) && pressedKeys.Count <= MAX_NORMAL_KEY_PRESSED)
-                {
-                    keyReport.KeyDown(temp);
-                    pressedKeys.Add(temp);
-                    syncKeyboard = true;
-                }
-            }
-            else if (key < MODIFIER_ENHANCED)
-            {
-                KeyboardModifier modifier = (KeyboardModifier)(key & ~MODIFIER_MASK);
-                if (!modifiers.Contains(modifier))
-                {
-                    keyReport.KeyDown(modifier);
-                    modifiers.Add(modifier);
-                    syncKeyboard = true;
-                }
-            }
-            else
-            {
-                EnhancedKey temp = (EnhancedKey)(key & ~MODIFIER_ENHANCED);
-                mediaKeyReport.KeyDown(temp);
-                syncEnhancedKeyboard = true;
-            }
-
-            eventLock.ExitWriteLock();
-        }
+        public override void PerformKeyPressAlt(uint key) => PerformKeyPress(key);
 
         public override void PerformKeyRelease(uint key)
         {
@@ -247,40 +214,7 @@ namespace DS4Windows.Output.Kbm
         /// Just use normal routine
         /// </summary>
         /// <param name="key"></param>
-        public override void PerformKeyReleaseAlt(uint key)
-        {
-            //Console.WriteLine("PerformKeyReleaseAlt {0}", key);
-            eventLock.EnterWriteLock();
-
-            if (key < MODIFIER_MASK)
-            {
-                KeyboardKey temp = (KeyboardKey)key;
-                if (pressedKeys.Contains(temp))
-                {
-                    keyReport.KeyUp(temp);
-                    pressedKeys.Remove(temp);
-                    syncKeyboard = true;
-                }
-            }
-            else if (key < MODIFIER_ENHANCED)
-            {
-                KeyboardModifier modifier = (KeyboardModifier)(key & ~MODIFIER_MASK);
-                if (modifiers.Contains(modifier))
-                {
-                    keyReport.KeyUp(modifier);
-                    modifiers.Remove(modifier);
-                    syncKeyboard = true;
-                }
-            }
-            else
-            {
-                EnhancedKey temp = (EnhancedKey)(key & ~MODIFIER_ENHANCED);
-                mediaKeyReport.KeyUp(temp);
-                syncEnhancedKeyboard = true;
-            }
-
-            eventLock.ExitWriteLock();
-        }
+        public override void PerformKeyReleaseAlt(uint key) => PerformKeyRelease(key);
 
         public override void PerformMouseButtonEvent(uint mouseButton)
         {
@@ -308,26 +242,7 @@ namespace DS4Windows.Output.Kbm
         /// </summary>
         /// <param name="mouseButton"></param>
         /// <param name="type"></param>
-        public override void PerformMouseButtonEventAlt(uint mouseButton, int type)
-        {
-            MouseButton temp = (MouseButton)mouseButton;
-            eventLock.EnterWriteLock();
-
-            //mouseReport.ResetMousePos();
-
-            if (!mouseReport.HeldButtons.Contains(temp))
-            {
-                mouseReport.ButtonDown(temp);
-                syncRelativeMouse = true;
-            }
-            else
-            {
-                mouseReport.ButtonUp(temp);
-                syncRelativeMouse = true;
-            }
-
-            eventLock.ExitWriteLock();
-        }
+        public override void PerformMouseButtonEventAlt(uint mouseButton, int type) => PerformMouseButtonEvent(mouseButton);
 
         /// <summary>
         /// No support for horizontal mouse wheel in vmulti

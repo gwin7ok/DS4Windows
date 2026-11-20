@@ -109,46 +109,25 @@ namespace DS4Windows.Output.Kbm
             SendInput(inputs, tempInput, (int)inputs * Marshal.SizeOf(tempInput[0]));
         }
 
-        public override void PerformMouseButtonEventAlt(uint mouseButton, int type)
-        {
-            INPUT[] tempInput = new INPUT[1];
-            ref INPUT temp = ref tempInput[0];
-            temp.Type = INPUT_MOUSE;
-            temp.Data.Mouse.ExtraInfo = IntPtr.Zero;
-            temp.Data.Mouse.Flags = mouseButton;
-            temp.Data.Mouse.MouseData = (uint)type;
-            temp.Data.Mouse.Time = 0;
-            temp.Data.Mouse.X = 0;
-            temp.Data.Mouse.Y = 0;
-            uint result = SendInput(1, tempInput, Marshal.SizeOf(tempInput[0]));
-        }
+        public override void PerformMouseButtonEventAlt(uint mouseButton, int type) => SendMouseButton(mouseButton, (uint)type);
 
-        public override void PerformMouseButtonPress(uint mouseButton)
-        {
-            INPUT[] tempInput = new INPUT[1];
-            ref INPUT temp = ref tempInput[0];
-            temp.Type = INPUT_MOUSE;
-            temp.Data.Mouse.ExtraInfo = IntPtr.Zero;
-            temp.Data.Mouse.Flags = mouseButton;
-            temp.Data.Mouse.MouseData = 0;
-            temp.Data.Mouse.Time = 0;
-            temp.Data.Mouse.X = 0;
-            temp.Data.Mouse.Y = 0;
-            uint result = SendInput(1, tempInput, Marshal.SizeOf(tempInput[0]));
-        }
+        public override void PerformMouseButtonPress(uint mouseButton) => SendMouseButton(mouseButton, 0);
 
-        public override void PerformMouseButtonRelease(uint mouseButton)
+        public override void PerformMouseButtonRelease(uint mouseButton) => SendMouseButton(mouseButton, 0);
+
+        // マウスのボタンのイベントを 1 件送る（flags はボタンの押す／離す、data はホイールなどの付加値）
+        private static void SendMouseButton(uint flags, uint data)
         {
             INPUT[] tempInput = new INPUT[1];
             ref INPUT temp = ref tempInput[0];
             temp.Type = INPUT_MOUSE;
             temp.Data.Mouse.ExtraInfo = IntPtr.Zero;
-            temp.Data.Mouse.Flags = mouseButton;
-            temp.Data.Mouse.MouseData = 0;
+            temp.Data.Mouse.Flags = flags;
+            temp.Data.Mouse.MouseData = data;
             temp.Data.Mouse.Time = 0;
             temp.Data.Mouse.X = 0;
             temp.Data.Mouse.Y = 0;
-            uint result = SendInput(1, tempInput, Marshal.SizeOf(tempInput[0]));
+            SendInput(1, tempInput, Marshal.SizeOf(tempInput[0]));
         }
 
         public override void PerformKeyPress(uint key)
