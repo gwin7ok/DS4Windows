@@ -26,9 +26,11 @@ namespace DS4Windows.Processing.Actions
 
         public DisconnectBTAction(SpecialAction sa, int deviceIndex, IControllerDisconnectPort port, IProfileSettingsService settings)
         {
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
+            ArgumentNullException.ThrowIfNull(sa);
+            _sa = sa;
             _deviceIndex = deviceIndex;
-            _port = port ?? throw new ArgumentNullException(nameof(port));
+            ArgumentNullException.ThrowIfNull(port);
+            _port = port;
             _keyReleaser = new TriggerButtonKeyReleaser(settings ?? throw new ArgumentNullException(nameof(settings)));
         }
 

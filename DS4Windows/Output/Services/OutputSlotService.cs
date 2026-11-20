@@ -34,9 +34,12 @@ namespace DS4Windows.Output.Services
 
         public OutputSlotService(IVirtualPadService virtualPad, IOutputSlotStore store, IOutputDeviceTypeState types)
         {
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _store = store ?? throw new ArgumentNullException(nameof(store));
-            _types = types ?? throw new ArgumentNullException(nameof(types));
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
+            ArgumentNullException.ThrowIfNull(store);
+            _store = store;
+            ArgumentNullException.ThrowIfNull(types);
+            _types = types;
         }
 
         /// <summary>

@@ -16,7 +16,8 @@ namespace DS4Windows.Composition.Startup
 
         public DriverStatusReporter(IEnvironmentService environment)
         {
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
         }
 
         public void RefreshAndLog()

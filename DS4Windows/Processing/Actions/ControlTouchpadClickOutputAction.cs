@@ -17,7 +17,8 @@ namespace DS4Windows.Processing.Actions
 
         public ControlTouchpadClickOutputAction(SpecialAction identity, DS4Controls source)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _source = source;
         }
 

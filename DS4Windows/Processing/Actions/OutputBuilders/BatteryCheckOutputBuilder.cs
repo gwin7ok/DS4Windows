@@ -12,7 +12,8 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public BatteryCheckOutputBuilder(IBatteryCheckPort batteryCheckPort, ISpecialActionRepository actionRepository = null)
         {
-            _batteryCheckPort = batteryCheckPort ?? throw new ArgumentNullException(nameof(batteryCheckPort));
+            ArgumentNullException.ThrowIfNull(batteryCheckPort);
+            _batteryCheckPort = batteryCheckPort;
             _actionRepository = actionRepository;
         }
 

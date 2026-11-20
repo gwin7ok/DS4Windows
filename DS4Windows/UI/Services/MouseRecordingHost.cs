@@ -16,8 +16,10 @@ namespace DS4Windows.UI.Services
 
         public MouseRecordingHost(IWindowSystem windowSystem, IMouseInputHook mouseHook)
         {
-            this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
-            this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            this.windowSystem = windowSystem;
+            ArgumentNullException.ThrowIfNull(mouseHook);
+            this.mouseHook = mouseHook;
         }
 
         public event Action<int, int> PointerMoved

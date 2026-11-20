@@ -21,12 +21,18 @@ namespace DS4Windows.UI.Services
             IRuntimeFeatureSwitch runtimeFeatures, IEnvironmentService environmentService,
             DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher, DS4Windows.UI.Abstractions.IDialogService dialogs)
         {
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
-            _uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
+            ArgumentNullException.ThrowIfNull(uiDispatcher);
+            _uiDispatcher = uiDispatcher;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(autoProfileService);
+            _autoProfileService = autoProfileService;
+            ArgumentNullException.ThrowIfNull(runtimeFeatures);
+            _runtimeFeatures = runtimeFeatures;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
         }
 
         public AutoProfilesViewModel Create(AutoProfileHolder autoProfileHolder, ProfileList profileList)

@@ -70,16 +70,22 @@ namespace DS4Windows.UI.ViewModels
             DS4Windows.UI.Abstractions.IImageResourceLookup imageResources = null)
         {
             this.imageResources = imageResources;
-            this.uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
+            ArgumentNullException.ThrowIfNull(uiDispatcher);
+            this.uiDispatcher = uiDispatcher;
             // Phase6-Step10-2-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
             // 置換前は、任意引数の null を AppHost/Global.*Instance で補っていた。さらに、コンストラクタ本体の
             // profileRepo（引数）が null のままだと NullReferenceException になる状態だった。
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
-            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            this.profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            this.appSettings = appSettings;
             this.profileListHolder = profileListHolder;
-            this.slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            this.lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            ArgumentNullException.ThrowIfNull(slots);
+            this.slots = slots;
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            this.lifecycle = lifecycle;
             lifecycle.ServiceStarted += ControllersChanged;
             lifecycle.PreServiceStop += ClearControllerList;
             slots.SlotChanged += Service_HotplugController;

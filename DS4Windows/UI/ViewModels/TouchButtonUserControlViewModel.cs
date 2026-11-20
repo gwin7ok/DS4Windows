@@ -49,7 +49,8 @@ namespace DS4Windows.UI.ViewModels
 
         public TouchButtonUserControlViewModel(int deviceIndex, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettingsService)
         {
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
             this.deviceIndex = deviceIndex;
         }
     }

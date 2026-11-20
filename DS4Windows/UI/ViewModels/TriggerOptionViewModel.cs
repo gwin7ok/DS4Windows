@@ -18,8 +18,10 @@ namespace DS4Windows.UI.ViewModels
 
         public TriggerOptionViewModel(TriggerItem item, IActionTriggerSource source)
         {
-            this.item = item ?? throw new ArgumentNullException(nameof(item));
-            this.source = source ?? throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(item);
+            this.item = item;
+            ArgumentNullException.ThrowIfNull(source);
+            this.source = source;
         }
 
         /// <summary>保存する名前。</summary>

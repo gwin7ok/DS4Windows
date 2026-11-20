@@ -26,13 +26,20 @@ namespace DS4Windows.Processing.Services.Connection
             ITouchpadToggleService touchpadToggle, IDeviceSlotState slots,
             IActiveInputProbe activeInputProbe, IDeviceRumbleService rumble, IEnvironmentService environmentService)
         {
-            _osc = osc ?? throw new ArgumentNullException(nameof(osc));
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
-            _hidHide = hidHide ?? throw new ArgumentNullException(nameof(hidHide));
-            _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _activeInputProbe = activeInputProbe ?? throw new ArgumentNullException(nameof(activeInputProbe));
-            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
+            ArgumentNullException.ThrowIfNull(osc);
+            _osc = osc;
+            ArgumentNullException.ThrowIfNull(udpMotion);
+            _udpMotion = udpMotion;
+            ArgumentNullException.ThrowIfNull(hidHide);
+            _hidHide = hidHide;
+            ArgumentNullException.ThrowIfNull(touchpadToggle);
+            _touchpadToggle = touchpadToggle;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(activeInputProbe);
+            _activeInputProbe = activeInputProbe;
+            ArgumentNullException.ThrowIfNull(rumble);
+            _rumble = rumble;
             _controllerSlotLimit = (environmentService ?? throw new ArgumentNullException(nameof(environmentService))).ControllerSlotLimit;
         }
 

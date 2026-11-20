@@ -19,9 +19,12 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public MacroRecordingState(IDeviceSlotState slotState, IMapping mapping, IInputReportProcessor inputReport)
         {
-            _slotState = slotState ?? throw new ArgumentNullException(nameof(slotState));
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            _inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
+            ArgumentNullException.ThrowIfNull(slotState);
+            _slotState = slotState;
+            ArgumentNullException.ThrowIfNull(mapping);
+            _mapping = mapping;
+            ArgumentNullException.ThrowIfNull(inputReport);
+            _inputReport = inputReport;
         }
 
         public bool IsRecording

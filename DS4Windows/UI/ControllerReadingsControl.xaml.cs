@@ -225,7 +225,8 @@ namespace DS4Windows.UI
 
         public void Initialize(DS4Windows.UI.Abstractions.IControllerReadingsFeed readingsSource)
         {
-            this.readingsSource = readingsSource ?? throw new ArgumentNullException(nameof(readingsSource));
+            ArgumentNullException.ThrowIfNull(readingsSource);
+            this.readingsSource = readingsSource;
         }
 
         public ControllerReadingsControl()

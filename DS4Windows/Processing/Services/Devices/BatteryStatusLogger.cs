@@ -30,7 +30,8 @@ namespace DS4Windows.Processing.Services.Devices
 
         public BatteryStatusLogger(IDeviceSlotState slots, TimeSpan interval)
         {
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
             _interval = interval;
         }
 

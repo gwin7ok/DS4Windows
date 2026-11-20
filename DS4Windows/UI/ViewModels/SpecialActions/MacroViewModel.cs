@@ -86,7 +86,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public MacroViewModel(ISpecialActionRepository specialActionRepository)
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             PlaybackOptions.PropertyChanged += OnPlaybackOptionsChanged;
         }
 

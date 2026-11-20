@@ -26,10 +26,14 @@ namespace DS4Windows.Core.Persistence
         public SpecialActionRepository(BackingStore config, IPathService pathService,
             DS4Windows.Core.Persistence.SpecialActionsXmlSerializer actionsXml, ISpecialActionRuntimeReset runtimeReset)
         {
-            _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
-            _runtimeReset = runtimeReset ?? throw new ArgumentNullException(nameof(runtimeReset));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(actionsXml);
+            _actionsXml = actionsXml;
+            ArgumentNullException.ThrowIfNull(runtimeReset);
+            _runtimeReset = runtimeReset;
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
         }
 
         private IPathService PathSvc => _pathService;

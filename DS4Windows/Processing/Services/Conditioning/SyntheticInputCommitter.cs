@@ -28,8 +28,10 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public SyntheticInputCommitter(SyntheticInputState syntheticInput, IVirtualKBM virtualKbm, Func<DateTime>? utcNow = null)
         {
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _virtualKbm = virtualKbm ?? throw new ArgumentNullException(nameof(virtualKbm));
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(virtualKbm);
+            _virtualKbm = virtualKbm;
             _utcNow = utcNow ?? (() => DateTime.UtcNow);
         }
 

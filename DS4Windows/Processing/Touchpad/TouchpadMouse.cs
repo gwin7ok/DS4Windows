@@ -85,10 +85,14 @@ namespace DS4Windows.Processing.Touchpad
             StickMotionState stickMotion, SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
             _tap = new TapClickDetector(deviceID, timeProvider);
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
             deviceNum = deviceID;
             dev = d;
             cursor = new MouseCursor(deviceNum, d.GyroMouseSensSettings, _profileSettings, _virtualKBM);

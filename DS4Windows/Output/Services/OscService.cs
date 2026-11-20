@@ -29,8 +29,10 @@ namespace DS4Windows.Output.Services
 
         public OscService(IAppSettingsService appSettings, IOscTransportFactory transportFactory)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _transportFactory = transportFactory ?? throw new ArgumentNullException(nameof(transportFactory));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(transportFactory);
+            _transportFactory = transportFactory;
             for (int i = 0; i < _oscState.Length; i++)
             {
                 _oscState[i] = new ControllerState();

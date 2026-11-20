@@ -48,11 +48,16 @@ namespace DS4Windows.Output.Services
         public UdpMotionService(IAppSettingsService appSettings, IInputDeviceRegistry deviceRegistry,
             IUdpMotionServerFactory serverFactory, IDeviceSlotState slots, IEventThreadDispatcher eventThread)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
-            _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(deviceRegistry);
+            _deviceRegistry = deviceRegistry;
+            ArgumentNullException.ThrowIfNull(serverFactory);
+            _serverFactory = serverFactory;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(eventThread);
+            _eventThread = eventThread;
 
             // 旧 ControlService のコンストラクターにあった購読
             _appSettings.UDPServerSmoothingMincutoffChanged += ChangeUdpSmoothingAttrs;

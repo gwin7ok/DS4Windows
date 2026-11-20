@@ -11,7 +11,8 @@ namespace DS4Windows.UI.Services
 
         public EditorLayoutSettingsAdapter(IAppSettingsService settings)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            ArgumentNullException.ThrowIfNull(settings);
+            _settings = settings;
         }
 
         public string UseLang => _settings.UseLang;

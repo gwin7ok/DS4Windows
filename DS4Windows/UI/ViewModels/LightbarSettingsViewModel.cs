@@ -20,9 +20,12 @@ namespace DS4Windows.UI.ViewModels
         public LightbarSettingsViewModel(LightbarSlotSettings lightbar, LightbarOverrides overrides,
             IEnvironmentService environmentService, int targetDevice)
         {
-            this.lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
-            this.overrides = overrides ?? throw new ArgumentNullException(nameof(overrides));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(lightbar);
+            this.lightbar = lightbar;
+            ArgumentNullException.ThrowIfNull(overrides);
+            this.overrides = overrides;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
             this.targetDevice = targetDevice;
 
             // 自分の値が変わったときの連動（派生する表示用プロパティの再通知）。値を設定した直後に同期して実行する

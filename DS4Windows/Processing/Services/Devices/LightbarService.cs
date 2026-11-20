@@ -50,9 +50,12 @@ namespace DS4Windows.Processing.Services.Devices
 
         public LightbarService(IProfileSettingsService profileSettings, LightbarOverrides overrides, TimeProvider time)
         {
-            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            this.overrides = overrides ?? throw new ArgumentNullException(nameof(overrides));
-            this.time = time ?? throw new ArgumentNullException(nameof(time));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            this.profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(overrides);
+            this.overrides = overrides;
+            ArgumentNullException.ThrowIfNull(time);
+            this.time = time;
             DateTime start = UtcNow();
             for (int i = 0; i < oldnow.Length; i++) oldnow[i] = start;
         }

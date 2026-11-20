@@ -66,7 +66,8 @@ namespace DS4Windows.UI
 
         public AssignmentEditor(AssignmentEditorSession session)
         {
-            this.session = session ?? throw new ArgumentNullException(nameof(session));
+            ArgumentNullException.ThrowIfNull(session);
+            this.session = session;
             InitializeComponent();
             focusWindowTarget.Picker = session.WindowPicker;
 

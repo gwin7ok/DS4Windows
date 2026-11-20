@@ -114,11 +114,15 @@ namespace DS4Windows.UI
             TrayAppearanceController trayAppearance,
             ProfileSelectionCoordinator profileSelection)
         {
-            this.trayAppearance = trayAppearance ?? throw new ArgumentNullException(nameof(trayAppearance));
-            this.profileSelection = profileSelection ?? throw new ArgumentNullException(nameof(profileSelection));
-            this.updateCheckPolicy = updateCheckPolicy ?? throw new ArgumentNullException(nameof(updateCheckPolicy));
+            ArgumentNullException.ThrowIfNull(trayAppearance);
+            this.trayAppearance = trayAppearance;
+            ArgumentNullException.ThrowIfNull(profileSelection);
+            this.profileSelection = profileSelection;
+            ArgumentNullException.ThrowIfNull(updateCheckPolicy);
+            this.updateCheckPolicy = updateCheckPolicy;
             // Phase14b-Step16（決定 D11）: テーマ・言語の切り替え（旧: Application.Current as App の直接呼び出し）
-            this.themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
+            ArgumentNullException.ThrowIfNull(themeLanguage);
+            this.themeLanguage = themeLanguage;
             // XAML初期化前にウィンドウサイズを設定（WindowLayoutDefaults から）
             Width = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
             Height = WindowLayoutDefaults.MAIN_WINDOW_HEIGHT;
@@ -126,12 +130,15 @@ namespace DS4Windows.UI
             InitializeComponent();
             // Phase14b-Step16（D11）: XAML の資源 ImgLocPaths（画像のパス）に、テーマの切り替えの通知元を渡す（旧: 自分のコンストラクターで App.ThemeChanged を購読）
             (TryFindResource("ImgLocPaths") as ImageLocationPaths)?.AttachThemeSource(themeLanguage);
-            mainWinVM = mainWindowsViewModel ?? throw new ArgumentNullException(nameof(mainWindowsViewModel));
+            ArgumentNullException.ThrowIfNull(mainWindowsViewModel);
+            mainWinVM = mainWindowsViewModel;
             DataContext = mainWinVM;
             mainWinVM.Navigator = new MainWindowNavigator(this);
-            this.layout = layout ?? throw new ArgumentNullException(nameof(layout));
+            ArgumentNullException.ThrowIfNull(layout);
+            this.layout = layout;
             profileListHolder = mainWinVM.CreateProfileList();
-            this.ipcDispatcher = ipcDispatcher ?? throw new ArgumentNullException(nameof(ipcDispatcher));
+            ArgumentNullException.ThrowIfNull(ipcDispatcher);
+            this.ipcDispatcher = ipcDispatcher;
 
             // Initialize log settings ComboBox
             logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
@@ -140,7 +147,8 @@ namespace DS4Windows.UI
             // Phase7-Step5 W5: 旧 AppHost 解決の失敗時の new MainWindowsViewModel(...) のフォールバックは削除した（必須引数）
 
             // Phase6-Step10-1-5（決定D7＝A）: ログ設定の反映の窓口（App が LoggerHolder の生成直後に接続する）
-            _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
+            ArgumentNullException.ThrowIfNull(viewModelFactory);
+            _viewModelFactory = viewModelFactory;
             settingsWrapVM = viewModelFactory.CreateSettingsViewModel();
             settingsTab.DataContext = settingsWrapVM;
             // Phase6-Step10-1-4: XAML から生成される LanguagePackControl へ、保持済みのサービスを渡す（Pure DI）。
@@ -210,7 +218,8 @@ namespace DS4Windows.UI
 
             // [Phase 5 Step 13-9] 二重実体化防止: 注入済み _autoProfileService を直接利用するため撤去
             // Phase6-Step10-2-3: AutoProfiles の Initialize に渡すため、解決を前へ移した（解決先は同じ）
-            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
+            ArgumentNullException.ThrowIfNull(autoProfileService);
+            _autoProfileService = autoProfileService;
 
             // Phase6-Step10-2-3: XAML から生成されるコントロールへ、保持済みのサービスを渡す（AutoProfileHolder を読む前に呼ぶ）
             string autoProfilesFile = mainWinVM.AppDataPath + "\\Auto Profiles.xml";

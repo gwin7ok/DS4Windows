@@ -17,7 +17,8 @@ namespace DS4Windows.Core.Persistence
 
         public ProfilePresets(BackingStore store)
         {
-            this.store = store ?? throw new ArgumentNullException(nameof(store));
+            ArgumentNullException.ThrowIfNull(store);
+            this.store = store;
         }
 
         private void PrepareBlankingProfile(int device, IProfileLoadTarget control, out bool xinputPlug, out bool xinputStatus, bool xinputChange = true)

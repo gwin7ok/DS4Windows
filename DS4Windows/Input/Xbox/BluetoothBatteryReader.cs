@@ -34,7 +34,8 @@ namespace DS4Windows.Input.Xbox
 
         public BluetoothBatteryReader(IGattBatteryFetcher fetcher, TimeSpan interval)
         {
-            this.fetcher = fetcher ?? throw new ArgumentNullException(nameof(fetcher));
+            ArgumentNullException.ThrowIfNull(fetcher);
+            this.fetcher = fetcher;
             intervalTicks = (long)(interval.TotalSeconds * Stopwatch.Frequency);
         }
 

@@ -22,10 +22,14 @@ namespace DS4Windows.UI.Services
             IAppearanceSettingsService appearanceSettings, IUiThemeAndLanguage themeLanguage,
             IAppSettingsService appSettings)
         {
-            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
-            _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            _themeLanguage = themeLanguage ?? throw new ArgumentNullException(nameof(themeLanguage));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            ArgumentNullException.ThrowIfNull(notificationService);
+            _notificationService = notificationService;
+            ArgumentNullException.ThrowIfNull(appearanceSettings);
+            _appearanceSettings = appearanceSettings;
+            ArgumentNullException.ThrowIfNull(themeLanguage);
+            _themeLanguage = themeLanguage;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
         }
 
         /// <summary>通知サービスのイベントを購読する（画面のイベント登録の時点で 1 回）。</summary>

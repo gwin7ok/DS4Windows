@@ -16,9 +16,12 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         public ProfileLoadContext(BackingStore store, XmlDocument xdoc, string rootName, int device, IProfileLoadTarget control,
             LightbarSettingInfo lightbarSettings, LightbarDS4WinInfo lightInfo)
         {
-            Store = store ?? throw new ArgumentNullException(nameof(store));
-            Xdoc = xdoc ?? throw new ArgumentNullException(nameof(xdoc));
-            RootName = rootName ?? throw new ArgumentNullException(nameof(rootName));
+            ArgumentNullException.ThrowIfNull(store);
+            Store = store;
+            ArgumentNullException.ThrowIfNull(xdoc);
+            Xdoc = xdoc;
+            ArgumentNullException.ThrowIfNull(rootName);
+            RootName = rootName;
             Device = device;
             Control = control;
             LightbarSettings = lightbarSettings;

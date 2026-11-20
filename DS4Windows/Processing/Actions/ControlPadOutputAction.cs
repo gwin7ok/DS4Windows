@@ -18,7 +18,8 @@ namespace DS4Windows.Processing.Actions
 
         public ControlPadOutputAction(SpecialAction identity, PadBindingValues values)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _values = values;
         }
 

@@ -30,8 +30,10 @@ namespace DS4Windows.Processing.Services.Connection
         public LatencyMonitor(DS4Windows.Core.Model.LightbarOverrides lightbar, IAppSettingsService appSettings, IProfileSettingsService profileSettings)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             for (int i = 0; i < _tempStrings.Length; i++)
             {
                 _tempStrings[i] = string.Empty;

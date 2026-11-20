@@ -19,8 +19,10 @@ namespace DS4Windows.UI.Services
 
         public AutoProfileRunner(IAutoProfileService autoProfileService, IControllerSlotQuery slots)
         {
-            this.autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            this.slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            ArgumentNullException.ThrowIfNull(autoProfileService);
+            this.autoProfileService = autoProfileService;
+            ArgumentNullException.ThrowIfNull(slots);
+            this.slots = slots;
             timer = new System.Timers.Timer { Interval = 1000, AutoReset = false };
         }
 

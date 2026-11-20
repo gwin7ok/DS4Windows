@@ -21,11 +21,16 @@ namespace DS4Windows.Processing.Services.Conditioning
         public TouchpadMouseFactory(IProfileSettingsService profileSettings, IVirtualKBM virtualKBM, StickMotionState stickMotion,
             SyntheticInputState syntheticInput, TimeProvider timeProvider)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _timeProvider = timeProvider;
         }
 
         public TouchpadMouse Create(int deviceIndex, InputDeviceCore device)

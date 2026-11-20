@@ -20,7 +20,8 @@ namespace DS4Windows.UI.ViewModels
 
         public ActionTypeEditorSet(IReadOnlyDictionary<SpecialAction.ActionTypeId, IActionTypeEditor> editors)
         {
-            this.editors = editors ?? throw new ArgumentNullException(nameof(editors));
+            ArgumentNullException.ThrowIfNull(editors);
+            this.editors = editors;
         }
 
         /// <summary>保存済みの SA を、種別に対応する入力へ読み込む。</summary>

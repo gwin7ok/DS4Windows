@@ -34,8 +34,10 @@ namespace DS4Windows.Processing.Touchpad
 
         public MouseWheel(int deviceNum, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
             deviceNumber = deviceNum;
         }
 

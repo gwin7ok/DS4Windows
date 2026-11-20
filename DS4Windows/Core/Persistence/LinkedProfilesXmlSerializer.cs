@@ -22,7 +22,8 @@ namespace DS4Windows.Core.Persistence
 
         public LinkedProfilesXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
         {
-            this.store = store ?? throw new ArgumentNullException(nameof(store));
+            ArgumentNullException.ThrowIfNull(store);
+            this.store = store;
             profileIdentity = profileIdentityService;
         }
 

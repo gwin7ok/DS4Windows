@@ -23,9 +23,11 @@ namespace DS4Windows.Processing.Actions
         /// <param name="actionRepository">ログの「ActionEntries」用。省略可（テスト）。</param>
         public GyroCalibrateAction(SpecialAction sa, int deviceIndex, IGyroCalibrationPort port, int actionIndex, ISpecialActionRepository actionRepository)
         {
-            _sa = sa ?? throw new ArgumentNullException(nameof(sa));
+            ArgumentNullException.ThrowIfNull(sa);
+            _sa = sa;
             _deviceIndex = deviceIndex;
-            _port = port ?? throw new ArgumentNullException(nameof(port));
+            ArgumentNullException.ThrowIfNull(port);
+            _port = port;
             _actionIndex = actionIndex;
             _actionRepository = actionRepository;
         }

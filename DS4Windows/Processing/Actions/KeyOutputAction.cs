@@ -46,8 +46,10 @@ namespace DS4Windows.Processing.Actions
         {
             _index = index;
             _actionRepository = actionRepository;
-            _sa = identity ?? throw new ArgumentNullException(nameof(identity));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(identity);
+            _sa = identity;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             _keyAction = new KeyAction(identity, -1, values.LogicalKey, values.ScanCode, manager, controllers);
             _logicalKey = values.LogicalKey;
             _toggle = values.Toggle;

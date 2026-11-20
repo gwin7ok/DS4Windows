@@ -15,9 +15,12 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public KeyOutputBuilder(IProfileSettingsService profileSettings, IManagedActionManager manager, IKeyButtonControllerRegistry controllers, ISpecialActionRepository actionRepository = null)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _controllers = controllers ?? throw new ArgumentNullException(nameof(controllers));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
+            ArgumentNullException.ThrowIfNull(controllers);
+            _controllers = controllers;
             _actionRepository = actionRepository;
         }
 

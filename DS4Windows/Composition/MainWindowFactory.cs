@@ -22,7 +22,8 @@ namespace DS4Windows.Composition
 
         public MainWindowFactory(IServiceProvider services)
         {
-            _services = services ?? throw new ArgumentNullException(nameof(services));
+            ArgumentNullException.ThrowIfNull(services);
+            _services = services;
         }
 
         public MainWindow Create(ArgumentParser parser)

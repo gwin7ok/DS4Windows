@@ -23,7 +23,8 @@ namespace DS4Windows.Input.Devices
         public ProtocolDevice(IDeviceProtocol protocol, IHidTransport hidDevice, string displayName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4)
             : base(hidDevice, displayName, featureSet)
         {
-            this.protocol = protocol ?? throw new ArgumentNullException(nameof(protocol));
+            ArgumentNullException.ThrowIfNull(protocol);
+            this.protocol = protocol;
             synced = true;
         }
 

@@ -54,7 +54,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public LoadProfileViewModel(ProfileList profileList, ISpecialActionRepository specialActionRepository)
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             this.profileList = profileList;
 
             ProfileIndexChanged += LoadProfileViewModel_ProfileIndexChanged;

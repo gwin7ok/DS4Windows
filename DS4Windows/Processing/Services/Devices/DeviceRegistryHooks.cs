@@ -24,11 +24,16 @@ namespace DS4Windows.Processing.Services.Devices
         public DeviceRegistryHooks(IInputDeviceRegistry deviceRegistry, IInputDeviceModuleRegistry deviceModules, IAppSettingsService appSettings,
             IElevatedProcessLauncher elevatedProcessLauncher, IPathService pathService)
         {
-            _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
-            _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _elevatedProcessLauncher = elevatedProcessLauncher ?? throw new ArgumentNullException(nameof(elevatedProcessLauncher));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(deviceRegistry);
+            _deviceRegistry = deviceRegistry;
+            ArgumentNullException.ThrowIfNull(deviceModules);
+            _deviceModules = deviceModules;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(elevatedProcessLauncher);
+            _elevatedProcessLauncher = elevatedProcessLauncher;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
         }
 
         public void Attach()

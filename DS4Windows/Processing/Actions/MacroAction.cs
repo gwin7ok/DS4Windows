@@ -37,14 +37,16 @@ namespace DS4Windows.Processing.Actions
             _logTrigger = true;
             _actionIndex = actionIndex;
             _actionRepository = actionRepository;
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
         }
 
         public MacroAction(SpecialAction sa, int deviceIndex, IMacroPlayer macroPlayer)
         {
             this.sa = sa;
             this.deviceIndex = deviceIndex;
-            this.macroPlayer = macroPlayer ?? throw new ArgumentNullException(nameof(macroPlayer));
+            ArgumentNullException.ThrowIfNull(macroPlayer);
+            this.macroPlayer = macroPlayer;
         }
 
         public string Id => sa?.name ?? "MacroAction";

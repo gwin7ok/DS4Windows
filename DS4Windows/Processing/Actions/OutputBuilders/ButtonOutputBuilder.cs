@@ -10,7 +10,8 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public ButtonOutputBuilder(IManagedActionManager manager)
         {
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
         }
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.Button;

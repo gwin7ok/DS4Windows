@@ -36,7 +36,8 @@ namespace DS4Windows.Processing.Actions
         public TriggerInput(int device, IProfileSettingsService profileSettings, Func<DateTime> utcNow = null, Func<long> tickCount64 = null)
         {
             _device = device;
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             _utcNow = utcNow ?? (() => DateTime.UtcNow);
             _tickCount64 = tickCount64 ?? (() => Environment.TickCount64);
             Delay = new DelayClock();

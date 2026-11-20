@@ -38,7 +38,8 @@ namespace DS4Windows.UI
             InitializeComponent();
             moonlightDocLink.NavigateUri = new Uri(ReleaseSource.MoonlightDocPageUri);
 
-            deviceOptsVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            deviceOptsVM = viewModel;
 
             devOptionsDockPanel.DataContext = deviceOptsVM;
             deviceOptsVM.ControllerSelectedIndexChanged += ChangeActiveDeviceTab;

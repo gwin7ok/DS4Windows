@@ -19,9 +19,12 @@ namespace DS4Windows.Processing.Services.Slots
         public AppliedProfileRecorder(IProfileRepository profileRepository, IProfileSettingsService profileSettings,
             IDeviceStateService deviceStateService, IDeviceSlotState slots)
         {
-            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
+            ArgumentNullException.ThrowIfNull(profileRepository);
+            _profileRepository = profileRepository;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(deviceStateService);
+            _deviceStateService = deviceStateService;
             _ds4Controllers = (slots ?? throw new ArgumentNullException(nameof(slots))).Controllers;
         }
 

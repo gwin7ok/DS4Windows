@@ -39,7 +39,8 @@ namespace DS4Windows.Core.Persistence
 
         public ProfileIdentityService(IPathService pathService)
         {
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
         }
 
         private sealed class Entry

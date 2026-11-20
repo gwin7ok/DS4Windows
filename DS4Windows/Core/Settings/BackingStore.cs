@@ -427,7 +427,8 @@ namespace DS4Windows.Core.Settings
 
         public BackingStore(DS4Windows.Core.Abstractions.IEnvironmentService environmentService)
         {
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
             ds4controlSettings = new ControlSettingsGroup[ControllerLimits.TestProfileItemCount];
             for (int i = 0; i < gyroSlots.Length; i++) gyroSlots[i] = new GyroSlotSettings(i, environmentService);
             for (int i = 0; i < sixAxisSlots.Length; i++) sixAxisSlots[i] = new SixAxisSlotSettings(i);

@@ -44,7 +44,8 @@ namespace DS4Windows.UI
         public UpdaterWindow(string newversion, Func<bool> isAdministrator,
             UpdaterWindowViewModel viewModel)
         {
-            _isAdministrator = isAdministrator ?? throw new ArgumentNullException(nameof(isAdministrator));
+            ArgumentNullException.ThrowIfNull(isAdministrator);
+            _isAdministrator = isAdministrator;
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
 
             InitCommands();

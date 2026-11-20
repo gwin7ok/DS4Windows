@@ -26,10 +26,14 @@ namespace DS4Windows.Output.Services
         public OutputKbmInitializer(IStartupArguments startupArguments, IVirtualKBM virtualKBM, IVirtualKBMLifecycle kbmLifecycle,
             IProfileSettingsService profileSettings)
         {
-            _startupArguments = startupArguments ?? throw new ArgumentNullException(nameof(startupArguments));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _kbmLifecycle = kbmLifecycle ?? throw new ArgumentNullException(nameof(kbmLifecycle));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(startupArguments);
+            _startupArguments = startupArguments;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
+            ArgumentNullException.ThrowIfNull(kbmLifecycle);
+            _kbmLifecycle = kbmLifecycle;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         // 起動引数が設定されていない場合（引数なしの CreateHost()、テスト）は、従来どおり空のパーサー（既定の出力方式）

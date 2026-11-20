@@ -77,7 +77,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public LaunchProgramViewModel(ISpecialActionRepository specialActionRepository, DS4Windows.UI.Abstractions.IDialogService dialogs = null)
         {
             this.dialogs = dialogs;
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             FilepathChanged += LaunchProgramViewModel_FilepathChanged;
         }
 

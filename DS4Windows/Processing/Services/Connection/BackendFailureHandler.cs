@@ -19,9 +19,12 @@ namespace DS4Windows.Processing.Services.Connection
 
         public BackendFailureHandler(IVirtualPadService virtualPad, IEventThreadDispatcher eventThread, IServiceLifecycle lifecycle)
         {
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
+            ArgumentNullException.ThrowIfNull(eventThread);
+            _eventThread = eventThread;
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            _lifecycle = lifecycle;
         }
 
         public void Attach()

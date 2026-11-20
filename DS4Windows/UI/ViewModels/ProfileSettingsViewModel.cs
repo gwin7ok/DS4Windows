@@ -170,13 +170,19 @@ namespace DS4Windows.UI.ViewModels
             if (lightbar == null) throw new System.ArgumentNullException(nameof(lightbar));
             this.device = device;
             this.targetDevice = targetDevice;
-            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            this.profileSettings = profileSettings;
             this.loadTarget = loadTarget;
-            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            this.presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            this.outputSlotService = outputSlotService;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            this.profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(presetLoader);
+            this.presetLoader = presetLoader;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(pathService);
+            this.pathService = pathService;
             // Phase6-Step7b: 実機を使う機能（ランブルテスト、校正、入力ハイライト等）の対象。
             // 実機なし（-1）の場合は、プロファイル一覧から開いたときの従来動作（コントローラー0）を維持する
             funcDevNum = HasTargetDevice ? targetDevice : 0;

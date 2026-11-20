@@ -30,8 +30,10 @@ namespace DS4Windows.Processing.Actions
 
         public TriggerDispatchEngine(IActionRegistry registry, IManagedActionManager manager, IVirtualKBM virtualKbm)
         {
-            _registry = registry ?? throw new ArgumentNullException(nameof(registry));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(registry);
+            _registry = registry;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
             _virtualKbm = virtualKbm; // null でもよい（出力アクションが OutputHandler を使えないだけ）
 
             for (int device = 0; device < _devices.Length; device++)

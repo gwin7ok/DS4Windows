@@ -17,7 +17,8 @@ namespace DS4Windows.UI.ViewModels
 
         public DeviceFamilyPanelModel(DeviceOptionsBase familyOptions, IReadOnlyList<ControllerSetting> controllerSettings)
         {
-            this.familyOptions = familyOptions ?? throw new ArgumentNullException(nameof(familyOptions));
+            ArgumentNullException.ThrowIfNull(familyOptions);
+            this.familyOptions = familyOptions;
             Items = familyOptions.Settings.Skip(1)
                 .Concat(controllerSettings ?? Array.Empty<ControllerSetting>())
                 .Where(s => s.Ui != null)

@@ -79,15 +79,24 @@ namespace DS4Windows.Processing.Services.Connection
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _lightbarService = lightbarService ?? throw new System.ArgumentNullException(nameof(lightbarService));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _deviceConnector = deviceConnector ?? throw new ArgumentNullException(nameof(deviceConnector));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(deviceRegistry);
+            _deviceRegistry = deviceRegistry;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
+            ArgumentNullException.ThrowIfNull(latencyMonitor);
+            _latencyMonitor = latencyMonitor;
+            ArgumentNullException.ThrowIfNull(deviceConnector);
+            _deviceConnector = deviceConnector;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(eventThread);
+            _eventThread = eventThread;
+            ArgumentNullException.ThrowIfNull(outputs);
+            _outputs = outputs;
             _controllerSlotLimit = (environmentService ?? throw new ArgumentNullException(nameof(environmentService))).ControllerSlotLimit;
         }
 

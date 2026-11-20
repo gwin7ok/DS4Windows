@@ -140,8 +140,10 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public CheckBatteryViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, ISpecialActionRepository specialActionRepository, IEnvironmentService environmentService)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
         }
 
         public void SaveAction(SpecialAction action, bool edit = false)

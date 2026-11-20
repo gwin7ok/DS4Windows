@@ -25,9 +25,12 @@ namespace DS4Windows.Processing.Services.Conditioning
         public SyntheticDispatcherService(SyntheticInputState syntheticInput, OutputKBMHandlerAdapter handlerOwner,
             IProfileSettingsService profileSettings)
         {
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _handlerOwner = handlerOwner ?? throw new ArgumentNullException(nameof(handlerOwner));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(handlerOwner);
+            _handlerOwner = handlerOwner;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public uint ResolveNativeKey(ushort kvpKey)

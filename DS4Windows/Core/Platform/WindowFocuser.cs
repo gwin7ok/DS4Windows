@@ -23,7 +23,8 @@ namespace DS4Windows.Core.Platform
 
         public WindowFocuser(IWindowSystem windowSystem)
         {
-            this.windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            this.windowSystem = windowSystem;
         }
 
         public WindowFocusResult Focus(WindowTargetMatcher target, bool centerCursor = false)

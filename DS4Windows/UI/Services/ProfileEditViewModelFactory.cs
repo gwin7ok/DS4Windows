@@ -42,18 +42,30 @@ namespace DS4Windows.UI.Services
             IDialogService dialogs,
             DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {
-            _uiDispatcher = uiDispatcher ?? throw new ArgumentNullException(nameof(uiDispatcher));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            _presetLoader = presetLoader ?? throw new ArgumentNullException(nameof(presetLoader));
-            _actionRepo = actionRepo ?? throw new ArgumentNullException(nameof(actionRepo));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _macroRecording = macroRecording ?? throw new ArgumentNullException(nameof(macroRecording));
-            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
-            _lightbar = lightbar ?? throw new ArgumentNullException(nameof(lightbar));
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            ArgumentNullException.ThrowIfNull(uiDispatcher);
+            _uiDispatcher = uiDispatcher;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            _profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(presetLoader);
+            _presetLoader = presetLoader;
+            ArgumentNullException.ThrowIfNull(actionRepo);
+            _actionRepo = actionRepo;
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            _outputSlotService = outputSlotService;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(macroRecording);
+            _macroRecording = macroRecording;
+            ArgumentNullException.ThrowIfNull(loadTarget);
+            _loadTarget = loadTarget;
+            ArgumentNullException.ThrowIfNull(lightbar);
+            _lightbar = lightbar;
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
         }
 
         public PresetOptionViewModel CreatePresetOptionViewModel() => new PresetOptionViewModel(_presetLoader, _loadTarget);

@@ -18,8 +18,10 @@ namespace DS4Windows.UI.ViewModels
 
         public TouchpadSettingsViewModel(TouchpadSlotSettings touchpad, IEnvironmentService environmentService)
         {
-            this.touchpad = touchpad ?? throw new ArgumentNullException(nameof(touchpad));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(touchpad);
+            this.touchpad = touchpad;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
         }
 
         public bool UsingMinViGEm173333 => environmentService.IsUsingMinViGEm117333();

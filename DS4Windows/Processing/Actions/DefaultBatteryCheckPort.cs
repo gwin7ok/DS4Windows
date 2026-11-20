@@ -23,8 +23,10 @@ namespace DS4Windows.Processing.Actions
         public DefaultBatteryCheckPort(DS4Windows.Core.Model.LightbarOverrides lightbar, IDeviceStateAccessor deviceStateAccessor, IDeviceBatteryText batteryText)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
-            _batteryText = batteryText ?? throw new ArgumentNullException(nameof(batteryText));
+            ArgumentNullException.ThrowIfNull(deviceStateAccessor);
+            _deviceStateAccessor = deviceStateAccessor;
+            ArgumentNullException.ThrowIfNull(batteryText);
+            _batteryText = batteryText;
         }
 
         private InputDeviceCore Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);

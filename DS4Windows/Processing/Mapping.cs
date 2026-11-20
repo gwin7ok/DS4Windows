@@ -107,22 +107,36 @@ namespace DS4Windows.Processing
             DS4Windows.Processing.Abstractions.IProfileActionProvider profileActionProvider)
         {
             // Phase13-Step5b: 旧 MapCustom の ControlService 引数（逆依存）の代わりに、必要な 3 つの窓口をコンストラクターで受ける
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(profileActionProvider);
+            _profileActionProvider = profileActionProvider;
 
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
-            _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
+            ArgumentNullException.ThrowIfNull(macroRuntime);
+            _macroRuntime = macroRuntime;
             if (stickMotion == null) throw new ArgumentNullException(nameof(stickMotion));
-            this.profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            this.VirtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _macroPlayback = macroPlayback ?? throw new ArgumentNullException(nameof(macroPlayback));
-            _inputCleanup = inputCleanup ?? throw new ArgumentNullException(nameof(inputCleanup));
-            _engine = triggerEngine ?? throw new ArgumentNullException(nameof(triggerEngine));
-            _mouseConversion = mouseConversion ?? throw new ArgumentNullException(nameof(mouseConversion));
-            _curveStage = curveStage ?? throw new ArgumentNullException(nameof(curveStage));
-            _controlActivityReader = controlActivityReader ?? throw new ArgumentNullException(nameof(controlActivityReader));
-            _syntheticCommitter = syntheticCommitter ?? throw new ArgumentNullException(nameof(syntheticCommitter));
-            _twoStageTrigger = twoStageTrigger ?? throw new ArgumentNullException(nameof(twoStageTrigger));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            this.profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            this.VirtualKBM = virtualKBM;
+            ArgumentNullException.ThrowIfNull(macroPlayback);
+            _macroPlayback = macroPlayback;
+            ArgumentNullException.ThrowIfNull(inputCleanup);
+            _inputCleanup = inputCleanup;
+            ArgumentNullException.ThrowIfNull(triggerEngine);
+            _engine = triggerEngine;
+            ArgumentNullException.ThrowIfNull(mouseConversion);
+            _mouseConversion = mouseConversion;
+            ArgumentNullException.ThrowIfNull(curveStage);
+            _curveStage = curveStage;
+            ArgumentNullException.ThrowIfNull(controlActivityReader);
+            _controlActivityReader = controlActivityReader;
+            ArgumentNullException.ThrowIfNull(syntheticCommitter);
+            _syntheticCommitter = syntheticCommitter;
+            ArgumentNullException.ThrowIfNull(twoStageTrigger);
+            _twoStageTrigger = twoStageTrigger;
 
             _triggerInputs = new DS4Windows.Processing.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Processing.Actions.FrameOutput[ControllerLimits.MaxControllerCount];

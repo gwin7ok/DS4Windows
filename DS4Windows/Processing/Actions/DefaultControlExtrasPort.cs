@@ -25,10 +25,14 @@ namespace DS4Windows.Processing.Actions
         public DefaultControlExtrasPort(DS4Windows.Core.Model.LightbarOverrides lightbar, IDeviceStateAccessor devices, IDeviceRumbleService rumble, IEnvironmentService environment, IProfileSettingsService profileSettings)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            _devices = devices ?? throw new ArgumentNullException(nameof(devices));
-            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(devices);
+            _devices = devices;
+            ArgumentNullException.ThrowIfNull(rumble);
+            _rumble = rumble;
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         private static bool InRange(int deviceIndex) => deviceIndex >= 0 && deviceIndex < DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;   // 旧 DS4LightBar.forcelight.Length（同じ値）

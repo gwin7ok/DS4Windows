@@ -21,10 +21,14 @@ namespace DS4Windows.Processing.Services.Slots
         public ControllerReadingsSource(IDeviceSlotState slotState, IMapping mapping,
             IProfileSettingsService profileSettings, IInputReportProcessor inputReport)
         {
-            _slotState = slotState ?? throw new ArgumentNullException(nameof(slotState));
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
+            ArgumentNullException.ThrowIfNull(slotState);
+            _slotState = slotState;
+            ArgumentNullException.ThrowIfNull(mapping);
+            _mapping = mapping;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(inputReport);
+            _inputReport = inputReport;
         }
 
         public bool IsMeasuringProcessingDelay

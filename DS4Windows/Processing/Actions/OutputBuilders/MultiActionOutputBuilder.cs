@@ -10,7 +10,8 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public MultiActionOutputBuilder(IMacroStringPlayer macroStringPlayer)
         {
-            _macroStringPlayer = macroStringPlayer ?? throw new ArgumentNullException(nameof(macroStringPlayer));
+            ArgumentNullException.ThrowIfNull(macroStringPlayer);
+            _macroStringPlayer = macroStringPlayer;
         }
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.MultiAction;

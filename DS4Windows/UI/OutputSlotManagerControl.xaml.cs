@@ -41,7 +41,8 @@ namespace DS4Windows.UI
         // ViewModel は IViewModelFactory が作り、メイン画面が渡す（この画面が出力スロットのサービスを知らずに済む）
         public void SetupDataContext(CurrentOutDeviceViewModel viewModel)
         {
-            currentOutDevVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            currentOutDevVM = viewModel;
             currentOutDevVM.SelectedIndexChanged += CurrentOutDevVM_SelectedIndexChanged;
             currentOutDevLV.DataContext = currentOutDevVM;
             sideStackPanel.DataContext = currentOutDevVM;

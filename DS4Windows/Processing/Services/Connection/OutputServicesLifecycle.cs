@@ -31,15 +31,24 @@ namespace DS4Windows.Processing.Services.Connection
             IOutputKbmInitializer kbmInitializer, IVirtualKBM virtualKBM, IOscService oscService, IUdpMotionService udpMotion, IHidHideService hidHideService,
             IXboxParentHider xboxParentHider)
         {
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _kbmInitializer = kbmInitializer ?? throw new ArgumentNullException(nameof(kbmInitializer));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
-            _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
-            _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
-            _xboxParentHider = xboxParentHider ?? throw new ArgumentNullException(nameof(xboxParentHider));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
+            ArgumentNullException.ThrowIfNull(kbmInitializer);
+            _kbmInitializer = kbmInitializer;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
+            ArgumentNullException.ThrowIfNull(oscService);
+            _oscService = oscService;
+            ArgumentNullException.ThrowIfNull(udpMotion);
+            _udpMotion = udpMotion;
+            ArgumentNullException.ThrowIfNull(hidHideService);
+            _hidHideService = hidHideService;
+            ArgumentNullException.ThrowIfNull(xboxParentHider);
+            _xboxParentHider = xboxParentHider;
         }
 
         public bool StartVirtualOutputs(bool showlog)

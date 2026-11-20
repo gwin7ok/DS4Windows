@@ -38,16 +38,26 @@ namespace DS4Windows.Processing.Services.Connection
             IOutputSlotService outputSlotService,
             IEventThreadDispatcher eventThread)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _deviceRegistryHooks = deviceRegistryHooks ?? throw new ArgumentNullException(nameof(deviceRegistryHooks));
-            _appliedProfileRecorder = appliedProfileRecorder ?? throw new ArgumentNullException(nameof(appliedProfileRecorder));
-            _backendFailureHandler = backendFailureHandler ?? throw new ArgumentNullException(nameof(backendFailureHandler));
-            _batteryStatusLogger = batteryStatusLogger ?? throw new ArgumentNullException(nameof(batteryStatusLogger));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(deviceRegistryHooks);
+            _deviceRegistryHooks = deviceRegistryHooks;
+            ArgumentNullException.ThrowIfNull(appliedProfileRecorder);
+            _appliedProfileRecorder = appliedProfileRecorder;
+            ArgumentNullException.ThrowIfNull(backendFailureHandler);
+            _backendFailureHandler = backendFailureHandler;
+            ArgumentNullException.ThrowIfNull(batteryStatusLogger);
+            _batteryStatusLogger = batteryStatusLogger;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            _outputSlotService = outputSlotService;
+            ArgumentNullException.ThrowIfNull(eventThread);
+            _eventThread = eventThread;
         }
 
         public void Initialize()

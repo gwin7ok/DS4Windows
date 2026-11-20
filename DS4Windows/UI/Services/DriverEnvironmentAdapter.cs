@@ -11,7 +11,8 @@ namespace DS4Windows.UI.Services
 
         public DriverEnvironmentAdapter(IEnvironmentService environment)
         {
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
         }
 
         public bool IsWin10OrGreater() => _environment.IsWin10OrGreater();

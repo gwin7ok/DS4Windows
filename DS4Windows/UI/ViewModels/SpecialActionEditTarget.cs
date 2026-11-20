@@ -16,7 +16,8 @@ namespace DS4Windows.UI.ViewModels
         // Phase6-Step10-3-2: Global.GetActions の置換先（必須引数。ActionList は Global.GetActions と同じリスト）
         public SpecialActionEditTarget(ISpecialActionRepository specialActionRepository, SpecialAction savedAction)
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             SavedAction = savedAction;
             EditMode = savedAction != null;
         }

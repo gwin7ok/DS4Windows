@@ -17,7 +17,8 @@ namespace DS4Windows.UI.ViewModels
 
         public StickSideViewModel(StickSlotSettings sticks, bool isLeft)
         {
-            this.sticks = sticks ?? throw new ArgumentNullException(nameof(sticks));
+            ArgumentNullException.ThrowIfNull(sticks);
+            this.sticks = sticks;
             this.isLeft = isLeft;
         }
 

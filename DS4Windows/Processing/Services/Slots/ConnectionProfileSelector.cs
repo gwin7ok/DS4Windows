@@ -23,10 +23,14 @@ namespace DS4Windows.Processing.Services.Slots
         public ConnectionProfileSelector(IProfileSettingsService profileSettings, IProfileRepository profileRepository,
             IDeviceStateService deviceStateService, IProfileSlotApplier profileSlotApplier)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            _deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
-            _profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(profileRepository);
+            _profileRepository = profileRepository;
+            ArgumentNullException.ThrowIfNull(deviceStateService);
+            _deviceStateService = deviceStateService;
+            ArgumentNullException.ThrowIfNull(profileSlotApplier);
+            _profileSlotApplier = profileSlotApplier;
         }
 
         public bool ApplyOnConnect(int index, bool useAutoProfile, bool isValidSerial, string? macAddress)

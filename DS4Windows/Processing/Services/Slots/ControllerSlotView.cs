@@ -19,7 +19,8 @@ namespace DS4Windows.Processing.Services.Slots
 
         internal ControllerSlotView(InputDeviceCore device, IProfileXmlStore profileXmlStore)
         {
-            Device = device ?? throw new ArgumentNullException(nameof(device));
+            ArgumentNullException.ThrowIfNull(device);
+            Device = device;
             _profileXmlStore = profileXmlStore;
 
             device.BatteryChanged += (s, e) => BatteryChanged?.Invoke(this, e);

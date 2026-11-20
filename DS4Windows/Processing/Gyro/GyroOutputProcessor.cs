@@ -47,9 +47,12 @@ namespace DS4Windows.Processing.Gyro
         {
             this.deviceNum = deviceNum;
             _device = device;
-            _cursor = cursor ?? throw new ArgumentNullException(nameof(cursor));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            ArgumentNullException.ThrowIfNull(cursor);
+            _cursor = cursor;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
 
             filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = GyroMouseStickInfo.DEFAULT_MINCUTOFF;
             filterPair.axis1Filter.Beta = filterPair.axis2Filter.Beta = GyroMouseStickInfo.DEFAULT_BETA;

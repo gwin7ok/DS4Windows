@@ -39,7 +39,8 @@ namespace DS4Windows.Processing.Actions
             _engineMode = true;
             _actionIndex = actionIndex;
             _actionRepository = actionRepository;
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            ArgumentNullException.ThrowIfNull(settings);
+            _settings = settings;
             _keyReleaser = new TriggerButtonKeyReleaser(_settings);
             _mapping = mapping;
         }
@@ -48,7 +49,8 @@ namespace DS4Windows.Processing.Actions
         {
             this.sa = sa;
             this.deviceIndex = deviceIndex;
-            this.profileSwitcher = profileSwitcher ?? throw new ArgumentNullException(nameof(profileSwitcher));
+            ArgumentNullException.ThrowIfNull(profileSwitcher);
+            this.profileSwitcher = profileSwitcher;
         }
 
         public string Id => sa?.name ?? "ProfileSwitch";

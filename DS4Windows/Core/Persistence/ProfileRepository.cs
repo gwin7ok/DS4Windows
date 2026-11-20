@@ -34,15 +34,24 @@ namespace DS4Windows.Core.Persistence
             DS4Windows.Core.Persistence.LinkedProfilesXmlSerializer linkedProfilesXml, DS4Windows.Core.Persistence.SpecialActionsXmlSerializer actionsXml,
             DS4Windows.Core.Persistence.LegacyProfileXmlSerializer legacyProfileXml, IEnvironmentService environment)
         {
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            _legacyProfileXml = legacyProfileXml ?? throw new ArgumentNullException(nameof(legacyProfileXml));
-            _linkedProfilesXml = linkedProfilesXml ?? throw new ArgumentNullException(nameof(linkedProfilesXml));
-            _actionsXml = actionsXml ?? throw new ArgumentNullException(nameof(actionsXml));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
+            ArgumentNullException.ThrowIfNull(legacyProfileXml);
+            _legacyProfileXml = legacyProfileXml;
+            ArgumentNullException.ThrowIfNull(linkedProfilesXml);
+            _linkedProfilesXml = linkedProfilesXml;
+            ArgumentNullException.ThrowIfNull(actionsXml);
+            _actionsXml = actionsXml;
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(profileXmlStore);
+            _profileXmlStore = profileXmlStore;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(loadTarget);
+            _loadTarget = loadTarget;
         }
 
         private IPathService PathSvc => _pathService;

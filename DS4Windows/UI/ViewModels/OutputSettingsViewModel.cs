@@ -25,8 +25,10 @@ namespace DS4Windows.UI.ViewModels
 
         public OutputSettingsViewModel(OutputSlotSettings output, IOutputSlotService outputSlotService, int slot)
         {
-            this.output = output ?? throw new ArgumentNullException(nameof(output));
-            this.outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
+            ArgumentNullException.ThrowIfNull(output);
+            this.output = output;
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            this.outputSlotService = outputSlotService;
             this.slot = slot;
             RefreshFromSettings();
             // 編集の開始時は、一時の種類を Xbox 360 にしておく（画面の選択が変わったときに、実際の種類で更新される）

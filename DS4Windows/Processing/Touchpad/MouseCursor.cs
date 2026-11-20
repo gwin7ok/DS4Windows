@@ -39,8 +39,10 @@ namespace DS4Windows.Processing.Touchpad
         public MouseCursor(int deviceNum, InputDeviceCore.GyroMouseSens gyroMouseSens,
             IProfileSettingsService profileSettings, IVirtualKBM virtualKBM)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM;
             deviceNumber = deviceNum;
             gyroMouseSensSettings = gyroMouseSens;
             filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = GyroMouseInfo.DEFAULT_MINCUTOFF;

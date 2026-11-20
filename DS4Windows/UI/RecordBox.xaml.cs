@@ -63,10 +63,12 @@ namespace DS4Windows.UI
             bool showscan, bool showPlaybackOptions,
             DS4Windows.UI.Services.MouseRecordingHost mouseHook)
         {
-            this.mouseHook = mouseHook ?? throw new ArgumentNullException(nameof(mouseHook));
+            ArgumentNullException.ThrowIfNull(mouseHook);
+            this.mouseHook = mouseHook;
             InitCommands();
             InitializeComponent();
-            recordBoxVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            recordBoxVM = viewModel;
             mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
             // Phase10-Step1 W2: Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）

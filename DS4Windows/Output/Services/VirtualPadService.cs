@@ -45,15 +45,21 @@ namespace DS4Windows.Output.Services
             IEventThreadDispatcher eventThread, IDeviceRumbleService rumble, IVirtualPadBackend backend,
             IEnumerable<IOutputDeviceCartridge> cartridges)
         {
-            _backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            ArgumentNullException.ThrowIfNull(backend);
+            _backend = backend;
             if (cartridges == null) throw new ArgumentNullException(nameof(cartridges));
             _cartridges = cartridges.ToDictionary(c => c.Type);
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
-            _deviceAccessor = deviceAccessor ?? throw new ArgumentNullException(nameof(deviceAccessor));
-            _eventThread = eventThread ?? throw new ArgumentNullException(nameof(eventThread));
-            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
+            ArgumentNullException.ThrowIfNull(deviceAccessor);
+            _deviceAccessor = deviceAccessor;
+            ArgumentNullException.ThrowIfNull(eventThread);
+            _eventThread = eventThread;
+            ArgumentNullException.ThrowIfNull(rumble);
+            _rumble = rumble;
 
             // 旧 ControlService のコンストラクターにあった生成
             outputslotMan = new OutputSlotManager(_environmentService.ControllerSlotLimit);

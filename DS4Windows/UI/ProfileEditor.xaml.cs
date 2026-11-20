@@ -154,11 +154,14 @@ namespace DS4Windows.UI
             IActionViewModelFactory actionViewModelFactory)
         {
             if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
-            this.backend = backend ?? throw new ArgumentNullException(nameof(backend));
+            ArgumentNullException.ThrowIfNull(backend);
+            this.backend = backend;
             // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
-            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
+            ArgumentNullException.ThrowIfNull(editorWindowFactory);
+            this.editorWindowFactory = editorWindowFactory;
             this.targetDevice = targetDevice;
-            this.appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            ArgumentNullException.ThrowIfNull(appSettingsService);
+            this.appSettingsService = appSettingsService;
             AppLogger.LogDebug($"[ProfileEditor] Opened profile editor for device={deviceNum}, targetDevice={targetDevice}");
 
             InitCommands();

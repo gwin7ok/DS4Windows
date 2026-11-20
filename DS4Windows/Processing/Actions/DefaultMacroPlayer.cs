@@ -22,8 +22,10 @@ namespace DS4Windows.Processing.Actions
 
         public DefaultMacroPlayer(IVirtualKBM virtualKBM, DS4Windows.Processing.Abstractions.IMapping mapping)
         {
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            _virtualKBM = virtualKBM ?? throw new ArgumentNullException(nameof(virtualKBM)); // Phase6-Step10-4-4: 必須の依存
+            ArgumentNullException.ThrowIfNull(mapping);
+            _mapping = mapping;
+            ArgumentNullException.ThrowIfNull(virtualKBM);
+            _virtualKBM = virtualKBM; // Phase6-Step10-4-4: 必須の依存
         }
 
         public bool IsPlaying(int deviceIndex)

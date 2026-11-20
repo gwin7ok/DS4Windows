@@ -35,18 +35,27 @@ namespace DS4Windows.Processing.Services.Connection
             IVirtualPadService virtualPad, IOutputDeviceTypeState outputDeviceTypes, IEnvironmentService environmentService,
             IDeviceSlotState host)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
-            _profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
-            _oscService = oscService ?? throw new ArgumentNullException(nameof(oscService));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _latencyMonitor = latencyMonitor ?? throw new ArgumentNullException(nameof(latencyMonitor));
-            _deviceStateService = deviceStateService ?? throw new ArgumentNullException(nameof(deviceStateService));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(mapping);
+            _mapping = mapping;
+            ArgumentNullException.ThrowIfNull(profileSlotApplier);
+            _profileSlotApplier = profileSlotApplier;
+            ArgumentNullException.ThrowIfNull(oscService);
+            _oscService = oscService;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(latencyMonitor);
+            _latencyMonitor = latencyMonitor;
+            ArgumentNullException.ThrowIfNull(deviceStateService);
+            _deviceStateService = deviceStateService;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
             _activeOutDevType = (outputDeviceTypes ?? throw new ArgumentNullException(nameof(outputDeviceTypes))).ActiveOutDevType;
             if (environmentService == null) throw new ArgumentNullException(nameof(environmentService));
             _controllerSlotLimit = environmentService.ControllerSlotLimit;
-            _host = host ?? throw new ArgumentNullException(nameof(host));
+            ArgumentNullException.ThrowIfNull(host);
+            _host = host;
         }
 
         // ActiveOutDevType の配列参照は再代入されない（要素書込みのみ）。旧 ControlService と同じ配列を指す

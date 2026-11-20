@@ -153,11 +153,16 @@ namespace DS4Windows.UI.ViewModels
             DS4Windows.UI.Abstractions.IDialogService dialogs)
         {
             if (uiDispatcher == null) throw new ArgumentNullException(nameof(uiDispatcher));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _autoProfileService = autoProfileService ?? throw new ArgumentNullException(nameof(autoProfileService));
-            _runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(autoProfileService);
+            _autoProfileService = autoProfileService;
+            ArgumentNullException.ThrowIfNull(runtimeFeatures);
+            _runtimeFeatures = runtimeFeatures;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
             programColl = new ObservableCollection<ProgramItem>();
             existingapps = new HashSet<string>();
             this.autoProfileHolder = autoProfileHolder;
@@ -181,7 +186,8 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>保存先のファイル、Steam のゲームのフォルダ（なければ null）を受け取る。画面の初期化のときに 1 回呼ぶ。</summary>
         public void Configure(string autoProfilesFile, string steamGamesDir)
         {
-            this.autoProfilesFile = autoProfilesFile ?? throw new ArgumentNullException(nameof(autoProfilesFile));
+            ArgumentNullException.ThrowIfNull(autoProfilesFile);
+            this.autoProfilesFile = autoProfilesFile;
             this.steamGamesDir = steamGamesDir;
             OnPropertyChanged(nameof(ShowSteamMenu));
         }

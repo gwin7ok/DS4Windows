@@ -48,8 +48,10 @@ namespace DS4Windows.Input.Xbox
         public XInputTransport(IXInputApi api, IXusbInterfaceSource interfaces, XusbInterfaceInfo info, IBluetoothBatteryReader? bluetoothBattery)
         {
             this.bluetoothBattery = bluetoothBattery;
-            this.api = api ?? throw new ArgumentNullException(nameof(api));
-            this.interfaces = interfaces ?? throw new ArgumentNullException(nameof(interfaces));
+            ArgumentNullException.ThrowIfNull(api);
+            this.api = api;
+            ArgumentNullException.ThrowIfNull(interfaces);
+            this.interfaces = interfaces;
             if (info == null)
             {
                 throw new ArgumentNullException(nameof(info));

@@ -351,8 +351,10 @@ namespace DS4Windows.UI.ViewModels
         {
             this.imageResources = imageResources;
             // Phase6-Step10-2-2: 必須引数（null は拒否する）
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
-            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            this.profileRepo = profileRepo;
             this.device = device;
             device.BatteryChanged += (sender, e) => RaiseBatteryStateChanged(e);
             device.ChargingChanged += (sender, e) => RaiseBatteryStateChanged(e);

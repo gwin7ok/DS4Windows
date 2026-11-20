@@ -46,8 +46,10 @@ namespace DS4Windows.UI.ViewModels
         public UpdaterWindowViewModel(string version, DS4Windows.Core.Abstractions.IAppSettingsService appSettingsService,
             DS4Windows.Core.Abstractions.IChangelogService changelogService)
         {
-            _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
-            _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            ArgumentNullException.ThrowIfNull(changelogService);
+            _changelogService = changelogService;
+            ArgumentNullException.ThrowIfNull(appSettingsService);
+            _appSettingsService = appSettingsService;
             Version = version;
         }
 

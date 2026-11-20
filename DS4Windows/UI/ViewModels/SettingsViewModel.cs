@@ -399,12 +399,18 @@ namespace DS4Windows.UI.ViewModels
             IEnvironmentService environmentService, IPathService pathService, ILogSettingsApplier logSettingsApplier,
             IStartupEntryService startupEntries)
         {
-            _startupEntries = startupEntries ?? throw new ArgumentNullException(nameof(startupEntries));
-            _logSettingsApplier = logSettingsApplier ?? throw new ArgumentNullException(nameof(logSettingsApplier));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            ArgumentNullException.ThrowIfNull(startupEntries);
+            _startupEntries = startupEntries;
+            ArgumentNullException.ThrowIfNull(logSettingsApplier);
+            _logSettingsApplier = logSettingsApplier;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(appearanceSettings);
+            _appearanceSettings = appearanceSettings;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] SettingsViewModel: created");

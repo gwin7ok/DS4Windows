@@ -36,11 +36,16 @@ namespace DS4Windows.Processing.Services.Conditioning
             MacroRuntimeState macroRuntime, IDeviceStateAccessor deviceStateAccessor, IWindowSystem windowSystem)
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            _virtualKbm = virtualKbm ?? throw new ArgumentNullException(nameof(virtualKbm));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _macroRuntime = macroRuntime ?? throw new ArgumentNullException(nameof(macroRuntime));
-            _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
-            _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
+            ArgumentNullException.ThrowIfNull(virtualKbm);
+            _virtualKbm = virtualKbm;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(macroRuntime);
+            _macroRuntime = macroRuntime;
+            ArgumentNullException.ThrowIfNull(deviceStateAccessor);
+            _deviceStateAccessor = deviceStateAccessor;
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            _windowSystem = windowSystem;
         }
 
         public bool Execute(int device, DS4KeyType keyType, int macroCodeValue, bool[] keydown)

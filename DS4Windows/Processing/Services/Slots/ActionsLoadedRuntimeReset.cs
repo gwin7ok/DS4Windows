@@ -21,8 +21,10 @@ namespace DS4Windows.Processing.Services.Slots
         // Phase8-Fix-MacroRepeatUnify（D5）: macrodone の解除を削除したため、MacroRuntimeState への依存（コンストラクターの引数）も削除した
         public ActionsLoadedRuntimeReset(SyntheticInputState syntheticInput, DS4Windows.Processing.Actions.IManagedActionManager actionManager)
         {
-            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
-            _syntheticInput = syntheticInput ?? throw new ArgumentNullException(nameof(syntheticInput));
+            ArgumentNullException.ThrowIfNull(actionManager);
+            _actionManager = actionManager;
+            ArgumentNullException.ThrowIfNull(syntheticInput);
+            _syntheticInput = syntheticInput;
         }
 
         public void Reset()

@@ -70,18 +70,23 @@ namespace DS4Windows.UI
             Func<(int name, int path, int title)> loadColumnWidths, Action<int, int, int> saveColumnWidths)
         {
             if (this.viewModelFactory != null) throw new InvalidOperationException("AutoProfiles is already initialized.");
-            this.viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            this.loadColumnWidths = loadColumnWidths ?? throw new ArgumentNullException(nameof(loadColumnWidths));
-            this.saveColumnWidths = saveColumnWidths ?? throw new ArgumentNullException(nameof(saveColumnWidths));
+            ArgumentNullException.ThrowIfNull(viewModelFactory);
+            this.viewModelFactory = viewModelFactory;
+            ArgumentNullException.ThrowIfNull(loadColumnWidths);
+            this.loadColumnWidths = loadColumnWidths;
+            ArgumentNullException.ThrowIfNull(saveColumnWidths);
+            this.saveColumnWidths = saveColumnWidths;
 
-            this.autoProfilesFile = autoProfilesFile ?? throw new ArgumentNullException(nameof(autoProfilesFile));
+            ArgumentNullException.ThrowIfNull(autoProfilesFile);
+            this.autoProfilesFile = autoProfilesFile;
 
             // Steam のゲームのフォルダが無い（null）ときは、ViewModel がメニューの項目を出さない
             steamgamesdir = steamGamesDir;
 
             // 監視に使われている唯一の Holder を共有する。独自に作ると、この画面での編集・保存が
             // バックグラウンドの監視（AutoProfileService.CheckProfiles）に反映されない二重インスタンスになる。
-            this.autoProfileHolder = autoProfileHolder ?? throw new ArgumentNullException(nameof(autoProfileHolder));
+            ArgumentNullException.ThrowIfNull(autoProfileHolder);
+            this.autoProfileHolder = autoProfileHolder;
 
             int currentRowCount = autoProfilesGrid.RowDefinitions.Count;
             if (currentRowCount > slotLimit)

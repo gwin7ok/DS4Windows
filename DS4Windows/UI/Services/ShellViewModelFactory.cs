@@ -41,18 +41,30 @@ namespace DS4Windows.UI.Services
             SettingsViewModelFactory settingsFactory,
             AutoProfilesViewModelFactory autoProfilesFactory)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
-            _appearanceSettings = appearanceSettings ?? throw new ArgumentNullException(nameof(appearanceSettings));
-            _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
-            _settingsFactory = settingsFactory ?? throw new ArgumentNullException(nameof(settingsFactory));
-            _autoProfilesFactory = autoProfilesFactory ?? throw new ArgumentNullException(nameof(autoProfilesFactory));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            _profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            _outputSlotService = outputSlotService;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            _lifecycle = lifecycle;
+            ArgumentNullException.ThrowIfNull(appearanceSettings);
+            _appearanceSettings = appearanceSettings;
+            ArgumentNullException.ThrowIfNull(changelogService);
+            _changelogService = changelogService;
+            ArgumentNullException.ThrowIfNull(settingsFactory);
+            _settingsFactory = settingsFactory;
+            ArgumentNullException.ThrowIfNull(autoProfilesFactory);
+            _autoProfilesFactory = autoProfilesFactory;
         }
 
         public ChangelogViewModel CreateChangelogViewModel() => new ChangelogViewModel(_changelogService);

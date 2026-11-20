@@ -34,7 +34,8 @@ namespace DS4Windows.UI
         {
             InitializeComponent();
 
-            changelogVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            changelogVM = viewModel;
 
             DataContext = changelogVM;
 

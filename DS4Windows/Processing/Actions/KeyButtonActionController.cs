@@ -40,9 +40,12 @@ namespace DS4Windows.Processing.Actions
             Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
         {
             _repeaterFactory = repeaterFactory;
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _time = timeProvider;
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            _dispatcher = dispatcher;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
             this.device = device;
             this.mode = mode;
             this.assignedActionName = actionName ?? "<null>";
@@ -81,9 +84,12 @@ namespace DS4Windows.Processing.Actions
             Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
         {
             _repeaterFactory = repeaterFactory;
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _time = timeProvider;
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            _dispatcher = dispatcher;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
             this.device = device;
             this.assignedActionName = actionName ?? (sa?.name ?? "<null>");
             this.assignedActionDef = sa;

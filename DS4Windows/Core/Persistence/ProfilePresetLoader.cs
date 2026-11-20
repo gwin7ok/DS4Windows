@@ -19,9 +19,12 @@ namespace DS4Windows.Core.Persistence
 
         public ProfilePresetLoader(BackingStore config, IProfileSettingsService profileSettings, ProfilePresets presets)
         {
-            _presets = presets ?? throw new ArgumentNullException(nameof(presets));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(presets);
+            _presets = presets;
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         // どのプリセットでも、読み込みの後に同じ後処理を行う（旧 Global.Load…Profile の共通部分）。

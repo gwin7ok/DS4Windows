@@ -14,7 +14,8 @@ namespace DS4Windows.UI.Services
 
         public ActionRumbleTestController(IControllerSlotCommands slotCommands)
         {
-            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
+            ArgumentNullException.ThrowIfNull(slotCommands);
+            this.slotCommands = slotCommands;
         }
 
         /// <param name="slot">振動させる実機のスロット番号。</param>

@@ -28,11 +28,16 @@ namespace DS4Windows.Processing.Services.Conditioning
             ITriggerDeadZoneProcessor triggerDeadZone, IGyroControlsProcessor gyroControls,
             IStickInputConditioner stickConditioner, StickMotionState stickMotion)
         {
-            _stickDeadZone = stickDeadZone ?? throw new ArgumentNullException(nameof(stickDeadZone));
-            _outputCurve = outputCurve ?? throw new ArgumentNullException(nameof(outputCurve));
-            _triggerDeadZone = triggerDeadZone ?? throw new ArgumentNullException(nameof(triggerDeadZone));
-            _gyroControls = gyroControls ?? throw new ArgumentNullException(nameof(gyroControls));
-            _stickConditioner = stickConditioner ?? throw new ArgumentNullException(nameof(stickConditioner));
+            ArgumentNullException.ThrowIfNull(stickDeadZone);
+            _stickDeadZone = stickDeadZone;
+            ArgumentNullException.ThrowIfNull(outputCurve);
+            _outputCurve = outputCurve;
+            ArgumentNullException.ThrowIfNull(triggerDeadZone);
+            _triggerDeadZone = triggerDeadZone;
+            ArgumentNullException.ThrowIfNull(gyroControls);
+            _gyroControls = gyroControls;
+            ArgumentNullException.ThrowIfNull(stickConditioner);
+            _stickConditioner = stickConditioner;
             if (stickMotion == null) throw new ArgumentNullException(nameof(stickMotion));
             stickValueHistory = stickMotion.StickValueHistory;
             lastStickAxisValues = stickMotion.LastStickAxisValues;

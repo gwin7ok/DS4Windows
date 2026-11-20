@@ -16,7 +16,8 @@ namespace DS4Windows.Processing.Actions
 
         public DefaultControllerDisconnectPort(IDeviceStateAccessor deviceStateAccessor)
         {
-            _deviceStateAccessor = deviceStateAccessor ?? throw new ArgumentNullException(nameof(deviceStateAccessor));
+            ArgumentNullException.ThrowIfNull(deviceStateAccessor);
+            _deviceStateAccessor = deviceStateAccessor;
         }
 
         private InputDeviceCore Controller(int deviceIndex) => _deviceStateAccessor.GetController(deviceIndex);

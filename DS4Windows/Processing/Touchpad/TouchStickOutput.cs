@@ -39,8 +39,10 @@ namespace DS4Windows.Processing.Touchpad
         public TouchStickOutput(int deviceNum, IProfileSettingsService profileSettings, StickMotionState stickMotion)
         {
             this.deviceNum = deviceNum;
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
         }
 
         /// <summary>スムージングの OneEuro フィルター（設定の変更の通知を受ける側）。</summary>

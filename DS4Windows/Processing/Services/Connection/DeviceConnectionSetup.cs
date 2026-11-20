@@ -27,11 +27,16 @@ namespace DS4Windows.Processing.Services.Connection
         public DeviceConnectionSetup(IProfileSettingsService profileSettings, IUdpMotionService udpMotion, StickMotionState stickMotion,
             IInputDeviceModuleRegistry deviceModules, IProfileProgramLauncher programLauncher)
         {
-            _programLauncher = programLauncher ?? throw new ArgumentNullException(nameof(programLauncher));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _udpMotion = udpMotion ?? throw new ArgumentNullException(nameof(udpMotion));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
-            _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
+            ArgumentNullException.ThrowIfNull(programLauncher);
+            _programLauncher = programLauncher;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(udpMotion);
+            _udpMotion = udpMotion;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
+            ArgumentNullException.ThrowIfNull(deviceModules);
+            _deviceModules = deviceModules;
         }
 
         public void ApplyProfileOptions(int ind, InputDeviceCore device, TouchpadMouse touchPad, bool startUp = false)

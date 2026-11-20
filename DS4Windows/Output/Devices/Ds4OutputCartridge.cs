@@ -18,7 +18,8 @@ namespace DS4Windows.Output.Devices
 
         public Ds4OutputCartridge(IProfileSettingsService profileSettings)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public OutContType Type => OutContType.DS4;

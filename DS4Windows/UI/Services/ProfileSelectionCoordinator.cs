@@ -31,14 +31,22 @@ namespace DS4Windows.UI.Services
             IEnvironmentService environmentService, IControllerSlotQuery slots,
             IPathService pathService, IDialogService dialogs)
         {
-            _editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
-            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            _profileSlotApplier = profileSlotApplier ?? throw new ArgumentNullException(nameof(profileSlotApplier));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
+            ArgumentNullException.ThrowIfNull(editorWindowFactory);
+            _editorWindowFactory = editorWindowFactory;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            _profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(profileSlotApplier);
+            _profileSlotApplier = profileSlotApplier;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(dialogs);
+            _dialogs = dialogs;
         }
 
         /// <summary>プロファイルの XML を選ばせ、プロファイルのフォルダーへコピーして、一覧へ加える。</summary>

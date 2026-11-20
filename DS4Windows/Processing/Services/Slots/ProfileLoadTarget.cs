@@ -32,12 +32,18 @@ namespace DS4Windows.Processing.Services.Slots
             StickMotionState stickMotion,
             IProfileProgramLauncher programLauncher)
         {
-            _programLauncher = programLauncher ?? throw new ArgumentNullException(nameof(programLauncher));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
-            _connectionSetup = connectionSetup ?? throw new ArgumentNullException(nameof(connectionSetup));
-            _touchpadToggle = touchpadToggle ?? throw new ArgumentNullException(nameof(touchpadToggle));
-            _stickMotion = stickMotion ?? throw new ArgumentNullException(nameof(stickMotion));
+            ArgumentNullException.ThrowIfNull(programLauncher);
+            _programLauncher = programLauncher;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
+            ArgumentNullException.ThrowIfNull(connectionSetup);
+            _connectionSetup = connectionSetup;
+            ArgumentNullException.ThrowIfNull(touchpadToggle);
+            _touchpadToggle = touchpadToggle;
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            _stickMotion = stickMotion;
         }
 
         // 旧 control.Controllers[ind] と同じ（範囲外は例外）。IDeviceStateAccessor.GetController（範囲外は null）にしない: 鎖の PostLoadSnippet などは範囲の検査をしないため、挙動を保つ

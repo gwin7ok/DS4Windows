@@ -22,7 +22,8 @@ namespace DS4Windows.Processing.Services.Slots
 
         public ControllerSlotQuery(IDeviceSlotState slotState, IServiceLifecycle lifecycle, IProfileXmlStore profileXmlStore)
         {
-            _slotState = slotState ?? throw new ArgumentNullException(nameof(slotState));
+            ArgumentNullException.ThrowIfNull(slotState);
+            _slotState = slotState;
             if (lifecycle == null) throw new ArgumentNullException(nameof(lifecycle));
             _profileXmlStore = profileXmlStore;
 

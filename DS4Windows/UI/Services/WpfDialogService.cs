@@ -17,7 +17,8 @@ namespace DS4Windows.UI.Services
 
         public WpfDialogService(IUiDispatcher dispatcher)
         {
-            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            _dispatcher = dispatcher;
         }
 
         public void ShowMessage(string message, string title = null, DialogIcon icon = DialogIcon.None)

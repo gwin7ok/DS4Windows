@@ -22,7 +22,8 @@ namespace DS4Windows.Output.Devices
 
         public Xbox360OutputCartridge(IDeviceRumbleService rumble)
         {
-            _rumble = rumble ?? throw new ArgumentNullException(nameof(rumble));
+            ArgumentNullException.ThrowIfNull(rumble);
+            _rumble = rumble;
         }
 
         public OutContType Type => OutContType.X360;

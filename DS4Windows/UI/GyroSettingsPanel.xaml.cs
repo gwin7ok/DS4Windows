@@ -42,7 +42,8 @@ namespace DS4Windows.UI
         /// <summary>トリガーのメニューの項目を作る。画面を作るときに 1 回だけ呼ぶ。</summary>
         public void CreateTriggerMenus(GyroSettingsViewModel gyro)
         {
-            viewModel = gyro ?? throw new ArgumentNullException(nameof(gyro));
+            ArgumentNullException.ThrowIfNull(gyro);
+            viewModel = gyro;
             TriggerMenuAdapter.AddItems(gyroControlsTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroControlsMenuItem_Click);
             TriggerMenuAdapter.AddItems(gyroMouseTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroMouseTrigMenuItem_Click);
             TriggerMenuAdapter.AddItems(gyroMouseStickTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroMouseStickTrigMenuItem_Click);
@@ -51,7 +52,8 @@ namespace DS4Windows.UI
         /// <summary>保存されているトリガーを、メニューのチェックと表示へ反映する（プロファイルの読み込み・プリセットの適用のあと）。</summary>
         public void PopulateTriggerMenus(GyroSettingsViewModel gyro)
         {
-            viewModel = gyro ?? throw new ArgumentNullException(nameof(gyro));
+            ArgumentNullException.ThrowIfNull(gyro);
+            viewModel = gyro;
             Populate(gyroMouseTrigBtn.ContextMenu, gyro.PopulateGyroMouseTrig);
             Populate(gyroMouseStickTrigBtn.ContextMenu, gyro.PopulateGyroMouseStickTrig);
             Populate(gyroControlsTrigBtn.ContextMenu, gyro.PopulateGyroControlsTrig);

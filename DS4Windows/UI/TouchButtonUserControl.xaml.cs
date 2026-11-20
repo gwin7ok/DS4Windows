@@ -33,7 +33,8 @@ namespace DS4Windows.UI
         {
             InitializeComponent();
 
-            touchButtonVM = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            ArgumentNullException.ThrowIfNull(viewModel);
+            touchButtonVM = viewModel;
             DataContext = touchButtonVM;
         }
 

@@ -98,7 +98,8 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public FocusWindowViewModel(ISpecialActionRepository specialActionRepository)
         {
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
         }
 
         public void LoadAction(SpecialAction action)

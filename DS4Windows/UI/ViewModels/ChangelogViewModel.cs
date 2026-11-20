@@ -29,7 +29,8 @@ namespace DS4Windows.UI.ViewModels
 
         public ChangelogViewModel(DS4Windows.Core.Abstractions.IChangelogService changelogService)
         {
-            _changelogService = changelogService ?? throw new ArgumentNullException(nameof(changelogService));
+            ArgumentNullException.ThrowIfNull(changelogService);
+            _changelogService = changelogService;
         }
 
         public string Markdown

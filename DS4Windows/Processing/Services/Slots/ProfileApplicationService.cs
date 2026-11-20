@@ -47,19 +47,30 @@ namespace DS4Windows.Processing.Services.Slots
             DS4Windows.Processing.Actions.IManagedActionManager actionManager,
             DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity = null)
         {
-            _actionManager = actionManager ?? throw new ArgumentNullException(nameof(actionManager));
+            ArgumentNullException.ThrowIfNull(actionManager);
+            _actionManager = actionManager;
             _profileIdentity = profileIdentity;
-            _actionRegistry = actionRegistry ?? throw new ArgumentNullException(nameof(actionRegistry));
-            _bindingBuilderProvider = bindingBuilderProvider ?? throw new ArgumentNullException(nameof(bindingBuilderProvider));
-            _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
-            _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
-            _profileActionProvider = profileActionProvider ?? throw new ArgumentNullException(nameof(profileActionProvider));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(actionRegistry);
+            _actionRegistry = actionRegistry;
+            ArgumentNullException.ThrowIfNull(bindingBuilderProvider);
+            _bindingBuilderProvider = bindingBuilderProvider;
+            ArgumentNullException.ThrowIfNull(keyButtonControllers);
+            _keyButtonControllers = keyButtonControllers;
+            ArgumentNullException.ThrowIfNull(profileXmlStore);
+            _profileXmlStore = profileXmlStore;
+            ArgumentNullException.ThrowIfNull(profileActionProvider);
+            _profileActionProvider = profileActionProvider;
+            ArgumentNullException.ThrowIfNull(config);
+            _config = config;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
             // Phase7-Step10b W3: 未使用だった依存 IDeviceStateService（フィールドを保持するだけ。234e20f9 で DI コンテナ化の途中に追加）を外した。
-            _control = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
-            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(loadTarget);
+            _control = loadTarget;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            _profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
         }
 
         /// <summary>

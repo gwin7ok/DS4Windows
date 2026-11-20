@@ -33,11 +33,16 @@ namespace DS4Windows.Processing.Services.Devices
         public KeyButtonControllerRegistry(IKeyButtonActionControllerFactory factory, IControllerRegistry controllerRegistry, IManagedActionManager manager,
             ISyntheticDispatcher dispatcher, TimeProvider timeProvider)
         {
-            _time = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-            _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _controllerRegistry = controllerRegistry ?? throw new ArgumentNullException(nameof(controllerRegistry));
+            ArgumentNullException.ThrowIfNull(timeProvider);
+            _time = timeProvider;
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            _dispatcher = dispatcher;
+            ArgumentNullException.ThrowIfNull(manager);
+            _manager = manager;
+            ArgumentNullException.ThrowIfNull(factory);
+            _factory = factory;
+            ArgumentNullException.ThrowIfNull(controllerRegistry);
+            _controllerRegistry = controllerRegistry;
         }
 
         // Key format: "{device}:{actionName}". If actionName is null use "{device}:<default>" to preserve device-only fallbacks.

@@ -76,8 +76,10 @@ namespace DS4Windows.UI.ViewModels
         {
             this.dialogs = dialogs;
             this.deviceNum = deviceNum;
-            this.specialActionRepo = specialActionRepo ?? throw new ArgumentNullException(nameof(specialActionRepo));
-            this.profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
+            ArgumentNullException.ThrowIfNull(specialActionRepo);
+            this.specialActionRepo = specialActionRepo;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            this.profileRepo = profileRepo;
 
             actionCol.CollectionChanged += ActionCol_CollectionChanged;
         }

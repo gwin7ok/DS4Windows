@@ -71,8 +71,10 @@ namespace DS4Windows.UI
 
         public WelcomeDialog(DS4Windows.UI.Abstractions.IDriverEnvironment environmentService, System.Net.Http.HttpClient httpClient)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(httpClient);
+            _httpClient = httpClient;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
 
             InitCommands();
             InitializeComponent();

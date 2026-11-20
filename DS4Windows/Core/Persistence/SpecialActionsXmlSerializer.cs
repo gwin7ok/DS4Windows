@@ -29,8 +29,10 @@ namespace DS4Windows.Core.Persistence
         public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset runtimeReset,
             DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
         {
-            _runtimeReset = runtimeReset ?? throw new ArgumentNullException(nameof(runtimeReset));
-            this.store = store ?? throw new ArgumentNullException(nameof(store));
+            ArgumentNullException.ThrowIfNull(runtimeReset);
+            _runtimeReset = runtimeReset;
+            ArgumentNullException.ThrowIfNull(store);
+            this.store = store;
             profileIdentity = profileIdentityService;
         }
 

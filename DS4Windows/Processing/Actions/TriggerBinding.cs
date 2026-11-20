@@ -15,9 +15,11 @@ namespace DS4Windows.Processing.Actions
         public TriggerBinding(IInputAction input, IReadOnlyList<IOutputAction> outputs, BindingPolicy policy, SpecialAction source, int index = -1,
             SpecialAction primarySource = null)
         {
-            Input = input ?? throw new ArgumentNullException(nameof(input));
+            ArgumentNullException.ThrowIfNull(input);
+            Input = input;
             if (outputs == null) throw new ArgumentNullException(nameof(outputs));
-            Policy = policy ?? throw new ArgumentNullException(nameof(policy));
+            ArgumentNullException.ThrowIfNull(policy);
+            Policy = policy;
             Source = source;
             Index = index;
             PrimarySource = primarySource;

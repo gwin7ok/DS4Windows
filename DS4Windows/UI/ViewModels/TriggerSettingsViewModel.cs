@@ -16,7 +16,8 @@ namespace DS4Windows.UI.ViewModels
 
         public TriggerSettingsViewModel(TriggerSlotSettings triggers)
         {
-            this.triggers = triggers ?? throw new ArgumentNullException(nameof(triggers));
+            ArgumentNullException.ThrowIfNull(triggers);
+            this.triggers = triggers;
         }
 
         // Phase7b（既存の不具合。上流の元から）: 旧は deadZone / 255.0（丸めなし）と (byte)(value * 255.0)（切り捨て）で、

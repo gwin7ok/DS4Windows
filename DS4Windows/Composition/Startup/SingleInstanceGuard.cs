@@ -47,7 +47,8 @@ namespace DS4Windows.Composition.Startup
         /// </summary>
         public void StartListening(Action onSecondLaunch)
         {
-            _onSecondLaunch = onSecondLaunch ?? throw new ArgumentNullException(nameof(onSecondLaunch));
+            ArgumentNullException.ThrowIfNull(onSecondLaunch);
+            _onSecondLaunch = onSecondLaunch;
 
             // Create the Event handle
             _comEvent = new EventWaitHandle(false, EventResetMode.ManualReset, SingleAppComEventName);

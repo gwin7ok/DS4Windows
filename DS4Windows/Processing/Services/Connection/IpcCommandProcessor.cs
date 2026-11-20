@@ -31,16 +31,26 @@ namespace DS4Windows.Processing.Services.Connection
             IProfileSettingsService profileSettings, IProfileApplicationService profileApplication, IProfileLoadTarget loadTarget,
             IPathService pathService, IDeviceSlotState slots, IVirtualPadService virtualPad, IIpcResultWriter resultWriter)
         {
-            _lifecycle = lifecycle ?? throw new ArgumentNullException(nameof(lifecycle));
-            _outputSlotService = outputSlotService ?? throw new ArgumentNullException(nameof(outputSlotService));
-            _profileRepo = profileRepo ?? throw new ArgumentNullException(nameof(profileRepo));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _profileApplication = profileApplication ?? throw new ArgumentNullException(nameof(profileApplication));
-            _loadTarget = loadTarget ?? throw new ArgumentNullException(nameof(loadTarget));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _resultWriter = resultWriter ?? throw new ArgumentNullException(nameof(resultWriter));
-            _virtualPad = virtualPad ?? throw new ArgumentNullException(nameof(virtualPad));
+            ArgumentNullException.ThrowIfNull(lifecycle);
+            _lifecycle = lifecycle;
+            ArgumentNullException.ThrowIfNull(outputSlotService);
+            _outputSlotService = outputSlotService;
+            ArgumentNullException.ThrowIfNull(profileRepo);
+            _profileRepo = profileRepo;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(profileApplication);
+            _profileApplication = profileApplication;
+            ArgumentNullException.ThrowIfNull(loadTarget);
+            _loadTarget = loadTarget;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(resultWriter);
+            _resultWriter = resultWriter;
+            ArgumentNullException.ThrowIfNull(virtualPad);
+            _virtualPad = virtualPad;
         }
 
         public void Execute(IIpcCommandHost host, string[] strData)

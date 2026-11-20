@@ -53,10 +53,14 @@ namespace DS4Windows.Core.Persistence
         {
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
             _profileIdentity = profileIdentity;
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
-            this.store = store ?? throw new ArgumentNullException(nameof(store));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(environment);
+            _environment = environment;
+            ArgumentNullException.ThrowIfNull(store);
+            this.store = store;
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public bool LoadProfile(int device, IProfileLoadTarget control,

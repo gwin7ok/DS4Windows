@@ -59,7 +59,8 @@ namespace DS4Windows.UI
         public void Initialize(Action<string, string> duplicateProfile)
         {
             if (this.duplicateProfile != null) throw new InvalidOperationException("DupBox is already initialized.");
-            this.duplicateProfile = duplicateProfile ?? throw new ArgumentNullException(nameof(duplicateProfile));
+            ArgumentNullException.ThrowIfNull(duplicateProfile);
+            this.duplicateProfile = duplicateProfile;
         }
 
         private void SaveBtn()

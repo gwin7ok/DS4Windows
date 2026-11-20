@@ -17,7 +17,8 @@ namespace DS4Windows.Processing.Actions
 
         public ControlMouseOutputAction(SpecialAction identity, X360Controls target)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _target = target;
         }
 

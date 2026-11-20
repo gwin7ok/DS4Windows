@@ -25,7 +25,8 @@ namespace DS4Windows.Processing.Actions
 
         public DefaultActionManager(Func<DS4Windows.Processing.Abstractions.IMapping> mappingProvider)
         {
-            _mappingProvider = mappingProvider ?? throw new ArgumentNullException(nameof(mappingProvider));
+            ArgumentNullException.ThrowIfNull(mappingProvider);
+            _mappingProvider = mappingProvider;
 
             // Phase13-Step4: 旧 静的 ActionManager の静的コンストラクターが購読していたログ（文言は同じ）。静的イベントの廃止に伴い、本クラスが持つ
             ToggledOnChanged += (sa, dev, oldv, newv) =>

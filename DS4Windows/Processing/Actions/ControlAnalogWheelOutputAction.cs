@@ -26,10 +26,12 @@ namespace DS4Windows.Processing.Actions
 
         public ControlAnalogWheelOutputAction(SpecialAction identity, DS4Controls source, bool down, IProfileSettingsService profileSettings)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
             _source = source;
             _down = down;
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
         }
 
         public string Id => string.IsNullOrEmpty(_identity.name) ? "ControlAnalogWheel" : _identity.name;

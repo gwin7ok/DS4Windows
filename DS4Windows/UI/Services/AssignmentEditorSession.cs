@@ -46,13 +46,16 @@ namespace DS4Windows.UI.Services
             ISpecialActionRepository specialActionRepository, IProfileSettingsService profileSettingsService, IEnvironmentService environmentService,
             IWindowSystem windowSystem)
         {
-            this.editorWindowFactory = editorWindowFactory ?? throw new ArgumentNullException(nameof(editorWindowFactory));
+            ArgumentNullException.ThrowIfNull(editorWindowFactory);
+            this.editorWindowFactory = editorWindowFactory;
             if (viewModelFactory == null) throw new ArgumentNullException(nameof(viewModelFactory));
             if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
-            this.specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            this.specialActionRepository = specialActionRepository;
             if (profileSettingsService == null) throw new ArgumentNullException(nameof(profileSettingsService));
             if (windowSystem == null) throw new ArgumentNullException(nameof(windowSystem));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
             TargetDevice = targetDevice;
             DeviceNum = deviceNum;
 

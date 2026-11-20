@@ -20,8 +20,10 @@ namespace DS4Windows.Processing.Services.Connection
 
         public FirstReportActionLogger(IPathService pathService, IProfileRepository profileRepository)
         {
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
-            _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+            ArgumentNullException.ThrowIfNull(pathService);
+            _pathService = pathService;
+            ArgumentNullException.ThrowIfNull(profileRepository);
+            _profileRepository = profileRepository;
         }
 
         public void Emit(int ind)

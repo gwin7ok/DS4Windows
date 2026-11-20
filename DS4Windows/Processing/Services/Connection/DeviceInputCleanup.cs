@@ -24,9 +24,12 @@ namespace DS4Windows.Processing.Services.Connection
         {
             if (syntheticInput == null) throw new ArgumentNullException(nameof(syntheticInput));
             deviceState = syntheticInput.DeviceState;
-            _syntheticDispatcher = syntheticDispatcher ?? throw new ArgumentNullException(nameof(syntheticDispatcher));
-            _macroPlayback = macroPlayback ?? throw new ArgumentNullException(nameof(macroPlayback));
-            _keyButtonControllers = keyButtonControllers ?? throw new ArgumentNullException(nameof(keyButtonControllers));
+            ArgumentNullException.ThrowIfNull(syntheticDispatcher);
+            _syntheticDispatcher = syntheticDispatcher;
+            ArgumentNullException.ThrowIfNull(macroPlayback);
+            _macroPlayback = macroPlayback;
+            ArgumentNullException.ThrowIfNull(keyButtonControllers);
+            _keyButtonControllers = keyButtonControllers;
         }
 
         public void Clear(int device)

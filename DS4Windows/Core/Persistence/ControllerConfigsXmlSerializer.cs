@@ -17,7 +17,8 @@ namespace DS4Windows.Core.Persistence
 
         public ControllerConfigsXmlSerializer(BackingStore store)
         {
-            this.store = store ?? throw new ArgumentNullException(nameof(store));
+            ArgumentNullException.ThrowIfNull(store);
+            this.store = store;
         }
 
         public bool createControllerConfigs()

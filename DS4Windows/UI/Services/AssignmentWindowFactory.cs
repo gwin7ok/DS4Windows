@@ -27,14 +27,22 @@ namespace DS4Windows.UI.Services
             IProfileEditViewModelFactory viewModelFactory, IActionViewModelFactory actionViewModelFactory, ISpecialActionRepository specialActionRepository,
             IEnvironmentService environmentService, IWindowSystem windowSystem, IControllerReadingsSource readings)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
-            _actionViewModelFactory = actionViewModelFactory ?? throw new ArgumentNullException(nameof(actionViewModelFactory));
-            _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            _specialActionRepository = specialActionRepository ?? throw new ArgumentNullException(nameof(specialActionRepository));
-            _environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
-            _windowSystem = windowSystem ?? throw new ArgumentNullException(nameof(windowSystem));
-            _readings = readings ?? throw new ArgumentNullException(nameof(readings));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(slotCommands);
+            _slotCommands = slotCommands;
+            ArgumentNullException.ThrowIfNull(actionViewModelFactory);
+            _actionViewModelFactory = actionViewModelFactory;
+            ArgumentNullException.ThrowIfNull(viewModelFactory);
+            _viewModelFactory = viewModelFactory;
+            ArgumentNullException.ThrowIfNull(specialActionRepository);
+            _specialActionRepository = specialActionRepository;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            _environmentService = environmentService;
+            ArgumentNullException.ThrowIfNull(windowSystem);
+            _windowSystem = windowSystem;
+            ArgumentNullException.ThrowIfNull(readings);
+            _readings = readings;
         }
 
         public BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,

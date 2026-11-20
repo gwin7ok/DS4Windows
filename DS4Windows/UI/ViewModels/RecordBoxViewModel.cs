@@ -149,9 +149,11 @@ namespace DS4Windows.UI.ViewModels
             this.dialogs = dialogs;
             this.macrosFolder = macrosFolder;
             _lightbar = lightbar ?? throw new System.ArgumentNullException(nameof(lightbar));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
             this.targetDevice = targetDevice;
-            this.profileSettingsService = profileSettingsService ?? throw new ArgumentNullException(nameof(profileSettingsService));
+            ArgumentNullException.ThrowIfNull(profileSettingsService);
+            this.profileSettingsService = profileSettingsService;
             // Phase6-Step10-2-4b: Program.rootHub への後退を廃止。ControlService は EditorWindowFactory から渡す。
             // null は「コントローラーを持たない」（単体テスト）を表し、記録中の入力の取り込み（ProcessDS4Tick）だけが使う。
             this.macroRecording = macroRecording;

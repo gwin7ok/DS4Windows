@@ -16,7 +16,8 @@ namespace DS4Windows.Processing.Actions
 
         public ControlToggleOutputAction(SpecialAction identity)
         {
-            _identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
         }
 
         public string Id => string.IsNullOrEmpty(_identity.name) ? "ControlToggle" : _identity.name;

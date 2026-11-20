@@ -35,19 +35,32 @@ namespace DS4Windows.Processing.Services.Connection
             IDeviceConnectionSetup deviceConnectionSetup, IInputDeviceModuleRegistry deviceModules, IHidHideService hidHideService,
             IDeviceSlotState slots, IInputReportProcessor inputReport, ITouchpadMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
         {
-            _profileSettings = profileSettings ?? throw new ArgumentNullException(nameof(profileSettings));
-            _profileXmlStore = profileXmlStore ?? throw new ArgumentNullException(nameof(profileXmlStore));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
-            _deviceRegistry = deviceRegistry ?? throw new ArgumentNullException(nameof(deviceRegistry));
-            _deviceDisconnect = deviceDisconnect ?? throw new ArgumentNullException(nameof(deviceDisconnect));
-            _connectionProfileSelector = connectionProfileSelector ?? throw new ArgumentNullException(nameof(connectionProfileSelector));
-            _deviceConnectionSetup = deviceConnectionSetup ?? throw new ArgumentNullException(nameof(deviceConnectionSetup));
-            _deviceModules = deviceModules ?? throw new ArgumentNullException(nameof(deviceModules));
-            _hidHideService = hidHideService ?? throw new ArgumentNullException(nameof(hidHideService));
-            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
-            _inputReport = inputReport ?? throw new ArgumentNullException(nameof(inputReport));
-            _mouseFactory = mouseFactory ?? throw new ArgumentNullException(nameof(mouseFactory));
-            _outputs = outputs ?? throw new ArgumentNullException(nameof(outputs));
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            _profileSettings = profileSettings;
+            ArgumentNullException.ThrowIfNull(profileXmlStore);
+            _profileXmlStore = profileXmlStore;
+            ArgumentNullException.ThrowIfNull(appSettings);
+            _appSettings = appSettings;
+            ArgumentNullException.ThrowIfNull(deviceRegistry);
+            _deviceRegistry = deviceRegistry;
+            ArgumentNullException.ThrowIfNull(deviceDisconnect);
+            _deviceDisconnect = deviceDisconnect;
+            ArgumentNullException.ThrowIfNull(connectionProfileSelector);
+            _connectionProfileSelector = connectionProfileSelector;
+            ArgumentNullException.ThrowIfNull(deviceConnectionSetup);
+            _deviceConnectionSetup = deviceConnectionSetup;
+            ArgumentNullException.ThrowIfNull(deviceModules);
+            _deviceModules = deviceModules;
+            ArgumentNullException.ThrowIfNull(hidHideService);
+            _hidHideService = hidHideService;
+            ArgumentNullException.ThrowIfNull(slots);
+            _slots = slots;
+            ArgumentNullException.ThrowIfNull(inputReport);
+            _inputReport = inputReport;
+            ArgumentNullException.ThrowIfNull(mouseFactory);
+            _mouseFactory = mouseFactory;
+            ArgumentNullException.ThrowIfNull(outputs);
+            _outputs = outputs;
         }
 
         public void BeginPrepare(InputDeviceCore device, bool showlog = false)

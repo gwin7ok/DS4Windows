@@ -22,10 +22,14 @@ namespace DS4Windows.UI.Services
         public ProfileEditorBackend(IProfileRepository profileRepository, IControllerSlotCommands slotCommands,
             IRuntimeFeatureSwitch runtimeFeatures, IEnvironmentService environmentService)
         {
-            this.profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
-            this.slotCommands = slotCommands ?? throw new ArgumentNullException(nameof(slotCommands));
-            this.runtimeFeatures = runtimeFeatures ?? throw new ArgumentNullException(nameof(runtimeFeatures));
-            this.environmentService = environmentService ?? throw new ArgumentNullException(nameof(environmentService));
+            ArgumentNullException.ThrowIfNull(profileRepository);
+            this.profileRepository = profileRepository;
+            ArgumentNullException.ThrowIfNull(slotCommands);
+            this.slotCommands = slotCommands;
+            ArgumentNullException.ThrowIfNull(runtimeFeatures);
+            this.runtimeFeatures = runtimeFeatures;
+            ArgumentNullException.ThrowIfNull(environmentService);
+            this.environmentService = environmentService;
         }
 
         /// <summary>実機（<paramref name="targetDevice"/>）が指定され、かつ有効なコントローラースロットの範囲内であるか。</summary>
