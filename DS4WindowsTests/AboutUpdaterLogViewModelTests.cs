@@ -62,20 +62,20 @@ namespace DS4WindowsTests
         [Fact]
         public void UpdaterWindowViewModel_SetAndBlankSkippedVersion_UpdateGlobalLastVersionChecked()
         {
-            string original = TestGlobals.Store.lastVersionChecked ?? string.Empty;
+            string original = TestGlobals.Store.UpdateCheck.lastVersionChecked ?? string.Empty;
             try
             {
                 object vm = CreateUpdaterVm("9.8.7", TestRepositoryFactory.CreateAppSettingsService());
 
                 UpdaterVmType.GetMethod("SetSkippedVersion").Invoke(vm, null);
-                Assert.Equal("9.8.7", TestGlobals.Store.lastVersionChecked);
+                Assert.Equal("9.8.7", TestGlobals.Store.UpdateCheck.lastVersionChecked);
 
                 UpdaterVmType.GetMethod("BlankSkippedVersion").Invoke(vm, null);
-                Assert.Equal(string.Empty, TestGlobals.Store.lastVersionChecked);
+                Assert.Equal(string.Empty, TestGlobals.Store.UpdateCheck.lastVersionChecked);
             }
             finally
             {
-                TestGlobals.Store.lastVersionChecked = original;
+                TestGlobals.Store.UpdateCheck.lastVersionChecked = original;
             }
         }
 
@@ -90,7 +90,7 @@ namespace DS4WindowsTests
         {
             // 注意: 一覧は ScanForLangPacks（非同期のファイル走査）が作る。ここでは走査を使わず、
             // 非公開の一覧フィールドへ直接項目を入れて、選択結果の反映だけを検証する。
-            string original = TestGlobals.Store.useLang;
+            string original = TestGlobals.Store.Appearance.useLang;
             string target = original == "zz-test" ? "yy-test" : "zz-test";
             try
             {
@@ -105,14 +105,14 @@ namespace DS4WindowsTests
 
                 vm.SelectedIndex = 1;
                 Assert.True(vm.ChangeLanguagePack());
-                Assert.Equal(target, TestGlobals.Store.useLang);
+                Assert.Equal(target, TestGlobals.Store.Appearance.useLang);
 
                 // 同じ値の再適用では変更しない
                 Assert.False(vm.ChangeLanguagePack());
             }
             finally
             {
-                TestGlobals.Store.useLang = original;
+                TestGlobals.Store.Appearance.useLang = original;
             }
         }
 

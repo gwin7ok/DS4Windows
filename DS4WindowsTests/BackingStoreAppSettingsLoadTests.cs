@@ -61,7 +61,7 @@ namespace DS4WindowsTests
 
             BackingStore reader = LoadStore();
 
-            Assert.Equal("fake_game.exe", reader.fakeExeFileName);
+            Assert.Equal("fake_game.exe", reader.Appearance.fakeExeFileName);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
 
             BackingStore reader = LoadStore();
 
-            Assert.Equal(string.Empty, reader.fakeExeFileName);
+            Assert.Equal(string.Empty, reader.Appearance.fakeExeFileName);
         }
 
         [Fact]
@@ -90,24 +90,24 @@ namespace DS4WindowsTests
         [Fact]
         public void Load_Dto_ComputesLastVersionCheckedNum()
         {
-            SaveStore(s => s.lastVersionChecked = "3.9.0");
+            SaveStore(s => s.UpdateCheck.lastVersionChecked = "3.9.0");
 
             BackingStore reader = LoadStore();
 
-            Assert.Equal("3.9.0", reader.lastVersionChecked);
-            Assert.True(reader.lastVersionCheckedNum > 0);
-            Assert.Equal(VersionUtil.CompileVersionNumberFromString("3.9.0"), reader.lastVersionCheckedNum);
+            Assert.Equal("3.9.0", reader.UpdateCheck.lastVersionChecked);
+            Assert.True(reader.UpdateCheck.lastVersionCheckedNum > 0);
+            Assert.Equal(VersionUtil.CompileVersionNumberFromString("3.9.0"), reader.UpdateCheck.lastVersionCheckedNum);
         }
 
         [Fact]
         public void Load_Dto_InvalidLastVersionChecked_IsCleared()
         {
-            SaveStore(s => s.lastVersionChecked = "not-a-version");
+            SaveStore(s => s.UpdateCheck.lastVersionChecked = "not-a-version");
 
             BackingStore reader = LoadStore();
 
-            Assert.Equal(string.Empty, reader.lastVersionChecked);
-            Assert.Equal(0UL, reader.lastVersionCheckedNum);
+            Assert.Equal(string.Empty, reader.UpdateCheck.lastVersionChecked);
+            Assert.Equal(0UL, reader.UpdateCheck.lastVersionCheckedNum);
         }
 
         [Fact]
@@ -115,16 +115,16 @@ namespace DS4WindowsTests
         {
             SaveStore(s =>
             {
-                s.oscServPort = 80;
-                s.oscSendPort = 70000;
-                s.udpServPort = 1;
+                s.Network.oscServPort = 80;
+                s.Network.oscSendPort = 70000;
+                s.Network.udpServPort = 1;
             });
 
             BackingStore reader = LoadStore();
 
-            Assert.Equal(1024, reader.oscServPort);
-            Assert.Equal(65535, reader.oscSendPort);
-            Assert.Equal(1024, reader.udpServPort);
+            Assert.Equal(1024, reader.Network.oscServPort);
+            Assert.Equal(65535, reader.Network.oscSendPort);
+            Assert.Equal(1024, reader.Network.udpServPort);
         }
 
         [Fact]
@@ -132,14 +132,14 @@ namespace DS4WindowsTests
         {
             SaveStore(s =>
             {
-                s.oscServPort = 9000;
-                s.udpServPort = 26760;
+                s.Network.oscServPort = 9000;
+                s.Network.udpServPort = 26760;
             });
 
             BackingStore reader = LoadStore();
 
-            Assert.Equal(9000, reader.oscServPort);
-            Assert.Equal(26760, reader.udpServPort);
+            Assert.Equal(9000, reader.Network.oscServPort);
+            Assert.Equal(26760, reader.Network.udpServPort);
         }
 
         [Fact]

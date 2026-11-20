@@ -68,17 +68,17 @@ namespace DS4WindowsTests
         public void UseLang_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var settings = TestRepositoryFactory.CreateAppSettingsService();
-            string original = TestGlobals.Store.useLang;
+            string original = TestGlobals.Store.Appearance.useLang;
             try
             {
-                TestGlobals.Store.useLang = "en";
+                TestGlobals.Store.Appearance.useLang = "en";
                 Assert.Equal("en", settings.UseLang);
 
                 string notified = null;
                 settings.SettingChanged += (s, name) => notified = name;
 
                 settings.UseLang = "ja";
-                Assert.Equal("ja", TestGlobals.Store.useLang);
+                Assert.Equal("ja", TestGlobals.Store.Appearance.useLang);
                 Assert.Equal(nameof(IAppSettingsService.UseLang), notified);
 
                 // 同じ値の再設定では通知しない（他のプロパティと同じ規約）。
@@ -88,7 +88,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                TestGlobals.Store.useLang = original;
+                TestGlobals.Store.Appearance.useLang = original;
             }
         }
 

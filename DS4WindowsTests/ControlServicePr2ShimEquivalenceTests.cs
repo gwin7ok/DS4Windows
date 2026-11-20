@@ -26,36 +26,36 @@ namespace DS4WindowsTests
         [Fact]
         public void UDPServerSmoothingMincutoff_SharesStateWithGlobal()
         {
-            double original = TestGlobals.Store.udpSmoothingMincutoff;
+            double original = TestGlobals.Store.Network.udpSmoothingMincutoff;
             try
             {
-                TestGlobals.Store.udpSmoothingMincutoff = original + 0.5;
+                TestGlobals.Store.Network.udpSmoothingMincutoff = original + 0.5;
                 Assert.Equal(original + 0.5, _appSettings.UDPServerSmoothingMincutoff);
 
                 _appSettings.UDPServerSmoothingMincutoff = original + 0.25;
-                Assert.Equal(original + 0.25, TestGlobals.Store.udpSmoothingMincutoff);
+                Assert.Equal(original + 0.25, TestGlobals.Store.Network.udpSmoothingMincutoff);
             }
             finally
             {
-                TestGlobals.Store.udpSmoothingMincutoff = original;
+                TestGlobals.Store.Network.udpSmoothingMincutoff = original;
             }
         }
 
         [Fact]
         public void UDPServerSmoothingBeta_SharesStateWithGlobal()
         {
-            double original = TestGlobals.Store.udpSmoothingBeta;
+            double original = TestGlobals.Store.Network.udpSmoothingBeta;
             try
             {
-                TestGlobals.Store.udpSmoothingBeta = original + 0.5;
+                TestGlobals.Store.Network.udpSmoothingBeta = original + 0.5;
                 Assert.Equal(original + 0.5, _appSettings.UDPServerSmoothingBeta);
 
                 _appSettings.UDPServerSmoothingBeta = original + 0.25;
-                Assert.Equal(original + 0.25, TestGlobals.Store.udpSmoothingBeta);
+                Assert.Equal(original + 0.25, TestGlobals.Store.Network.udpSmoothingBeta);
             }
             finally
             {
-                TestGlobals.Store.udpSmoothingBeta = original;
+                TestGlobals.Store.Network.udpSmoothingBeta = original;
             }
         }
 
@@ -67,8 +67,8 @@ namespace DS4WindowsTests
             int betaFired = 0;
             EventHandler onMincutoff = (s, e) => mincutoffFired++;
             EventHandler onBeta = (s, e) => betaFired++;
-            double originalMincutoff = TestGlobals.Store.udpSmoothingMincutoff;
-            double originalBeta = TestGlobals.Store.udpSmoothingBeta;
+            double originalMincutoff = TestGlobals.Store.Network.udpSmoothingMincutoff;
+            double originalBeta = TestGlobals.Store.Network.udpSmoothingBeta;
             _appSettings.UDPServerSmoothingMincutoffChanged += onMincutoff;
             _appSettings.UDPServerSmoothingBetaChanged += onBeta;
             try
@@ -83,8 +83,8 @@ namespace DS4WindowsTests
             {
                 _appSettings.UDPServerSmoothingMincutoffChanged -= onMincutoff;
                 _appSettings.UDPServerSmoothingBetaChanged -= onBeta;
-                TestGlobals.Store.udpSmoothingMincutoff = originalMincutoff;
-                TestGlobals.Store.udpSmoothingBeta = originalBeta;
+                TestGlobals.Store.Network.udpSmoothingMincutoff = originalMincutoff;
+                TestGlobals.Store.Network.udpSmoothingBeta = originalBeta;
             }
         }
 

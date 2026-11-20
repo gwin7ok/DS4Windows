@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         public void UseOscServer_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.useOSCServ, v => TestGlobals.Store.useOSCServ = v,
+                () => TestGlobals.Store.Network.useOSCServ, v => TestGlobals.Store.Network.useOSCServ = v,
                 () => _appSettings.UseOscServer, v => _appSettings.UseOscServer = v,
                 true, false);
         }
@@ -54,7 +54,7 @@ namespace DS4WindowsTests
         public void UseOscSender_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.useOSCSend, v => TestGlobals.Store.useOSCSend = v,
+                () => TestGlobals.Store.Network.useOSCSend, v => TestGlobals.Store.Network.useOSCSend = v,
                 () => _appSettings.UseOscSender, v => _appSettings.UseOscSender = v,
                 true, false);
         }
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         public void InterpretingOscMonitoring_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.interpretingOscMonitoring, v => TestGlobals.Store.interpretingOscMonitoring = v,
+                () => TestGlobals.Store.Network.interpretingOscMonitoring, v => TestGlobals.Store.Network.interpretingOscMonitoring = v,
                 () => _appSettings.InterpretingOscMonitoring, v => _appSettings.InterpretingOscMonitoring = v,
                 true, false);
         }
@@ -72,7 +72,7 @@ namespace DS4WindowsTests
         public void OscServerPort_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.oscServPort, v => TestGlobals.Store.oscServPort = v,
+                () => TestGlobals.Store.Network.oscServPort, v => TestGlobals.Store.Network.oscServPort = v,
                 () => _appSettings.OscServerPort, v => _appSettings.OscServerPort = v,
                 9101, 9102);
         }
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
         public void OscSenderPort_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.oscSendPort, v => TestGlobals.Store.oscSendPort = v,
+                () => TestGlobals.Store.Network.oscSendPort, v => TestGlobals.Store.Network.oscSendPort = v,
                 () => _appSettings.OscSenderPort, v => _appSettings.OscSenderPort = v,
                 9103, 9104);
         }
@@ -89,21 +89,21 @@ namespace DS4WindowsTests
         [Fact]
         public void OscSenderAddress_SharesStateWithGlobal_AndKeepsTrimBehavior()
         {
-            string original = TestGlobals.Store.oscSendAddress;
+            string original = TestGlobals.Store.Network.oscSendAddress;
             try
             {
-                TestGlobals.Store.oscSendAddress = "10.0.0.1";
+                TestGlobals.Store.Network.oscSendAddress = "10.0.0.1";
                 Assert.Equal("10.0.0.1", _appSettings.OscSenderAddress);
 
                 // Global.setOSCSenderAddress は前後の空白を除去する。サービス経由でも同じ挙動であること。
                 _appSettings.OscSenderAddress = "  10.0.0.2  ";
-                Assert.Equal("10.0.0.2", TestGlobals.Store.oscSendAddress);
+                Assert.Equal("10.0.0.2", TestGlobals.Store.Network.oscSendAddress);
             }
             finally
             {
                 if (original != null)
                 {
-                    TestGlobals.Store.oscSendAddress = original;
+                    TestGlobals.Store.Network.oscSendAddress = original;
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
         public void QuickCharge_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.quickCharge, v => TestGlobals.Store.quickCharge = v,
+                () => TestGlobals.Store.Behavior.quickCharge, v => TestGlobals.Store.Behavior.quickCharge = v,
                 () => _appSettings.QuickCharge, v => _appSettings.QuickCharge = v,
                 true, false);
         }
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
         public void DCBTatStop_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.disconnectBTAtStop, v => TestGlobals.Store.disconnectBTAtStop = v,
+                () => TestGlobals.Store.Behavior.disconnectBTAtStop, v => TestGlobals.Store.Behavior.disconnectBTAtStop = v,
                 () => _appSettings.DCBTatStop, v => _appSettings.DCBTatStop = v,
                 true, false);
         }
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
         public void ProcessPriority_SharesStateWithGlobal()
         {
             AssertSharesStateWithGlobal(
-                () => TestGlobals.Store.processPriority, v => TestGlobals.Store.processPriority = v,
+                () => TestGlobals.Store.Behavior.processPriority, v => TestGlobals.Store.Behavior.processPriority = v,
                 () => _appSettings.ProcessPriority, v => _appSettings.ProcessPriority = v,
                 1, 3);
         }

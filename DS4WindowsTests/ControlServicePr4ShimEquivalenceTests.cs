@@ -23,18 +23,18 @@ namespace DS4WindowsTests
         [Fact]
         public void FlashWhenLate_SharesStateWithGlobal()
         {
-            bool original = TestGlobals.Store.flashWhenLate;
+            bool original = TestGlobals.Store.Behavior.flashWhenLate;
             try
             {
-                TestGlobals.Store.flashWhenLate = !original;
+                TestGlobals.Store.Behavior.flashWhenLate = !original;
                 Assert.Equal(!original, _appSettings.FlashWhenLate);
 
                 _appSettings.FlashWhenLate = original;
-                Assert.Equal(original, TestGlobals.Store.flashWhenLate);
+                Assert.Equal(original, TestGlobals.Store.Behavior.flashWhenLate);
             }
             finally
             {
-                TestGlobals.Store.flashWhenLate = original;
+                TestGlobals.Store.Behavior.flashWhenLate = original;
             }
         }
 

@@ -155,12 +155,26 @@ namespace DS4WindowsTests
                 }
                 else
                 {
+                    // 設定の領域（BackingStore が持つ LayoutSettings など）は、領域の名前を付けず、中の値を平らに並べる
+                    // （移す前のゴールデンと、同じ名前・同じ順序で比べるため）。
+                    var entries = new List<(string Name, object Owner, MemberInfo Member)>();
                     foreach (MemberInfo m in Members(t))
                     {
+                        Type mt = m is FieldInfo ff ? ff.FieldType : ((PropertyInfo)m).PropertyType;
+                        if (IsSettingsArea(mt))
+                        {
+                            object area = m is FieldInfo f1 ? f1.GetValue(value) : ((PropertyInfo)m).GetValue(value);
+                            foreach (MemberInfo am in Members(mt)) entries.Add((am.Name, area, am));
+                        }
+                        else entries.Add((m.Name, value, m));
+                    }
+
+                    foreach (var e in entries.OrderBy(x => x.Name, StringComparer.Ordinal))
+                    {
                         object v;
-                        try { v = m is FieldInfo f ? f.GetValue(value) : ((PropertyInfo)m).GetValue(value); }
-                        catch (Exception ex) { Line(sb, path + "." + m.Name, "<throws:" + (ex.InnerException ?? ex).GetType().Name + ">"); continue; }
-                        Visit(sb, path + "." + m.Name, v, depth + 1, stack);
+                        try { v = e.Member is FieldInfo f ? f.GetValue(e.Owner) : ((PropertyInfo)e.Member).GetValue(e.Owner); }
+                        catch (Exception ex) { Line(sb, path + "." + e.Name, "<throws:" + (ex.InnerException ?? ex).GetType().Name + ">"); continue; }
+                        Visit(sb, path + "." + e.Name, v, depth + 1, stack);
                     }
                 }
             }
@@ -185,6 +199,11 @@ namespace DS4WindowsTests
             public DS4Windows.Core.Settings.SwitchProDeviceOptions SwitchProDeviceOpts { get; }
             public bool VerboseLogMessages { get; }
         }
+
+        private static bool IsSettingsArea(Type t) =>
+            t.IsClass && t.Namespace == "DS4Windows.Core.Settings" && t != typeof(DS4Windows.Core.Settings.BackingStore)
+            && (t.Name.EndsWith("Settings", StringComparison.Ordinal) || t.Name.EndsWith("State", StringComparison.Ordinal))
+            && typeof(DS4Windows.Core.Settings.BackingStore).GetProperties().Any(p => p.PropertyType == t);
 
         private static IEnumerable<MemberInfo> Members(Type t)
         {

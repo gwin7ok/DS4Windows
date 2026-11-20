@@ -57,7 +57,7 @@ namespace DS4Windows.UI.Services
                 CultureInfo culture = CultureInfo.GetCultureInfo(cultureCode);
                 // コンテナの構築より前（-driverinstall の分岐）からも呼ばれるため、DI の解決に頼らず、
                 // 受け取った BackingStore（コンテナの Singleton と同一）へ書く。
-                _store.useLang = cultureCode;
+                _store.Appearance.useLang = cultureCode;
                 UiCulture.Set(cultureCode);
 
                 // Ensure thread and default thread cultures are set so UI localization applies

@@ -913,48 +913,48 @@ public class AppSettingsDTO
     public void MapFrom(BackingStore source)
     {
         // ProfileEditorレイアウト情報の同期
-        ProfileEditorLeftWidth = source.profileEditorLeftWidth > 0 ? source.profileEditorLeftWidth : BackingStore.DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
-        ProfileEditorRightWidth = source.profileEditorRightWidth > 0 ? source.profileEditorRightWidth : BackingStore.DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
-        SpecialActionNameColWidth = source.specialActionNameColWidth > 0 ? source.specialActionNameColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
-        SpecialActionTriggerColWidth = source.specialActionTriggerColWidth > 0 ? source.specialActionTriggerColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
-        SpecialActionDetailColWidth = source.specialActionDetailColWidth > 0 ? source.specialActionDetailColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
+        ProfileEditorLeftWidth = source.Layout.profileEditorLeftWidth > 0 ? source.Layout.profileEditorLeftWidth : BackingStore.DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
+        ProfileEditorRightWidth = source.Layout.profileEditorRightWidth > 0 ? source.Layout.profileEditorRightWidth : BackingStore.DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
+        SpecialActionNameColWidth = source.Layout.specialActionNameColWidth > 0 ? source.Layout.specialActionNameColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
+        SpecialActionTriggerColWidth = source.Layout.specialActionTriggerColWidth > 0 ? source.Layout.specialActionTriggerColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
+        SpecialActionDetailColWidth = source.Layout.specialActionDetailColWidth > 0 ? source.Layout.specialActionDetailColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
 
         // Controller tab column widths
-        ControllerIndexColWidth = source.controllerIndexColWidth > 0 ? source.controllerIndexColWidth : BackingStore.DEFAULT_CONTROLLER_INDEX_COL_WIDTH;
-        ControllerIdColWidth = source.controllerIdColWidth > 0 ? source.controllerIdColWidth : BackingStore.DEFAULT_CONTROLLER_ID_COL_WIDTH;
-        ControllerStatusColWidth = source.controllerStatusColWidth > 0 ? source.controllerStatusColWidth : BackingStore.DEFAULT_CONTROLLER_STATUS_COL_WIDTH;
-        ControllerExclusiveColWidth = source.controllerExclusiveColWidth > 0 ? source.controllerExclusiveColWidth : BackingStore.DEFAULT_CONTROLLER_EXCLUSIVE_COL_WIDTH;
-        ControllerBatteryColWidth = source.controllerBatteryColWidth > 0 ? source.controllerBatteryColWidth : BackingStore.DEFAULT_CONTROLLER_BATTERY_COL_WIDTH;
-        ControllerSelectProfileColWidth = source.controllerSelectProfileColWidth > 0 ? source.controllerSelectProfileColWidth : BackingStore.DEFAULT_CONTROLLER_SELECTPROFILE_COL_WIDTH;
-        ControllerEditColWidth = source.controllerEditColWidth > 0 ? source.controllerEditColWidth : BackingStore.DEFAULT_CONTROLLER_EDIT_COL_WIDTH;
-        ControllerLinkedProfileColWidth = source.controllerLinkedProfileColWidth > 0 ? source.controllerLinkedProfileColWidth : BackingStore.DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
-        ControllerLinkProfIdColWidth = source.controllerLinkProfIdColWidth > 0 ? source.controllerLinkProfIdColWidth : BackingStore.DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
-        ControllerCustomColorColWidth = source.controllerCustomColorColWidth > 0 ? source.controllerCustomColorColWidth : BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
-        OutputSlotNumColWidth = source.outputSlotNumColWidth > 0 ? source.outputSlotNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
-        OutputSlotInputNumColWidth = source.outputSlotInputNumColWidth > 0 ? source.outputSlotInputNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
-        OutputSlotInputIdColWidth = source.outputSlotInputIdColWidth > 0 ? source.outputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
-        OutputSlotCurrentTypeColWidth = source.outputSlotCurrentTypeColWidth > 0 ? source.outputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
-        OutputSlotReservationColWidth = source.outputSlotReservationColWidth > 0 ? source.outputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
-        AutoProfileNameColWidth = source.autoProfileNameColWidth > 0 ? source.autoProfileNameColWidth : BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
-        AutoProfilePathColWidth = source.autoProfilePathColWidth > 0 ? source.autoProfilePathColWidth : BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
-        AutoProfileTitleColWidth = source.autoProfileTitleColWidth > 0 ? source.autoProfileTitleColWidth : BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
-        LogTimeColWidth = source.logTimeColWidth > 0 ? source.logTimeColWidth : BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
-        LogDataColWidth = source.logDataColWidth > 0 ? source.logDataColWidth : BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
+        ControllerIndexColWidth = source.Layout.controllerIndexColWidth > 0 ? source.Layout.controllerIndexColWidth : BackingStore.DEFAULT_CONTROLLER_INDEX_COL_WIDTH;
+        ControllerIdColWidth = source.Layout.controllerIdColWidth > 0 ? source.Layout.controllerIdColWidth : BackingStore.DEFAULT_CONTROLLER_ID_COL_WIDTH;
+        ControllerStatusColWidth = source.Layout.controllerStatusColWidth > 0 ? source.Layout.controllerStatusColWidth : BackingStore.DEFAULT_CONTROLLER_STATUS_COL_WIDTH;
+        ControllerExclusiveColWidth = source.Layout.controllerExclusiveColWidth > 0 ? source.Layout.controllerExclusiveColWidth : BackingStore.DEFAULT_CONTROLLER_EXCLUSIVE_COL_WIDTH;
+        ControllerBatteryColWidth = source.Layout.controllerBatteryColWidth > 0 ? source.Layout.controllerBatteryColWidth : BackingStore.DEFAULT_CONTROLLER_BATTERY_COL_WIDTH;
+        ControllerSelectProfileColWidth = source.Layout.controllerSelectProfileColWidth > 0 ? source.Layout.controllerSelectProfileColWidth : BackingStore.DEFAULT_CONTROLLER_SELECTPROFILE_COL_WIDTH;
+        ControllerEditColWidth = source.Layout.controllerEditColWidth > 0 ? source.Layout.controllerEditColWidth : BackingStore.DEFAULT_CONTROLLER_EDIT_COL_WIDTH;
+        ControllerLinkedProfileColWidth = source.Layout.controllerLinkedProfileColWidth > 0 ? source.Layout.controllerLinkedProfileColWidth : BackingStore.DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
+        ControllerLinkProfIdColWidth = source.Layout.controllerLinkProfIdColWidth > 0 ? source.Layout.controllerLinkProfIdColWidth : BackingStore.DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
+        ControllerCustomColorColWidth = source.Layout.controllerCustomColorColWidth > 0 ? source.Layout.controllerCustomColorColWidth : BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
+        OutputSlotNumColWidth = source.Layout.outputSlotNumColWidth > 0 ? source.Layout.outputSlotNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
+        OutputSlotInputNumColWidth = source.Layout.outputSlotInputNumColWidth > 0 ? source.Layout.outputSlotInputNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+        OutputSlotInputIdColWidth = source.Layout.outputSlotInputIdColWidth > 0 ? source.Layout.outputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+        OutputSlotCurrentTypeColWidth = source.Layout.outputSlotCurrentTypeColWidth > 0 ? source.Layout.outputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+        OutputSlotReservationColWidth = source.Layout.outputSlotReservationColWidth > 0 ? source.Layout.outputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+        AutoProfileNameColWidth = source.Layout.autoProfileNameColWidth > 0 ? source.Layout.autoProfileNameColWidth : BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
+        AutoProfilePathColWidth = source.Layout.autoProfilePathColWidth > 0 ? source.Layout.autoProfilePathColWidth : BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
+        AutoProfileTitleColWidth = source.Layout.autoProfileTitleColWidth > 0 ? source.Layout.autoProfileTitleColWidth : BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
+        LogTimeColWidth = source.Layout.logTimeColWidth > 0 ? source.Layout.logTimeColWidth : BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
+        LogDataColWidth = source.Layout.logDataColWidth > 0 ? source.Layout.logDataColWidth : BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
 
-        LogMaxArchiveFiles = source.logMaxArchiveFiles > 0 ? source.logMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
-        LogMinLevel = !string.IsNullOrEmpty(source.logMinLevel) ? source.logMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
+        LogMaxArchiveFiles = source.Log.logMaxArchiveFiles > 0 ? source.Log.logMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
+        LogMinLevel = !string.IsNullOrEmpty(source.Log.logMinLevel) ? source.Log.logMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
 
         // ルート属性に現在のアプリ/設定バージョンをセット（シリアライザで属性として出力される）
         AppVersion = DS4Windows.Core.Platform.PathService.ExecutableVersionState;
         ConfigVersion = AppConfigVersion.ToString();
-        UseExclusiveMode = source.useExclusiveMode;
-        StartMinimized = source.startMinimized;
-        MinimizeToTaskbar = source.minToTaskbar;
-        ProcessPriority = source.processPriority;
-        FormWidth = source.formWidth;
-        FormHeight = source.formHeight;
-        FormLocationX = source.formLocationX;
-        FormLocationY = source.formLocationY;
+        UseExclusiveMode = source.Behavior.useExclusiveMode;
+        StartMinimized = source.Behavior.startMinimized;
+        MinimizeToTaskbar = source.Behavior.minToTaskbar;
+        ProcessPriority = source.Behavior.processPriority;
+        FormWidth = source.Layout.formWidth;
+        FormHeight = source.Layout.formHeight;
+        FormLocationX = source.Layout.formLocationX;
+        FormLocationY = source.Layout.formLocationY;
         // Save currently selected profiles to Controller1-8
         Controller1CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(0)) ? source.GetPersistedProfileName(0) : string.Empty;
         Controller2CurrentProfile = !string.IsNullOrEmpty(source.GetPersistedProfileName(1)) ? source.GetPersistedProfileName(1) : string.Empty;
@@ -981,48 +981,48 @@ public class AppSettingsDTO
             ControllerProfileIds = anyId ? string.Join("/", ids) : string.Empty;
         }
 
-        LastChecked = source.lastChecked;
+        LastChecked = source.UpdateCheck.lastChecked;
         // Map legacy CheckWhen into new fields if present in source profiles.
         // Prefer explicit fields when available (checkEveryValue/checkEveryUnit).
-        CheckEveryValue = source.checkEveryValue;
-        CheckEveryUnit = source.checkEveryUnit;
+        CheckEveryValue = source.UpdateCheck.checkEveryValue;
+        CheckEveryUnit = source.UpdateCheck.checkEveryUnit;
         // Map new explicit startup-check settings when available
-        CheckUpdateStartup = source.checkUpdateStartup;
-        CheckEveryValue = source.checkEveryValue;
-        CheckEveryUnit = source.checkEveryUnit;
-        LastVersionChecked = source.lastVersionChecked;
-        Notifications = source.notifications;
-        ProfileChangedNotification = source.profileChangedNotification;
-        DisconnectBTAtStop = source.disconnectBTAtStop;
-        SwipeProfiles = source.swipeProfiles;
-        QuickCharge = source.quickCharge;
-        UseMoonlight = source.useMoonlight;
-        UseAdvancedMoonlight = source.useAdvancedMoonlight;
-        CloseMinimizes = source.closeMini;
-        UseLang = source.useLang;
-        DownloadLang = source.downloadLang;
-        FlashWhenLate = source.flashWhenLate;
-        FlashWhenLateAt = source.flashWhenLateAt;
-        AppIcon = source.useIconChoice;
-        AppTheme = source.useCurrentTheme;
-        UseOSCServer = source.useOSCServ;
-        OSCServerPort = source.oscServPort;
-        InterpretingOscMonitoring = source.interpretingOscMonitoring;
-        UseOSCSender = source.useOSCSend;
-        OSCSenderPort = source.oscSendPort;
-        OSCSenderAddress = source.oscSendAddress;
-        UseUDPServer = source.useUDPServ;
-        UDPServerPort = source.udpServPort;
-        UDPServerListenAddress = source.udpServListenAddress;
+        CheckUpdateStartup = source.UpdateCheck.checkUpdateStartup;
+        CheckEveryValue = source.UpdateCheck.checkEveryValue;
+        CheckEveryUnit = source.UpdateCheck.checkEveryUnit;
+        LastVersionChecked = source.UpdateCheck.lastVersionChecked;
+        Notifications = source.Behavior.notifications;
+        ProfileChangedNotification = source.Behavior.profileChangedNotification;
+        DisconnectBTAtStop = source.Behavior.disconnectBTAtStop;
+        SwipeProfiles = source.Behavior.swipeProfiles;
+        QuickCharge = source.Behavior.quickCharge;
+        UseMoonlight = source.Behavior.useMoonlight;
+        UseAdvancedMoonlight = source.Behavior.useAdvancedMoonlight;
+        CloseMinimizes = source.Behavior.closeMini;
+        UseLang = source.Appearance.useLang;
+        DownloadLang = source.Appearance.downloadLang;
+        FlashWhenLate = source.Behavior.flashWhenLate;
+        FlashWhenLateAt = source.Behavior.flashWhenLateAt;
+        AppIcon = source.Appearance.useIconChoice;
+        AppTheme = source.Appearance.useCurrentTheme;
+        UseOSCServer = source.Network.useOSCServ;
+        OSCServerPort = source.Network.oscServPort;
+        InterpretingOscMonitoring = source.Network.interpretingOscMonitoring;
+        UseOSCSender = source.Network.useOSCSend;
+        OSCSenderPort = source.Network.oscSendPort;
+        OSCSenderAddress = source.Network.oscSendAddress;
+        UseUDPServer = source.Network.useUDPServ;
+        UDPServerPort = source.Network.udpServPort;
+        UDPServerListenAddress = source.Network.udpServListenAddress;
         UDPServerSmoothingOptions = new UDPSrvSmoothingOptionsGroup()
         {
-            UseSmoothing = source.useUdpSmoothing,
-            UdpSmoothMinCutoff = source.udpSmoothingMincutoff,
-            UdpSmoothBeta = source.udpSmoothingBeta,
+            UseSmoothing = source.Network.useUdpSmoothing,
+            UdpSmoothMinCutoff = source.Network.udpSmoothingMincutoff,
+            UdpSmoothBeta = source.Network.udpSmoothingBeta,
         };
-        UseCustomSteamFolder = source.useCustomSteamFolder;
-        CustomSteamFolder = source.customSteamFolder;
-        AutoProfileRevertDefaultProfile = source.autoProfileRevertDefaultProfile;
+        UseCustomSteamFolder = source.Network.useCustomSteamFolder;
+        CustomSteamFolder = source.Network.customSteamFolder;
+        AutoProfileRevertDefaultProfile = source.Behavior.autoProfileRevertDefaultProfile;
         AutoProfileSwitchNotifyChoice = source.autoProfileSwitchNotifyChoice;
 
         DeviceOptions = new InputDeviceOptions();
@@ -1046,49 +1046,49 @@ public class AppSettingsDTO
     public void MapTo(BackingStore destination)
     {
         // ProfileEditorレイアウト情報の同期
-        destination.profileEditorLeftWidth = ProfileEditorLeftWidth > 0 ? ProfileEditorLeftWidth : BackingStore.DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
-        destination.profileEditorRightWidth = ProfileEditorRightWidth > 0 ? ProfileEditorRightWidth : BackingStore.DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
-        destination.specialActionNameColWidth = SpecialActionNameColWidth > 0 ? SpecialActionNameColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
-        destination.specialActionTriggerColWidth = SpecialActionTriggerColWidth > 0 ? SpecialActionTriggerColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
-        destination.specialActionDetailColWidth = SpecialActionDetailColWidth > 0 ? SpecialActionDetailColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
+        destination.Layout.profileEditorLeftWidth = ProfileEditorLeftWidth > 0 ? ProfileEditorLeftWidth : BackingStore.DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
+        destination.Layout.profileEditorRightWidth = ProfileEditorRightWidth > 0 ? ProfileEditorRightWidth : BackingStore.DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
+        destination.Layout.specialActionNameColWidth = SpecialActionNameColWidth > 0 ? SpecialActionNameColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
+        destination.Layout.specialActionTriggerColWidth = SpecialActionTriggerColWidth > 0 ? SpecialActionTriggerColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
+        destination.Layout.specialActionDetailColWidth = SpecialActionDetailColWidth > 0 ? SpecialActionDetailColWidth : BackingStore.DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
 
         // Controller tab column widths
-        destination.controllerIndexColWidth = ControllerIndexColWidth > 0 ? ControllerIndexColWidth : BackingStore.DEFAULT_CONTROLLER_INDEX_COL_WIDTH;
-        destination.controllerIdColWidth = ControllerIdColWidth > 0 ? ControllerIdColWidth : BackingStore.DEFAULT_CONTROLLER_ID_COL_WIDTH;
-        destination.controllerStatusColWidth = ControllerStatusColWidth > 0 ? ControllerStatusColWidth : BackingStore.DEFAULT_CONTROLLER_STATUS_COL_WIDTH;
-        destination.controllerExclusiveColWidth = ControllerExclusiveColWidth > 0 ? ControllerExclusiveColWidth : BackingStore.DEFAULT_CONTROLLER_EXCLUSIVE_COL_WIDTH;
-        destination.controllerBatteryColWidth = ControllerBatteryColWidth > 0 ? ControllerBatteryColWidth : BackingStore.DEFAULT_CONTROLLER_BATTERY_COL_WIDTH;
-        destination.controllerSelectProfileColWidth = ControllerSelectProfileColWidth > 0 ? ControllerSelectProfileColWidth : BackingStore.DEFAULT_CONTROLLER_SELECTPROFILE_COL_WIDTH;
-        destination.controllerEditColWidth = ControllerEditColWidth > 0 ? ControllerEditColWidth : BackingStore.DEFAULT_CONTROLLER_EDIT_COL_WIDTH;
-        destination.controllerLinkedProfileColWidth = ControllerLinkedProfileColWidth > 0 ? ControllerLinkedProfileColWidth : BackingStore.DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
-        destination.controllerLinkProfIdColWidth = ControllerLinkProfIdColWidth > 0 ? ControllerLinkProfIdColWidth : BackingStore.DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
-        destination.controllerCustomColorColWidth = ControllerCustomColorColWidth > 0 ? ControllerCustomColorColWidth : BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
-        destination.outputSlotNumColWidth = OutputSlotNumColWidth > 0 ? OutputSlotNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
-        destination.outputSlotInputNumColWidth = OutputSlotInputNumColWidth > 0 ? OutputSlotInputNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
-        destination.outputSlotInputIdColWidth = OutputSlotInputIdColWidth > 0 ? OutputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
-        destination.outputSlotCurrentTypeColWidth = OutputSlotCurrentTypeColWidth > 0 ? OutputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
-        destination.outputSlotReservationColWidth = OutputSlotReservationColWidth > 0 ? OutputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
-        destination.autoProfileNameColWidth = AutoProfileNameColWidth > 0 ? AutoProfileNameColWidth : BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
-        destination.autoProfilePathColWidth = AutoProfilePathColWidth > 0 ? AutoProfilePathColWidth : BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
-        destination.autoProfileTitleColWidth = AutoProfileTitleColWidth > 0 ? AutoProfileTitleColWidth : BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
-        destination.logTimeColWidth = LogTimeColWidth > 0 ? LogTimeColWidth : BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
-        destination.logDataColWidth = LogDataColWidth > 0 ? LogDataColWidth : BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
+        destination.Layout.controllerIndexColWidth = ControllerIndexColWidth > 0 ? ControllerIndexColWidth : BackingStore.DEFAULT_CONTROLLER_INDEX_COL_WIDTH;
+        destination.Layout.controllerIdColWidth = ControllerIdColWidth > 0 ? ControllerIdColWidth : BackingStore.DEFAULT_CONTROLLER_ID_COL_WIDTH;
+        destination.Layout.controllerStatusColWidth = ControllerStatusColWidth > 0 ? ControllerStatusColWidth : BackingStore.DEFAULT_CONTROLLER_STATUS_COL_WIDTH;
+        destination.Layout.controllerExclusiveColWidth = ControllerExclusiveColWidth > 0 ? ControllerExclusiveColWidth : BackingStore.DEFAULT_CONTROLLER_EXCLUSIVE_COL_WIDTH;
+        destination.Layout.controllerBatteryColWidth = ControllerBatteryColWidth > 0 ? ControllerBatteryColWidth : BackingStore.DEFAULT_CONTROLLER_BATTERY_COL_WIDTH;
+        destination.Layout.controllerSelectProfileColWidth = ControllerSelectProfileColWidth > 0 ? ControllerSelectProfileColWidth : BackingStore.DEFAULT_CONTROLLER_SELECTPROFILE_COL_WIDTH;
+        destination.Layout.controllerEditColWidth = ControllerEditColWidth > 0 ? ControllerEditColWidth : BackingStore.DEFAULT_CONTROLLER_EDIT_COL_WIDTH;
+        destination.Layout.controllerLinkedProfileColWidth = ControllerLinkedProfileColWidth > 0 ? ControllerLinkedProfileColWidth : BackingStore.DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
+        destination.Layout.controllerLinkProfIdColWidth = ControllerLinkProfIdColWidth > 0 ? ControllerLinkProfIdColWidth : BackingStore.DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
+        destination.Layout.controllerCustomColorColWidth = ControllerCustomColorColWidth > 0 ? ControllerCustomColorColWidth : BackingStore.DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
+        destination.Layout.outputSlotNumColWidth = OutputSlotNumColWidth > 0 ? OutputSlotNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
+        destination.Layout.outputSlotInputNumColWidth = OutputSlotInputNumColWidth > 0 ? OutputSlotInputNumColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
+        destination.Layout.outputSlotInputIdColWidth = OutputSlotInputIdColWidth > 0 ? OutputSlotInputIdColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
+        destination.Layout.outputSlotCurrentTypeColWidth = OutputSlotCurrentTypeColWidth > 0 ? OutputSlotCurrentTypeColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
+        destination.Layout.outputSlotReservationColWidth = OutputSlotReservationColWidth > 0 ? OutputSlotReservationColWidth : BackingStore.DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
+        destination.Layout.autoProfileNameColWidth = AutoProfileNameColWidth > 0 ? AutoProfileNameColWidth : BackingStore.DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
+        destination.Layout.autoProfilePathColWidth = AutoProfilePathColWidth > 0 ? AutoProfilePathColWidth : BackingStore.DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
+        destination.Layout.autoProfileTitleColWidth = AutoProfileTitleColWidth > 0 ? AutoProfileTitleColWidth : BackingStore.DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
+        destination.Layout.logTimeColWidth = LogTimeColWidth > 0 ? LogTimeColWidth : BackingStore.DEFAULT_LOG_TIME_COL_WIDTH;
+        destination.Layout.logDataColWidth = LogDataColWidth > 0 ? LogDataColWidth : BackingStore.DEFAULT_LOG_DATA_COL_WIDTH;
 
-        destination.logMaxArchiveFiles = LogMaxArchiveFiles > 0 ? LogMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
-        destination.logMinLevel = !string.IsNullOrEmpty(LogMinLevel) ? LogMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
+        destination.Log.logMaxArchiveFiles = LogMaxArchiveFiles > 0 ? LogMaxArchiveFiles : BackingStore.DEFAULT_LOG_MAX_ARCHIVE_FILES;
+        destination.Log.logMinLevel = !string.IsNullOrEmpty(LogMinLevel) ? LogMinLevel : BackingStore.DEFAULT_LOG_MIN_LEVEL;
 
-        destination.useExclusiveMode = UseExclusiveMode;
-        destination.startMinimized = StartMinimized;
-        destination.minToTaskbar = MinimizeToTaskbar;
-        destination.processPriority = ProcessPriority;
-        destination.formWidth = FormWidth;
+        destination.Behavior.useExclusiveMode = UseExclusiveMode;
+        destination.Behavior.startMinimized = StartMinimized;
+        destination.Behavior.minToTaskbar = MinimizeToTaskbar;
+        destination.Behavior.processPriority = ProcessPriority;
+        destination.Layout.formWidth = FormWidth;
         // Map new explicit startup-check settings back into backing store
-        destination.checkUpdateStartup = CheckUpdateStartup;
-        destination.checkEveryValue = CheckEveryValue;
-        destination.checkEveryUnit = CheckEveryUnit;
-        destination.formHeight = FormHeight;
-        destination.formLocationX = FormLocationX;
-        destination.formLocationY = FormLocationY;
+        destination.UpdateCheck.checkUpdateStartup = CheckUpdateStartup;
+        destination.UpdateCheck.checkEveryValue = CheckEveryValue;
+        destination.UpdateCheck.checkEveryUnit = CheckEveryUnit;
+        destination.Layout.formHeight = FormHeight;
+        destination.Layout.formLocationX = FormLocationX;
+        destination.Layout.formLocationY = FormLocationY;
         // Load Controller1-8 to both profilePath/olderProfilePath and selectedProfile
         destination.profilePath[0] = destination.olderProfilePath[0] = destination.selectedProfile[0] = !string.IsNullOrEmpty(Controller1CurrentProfile) ? Controller1CurrentProfile : string.Empty;
         destination.profilePath[1] = destination.olderProfilePath[1] = destination.selectedProfile[1] = !string.IsNullOrEmpty(Controller2CurrentProfile) ? Controller2CurrentProfile : string.Empty;
@@ -1113,49 +1113,49 @@ public class AppSettingsDTO
             }
         }
 
-        destination.lastChecked = LastChecked;
+        destination.UpdateCheck.lastChecked = LastChecked;
         // Persist new explicit startup-check settings in place of legacy CheckWhen.
-        destination.checkEveryValue = CheckEveryValue;
-        destination.checkEveryUnit = CheckEveryUnit;
-        destination.lastVersionChecked = LastVersionChecked;
-        destination.notifications = Notifications;
-        destination.profileChangedNotification = ProfileChangedNotification;
-        destination.disconnectBTAtStop = DisconnectBTAtStop;
-        destination.swipeProfiles = SwipeProfiles;
-        destination.quickCharge = QuickCharge;
-        destination.useMoonlight = UseMoonlight;
-        destination.useAdvancedMoonlight = UseAdvancedMoonlight;
-        destination.closeMini = CloseMinimizes;
-        destination.useLang = UseLang;
-        destination.downloadLang = DownloadLang;
-        destination.flashWhenLate = FlashWhenLate;
-        destination.flashWhenLateAt = FlashWhenLateAt;
-        destination.useIconChoice = AppIcon;
-        destination.useCurrentTheme = AppTheme;
-        destination.useOSCServ = UseOSCServer;
-        destination.oscServPort = OSCServerPort;
-        destination.interpretingOscMonitoring = InterpretingOscMonitoring;
-        destination.useOSCSend = UseOSCSender;
-        destination.oscSendPort = OSCSenderPort;
+        destination.UpdateCheck.checkEveryValue = CheckEveryValue;
+        destination.UpdateCheck.checkEveryUnit = CheckEveryUnit;
+        destination.UpdateCheck.lastVersionChecked = LastVersionChecked;
+        destination.Behavior.notifications = Notifications;
+        destination.Behavior.profileChangedNotification = ProfileChangedNotification;
+        destination.Behavior.disconnectBTAtStop = DisconnectBTAtStop;
+        destination.Behavior.swipeProfiles = SwipeProfiles;
+        destination.Behavior.quickCharge = QuickCharge;
+        destination.Behavior.useMoonlight = UseMoonlight;
+        destination.Behavior.useAdvancedMoonlight = UseAdvancedMoonlight;
+        destination.Behavior.closeMini = CloseMinimizes;
+        destination.Appearance.useLang = UseLang;
+        destination.Appearance.downloadLang = DownloadLang;
+        destination.Behavior.flashWhenLate = FlashWhenLate;
+        destination.Behavior.flashWhenLateAt = FlashWhenLateAt;
+        destination.Appearance.useIconChoice = AppIcon;
+        destination.Appearance.useCurrentTheme = AppTheme;
+        destination.Network.useOSCServ = UseOSCServer;
+        destination.Network.oscServPort = OSCServerPort;
+        destination.Network.interpretingOscMonitoring = InterpretingOscMonitoring;
+        destination.Network.useOSCSend = UseOSCSender;
+        destination.Network.oscSendPort = OSCSenderPort;
         if (!string.IsNullOrEmpty(OSCSenderAddress))
         {
-            destination.oscSendAddress = OSCSenderAddress;
+            destination.Network.oscSendAddress = OSCSenderAddress;
         }
 
-        destination.useUDPServ = UseUDPServer;
-        destination.udpServPort = UDPServerPort;
+        destination.Network.useUDPServ = UseUDPServer;
+        destination.Network.udpServPort = UDPServerPort;
 
         if (!string.IsNullOrEmpty(UDPServerListenAddress))
         {
-            destination.udpServListenAddress = UDPServerListenAddress;
+            destination.Network.udpServListenAddress = UDPServerListenAddress;
         }
-        destination.useUdpSmoothing = UDPServerSmoothingOptions.UseSmoothing;
-        destination.udpSmoothingMincutoff = UDPServerSmoothingOptions.UdpSmoothMinCutoff;
-        destination.udpSmoothingBeta = UDPServerSmoothingOptions.UdpSmoothBeta;
+        destination.Network.useUdpSmoothing = UDPServerSmoothingOptions.UseSmoothing;
+        destination.Network.udpSmoothingMincutoff = UDPServerSmoothingOptions.UdpSmoothMinCutoff;
+        destination.Network.udpSmoothingBeta = UDPServerSmoothingOptions.UdpSmoothBeta;
 
-        destination.useCustomSteamFolder = UseCustomSteamFolder;
-        destination.customSteamFolder = CustomSteamFolder;
-        destination.autoProfileRevertDefaultProfile = AutoProfileRevertDefaultProfile;
+        destination.Network.useCustomSteamFolder = UseCustomSteamFolder;
+        destination.Network.customSteamFolder = CustomSteamFolder;
+        destination.Behavior.autoProfileRevertDefaultProfile = AutoProfileRevertDefaultProfile;
         destination.autoProfileSwitchNotifyChoice = AutoProfileSwitchNotifyChoice;
 
         destination.deviceOptions.CopyValuesFrom(DeviceOptions.Options);

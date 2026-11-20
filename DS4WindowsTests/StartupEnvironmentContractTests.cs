@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         public void LastVersionChecked_SharesStateWithGlobal_UpdatesNum_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            string original = TestGlobals.Store.lastVersionChecked ?? string.Empty;
+            string original = TestGlobals.Store.UpdateCheck.lastVersionChecked ?? string.Empty;
             var changed = new System.Collections.Generic.List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
@@ -147,9 +147,9 @@ namespace DS4WindowsTests
                 string newValue = original == "9.8.7" ? "9.8.6" : "9.8.7";
                 service.LastVersionChecked = newValue;
 
-                Assert.Equal(newValue, TestGlobals.Store.lastVersionChecked);
+                Assert.Equal(newValue, TestGlobals.Store.UpdateCheck.lastVersionChecked);
                 Assert.Equal(newValue, service.LastVersionChecked);
-                Assert.Equal(TestGlobals.Store.lastVersionCheckedNum, service.LastVersionCheckedNum);
+                Assert.Equal(TestGlobals.Store.UpdateCheck.lastVersionCheckedNum, service.LastVersionCheckedNum);
                 Assert.Contains(nameof(IAppSettingsService.LastVersionChecked), changed);
 
                 // 同じ値の再設定では通知しない
@@ -159,7 +159,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                TestGlobals.Store.lastVersionChecked = original;
+                TestGlobals.Store.UpdateCheck.lastVersionChecked = original;
             }
         }
 
@@ -169,13 +169,13 @@ namespace DS4WindowsTests
             IAppSettingsService service = TestRepositoryFactory.CreateAppSettingsService();
             CultureInfo originalThreadUi = Thread.CurrentThread.CurrentUICulture;
             CultureInfo originalDefaultUi = CultureInfo.DefaultThreadCurrentUICulture;
-            string originalUseLang = TestGlobals.Store.useLang;
+            string originalUseLang = TestGlobals.Store.Appearance.useLang;
             try
             {
                 service.SetCulture("ja");
                 Assert.Equal("ja", Thread.CurrentThread.CurrentUICulture.Name);
                 Assert.Equal("ja", CultureInfo.DefaultThreadCurrentUICulture.Name);
-                Assert.Equal(originalUseLang, TestGlobals.Store.useLang);
+                Assert.Equal(originalUseLang, TestGlobals.Store.Appearance.useLang);
 
                 // 不正なカルチャ名でも例外にしない（Global.SetCulture と同じ。try/catch で握りつぶす）。
                 // 注意: .NET は "xx-..." 形式の未知の名前を、例外にせず別のカルチャとして受け入れることがある。

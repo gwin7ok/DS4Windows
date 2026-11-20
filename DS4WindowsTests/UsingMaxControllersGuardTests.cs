@@ -101,8 +101,8 @@ namespace DS4WindowsTests
             Assert.Equal(1, BackingStore.DEFAULT_CHECK_EVERY_VALUE);
             Assert.Equal(1, BackingStore.DEFAULT_CHECK_EVERY_UNIT);
             var fresh = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
-            Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_VALUE, fresh.checkEveryValue);
-            Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_UNIT, fresh.checkEveryUnit);
+            Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_VALUE, fresh.UpdateCheck.checkEveryValue);
+            Assert.Equal(BackingStore.DEFAULT_CHECK_EVERY_UNIT, fresh.UpdateCheck.checkEveryUnit);
 
             foreach (string name in new[] { "DEFAULT_STICK_OUTPUT_CURVE", "DEFAULT_STICK_OUTPUT_CURVE_ID", "DEFAULT_SA_OUTPUT_CURVE", "DEFAULT_SA_OUTPUT_CURVE_ID" })
                 Assert.Null(typeof(BackingStore).GetField(name));

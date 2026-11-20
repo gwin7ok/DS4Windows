@@ -214,3 +214,6 @@
 | 500 行以上のファイル | 33 | 32 |
 | `BindingWindow.xaml.cs` の構造の重複 | 69% | 11% |
 | テスト（xUnit） | 3,671 | 3,682 |
+
+## RV10 の実測（2026-11-20）
+- `BackingStore` の public な可変フィールド: 107（計測の定義による）→ **24**（反射の実測。`BackingStorePublicFieldRatchetTests` が固定）。評価の再算定は未実施。
