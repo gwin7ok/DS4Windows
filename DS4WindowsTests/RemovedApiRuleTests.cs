@@ -27,6 +27,7 @@ namespace DS4WindowsTests
         /// <summary>撤去した型（単純名。どの名前空間にもないこと）。</summary>
         private static readonly string[] RemovedTypeNames =
         {
+            "TriggerType",        // PhaseRV6-5（参照 0 の列挙型）
             "PressActionController",        // PhaseRV6-1（本体が空の [Obsolete] の置き物。KeyButtonActionController へ置き換え済み）
             "MainWindowSettings",           // PhaseRV3-4（委譲だけの窓口。配置は MainWindowLayoutViewModel、その他は MainWindowsViewModel へ）
             "MainWindowEnvironment",        // PhaseRV3-4（パス・実行環境は MainWindowsViewModel へ）
