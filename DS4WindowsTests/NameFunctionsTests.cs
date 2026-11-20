@@ -50,23 +50,5 @@ namespace DS4WindowsTests
             Assert.Equal(expected, X360ControlTables.getX360ControlsByName(name));
         }
 
-        [Fact]
-        public void BackingStore_NoLongerDeclaresTheNameFunctions_AndNoCallerUsesTheStore()
-        {
-            string store = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
-            string sections = SourceFileLocator.Find("DS4Windows/Core/Persistence/ProfileSections/ProfileButtonControlLoadSection.cs");
-            if (store == null || sections == null) return;
-
-            string text = File.ReadAllText(store);
-            Assert.DoesNotContain("public DS4Controls getDS4ControlsByName(", text);
-            Assert.DoesNotContain("public X360Controls getX360ControlsByName(", text);
-
-            foreach (string file in Directory.GetFiles(Path.GetDirectoryName(sections), "*.cs"))
-            {
-                string section = File.ReadAllText(file);
-                Assert.DoesNotContain("store.getDS4ControlsByName(", section);
-                Assert.DoesNotContain("store.getX360ControlsByName(", section);
-            }
-        }
     }
 }

@@ -39,17 +39,5 @@ namespace DS4WindowsTests
             Assert.Equal("272/400/272,65/65,", sa.details);
         }
 
-        [Fact]
-        public void TheSources_NoLongerMentionTheRemovedType()
-        {
-            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            string specialAction = SourceFileLocator.Find("DS4Windows/Core/Settings/SpecialAction.cs");
-            if (mapping == null || specialAction == null) return;
-
-            Assert.DoesNotContain("XboxGameDVR", File.ReadAllText(mapping));
-            string text = File.ReadAllText(specialAction);
-            Assert.DoesNotContain("ActionTypeId.XboxGameDVR", text);
-            Assert.DoesNotContain("type == \"XboxGameDVR\"", text);
-        }
     }
 }

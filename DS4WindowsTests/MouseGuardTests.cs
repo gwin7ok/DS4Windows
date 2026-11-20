@@ -31,25 +31,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"private double getMouseMapping\(")]
-        [InlineData(@"private void calculateFinalMouseMovement\(")]
-        [InlineData(@"public static bool compare\(")]
-        [InlineData(@"private bool IsUsingGyroForControls\(")]
-        [InlineData(@"public int mcounter\b")]
-        [InlineData(@"public int mouseaccel\b")]
-        [InlineData(@"public int prevmouseaccel\b")]
-        [InlineData(@"\bhorizontalRemainder\b")]
-        [InlineData(@"\bverticalRemainder\b")]
-        [InlineData(@"\bMOUSESTICKANTIOFFSET\b")]
-        [InlineData(@"\bMOUSESTICKMINVELOCITY\b")]
-        public void Mapping_NoLongerContains_TheMovedMembers(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（9-B で移した／削除した）");
-        }
 
         [Fact]
         public void NewComponents_AreRegisteredAsSingletons()

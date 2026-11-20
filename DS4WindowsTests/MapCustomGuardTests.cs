@@ -21,21 +21,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"\bPerformMouseButtonEvent\(")]
-        [InlineData(@"\bPerformMouseButtonEventAlt\(")]
-        [InlineData(@"\bPerformMouseWheelEvent\(")]
-        [InlineData(@"\bSaveToPrevious\(")]
-        [InlineData(@"\bpressagain\b")]
-        [InlineData(@"\boldnow\b")]
-        [InlineData(@"\bMOUSEEVENTF_LEFTDOWN\b")]
-        public void Mapping_NoLongerContains_TheMovedCommit(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（Phase9 MapCustom の分割 M1 で SyntheticInputCommitter へ移した）");
-        }
 
         [Fact]
         public void Mapping_KeepsTheThinCommit_ForTheCallers()

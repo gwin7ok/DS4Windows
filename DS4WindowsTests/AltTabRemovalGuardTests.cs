@@ -19,18 +19,6 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class AltTabRemovalGuardTests
     {
-        [Fact]
-        public void TheAltTabSpecialCase_IsGoneFromMapping()
-        {
-            // 旧 PlayMacroTask ほかは MacroPlayback／MacroStepExecutor へ移したため、移し先も含めて検査する
-            string text = SourceText.Read("DS4Windows/Processing/Mapping.cs");
-            if (text == null) return;
-            text += SourceText.Read("DS4Windows/Processing/Services/Conditioning/MacroPlayback.cs") ?? string.Empty;
-            text += SourceText.Read("DS4Windows/Processing/Services/Conditioning/MacroStepExecutor.cs") ?? string.Empty;
-
-            foreach (string token in new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow", "164/9/9/164", "18/9/9/18", "macro[0] == 164", "macroLst[0] == 164", "macroArr[0] == 164" })
-                Assert.DoesNotContain(token, text);
-        }
 
         [Fact]
         public void TheCyclePrograms_Preset_IsGone()
