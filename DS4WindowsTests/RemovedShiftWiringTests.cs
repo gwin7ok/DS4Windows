@@ -151,11 +151,6 @@ namespace DS4WindowsTests
             if (mapping == null || settings == null || misc == null || bindingWindow == null) return;
 
             string mappingText = File.ReadAllText(mapping);
-            Assert.DoesNotContain("ShiftTrigger(", mappingText);
-            Assert.DoesNotContain("shiftTriggerMapping", mappingText);
-            Assert.DoesNotContain(".shiftAction", mappingText);
-            Assert.DoesNotContain("shiftExtras", mappingText);
-            Assert.DoesNotContain("shiftActionType", File.ReadAllText(settings));
             Assert.DoesNotContain("ShiftModifier\")", File.ReadAllText(misc));
             Assert.DoesNotContain("shiftBindRadio", File.ReadAllText(bindingWindow));
             Assert.DoesNotContain("shiftTriggerCombo", File.ReadAllText(bindingWindow));

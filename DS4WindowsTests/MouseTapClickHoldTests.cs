@@ -13,10 +13,10 @@ namespace DS4WindowsTests
         [Fact]
         public void TapClick_UsesHoldInsteadOfSingleFramePulse()
         {
+            Assert.Equal(50.0, ConstantValueReader.Get<double>(typeof(DS4Windows.Processing.Touchpad.TapClickDetector), "TapClickHoldMs"));
+
             string text = SourceText.ReadCode("DS4Windows/Processing/Touchpad/TapClickDetector.cs");
             if (text == null) return;
-
-            Assert.Matches(@"const\s+double\s+TapClickHoldMs\s*=\s*50\.0\s*;", text);
 
             // タップ成立（即時／Double Tap の保留）の 2 経路とも、StartTapClickHold を呼ぶ
             Assert.True(Regex.Matches(text, @"\bStartTapClickHold\(\)\s*;").Count >= 2);

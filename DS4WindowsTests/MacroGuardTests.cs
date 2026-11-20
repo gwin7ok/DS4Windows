@@ -25,22 +25,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Theory]
-        [InlineData(@"private void PlayMacro\(")]
-        [InlineData(@"private void PlayMacroTask\(")]
-        [InlineData(@"private void RunMacroOnce\(")]
-        [InlineData(@"private bool PlayMacroCodeValue\(")]
-        [InlineData(@"\bmacroControl\b")]
-        [InlineData(@"\bmacroTaskQueue\b")]
-        [InlineData(@"\b_deviceStateAccessor\b")]
-        [InlineData(@"\bEmptyMacroRepeatIntervalMs\b")]
-        public void Mapping_NoLongerContains_TheMovedMembers(string pattern)
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Mapping.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, pattern), $"Mapping.cs に '{pattern}' が残っている（9-C で移した）");
-        }
 
         [Fact]
         public void NewComponents_AreRegisteredAsSingletons()

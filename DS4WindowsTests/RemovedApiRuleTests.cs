@@ -45,6 +45,9 @@ namespace DS4WindowsTests
             "SyntheticDispatcher",          // Phase14c-Step3（静的な橋渡し）
             "ActionRegistry",               // Phase14c-Step5（本番で未初期化の静的な登録簿）
             "DS4LightBar",                  // Phase16-Step7（静的なライトバーの色の計算は ILightbarService／LightbarService へ）
+            "VJoyFeeder",                   // ステアリング・vJoy の削除
+            "SASteeringWheelEmulationUnit", // ステアリングの削除
+            "SteeringWheelAxisProvider",    // ステアリングの削除
             "InputDeviceFactory",           // Phase16-Step5b（種類ごとの switch は IInputDeviceCartridge の Create へ）
             "MouseOutputAction",            // Phase7-Step8 W2
             "IUdpServerService",            // Phase9 9-E E-3（未接続の並行実装）
@@ -117,6 +120,18 @@ namespace DS4WindowsTests
             ("Mapping", new[] { "MapClick", "ResetRuntimeStateForKey", "DispatchProfileActionEdge", "TakePendingRestoreProfileName", "ApplyProfileDirect", "RestoreProfileDirect", "keyButtonControllerLock", "keyButtonControllers" }),
             // ControlActivityReader へ移った判定と、マクロ経路の静的な出力ハンドラの参照
             ("Mapping", new[] { "IsUsingGyroForControls", "outputKBMMapping" }),
+            // Mapping から各部品へ移した・削除したメンバー（マクロ・合成入力・2 段階トリガー・マウス）
+            ("Mapping", new[] { "PlayMacro", "PlayMacroTask", "RunMacroOnce", "PlayMacroCodeValue", "_deviceStateAccessor", "EmptyMacroRepeatIntervalMs",
+                "PerformMouseButtonEvent", "PerformMouseButtonEventAlt", "PerformMouseWheelEvent", "SaveToPrevious", "pressagain", "oldnow", "MOUSEEVENTF_LEFTDOWN",
+                "hipFireMS", "EngageButtonsMode", "getMouseMapping", "calculateFinalMouseMovement", "compare", "mcounter", "mouseaccel", "prevmouseaccel",
+                "horizontalRemainder", "verticalRemainder", "MOUSESTICKANTIOFFSET", "MOUSESTICKMINVELOCITY",
+                "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow", "ShiftTrigger", "shiftTriggerMapping" }),
+            ("MacroPlayback", new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow" }),
+            ("MacroStepExecutor", new[] { "AltTabSwapping", "altTabDone", "altTabNow", "oldAltTabNow" }),
+            ("DS4ControlSettings", new[] { "shiftAction", "shiftExtras", "shiftActionType" }),
+            ("OutputDevice", new[] { "GetSteeringWheelEmulationAxis", "SteeringWheelAxisProvider" }),
+            // 名前から値を引く関数は DS4ControlNames／X360ControlTables へ移した
+            ("BackingStore", new[] { "getDS4ControlsByName", "getX360ControlsByName" }),
             // 状態の保持クラスの暫定の静的な窓口
             ("SyntheticInputState", new[] { "Shared" }),
             ("MacroRuntimeState", new[] { "Shared" }),

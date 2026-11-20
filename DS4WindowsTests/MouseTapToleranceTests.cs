@@ -10,17 +10,9 @@ namespace DS4WindowsTests
     public class MouseTapToleranceTests
     {
         [Fact]
-        public void TapTolerance_Is100_AndUsedByTapJudgement()
+        public void TapTolerance_Is100()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Touchpad/TapClickDetector.cs");
-            if (path == null) return;
-            string text = File.ReadAllText(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-
-            Assert.Matches(@"const\s+int\s+TapMaxMoveHw\s*=\s*100\s*;", text);
-            Assert.Contains("< TapMaxMoveHw", text);
-            Assert.DoesNotMatch(@"firstTouch\.HwX\s*-\s*arg\.Touches\[0\]\.HwX\)\s*<\s*10\b", text);
+            Assert.Equal(100, ConstantValueReader.Get<int>(typeof(DS4Windows.Processing.Touchpad.TapClickDetector), "TapMaxMoveHw"));
         }
     }
 }

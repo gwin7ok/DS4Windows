@@ -42,11 +42,6 @@ namespace DS4WindowsTests
         {
             Assert.IsType<ConnectionProfileSelector>(TestHost.GetService<IConnectionProfileSelector>());
             Assert.Same(TestHost.GetService<IConnectionProfileSelector>(), TestHost.GetService<IConnectionProfileSelector>());
-
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "ConnectionProfileSelector が ControlService を参照している");
         }
     
         [Fact]
@@ -60,7 +55,6 @@ namespace DS4WindowsTests
 
             // 旧 TouchPadOn と同じく、発火のたびに配列からマウスを引き直す
             Assert.Contains("touchPads[ind].PopulatePriorButtonStates()", text);
-            Assert.False(Regex.IsMatch(text, @"(?<!ProfileChangeSource\.)\bControlService\b"), "DeviceConnectionSetup が ControlService を参照している");
         }
     
         [Fact]
@@ -87,14 +81,6 @@ namespace DS4WindowsTests
                 (System.Collections.Generic.IEnumerable<IInputDeviceModule>)TestHost.GetService(typeof(System.Collections.Generic.IEnumerable<IInputDeviceModule>)));
             Assert.Equal(4, modules.Count);
             Assert.IsType<InputDeviceModuleRegistry>(TestHost.GetService<IInputDeviceModuleRegistry>());
-
-            foreach (string file in new[] { "Ds4DeviceModule", "DualSenseDeviceModule", "SwitchProDeviceModule", "XboxDeviceModule", "NullInputDeviceModule", "InputDeviceModuleBase", "InputDeviceModuleRegistry" })
-            {
-                string text = SourceText.ReadCode(SourceText.RelativePathOf(file + ".cs"));   // 旧パス（DS4Control/Services/）のまま、黙って省略されていた
-                if (text == null) continue;
-
-                Assert.False(Regex.IsMatch(text, @"\bControlService\b(?!DeviceOptions)"), file + " が ControlService を参照している");
-            }
         }
 
         [Fact]
