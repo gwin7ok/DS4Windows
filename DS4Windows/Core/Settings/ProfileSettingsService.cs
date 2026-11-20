@@ -248,10 +248,10 @@ namespace DS4Windows.Core.Settings
         // ---- Step10-2-A-8: 残余設定・デバイスオプション (m_Config委譲) ----
         public bool DS4Mapping
         {
-            get => SafeConfig != null && SafeConfig.ds4Mapping;
+            get => SafeConfig != null && SafeConfig.Behavior.ds4Mapping;
             set
             {
-                if (SafeConfig != null) SafeConfig.ds4Mapping = value;
+                if (SafeConfig != null) SafeConfig.Behavior.ds4Mapping = value;
             }
         }
 
@@ -278,10 +278,10 @@ namespace DS4Windows.Core.Settings
         // ---- Step10-2-A-9: Mapping.cs専用 ----
         public bool ProfileChangedNotification
         {
-            get => SafeConfig != null && SafeConfig.profileChangedNotification;
+            get => SafeConfig != null && SafeConfig.Behavior.profileChangedNotification;
             set
             {
-                if (SafeConfig != null) SafeConfig.profileChangedNotification = value;
+                if (SafeConfig != null) SafeConfig.Behavior.profileChangedNotification = value;
             }
         }
         public VirtualKBMMapping OutputKBMMapping { get; set; } = null!;   // 出力 KBM のハンドラーの確立（OutputKBMHandlerLifecycle）が、マッピングを使う処理より前に必ず設定する

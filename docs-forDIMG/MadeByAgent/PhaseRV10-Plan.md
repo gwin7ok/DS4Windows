@@ -1,7 +1,7 @@
 # PhaseRV10 計画書: BackingStore の公開フィールドを、設定の領域ごとの窓口へ移す
 
 作成日: 2026-11-20
-状態: **D1＝(A)、D2＝(A)、D3＝(A)、D4＝(B)（全領域をまとめて 1 コミット）で決定（2026-11-20）。着手済み**
+状態: **D1＝(A)、D2＝(A)、D3＝(A)、D4＝(B)（全領域をまとめて 1 コミット）で決定（2026-11-20）。完了（2026-11-20）**
 出典: `docs-forDIMG/Code-Review-2026-11-19/02-Scorecard.md`（オブジェクト指向 B。`BackingStore` の公開フィールド 107 件が最大の減点）、`.github/copilot-instructions.md` §3.1「設定の領域の窓口」
 動き: **機能・保存の形（XML）・ログは変えない**。フィールドの置き場所と、読み書きの経路だけを変える。
 
@@ -62,3 +62,4 @@
 ## 変更履歴
 - 2026-11-20: 作成（D1〜D4 の決定待ち）。
 - 2026-11-20: D1＝(A)、D2＝(A)、D3＝(A)、D4＝(B) を、ユーザーが選択。D4 は推奨の (A) と異なり、全領域を 1 コミットにまとめる（往復テストは先に足す）。
+- 2026-11-20: 実施。72 件を 6 つの領域（`LayoutSettings` 29、`BehaviorSettings` 16、`NetworkSettings` 14、`UpdateCheckSettings` 6、`AppearanceState` 5、`LogSettings` 2）へ移した（計画の約 66 件より 6 件多い。保存対象の項目を実測で拾い直したため）。`BackingStore` の public な可変フィールドは **24 件**（反射での実測）。`AppSettingsService.SetIfChanged` は、プロパティを ref で渡せないため、現在値と代入の処理を受ける形を足した。`AppSettingsXmlSerializer` の `out store.…` は、一時変数へ受けて代入する形へ直した（失敗時に 0 を代入する従来の動きを維持）。往復テスト（`AppSettingsRoundTripTests`）と、状態の書き出し（`BackingStoreStateDumper`が領域を平らに出し、ゴールデンは不変）で、保存の形が変わらないことを確認。`BackingStorePublicFieldRatchetTests` で基準 24 を固定。Debug ビルド 警告 0・全 3,662 テスト合格。評価の再算定（RV10-5）と実機確認（設定を変えて保存→再起動→読み込み）は未実施。

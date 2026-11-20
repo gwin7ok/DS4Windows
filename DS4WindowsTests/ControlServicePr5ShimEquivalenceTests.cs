@@ -23,36 +23,36 @@ namespace DS4WindowsTests
         [Fact]
         public void UseUdpServerSmoothing_SharesStateWithGlobal()
         {
-            bool original = TestGlobals.Store.useUdpSmoothing;
+            bool original = TestGlobals.Store.Network.useUdpSmoothing;
             try
             {
-                TestGlobals.Store.useUdpSmoothing = !original;
+                TestGlobals.Store.Network.useUdpSmoothing = !original;
                 Assert.Equal(!original, _appSettings.UseUdpServerSmoothing);
 
                 _appSettings.UseUdpServerSmoothing = original;
-                Assert.Equal(original, TestGlobals.Store.useUdpSmoothing);
+                Assert.Equal(original, TestGlobals.Store.Network.useUdpSmoothing);
             }
             finally
             {
-                TestGlobals.Store.useUdpSmoothing = original;
+                TestGlobals.Store.Network.useUdpSmoothing = original;
             }
         }
 
         [Fact]
         public void FlashWhenLateAt_SharesStateWithGlobal()
         {
-            int original = TestGlobals.Store.flashWhenLateAt;
+            int original = TestGlobals.Store.Behavior.flashWhenLateAt;
             try
             {
-                TestGlobals.Store.flashWhenLateAt = original + 7;
+                TestGlobals.Store.Behavior.flashWhenLateAt = original + 7;
                 Assert.Equal(original + 7, _appSettings.FlashWhenLateAt);
 
                 _appSettings.FlashWhenLateAt = original + 3;
-                Assert.Equal(original + 3, TestGlobals.Store.flashWhenLateAt);
+                Assert.Equal(original + 3, TestGlobals.Store.Behavior.flashWhenLateAt);
             }
             finally
             {
-                TestGlobals.Store.flashWhenLateAt = original;
+                TestGlobals.Store.Behavior.flashWhenLateAt = original;
             }
         }
 
@@ -86,16 +86,16 @@ namespace DS4WindowsTests
         [Fact]
         public void UseIconChoice_SharesStateWithGlobal()
         {
-            TrayIconChoice original = TestGlobals.Store.useIconChoice;
+            TrayIconChoice original = TestGlobals.Store.Appearance.useIconChoice;
             TrayIconChoice other = original == TrayIconChoice.Battery ? TrayIconChoice.Default : TrayIconChoice.Battery;
             try
             {
-                TestGlobals.Store.useIconChoice = other;
+                TestGlobals.Store.Appearance.useIconChoice = other;
                 Assert.Equal(other, _appearance.UseIconChoice);
             }
             finally
             {
-                TestGlobals.Store.useIconChoice = original;
+                TestGlobals.Store.Appearance.useIconChoice = original;
             }
         }
 

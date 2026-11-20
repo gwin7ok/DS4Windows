@@ -193,12 +193,12 @@ namespace DS4Windows
 
                 // Perform deterministic startup rotation
                 // （Phase7-Step4 W4: appdatapath は null の可能性がある（初回起動）ため、AppDataPath（null のとき実行フォルダ）ではなく状態そのものを渡す）
-                LogRotator.PerformStartupRotation(DS4Windows.Core.Platform.PathService.AppDataPathState, _bootstrapBackingStore.logMaxArchiveFiles);
+                LogRotator.PerformStartupRotation(DS4Windows.Core.Platform.PathService.AppDataPathState, _bootstrapBackingStore.Log.logMaxArchiveFiles);
 
                 // Immediately apply bootstrap minimum log level so early logging honors user-configured min level
                 try
                 {
-                    DS4Windows.Core.Logging.LoggerHolder.ApplyBootstrapMinLogLevel(_bootstrapBackingStore.logMinLevel);
+                    DS4Windows.Core.Logging.LoggerHolder.ApplyBootstrapMinLogLevel(_bootstrapBackingStore.Log.logMinLevel);
                 }
                 catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ AppLogger.LogDebug($"[App:205] ignored {caught.GetType().Name}: {caught.Message}"); }
             }
@@ -809,10 +809,10 @@ namespace DS4Windows
                 if (readAppConfig)
                 {
                     // Have app use selected culture
-                    _themeCulture.SetUICulture(_bootstrapBackingStore.useLang);
-                    _themeCulture.ApplyLanguageSetting(_bootstrapBackingStore.useLang);
-                    DS4Windows.Core.Settings.AppThemeChoice themeChoice = _bootstrapBackingStore.useCurrentTheme;
-                    _themeCulture.ChangeTheme(_bootstrapBackingStore.useCurrentTheme, false);
+                    _themeCulture.SetUICulture(_bootstrapBackingStore.Appearance.useLang);
+                    _themeCulture.ApplyLanguageSetting(_bootstrapBackingStore.Appearance.useLang);
+                    DS4Windows.Core.Settings.AppThemeChoice themeChoice = _bootstrapBackingStore.Appearance.useCurrentTheme;
+                    _themeCulture.ChangeTheme(_bootstrapBackingStore.Appearance.useCurrentTheme, false);
                 }
 
                 CreateBaseThread();

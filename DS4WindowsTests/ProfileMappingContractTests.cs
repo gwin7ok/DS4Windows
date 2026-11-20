@@ -35,13 +35,13 @@ namespace DS4WindowsTests
         public void UseMoonlight_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            bool original = TestGlobals.Store.useMoonlight;
+            bool original = TestGlobals.Store.Behavior.useMoonlight;
             var changed = new List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.UseMoonlight = !original;
-                Assert.Equal(!original, TestGlobals.Store.useMoonlight);
+                Assert.Equal(!original, TestGlobals.Store.Behavior.useMoonlight);
                 Assert.Equal(!original, service.UseMoonlight);
                 Assert.Contains(nameof(IAppSettingsService.UseMoonlight), changed);
 
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                TestGlobals.Store.useMoonlight = original;
+                TestGlobals.Store.Behavior.useMoonlight = original;
             }
         }
 
@@ -60,13 +60,13 @@ namespace DS4WindowsTests
         public void UseAdvancedMoonlight_SharesStateWithGlobal_AndNotifiesOnChange()
         {
             var service = TestRepositoryFactory.CreateAppSettingsService();
-            bool original = TestGlobals.Store.useAdvancedMoonlight;
+            bool original = TestGlobals.Store.Behavior.useAdvancedMoonlight;
             var changed = new List<string>();
             service.SettingChanged += (s, name) => changed.Add(name);
             try
             {
                 service.UseAdvancedMoonlight = !original;
-                Assert.Equal(!original, TestGlobals.Store.useAdvancedMoonlight);
+                Assert.Equal(!original, TestGlobals.Store.Behavior.useAdvancedMoonlight);
                 Assert.Equal(!original, service.UseAdvancedMoonlight);
                 Assert.Contains(nameof(IAppSettingsService.UseAdvancedMoonlight), changed);
 
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
             }
             finally
             {
-                TestGlobals.Store.useAdvancedMoonlight = original;
+                TestGlobals.Store.Behavior.useAdvancedMoonlight = original;
             }
         }
 

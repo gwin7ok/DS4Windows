@@ -67,36 +67,21 @@ namespace DS4Windows.Core.Settings
         public const int DEFAULT_LOG_MAX_ARCHIVE_FILES = 50;
         public const string DEFAULT_LOG_MIN_LEVEL = "Info";
 
-        public int profileEditorLeftWidth = DEFAULT_PROFILE_EDITOR_LEFT_WIDTH;
-        public int profileEditorRightWidth = DEFAULT_PROFILE_EDITOR_RIGHT_WIDTH;
-        public int specialActionNameColWidth = DEFAULT_SPECIAL_ACTION_NAME_COL_WIDTH;
-        public int specialActionTriggerColWidth = DEFAULT_SPECIAL_ACTION_TRIGGER_COL_WIDTH;
-        public int specialActionDetailColWidth = DEFAULT_SPECIAL_ACTION_DETAIL_COL_WIDTH;
+        /// <summary>画面の配置（ウィンドウの位置・大きさ、エディターの幅、一覧の列の幅）。</summary>
+        public LayoutSettings Layout { get; } = new LayoutSettings();
+        /// <summary>ログの保存の設定。</summary>
+        public LogSettings Log { get; } = new LogSettings();
+        /// <summary>更新の確認の設定。</summary>
+        public UpdateCheckSettings UpdateCheck { get; } = new UpdateCheckSettings();
+        /// <summary>通知・起動・動作の設定。</summary>
+        public BehaviorSettings Behavior { get; } = new BehaviorSettings();
+        /// <summary>OSC・UDP・Steam フォルダーの設定。</summary>
+        public NetworkSettings Network { get; } = new NetworkSettings();
+        /// <summary>言語・アイコン・テーマの設定。</summary>
+        public AppearanceState Appearance { get; } = new AppearanceState();
         // SpecialActionDeleteColWidth フィールド削除
 
-        public int controllerIndexColWidth = DEFAULT_CONTROLLER_INDEX_COL_WIDTH;
-        public int controllerIdColWidth = DEFAULT_CONTROLLER_ID_COL_WIDTH;
-        public int controllerStatusColWidth = DEFAULT_CONTROLLER_STATUS_COL_WIDTH;
-        public int controllerExclusiveColWidth = DEFAULT_CONTROLLER_EXCLUSIVE_COL_WIDTH;
-        public int controllerBatteryColWidth = DEFAULT_CONTROLLER_BATTERY_COL_WIDTH;
-        public int controllerSelectProfileColWidth = DEFAULT_CONTROLLER_SELECTPROFILE_COL_WIDTH;
-        public int controllerEditColWidth = DEFAULT_CONTROLLER_EDIT_COL_WIDTH;
-        public int controllerLinkedProfileColWidth = DEFAULT_CONTROLLER_LINKED_PROFILE_COL_WIDTH;
-        public int controllerLinkProfIdColWidth = DEFAULT_CONTROLLER_LINK_PROF_ID_COL_WIDTH;
-        public int controllerCustomColorColWidth = DEFAULT_CONTROLLER_CUSTOMCOLOR_COL_WIDTH;
-        public int outputSlotNumColWidth = DEFAULT_OUTPUT_SLOT_NUM_COL_WIDTH;
-        public int outputSlotInputNumColWidth = DEFAULT_OUTPUT_SLOT_INPUT_NUM_COL_WIDTH;
-        public int outputSlotInputIdColWidth = DEFAULT_OUTPUT_SLOT_INPUT_ID_COL_WIDTH;
-        public int outputSlotCurrentTypeColWidth = DEFAULT_OUTPUT_SLOT_CURRENT_TYPE_COL_WIDTH;
-        public int outputSlotReservationColWidth = DEFAULT_OUTPUT_SLOT_RESERVATION_COL_WIDTH;
-        public int autoProfileNameColWidth = DEFAULT_AUTO_PROFILE_NAME_COL_WIDTH;
-        public int autoProfilePathColWidth = DEFAULT_AUTO_PROFILE_PATH_COL_WIDTH;
-        public int autoProfileTitleColWidth = DEFAULT_AUTO_PROFILE_TITLE_COL_WIDTH;
-        public int logTimeColWidth = DEFAULT_LOG_TIME_COL_WIDTH;
-        public int logDataColWidth = DEFAULT_LOG_DATA_COL_WIDTH;
 
-        public int logMaxArchiveFiles = DEFAULT_LOG_MAX_ARCHIVE_FILES;
-        public string logMinLevel = DEFAULT_LOG_MIN_LEVEL;
 
         public const double DEFAULT_UDP_SMOOTH_MINCUTOFF = 0.4;
         public const double DEFAULT_UDP_SMOOTH_BETA = 0.2;
@@ -189,52 +174,27 @@ namespace DS4Windows.Core.Settings
 
 
 
-        public int processPriority;
 
 
 
 
-        public Boolean useExclusiveMode = false; // Re-enable Ex Mode
 
         public const int DEFAULT_FORM_WIDTH = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
-        public int formWidth = DEFAULT_FORM_WIDTH;
 
         public const int DEFAULT_FORM_HEIGHT = WindowLayoutDefaults.MAIN_WINDOW_HEIGHT;
-        public int formHeight = DEFAULT_FORM_HEIGHT;
 
         public const int DEFAULT_FORM_LOCATION_X = WindowLayoutDefaults.MAIN_WINDOW_LOCATION_X;
-        public int formLocationX = DEFAULT_FORM_LOCATION_X;
 
         public const int DEFAULT_FORM_LOCATION_Y = WindowLayoutDefaults.MAIN_WINDOW_LOCATION_Y;
-        public int formLocationY = DEFAULT_FORM_LOCATION_Y;
 
-        public Boolean startMinimized = false;
-        public Boolean minToTaskbar = false;
-        public DateTime lastChecked;
-        public string lastVersionChecked = string.Empty;
-        public ulong lastVersionCheckedNum;
 
         // Legacy CheckWhen removed. Store explicit defaults for the new fields.
         public const int DEFAULT_CHECK_EVERY_VALUE = 1;
         public const int DEFAULT_CHECK_EVERY_UNIT = 1;
-        // New explicit startup update-check persistence fields
-        public bool checkUpdateStartup = true;
-        // 既定値の出所を DEFAULT_CHECK_EVERY_VALUE／_UNIT に一本化した（値は従来と同じ）
-        public int checkEveryValue = DEFAULT_CHECK_EVERY_VALUE; // default 1 day
-        public int checkEveryUnit = DEFAULT_CHECK_EVERY_UNIT; // 0=hours,1=days
 
         public const int DEFAULT_NOTIFICATIONS = 2;
-        public int notifications = DEFAULT_NOTIFICATIONS;
-        public bool profileChangedNotification;
-        public bool disconnectBTAtStop = false;
 
         public const bool DEFAULT_SWIPE_PROFILES = false;
-        public bool swipeProfiles = DEFAULT_SWIPE_PROFILES;
-        public bool ds4Mapping = false;
-        public bool quickCharge = false;
-        public bool useMoonlight = false;
-        public bool useAdvancedMoonlight = false;
-        public bool closeMini = false;
         public List<SpecialAction> actions = new List<SpecialAction>();
         /// <summary>
         /// 廃止された「シフト」機能の設定（プロファイルの &lt;ShiftControl&gt;）を、解釈せずに保持する。スロットごと。
@@ -280,44 +240,23 @@ namespace DS4Windows.Core.Settings
             { new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(),
               new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>(), new Dictionary<string, int>() };
 
-        public string useLang = "";
-        public bool downloadLang = true;
-        public TrayIconChoice useIconChoice;
         public const bool DEFAULT_FLASH_WHEN_LATE = true;
-        public bool flashWhenLate = DEFAULT_FLASH_WHEN_LATE;
 
         public const int DEFAULT_FLASH_WHEN_LATE_AT = 500;
-        public int flashWhenLateAt = DEFAULT_FLASH_WHEN_LATE_AT;
-        public bool useOSCServ = false;
 
         public const int DEFAULT_OSC_SERV_PORT = 9000;
-        public int oscServPort = DEFAULT_OSC_SERV_PORT;
 
-        public bool interpretingOscMonitoring = false;
 
-        public bool useOSCSend = false;
 
         public const int DEFAULT_OSC_SEND_PORT = 9001;
-        public int oscSendPort = DEFAULT_OSC_SEND_PORT;
 
         public const string DEFAULT_OSC_SEND_ADDRESS = "127.0.0.1";
-        public string oscSendAddress = DEFAULT_OSC_SEND_ADDRESS;
-        public bool useUDPServ = false;
 
         public const int DEFAULT_UDP_SERV_PORT = 26760;
-        public int udpServPort = DEFAULT_UDP_SERV_PORT;
 
         // 127.0.0.1=IPAddress.Loopback (default), 0.0.0.0=IPAddress.Any as all interfaces, x.x.x.x = Specific ipv4 interface address or hostname
         public const string DEFAULT_UDP_SERV_LISTEN_ADDR = "127.0.0.1";
-        public string udpServListenAddress = DEFAULT_UDP_SERV_LISTEN_ADDR;
-        public bool useUdpSmoothing;
 
-        public double udpSmoothingMincutoff = DEFAULT_UDP_SMOOTH_MINCUTOFF;
-        public double udpSmoothingBeta = DEFAULT_UDP_SMOOTH_BETA;
-        public bool useCustomSteamFolder;
-        public string? customSteamFolder;
-        public AppThemeChoice useCurrentTheme;
-        public string fakeExeFileName = string.Empty;
 
 
         // debouncingMs（デバウンス時間）は機能廃止で削除した
@@ -353,7 +292,6 @@ namespace DS4Windows.Core.Settings
 
         // TRUE=AutoProfile reverts to default profile if current foreground process is unknown, FALSE=Leave existing profile active when a foreground proces is unknown (ie. no matching auto-profile rule)
         public const bool DEFAULT_AUTO_PROFILE_REVERT_DEFAULT_PROFILE = true;
-        public bool autoProfileRevertDefaultProfile = DEFAULT_AUTO_PROFILE_REVERT_DEFAULT_PROFILE;
         public AutoProfileDisplayProfileSwitchChoices autoProfileSwitchNotifyChoice =
             AutoProfileDisplayProfileSwitchChoices.None;
 
@@ -699,18 +637,18 @@ namespace DS4Windows.Core.Settings
             }
 
             // Compile shortcut version number if lastVersionChecked is populated
-            if (!string.IsNullOrEmpty(lastVersionChecked))
+            if (!string.IsNullOrEmpty(UpdateCheck.lastVersionChecked))
             {
-                lastVersionCheckedNum = VersionUtil.CompileVersionNumberFromString(lastVersionChecked);
-                if (lastVersionCheckedNum == 0) lastVersionChecked = string.Empty;
+                UpdateCheck.lastVersionCheckedNum = VersionUtil.CompileVersionNumberFromString(UpdateCheck.lastVersionChecked);
+                if (UpdateCheck.lastVersionCheckedNum == 0) UpdateCheck.lastVersionChecked = string.Empty;
             }
 
-            oscServPort = Math.Clamp(oscServPort, 1024, 65535);
-            oscSendPort = Math.Clamp(oscSendPort, 1024, 65535);
-            udpServPort = Math.Clamp(udpServPort, 1024, 65535);
+            Network.oscServPort = Math.Clamp(Network.oscServPort, 1024, 65535);
+            Network.oscSendPort = Math.Clamp(Network.oscSendPort, 1024, 65535);
+            Network.udpServPort = Math.Clamp(Network.udpServPort, 1024, 65535);
 
-            udpSmoothingMincutoff = Math.Clamp(udpSmoothingMincutoff, 0.00001, 100.0);
-            udpSmoothingBeta = Math.Clamp(udpSmoothingBeta, 0.0, 1.0);
+            Network.udpSmoothingMincutoff = Math.Clamp(Network.udpSmoothingMincutoff, 0.00001, 100.0);
+            Network.udpSmoothingBeta = Math.Clamp(Network.udpSmoothingBeta, 0.0, 1.0);
         }
 
         public static void ParseCustomLedString(string source, LightbarDS4WinInfo destination)
@@ -932,7 +870,7 @@ namespace DS4Windows.Core.Settings
             sixAxisSlots[device].ResetForProfileLoad();
             lightbarSlots[device].ResetForProfileLoad();
 
-            ds4Mapping = false;
+            Behavior.ds4Mapping = false;
         }
 
 

@@ -20,7 +20,7 @@ namespace DS4Windows.UI.Services
             _config = config;
         }
 
-        private bool NotificationsEnabled => _config.notifications != 0;
+        private bool NotificationsEnabled => _config.Behavior.notifications != 0;
 
         public void SendNotification(string title, string message, bool warning = false, bool temporary = false, bool isToast = true)
         {

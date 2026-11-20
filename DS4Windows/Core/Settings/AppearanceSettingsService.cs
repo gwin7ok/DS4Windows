@@ -17,14 +17,14 @@ namespace DS4Windows.Core.Settings
 
         public AppThemeChoice UseCurrentTheme
         {
-            get => _config.useCurrentTheme;
-            set => _config.useCurrentTheme = value;
+            get => _config.Appearance.useCurrentTheme;
+            set => _config.Appearance.useCurrentTheme = value;
         }
 
         public TrayIconChoice UseIconChoice
         {
-            get => _config.useIconChoice;
-            set => _config.useIconChoice = value;
+            get => _config.Appearance.useIconChoice;
+            set => _config.Appearance.useIconChoice = value;
         }
 
         // 旧 GetIconResourcePath は外した（Core から UI の資源の表を参照しないため）。UI が TrayIconResources から引く

@@ -72,28 +72,28 @@ namespace DS4WindowsTests
             var vm = TestHost.GetService<SettingsViewModel>();
             Assert.NotNull(vm);
 
-            bool originalQuick = TestGlobals.Store.quickCharge;
-            int originalOscPort = TestGlobals.Store.oscServPort;
-            double originalBeta = TestGlobals.Store.udpSmoothingBeta;
-            string originalLevel = TestGlobals.Store.logMinLevel;
+            bool originalQuick = TestGlobals.Store.Behavior.quickCharge;
+            int originalOscPort = TestGlobals.Store.Network.oscServPort;
+            double originalBeta = TestGlobals.Store.Network.udpSmoothingBeta;
+            string originalLevel = TestGlobals.Store.Log.logMinLevel;
             try
             {
                 vm.QuickCharge = !originalQuick;
-                Assert.Equal(!originalQuick, TestGlobals.Store.quickCharge);
+                Assert.Equal(!originalQuick, TestGlobals.Store.Behavior.quickCharge);
                 Assert.Equal(!originalQuick, vm.QuickCharge);
 
                 vm.OscPort = originalOscPort + 1;
-                Assert.Equal(originalOscPort + 1, TestGlobals.Store.oscServPort);
+                Assert.Equal(originalOscPort + 1, TestGlobals.Store.Network.oscServPort);
 
                 vm.UdpSmoothBeta = originalBeta + 0.25;
-                Assert.Equal(originalBeta + 0.25, TestGlobals.Store.udpSmoothingBeta);
+                Assert.Equal(originalBeta + 0.25, TestGlobals.Store.Network.udpSmoothingBeta);
             }
             finally
             {
-                TestGlobals.Store.quickCharge = originalQuick;
-                TestGlobals.Store.oscServPort = originalOscPort;
-                TestGlobals.Store.udpSmoothingBeta = originalBeta;
-                TestGlobals.Store.logMinLevel = originalLevel;
+                TestGlobals.Store.Behavior.quickCharge = originalQuick;
+                TestGlobals.Store.Network.oscServPort = originalOscPort;
+                TestGlobals.Store.Network.udpSmoothingBeta = originalBeta;
+                TestGlobals.Store.Log.logMinLevel = originalLevel;
                 vm.Dispose();
             }
         }

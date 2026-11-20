@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             service.CheckProfiles();
             settings.SetUseTempProfile(0, true);
             settings.SetTempProfileName(0, "GameProfile");
-            TestGlobals.Store.autoProfileRevertDefaultProfile = true;
+            TestGlobals.Store.Behavior.autoProfileRevertDefaultProfile = true;
             inspector.Path = @"c:\windows\explorer.exe";
             service.CheckProfiles();
 
