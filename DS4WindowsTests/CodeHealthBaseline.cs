@@ -52,7 +52,6 @@ namespace DS4WindowsTests
             "Processing/DS4TimedStickAxisValue.cs",
             "Processing/DeviceRuntimeState.cs",
             "Processing/Mapping.cs",
-            "Processing/MappingDoneEventArgs.cs",
             "Processing/PostMapStickData.cs",
             "Processing/ProfileUntriggerSnapshot.cs",
             "Processing/RepeatHelper.cs",
