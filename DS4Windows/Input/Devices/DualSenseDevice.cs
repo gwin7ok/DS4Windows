@@ -295,7 +295,7 @@ namespace DS4Windows.Input.Devices
             }
             else
             {
-                featureFirmRead = hDevice.readFeatureData(firmwareInfoData);
+                featureFirmRead = hDevice.ReadFeatureData(firmwareInfoData);
             }
 
             if (featureFirmRead)
@@ -336,7 +336,7 @@ namespace DS4Windows.Input.Devices
             int crc32Pos = size - 4;
             for (int tries = 0; !found && tries < 5; tries++)
             {
-                hDevice.readFeatureData(buffer);
+                hDevice.ReadFeatureData(buffer);
                 uint recvCrc32 = buffer[crc32Pos] |
                                 (uint)(buffer[crc32Pos + 1] << 8) |
                                 (uint)(buffer[crc32Pos + 2] << 16) |
@@ -421,7 +421,7 @@ namespace DS4Windows.Input.Devices
                 bool found = false;
                 for (int tries = 0; !found && tries < 5; tries++)
                 {
-                    hDevice.readFeatureData(calibration);
+                    hDevice.ReadFeatureData(calibration);
                     uint recvCrc32 = calibration[DS4_FEATURE_REPORT_5_CRC32_POS] |
                                 (uint)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 1] << 8) |
                                 (uint)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 2] << 16) |
@@ -441,12 +441,12 @@ namespace DS4Windows.Input.Devices
                     }
                 }
 
-                sixAxis.setCalibrationData(ref calibration, true);
+                sixAxis.SetCalibrationData(ref calibration, true);
             }
             else
             {
-                hDevice.readFeatureData(calibration);
-                sixAxis.setCalibrationData(ref calibration, true);
+                hDevice.ReadFeatureData(calibration);
+                sixAxis.SetCalibrationData(ref calibration, true);
             }
         }
 
@@ -487,7 +487,7 @@ namespace DS4Windows.Input.Devices
             // device.
             byte[] tmpFeatureData = new byte[64];
             tmpFeatureData[0] = SERIAL_FEATURE_ID;
-            hDevice.readFeatureData(tmpFeatureData);
+            hDevice.ReadFeatureData(tmpFeatureData);
         }
 
         private int reportOffset;
@@ -648,7 +648,7 @@ namespace DS4Windows.Input.Devices
                     // Even when idling there is still a touch packet indicating no touch 1 or 2
                     if (synced)
                     {
-                        touchpad.handleTouchpad(inputReport, cState, TOUCHPAD_DATA_OFFSET + reportOffset, touchOffset);
+                        touchpad.HandleTouchpad(inputReport, cState, TOUCHPAD_DATA_OFFSET + reportOffset, touchOffset);
                     }
                 }
                 catch (Exception ex) { frameError = $"Touchpad: {ex.Message}"; }
@@ -667,7 +667,7 @@ namespace DS4Windows.Input.Devices
 
                     if (synced)
                     {
-                        sixAxis.handleSixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime);
+                        sixAxis.HandleSixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime);
                     }
                 }
             }

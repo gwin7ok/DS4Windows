@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>機種固有の設定の入れ物（なければ null）。</summary>
         ControllerOptionsStore OptionsStore { get; }
 
-        bool isSynced();
+        bool IsSynced();
 
         bool IsAlive();
 

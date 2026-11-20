@@ -22,7 +22,7 @@ namespace DS4WindowsTests
 
         public override event ReportHandler<System.EventArgs> Report { add { } remove { } }
 
-        public override void removeReportHandlers()
+        public override void RemoveReportHandlers()
         {
         }
 

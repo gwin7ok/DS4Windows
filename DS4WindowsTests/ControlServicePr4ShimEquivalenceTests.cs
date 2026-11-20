@@ -58,8 +58,8 @@ namespace DS4WindowsTests
 
                 Assert.Equal(1, fired);
                 Assert.Same(caller, receivedSender);
-                Assert.Equal(2, receivedArgs.getIndex());
-                Assert.Equal("AA:BB:CC:DD:EE:FF", receivedArgs.getSerial());
+                Assert.Equal(2, receivedArgs.GetIndex());
+                Assert.Equal("AA:BB:CC:DD:EE:FF", receivedArgs.GetSerial());
             }
             finally
             {

@@ -14,13 +14,13 @@ namespace DS4Windows.Core.Abstractions
 
         bool isValidSerial();
 
-        bool isSynced();
+        bool IsSynced();
 
         bool IsAlive();
 
         ConnectionType getConnectionType();
 
-        bool isDS4Idle();
+        bool IsDS4Idle();
 
         int getBattery();
 

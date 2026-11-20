@@ -27,7 +27,7 @@ namespace DS4WindowsTests
                     horizontalRemainder = 0.0;
                 }
 
-                double mouseXTemp = rawMouseX - (Mapping.remainderCutoff(rawMouseX * 100.0, 1.0) / 100.0);
+                double mouseXTemp = rawMouseX - (Mapping.RemainderCutoff(rawMouseX * 100.0, 1.0) / 100.0);
                 mouseX = (int)mouseXTemp;
                 horizontalRemainder = mouseXTemp - mouseX;
 
@@ -40,7 +40,7 @@ namespace DS4WindowsTests
                     verticalRemainder = 0.0;
                 }
 
-                double mouseYTemp = rawMouseY - (Mapping.remainderCutoff(rawMouseY * 100.0, 1.0) / 100.0);
+                double mouseYTemp = rawMouseY - (Mapping.RemainderCutoff(rawMouseY * 100.0, 1.0) / 100.0);
                 mouseY = (int)mouseYTemp;
                 verticalRemainder = mouseYTemp - mouseY;
             }

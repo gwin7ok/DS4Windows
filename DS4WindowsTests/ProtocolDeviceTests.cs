@@ -82,7 +82,7 @@ namespace DS4WindowsTests
             var reportedLx = new List<byte>();
             device.Report += (sender, args) =>
             {
-                ControllerState state = sender.getCurrentStateRef();
+                ControllerState state = sender.GetCurrentStateRef();
                 reportedCross.Add(state.Cross);
                 reportedLx.Add(state.LX);
             };

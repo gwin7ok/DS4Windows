@@ -255,9 +255,9 @@ namespace DS4Windows.Input.Xbox
         // XInput には、特徴レポートがない
         public bool WriteFeatureReport(byte[] data) => false;
 
-        public bool readFeatureData(byte[] inputBuffer) => false;
+        public bool ReadFeatureData(byte[] inputBuffer) => false;
 
-        public void resetSerial()
+        public void ResetSerial()
         {
         }
 

@@ -335,7 +335,7 @@ namespace DS4Windows.Processing
             int mouseDeltaX = 0;
             int mouseDeltaY = 0;
 
-            cState.calculateStickAngles();
+            cState.CalculateStickAngles();
             ControllerStateFieldMapping fieldMapping = fieldMappings[device];
             fieldMapping.PopulateFieldMapping(cState, eState, tp);
             ControllerStateFieldMapping outputfieldMapping = outputFieldMappings[device];
@@ -460,8 +460,8 @@ namespace DS4Windows.Processing
                 if (isRightStick && stickSettings.outputSettings.controlSettings.deltaAccelSettings.enabled)
                 {
                     InputDeviceCore d = _slots.Controllers[device];
-                    ControllerState cRawState = d.getCurrentStateRef();
-                    cRawState.calculateStickAngles();
+                    ControllerState cRawState = d.GetCurrentStateRef();
+                    cRawState.CalculateStickAngles();
 
                     double maxXValue = cState.RX >= 128.0 ? 255.0 : 0.0;
                     double maxYValue = cState.RY >= 128.0 ? 255.0 : 0.0;
@@ -499,7 +499,7 @@ namespace DS4Windows.Processing
                         break;
                     case StickMode.FlickStick:
                         InputDeviceCore d = _slots.Controllers[device];
-                        ControllerState cRawState = d.getCurrentStateRef();
+                        ControllerState cRawState = d.GetCurrentStateRef();
                         ControllerState pState = d.getPreviousStateRef();
 
                         if (isRightStick)
@@ -808,7 +808,7 @@ namespace DS4Windows.Processing
         // 旧 calculateFinalMouseMovement は MouseMotionQuantizer（同）へ、そのまま移した。
         // 計算の変更履歴は git log を参照（Phase9-B-Plan.md）。
 
-        public static double remainderCutoff(double dividend, double divisor)
+        public static double RemainderCutoff(double dividend, double divisor)
         {
             return dividend - (divisor * (int)(dividend / divisor));
         }
@@ -848,22 +848,22 @@ namespace DS4Windows.Processing
             return _engine.IsSuppressed(device, control);
         }
 
-        public static bool getBoolButtonMapping(bool stateButton)
+        public static bool GetBoolButtonMapping(bool stateButton)
         {
             return stateButton;
         }
 
-        public static bool getBoolAxisDirMapping(byte stateAxis, bool positive)
+        public static bool GetBoolAxisDirMapping(byte stateAxis, bool positive)
         {
             return positive ? stateAxis > 128 + 55 : stateAxis < 128 - 55;
         }
 
-        public static bool getBoolTriggerMapping(byte stateAxis)
+        public static bool GetBoolTriggerMapping(byte stateAxis)
         {
             return stateAxis > 100;
         }
 
-        public static bool getBoolTouchMapping(bool touchButton)
+        public static bool GetBoolTouchMapping(bool touchButton)
         {
             return touchButton;
         }

@@ -41,7 +41,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             if (device == null)
                 return false;
 
-            ControllerState state = device.getCurrentStateRef();
+            ControllerState state = device.GetCurrentStateRef();
             TouchpadMouse touchPad = _slotState.TouchPads[0];
             return _mapping.GetBoolMappingExternal(0, control, state, null!, touchPad); // 記録中の判定は、露出した状態を使わない（従来どおり null）
         }

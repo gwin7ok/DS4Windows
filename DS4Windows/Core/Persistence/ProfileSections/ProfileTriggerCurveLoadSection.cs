@@ -22,7 +22,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
             int axisOutputCurveId(string name)
             {
-                return store.stickOutputCurveId(name);
+                return store.StickOutputCurveId(name);
             }
 
             // Start of DualSense specific profile load

@@ -487,9 +487,9 @@ namespace DS4Windows.UI
             }
 
             // SixAxis / ジャイロ差分更新
-            int accelX = exposeState.getAccelX();
-            int accelY = exposeState.getAccelY();
-            int accelZ = exposeState.getAccelZ();
+            int accelX = exposeState.GetAccelX();
+            int accelY = exposeState.GetAccelY();
+            int accelZ = exposeState.GetAccelZ();
             double outAccelX = interState.Motion.outputAccelX;
             double outAccelZ = interState.Motion.outputAccelZ;
 

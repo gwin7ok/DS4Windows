@@ -109,14 +109,14 @@ namespace DS4Windows.Processing.Services.Conditioning
                 _latencyMonitor.OnReport(device, ind);
 
                 ControllerState cState = _currentState[ind];
-                device.getRawCurrentState(cState);
+                device.GetRawCurrentState(cState);
 
                 ControllerState pState = device.getPreviousStateRef();
                 //device.getPreviousState(PreviousState[ind]);
                 //ControllerState pState = PreviousState[ind];
 
 
-                if (device.firstReport && device.isSynced())
+                if (device.firstReport && device.IsSynced())
                 {
                     // Emit missing-action logs once per profile-apply (respect suppression).
                     // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents

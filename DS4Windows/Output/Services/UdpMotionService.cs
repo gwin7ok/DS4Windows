@@ -256,14 +256,14 @@ namespace DS4Windows.Output.Services
             }
             else
             {
-                if (d.isSynced() || d.IsAlive())
+                if (d.IsSynced() || d.IsAlive())
                     meta.PadState = DsState.Connected;
                 else
                     meta.PadState = DsState.Reserved;
             }
 
             meta.ConnectionType = (d.getConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
-            meta.IsActive = !d.isDS4Idle();
+            meta.IsActive = !d.IsDS4Idle();
 
             int batteryLevel = d.getBattery();
             if (d.isCharging() && batteryLevel >= 100)

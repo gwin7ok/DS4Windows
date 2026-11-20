@@ -43,7 +43,7 @@ namespace DS4WindowsTests
 
                 int controlNum = (int)control;
                 ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
-                //long timeElapsed = ctrl.Controllers[device].getLastTimeElapsed();
+                //long timeElapsed = ctrl.Controllers[device].GetLastTimeElapsed();
                 //double mouseOffset = 0.025;
                 double tempMouseOffsetX = 0.0, tempMouseOffsetY = 0.0;
                 double mouseVerticalScale = 1.0;
@@ -364,7 +364,7 @@ namespace DS4WindowsTests
             }
 
             state.LX = Axis(); state.LY = Axis(); state.RX = Axis(); state.RY = Axis();
-            state.calculateStickAngles();
+            state.CalculateStickAngles();
             fields.buttons[(int)DS4Controls.Cross] = rnd.Next(2) == 0;
             fields.triggers[(int)DS4Controls.L2] = (byte)rnd.Next(256);
             fields.triggers[(int)DS4Controls.R2] = (byte)rnd.Next(256);

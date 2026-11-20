@@ -180,7 +180,7 @@ namespace DS4Windows.Input.Devices
                 bool found = false;
                 for (int tries = 0; !found && tries < 5; tries++)
                 {
-                    hDevice.readFeatureData(calibration);
+                    hDevice.ReadFeatureData(calibration);
                     uint recvCrc32 = calibration[DS4_FEATURE_REPORT_5_CRC32_POS] |
                                 (uint)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 1] << 8) |
                                 (uint)(calibration[DS4_FEATURE_REPORT_5_CRC32_POS + 2] << 16) |
@@ -200,16 +200,16 @@ namespace DS4Windows.Input.Devices
                     }
                 }
 
-                sixAxis.setCalibrationData(ref calibration, conType == ConnectionType.USB);
+                sixAxis.SetCalibrationData(ref calibration, conType == ConnectionType.USB);
 
                 if (hDevice.Attributes.ProductId == 0x5C4 && hDevice.Attributes.VendorId == 0x054C &&
-                    sixAxis.fixupInvertedGyroAxis())
+                    sixAxis.FixupInvertedGyroAxis())
                     AppLogger.LogUser(AppLogLevel.Info, "Log_Device_YawAxisFixed", Mac.ToString());
             }
             else
             {
-                hDevice.readFeatureData(calibration);
-                sixAxis.setCalibrationData(ref calibration, conType == ConnectionType.USB);
+                hDevice.ReadFeatureData(calibration);
+                sixAxis.SetCalibrationData(ref calibration, conType == ConnectionType.USB);
             }
         }
 
@@ -740,7 +740,7 @@ namespace DS4Windows.Input.Devices
                         // Even when idling there is still a touch packet indicating no touch 1 or 2
                         if (synced)
                         {
-                            touchpad.handleTouchpad(inputReport, cState, DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET, touchOffset);
+                            touchpad.HandleTouchpad(inputReport, cState, DS4Touchpad.DS4_TOUCHPAD_DATA_OFFSET, touchOffset);
                         }
                     }
                 }
@@ -761,7 +761,7 @@ namespace DS4Windows.Input.Devices
 
                     if (synced)
                     {
-                        sixAxis.handleSixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime);
+                        sixAxis.HandleSixaxis(pbGyro, pbAccel, cState, elapsedDeltaTime);
                     }
                 }
 

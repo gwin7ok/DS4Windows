@@ -214,7 +214,7 @@ namespace DS4Windows.Processing.Touchpad
 
         private void TouchpadMouseStick(int dx, int dy)
         {
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _touchStick.Apply(dx, dy, s.elapsedTime);
         }
 
@@ -287,8 +287,8 @@ namespace DS4Windows.Processing.Touchpad
                     {
                         //int iIndex = trackballBufferTail;
                         //// Establish 4 ms as the base
-                        //trackballXBuffer[iIndex] = (arg.touches[0].deltaX * TRACKBALL_SCALE) / 0.004; // dev.getCurrentStateRef().elapsedTime;
-                        //trackballYBuffer[iIndex] = (arg.touches[0].deltaY * TRACKBALL_SCALE) / 0.004; // dev.getCurrentStateRef().elapsedTime;
+                        //trackballXBuffer[iIndex] = (arg.touches[0].deltaX * TRACKBALL_SCALE) / 0.004; // dev.GetCurrentStateRef().elapsedTime;
+                        //trackballYBuffer[iIndex] = (arg.touches[0].deltaY * TRACKBALL_SCALE) / 0.004; // dev.GetCurrentStateRef().elapsedTime;
                         //trackballBufferTail = (iIndex + 1) % TRACKBALL_BUFFER_LEN;
                         //if (trackballBufferHead == trackballBufferTail)
                         //    trackballBufferHead = (trackballBufferHead + 1) % TRACKBALL_BUFFER_LEN;
@@ -316,7 +316,7 @@ namespace DS4Windows.Processing.Touchpad
         public virtual void touchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
 
             //Trace.WriteLine("TOUCHES_MOVED");
             TouchpadOutMode tempMode = touchpad.OutputMode;
@@ -371,7 +371,7 @@ namespace DS4Windows.Processing.Touchpad
 
             _buttons.ResetForNewTouch();
 
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
@@ -381,7 +381,7 @@ namespace DS4Windows.Processing.Touchpad
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             //Trace.WriteLine("TOUCHES ENDED");
 
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.WasTouched = true;
             slideright = slideleft = false;
             swipeUp = swipeDown = swipeLeft = swipeRight = false;
@@ -527,7 +527,7 @@ namespace DS4Windows.Processing.Touchpad
         {
             //Trace.WriteLine("TOUCHES UNCHANGED");
 
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             if (s.Touch1Finger)
             {
                 _buttons.WasTouched = false;
@@ -670,7 +670,7 @@ namespace DS4Windows.Processing.Touchpad
             _buttons.ClearDownFlagsKeepCandidate();
             _buttons.WasTouchButtonClicked = true;
 
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             TouchButtonActivationMode touchButtonMode = touchpad.ButtonMode;
             bool checkedOnUp = s.Touch1 || s.Touch2 ||
                 touchButtonMode == TouchButtonActivationMode.Release;
@@ -699,7 +699,7 @@ namespace DS4Windows.Processing.Touchpad
             }
 
             _buttons.WasTouchButtonClicked = false;
-            s = dev!.getCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
+            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
 
@@ -719,7 +719,7 @@ namespace DS4Windows.Processing.Touchpad
             priorSwipeDownB = swipeDownB; priorSwipedB = swipedB;
         }
 
-        public ControllerState getDS4State()
+        public ControllerState GetDS4State()
         {
             return s;
         }

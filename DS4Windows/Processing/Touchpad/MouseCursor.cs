@@ -236,8 +236,8 @@ namespace DS4Windows.Processing.Touchpad
 
             hRemainder = vRemainder = 0.0;
 
-            xMotion = xMotion - (Mapping.remainderCutoff(xMotion * 100, 1.0) / 100);
-            yMotion = yMotion - (Mapping.remainderCutoff(yMotion * 100, 1.0) / 100);
+            xMotion = xMotion - (Mapping.RemainderCutoff(xMotion * 100, 1.0) / 100);
+            yMotion = yMotion - (Mapping.RemainderCutoff(yMotion * 100, 1.0) / 100);
 
             double distSqu = (xMotion * xMotion) + (yMotion * yMotion);
             xAction = (int)xMotion;
@@ -279,7 +279,7 @@ namespace DS4Windows.Processing.Touchpad
             vDirection = yMotion > 0.0 ? Direction.Positive : yMotion < 0.0 ? Direction.Negative : Direction.Neutral;
         }
 
-        public void mouseRemainderReset(SixAxisEventArgs arg)
+        public void MouseRemainderReset(SixAxisEventArgs arg)
         {
             hRemainder = vRemainder = 0.0;
             int iIndex = smoothBufferTail % SMOOTH_BUFFER_LEN;
@@ -399,8 +399,8 @@ namespace DS4Windows.Processing.Touchpad
                 yMotion += verticalRemainder;
             }
 
-            xMotion = xMotion - (Mapping.remainderCutoff(xMotion * 100, 1.0) / 100);
-            yMotion = yMotion - (Mapping.remainderCutoff(yMotion * 100, 1.0) / 100);
+            xMotion = xMotion - (Mapping.RemainderCutoff(xMotion * 100, 1.0) / 100);
+            yMotion = yMotion - (Mapping.RemainderCutoff(yMotion * 100, 1.0) / 100);
 
             double distSqu = (xMotion * xMotion) + (yMotion * yMotion);
             int xAction = (int)xMotion;

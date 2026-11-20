@@ -93,7 +93,7 @@ namespace DS4Windows.Input
         protected int warnInterval = WARN_INTERVAL_USB;
 
         // Phase11 K-W6-10: Debouncer（デバウンスのフィルター）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
-        public int getWarnInterval()
+        public int GetWarnInterval()
         {
             return warnInterval;
         }
@@ -196,7 +196,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public bool isDisconnectingStatus()
+        public bool IsDisconnectingStatus()
         {
             return this.isDisconnecting;
         }
@@ -236,8 +236,8 @@ namespace DS4Windows.Input
         int DS4Windows.Input.Abstractions.ILightbarDevice.Battery => getBattery();
         ConnectionType DS4Windows.Input.Abstractions.ILightbarDevice.ConnectionType => getConnectionType();
         DateTime DS4Windows.Input.Abstractions.ILightbarDevice.LastActive => lastActive;
-        byte DS4Windows.Input.Abstractions.ILightbarDevice.LeftHeavySlowRumble => getLeftHeavySlowRumble();
-        byte DS4Windows.Input.Abstractions.ILightbarDevice.LightBarOnDuration => getLightBarOnDuration();
+        byte DS4Windows.Input.Abstractions.ILightbarDevice.LeftHeavySlowRumble => GetLeftHeavySlowRumble();
+        byte DS4Windows.Input.Abstractions.ILightbarDevice.LightBarOnDuration => GetLightBarOnDuration();
 
         public ConnectionType getConnectionType()
         {
@@ -255,12 +255,12 @@ namespace DS4Windows.Input
             }
         }
 
-        public int getIdleTimeout()
+        public int GetIdleTimeout()
         {
             return idleTimeout;
         }
 
-        public void setIdleTimeout(int value)
+        public void SetIdleTimeout(int value)
         {
             if (idleTimeout != value)
             {
@@ -325,13 +325,13 @@ namespace DS4Windows.Input
         }
 
         protected long lastTimeElapsed = 0;
-        public long getLastTimeElapsed()
+        public long GetLastTimeElapsed()
         {
             return lastTimeElapsed;
         }
 
         public double lastTimeElapsedDouble = 0.0;
-        public double getLastTimeElapsedDouble()
+        public double GetLastTimeElapsedDouble()
         {
             return lastTimeElapsedDouble;
         }
@@ -356,7 +356,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public byte getLeftHeavySlowRumble()
+        public byte GetLeftHeavySlowRumble()
         {
             return currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
         }
@@ -391,7 +391,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public byte getLightBarOnDuration()
+        public byte GetLightBarOnDuration()
         {
             return currentHap.lightbarState.LightBarFlashDurationOn;
         }
@@ -416,7 +416,7 @@ namespace DS4Windows.Input
             return btPollRate;
         }
 
-        public void setBTPollRate(int value)
+        public void SetBTPollRate(int value)
         {
             if (btPollRate != value && value >= 0 && value <= 16)
             {
@@ -673,7 +673,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public bool isSynced()
+        public bool IsSynced()
         {
             return synced;
         }
@@ -866,27 +866,27 @@ namespace DS4Windows.Input
             testRumble.dirty = false;
         }
 
-        public ControllerState getRawCurrentState()
+        public ControllerState GetRawCurrentState()
         {
             return cState.Clone();
         }
 
-        public ControllerState getRawPreviousState()
+        public ControllerState GetRawPreviousState()
         {
             return pState.Clone();
         }
 
-        public void getRawCurrentState(ControllerState state)
+        public void GetRawCurrentState(ControllerState state)
         {
             cState.CopyTo(state);
         }
 
-        public void getRawPreviousState(ControllerState state)
+        public void GetRawPreviousState(ControllerState state)
         {
             pState.CopyTo(state);
         }
 
-        public virtual ControllerState getCurrentStateRef()
+        public virtual ControllerState GetCurrentStateRef()
         {
             return cState;
         }
@@ -906,7 +906,7 @@ namespace DS4Windows.Input
             return pState;
         }
 
-        public bool isDS4Idle()
+        public bool IsDS4Idle()
         {
             if (cState.Square || cState.Cross || cState.Circle || cState.Triangle)
                 return false;
@@ -942,7 +942,7 @@ namespace DS4Windows.Input
                 }
                 else
                 {
-                    idleInput = isDS4Idle();
+                    idleInput = IsDS4Idle();
                     if (!idleInput)
                     {
                         lastActive = now;
@@ -955,7 +955,7 @@ namespace DS4Windows.Input
             bool shouldDisconnect = false;
             if (!isRemoved && idleTimeout > 0)
             {
-                idleInput = isDS4Idle();
+                idleInput = IsDS4Idle();
                 if (idleInput)
                 {
                     DateTime timeout = lastActive + TimeSpan.FromSeconds(idleTimeout);
@@ -1037,7 +1037,7 @@ namespace DS4Windows.Input
         }
 
         /// <summary>登録済みの <c>Report</c> の購読者を全て外す。</summary>
-        public abstract void removeReportHandlers();
+        public abstract void RemoveReportHandlers();
 
         public void queueEvent(Action act)
         {
@@ -1079,7 +1079,7 @@ namespace DS4Windows.Input
 
         public void updateSerial()
         {
-            hDevice.resetSerial();
+            hDevice.ResetSerial();
             string tempMac = hDevice.ReadSerial(SerialReportID);
             if (tempMac != Mac)
             {

@@ -278,7 +278,7 @@ namespace DS4Windows.Processing.Services.Connection
                 {
                     InputDeviceCore device = devEnum.Current;
 
-                    if (device.isDisconnectingStatus())
+                    if (device.IsDisconnectingStatus())
                         continue;
 
                     // Use local method rather than Func

@@ -292,12 +292,12 @@ namespace DS4Windows.Input.Hid
             );
         }
 
-        public bool readFeatureData(byte[] inputBuffer)
+        public bool ReadFeatureData(byte[] inputBuffer)
         {
             return NativeMethods.HidD_GetFeature(SafeReadHandle!.DangerousGetHandle(), inputBuffer, inputBuffer.Length); // 開いた後に呼ぶ（null なら従来どおり NullReferenceException）
         }
 
-        public void resetSerial()
+        public void ResetSerial()
         {
             serial = null;
         }
@@ -311,7 +311,7 @@ namespace DS4Windows.Input.Hid
             {
                 byte[] buffer = new byte[64];
                 buffer[0] = featureID;
-                if (readFeatureData(buffer))
+                if (ReadFeatureData(buffer))
                     serial = String.Format("{0:X02}:{1:X02}:{2:X02}:{3:X02}:{4:X02}:{5:X02}",
                         buffer[6], buffer[5], buffer[4], buffer[3], buffer[2], buffer[1]);
             }

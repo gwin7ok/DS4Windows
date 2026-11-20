@@ -174,7 +174,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             if (ind >= 0)
             {
-                bool synced = device.isSynced();
+                bool synced = device.IsSynced();
 
                 if (!synced)
                 {

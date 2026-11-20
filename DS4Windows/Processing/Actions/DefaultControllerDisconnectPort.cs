@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Actions
         public DisconnectTargetKind GetTargetKind(int deviceIndex)
         {
             InputDeviceCore d = Controller(deviceIndex);
-            if (d == null || !d.isSynced() || d.isCharging()) return DisconnectTargetKind.None;
+            if (d == null || !d.IsSynced() || d.isCharging()) return DisconnectTargetKind.None;
 
             switch (d.getConnectionType())
             {
@@ -44,13 +44,13 @@ namespace DS4Windows.Processing.Actions
         public bool IsDongleSynced(int deviceIndex)
         {
             InputDeviceCore d = Controller(deviceIndex);
-            return d != null && d.getConnectionType() == ConnectionType.SONYWA && d.isSynced();
+            return d != null && d.getConnectionType() == ConnectionType.SONYWA && d.IsSynced();
         }
 
         public bool IsIdle(int deviceIndex)
         {
             InputDeviceCore d = Controller(deviceIndex);
-            return d != null && d.isDS4Idle();
+            return d != null && d.IsDS4Idle();
         }
 
         public bool DisconnectDongle(int deviceIndex)

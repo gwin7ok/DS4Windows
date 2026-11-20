@@ -233,7 +233,7 @@ namespace DS4Windows.Core.Settings
             {
                 SafeConfig.rumbleSlots[index].AutostopTime = value;
                 IConfigurableDevice tempDev = _deviceState.GetConfigurableDevice(index);
-                if (tempDev != null && tempDev.isSynced())
+                if (tempDev != null && tempDev.IsSynced())
                     tempDev.RumbleAutostopTime = value;
             }
         }

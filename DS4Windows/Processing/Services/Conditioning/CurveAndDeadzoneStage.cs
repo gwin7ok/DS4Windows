@@ -47,11 +47,11 @@ namespace DS4Windows.Processing.Services.Conditioning
         {
             double rotation = /*tempDoubleArray[device] =*/  settings.ForSlot(device).Sticks.LSRotation;
             if (rotation > 0.0 || rotation < 0.0)
-                cState.rotateLSCoordinates(rotation);
+                cState.RotateLSCoordinates(rotation);
 
             double rotationRS = /*tempDoubleArray[device] =*/ settings.ForSlot(device).Sticks.RSRotation;
             if (rotationRS > 0.0 || rotationRS < 0.0)
-                cState.rotateRSCoordinates(rotationRS);
+                cState.RotateRSCoordinates(rotationRS);
 
             StickAntiSnapbackInfo lsAntiSnapback = settings.ForSlot(device).Sticks.LSAntiSnapback;
             StickAntiSnapbackInfo rsAntiSnapback = settings.ForSlot(device).Sticks.RSAntiSnapback;

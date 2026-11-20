@@ -154,11 +154,11 @@ namespace DS4Windows.Processing
                 buttons[(int)DS4Controls.TouchUpper] = tp != null ? (!priorMouse ? tp.upperDown : tp.priorUpperDown) : false;
                 buttons[(int)DS4Controls.TouchMulti] = tp != null ? (!priorMouse ? tp.multiDown : tp.priorMultiDown) : false;
 
-                int sixAxisX = -exposeState.getOutputAccelX();
+                int sixAxisX = -exposeState.GetOutputAccelX();
                 gryodirs[(int)DS4Controls.GyroXPos] = sixAxisX > 0 ? sixAxisX : 0;
                 gryodirs[(int)DS4Controls.GyroXNeg] = sixAxisX < 0 ? sixAxisX : 0;
 
-                int sixAxisZ = exposeState.getOutputAccelZ();
+                int sixAxisZ = exposeState.GetOutputAccelZ();
                 gryodirs[(int)DS4Controls.GyroZPos] = sixAxisZ > 0 ? sixAxisZ : 0;
                 gryodirs[(int)DS4Controls.GyroZNeg] = sixAxisZ < 0 ? sixAxisZ : 0;
 
