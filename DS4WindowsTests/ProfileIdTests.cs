@@ -291,9 +291,12 @@ namespace DS4WindowsTests
             if (app == null) return;
 
             string source = SourceText.ReadFileWithPartials(app);
-            int ensure = source.IndexOf("_profileIdentityService.EnsureAllPersisted()", StringComparison.Ordinal);
-            int window = source.IndexOf("ResolvePostHostService<IMainWindowFactory>().Create(parser)", StringComparison.Ordinal);
-            Assert.True(ensure > 0 && window > ensure, "プロファイルの ID の割り当てが、メイン画面の生成より前にない");
+            // 起動の手順は部分クラスのファイルに分かれているため、呼ぶ順序は、起動の入口（Application_Startup）の呼び出しの並びで確かめる
+            Assert.Contains("_profileIdentityService.EnsureAllPersisted()", source);
+            Assert.Contains("ResolvePostHostService<IMainWindowFactory>().Create(parser)", source);
+            int prepare = source.IndexOf("PrepareProfilesCultureAndTheme(", StringComparison.Ordinal);
+            int show = source.IndexOf("ShowMainWindowAndFinish(", StringComparison.Ordinal);
+            Assert.True(prepare > 0 && show > prepare, "プロファイルの ID の割り当て（PrepareProfilesCultureAndTheme）が、メイン画面の生成より前にない");
         }
     }
 }

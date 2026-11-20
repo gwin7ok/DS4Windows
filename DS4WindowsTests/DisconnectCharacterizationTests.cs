@@ -110,7 +110,7 @@ namespace DS4WindowsTests
             var callers = Sources(root)
                 .Where(f => File.ReadAllText(f).Contains(".ResetConnectionFlags();"))
                 .Select(f => Rel(root, f)).OrderBy(x => x).ToArray();
-            Assert.Equal(new[] { "DS4Windows/App.Bootstrap.cs" }, callers);
+            Assert.Equal(new[] { "DS4Windows/App.FirstRun.cs" }, callers);
         }
 
         [Fact]
@@ -125,7 +125,7 @@ namespace DS4WindowsTests
 
             Assert.Equal(new[]
             {
-                "DS4Windows/App.Bootstrap.cs",                                    // 起動時の既定の設定
+                "DS4Windows/App.FirstRun.cs",                                    // 起動時の既定の設定
                 "DS4Windows/Core/Abstractions/IProfileRepository.cs",
                 "DS4Windows/Core/Settings/BackingStore.cs",
                 "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.Mapping.cs",        // アプリ設定の読込
