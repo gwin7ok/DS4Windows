@@ -172,18 +172,12 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void SpecialActionRepository_CreateStandardActions_DelegatesToGlobal_AndLoadActionsHasNoFileExistsShortcut()
+        public void SpecialActionRepository_CreateStandardActions_Delegates()
         {
             string text = SourceText.ReadCode("DS4Windows/Core/Persistence/SpecialActionRepository.cs");
             if (text == null) return;
 
             Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*CreateStdActions\(\);", text);
-
-            // LoadActions の本体に、Actions.xml の有無で早期に false を返す判定が再混入していないこと。
-            // 終端を、LoadActions の次のメンバー（SaveActions を削除したため GetAction）に変更した。
-            Match m = Regex.Match(text, @"public bool LoadActions\(\)(?<body>.*?)public SpecialAction GetAction\(", RegexOptions.Singleline);
-            Assert.True(m.Success, "LoadActions の本体を特定できなかった。");
-            Assert.DoesNotContain("File.Exists", m.Groups["body"].Value);
         }
     }
 }

@@ -20,6 +20,9 @@ namespace DS4WindowsTests
 
         public override ControllerState GetPreviousStateRef() => Previous;
 
+        /// <summary>電池の残量（%）を直接設定する（読み取りのループを持たないため）。</summary>
+        public void SetBattery(int percent) => battery = percent;
+
         public override event ReportHandler<System.EventArgs> Report { add { } remove { } }
 
         public override void RemoveReportHandlers()

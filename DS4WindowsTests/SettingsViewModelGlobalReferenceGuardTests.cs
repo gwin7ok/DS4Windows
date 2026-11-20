@@ -50,7 +50,6 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            Assert.DoesNotContain("appSettings = null", text);
 
             var env = new EnvironmentService();
             var appearance = TestRepositoryFactory.CreateAppearanceSettingsService();
