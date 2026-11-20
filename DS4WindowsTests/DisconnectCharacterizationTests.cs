@@ -128,7 +128,7 @@ namespace DS4WindowsTests
                 "DS4Windows/App.xaml.cs",                                        // 起動時の既定の設定
                 "DS4Windows/Core/Abstractions/IProfileRepository.cs",
                 "DS4Windows/Core/Settings/BackingStore.cs",
-                "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs",                // アプリ設定の読込
+                "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.Mapping.cs",        // アプリ設定の読込
                 "DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs",
                 "DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs",   // 初回接続の既定
                 "DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction

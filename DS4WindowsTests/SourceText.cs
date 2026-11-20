@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DS4WindowsTests
@@ -30,6 +32,20 @@ namespace DS4WindowsTests
         {
             string text = Read(relativePath, callerFile);
             return text == null ? null : StripComments(text);
+        }
+
+        /// <summary>
+        /// コメントを除いた全文。<c>partial</c> で分けた型のため、<c>Name.cs</c> と同じ場所の <c>Name.*.cs</c> を続けて返す。ソースなしの環境では null。
+        /// </summary>
+        public static string ReadCodeWithPartials(string relativePath, [CallerFilePath] string callerFile = "")
+        {
+            string path = SourceFileLocator.Find(relativePath, callerFile);
+            if (path == null) return null;
+            string stem = Path.GetFileNameWithoutExtension(path);
+            var sb = new StringBuilder(StripComments(File.ReadAllText(path)));
+            foreach (string f in Directory.GetFiles(Path.GetDirectoryName(path), stem + ".*.cs").OrderBy(x => x, StringComparer.Ordinal))
+                sb.Append('\n').Append(StripComments(File.ReadAllText(f)));
+            return sb.ToString();
         }
 
         /// <summary>コメントを除き、空白（改行を含む）の連続を 1 つの空白にした全文（書式に依存しない照合用）。ソースなしの環境では null。</summary>

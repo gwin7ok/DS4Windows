@@ -21,6 +21,7 @@ namespace DS4WindowsTests
             ["Ds4OutputCartridge.cs"] = "DS4 の出力のカートリッジ（自分の種類を名乗る）",
             ["OutContTypeInfo.cs"] = "種類ごとの値の表（保存キー、IPC の名前、ボタン名の表、既定の種類）",
             ["ControllerLayouts.cs"] = "出力ピッカーの図の対応表（種類 → 配置表と背景の画像）",
+            ["ProfilePresets.Gyro.cs"] = "DS4 の出力の種類を選ぶ名前の付いたプリセット（LoadDefaultDS4GamepadGyroProfile など。ProfilePresets.cs を分けたもの）",
             ["ProfilePresets.cs"] = "DS4 の出力の種類を選ぶ名前の付いたプリセット（LoadBlankDS4Profile など）",
         };
 
