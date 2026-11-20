@@ -218,13 +218,9 @@ namespace DS4WindowsTests
         // ---- ソースのガード ----
 
         [Fact]
-        public void TheSources_CarryTheMouseWiring()
+        public void TheFrameOutput_SupportsTheToggleOutput()
         {
-            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            string frameOutput = SourceFileLocator.Find("DS4Windows/Processing/Actions/FrameOutput.cs");
-            if (registration == null || frameOutput == null) return;
-
-            Assert.Contains("IToggleFrameOutput", File.ReadAllText(frameOutput));
+            Assert.True(typeof(DS4Windows.Processing.Actions.IToggleFrameOutput).IsAssignableFrom(typeof(DS4Windows.Processing.Actions.FrameOutput)));
         }
     }
 }

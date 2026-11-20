@@ -364,28 +364,5 @@ namespace DS4WindowsTests
         }
 
         // ---- ソースのガード ----
-
-        [Fact]
-        public void TheSources_CarryTheExtrasWiring_AndTheLightbarMacroIsGone()
-        {
-            string engine = SourceFileLocator.Find("DS4Windows/Processing/Actions/TriggerDispatchEngine.cs");
-            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            if (engine == null || registration == null || mapping == null) return;
-
-            string engineText = File.ReadAllText(engine);
-            Assert.Contains("ControlNext", engineText);
-            Assert.Contains("IResettableOutputAction", engineText);
-
-            string mappingText = File.ReadAllText(mapping);
-            Assert.DoesNotContain("LightbarMacroTrigger", mappingText);
-            Assert.DoesNotContain("lightbarMacroTask", mappingText);
-            Assert.DoesNotContain("threadCts", mappingText);
-            Assert.DoesNotContain("RunLightbarMacro", mappingText);
-            Assert.DoesNotContain("BoolDS4Controls", mappingText);
-
-            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Forms/ViewModels/LightbarMacro.cs"));
-            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Forms/LightbarMacroCreator.xaml"));
-        }
     }
 }

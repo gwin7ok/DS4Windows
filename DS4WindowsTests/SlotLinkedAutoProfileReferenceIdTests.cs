@@ -215,16 +215,10 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<LinkedProfilesXmlSerializer>());
             Assert.NotNull(TestHost.GetService<AutoProfileHolder>());
 
-            foreach (string relative in new[]
+            // 登録簿は、コンストラクターの引数で受ける（渡らないと ID を書かず・使わない）
+            foreach (Type type in new[] { typeof(AppSettingsXmlSerializer), typeof(LinkedProfilesXmlSerializer), typeof(AutoProfileHolder) })
             {
-                "DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs",
-                "DS4Windows/Core/Persistence/LinkedProfilesXmlSerializer.cs",
-                "DS4Windows/Core/Profiles/AutoProfileHolder.cs",
-            })
-            {
-                string path = SourceFileLocator.Find(relative);
-                if (path == null) continue;
-                Assert.Contains("IProfileIdentityService", File.ReadAllText(path));
+                Assert.Contains(type.GetConstructors().SelectMany(c => c.GetParameters()), p => p.ParameterType == typeof(IProfileIdentityService));
             }
         }
     }

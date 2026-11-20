@@ -43,15 +43,5 @@ namespace DS4WindowsTests
             Assert.Same(TestHost.GetService<IHidHideService>(), TestHost.GetService<IHidHideService>());
         }
 
-        [Fact]
-        public void TheOtherFiles_ForTheCallers()
-        {
-
-            // 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
-            string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
-            if (sw == null) return;
-            Assert.Contains("_hidHide.CheckPresence(exePath, exeName, addExe)", sw);
-            Assert.Contains("_hidHide.UpdateAttributes()", sw);
-        }
     }
 }

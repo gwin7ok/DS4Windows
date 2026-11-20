@@ -183,9 +183,25 @@ namespace DS4WindowsTests
             // 使う側が、存在を確かめてから使う（無ければ既定の Steam フォルダーへ）。この確認を外す変更は、保存を許す前提を壊す
             // 確認は MainWindowsViewModel.CustomSteamFolderIfValid が持ち、画面は、その値が無いときだけ既定の Steam フォルダーへ進む
             Assert.Contains("mainWinVM.CustomSteamFolderIfValid ?? (Directory.Exists(AutoProfiles.steamCommx86Loc)", text);
-            string settings = SourceFileLocator.Find("DS4Windows/UI/ViewModels/MainWindowsViewModel.cs");
-            if (settings == null) return;
-            Assert.Contains("_appSettings.UseCustomSteamFolder && System.IO.Directory.Exists(_appSettings.CustomSteamFolder)", File.ReadAllText(settings));
+        }
+
+        [Fact]
+        public void TheViewModel_ReturnsTheCustomFolderOnlyWhenItIsEnabledAndExists()
+        {
+            var appSettings = TestRepositoryFactory.CreateAppSettingsService();
+            var vm = new MainWindowsViewModel(new EnvironmentService(), new PathService(), new FakeServiceLifecycle(), new FakeShellLauncher(), new FakeDialogService(),
+                new DS4Windows.UI.Services.UpdateCheckPolicy(new FakeChangelogService(), appSettings), new FakeRuntimeFeatureSwitch(), new FakeProcessPriorityControl(), appSettings);
+            string existing = Path.GetTempPath();
+
+            appSettings.UseCustomSteamFolder = false;
+            appSettings.CustomSteamFolder = existing;
+            Assert.Null(vm.CustomSteamFolderIfValid);
+
+            appSettings.UseCustomSteamFolder = true;
+            Assert.Equal(existing, vm.CustomSteamFolderIfValid);
+
+            appSettings.CustomSteamFolder = Path.Combine(existing, "no-such-folder-" + Guid.NewGuid().ToString("N"));
+            Assert.Null(vm.CustomSteamFolderIfValid);
         }
     }
 }
