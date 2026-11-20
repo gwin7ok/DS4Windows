@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Persistence
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(store.m_controllerConfigs);
 
-                XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.getMacAddress() + "\"]");
+                XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
                 if (node != null)
                 {
                     // Phase9 Steering 削除 W2: 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
@@ -89,7 +89,7 @@ namespace DS4Windows.Core.Persistence
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(store.m_controllerConfigs);
 
-                XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.getMacAddress() + "\"]");
+                XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
                 XmlNode xmlControllersNode = xmlDoc.SelectSingleNode("/Controllers");
                 if (node == null)
                 {
@@ -102,7 +102,7 @@ namespace DS4Windows.Core.Persistence
                 }
 
                 XmlAttribute macAttr = xmlDoc.CreateAttribute("Mac");
-                macAttr.Value = device.getMacAddress();
+                macAttr.Value = device.GetMacAddress();
                 node.Attributes.Append(macAttr);
 
                 XmlAttribute contTypeAttr = xmlDoc.CreateAttribute("ControllerType");

@@ -706,7 +706,7 @@ namespace DS4Windows.Processing.Touchpad
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TOUCHBTN] device={deviceNum} down mode={touchpad.ButtonMode} touches={arg.Touches?.Length} active={arg.TouchActive} pressed={arg.TouchButtonPressed} L={leftDown} R={rightDown} U={upperDown} M={multiDown}");
         }
 
-        public void populatePriorButtonStates()
+        public void PopulatePriorButtonStates()
         {
             priorUpperDown = upperDown;
             priorLeftDown = leftDown;

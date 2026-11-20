@@ -13,7 +13,7 @@ namespace DS4Windows.Core.Abstractions
     public interface IConfigurableDevice
     {
         /// <summary>MAC アドレス（コントローラー固有の設定の保存先のキー）。</summary>
-        string getMacAddress();
+        string GetMacAddress();
 
         /// <summary>デバイスの種類（設定の保存先の属性、DualSense かの判定）。</summary>
         InputDeviceType DeviceType { get; }

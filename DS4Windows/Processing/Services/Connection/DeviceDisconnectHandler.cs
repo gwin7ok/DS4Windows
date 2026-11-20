@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Services.Connection
             int ind = -1;
             for (int i = 0, arlength = host.Controllers.Length; ind == -1 && i < arlength; i++)
             {
-                if (host.Controllers[i] != null && device.getMacAddress() == host.Controllers[i].getMacAddress())
+                if (host.Controllers[i] != null && device.GetMacAddress() == host.Controllers[i].GetMacAddress())
                     ind = i;
             }
 
@@ -213,7 +213,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             if (ind >= 0)
             {
-                _deviceStateService.OnDeviceSerialChange(host, ind, device.getMacAddress());   // Phase13-Step5: 送り主は IDeviceSlotState（旧: ControlService）。購読者はいない
+                _deviceStateService.OnDeviceSerialChange(host, ind, device.GetMacAddress());   // Phase13-Step5: 送り主は IDeviceSlotState（旧: ControlService）。購読者はいない
             }
         }
     }

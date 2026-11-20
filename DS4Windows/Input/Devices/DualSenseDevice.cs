@@ -277,7 +277,7 @@ namespace DS4Windows.Input.Devices
                 outReportBuffer = new byte[BT_OUTPUT_REPORT_LENGTH];
 
                 warnInterval = WARN_INTERVAL_BT;
-                synced = isValidSerial();
+                synced = IsValidSerial();
             }
 
             if (runCalib)

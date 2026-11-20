@@ -12,8 +12,8 @@ namespace DS4Windows.Processing.Abstractions
     {
         /// <summary>
         /// プロファイルを選んで、スロットへ適用する。適用できたら true。
-        /// <paramref name="isValidSerial"/> が false のとき（MAC が使えない）は、<paramref name="macAddress"/> は使わず、従来のスロット単位で判定する。
+        /// <paramref name="IsValidSerial"/> が false のとき（MAC が使えない）は、<paramref name="macAddress"/> は使わず、従来のスロット単位で判定する。
         /// </summary>
-        bool ApplyOnConnect(int index, bool useAutoProfile, bool isValidSerial, string? macAddress);
+        bool ApplyOnConnect(int index, bool useAutoProfile, bool IsValidSerial, string? macAddress);
     }
 }

@@ -69,7 +69,7 @@ namespace DS4Windows.Input.Devices
                 else
                 {
                     warnInterval = WARN_INTERVAL_BT;
-                    runCalib = synced = isValidSerial();
+                    runCalib = synced = IsValidSerial();
                 }
             }
             else
@@ -96,7 +96,7 @@ namespace DS4Windows.Input.Devices
                     btOutputPayloadLen = outputReport.Length;
                 }
                 warnInterval = WARN_INTERVAL_BT;
-                synced = isValidSerial();
+                synced = IsValidSerial();
             }
 
             if (runCalib)

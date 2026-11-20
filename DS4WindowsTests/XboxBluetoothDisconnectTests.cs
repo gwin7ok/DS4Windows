@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             InputDeviceCore device = NewDevice(BlePath, 0x0B22);
 
             Assert.Equal(ConnectionType.BT, device.getConnectionType());
-            Assert.Equal("3C:FA:06:17:28:7C", device.getMacAddress());
+            Assert.Equal("3C:FA:06:17:28:7C", device.GetMacAddress());
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace DS4WindowsTests
                 InputDeviceCore device = new XboxDeviceCartridge().Create(InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
                 device.PostInit();
 
-                Assert.Equal(candidate.Transport.ReadSerial(), device.getMacAddress());
+                Assert.Equal(candidate.Transport.ReadSerial(), device.GetMacAddress());
             }
         }
 

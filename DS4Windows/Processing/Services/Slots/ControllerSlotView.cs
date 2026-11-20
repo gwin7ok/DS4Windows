@@ -47,7 +47,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public bool Synced => Device.Synced;
 
-        public bool HasValidSerial => Device.isValidSerial();
+        public bool HasValidSerial => Device.IsValidSerial();
 
         public bool IsRemoving => Device.IsRemoving;
 

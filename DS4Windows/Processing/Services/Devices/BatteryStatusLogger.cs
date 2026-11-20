@@ -58,7 +58,7 @@ namespace DS4Windows.Processing.Services.Devices
                 try
                 {
                     if (AppLogger.IsDebugEnabled) AppLogger.LogDebug(Format(i + 1, device.DeviceType.ToString(), device.ConnectionType.ToString(),
-                        device.getMacAddress(), device.Battery, device.Charging));
+                        device.GetMacAddress(), device.Battery, device.Charging));
                 }
                 catch (Exception ex)
                 {

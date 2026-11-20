@@ -341,10 +341,10 @@ namespace DS4Windows.Processing
             ControllerStateFieldMapping outputfieldMapping = outputFieldMappings[device];
             outputfieldMapping.PopulateFieldMapping(cState, eState, tp);
             // Phase8-Step4 W4: トリガー判定の入力と、フレームの出力の書き込み口を、このフレームの表に合わせる（割り当て 0）
-            // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の getPreviousStateRef と同じ）を渡す。
+            // Phase8-Step7 7.7b: 前フレームの状態（MultiAction のエッジ判定用）は、デバイスの前回のレポート（旧経路の GetPreviousStateRef と同じ）を渡す。
             // 前フレームの表は、WasActive が最初に呼ばれたときにだけ作る（遅延）ため、MultiAction がなければ費用は増えない。デバイスがなければ null（従来どおり）
             ControllerState? previousState = null;
-            try { previousState = _slots.Controllers[device]?.getPreviousStateRef(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            try { previousState = _slots.Controllers[device]?.GetPreviousStateRef(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
             _triggerInputs[device].Update(cState, previousState, eState, tp, fieldMapping);
             _frameOutputs[device].Bind(outputfieldMapping, this.deviceState[device]);
             _sampleState[device] = cState;
@@ -500,7 +500,7 @@ namespace DS4Windows.Processing
                     case StickMode.FlickStick:
                         InputDeviceCore d = _slots.Controllers[device];
                         ControllerState cRawState = d.GetCurrentStateRef();
-                        ControllerState pState = d.getPreviousStateRef();
+                        ControllerState pState = d.GetPreviousStateRef();
 
                         if (isRightStick)
                         {

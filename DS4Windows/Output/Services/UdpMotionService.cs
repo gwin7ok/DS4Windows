@@ -239,17 +239,17 @@ namespace DS4Windows.Output.Services
                 //return meta;
             }
 
-            bool isValidSerial = false;
-            string stringMac = d.getMacAddress();
+            bool IsValidSerial = false;
+            string stringMac = d.GetMacAddress();
             if (!string.IsNullOrEmpty(stringMac))
             {
                 stringMac = string.Join("", stringMac.Split(':'));
                 //stringMac = stringMac.Replace(":", "").Trim();
                 meta.PadMacAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(stringMac);
-                isValidSerial = d.isValidSerial();
+                IsValidSerial = d.IsValidSerial();
             }
 
-            if (!isValidSerial)
+            if (!IsValidSerial)
             {
                 //meta.PadMacAddress = null;
                 meta.PadState = DsState.Disconnected;

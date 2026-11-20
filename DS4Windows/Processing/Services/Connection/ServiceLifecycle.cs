@@ -287,7 +287,7 @@ namespace DS4Windows.Processing.Services.Connection
                         for (int Index = 0, arlength = slots.Controllers.Length; Index < arlength; Index++)
                         {
                             if (slots.Controllers[Index] != null &&
-                                slots.Controllers[Index].getMacAddress() == device.getMacAddress())
+                                slots.Controllers[Index].GetMacAddress() == device.GetMacAddress())
                             {
                                 device.CheckControllerNumDeviceSettings(numControllers);
                                 return true;

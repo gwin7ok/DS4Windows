@@ -10,9 +10,9 @@ namespace DS4Windows.Core.Abstractions
     /// </summary>
     public interface IPadStatusSource
     {
-        string getMacAddress();
+        string GetMacAddress();
 
-        bool isValidSerial();
+        bool IsValidSerial();
 
         bool IsSynced();
 

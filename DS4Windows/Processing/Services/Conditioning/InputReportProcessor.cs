@@ -111,7 +111,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 ControllerState cState = _currentState[ind];
                 device.GetRawCurrentState(cState);
 
-                ControllerState pState = device.getPreviousStateRef();
+                ControllerState pState = device.GetPreviousStateRef();
                 //device.getPreviousState(PreviousState[ind]);
                 //ControllerState pState = PreviousState[ind];
 

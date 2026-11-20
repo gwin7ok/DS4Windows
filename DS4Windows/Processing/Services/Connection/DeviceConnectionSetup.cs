@@ -157,8 +157,8 @@ namespace DS4Windows.Processing.Services.Connection
             device.Touchpad.TouchesEnded += tPad.touchesEnded;
             device.Touchpad.TouchesEnded += tPad.TouchStartedOrEnded;
             device.Touchpad.TouchUnchanged += tPad.touchUnchanged;
-            //device.Touchpad.PreTouchProcess += delegate { touchPads[ind].populatePriorButtonStates(); };
-            device.Touchpad.PreTouchProcess += (sender, args) => { touchPads[ind].populatePriorButtonStates(); };
+            //device.Touchpad.PreTouchProcess += delegate { touchPads[ind].PopulatePriorButtonStates(); };
+            device.Touchpad.PreTouchProcess += (sender, args) => { touchPads[ind].PopulatePriorButtonStates(); };
             device.SixAxis.SixAccelMoved += tPad.sixaxisMoved;
             //LogDebug("Touchpad mode for " + device.MacAddress + " is now " + tmode.ToString());
             //Log.LogToTray("Touchpad mode for " + device.MacAddress + " is now " + tmode.ToString());

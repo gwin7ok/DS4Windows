@@ -105,8 +105,8 @@ namespace DS4Windows.Processing.Services.Connection
             bool useAutoProfile = _profileSettings.GetUseTempProfile(index);
 
             // Phase9 9-E E-6a: プロファイルの選択と適用（初回接続／再接続、Linked、一時プロファイル）は ConnectionProfileSelector へ移した
-            bool isValidSerial = device.isValidSerial();
-            profileLoaded = _connectionProfileSelector.ApplyOnConnect(index, useAutoProfile, isValidSerial, isValidSerial ? device.getMacAddress() : null);
+            bool IsValidSerial = device.IsValidSerial();
+            profileLoaded = _connectionProfileSelector.ApplyOnConnect(index, useAutoProfile, IsValidSerial, IsValidSerial ? device.GetMacAddress() : null);
 
             if (profileLoaded || useAutoProfile)
             {

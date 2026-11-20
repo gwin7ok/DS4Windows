@@ -225,7 +225,7 @@ namespace DS4Windows.Input
 
         public string MacAddress => Mac;
         public event EventHandler? MacAddressChanged;
-        public string getMacAddress()
+        public string GetMacAddress()
         {
             return this.Mac;
         }
@@ -891,7 +891,7 @@ namespace DS4Windows.Input
             return cState;
         }
 
-        public virtual ControllerState getPreviousStateRef()
+        public virtual ControllerState GetPreviousStateRef()
         {
             return pState;
         }
@@ -1089,12 +1089,12 @@ namespace DS4Windows.Input
             }
         }
 
-        public bool isValidSerial()
+        public bool IsValidSerial()
         {
             return !Mac.Equals(BLANK_SERIAL);
         }
 
-        public static bool isValidSerial(string test)
+        public static bool IsValidSerial(string test)
         {
             return !test.Equals(BLANK_SERIAL);
         }
