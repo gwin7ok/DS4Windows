@@ -5,7 +5,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase13-Step10 10-c（Phase13-Step10-Plan.md）: 画面（メイン画面、自動プロファイル画面、起動処理）が使う、実行中の機能の切り替えの窓口。
+    /// 画面（メイン画面、自動プロファイル画面、起動処理）が使う、実行中の機能の切り替えの窓口。
     /// OSC の受信・送信、UDP モーション、HidHide のホワイトリスト、タッチパッドのスライド表示を、それぞれの本物のサービスへ委譲するだけで、状態は持たない。
     /// 以前は <c>ControlService</c> の転送メンバー（<c>ChangeOSCListenerStatus</c>／<c>ChangeOSCSenderStatus</c>／<c>ChangeUDPStatus</c>／<c>ChangeMotionEventStatus</c>／
     /// <c>CheckHidHidePresence</c>／<c>UpdateHidHiddenAttributes</c>／<c>TouchpadSlide</c>）と、プロファイル編集画面が使う <c>GetActiveInputControl</c>／<c>setRumble</c> の転送だった。

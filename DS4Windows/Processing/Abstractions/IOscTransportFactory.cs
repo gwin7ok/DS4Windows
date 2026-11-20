@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-1（Phase9-E-Plan.md）: OSC の通信（SharpOSC の <c>UDPListener</c>／<c>UDPSender</c>）の生成。
+    /// OSC の通信（SharpOSC の <c>UDPListener</c>／<c>UDPSender</c>）の生成。
     /// <see cref="IOscService"/> が SharpOSC の型を直接持たないようにするための境界（実装は <c>SharpOscTransportFactory</c>）。
     /// </summary>
     public interface IOscTransportFactory

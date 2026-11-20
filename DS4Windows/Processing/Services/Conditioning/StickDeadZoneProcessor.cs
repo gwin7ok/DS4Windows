@@ -8,10 +8,10 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-A(1) (b)（Phase9-A1-Plan.md §2）: <see cref="IStickDeadZoneProcessor"/> の実装（DI の Singleton。状態は持たない）。
+    /// <see cref="IStickDeadZoneProcessor"/> の実装（DI の Singleton。状態は持たない）。
     /// 旧 <c>Mapping.SetCurveAndDeadzone</c> の左スティックのデッドゾーンの処理（Radial と Axial、Radial の外側の出力）を、そのまま移したもの
     /// （右スティックのコードは、名前と数値の書き方［<c>128f</c> と <c>128.0</c>］以外は同じだったため、このメソッドに統合した。計算結果は変わらない）。
-    /// 値の特性化は <c>Phase9A1SetCurveAndDeadzoneGoldenTests</c> が守る。
+    /// 値の特性化は 対応するテスト が守る。
     /// </summary>
     public sealed class StickDeadZoneProcessor : IStickDeadZoneProcessor
     {

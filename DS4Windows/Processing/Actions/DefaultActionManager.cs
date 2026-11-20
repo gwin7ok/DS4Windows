@@ -15,10 +15,10 @@ namespace DS4Windows.Processing.Actions
         // Button state table: device x controlIndex
         private bool[,] buttonStates = null;
         private const int ToggleReleaseHoldMsLocal = 200;
-        // Phase7-Step8 W2（Q8＝A）: 切断時の後始末（旧: Mapping.HandleDeviceDisconnect の静的呼び出し）。ホスト構築時（PreallocateEntries）に Mapping とその依存を
-        // 作らないよう、遅延（Func）で受ける（Phase5-Plan §5.4）。
-        // Phase13-Step8: 遅延取得のまま残す（意図的）。Mapping の依存グラフの内側（Mapping → … → ActionManager）にあり、直接受けると循環する。
-        // ホスト構築時（AppHost.PreallocateActionEntries）に Mapping を作らない理由も兼ねる。再検討条件: Mapping が IManagedActionManager に依存しなくなったとき。許可リスト: Phase13FuncRatchetGuardTests
+        // 切断時の後始末。ホスト構築時（PreallocateEntries）に Mapping とその依存を
+        // 作らないよう、遅延（Func）で受ける。
+        // 遅延取得のまま残す（意図的）。Mapping の依存グラフの内側（Mapping → … → ActionManager）にあり、直接受けると循環する。
+        // ホスト構築時（AppHost.PreallocateActionEntries）に Mapping を作らない理由も兼ねる。再検討条件: Mapping が IManagedActionManager に依存しなくなったとき。許可リスト: 対応するテスト
         private readonly Func<DS4Windows.Processing.Abstractions.IMapping> _mappingProvider;
 
         public event Action<SpecialAction, int, bool, bool> ToggledOnChanged;
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Actions
             ArgumentNullException.ThrowIfNull(mappingProvider);
             _mappingProvider = mappingProvider;
 
-            // Phase13-Step4: 旧 静的 ActionManager の静的コンストラクターが購読していたログ（文言は同じ）。静的イベントの廃止に伴い、本クラスが持つ
+            // 旧 静的 ActionManager の静的コンストラクターが購読していたログ（文言は同じ）。静的イベントの廃止に伴い、本クラスが持つ
             ToggledOnChanged += (sa, dev, oldv, newv) =>
             {
                 if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ActionManager.ToggledOnChanged: name={sa?.name} device={dev} old={oldv} new={newv}");
@@ -60,7 +60,6 @@ namespace DS4Windows.Processing.Actions
         {
             try
             {
-                // Phase14c-Step5（決定 E3）: 旧「静的な ActionRegistry の全アクションの ActionEntry を先に作る」ループは削除した。
                 // ActionRegistry は本番では一度も Initialize されず（作られた 2025-12-18 から呼び出しなし）、ループは常に空だった。ActionEntry は GetStateFor が必要な時に作る
 
                 // Initialize button state table for all devices × supported control indices
@@ -184,13 +183,13 @@ namespace DS4Windows.Processing.Actions
                     }
                 }
 
-                // Phase6-Step9b-2（F02）: （Phase13-Step4 で廃止した旧 静的ファサード ActionManager.ClearDeviceState と同じく）
+                //
                 // Mapping.HandleDeviceDisconnect を呼ぶ（保持中の合成キーの解放、カスタムマッピングキューとマクロキューの
                 // クリア、KeyButtonActionController の破棄［ClearKeyButtonControllersForDevice を内包］）。
                 // 2026-09-04（31dddc43）から本クラスは未登録で静的実装が使われ、実機確認はその挙動で行われていたため、
                 // 再登録で挙動が変わらないよう揃えた（以前の ClearKeyButtonControllersForDevice 単体では、
                 // 押しっぱなしの合成キーが解放されない）。
-                // Phase7b W1: HandleDeviceDisconnect は deviceRuntime を作り直し、プロファイル切替のスペシャルアクション
+                // HandleDeviceDisconnect は deviceRuntime を作り直し、プロファイル切替のスペシャルアクション
                 // （「Unload on trigger release」など）の復帰の合図（UntriggerAction）も消す。ClearDeviceState は
                 // プロファイル適用でも呼ばれ、切断ではないため、合図を退避して戻す（実際の切断は ControlService が
                 // Mapping.HandleDeviceDisconnect を直接呼ぶので、合図は消える）。

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3）: プロファイルの固定 ID と名前（ファイル名）を結ぶ登録簿。
+    /// プロファイルの固定 ID と名前（ファイル名）を結ぶ登録簿。
     /// ID は、プロファイル XML のルート直下の <c>&lt;ProfileId&gt;</c>（GUID の <c>N</c> 形式）に保存する。名前を変えても変わらない。
     /// W1 では、ID の割り当て・検索だけを提供し、参照は名前のまま（参照を ID に替えるのは W3〜W4）。名前は、拡張子なしのファイル名。
     /// </summary>
@@ -19,7 +19,7 @@ namespace DS4Windows.Core.Abstractions
         IReadOnlyList<string> EnsureAllPersisted();
 
         /// <summary>
-        /// Phase10-Step4d W5a: メモリの索引（ID ↔ 名前）を、プロファイルのフォルダーから作り直す。通常は不要（フォルダーの変更を、検索のたびに見分けて、自動で作り直す）。
+        /// メモリの索引（ID ↔ 名前）を、プロファイルのフォルダーから作り直す。通常は不要（フォルダーの変更を、検索のたびに見分けて、自動で作り直す）。
         /// 外から ID の中身だけを書き換えた直後など、確実に反映したいときに呼ぶ。
         /// </summary>
         void Refresh();
@@ -34,7 +34,7 @@ namespace DS4Windows.Core.Abstractions
         string EnsurePersisted(string profileName);
 
         /// <summary>
-        /// Phase11 W6 K-W6-8: 名前のプロファイルに、<b>新しい ID を振って書く</b>（すでに ID があっても置き換える）。アプリ内の複製（Duplicate）が、
+        /// 名前のプロファイルに、<b>新しい ID を振って書く</b>（すでに ID があっても置き換える）。アプリ内の複製（Duplicate）が、
         /// ファイルのコピーの直後に、コピー側が元と同じ ID を持たないようにするために呼ぶ。書いた ID を返す。ファイルがない・書けないときは null
         /// （起動時の <see cref="EnsureAllPersisted"/> が、重複を直す）。
         /// </summary>

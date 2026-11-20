@@ -5,7 +5,7 @@ using System;
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase12-Step2 2b-2: 列挙されたトップレベルのウィンドウ 1 つ。照合に使う値は、<see cref="IProcessInspector.GetForegroundProcessInfo"/> と
+    /// 列挙されたトップレベルのウィンドウ 1 つ。照合に使う値は、<see cref="IProcessInspector.GetForegroundProcessInfo"/> と
     /// 同じ約束にそろえる（パスは小文字・バックスラッシュ正規化、タイトルは小文字）。そのため <see cref="WindowTargetMatcher.IsMatch"/> へそのまま渡せる。
     /// </summary>
     public class WindowCandidate

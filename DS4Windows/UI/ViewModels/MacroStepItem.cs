@@ -110,7 +110,7 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        // Phase12-Step3 3d（R-3）: マウス移動ステップの編集（モード、X、Y）。範囲外の座標は MacroPointerMove が端に丸める
+        // マウス移動ステップの編集（モード、X、Y）。範囲外の座標は MacroPointerMove が端に丸める
         public int PointerModeIndex
         {
             get => MacroPointerMove.TryFromMacroValue(step.Value, out MacroPointerMove move) ? (int)move.Mode : 0;

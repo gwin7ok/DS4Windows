@@ -3,7 +3,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2。Q5＝A）: Controls タブの Extras の出力（<see cref="ControlExtrasOutputAction"/>）が、
+    /// Controls タブの Extras の出力（<see cref="ControlExtrasOutputAction"/>）が、
     /// 実機の振動、ライトバーの強制色（静的な <c>DS4LightBar</c>）、ボタン感度の一時変更（<c>ButtonMouseInfo</c>）を操作する窓口。
     /// 出力が静的な状態や <c>ControlService</c> に直接触れず、テストで差し替えられるようにする（前例: <see cref="IBatteryCheckPort"/>）。
     /// 範囲外のデバイスや、コントローラーがいないときは、何もしない（例外にしない）。

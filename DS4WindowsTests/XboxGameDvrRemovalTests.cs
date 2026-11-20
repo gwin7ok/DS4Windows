@@ -8,7 +8,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.7a（Phase8-Step7-7-Plan.md Q1＝A。ユーザーの決定）: XboxGameDVR 種別の削除の確認。
+    /// XboxGameDVR 種別の削除の確認。
     /// 実行時にマクロが実行されず、編集画面から新しく作れず、保存でも書き出されない機能だったため、機能ごと削除した。
     /// </summary>
     public class XboxGameDvrRemovalTests
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheMultiActionType_StillKeepsItsDetailsAsGiven()
         {
-            // MultiAction の details（タップ、長押し、ダブルタップのマクロ）は、そのまま保たれる（旧経路は、この文字列をそのままマクロとして実行する）
+            // MultiAction の details（タップ、長押し、ダブルタップのマクロ）は、そのまま保たれる
             var sa = new SpecialAction("p8s77a_multi", "PS", "MultiAction", "272/400/272,65/65,", 0, string.Empty);
 
             Assert.Equal(SpecialAction.ActionTypeId.MultiAction, sa.typeID);

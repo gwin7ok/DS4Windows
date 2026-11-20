@@ -5,8 +5,8 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W1（Q1＝A）: <c>Mapping.Commit</c>（合成入力の出力）、<c>MapClick</c>、<c>getBool*Mapping</c>、
-    /// <c>HandleDeviceDisconnect</c> の特性化テスト。出力は <see cref="RecordingVirtualKbmBase"/>（<c>OutputKBMHandlerAdapter.Handler</c>（旧 Global.outputKBMHandler）へ差す）で記録する。
+    /// <c>Mapping.Commit</c>（合成入力の出力）、<c>MapClick</c>、<c>getBool*Mapping</c>、
+    /// <c>HandleDeviceDisconnect</c> の特性化テスト。出力は <see cref="RecordingVirtualKbmBase"/>（<c>OutputKBMHandlerAdapter.Handler</c>へ差す）で記録する。
     /// ホイールは <c>Commit</c> が実時間（150ms）で連続送出するため、フレーク防止のため範囲外とする。
     /// <c>Mapping</c> の静的な状態を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>

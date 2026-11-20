@@ -9,12 +9,12 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7b-1: `ProfileSettingsViewModel` が、設定の読み書き先（`Device`＝編集スロット）とは別に、
+    /// `ProfileSettingsViewModel` が、設定の読み書き先（`Device`＝編集スロット）とは別に、
     /// 実機のスロット番号 `targetDevice` を持ち、実機を使う機能（`FuncDevNum`、ライトバー強制色のプレビュー）が
     /// `targetDevice` だけを使うことを固定する。
     /// Step7b-3 以降、プロファイル編集画面の編集スロットは常に `Global.TEST_PROFILE_INDEX`（8）になるため、
     /// 編集スロットに 8 を渡したときにも、実機側の処理が `targetDevice` の添字で動くことを確認する。
-    /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する（Phase6-Status.md §6.4-1）。
+    /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する。
     /// </summary>
     public class ProfileSettingsViewModelTargetDeviceTests
     {

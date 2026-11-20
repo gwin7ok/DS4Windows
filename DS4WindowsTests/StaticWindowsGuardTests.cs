@@ -10,7 +10,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10d W2（Q5・Q6＝A）: 環境・パスの窓口、Windows の判定、定数・文化を <c>Global</c> から持ち主の型へ移したことの回帰ガード。
+    /// 環境・パスの窓口、Windows の判定、定数・文化を <c>Global</c> から持ち主の型へ移したことの回帰ガード。
     /// </summary>
     public class StaticWindowsGuardTests
     {
@@ -24,7 +24,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Global_NoLongerDeclaresTheMovedMembers()
         {
-            // Phase7-Step10d W5: Global 型ごと削除した（GlobalRemovedGuardTests が型の不在を確認する）
+            // Global 型ごと削除した（GlobalRemovedGuardTests が型の不在を確認する）
             Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
         }
 

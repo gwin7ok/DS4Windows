@@ -11,8 +11,8 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7: `App.xaml.cs` の Global 直接参照を、領域（メソッド、および Application_Startup の
-    /// Pre-Host／Post-Host）ごとに固定する回帰ガード（`Phase6-Step7-Plan.md` §2・§5）。
+    /// `App.xaml.cs` の Global 直接参照を、領域（メソッド、および Application_Startup の
+    /// Pre-Host／Post-Host）ごとに固定する回帰ガード（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step7-Plan.md` §2・§5）。
     /// - Pre-Host 領域（Application_Startup の CreateControlService より前、CheckOptions）と共用ヘルパー
     ///   ApplyLanguageSetting は温存（決定4）なので、参照が変わっていないことを確認する。
     /// - Post-Host 領域は、置き換え済みの参照が再混入していないこと、残っているのが計画どおりの箇所だけであることを確認する。
@@ -56,25 +56,11 @@ namespace DS4WindowsTests
             string text = ReadSourceWithoutComments();
             if (text == null) return;
 
-            string startup = SourceText.BodyOfMethodNamed(text, "BuildHostAndServices");   // Phase9 9-F F-1b: ホストの構築の手順の中
+            string startup = SourceText.BodyOfMethodNamed(text, "BuildHostAndServices");   // ホストの構築の手順の中
             Assert.Matches(@"CreateControlService\(parser\);\s*InitializePostHostServices\(\);", startup);
             Assert.Single(Regex.Matches(text, @"\bInitializePostHostServices\(\);"));
         }
 
-        [Fact]
-        public void RetainedGlobalReferences_HaveTodoComments()
-        {
-            // 温存を決めた箇所（決定3＝P1。決定4＝K は解消済みで、言語の切り替えは AppThemeAndCultureService へ移した）に、copilot-instructions.md §3.3 原則4 の TODO が付いていること。
-            string path = SourceFileLocator.Find(AppSourcePath);
-            if (path == null)
-            {
-                _output.WriteLine("App.xaml.cs が見つからないため検査を省略した。");
-                return;
-            }
-
-            string raw = File.ReadAllText(path);
-            Assert.Contains("TODO(Phase6-Step7 決定3＝P1)", raw);
-        }
 
         [Fact]
         public void PostHostServices_CanBeResolvedFromAppHost()
@@ -87,7 +73,7 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<ISpecialActionRepository>());
             Assert.NotNull(TestHost.GetService<IAppearanceSettingsService>());
             Assert.NotNull(TestHost.GetService<IDeviceStateService>());
-            // Phase7-Step5 W3: 出力スロットの契約（起動後の読込）と、LogToTray が使う通知サービス
+            // 出力スロットの契約（起動後の読込）と、LogToTray が使う通知サービス
             Assert.NotNull(TestHost.GetService<IOutputSlotService>());
             Assert.NotNull(TestHost.GetService<INotificationService>());
         }

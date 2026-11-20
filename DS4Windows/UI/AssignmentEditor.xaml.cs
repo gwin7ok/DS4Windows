@@ -97,7 +97,7 @@ namespace DS4Windows.UI
             defaultActTab.Visibility = Visibility.Collapsed;
             unboundActTab.Visibility = Visibility.Collapsed;
 
-            // Phase10-Step3: 入力の制限は、種別の一覧の項目の表示・非表示だけで行う（検証・保存ボタンは、モードを区別しない）。
+            // 入力の制限は、種別の一覧の項目の表示・非表示だけで行う（検証・保存ボタンは、モードを区別しない）。
             // Controls のモード: 「種別を選んでください」（添字 0）を隠す（選べるのは、Default／Macro／Output Key/Mouse/Button／Unbound）。
             // SA のモード: Controls のモードだけの「Default」「Unbound」を隠す
             if (controlMode)
@@ -221,7 +221,7 @@ namespace DS4Windows.UI
             dialog.Owner = Application.Current.MainWindow;
             DS4Color tempcolor = checkBatteryVM.EmptyColor;
             dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
-            // Phase6-Step7b: 色のプレビューは実機（targetDevice）に対して行う。実機なしなら何もしない
+            // 色のプレビューは実機（targetDevice）に対して行う。実機なしなら何もしない
             if (HasTargetDevice) checkBatteryVM.StartForcedColor(tempcolor, targetDevice);
             dialog.ColorChanged += (sender2, color) =>
             {
@@ -238,7 +238,7 @@ namespace DS4Windows.UI
             dialog.Owner = Application.Current.MainWindow;
             DS4Color tempcolor = checkBatteryVM.FullColor;
             dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
-            // Phase6-Step7b: 色のプレビューは実機（targetDevice）に対して行う。実機なしなら何もしない
+            // 色のプレビューは実機（targetDevice）に対して行う。実機なしなら何もしない
             if (HasTargetDevice) checkBatteryVM.StartForcedColor(tempcolor, targetDevice);
             dialog.ColorChanged += (sender2, color) =>
             {

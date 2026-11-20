@@ -4,7 +4,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 共通の編集画面の、編集の対象（名前、新規か編集か、保存済みの値、名前の検証）。
+    /// 共通の編集画面の、編集の対象（名前、新規か編集か、保存済みの値、名前の検証）。
     /// SA のモード（<see cref="SpecialActionEditTarget"/>）は、名前を編集でき、名前の重複を検査する。Controls のモード（W3・W4 で追加）は、
     /// 名前が、対象のボタン名で固定（編集不可）で、重複の検査はない。
     /// </summary>

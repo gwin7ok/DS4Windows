@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace DS4Windows.UI
 {
     /// <summary>
-    /// Phase9 9-F F-2b（Phase9-F-Plan.md §6）: MainWindow の IPC コマンド（WM_COPYDATA）の処理。旧 <c>WndProc</c> の巨大な if の連なりを、コマンドごとのメソッドへ分けた。
+    /// MainWindow の IPC コマンド（WM_COPYDATA）の処理。旧 <c>WndProc</c> の巨大な if の連なりを、コマンドごとのメソッドへ分けた。
     /// コマンドの受け付け順（if／else if の順序）、条件、例外の握りつぶし、query の結果の書き込みは、従来のまま。UI の部品に触れるため、MainWindow の partial に置く。
     /// </summary>
     public partial class MainWindow
@@ -24,14 +24,14 @@ namespace DS4Windows.UI
         {
             try
             {
-                DS4Windows.Core.Platform.COPYDATASTRUCT cds = (DS4Windows.Core.Platform.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(DS4Windows.Core.Platform.COPYDATASTRUCT));   // Phase14b-Step16: 旧 App.COPYDATASTRUCT
+                DS4Windows.Core.Platform.COPYDATASTRUCT cds = (DS4Windows.Core.Platform.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(DS4Windows.Core.Platform.COPYDATASTRUCT));   // 旧 App.COPYDATASTRUCT
                 if (IpcCommandParser.IsValidSize(cds.cbData))
                 {
                     byte[] buffer = new byte[cds.cbData];
                     Marshal.Copy(cds.lpData, buffer, 0, cds.cbData);
                     string[] strData = IpcCommandParser.Parse(buffer);
 
-                    // Phase13-Step11 11-c: コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序・条件は従来のまま）
+                    // コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序・条件は従来のまま）
                     ipcDispatcher.Execute(ipcHost, strData);
                 }
             }

@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step3 W4（Phase8-Step3-Plan.md §2.4）: 書き直した <see cref="KeyOutputAction"/> が、系統 B（<c>KeyActionAdapter</c> 経由）と
+    /// 書き直した <see cref="KeyOutputAction"/> が、系統 B（<c>KeyActionAdapter</c> 経由）と
     /// 同じ押下・解放の列になること、ネイティブキーの求め方（Q7＝A）が現行の経路と一致することを確認する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -63,7 +63,7 @@ namespace DS4WindowsTests
         [InlineData(DS4KeyType.Toggle)]
         public void ExecuteAndStop_PressAndReleaseTheKey_Twice(DS4KeyType keyType)
         {
-            // Phase8-Step8 8c: 系統 B（KeyActionAdapter）は削除した。比べる相手はなく、押す・離すが出ることだけを確かめる
+            // 系統 B（KeyActionAdapter）は削除した。比べる相手はなく、押す・離すが出ることだけを確かめる
             IProfileSettingsService settings = Settings();
 
             var newKbm = new MockVirtualKBM();

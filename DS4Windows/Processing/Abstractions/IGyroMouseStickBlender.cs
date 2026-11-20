@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: ジャイロのマウススティック出力（<c>GyroOutMode.MouseJoystick</c>）の合成。
+    /// ジャイロのマウススティック出力（<c>GyroOutMode.MouseJoystick</c>）の合成。
     /// 出力スティックの X／Y それぞれで、ジャイロ由来の値と通常のスティックの値のうち、中心（128）から遠い方を採る。
     /// 以前は <c>Mapping.TempMouseJoystick</c> の内側だった。状態は持たない。
     /// </summary>

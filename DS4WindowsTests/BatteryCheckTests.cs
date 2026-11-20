@@ -18,7 +18,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.6c（Phase8-Step7-6-Plan.md §3.3。Q6＝A: 静的な窓口はポートの内側／Q8＝B: コピーの名残りのログを削除）: BatteryCheck の新経路の確認。
+    /// BatteryCheck の新経路の確認。
     /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -146,7 +146,7 @@ namespace DS4WindowsTests
             t.RunFrame(Frame(true));
             t.RunFrame(Frame(true));
 
-            Assert.Equal(new[] { "notify:" + t.Device }, port.Events.ToArray());   // 通知だけ（旧経路は、コントローラーがなければ色の処理で例外になる）
+            Assert.Equal(new[] { "notify:" + t.Device }, port.Events.ToArray());   // 通知だけ
             Assert.Equal(0, port.ColorWrites);
         }
 
@@ -273,7 +273,7 @@ namespace DS4WindowsTests
             ControllerState held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がり、フェードの完了（50 フレーム）、JIT は、測定の外へ
 
-            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う。一度きりの割り当て（遅延初期化など。実測で 0.5〜4MB が 1 回だけ混ざることがある）が測定の窓に入っても、
+            // 5 ラウンド測って最小値を使う。一度きりの割り当て（遅延初期化など。実測で 0.5〜4MB が 1 回だけ混ざることがある）が測定の窓に入っても、
             // 結果が変わらないようにするため。フレームごとの本物の割り当ては、全ラウンドに出るので、最小値にも出る
             long min = long.MaxValue;
             for (int round = 0; round < 5; round++)
@@ -323,7 +323,7 @@ namespace DS4WindowsTests
             port.SetForceLight(-1, true);
             port.SetForcedColor(99, new DS4Color(1, 2, 3));   // 範囲外は何もしない
 
-            // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
+            // 窓口は直接注入（必須）。null は受け付けない
             Assert.Throws<ArgumentNullException>(() => new DefaultBatteryCheckPort(TestLightbar.State, null, new DS4Windows.Processing.Services.Devices.DeviceBatteryText(new NoControllerAccessor())));
         }
 

@@ -6,17 +6,17 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step4: 静的 <c>ActionManager</c>（廃止）の代わりに、共有のテスト用ホスト（<see cref="TestHost"/>）の管理役と登録簿を返す窓口。
+    /// 静的 <c>ActionManager</c>（廃止）の代わりに、共有のテスト用ホスト（<see cref="TestHost"/>）の管理役と登録簿を返す窓口。
     /// 旧: テストは <c>ActionManager.GetStateFor</c> などの静的メソッドを直接呼んでいた（本番と同じ <c>IManagedActionManager</c> に委譲されていた）。
     /// </summary>
     public static class TestActions
     {
         public static IManagedActionManager Manager => TestHost.GetService<IManagedActionManager>();
 
-        /// <summary>Phase14c-Step3（R-06）: 合成キーの送出（コンテナの Singleton。旧: 静的な橋渡し SyntheticDispatcher が束縛していたもの）。</summary>
+        /// <summary>合成キーの送出（コンテナの Singleton。旧: 静的な橋渡し SyntheticDispatcher が束縛していたもの）。</summary>
         public static ISyntheticDispatcher Dispatcher => TestHost.GetService<ISyntheticDispatcher>();
 
-        /// <summary>Phase14b-Step14（D14）: スペシャルアクションの保存・読込の後の実行時状態のリセット（コンテナの Singleton。<see cref="Manager"/> と同じ管理役を使う）。</summary>
+        /// <summary>スペシャルアクションの保存・読込の後の実行時状態のリセット（コンテナの Singleton。<see cref="Manager"/> と同じ管理役を使う）。</summary>
         public static DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset RuntimeReset => TestHost.GetService<DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset>();
 
         public static IKeyButtonControllerRegistry Controllers => TestHost.GetService<IKeyButtonControllerRegistry>();

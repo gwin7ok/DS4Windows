@@ -9,7 +9,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase7-Step10c W4・W5（Q1＝A）: プロファイル（旧形式の XML）の保存・読込。
+    /// プロファイルの保存・読込。
     /// 旧: <c>BackingStore</c> の <c>LoadProfile</c>／<c>LoadLegacyExtraSettings</c>／<c>ReadLegacyElement</c>／<c>axisOutputCurveId</c>／<c>OutContDeviceId</c>／
     /// <c>GetLightbarModeType</c>／<c>PortOldGyroSettings</c>（W4。読込側）と、保存側（W5）。移動のみで、ロジック・ログ・要素の順序は変えない。
     /// <c>BackingStore</c> の公開状態を <c>store.</c> で読み書きする。プロファイルの置き場所は <see cref="DS4Windows.Core.Abstractions.IPathService"/>、
@@ -18,7 +18,7 @@ namespace DS4Windows.Core.Persistence
     /// </summary>
     public class LegacyProfileXmlSerializer
     {
-        // プロファイル XML の設定バージョンと拡張子（旧: ConfigVersion／XML_EXTENSION。Global の同名の定数は、この値を指す別名）
+        // プロファイル XML の設定バージョンと拡張子
         public const int ConfigVersion = 5;
         public const string XmlExtension = ".xml";
 
@@ -39,13 +39,13 @@ namespace DS4Windows.Core.Persistence
         private readonly ProfileAreaSection _actions = new ProfileAreaSection("Actions", new ProfileActionsSaveSection(), new ProfileActionsLoadSection());
         private readonly ProfileAreaSection _button = new ProfileAreaSection("Button", new ProfileButtonSaveSection(),
             new ProfileButtonControlLoadSection(), new ProfileButtonShiftLoadSection());
-        private readonly ProfileIdFile _profileIdFile = new ProfileIdFile();   // Phase10-Step4d W1: プロファイルの固定 ID
+        private readonly ProfileIdFile _profileIdFile = new ProfileIdFile();   // プロファイルの固定 ID
 
 
-        // Phase10-Step4d W3: Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        // Controls の Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService _profileIdentity;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public LegacyProfileXmlSerializer(DS4Windows.Core.Model.LightbarOverrides lightbar, BackingStore store, DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IProfileSettingsService profileSettings,
@@ -126,7 +126,7 @@ namespace DS4Windows.Core.Persistence
                 control.PreLoadReset(device);
 
                 _general.Load(context);
-                // Phase6-Step12: 旧形式の読込で欠けていた 10 要素。要素が無い（古いプロファイル）、または値が不正なときは、
+                // 旧形式の読込で欠けていた 10 要素。要素が無い（古いプロファイル）、または値が不正なときは、
                 // ResetProfile で設定済みの既定値のままにする（missingSetting は立てない）。
                 LoadLegacyExtraSettings(device, rootname);
 
@@ -211,7 +211,7 @@ namespace DS4Windows.Core.Persistence
 
         public void LoadLegacyExtraSettings(int device, string rootname)
         {
-            // Phase11 K-W6-10: <DebouncingMs> は機能廃止で読み捨てる（古いプロファイルの互換のため、タグがあっても無視する）。保存もしない
+            // <DebouncingMs> は機能廃止で読み捨てる（古いプロファイルの互換のため、タグがあっても無視する）。保存もしない
             if (bool.TryParse(ReadLegacyElement(rootname, "InverseRumbleMotors"), out bool inverseRumble))
                 store.rumbleSlots[device].InverseMotors = inverseRumble;
 
@@ -281,7 +281,7 @@ namespace DS4Windows.Core.Persistence
                 LightbarDS4WinInfo lightInfo = lightbarSettings.ds4winSettings;
                 var context = new ProfileSaveContext(store, m_Xdoc, rootElement, device, lightbarSettings, lightInfo);
 
-                // Phase10-Step4d W1（Phase10-Step4d-Plan.md §3.1）: プロファイルの固定 ID を、ルート直下の先頭に書く。保存先のファイルがすでに ID を持つなら、それを保つ
+                // プロファイルの固定 ID を、ルート直下の先頭に書く。保存先のファイルがすでに ID を持つなら、それを保つ
                 // （上書き保存は ID を変えない）。保存先が新しいファイル（別名で保存、新規作成）なら、新しい ID を振る。古いバージョンは、この要素を読み飛ばす
                 XmlNode xmlProfileId = m_Xdoc.CreateNode(XmlNodeType.Element, ProfileIdFile.ElementName, null);
                 xmlProfileId.InnerText = _profileIdFile.ReadIdOrNew(path);
@@ -290,7 +290,7 @@ namespace DS4Windows.Core.Persistence
                 FillControlProfileTargetIds(device);   // Phase10-Step4d W3
 
                 _general.Save(context);
-                // Phase6-Step12: 旧形式（3.9.9 互換）の保存で欠けていた 10 要素（要素名は ProfileDTO と同じ。旧版は未知の要素を無視する）
+                // 旧形式（3.9.9 互換）の保存で欠けていた 10 要素（要素名は ProfileDTO と同じ。旧版は未知の要素を無視する）
                 SaveLegacyExtraSettings(rootElement, device);
                 _triggerStick.Save(context);
                 _motion.Save(context);
@@ -307,7 +307,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step4d W3: Controls の Load Profile の切り替え先を、ID で解決する。ID が見つかれば、現在の名前に置き換える（名前変更への追従。ID が勝つ）。
+        /// Controls の Load Profile の切り替え先を、ID で解決する。ID が見つかれば、現在の名前に置き換える（名前変更への追従。ID が勝つ）。
         /// ID がない・見つからないときは、名前のまま。
         /// </summary>
         private void ResolveControlProfileTargets(int device)
@@ -325,7 +325,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step4d W3: 保存の前に、Controls の Load Profile の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
+        /// 保存の前に、Controls の Load Profile の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
         /// プロファイルが見つからなければ（削除済み）、そのままにする。
         /// </summary>
         private void FillControlProfileTargetIds(int device)

@@ -20,11 +20,11 @@ namespace DS4Windows.Core.Platform
     /// 同じ状態を読み書きする。下位層（BackingStore／LoggerHolder など）が静的に読んでいた <c>Global.appdatapath</c>／<c>exedirpath</c>／
     /// <c>exelocation</c>／<c>exeversion</c> の窓口は、Phase7-Step10d で <c>Global</c> ごと削除済み
     /// （下位層は、本クラスの <c>*State</c> の静的な状態、または注入された <see cref="IPathService"/> を読む。Phase7c W3 でコメントを訂正）。
-    /// 静的初期化の循環を作らないため、本クラスの static 初期化は <c>Global</c> を参照しない（回帰ガード: Phase7Step4PathServiceGuardTests）。
+    /// 静的初期化の循環を作らないため、本クラスの static 初期化は <c>Global</c> を参照しない（回帰ガード: 対応するテスト）。
     /// </summary>
     public class PathService : IPathService
     {
-        // ---- Phase7-Step4 W3: 旧 Global の static 状態 ----
+        // ---- 旧 Global の static 状態 ----
 
         // Need to perform extra steps to check if DS4Windows is installed in a junction
         // directory (done with Scoop). Use real path when available
@@ -78,7 +78,7 @@ namespace DS4Windows.Core.Platform
         private readonly BackingStore? _config;
 
         // config: SaveWhere が設定ファイルのパス（m_Profile ほか）を更新する先（本番はコンテナの BackingStore。ブートストラップでは起動時に作る BackingStore）。
-        // Phase7-Step10d W5: 省略時の Global.store をやめた。省略（null）のインスタンスは、保存場所の決定（SetSaveLocation／FindConfigLocation）
+        // 省略時の Global.store をやめた。省略（null）のインスタンスは、保存場所の決定（SetSaveLocation／FindConfigLocation）
         // だけが使えない（呼ぶと InvalidOperationException）。パスの読み取りは config なしで使える。
         public PathService(string? appDataPath = null, BackingStore? config = null)
         {
@@ -109,12 +109,11 @@ namespace DS4Windows.Core.Platform
 
         public string ExecutableDirectory => AppContext.BaseDirectory;
 
-        // Phase6-Step9-1／Phase7-Step4 W3: 旧 Global.exedirpath（ExecutableDirectory とは値が異なりうる。IPathService の注記を参照）
+        // 旧 Global.exedirpath（ExecutableDirectory とは値が異なりうる。IPathService の注記を参照）
         public string ProgramDirectory => ExecutableDirectoryState;
 
         /// <summary>
-        /// 実行ファイルのフルパスを取得します。Scoop等のジャンクションシンボリックリンク解決ロジックを含みます
-        /// （Phase7-Step4 W3: 旧 Global.exelocation の実体をここへ移した）。
+        /// 実行ファイルのフルパスを取得します。Scoop等のジャンクションシンボリックリンク解決ロジックを含みます。
         /// </summary>
         public string ExecutablePath => ExecutableLocationState;
 
@@ -146,7 +145,7 @@ namespace DS4Windows.Core.Platform
             return Path.Combine(ProfilesPath, profileName);
         }
 
-        // ---- Phase6-Step7-1: App.xaml.cs（Post-Host）の Global 直接参照解消 ----
+        // ---- App.xaml.cs（Post-Host）の Global 直接参照解消 ----
         public string RoamingAppDataPath => RoamingAppDataPathState;
 
         public bool HasMultipleSaveLocations => MultipleSaveLocationsState;
@@ -155,8 +154,7 @@ namespace DS4Windows.Core.Platform
         public void SetSaveLocation(string path) => SaveWhere(RequireConfig(), path);
 
         /// <summary>
-        /// 保存場所を決める。<see cref="AppDataPathState"/> のほか、設定ファイル 4 つのパス（BackingStore）も更新する
-        /// （旧 <c>Global.SaveWhere</c> と同じ動作）。
+        /// 保存場所を決める。<see cref="AppDataPathState"/> のほか、設定ファイル 4 つのパス（BackingStore）も更新する。
         /// </summary>
         public static void SaveWhere(BackingStore config, string path)
         {
@@ -168,7 +166,7 @@ namespace DS4Windows.Core.Platform
         }
 
         /// <summary>
-        /// 設定の保存場所を決める（旧 <c>Global.FindConfigLocation</c>）。プログラムフォルダと AppData の
+        /// 設定の保存場所を決める。プログラムフォルダと AppData の
         /// "Auto Profiles.xml" の有無で、初回起動・保存場所が 2 か所・保存先を決める。起動時に 1 度呼ぶ。
         /// </summary>
         public void FindConfigLocation() =>
@@ -211,7 +209,7 @@ namespace DS4Windows.Core.Platform
             }
         }
 
-        /// <summary>空のプロファイル一覧ファイルを作る（旧 <c>Global.SaveDefault</c>）。作成に失敗したら false。</summary>
+        /// <summary>空のプロファイル一覧ファイルを作る。作成に失敗したら false。</summary>
         public bool CreateEmptyProfilesFile(string path)
         {
             Boolean Saved = true;

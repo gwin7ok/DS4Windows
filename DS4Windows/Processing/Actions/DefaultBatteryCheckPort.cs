@@ -7,9 +7,9 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6c: <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作し、
+    /// <see cref="IBatteryCheckPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作し、
     /// ライトバーの強制色は静的な <c>DS4LightBar</c> を、通知は <c>AppLogger.LogToTray</c> を、この窓口の内側に閉じ込めて使う（Q6＝A）。
-    /// 電池残量の文言は <see cref="IDeviceBatteryText"/>（旧 <c>ControlService.GetDS4Battery</c>。Phase13-Step6 6-b で移し、<c>Func&lt;ControlService&gt;</c> をやめた）。
+    /// 電池残量の文言は <see cref="IDeviceBatteryText"/>。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>
     public sealed class DefaultBatteryCheckPort : IBatteryCheckPort
@@ -17,7 +17,7 @@ namespace DS4Windows.Processing.Actions
         private readonly IDeviceStateAccessor _deviceStateAccessor;
         private readonly IDeviceBatteryText _batteryText;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public DefaultBatteryCheckPort(DS4Windows.Core.Model.LightbarOverrides lightbar, IDeviceStateAccessor deviceStateAccessor, IDeviceBatteryText batteryText)

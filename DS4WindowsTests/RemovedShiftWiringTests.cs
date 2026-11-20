@@ -10,7 +10,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8d-W2（Phase8-Step7-8d-Plan.md §4.1・§5）: 廃止された「シフト」機能の、読込・保存・実行への配線のテスト。
+    /// 廃止された「シフト」機能の、読込・保存・実行への配線のテスト。
     /// 読込: <c>&lt;ShiftControl&gt;</c> の内容を解釈せずに保持する。保存: 保持した内容をそのまま書き出す（削除したら、空の要素）。
     /// 実行・設定: シフトの設定は、割り当てに反映されない。シフトのメンバー（<c>DS4ControlSettings</c> の欄、<c>Mapping</c> の処理）は存在しない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。

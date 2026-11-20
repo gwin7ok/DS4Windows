@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step7 7-d: テスト用の <see cref="IVirtualPadService"/>。旧 <c>OutputSlotService</c> のテストが渡していた
+    /// テスト用の <see cref="IVirtualPadService"/>。旧 <c>OutputSlotService</c> のテストが渡していた
     /// <c>Func&lt;OutputSlotManager&gt;</c>／<c>Func&lt;IVirtualPadService&gt;</c>（ControlService なしなら null）の置き換え。
     /// <see cref="OutputSlotManager"/> はテストが渡したものを返し、それ以外の操作は <c>inner</c> があれば転送、なければ何もしない。
     /// </summary>

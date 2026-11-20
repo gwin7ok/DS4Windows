@@ -7,7 +7,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step8 8-0-W1（Phase8-Step8-Plan.md §5.1。Q2＝C、Q9＝A）: 廃止された「ジャイロスワイプ」機能の設定の、保持（<see cref="RemovedGyroSwipeSettings"/>）と、
+    /// 廃止された「ジャイロスワイプ」機能の設定の、保持（<see cref="RemovedGyroSwipeSettings"/>）と、
     /// 編集画面の警告の判定（<see cref="RemovedGyroSwipeNotice"/>）の仕様のテスト。読込・保存・画面への配線は W2・W3。7.8d の Shift の W1 と対応する。
     /// </summary>
     public class RemovedGyroSwipeSpecTests

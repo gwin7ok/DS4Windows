@@ -3,7 +3,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step1（R-01）: <see cref="LayerMap"/>（名前空間 → 層、層の組み合わせ → 規則、型名の正規化）の単体テスト。
+    /// <see cref="LayerMap"/>（名前空間 → 層、層の組み合わせ → 規則、型名の正規化）の単体テスト。
     /// </summary>
     public class LayerMapTests
     {

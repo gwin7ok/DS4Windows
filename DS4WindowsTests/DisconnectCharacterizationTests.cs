@@ -14,7 +14,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step6 W1（Phase8-Step6-Plan.md §3.1。Q6＝A）: 切断・再接続まわりの<b>現行の挙動</b>を固定する（コードは変えない）。
+    /// 切断・再接続まわりの<b>現行の挙動</b>を固定する（コードは変えない）。
     /// Step6 の根拠になる事実:
     /// 1. <c>Mapping.HandleDeviceDisconnect</c> はスロットのプロファイル選択の状態（<c>OlderProfilePath</c> ほか）に触れない。
     /// 2. プロファイル適用の後始末（<c>ClearDeviceState</c>）も、同じ切断の後始末を通る（だから、ここにエンジンの切断を足せない）。
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFirstConnection_UsesTheOlderProfilePath_AndAReconnectionUsesTheSelectedProfile()
         {
-            // Phase9 9-E E-6a: プロファイルの選択は ConnectionProfileSelector へ移った
+            // プロファイルの選択は ConnectionProfileSelector へ移った
             string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (path == null) return;
 
@@ -130,7 +130,7 @@ namespace DS4WindowsTests
                 "DS4Windows/Core/Settings/BackingStore.cs",
                 "DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs",                // アプリ設定の読込
                 "DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs",
-                "DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs",   // 初回接続の既定（Phase9 9-E E-6a: ControlService から移した）
+                "DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs",   // 初回接続の既定
                 "DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs",   // 適用での更新、RestoreFromAction
                 "DS4Windows/Core/Persistence/ProfileRepository.cs",
                 "DS4Windows/UI/ViewModels/CompositeDeviceModel.cs",        // 画面の選択、リンクの解除
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ClearState_AndClearPendingRestore_AreRemoved()
         {
-            // Phase8-Step6 W3（Q3＝A。承認済み）: 本番の呼び出しが 0 件だった 2 つのメンバーを削除した。
+            // 本番の呼び出しが 0 件だった 2 つのメンバーを削除した。
             // 切断で OlderProfilePath を空にするとスロットの「通常のプロファイル」が失われるため、接続しなかった。
             Assert.Null(typeof(IProfileSwitcher).GetMethod("ClearState"));
             Assert.Null(typeof(IProfileApplicationService).GetMethod("ClearPendingRestore"));
@@ -166,13 +166,13 @@ namespace DS4WindowsTests
         public void OnlyThePhysicalRemoval_CallsHandleDeviceDisconnect_AndTheServiceStopDoesNot()
         {
 
-            // Phase9 9-E E-6e: 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
+            // 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った（ControlService.On_DS4Removal は委譲）
             string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
             if (handlerPath == null) return;
             string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
             Assert.Contains("_mapping.HandleDeviceDisconnect(ind);", removal);
 
-            // Phase9 9-E E-6f2: Stop の本体は ServiceLifecycle へ移った
+            // Stop の本体は ServiceLifecycle へ移った
             string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;
             string stop = SourceText.Method(File.ReadAllText(lifecyclePath), "public bool Stop(");

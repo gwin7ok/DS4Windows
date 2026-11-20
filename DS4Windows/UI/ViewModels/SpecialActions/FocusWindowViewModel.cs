@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels.Util;
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>
-    /// Phase12-Step2 2e（R-4）: FocusWindow（指定のウィンドウを前面へ出す）の編集。対象は、プログラムのパスとウィンドウタイトル
+    /// FocusWindow（指定のウィンドウを前面へ出す）の編集。対象は、プログラムのパスとウィンドウタイトル
     /// （どちらも省略可。両方を指定したときは両方に一致するウィンドウ。Auto-Profile と同じ書式）。パスもタイトルも空は、どのウィンドウにも一致してしまうため、保存を止める。
     /// SA は <c>SaveActionNew</c> のモード 11（Details＝パス、Extras＝タイトル、Delay＝押し続ける秒数）で保存する。
     /// </summary>
@@ -92,7 +92,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public double Delay { get => delay; set => delay = value; }
 
-        /// <summary>Phase12-Step2 2j: 前面化のあと、ウィンドウの中央へマウスポインターを移動する。</summary>
+        /// <summary>前面化のあと、ウィンドウの中央へマウスポインターを移動する。</summary>
         public bool CenterCursor { get; set; }
 
         public FocusWindowViewModel(ISpecialActionRepository specialActionRepository)

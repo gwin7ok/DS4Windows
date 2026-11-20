@@ -29,14 +29,14 @@ namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// Windows のスタートアップ登録（スタートアップフォルダーのショートカットと、タスクスケジューラーのタスク「RunDS4Windows」）。
-    /// Phase14b-Step15（決定 D12）: 旧 ルート直下の静的クラス <c>StartupMethods</c>（アプリの起点ではない）を、<see cref="IStartupEntryService"/> の実装（DI の Singleton）にした。
+    /// 旧 ルート直下の静的クラス <c>StartupMethods</c>（アプリの起点ではない）を、<see cref="IStartupEntryService"/> の実装（DI の Singleton）にした。
     /// 処理の中身は変えていない。設定画面（<c>SettingsViewModel</c>）は契約だけを受ける。
     /// </summary>
     [System.Security.SuppressUnmanagedCodeSecurity]
     public sealed class StartupEntryService : IStartupEntryService
     {
         private static readonly string lnkpath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\DS4Windows.lnk";
-        // Phase6-Step10-1-5（決定4＝A）: プログラムフォルダと実行ファイルの場所は引数で受け取る
+        // プログラムフォルダと実行ファイルの場所は引数で受け取る
         // （呼び出し側が IPathService.ProgramDirectory／ExecutablePath を渡す。置換前は Global.exedirpath／exelocation／exeFileName を直接参照していた）。
         private static string GetTaskBatPath(string programDirectory) => Path.Combine(programDirectory, "task.bat");
 

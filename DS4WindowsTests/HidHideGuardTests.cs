@@ -12,7 +12,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-2（Phase9-E-Plan.md）: HidHide の切り出しの守り。
+    /// HidHide の切り出しの守り。
     /// (1) <c>ControlService</c> から、移したメンバーが無くなっていること（ソースの走査。コメントは除く）。
     /// (2) 新しい部品が DI の Singleton として登録され、静的な窓口（<c>Global</c>／<c>AppHost</c>）を参照しないこと。
     /// (3) ドライバーの窓口（<c>HidHideAPIDevice</c>）は、<c>HidHideApiAdapter</c> の中に閉じていること。
@@ -29,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void HidHideService_DoesNotTouchTheDriverDirectly()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、型の参照（メソッド本体を含む）で確かめる。ドライバーの窓口 HidHideAPIDevice に触れるのは工場（アダプター）だけ
+            // ソースの文字列ではなく、型の参照（メソッド本体を含む）で確かめる。ドライバーの窓口 HidHideAPIDevice に触れるのは工場（アダプター）だけ
             var targets = LayerDependencyScanner.AllTargetsOf("DS4Windows.Output.Services.HidHideService");
             Assert.DoesNotContain(targets, t => t.EndsWith(".HidHideAPIDevice", StringComparison.Ordinal));
             Assert.Contains(typeof(DS4Windows.Processing.Abstractions.IHidHideApiFactory).FullName, targets);
@@ -47,7 +47,7 @@ namespace DS4WindowsTests
         public void TheOtherFiles_ForTheCallers()
         {
 
-            // Phase13-Step10 10-c: 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
+            // 転送は削除した。利用者は IRuntimeFeatureSwitch（RuntimeFeatureSwitch）を使う
             string sw = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/RuntimeFeatureSwitch.cs");
             if (sw == null) return;
             Assert.Contains("_hidHide.CheckPresence(exePath, exeName, addExe)", sw);

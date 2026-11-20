@@ -111,7 +111,7 @@
                                Fill="{DynamicResource ForegroundBrush}">
                     </Rectangle>
                 </Canvas>
-                <!-- Phase11 W2: 数値の見切れ防止。(I)/(O) の組を WrapPanel に入れ、列の幅に収まらない大きなフォントでは 2 行に折り返す（右スティック・SixAxis も同じ） -->
+                <!-- 数値の見切れ防止。(I)/(O) の組を WrapPanel に入れ、列の幅に収まらない大きなフォントでは 2 行に折り返す（右スティック・SixAxis も同じ） -->
                 <WrapPanel HorizontalAlignment="Center"
                            Margin="0,4,0,0">
                     <StackPanel Orientation="Horizontal"
@@ -330,7 +330,7 @@
                         Grid.Column="0"
                         HorizontalAlignment="Center">
 
-                <!-- Phase11 W2: 幅 470 のとき、この列は約 205。グループの固定幅を詰め（L2/R2: 58＋右余白 4、TX/TY: 70。合計 194）、右端の TX/TY が欠けないようにした -->
+                <!-- 幅 470 のとき、この列は約 205。グループの固定幅を詰め（L2/R2: 58＋右余白 4、TX/TY: 70。合計 194）、右端の TX/TY が欠けないようにした -->
                 <!-- === L2 グループ === -->
                 <StackPanel Width="58"
                             Margin="0,0,4,0">

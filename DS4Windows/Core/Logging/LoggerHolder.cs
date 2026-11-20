@@ -35,7 +35,7 @@ namespace DS4Windows.Core.Logging
         public Logger Logger { get => logger; }
         private ReaderWriterLockSlim logLock = new ReaderWriterLockSlim();
 
-        // Phase7-Step10d W5: ログ設定（保管数・最小レベル）は、旧 Global.LogMaxArchiveFiles／LogMinLevel（BackingStore の値）に替えて、注入された設定サービスから読む
+        // ログ設定（保管数・最小レベル）は、旧 Global.LogMaxArchiveFiles／LogMinLevel（BackingStore の値）に替えて、注入された設定サービスから読む
         private readonly DS4Windows.Core.Abstractions.IAppSettingsService appSettings;
 
         public LoggerHolder(DS4Windows.Core.Abstractions.IAppSettingsService appSettings)
@@ -172,7 +172,7 @@ namespace DS4Windows.Core.Logging
         public void UpdateLogSettings()
         {
             var configuration = LogManager.Configuration;
-            // Phase6-Step9b-1: NLog.config の async="false" では logfile が直接の FileTarget になる。
+            // NLog.config の async="false" では logfile が直接の FileTarget になる。
             // ラッパー前提の WrappedTarget 参照は NullReferenceException になり、設定の保存も止めていた。
             var fileTarget = FindLogFileTarget(configuration);
             if (fileTarget == null)
@@ -272,7 +272,7 @@ namespace DS4Windows.Core.Logging
             }
 
             using WriteLocker locker = new WriteLocker(logLock);
-            // Phase13b-Step1: Level を尊重する（旧 API 由来は Info／Warn のみで、従来と同じ出力）。
+            // Level を尊重する。
             logger.Log(DS4Windows.Core.Logging.AppLogger.ToNLogLevel(e.Level), e.FileData ?? e.Data);
         }
     }

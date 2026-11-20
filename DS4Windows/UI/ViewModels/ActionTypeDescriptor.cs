@@ -4,7 +4,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 編集画面の種別の一覧の 1 項目。従来は、<c>SpecialActEditorViewModel.typeAssoc</c>（種別の ID の配列）と、
+    /// 編集画面の種別の一覧の 1 項目。従来は、<c>SpecialActEditorViewModel.typeAssoc</c>（種別の ID の配列）と、
     /// <c>AssignmentEditor.xaml</c> のドロップダウンの項目が、添字だけで対応していた。それを 1 つの記述にまとめる。
     /// </summary>
     public sealed class ActionTypeDescriptor

@@ -45,18 +45,18 @@ namespace DS4Windows.UI
         /// <summary>実機なし（プロファイル一覧から開いた場合）を表す targetDevice の値。</summary>
         public const int NoTargetDevice = -1;
 
-        // Phase6-Step7b: 設定の読み書き先（編集スロット）。常に作業スロット Global.TEST_PROFILE_INDEX を使い、
+        // 設定の読み書き先（編集スロット）。常に作業スロット Global.TEST_PROFILE_INDEX を使い、
         // 編集内容は保存・適用を押すまで、接続中のどのコントローラーにも影響しない
         private readonly int deviceNum = ControllerLimits.TestProfileIndex;
-        // Phase6-Step7b: ランブルテスト・ライトバーのプレビュー・校正・マクロ記録などで使う実機のスロット番号。
+        // ランブルテスト・ライトバーのプレビュー・校正・マクロ記録などで使う実機のスロット番号。
         // NoTargetDevice（-1）は「実機なし」。設定の読み書き先 deviceNum とは別に持つ。
         // ViewModel をこの値で生成するため、コンストラクタでだけ設定する
         private readonly int targetDevice = NoTargetDevice;
-        // Phase6-Step8-2: レイアウト・言語設定（コンストラクタ注入。Global.ProfileEditor*Width 等の置換先）
+        // レイアウト・言語設定（コンストラクタ注入。Global.ProfileEditor*Width 等の置換先）
         private readonly DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService;
-        // Phase6-Step8-3: 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
+        // 編集スロットの LS／RS 補正値・出力種別の読み書き先（Global.LSModInfo 等の置換先）
         private readonly IProfileEditViewModelFactory _viewModelFactory;
-        // Phase6-Step10-2-4a: 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
+        // 補助ウィンドウ（ボタン割り当て、プリセット、スティック校正、スペシャルアクション編集）の生成の窓口
         private readonly DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory;
         // 業務のサービス（プロファイルの読み込み、スペシャルアクションの参照、実機の振動・入力・較正）への窓口（V2）
         private readonly DS4Windows.UI.Services.ProfileEditorBackend backend;
@@ -85,7 +85,7 @@ namespace DS4Windows.UI
         public event ProfileSavedHandler ProfileSaved;
 
         /// <summary>
-        /// Phase6-Step10-3b-3: アクションの除去・名前変更により、編集中以外も含むプロファイルの XML を書き換えたときに、
+        /// アクションの除去・名前変更により、編集中以外も含むプロファイルの XML を書き換えたときに、
         /// 書き換えたプロファイル名の一覧を通知する。MainWindow が、保存時と同じ再適用の経路（SyncProfileListAndControllers）を呼ぶ。
         /// </summary>
         public event Action<IReadOnlyList<string>> ProfilesUpdatedExternally;
@@ -100,7 +100,7 @@ namespace DS4Windows.UI
         private bool keepsize;
         private bool controllerReadingsTabActive = false;
 
-        // Phase11 W3: 読み取り専用のままにする。書き込みの経路は KeepSizeCheckBox_Click（Click イベント）だけで、XAML のバインディングは使わない
+        // 読み取り専用のままにする。書き込みの経路は KeepSizeCheckBox_Click（Click イベント）だけで、XAML のバインディングは使わない
         // （以前の IsChecked="{Binding Keepsize, Mode=TwoWay}" は、DataContext がメインウィンドウの MainWindowsViewModel のため解決せず、外した）。
         public bool Keepsize
         {
@@ -137,15 +137,15 @@ namespace DS4Windows.UI
         // add a narrowly-scoped helper or adapt the call site accordingly.
 
         /// <param name="targetDevice">
-        /// Phase6-Step7b: Edit／New Profile ボタンを押したコントローラーのスロット番号。
+        /// Edit／New Profile ボタンを押したコントローラーのスロット番号。
         /// プロファイル一覧から開いた場合は NoTargetDevice（-1）。編集スロットは常に Global.TEST_PROFILE_INDEX
         /// </param>
         /// <param name="appSettingsService">
-        /// Phase6-Step8-2: エディタ画面のレイアウト（左右幅・Special Actions の列幅・ウィンドウサイズ）と表示言語の設定。
+        /// エディタ画面のレイアウト（左右幅・Special Actions の列幅・ウィンドウサイズ）と表示言語の設定。
         /// MainWindow から渡す（Global の直接参照を置換）
         /// </param>
         /// <param name="profileSettingsService">
-        /// Phase6-Step8-3: プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
+        /// プロファイル設定（LSModInfo／RSModInfo／OutContType）。MainWindow から渡す
         /// </param>
         public ProfileEditor(int targetDevice, DS4Windows.UI.Abstractions.IEditorLayoutSettings appSettingsService,
             DS4Windows.UI.Abstractions.IEditorWindowFactory editorWindowFactory, DS4Windows.UI.Services.ProfileEditorBackend backend,
@@ -155,7 +155,7 @@ namespace DS4Windows.UI
             if (actionViewModelFactory == null) throw new ArgumentNullException(nameof(actionViewModelFactory));
             ArgumentNullException.ThrowIfNull(backend);
             this.backend = backend;
-            // Phase6-Step10-2-4a: 補助ウィンドウの生成を窓口へ依頼する（必須引数）
+            // 補助ウィンドウの生成を窓口へ依頼する（必須引数）
             ArgumentNullException.ThrowIfNull(editorWindowFactory);
             this.editorWindowFactory = editorWindowFactory;
             this.targetDevice = targetDevice;
@@ -167,9 +167,9 @@ namespace DS4Windows.UI
             InitializeComponent();
             InitVisualizerButtons();
 
-            // Phase7-Step5 W5（Q5＝A）: 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）
+            // 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）
             rumbleTest = backend.CreateRumbleTest();
-            // Phase6-Step10-2-5: ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
+            // ControllerReadingsControl は XAML から生成されるため、ControlService を Initialize で渡す
             conReadingsUserCon.Initialize(readingsSource ?? throw new ArgumentNullException(nameof(readingsSource)));
 
             // SpecialActionsリスト表示前にカルチャを明示的に再設定
@@ -179,7 +179,7 @@ namespace DS4Windows.UI
             System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
             System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 
-            // Phase6-Step9-4: ファクトリが解決できない場合のレガシーフォールバック（new ProfileSettingsViewModel）は削除した
+            // ファクトリが解決できない場合のレガシーフォールバック（new ProfileSettingsViewModel）は削除した
             // （ViewModel の依存を必須引数にしたため、ファクトリ以外に組み立てる経路が無い）
             var vmFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _viewModelFactory = vmFactory;
@@ -692,7 +692,7 @@ namespace DS4Windows.UI
 
         /// <summary>
         /// 編集するプロファイルを作業スロット（Global.TEST_PROFILE_INDEX）へ読み込み、画面を初期化する。
-        /// Phase6-Step7b: 読み込み先は常に作業スロットで、コントローラーのスロットには触れない。
+        /// 読み込み先は常に作業スロットで、コントローラーのスロットには触れない。
         /// 実機（targetDevice）はコンストラクタで確定しているため、引数では受け取らない。
         /// </summary>
         /// <param name="profile">編集するプロファイル。null は新規作成（プリセット選択から始める）</param>
@@ -729,7 +729,7 @@ namespace DS4Windows.UI
 
             lightbarPanel.RefreshColorByBatteryLayout(profileSettingsVM.Lightbar);
 
-            // Phase6-Step7b: Controller Readings は、実機（なければコントローラー0）の入力に対して、
+            // Controller Readings は、実機（なければコントローラー0）の入力に対して、
             // 作業スロット（編集中の設定）で計算した結果を表示する
             int readingsDevice = profileSettingsVM.FuncDevNum;
             generalPanel.UseControllerUD.Value = readingsDevice + 1;
@@ -742,7 +742,7 @@ namespace DS4Windows.UI
 
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
-            // Phase6-Step6-1: mappingListVM はプロファイル読み込み前の出力種別で生成されるため、読み込み後の
+            // mappingListVM はプロファイル読み込み前の出力種別で生成されるため、読み込み後の
             // 出力種別（Xbox 360／DS4）でボタン名表記を明示的に揃える（出力の種類の選択の SelectionChanged の発生有無に依存しない）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.Output.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
@@ -821,11 +821,11 @@ namespace DS4Windows.UI
             // （同一インスタンスの再代入）だけではWPFのバインディングは更新されない。本メソッドの
             // 呼び出し元（PresetBtn_Click）が必ず先にStopEditorBindings()（DataContext=null）を
             // 呼んでいることが、UI反映を成立させる前提条件になっている。詳細はUpdateLateProperties()の
-            // コメント、および Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1 を参照。
+            // コメント、および docs-forDIMG/MadeByAgent/Archive/Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1 を参照。
             specialActionsVM.LoadActions(currentProfile == null);
             mappingListVM.UpdateMappings();
             profileSettingsVM.UpdateLateProperties();
-            // Phase6-Step6-1: プリセット適用後の出力種別でボタン名表記を明示的に揃える（Reload と同じ理由）
+            // プリセット適用後の出力種別でボタン名表記を明示的に揃える（Reload と同じ理由）
             mappingListVM.UpdateMappingDevType(profileSettingsVM.Output.ContType);
             touchpadPanel.PopulateDisInvertMenu(profileSettingsVM.Touchpad);
             gyroPanel.PopulateTriggerMenus(profileSettingsVM.Gyro);
@@ -851,8 +851,8 @@ namespace DS4Windows.UI
             backend.StopRumble(profileSettingsVM.FuncDevNum);
 
             profileSettingsVM.Output.ResetOutDevTypeTemp();
-            // Phase6-Step7b: 編集は作業スロットに対して行っており、コントローラーのスロットには届いていないため、
-            // 元のプロファイルを読み込み直して取り消す処理は不要（旧: HaltReportingRunAction 内で LoadProfile していた）。
+            // 編集は作業スロットに対して行っており、コントローラーのスロットには届いていないため、
+            // 元のプロファイルを読み込み直して取り消す処理は不要。
             // 作業スロットは次に編集画面を開いたときに読み込み直される
             AppLogger.LogDebug($"[ProfileEditor] Cancel: edit slot {deviceNum} discarded; controller slots were not modified (targetDevice={targetDevice})");
 
@@ -968,11 +968,11 @@ namespace DS4Windows.UI
             picBoxHover.Visibility = Visibility.Hidden;
         }
 
-        // Phase6-Step7b（決定7＝H1）: GyroOutModeCombo_SelectionChanged（ジャイロ出力モードの変更時に、実機の
+        // GyroOutModeCombo_SelectionChanged（ジャイロ出力モードの変更時に、実機の
         // touchPad.ResetToggleGyroModes() を即時に呼ぶ処理）と FrictionUD_ValueChanged（トラックボール摩擦の変更時に
         // ResetTrackAccel を即時に呼ぶ処理）は削除した。編集スロットが常に作業スロット（8）になり到達しなくなったため。
         // 同じ処理は、適用・保存時の ApplyProfile → ControlService.CheckProfileOptions で行われる
-        // （Phase6-Step7b-Plan.md §1A.3）
+        //
 
         #region Save / Apply Profile Logic (Unified)
 
@@ -992,7 +992,7 @@ namespace DS4Windows.UI
                 return false;
             }
 
-            // Phase 5 Step 14: SpecialActionsListViewModel から有効なアクション名リストを取得し、Global.ProfileActions に確実に反映
+            // SpecialActionsListViewModel から有効なアクション名リストを取得し、Global.ProfileActions に確実に反映
             if (specialActionsVM != null)
             {
                 specialActionsVM.CommitEnabledActionsToProfile();
@@ -1000,13 +1000,13 @@ namespace DS4Windows.UI
 
             SaveSplitterAndColumnWidths();
 
-            // Phase6-Step8-3: profileRepository はコンストラクタで必ず非 null（Global.SaveProfile へのフォールバックを削除）
+            // profileRepository はコンストラクタで必ず非 null（Global.SaveProfile へのフォールバックを削除）
             bool saved = profileSettingsVM.SaveProfile(profileName);
 
             if (saved)
             {
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Editor_ProfileSaved", profileName);
-                // Phase6-Step7b（決定8）: 保存（Save）と適用（Apply）の違いは、画面を閉じるかどうかだけ。
+                // 保存（Save）と適用（Apply）の違いは、画面を閉じるかどうかだけ。
                 // どちらも親画面へ ProfileSaved を通知し、MainWindow.SyncProfileListAndControllers が、
                 // プロファイル一覧を読み込み直したうえで、このプロファイルを使っているスロットにだけ再適用する。
                 // 編集画面を開いたコントローラー（targetDevice）へ直接適用はしない（新規作成したプロファイルで
@@ -1141,7 +1141,7 @@ namespace DS4Windows.UI
             };
         }
 
-        // Phase9 UI 変更: SA の行をダブルクリックすると、「アクションを編集」と同じ編集画面を開く（Controls タブの一覧のダブルクリックと同じ）。
+        // SA の行をダブルクリックすると、「アクションを編集」と同じ編集画面を開く（Controls タブの一覧のダブルクリックと同じ）。
         // ヘッダー、空きの領域、「有効」のチェックボックスのダブルクリックは対象外
         private void SpecialActionsLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -1197,7 +1197,7 @@ namespace DS4Windows.UI
                     // according to the current sort column and direction.
                     SortSpecialActionsList(specialActionsVM.CurrentSortColumn, specialActionsVM.CurrentSortAscending);
 
-                    // Phase6-Step10-3b-4: 名前が変わったときは、編集中以外も含むすべてのプロファイルの XML の参照を
+                    // 名前が変わったときは、編集中以外も含むすべてのプロファイルの XML の参照を
                     // 新名へ置換し、書き換えたプロファイルを使っているスロットへ再適用する（MainWindow の 1 か所の経路）。
                     // 編集中のプロファイルのメモリ上の参照は、上で置換済み。
                     if (!string.IsNullOrEmpty(oldName) && !string.Equals(oldName, newName, StringComparison.Ordinal))
@@ -1249,7 +1249,7 @@ namespace DS4Windows.UI
 
         private void CommitEnabledActions()
         {
-            // Phase 5 Step 14: ViewModel 側の ProfileActions 文字列を即時再同期
+            // ViewModel 側の ProfileActions 文字列を即時再同期
             if (specialActionsVM != null)
             {
                 specialActionsVM.CommitEnabledActionsToProfile();
@@ -1296,7 +1296,7 @@ namespace DS4Windows.UI
             if (activeWin && profileSettingsVM.General.UseControllerReadout)
             {
                 int index = -1;
-                // Phase5-Step15-2-d: 281行目で解決済みのcontrolServiceフィールドを使わず、
+                // 281行目で解決済みのcontrolServiceフィールドを使わず、
                 // ここだけProgram.rootHubを直接呼んでいた置換漏れを修正。
                 switch (backend.GetActiveInputControl(tempDeviceNum))
                 {
@@ -1377,7 +1377,7 @@ namespace DS4Windows.UI
 
         private void UseControllerReadoutCk_Click(object sender, RoutedEventArgs e)
         {
-            // Phase6-Step7b: 判定は編集スロット（常に 8）ではなく実機の有無で行う（一覧経由では従来どおり開始しない）
+            // 判定は編集スロット（常に 8）ではなく実機の有無で行う（一覧経由では従来どおり開始しない）
             if (profileSettingsVM.General.UseControllerReadout && HasTargetDevice)
             {
                 inputTimer.Start();
@@ -1388,7 +1388,7 @@ namespace DS4Windows.UI
             }
         }
 
-        // Phase10-Step3 W4: 左ペイン全体（タブ）に重なって表示されている編集画面（Controls の割り当てエディター、SA の編集画面）。
+        // 左ペイン全体（タブ）に重なって表示されている編集画面（Controls の割り当てエディター、SA の編集画面）。
         // 表示されているあいだは null でない。開いているあいだは、新しく開かない（コントローラーの入力［タイマー］と、右ペインに残る入口からの二重起動を防ぐ）。
         // TODO(Phase10-Step3b): 入口をすべて左ペインのタブのボタンにする（Axis Config の 4 つの入口は、Controls タブへボタンとして追加）。
         //   そのあとも、この判定は、コントローラーの入力（タイマー）経由の安全装置として残す
@@ -1449,7 +1449,7 @@ namespace DS4Windows.UI
             ShowControlAssignmentEditor(mpControl, updateHighlight: true);
         }
 
-        // Phase9 UI 変更: Controls タブの全ての割り当て（L2／R2 Full Pull、スティックの Outer Bind を含む一覧の全項目）を Default に戻す。
+        // Controls タブの全ての割り当て（L2／R2 Full Pull、スティックの Outer Bind を含む一覧の全項目）を Default に戻す。
         // Extras、マクロも含めて、そのボタンの設定を初期化する（DS4ControlSettings.Reset）。プロファイルは Save するまで保存されない
         private void ResetAllControls()
         {
@@ -1478,7 +1478,7 @@ namespace DS4Windows.UI
 
         private void SidebarTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Phase10-Step3b W1: 左ペインのタブの中の ComboBox や入れ子の TabControl（Touchpad・ジャイロの Output Mode ほか）の選択変更も、
+            // 左ペインのタブの中の ComboBox や入れ子の TabControl（Touchpad・ジャイロの Output Mode ほか）の選択変更も、
             // このイベントとして届く。左ペインのタブ自身の選択変更だけを扱う
             if (e.OriginalSource != sidebarTabControl) return;
 
@@ -1558,7 +1558,7 @@ namespace DS4Windows.UI
 
         private void GyroCalibration_Click(object sender, EventArgs e)
         {
-            // Phase6-Step7b: 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
+            // 校正するのは実機（FuncDevNum＝targetDevice、実機なしならコントローラー0）。
             // 編集スロットのフィールド deviceNum と区別するため、ローカル変数名を分けた
             int calibrationDevice = profileSettingsVM.FuncDevNum;
             // 未接続のスロットでは何もしない（以前は null の機器を触って NullReferenceException でアプリが終了していた）
@@ -1567,7 +1567,7 @@ namespace DS4Windows.UI
 
         private void CalibrateStick_OnClick(object sender, int tag)
         {
-            // Phase6-Step7b: 校正には実機が必要。旧判定 deviceNum == 8（一覧経由）は、編集スロットが常に 8 になったため
+            // 校正には実機が必要。旧判定 deviceNum == 8（一覧経由）は、編集スロットが常に 8 になったため
             // 実機の有無（targetDevice）の判定に置き換えた。メッセージの文言は維持
             if (!HasTargetDevice)
             {

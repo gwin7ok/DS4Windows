@@ -23,7 +23,7 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
         {
             AssignmentOrigin origin = definition.Origin;
             SpecialAction sa = source;
-            // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま（旧経路の独自の判定と同じ効果）。実行中のブロックなし
+            // 立ち上がりの 1 回だけ。Fresh-press ガードは既定のまま。実行中のブロックなし
             return new SpecialActionOutputs(new IOutputAction[] { new GyroCalibrateAction(sa, device, _gyroCalibration, index, _actionRepository) },
                 OutputBindingPolicy.For(origin, definition));
         }

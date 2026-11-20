@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W0（Phase10-Step4d-Plan.md §4 W0・W5・W6）: 実行時の状態を<b>名前で持っている箇所</b>の数を、ファイルごとに固定する進捗の目安（ラチェット）。
+    /// 実行時の状態を<b>名前で持っている箇所</b>の数を、ファイルごとに固定する進捗の目安（ラチェット）。
     /// 対象は、プロファイル側の <c>ProfilePath</c>／<c>OlderProfilePath</c>（W5 で ID に替える）と、SA 側の <c>profileActions</c>／<c>ProfileActions</c>（W6 で ID に替える）。
     /// 件数が<b>実数と一致する</b>ことを検査する（基準値を実数と一致させる考え方。旧 <c>Phase7Step10eW5RatchetEqualityGuardTests</c> と同じ。同テストは Phase14d-Step2 で、対象のラチェットとともに撤去した）。W5・W6 で参照を ID に替えて件数が減ったら、基準値も同時に更新する。
     /// コメントの行は数えない。ソースが見つからない環境では、検査を行わず合格とする。
@@ -27,26 +27,26 @@ namespace DS4WindowsTests
             ["DS4Windows/Core/Abstractions/IProfileSettingsService.cs"] = (0, 1),
             ["DS4Windows/Core/Settings/BackingStore.cs"] = (10, 9),   // 保存するプロファイル名（GetPersistedProfileName）が、一時のあいだ通常のプロファイルを読む 1 件
             //   // Phase10-Step4d W5b: 保管を ID にした窓口（ProfileSlotNames）の宣言と、登録簿との結び（AttachProfileIdentity）で 2 件増えた。名前の配列そのものは、もうない
-            ["DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs"] = (18, 0),   // Phase10-Step4d W4: ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
+            ["DS4Windows/Core/Persistence/Dto/AppSettingsDTO.cs"] = (18, 0),   // ID から現在の名前に引き直す代入で 2 件増えた（W5 で ID に替える）
             ["DS4Windows/Core/Settings/ProfileActions.cs"] = (0, 1),
             ["DS4Windows/Core/Persistence/AppSettingsXmlSerializer.cs"] = (6, 0),
             ["DS4Windows/Processing/Services/Slots/AutoProfileService.cs"] = (2, 0),
-            ["DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs"] = (1, 0),   // Phase9 9-E E-6a: ControlService から移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs"] = (1, 0),   // ControlService から移した（合計は増えていない）
             ["DS4Windows/Processing/Services/Connection/FirstReportActionLogger.cs"] = (1, 0),   // InputReportProcessor から、最初のレポートのログを切り出した（合計は増えていない）
-            ["DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs"] = (0, 0),   // Phase13-Step5b: ControlService.On_Report の本文を移した（合計は増えていない）
-            ["DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs"] = (2, 0),   // Phase13-Step11 11-b: IPC コマンド（loadprofile／query）の実行を MainWindow.Ipc.cs から移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs"] = (0, 0),   // ControlService.On_Report の本文を移した（合計は増えていない）
+            ["DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs"] = (2, 0),   // IPC コマンド（loadprofile／query）の実行を MainWindow.Ipc.cs から移した（合計は増えていない）
             ["DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs"] = (1, 0),
             ["DS4Windows/Processing/Services/Slots/ProfileActionProvider.cs"] = (0, 2),
             ["DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs"] = (7, 4),
             ["DS4Windows/Core/Persistence/ProfilePresets.cs"] = (0, 7),
             ["DS4Windows/Core/Persistence/ProfileRepository.cs"] = (6, 4),
             ["DS4Windows/Core/Persistence/ProfileSections/ProfileActionsLoadSection.cs"] = (0, 7),
-            ["DS4Windows/Core/Persistence/ProfileSections/ProfileActionsSaveSection.cs"] = (0, 3),   // Phase10-Step4d W3: SA の固定 ID を書く繰り返しで 1 件増えた（W6 で ID に替える）
+            ["DS4Windows/Core/Persistence/ProfileSections/ProfileActionsSaveSection.cs"] = (0, 3),   // SA の固定 ID を書く繰り返しで 1 件増えた（W6 で ID に替える）
             ["DS4Windows/Core/Persistence/ProfileSections/ProfileMotionSaveSection.cs"] = (0, 2),
             ["DS4Windows/Core/Settings/ProfileSettingsService.cs"] = (0, 3),
             ["DS4Windows/Core/Persistence/SpecialActionRepository.cs"] = (0, 2),
             ["DS4Windows/UI/Services/ProfileSelectionCoordinator.cs"] = (2, 0),   // MainWindow から、プロファイルの選択・同期の責務ごと移した（合計は増えていない）
-            ["DS4Windows/UI/MainWindow.xaml.cs"] = (0, 0),   // Phase10-Step4d W7: 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った。Phase9 9-F F-2b: IPC の 2 件を MainWindow.Ipc.cs へ移した
+            ["DS4Windows/UI/MainWindow.xaml.cs"] = (0, 0),   // 名前変更の追従で、スロットの配列を書き換える代入（ProfilePath／OlderProfilePath）を撤去して 2 件減った。Phase9 9-F F-2b: IPC の 2 件を MainWindow.Ipc.cs へ移した
             ["DS4Windows/UI/Services/ProfileEditorBackend.cs"] = (1, 4),   // ProfileEditor から移した（合計は増えていない）
             ["DS4Windows/UI/ViewModels/CompositeDeviceModel.cs"] = (5, 0),
             ["DS4Windows/UI/ViewModels/ControllerListViewModel.cs"] = (3, 0),

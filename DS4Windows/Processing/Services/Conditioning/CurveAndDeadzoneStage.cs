@@ -82,12 +82,12 @@ namespace DS4Windows.Processing.Services.Conditioning
             cState.CopyTo(dState);
             //ControllerState dState = new ControllerState(cState);
 
-            // Phase9 9-A(2)-B: ドリフト補正・アンチスナップバック・ファズは、共通の処理（IStickInputConditioner）が行う。状態（履歴、前回の値）は StickMotionState が持つ。
+            // ドリフト補正・アンチスナップバック・ファズは、共通の処理（IStickInputConditioner）が行う。状態（履歴、前回の値）は StickMotionState が持つ。
             cState = _stickConditioner.ApplyDrift(device, dState, settings);
 
 
-            // Phase9 9-A(1) (b): 左右のスティックのデッドゾーン（Radial・Axial、Radial の外側の出力）は、共通の処理（IStickDeadZoneProcessor）が行う。
-            // 以前は、ここに、左右でほぼ同じコードが 2 回あった（約 470 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests が守る
+            // 左右のスティックのデッドゾーン（Radial・Axial、Radial の外側の出力）は、共通の処理（IStickDeadZoneProcessor）が行う。
+            // 以前は、ここに、左右でほぼ同じコードが 2 回あった（約 470 行）。値は 対応するテスト が守る
             _stickDeadZone.Process(lsMod, cState.LX, cState.LY, ref dState.LX, ref dState.LY, ref dState.OutputLSOuter);
             _stickDeadZone.Process(rsMod, cState.RX, cState.RY, ref dState.RX, ref dState.RY, ref dState.OutputRSOuter);
 
@@ -96,8 +96,8 @@ namespace DS4Windows.Processing.Services.Conditioning
             int l2Maxzone = getL2Maxzone(device);
             */
 
-            // Phase9 9-A(1) (d): トリガーのデッドゾーン（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）は、L2／R2 とも共通の処理（ITriggerDeadZoneProcessor）が行う。
-            // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は Phase9A1SetCurveAndDeadzoneGoldenTests と Phase7bTriggerDeadZoneRoundingTests が守る
+            // トリガーのデッドゾーン（デッドゾーン、アンチデッドゾーン、最大ゾーン、最大出力）は、L2／R2 とも共通の処理（ITriggerDeadZoneProcessor）が行う。
+            // 以前は、ここに、L2 と R2 で同じコードが 2 回あった（約 100 行）。値は 対応するテスト が守る
             TriggerDeadZoneZInfo l2ModInfo = settings.ForSlot(device).Triggers.L2Mod;
             if (l2ModInfo.deadZone > 0 || l2ModInfo.antiDeadZone > 0 || l2ModInfo.maxZone != 100 || l2ModInfo.maxOutput != 100.0)
                 _triggerDeadZone.Process(l2ModInfo, cState.L2, ref dState.L2);
@@ -141,7 +141,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 dState.R2 = (byte)NumericUtil.Clamp(0, r2Sens * dState.R2, 255);
 
             SquareStickInfo squStk = settings.ForSlot(device).Sticks.SquStick;
-            // Phase9 9-A(1) (c): スクエアスティックと出力カーブは IOutputCurveProcessor へ切り出した（左右・L2／R2 は同じ処理）。条件の判定は、ここに残す
+            // スクエアスティックと出力カーブは IOutputCurveProcessor へ切り出した（左右・L2／R2 は同じ処理）。条件の判定は、ここに残す
             if (squStk.lsMode && (dState.LX != 128 || dState.LY != 128))
                 _outputCurve.ProcessSquareStick(squStk.lsRoundness, ref dState.LX, ref dState.LY);
 
@@ -179,8 +179,8 @@ namespace DS4Windows.Processing.Services.Conditioning
 
                 int gyroX = cState.Motion.accelX, gyroZ = cState.Motion.accelZ;
 
-                // Phase9 9-A(2)-A: ジャイロの補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）は、X／Z とも共通の処理（IGyroControlsProcessor）が行う。
-                // 以前は、ここに、X と Z で同じコードが 2 回あった（約 150 行）。値は Phase9A2GyroControlsGoldenTests が守る。出力カーブを適用する条件は、X と Z で違うため、ここに残す
+                // ジャイロの補正（デッドゾーン、最大ゾーン、アンチデッドゾーン、感度、出力カーブ）は、X／Z とも共通の処理（IGyroControlsProcessor）が行う。
+                // 以前は、ここに、X と Z で同じコードが 2 回あった（約 150 行）。値は 対応するテスト が守る。出力カーブを適用する条件は、X と Z で違うため、ここに残す
                 dState.Motion.outputAccelX = _gyroControls.Correct(gyroX, SXD, SXMax, sxAntiDead, sxsens);
                 dState.Motion.outputAccelZ = _gyroControls.Correct(gyroZ, SZD, SZMax, szAntiDead, szsens);
 

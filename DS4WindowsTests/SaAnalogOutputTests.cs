@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step5 S5b（Phase10-Step6 後の Step5。SA 側のアナログ出力）: SA の Button（Output Key/Mouse/Button）の出力先が、パッドの軸・トリガー、マウス移動のとき、
+    /// SA の Button（Output Key/Mouse/Button）の出力先が、パッドの軸・トリガー、マウス移動のとき、
     /// 強さ（0〜100%）の固定値で出す。Controls のボタンが元のときの出力（軸は端［255／0］、トリガーは 255、マウス移動はボタンが元のときの量）を 100% とし、比例させる。
     /// デジタルな出力先（ボタン、マウスのボタン、ホイール）は、従来どおり <c>PressX360</c>。
     /// </summary>

@@ -1,7 +1,7 @@
 # K7b-1（意図しない終了。メモリ破壊の疑い）の調査記録
 
 作成日: 2026-10-23
-関連: `Phase7c-Completion-Report.md` §4（切り分け手順）、`Phase8-Completion-Report.md` §4（2026-10-20 の 0xc0000005）、`Phase9-Completion-Report.md` §5
+関連: `Archive/Phase7c-Completion-Report.md` §4（切り分け手順）、`Archive/Phase8-Completion-Report.md` §4（2026-10-20 の 0xc0000005）、`Archive/Phase9-Completion-Report.md` §5
 
 ## 1. 事実
 
@@ -25,7 +25,7 @@ GetOverlappedResultEx(handle, ov, out _, timeout, true)   // ← 保留中の I/
 ```
 
 - 非同期の読み取りが保留の間、バッファ（`DS4Device.inputReport`／`btInputReport` などの `byte[]`）が**固定されていない**。待っている間に GC がこの配列を移動すると、カーネルは**古い位置**へ書き込む。ヒープが壊れ、落ちる場所も種類も毎回変わる。
-- GC は、画面を開く・ログを出すなど、割り当てのある操作で起きる。「ColorPicker を開く → 落ちることがある」という再現手順（`Phase7c-Completion-Report.md` §4.1）と整合する。
+- GC は、画面を開く・ログを出すなど、割り当てのある操作で起きる。「ColorPicker を開く → 落ちることがある」という再現手順（`Archive/Phase7c-Completion-Report.md` §4.1）と整合する。
 - 待ち（`GetOverlappedResultEx`）が失敗・タイムアウト（Switch Pro の `SUBCOMMAND_RESPONSE_TIMEOUT`、`WAIT_IO_COMPLETION` など）したときは、I/O が保留のまま関数を抜ける。スタック上の `NativeOverlapped` と、`using` で破棄したイベントが無効になり、後で完了したときに、解放済みのスタック・ハンドルへ書き込む（アクセス違反）。
 
 ### 2.2 `WriteOutputReportViaInterrupt`（出力レポートの書き込み）

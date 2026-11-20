@@ -8,7 +8,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10d W4（Q7＝A）: アプリ層の静的な窓口（イベント・表示言語・自動プロファイルの作成・更新確認のスキップ判定）を
+    /// アプリ層の静的な窓口（イベント・表示言語・自動プロファイルの作成・更新確認のスキップ判定）を
     /// 持ち主の型へ移したことの回帰ガード。
     /// </summary>
     public class AppLayerStaticsGuardTests
@@ -16,7 +16,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Global_NoLongerDeclaresTheMovedMembers()
         {
-            // Phase7-Step10d W5: Global 型ごと削除した（GlobalRemovedGuardTests が型の不在を確認する）
+            // Global 型ごと削除した（GlobalRemovedGuardTests が型の不在を確認する）
             Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
         }
 
@@ -50,7 +50,7 @@ namespace DS4WindowsTests
             var original = System.Globalization.CultureInfo.DefaultThreadCurrentUICulture;
             try
             {
-                UiCulture.Set(null); // 例外は握りつぶし、カルチャは変えない（旧 Global.SetCulture と同じ）
+                UiCulture.Set(null); // 例外は握りつぶし、カルチャは変えない
                 Assert.Equal(original, System.Globalization.CultureInfo.DefaultThreadCurrentUICulture);
             }
             finally

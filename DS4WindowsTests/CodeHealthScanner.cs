@@ -138,7 +138,7 @@ namespace DS4WindowsTests
             return -1;
         }
 
-        // 空の catch（本体が空白だけ）・コメントだけの catch・ログを包む try・イベントハンドラー以外の async void（PhaseRV2-7）。
+        // 空の catch（本体が空白だけ）・コメントだけの catch・ログを包む try・イベントハンドラー以外の async void。
         private static readonly Regex EmptyCatchBlank = new Regex(
             @"\bcatch\b(?:\s*\([^)]*\))?(?:\s*when\s*\([^)]*\))?\s*\{\s*\}", RegexOptions.Compiled);
 
@@ -192,6 +192,15 @@ namespace DS4WindowsTests
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// 経緯の参照（<c>Phase</c> に数字が続く語。例: <c>Phase9</c>）を含む行。経緯は git の履歴と <c>docs-forDIMG/</c> にあり、コメントへ書き足さない（規約 3.3 原則5）。
+        /// 実在する型名（例: テストのクラス名）を指す行も数える。
+        /// </summary>
+        public static int CountPhaseReferenceLines(IEnumerable<SourceFile> files)
+        {
+            return files.Sum(f => f.Text.Split('\n').Count(line => Regex.IsMatch(line, @"Phase\d")));
         }
 
         private static bool IsUnder(string relativePath, string prefix)

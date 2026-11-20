@@ -26,7 +26,7 @@ namespace DS4Windows.UI.ViewModels
 
     public class MappedControl
     {
-        // Phase6-Step10-2-5: Global.GetDS4CSetting／Global.defaultButtonMapping の置換先（必須引数）
+        // Global.GetDS4CSetting／Global.defaultButtonMapping の置換先（必須引数）
         private readonly IProfileSettingsService profileSettingsService;
         private int devIndex;
         private OutContType devType;
@@ -107,7 +107,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase9 UI 変更: 割り当ての説明文（<see cref="AssignmentDescriber"/>。出力ピッカーのボタンのラベル、SA タブの一覧と同じ書式）。
+        /// 割り当ての説明文（<see cref="AssignmentDescriber"/>。出力ピッカーのボタンのラベル、SA タブの一覧と同じ書式）。
         /// </summary>
         public string GetMappingString()
         {

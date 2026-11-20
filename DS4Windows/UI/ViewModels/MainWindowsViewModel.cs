@@ -66,7 +66,7 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler? FullTabsEnabledChanged;
 
-        // Phase6-Step9-2: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
+        // 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // 旧 RunUpdaterCheck／DownloadUpstreamVersionInfo／LauchDS4Updater／IsNET8Available と updaterExe は、
         // 呼出元 0 件の上流の更新経路の残骸（2025-12-12 の b55d160b で呼び出しが消え、現行の更新処理は
         // UpdaterWindow が担う）のため、決定6＝D1 により削除した。

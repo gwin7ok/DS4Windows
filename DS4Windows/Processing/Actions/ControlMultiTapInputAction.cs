@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 W8 相当: Controls タブの Multi-action（ボタン 1 つの、タップ・長押し・ダブルタップ）の入力アクション。
+    /// Controls タブの Multi-action（ボタン 1 つの、タップ・長押し・ダブルタップ）の入力アクション。
     /// 判定は SA の <see cref="MultiTapInputAction"/>（押下の判定は SA と同じ、閾値なしのデジタルな判定［R-5］、タップの間隔、長押しの時間）にそのまま任せる。Controls の束縛としてエンジンの
     /// ボタンごとの処理の表に載せるための印（<see cref="IControlBoundInput"/>）を持つだけ。
     /// </summary>

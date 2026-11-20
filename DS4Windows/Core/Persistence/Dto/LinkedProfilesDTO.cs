@@ -30,10 +30,10 @@ namespace DS4Windows.Core.Persistence.Dto
     {
         private List<LinkedProfileItem> linkedProfileItems;
 
-        /// <summary>Phase10-Step4d W4: 名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。シリアライザーが設定する。</summary>
+        /// <summary>名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。シリアライザーが設定する。</summary>
         public Func<string, string> ProfileIdOf { get; set; }
 
-        /// <summary>Phase10-Step4d W4: ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。シリアライザーが設定する。</summary>
+        /// <summary>ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。シリアライザーが設定する。</summary>
         public Func<string, string> ProfileNameOf { get; set; }
 
         public LinkedProfilesDTO()
@@ -60,7 +60,7 @@ namespace DS4Windows.Core.Persistence.Dto
         {
             foreach(LinkedProfileItem item in linkedProfileItems)
             {
-                // Phase10-Step4d W4: ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
+                // ID が見つかれば、現在の名前に置き換える（名前変更に追従。ID が勝つ）。ない・見つからないときは、名前のまま
                 string profile = item.Profile;
                 if (!string.IsNullOrEmpty(item.ProfileId))
                 {

@@ -6,7 +6,7 @@ using DS4Windows.Core.Profiles;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step2 2b-1: <see cref="WindowTargetMatcher"/> は、<c>AutoProfileEntity</c> が持っていた照合の規則を取り出した部品。
+    /// <see cref="WindowTargetMatcher"/> は、<c>AutoProfileEntity</c> が持っていた照合の規則を取り出した部品。
     /// 取り出し前の実装（下の <c>LegacyEntity</c>。コードを変えずに写したもの）と、同じ入力に同じ結果を返すこと（差分テスト）、
     /// および <c>AutoProfileEntity</c> が部品へ委譲しても結果が変わらないことを確かめる。
     /// </summary>

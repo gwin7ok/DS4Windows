@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-A(2)-C（Phase9-A2-Plan.md）: フリックスティック（スティックをはじいた角度を、マウスの X 移動量にする）の 1 フレーム分の処理。
+    /// フリックスティック（スティックをはじいた角度を、マウスの X 移動量にする）の 1 フレーム分の処理。
     /// 以前は <c>Mapping</c> の private メソッド（<c>ProcessFlickStick</c>／<c>HandleFlickStickAngle</c>／<c>WarpEaseOut</c>）だった。状態は持たない（フリックの進行は <see cref="FlickStickMappingData"/> が持ち、引数で渡す）。
     /// 時刻には依存しない（フレーム間隔は <paramref name="elapsedTime"/> で受ける）。
     /// </summary>

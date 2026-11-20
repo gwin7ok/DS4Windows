@@ -11,9 +11,9 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step4 W3: 実行ファイルの情報と設定の保存場所（旧 <c>Global</c> の状態と <c>FindConfigLocation</c>／<c>SaveWhere</c>／<c>SaveDefault</c>）を
+    /// 実行ファイルの情報と設定の保存場所を
     /// <see cref="PathService"/> へ移した結果の特性化テストと回帰ガード。
-    /// - <see cref="PathService.FindConfigLocation(BackingStore, string, string, Func{string, bool})"/> の 4 通りの分岐（旧 <c>Global.FindConfigLocation</c> の分岐そのまま）。
+    /// - <see cref="PathService.FindConfigLocation(BackingStore, string, string, Func{string, bool})"/> の 4 通りの分岐。
     /// - <c>Global</c> に残る 4 つの窓口（appdatapath／exedirpath／exelocation／exeversion）が <see cref="PathService"/> の状態を指すこと。
     /// - 削除済みの <c>Global</c> のメンバーが再び宣言されないこと。静的初期化の循環を作らないこと。
     /// 静的な状態（AppDataPathState、FirstRunState ほか）を書き換えるため、同じ状態を使うテストと直列に実行し、必ず元へ戻す。

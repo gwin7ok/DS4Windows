@@ -97,8 +97,8 @@ namespace DS4Windows
             runShutdown = true;
             skipSave = true;
 
-            // Phase9 9-F F-1b（Phase9-F-Plan.md §5）: 起動の手順を、順に呼ぶだけにした（各手順は、下のメソッド。順序と、早期の終了の条件は、従来のまま。
-            // 呼び出しの順序は Phase9F1StartupOrderGuardTests が守る）
+            // Phase9 9-F F-1b（docs-forDIMG/MadeByAgent/Archive/Phase9-F-Plan.md §5）: 起動の手順を、順に呼ぶだけにした（各手順は、下のメソッド。順序と、早期の終了の条件は、従来のまま。
+            // 呼び出しの順序は 対応するテスト が守る）
             RunPreHostBootstrap(e);
 
             ArgumentParser parser = new ArgumentParser();
@@ -341,7 +341,7 @@ namespace DS4Windows
             // Phase6-Step7: ここまでが Pre-Host 領域（明示的なホスト構築より前に実行される起動処理）。
             // この領域と CheckOptions（-driverinstall 分岐を含む）の Global 参照（起動時ログローテーション・
             // 設定の場所の決定・ViGEmBus 情報など）は、ブートストラップ処理として意図的に静的のまま温存する
-            // （Phase6-Step7-Plan.md §1.2・§2.5）。Phase7-Step4 W2: -driverinstall 分岐は、設定の読込の前に、
+            // （docs-forDIMG/MadeByAgent/Archive/Phase6-Step7-Plan.md §1.2・§2.5）。Phase7-Step4 W2: -driverinstall 分岐は、設定の読込の前に、
             // CheckOptions の中で CreateHost(config, parser) を明示的に呼ぶ（暗黙のホスト構築はなくなった）。
             // DI サービスは、下の CreateControlService の直後に InitializePostHostServices で解決する。
             // フェーズ0-3: AppHost正式ルート

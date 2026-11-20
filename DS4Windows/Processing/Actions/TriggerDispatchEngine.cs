@@ -13,10 +13,10 @@ namespace DS4Windows.Processing.Actions
     // それまでは単体テストからのみ呼ばれる（規約 2.4）。ProcessTriggers は最終形の入口で、Step8 で旧ループのフックと入れ替える。
     // 復帰（UntriggerPolicy）: Automatic（Unload on trigger release）のみ。Buttons（解除トリガー）は Phase8-Step8 8b で機能を廃止し、8d で型から削除した。
     /// <summary>
-    /// Phase8-Step4 W3: 統一トリガーディスパッチのエンジン（Phase8-Step2-Design.md §9、§14〜§17、§23.1）。
+    /// 統一トリガーディスパッチのエンジン。
     /// 種別ごとの分岐は持たない。差は <see cref="BindingPolicy"/> と出力アクションで表す。状態（<c>BeingTriggered</c> ほか）は <c>ActionInstanceState</c> に残し、
     /// エンジンが持つのは、デバイスごとの抑制の集合と、束縛ごとの実行時の配列（前フレームの成立、このフレームの評価結果）だけ。
-    /// 束縛が登録されていれば、常に処理する（Phase8-Step8 8d: 種別ごとの移行のスイッチ <c>BindingMigrationOptions</c> は削除した）。
+    /// 束縛が登録されていれば、常に処理する。
     /// スレッド（Q8＝A）: <c>ProcessOwned</c>／<c>ProcessTriggers</c>／<c>ApplyFrameOutputs</c>／<c>AddSuppressed</c>／<c>ReleaseSuppressed</c> は、デバイスごとのロックの下で動く。
     /// <c>IsSuppressed</c> は、従来の <c>CheckForSpecialActionSuppression</c> と同じく、ロックなしで集合を読む。
     /// </summary>
@@ -84,7 +84,7 @@ namespace DS4Windows.Processing.Actions
                 int c = (int)control;
                 if (rt.ControlCount == 0 || (uint)c >= (uint)rt.ControlIndex.Length) return;
 
-                // Phase8-Step7 7.8e: 1 つのボタンに複数の束縛（Extras → 通常の割り当て）を持てる。ビルダーが並べた順に、鎖をたどって処理する
+                // 1 つのボタンに複数の束縛（Extras → 通常の割り当て）を持てる。ビルダーが並べた順に、鎖をたどって処理する
                 for (int i = rt.ControlIndex[c]; i >= 0; i = rt.ControlNext[i])
                 {
                     IActionBinding binding = rt.Bindings[i];
@@ -107,7 +107,7 @@ namespace DS4Windows.Processing.Actions
                 IActionBinding binding = rt.Bindings[i];
                 if (!IsOwnedBinding(binding)) return FrameResult.Continue;
 
-                // Phase10-Step6 I5 の修正: SA に付随する束縛（SA の Extras）は、SA 本体の直前に処理する（本体が途中で終了を要求しても、必ず処理する）
+                // SA に付随する束縛（SA の Extras）は、SA 本体の直前に処理する（本体が途中で終了を要求しても、必ず処理する）
                 if (rt.CompanionHead != null)
                 {
                     for (int j = rt.CompanionHead[i]; j >= 0; j = rt.CompanionNext[j])
@@ -177,7 +177,7 @@ namespace DS4Windows.Processing.Actions
                         }
                         else if (rt.Stamp[i] == rt.Frame && outputs[o] is IEvaluatedFrameOutputAction evaluatedOutput)
                         {
-                            // Phase8-Step7 7.8f-1: このフレームで評価された束縛だけ（旧経路が dcs を処理したフレームだけ、アナログの値を出す）
+                            // このフレームで評価された束縛だけ
                             try { evaluatedOutput.ApplyEvaluatedFrame(ctx, established); }
                             catch (Exception ex) { LogException(ex); }
                         }
@@ -192,7 +192,7 @@ namespace DS4Windows.Processing.Actions
             }
         }
 
-        // ---- 復帰（Phase8-Step7 7.5b）----
+        // ---- 復帰----
 
         public void ProcessUntrigger(int device, ITriggerInput input)
         {
@@ -212,7 +212,7 @@ namespace DS4Windows.Processing.Actions
                     SpecialAction action = binding.Source;
                     if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction UNTRIGGER check: device={device}, untriggeraction={(action != null ? action.name : "null")}, untriggerindex={binding.Index}");
 
-                    // 自動（Unload on trigger release）: トリガーのうち、どれか 1 つでも離れたら成立（旧 Mapping と同じ）
+                    // 自動（Unload on trigger release）: トリガーのうち、どれか 1 つでも離れたら成立
                     bool activated = false;
                     var triggers = action.trigger;
                     for (int i = 0, count = triggers.Count; i < count; i++)
@@ -236,7 +236,7 @@ namespace DS4Windows.Processing.Actions
                         return;
                     }
 
-                    // 復帰の適用も ClearDeviceState を通る。復帰の前に合図を消す（旧経路と同じ順序。Phase7b W1）
+                    // 復帰の適用も ClearDeviceState を通る。復帰の前に合図を消す
                     rt.Pending = null;
                 }
                 catch (Exception ex)
@@ -246,7 +246,7 @@ namespace DS4Windows.Processing.Actions
                 }
             }
 
-            // 復帰の適用はロックの外で行う（旧経路と同じ。適用が、同じスレッドでエンジンの他のメソッドを呼んでも、待たない）
+            // 復帰の適用はロックの外で行う
             try
             {
                 EngineContext ctx = rt.Context;
@@ -315,7 +315,7 @@ namespace DS4Windows.Processing.Actions
         {
             if ((uint)device >= (uint)_devices.Length) return;
 
-            // 適用スレッドは、入力スレッドのものである状態を直接書かない。次の処理の先頭でリセットする（Phase8-Step2-Design.md §17）
+            // 適用スレッドは、入力スレッドのものである状態を直接書かない。次の処理の先頭でリセットする
             _devices[device].ResetRequested = true;
         }
 
@@ -360,7 +360,7 @@ namespace DS4Windows.Processing.Actions
             }
         }
 
-        // Phase8-Step7 7.8e（Q6＝B）: 束縛の差し替え・適用・切断のときに、IResettableOutputAction を実装する出力へ後始末を知らせる。
+        // 束縛の差し替え・適用・切断のときに、IResettableOutputAction を実装する出力へ後始末を知らせる。
         // 有効にしていない出力は何もしない。割り当てが起きるのは、差し替えの瞬間だけ（毎フレームではない）
         private static void ResetOutputs(DeviceRuntime rt, IReadOnlyList<IActionBinding> bindings, ITriggerInput input)
         {
@@ -409,7 +409,7 @@ namespace DS4Windows.Processing.Actions
                     rt.Index.Add(source, i);
 
                 // Controls タブの束縛（7.8b）: ボタン → 束縛の添字の表
-                if (snapshot[i]?.Input is IControlBoundInput controlInput)   // Phase10-Step6 W8 相当: 型ではなく印で見分ける（Controls の Multi-action も載せる）
+                if (snapshot[i]?.Input is IControlBoundInput controlInput)   // 型ではなく印で見分ける（Controls の Multi-action も載せる）
                 {
                     if (rt.ControlIndex == null || rt.ControlCount == 0)
                     {
@@ -431,7 +431,7 @@ namespace DS4Windows.Processing.Actions
                 }
             }
 
-            // Phase10-Step6 I5 の修正: SA に付随する束縛（SA の Extras）を、SA 本体の添字につなぐ（SA 本体の ProcessOwned が、一緒に処理する）
+            // SA に付随する束縛（SA の Extras）を、SA 本体の添字につなぐ（SA 本体の ProcessOwned が、一緒に処理する）
             for (int j = 0; j < count; j++)
             {
                 SpecialAction primary = (snapshot[j] as TriggerBinding)?.PrimarySource;
@@ -475,7 +475,7 @@ namespace DS4Windows.Processing.Actions
             input?.Delay?.Reset();
         }
 
-        // Phase8-Step2-Design.md §15.2 の 1 束縛の処理
+        // docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Design.md §15.2 の 1 束縛の処理
         private FrameResult ProcessBinding(int device, DeviceRuntime rt, int i, IActionBinding binding, ITriggerInput input, IFrameOutput frame)
         {
             try
@@ -494,7 +494,7 @@ namespace DS4Windows.Processing.Actions
 
                 UpdateFreshPressTimer(state, established, input.TickCount64);
 
-                // Controls タブの束縛（7.8b。Q3＝A）: 成立の有無によらず、毎フレーム、割り当てたボタンの通常の出力を消す（旧 ResetToDefaultValue）
+                // Controls タブの束縛（7.8b。Q3＝A）: 成立の有無によらず、毎フレーム、割り当てたボタンの通常の出力を消す
                 if (policy.ErasesOutputEveryFrame && frame != null)
                 {
                     IReadOnlyList<DS4Controls> erased = inputAction.Triggers;
@@ -503,8 +503,8 @@ namespace DS4Windows.Processing.Actions
                 }
 
                 // ジェスチャー（Phase8-Step7 7.7b。MultiAction のタップ・長押し・ダブルタップ）: 出力を「ジェスチャーで選ぶ」束縛では、
-                // ガード・成立の判定・BeingTriggered によらず、Gesture が 0 でないフレームだけ、Outputs[Gesture - 1] を実行する
-                // （旧経路の MultiAction は、ガードを見ず、BeingTriggered を使わない）。どのジェスチャーでどの出力かは、束縛を作る側（ビルダー）が決めている。
+                // ガード・成立の判定・BeingTriggered によらず、Gesture が 0 でないフレームだけ、Outputs[Gesture - 1] を実行する。
+                // どのジェスチャーでどの出力かは、束縛を作る側（ビルダー）が決めている。
                 if (policy.RoutesOutputsByGesture && result.Gesture != TriggerState.NoGesture)
                 {
                     IReadOnlyList<IOutputAction> routed = binding.Outputs;
@@ -557,7 +557,7 @@ namespace DS4Windows.Processing.Actions
                         // 立ち上がりのエッジ
                         ctx.Begin(frame, input);
 
-                        // 実行の条件（任意。Profile の連鎖の防止）。満たさないときは、状態を変えずに素通しする（旧経路の、実行の条件の if と同じ位置）
+                        // 実行の条件（任意。Profile の連鎖の防止）。満たさないときは、状態を変えずに素通しする
                         IReadOnlyList<IOutputAction> gated = binding.Outputs;
                         for (int o = 0; o < gated.Count; o++)
                         {
@@ -570,7 +570,7 @@ namespace DS4Windows.Processing.Actions
                         if (policy.BlocksWhileExecuting) state.IsExecuting = true;
                         try
                         {
-                            // 復帰の合図（旧経路と同じ。出力を実行する前に設定する）。Buttons は、ビルダーが束縛を作らないため、ここでは扱わない
+                            // 復帰の合図。Buttons は、ビルダーが束縛を作らないため、ここでは扱わない
                             if (policy.Untrigger == UntriggerPolicy.Automatic) rt.Pending = binding;
 
                             lock (state) { state.SetBeingTriggeredInternal(true); }
@@ -622,7 +622,7 @@ namespace DS4Windows.Processing.Actions
             return FrameResult.Continue;
         }
 
-        // Phase10-Step4c W2（項目 4）: 立ち上がりのログ。出力アクションが自分で出さない種別（BindingPolicy.LogsRisingEdge）だけ。SA の出力アクションのログと同じ形
+        // 立ち上がりのログ。出力アクションが自分で出さない種別（BindingPolicy.LogsRisingEdge）だけ。SA の出力アクションのログと同じ形
         // （出力の組み合わせの行は、フレームの出力が立ち上がりの時点では確定しない［毎フレームの出力は、あとで適用される］ため、出さない）
         private static void LogRisingEdge(int device, SpecialAction source)
         {
@@ -641,7 +641,7 @@ namespace DS4Windows.Processing.Actions
             catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
         }
 
-        // Phase10-Step4c W2（項目 4）: 離したエッジのログ。全種別共通（BindingPolicy.LogsReleaseEdge）。Key の KeyReleased は、Key の出力アクションが別に出す
+        // 離したエッジのログ。全種別共通（BindingPolicy.LogsReleaseEdge）。Key の KeyReleased は、Key の出力アクションが別に出す
         private static void LogReleaseEdge(int device, SpecialAction source)
         {
             try
@@ -698,7 +698,7 @@ namespace DS4Windows.Processing.Actions
             public int[] ControlTail;    // 7.8e: DS4Controls → 鎖の最後の添字（Rebuild の間だけ使う）
             public int[] ControlNext;    // 7.8e: 束縛の添字 → 同じボタンの次の束縛の添字（なしは -1）
             public volatile int ControlCount;
-            public int[] CompanionHead;  // Phase10-Step6 I5 の修正: SA 本体の添字 → 付随する束縛（SA の Extras）の先頭の添字（なしは -1。付随する束縛がなければ null）
+            public int[] CompanionHead;  // SA 本体の添字 → 付随する束縛（SA の Extras）の先頭の添字（なしは -1。付随する束縛がなければ null）
             public int[] CompanionNext;  // 付随する束縛の添字 → 同じ SA 本体の次の付随する束縛の添字（なしは -1）
             public int Frame = 1;
             public ITriggerInput ReleaseInput;

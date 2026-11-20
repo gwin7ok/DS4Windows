@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase10-Step4 W1（Phase10-Step4-Plan.md §3.1）: Controls のボタン 1 つの割り当てに持たせる、SA 専用の種別と項目の、<b>型のある</b>定義。
+    /// Controls のボタン 1 つの割り当てに持たせる、SA 専用の種別と項目の、<b>型のある</b>定義。
     /// SA（<see cref="SpecialAction"/>）は、種別ごとの意味を、<c>details</c>／<c>extra</c> の文字列に詰めている（例: Program はパスを details、引数と <c>$hidden</c> を extra）。
     /// これは、その文字列に詰めず、項目ごとに型を持つ。実行のときは、この項目から、合成の <see cref="SpecialAction"/> を作って、SA の出力アクションへ渡す（W2 以降）。
     /// <para>
@@ -52,7 +52,7 @@ namespace DS4Windows.Core.Settings
         /// <summary>前面へ出すウィンドウのタイトル（SA の <c>extra</c>）。<see cref="WindowPath"/> と同じ規則。省略可（パスとタイトルの両方が空の指定は無効）。</summary>
         public string WindowTitle { get; set; } = string.Empty;
 
-        /// <summary>Phase12-Step2 2j: 前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する（SA の <c>centerCursor</c>）。</summary>
+        /// <summary>前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する（SA の <c>centerCursor</c>）。</summary>
         public bool CenterCursor { get; set; }
 
         // ---- Profile ----
@@ -61,7 +61,7 @@ namespace DS4Windows.Core.Settings
         public string ProfileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Phase10-Step4d W3: 切り替え先のプロファイルの固定 ID（プロファイル XML の <c>&lt;ProfileId&gt;</c>）。保存のとき、名前から引いて書く。
+        /// 切り替え先のプロファイルの固定 ID（プロファイル XML の <c>&lt;ProfileId&gt;</c>）。保存のとき、名前から引いて書く。
         /// 読み込みでは、ID が見つかれば、現在の名前（<see cref="ProfileName"/>）に置き換える（名前変更への追従）。ない・見つからないときは、名前のまま。
         /// </summary>
         public string ProfileId { get; set; } = string.Empty;
@@ -77,7 +77,7 @@ namespace DS4Windows.Core.Settings
         /// <summary>電池が満タンのときの色（同、後半）。</summary>
         public DS4Color FullColor { get; set; }
 
-        // Phase10-Step6 W7 相当（接続済み）: SA の BatteryCheck の通知・ライトバーの 2 項目（details の 2 番目・3 番目）を受ける型のある項目。Controls の Check Battery（ControlsSpecialTypeTable）で、
+        // SA の BatteryCheck の通知・ライトバーの 2 項目（details の 2 番目・3 番目）を受ける型のある項目。Controls の Check Battery（ControlsSpecialTypeTable）で、
         // プロファイル XML（ControlSpecialItemXml）に保存する（種別が Check Battery のときだけ、明示して書く）。
 
         /// <summary>電池の残量を通知する（SA の BatteryCheck の通知）。</summary>

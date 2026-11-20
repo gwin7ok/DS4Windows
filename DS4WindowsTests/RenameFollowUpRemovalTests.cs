@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W7（Phase10-Step4d-Plan.md §4 W7、ユーザー決定: 案 A）: 名前変更の追従のコードのうち、実行時に不要になったもの（スロットの配列の書き換え、
+    /// 名前変更の追従のコードのうち、実行時に不要になったもの（スロットの配列の書き換え、
     /// <c>ReplaceLinkedProfileName</c>、<c>AutoProfileHolder.ReplaceProfileName</c>）を撤去した。実行時の保持は、W5b〜W5d で、プロファイルの固定 ID を保管する窓口になっている。
     /// 保存先のファイルの名前と ID は、名前変更の直後に、保存し直して書き直す（<c>SaveLinkedProfiles</c>、<c>AutoProfileHolder.Save</c>、アプリ設定の保存）。
     /// SA の切り替え先は、ID から現在の名前に引き直して保存する（<c>RefreshProfileSwitchTargets</c>）。ID のない古いプロファイルのファイルのため、

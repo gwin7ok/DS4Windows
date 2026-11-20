@@ -6,11 +6,11 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.7b（W2b。<c>MultiActionOutput</c> の置き換え）: 「このマクロの文字列を再生する」だけの、汎用の出力（信号・アクション出力層）。
+    /// 「このマクロの文字列を再生する」だけの、汎用の出力（信号・アクション出力層）。
     /// どのジェスチャーでどのマクロを実行するかは、この出力は知らない。**変換層（ビルダーが作る束縛）が決めて**、ジェスチャーごとにこの出力を1つずつ持たせる
     /// （<c>BindingPolicy.RoutesOutputsByGesture</c> が真の束縛では、エンジンが <c>Outputs[Gesture - 1]</c> を実行する）。
     /// 実行されたとき、マクロが空なら何もしない。空でなければ、旧 <c>MapCustomAction</c> の MultiAction の枝と同じく、実行の直前に Trace 4 行（<c>LogSpecialActionTrace</c>）を出し、
-    /// <see cref="IMacroStringPlayer"/> で再生する。Debug のログはない（旧経路と同じ）。
+    /// <see cref="IMacroStringPlayer"/> で再生する。Debug のログはない。
     /// </summary>
     public sealed class MacroStringAction : IOutputAction
     {

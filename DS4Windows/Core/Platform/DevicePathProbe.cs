@@ -9,7 +9,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Core.Platform
 {
     /// <summary>
-    /// Phase7-Step10d W2（Q5＝A）: 旧 <c>Global.GetInstanceIdFromDevicePath／CheckIfVirtualDevice</c> ほか。デバイスパスから調べる、
+    /// 旧 <c>Global.GetInstanceIdFromDevicePath／CheckIfVirtualDevice</c> ほか。デバイスパスから調べる、
     /// 状態を持たない Windows の判定（内容は移動のみ）。
     /// </summary>
     public static class DevicePathProbe

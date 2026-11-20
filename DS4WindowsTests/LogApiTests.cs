@@ -5,7 +5,7 @@ using DS4Windows.Core.Logging;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13b-Step1: 新 API <c>AppLogger.Log</c> との出力（レベル、利用者向け、一時表示）を固定する。旧 <c>LogToGui</c> は Phase13b-Step9 で削除した。
+    /// 新 API <c>AppLogger.Log</c> との出力（レベル、利用者向け、一時表示）を固定する。旧 <c>LogToGui</c> は Phase13b-Step9 で削除した。
     /// GuiLog は静的イベントのため、他のテストと並行しないよう同じコレクションに入れる。
     /// </summary>
     [Collection("GuiLogSubscribers")]

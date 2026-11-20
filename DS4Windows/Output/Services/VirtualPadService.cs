@@ -14,13 +14,13 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Output.Services
 {
     /// <summary>
-    /// Phase9 9-E E-4（Phase9-E-Plan.md）: <see cref="IVirtualPadService"/> の実装（DI の Singleton）。
+    /// <see cref="IVirtualPadService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の仮想パッド出力系（ViGEm クライアントの生成・破棄 <c>StartViGEm</c>／<c>StopViGEm</c>、<c>EstablishOutDevice</c>、振動・ライトバーの戻り
     /// <c>EstablishOutFeedback</c>／<c>RemoveOutFeedback</c>、割り当て・取り外し <c>PluginOutDev</c>／<c>UnplugOutDev</c>、入力に紐づかない仮想パッドの抜き差し、
     /// 状態 <c>outputslotMan</c>／<c>outputDevices</c>／<c>vigemTestClient</c>）を、そのまま移したもの（呼び出しの順序は変えていない。ガードレール: ドライバ破棄順序、切断時クリーンアップ）。
     /// <c>ControlService</c> が持つもの（振動のブースト込みの設定、イベントスレッド）は <see cref="IVirtualPadHost"/> 経由で、デバイスは <see cref="IDeviceStateAccessor"/> 経由で、
     /// いずれも遅延して受ける（循環を避ける）。実機（ViGEmBus とコントローラー）でなければ確かめられない部分は、台帳 §36 の確認項目で担保する。
-    /// PluginOutDev の X360 の枝と DS4 の枝は、実機確認のあとに 1 つへ畳んだ（Phase9-E-Plan.md §13 の Q3）。
+    /// PluginOutDev の X360 の枝と DS4 の枝は、実機確認のあとに 1 つへ畳んだ。
     /// </summary>
     public sealed class VirtualPadService : IVirtualPadService
     {
@@ -36,7 +36,7 @@ namespace DS4Windows.Output.Services
         // 出力の種類（Xbox 360／DS4）ごとの生成・戻りの接続・型の絞り込み。種類を足すときは、カートリッジを足す
         private readonly Dictionary<OutContType, IOutputDeviceCartridge> _cartridges;
 
-        // Phase13-Step7 7-c: 旧: 遅延取得デリゲート（初回に1回だけ取得）。配列の参照は再代入されないため、コンストラクターで保持する
+        // 配列の参照は再代入されないため、コンストラクターで保持する
         private readonly OutContType[] _activeOutDevType;
         private OutContType[] ActiveOutDevType => _activeOutDevType;
 
@@ -236,7 +236,7 @@ namespace DS4Windows.Output.Services
             if (_profileSettings.UseDInputOnlyArray[index])
             {
                 bool success = false;
-                // Phase9 9-E E-4（Q3）: X360 の枝と DS4 の枝は、型の違い（Xbox360OutDevice／DS4OutDevice）以外が同一だったため、1 つにまとめた。
+                // X360 の枝と DS4 の枝は、型の違い（Xbox360OutDevice／DS4OutDevice）以外が同一だったため、1 つにまとめた。
                 if (_cartridges.ContainsKey(contType))
                 {
                     ActiveOutDevType[index] = contType;

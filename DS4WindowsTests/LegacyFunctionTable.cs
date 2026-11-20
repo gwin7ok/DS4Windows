@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step8 W1（Phase8-Step8-Plan.md §3 の方針 1。Q4＝A）: 旧経路の判定・アナログ値の関数（<c>Mapping</c> の private メソッド）の戻り値を、
+    /// 旧経路の判定・アナログ値の関数（<c>Mapping</c> の private メソッド）の戻り値を、
     /// 決定的な入力（種つきの乱数）で、全コントロールについて表にする。旧関数を削除（8a・8b）したあとも、新経路の関数（<c>TriggerInput</c>）を、
     /// 旧関数が返した値（ゴールデン）と比べられるようにするため、削除の前に値を固定する。
     /// 1 行 ＝ 1 回の入力。コントロールごとに 1 つの項目（9 文字）をコンマで区切る:

@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8c-W2/W3（Phase8-Step7-8c-Plan.md §3〜§5）: Controls タブの Macro の新経路（SA の Macro の仕様に合わせた）。
+    /// Controls タブの Macro の新経路（SA の Macro の仕様に合わせた）。
     /// 所有の条件、ビルダー、押下の判定の種類、ロールバック、割り当て。動作の旧・新の比べは <c>ControlsMacroCharacterizationTests</c>。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -54,7 +54,7 @@ namespace DS4WindowsTests
             Assert.False(ControlBindingBuilder.TryInterpretMacro(key, out _));
 
             Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(null), out _));            // 手順そのものがない（null）ものは、所有しない
-            // Phase10-Step3（ユーザー承認）: 手順が空のマクロは、SA と同じく所有する（何も出力しない空のマクロを実行し、通常の出力を消す）
+            // 手順が空のマクロは、SA と同じく所有する（何も出力しない空のマクロを実行し、通常の出力を消す）
             Assert.True(ControlBindingBuilder.TryInterpretMacro(Macro(new int[0]), out int[] emptySteps));
             Assert.Empty(emptySteps);
 

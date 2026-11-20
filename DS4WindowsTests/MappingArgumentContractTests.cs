@@ -7,13 +7,13 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step3-1: `Mapping.cs` の段階的引数渡し（Step3-2以降）に先立って新設・拡張した
+    /// `Mapping.cs` の段階的引数渡し（Step3-2以降）に先立って新設・拡張した
     /// 3つの契約（
     /// <see cref="IProfileXmlStore.SaveControllerConfigsForDevice"/>、
     /// <see cref="IProfileActionProvider.GetProfileActionIndexOf"/>／<c>GetProfileActionsRaw</c>、
     /// <see cref="IProfileSettingsService.GetControlSettingsGroup"/>）が、
     /// 従来の <see cref="Global"/> 側の実体と同一の値・同一の参照を返すことを検証する。
-    /// 各テストは変更した Global 状態を必ず元に戻す（Phase6-Step2 の教訓）。
+    /// 各テストは変更した Global 状態を必ず元に戻す。
     /// </summary>
     public class MappingArgumentContractTests
     {
@@ -36,8 +36,8 @@ namespace DS4WindowsTests
                 Assert.Equal(3, _actionProvider.GetProfileActionIndexOf(slot, "TestAction"));
                 Assert.Equal(0, _actionProvider.GetProfileActionIndexOf(slot, "FirstAction"));
 
-                // Phase7-Step1 W2（K2 の是正）: Dictionary<TKey,TValue>.TryGetValue は未検出時に out 引数を
-                // default(int)(=0) で上書きするため、移植元の Global.GetProfileActionIndexOf（Phase6-Step12 Wave 4 で削除）は
+                // Dictionary<TKey,TValue>.TryGetValue は未検出時に out 引数を
+                // default(int)(=0) で上書きするため、移植元の Global.GetProfileActionIndexOfは
                 // 未検出でも 0 を返していた。現在は戻り値で判定し、未検出は -1 を返す（0 は定義済みの先頭のアクションと区別できる）。
                 Assert.Equal(-1, _actionProvider.GetProfileActionIndexOf(slot, "NoSuchAction"));
                 Assert.Equal(-1, _actionProvider.GetProfileActionIndexOf(slot, null));

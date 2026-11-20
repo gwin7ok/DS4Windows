@@ -35,7 +35,7 @@ namespace DS4Windows.Core.Persistence.Dto
             get; set;
         }
 
-        /// <summary>Phase10-Step4d W4: 紐付けたプロファイルの固定 ID（要素の Id 属性）。古いファイルにはない。</summary>
+        /// <summary>紐付けたプロファイルの固定 ID（要素の Id 属性）。古いファイルにはない。</summary>
         [XmlIgnore]
         public string ProfileId
         {

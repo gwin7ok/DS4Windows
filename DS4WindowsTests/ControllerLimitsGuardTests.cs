@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10a W1・W2（Q2＝A）: <c>BackingStore</c> と制御層・DTO・サービス・Actions が、コントローラー数などの定数を
+    /// <c>BackingStore</c> と制御層・DTO・サービス・Actions が、コントローラー数などの定数を
     /// <c>Global</c> ではなく <c>ControllerLimits</c> から取ることと、再宣言された定数が <c>ControllerLimits</c> と一致することの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>

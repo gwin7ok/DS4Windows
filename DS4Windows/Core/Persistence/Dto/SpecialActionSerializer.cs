@@ -31,7 +31,7 @@ namespace DS4Windows.Core.Persistence.Dto
             get; set;
         } = string.Empty;
 
-        // Phase10-Step4d W2: SA の固定 ID（GUID の N 形式）。古いファイルにはない。古いバージョンは、未知の属性として読み飛ばす
+        // SA の固定 ID（GUID の N 形式）。古いファイルにはない。古いバージョンは、未知の属性として読み飛ばす
         [XmlAttribute("Id")]
         public string Id
         {
@@ -42,7 +42,7 @@ namespace DS4Windows.Core.Persistence.Dto
             return !string.IsNullOrEmpty(Id);
         }
 
-        // Phase10-Step4d W3: 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（Details は名前のまま）。古いバージョンは、未知の要素として読み飛ばす
+        // 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（Details は名前のまま）。古いバージョンは、未知の要素として読み飛ばす
         [XmlElement("ProfileId")]
         public string ProfileId
         {
@@ -134,7 +134,7 @@ namespace DS4Windows.Core.Persistence.Dto
             return TypeString == "Program" || TypeString == "FocusWindow";
         }
 
-        // Phase12-Step2 2c（R-4）: 種別が FocusWindow の SA の、対象のウィンドウタイトル（Details はプログラムのパス）。どちらも Auto-Profile と同じ記号（^ $ *）を使える
+        // 種別が FocusWindow の SA の、対象のウィンドウタイトル（Details はプログラムのパス）。どちらも Auto-Profile と同じ記号（^ $ *）を使える
         [XmlElement("WindowTitle")]
         public string WindowTitle { get; set; } = string.Empty;
         public bool ShouldSerializeWindowTitle()
@@ -142,7 +142,7 @@ namespace DS4Windows.Core.Persistence.Dto
             return TypeString == "FocusWindow" && !string.IsNullOrEmpty(WindowTitle);
         }
 
-        // Phase12-Step2 2j（R-4）: FocusWindow の、前面化のあとにウィンドウの中央へマウスポインターを移動するか。true のときだけ書く（古いバージョンは未知の要素として読み飛ばす）
+        // FocusWindow の、前面化のあとにウィンドウの中央へマウスポインターを移動するか。true のときだけ書く（古いバージョンは未知の要素として読み飛ばす）
         [XmlElement("CenterCursor")]
         public bool CenterCursor { get; set; }
         public bool ShouldSerializeCenterCursor()
@@ -179,11 +179,11 @@ namespace DS4Windows.Core.Persistence.Dto
         public string SwitchMode { get; set; } = string.Empty;
         public bool ShouldSerializeSwitchMode()
         {
-            // Phase6-Step10-3c: Button（コントローラーのボタンの割り当て）も、Press／Toggle を保存する
+            // Button（コントローラーのボタンの割り当て）も、Press／Toggle を保存する
             return (TypeString == "Key" || TypeString == "Button") && !string.IsNullOrEmpty(SwitchMode);
         }
 
-        // Phase10-Step6 I5a: SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras と同じ書式（カンマ区切りの 9 個）。
+        // SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras と同じ書式（カンマ区切りの 9 個）。
         // Extras 要素は Macro の旗に使っているため、別の名前にした。全種別で、あるときだけ書く。古いバージョンは、未知の要素として読み飛ばす
         [XmlElement("OutputExtras")]
         public string OutputExtras { get; set; } = string.Empty;
@@ -192,7 +192,7 @@ namespace DS4Windows.Core.Persistence.Dto
             return !string.IsNullOrEmpty(OutputExtras);
         }
 
-        // Phase10-Step6 後の Step5: Button の出力先がアナログ（軸・トリガー・マウス移動）のときの強さ（0〜100%）。100（既定）のときは書かない。古いバージョンは、未知の要素として読み飛ばす
+        // Button の出力先がアナログ（軸・トリガー・マウス移動）のときの強さ（0〜100%）。100（既定）のときは書かない。古いバージョンは、未知の要素として読み飛ばす
         [XmlElement("Strength")]
         public int Strength { get; set; } = 100;
         public bool ShouldSerializeStrength()

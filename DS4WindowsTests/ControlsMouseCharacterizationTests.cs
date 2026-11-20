@@ -9,7 +9,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-2 W1（Phase8-Step7-8f-Plan.md §5）: Controls タブの Button のうち、マウスのボタン（左・右・中・4・5）、タッチパッドクリック、
+    /// Controls タブの Button のうち、マウスのボタン（左・右・中・4・5）、タッチパッドクリック、
     /// ホイール（デジタル。元がボタン）、Toggle つきの割り当ての特性化。旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じテストを走らせる。
     /// W1 の時点では、新経路が未実装のため、どちらでも旧経路が処理する。W2 で新経路が入るとき、同じ期待値で通ること
     /// （例外: Toggle は、Q8＝A の不具合の是正で変わる。<see cref="Toggle_LegacyFlipsEveryFrameWhileHeld"/> は旧経路だけの記録）。

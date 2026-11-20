@@ -10,13 +10,13 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.1-W1（Phase8-Step7-Plan.md §3・§5.1）: Button 種別の「旧経路（Stage3 と旧ループ）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
+    /// Button 種別の「旧経路（Stage3 と旧ループ）」と「新経路（エンジン。実物のビルダーが作る束縛）」の特性化。
     /// 同じ入力の列を両経路に流し、フレームごとの出力（Cross、L1／R1 の素通し、タッチパッドクリック、マウス左クリックの数）が一致することを確かめる。
     /// 期待値は旧経路に合わせる（Q3＝A。新経路を正として書き換えない）。
     /// 注意: 遅延（<c>delayTime</c>）は時刻に依存するため、ここでは「Button の出力は遅延（delayTime）で遅れない」ことだけを確かめる。時刻を伴う Fresh-press の解除は、
     /// <c>SpecialActionTriggerCharacterizationTests</c>（両経路の <c>[Theory]</c>）が担う。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ButtonDualPathTests

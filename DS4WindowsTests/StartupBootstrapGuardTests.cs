@@ -11,11 +11,11 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step4 W4（D3＝S1）: 起動前（Pre-Host）のブートストラップと、<c>-reenableDevice</c> の接続（Q1・Q4）の回帰ガード。
+    /// 起動前（Pre-Host）のブートストラップと、<c>-reenableDevice</c> の接続（Q1・Q4）の回帰ガード。
     /// - コンテナの構築より前に作った <see cref="PathService"/>／<see cref="EnvironmentService"/> を、<c>CreateHost</c> が同じインスタンスとして登録する。
     /// - App の Pre-Host は、ブートストラップのインスタンスを使う（個別の <c>new</c> や <c>Global</c> 経由の保存場所の参照をしない）。
     /// - <c>-reenableDevice</c> 分岐は、<c>InputDeviceRegistry</c> を静的に呼ばず、<see cref="IInputDeviceRegistry"/> を通す。
-    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
+    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step4-Plan.md</c>。
     /// </summary>
     public class StartupBootstrapGuardTests
     {
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             if (path == null) return;
 
             string text = SourceText.StripComments(File.ReadAllText(path));
-            // Phase7-Step10d W5: 既定の登録は RegisterServices(services, bootstrapBackingStore) になった（BackingStore は登録の中で配線する）
+            // 既定の登録は RegisterServices(services, bootstrapBackingStore) になった（BackingStore は登録の中で配線する）
             var defaultsMatch = System.Text.RegularExpressions.Regex.Match(text, @"RegisterServices\(services, bootstrapBackingStore\);\s*services\.AddSingleton\(parser\);");
             int defaults = defaultsMatch.Success ? defaultsMatch.Index : -1;
             int bootstrap = text.IndexOf("AddSingleton<DS4Windows.Core.Abstractions.IPathService>(bootstrapPathService)", System.StringComparison.Ordinal);
@@ -81,7 +81,7 @@ namespace DS4WindowsTests
             // 2 箇所のホスト構築（通常の起動と -driverinstall）が、ブートストラップのインスタンスを渡す
             Assert.Equal(2, Regex.Matches(text, @"_bootstrapPathService,\s*_bootstrapEnvironmentService,\s*_bootstrapBackingStore\)").Count);
 
-            // 保存場所は Global 経由ではなく PathService の状態を読む（Phase14d-Step2: Global 型の撤去により、Global を読まないことの Assert は RemovedApiRuleTests へ畳んだ）
+            // 保存場所は Global 経由ではなく PathService の状態を読む
         }
 
         [Fact]

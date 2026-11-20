@@ -29,7 +29,7 @@ namespace DS4WindowsTests
 
             public bool SaveProfileXml(int deviceIndex, string profileName) => true;
 
-            // Phase6-Step2-2 (PR-2) / Phase6-Step3-1: IProfileXmlStore の拡張に追随（本テストでは使用しない）
+            // IProfileXmlStore の拡張に追随（本テストでは使用しない）
             public bool LoadControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;
             public bool SaveControllerConfigsForDevice(DS4Windows.Core.Abstractions.IConfigurableDevice device) => true;
 
@@ -119,12 +119,12 @@ namespace DS4WindowsTests
             var saveEx = Record.Exception(() => service.Save());
             Assert.Null(saveEx);
 
-            // Phase7-Step4 W2: Global.Load は削除した。サービスの Load が同じ処理（旧 Global.Load の中身）
+            // Global.Load は削除した。サービスの Load が同じ処理
             var loadEx = Record.Exception(() => service.Load());
             Assert.Null(loadEx);
         }
 
-        // Phase5-Step13-9 (回帰テスト): StartMinimized/MinimizeToTaskbar/CloseMinimizes/
+        // StartMinimized/MinimizeToTaskbar/CloseMinimizes/
         // UseUdpServer/UdpServerPort/UdpServerListenAddress/UseExclusiveModeは、かつて独立した
         // privateフィールドを持ち、Global側の実体と一切連動しない「孤立重複状態」バグがあった
         // （Step13-7調査時に発覚、根本修正済み）。このテストは、サービス経由の書き込みが

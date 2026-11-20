@@ -37,7 +37,7 @@ namespace DS4Windows.UI
     public partial class RecordBox : UserControl
     {
         private RecordBoxViewModel recordBoxVM;
-        // Phase12-Step3 3e（R-3）: マウスの移動の記録（画面全体のマウス入力の監視と、記録のロジック）
+        // マウスの移動の記録（画面全体のマウス入力の監視と、記録のロジック）
         private readonly DS4Windows.UI.Services.MouseRecordingHost mouseHook;
         private DS4Windows.Processing.Macro.MacroPointerRecorder pointerRecorder;
         private bool limitStopRequested;
@@ -52,11 +52,11 @@ namespace DS4Windows.UI
         private ColorPickerWindow colorDialog;
         private System.Timers.Timer ds4 = new System.Timers.Timer();
 
-        // Phase6-Step10-2-4b: Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
+        // Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
 
         /// <param name="targetDevice">
-        /// Phase6-Step7b: ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
-        /// 渡し忘れをコンパイルで検出するため必須引数とする（Phase6-Step7b-Plan.md 決定2）
+        /// ライトバーのプレビューと記録中のタッチパッド Passthru で使う実機のスロット番号。-1 は実機なし。
+        /// 渡し忘れをコンパイルで検出するため必須引数とする
         /// </param>
         public RecordBox(RecordBoxViewModel viewModel,
             bool showscan, bool showPlaybackOptions,
@@ -70,9 +70,9 @@ namespace DS4Windows.UI
             recordBoxVM = viewModel;
             mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
-            // Phase10-Step1 W2: Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）
+            // Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）
             playbackPanel.ShowScanCode = showscan;
-            // Phase10-Step1 W3: SA から開くときは、Execute Mode／Scan Code を出さない（SA の Macro タブで設定する。記録専用の画面にする）
+            // SA から開くときは、Execute Mode／Scan Code を出さない（SA の Macro タブで設定する。記録専用の画面にする）
             playbackPanel.Visibility = showPlaybackOptions ? Visibility.Visible : Visibility.Collapsed;
 
             ds4.Enabled = false;
@@ -135,7 +135,7 @@ namespace DS4Windows.UI
 
         private void MacroListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Phase12-Step3 3d: 編集部品の中の ComboBox（マウス移動のモード）の SelectionChanged も、ここまで伝わってくる。
+            // 編集部品の中の ComboBox（マウス移動のモード）の SelectionChanged も、ここまで伝わってくる。
             // それで編集部品を確定・差し替えると、ComboBox の操作の最中に木が壊れてクラッシュするため、ListBox 自身の選択の変更だけを扱う
             if (!ReferenceEquals(e.OriginalSource, macroListBox)) return;
 
@@ -334,7 +334,7 @@ namespace DS4Windows.UI
 
         private void LoadPreset()
         {
-            // Phase8-Step7-3a: Alt-Tab 用のプリセットの削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する
+            // Alt-Tab 用のプリセットの削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する
             // Reset selected index of macro list before removing item source
             macroListBox.SelectedIndex = -1;
 
@@ -426,7 +426,7 @@ namespace DS4Windows.UI
                 }
                 else if (item.Step.OutputType == DS4Windows.Processing.Macro.MacroStep.StepOutput.PointerMove)
                 {
-                    // Phase12-Step3 3d（R-3）: マウス移動の座標の編集
+                    // マウス移動の座標の編集
                     ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
                         as ListBoxItem;
                     lbitem.ContentTemplate = this.FindResource("EditPointerMoveTemplate") as DataTemplate;
@@ -645,7 +645,7 @@ namespace DS4Windows.UI
             }
         }
 
-        // Phase12-Step3 3d（R-3）: マウス移動のステップを、選択した位置の前（選択がなければ末尾）へ入れ、選択する。座標は、ダブルクリックで直す
+        // マウス移動のステップを、選択した位置の前（選択がなければ末尾）へ入れ、選択する。座標は、ダブルクリックで直す
         private void StartMouseRecording()
         {
             if (!recordBoxVM.RecordMouseMovement) return;

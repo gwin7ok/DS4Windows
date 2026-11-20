@@ -9,11 +9,11 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step2: DI インターフェースの、本体の呼び出しが 0 件だったメンバーを削除した結果の回帰ガード。
+    /// DI インターフェースの、本体の呼び出しが 0 件だったメンバーを削除した結果の回帰ガード。
     /// (1) 削除済みのメンバーが、契約（<c>DS4Windows/DI/*.cs</c>）に再び現れないこと。
     /// (2) 削除済みのファイルが再び存在しないこと。
     /// (3) 「使うべきだが未接続」と判断して残した契約（TODO 付き）が、削除されていないこと。
-    /// 判断の根拠は <c>Phase7-Step2-Plan.md</c> §2。ソースが見つからない環境では、検査を行わず合格とする。
+    /// 判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step2-Plan.md</c> §2。ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class RemovedContractMembersGuardTests
     {
@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         [Fact]
         public void KeptMembers_StillExistInContracts()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、契約（インターフェース）の宣言されたメンバーを確かめる。契約は名前で引く（フォルダーの再編に依存しない）
+            // ソースの文字列ではなく、契約（インターフェース）の宣言されたメンバーを確かめる。契約は名前で引く（フォルダーの再編に依存しない）
             var types = typeof(DS4Windows.Composition.AppHost).Assembly.GetTypes();
             var missing = new List<string>();
             foreach (var pair in Kept)

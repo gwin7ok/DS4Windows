@@ -4,7 +4,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase9 UI 変更（ユーザー承認 2026-10-22）: 入力ボタンの一覧の、<b>表示順と表示名の唯一の定義</b>。
+    /// 入力ボタンの一覧の、<b>表示順と表示名の唯一の定義</b>。
     /// Controls タブの一覧（<c>MappingListViewModel</c> の表示順と各ボタンの名前）と、SA タブのトリガーの一覧（<see cref="TriggerCatalog"/>）が、この表から作られる。
     /// 並びは、SA のトリガーの一覧の従来の並びを基準にし、LS／RS Outer だけ、LS／RS の 4 方向の下に置く（L2／R2 Full Pull は、L2／R2 の下）。
     /// 表示名は、スティックは「LS Up」、DualSense Edge は「Function L」「Paddle L」。保存する名前（<see cref="InputControlEntry.Name"/>）は、従来のまま変えない。

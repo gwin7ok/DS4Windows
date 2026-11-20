@@ -21,7 +21,7 @@ namespace DS4Windows.UI.ViewModels
             this.triggers = triggers;
         }
 
-        // Phase7b（既存の不具合。上流の元から）: 旧は deadZone / 255.0（丸めなし）と (byte)(value * 255.0)（切り捨て）で、
+        // 旧は deadZone / 255.0（丸めなし）と (byte)(value * 255.0)（切り捨て）で、
         // 上下ボタンで 0.10 ずつ増減すると誤差が溜まり、0.20 → 0.29 のように 0.09 しか変わらない所があった。スティック（LSDeadZone）と同じく、読み出しは小数 2 桁へ丸め、設定は四捨五入する。
         public double L2DeadZone
         {

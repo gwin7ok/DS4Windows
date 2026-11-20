@@ -41,7 +41,7 @@ namespace DS4Windows.Processing.Macro
             Button,
             Rumble,
             Lightbar,
-            // Phase12-Step3 3b（R-3）: マウスポインターの移動（MacroPointerMove）。既存の値は変えないため、末尾に足す
+            // マウスポインターの移動（MacroPointerMove）。既存の値は変えないため、末尾に足す
             PointerMove,
         }
 

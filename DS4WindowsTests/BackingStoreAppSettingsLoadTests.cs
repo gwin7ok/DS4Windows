@@ -8,7 +8,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step1 W3: アプリ設定（<c>Profiles.xml</c>）の DTO 読込（<c>BackingStore.Load</c>）の後処理の特性化テスト。
+    /// アプリ設定（<c>Profiles.xml</c>）の DTO 読込（<c>BackingStore.Load</c>）の後処理の特性化テスト。
     /// 不具合 B: DTO の経路は <c>MapTo</c> の直後に <c>return</c> し、偽の exe 名の読み込み、<c>lastVersionCheckedNum</c> の算出、
     /// ポート番号の範囲の丸め、Distance プロファイルの判定が行われていなかった（105575a7 〜。移行前から続く不具合）。
     /// 保存は <c>BackingStore.Save</c> の実出力（DTO）を使い、読込は別の <c>BackingStore</c> で行う。

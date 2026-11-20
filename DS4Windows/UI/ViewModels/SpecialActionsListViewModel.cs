@@ -40,8 +40,8 @@ namespace DS4Windows.UI.ViewModels
         private int deviceNum;
         private readonly ISpecialActionRepository specialActionRepo;
         private readonly IProfileRepository profileRepo;
-        // Phase6-Step10-3-3: 未使用だった依存（actionManager、outputSlotService、profileSettings）を削除した。
-        // ボタン名表示は Issue7 の是正で、取得元がこのクラスの外へ移っている（Phase5-Step14-Issue7-Fix-Plan.md タスク3）。
+        // 未使用だった依存（actionManager、outputSlotService、profileSettings）を削除した。
+        // ボタン名表示は Issue7 の是正で、取得元がこのクラスの外へ移っている。
 
         private string _profileActions = string.Empty;
         private bool _isInternalSync = false;
@@ -240,7 +240,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase6-Step8-3: 名前からアクションを取得する（前後の空白・大文字小文字を無視、未発見は placeholder）。
+        /// 名前からアクションを取得する（前後の空白・大文字小文字を無視、未発見は placeholder）。
         /// ProfileEditor の <c>Global.GetAction</c> の置換（<see cref="ISpecialActionRepository.GetActionOrPlaceholder"/>）。
         /// </summary>
         public SpecialAction GetActionOrPlaceholder(string actionName)
@@ -249,12 +249,12 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase6-Step8-3: Actions.xml のファイルパス（エクスポートのコピー元。ProfileEditor の <c>Global.appdatapath</c> の置換）。
+        /// Actions.xml のファイルパス（エクスポートのコピー元。ProfileEditor の <c>Global.appdatapath</c> の置換）。
         /// </summary>
         public string ActionsFilePath => specialActionRepo.ActionsPath;
 
         /// <summary>
-        /// Phase6-Step8-4: 有効（チェック済み）なアクション名を、編集スロットの <c>ProfileActions</c> へ反映する。
+        /// 有効（チェック済み）なアクション名を、編集スロットの <c>ProfileActions</c> へ反映する。
         /// 保存時とチェック切り替え時の共通処理（ProfileEditor の同じ 2 行の重複を集約）。
         /// </summary>
         public void CommitEnabledActionsToProfile()
@@ -340,7 +340,7 @@ namespace DS4Windows.UI.ViewModels
                     }
                 }
 
-                // Phase6-Step10-3b-2: Actions.xml に無く、プロファイルの XML にだけ残っている名前を、トリガー・アクション欄が空の
+                // Actions.xml に無く、プロファイルの XML にだけ残っている名前を、トリガー・アクション欄が空の
                 // グレーの項目として表示する（チェックを外して保存する、または「除去」で取り除ける）。
                 // 40011c12 で実装され、36d124a6 のリファクタ（Actions.xml の一覧だけから一覧を作る形）で失われていた。
                 // チェックしたままのものは、保存してもプロファイルに残る（GetEnabledActionNames）。

@@ -12,7 +12,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-A(2)-C（Phase9-A2-Plan.md）: フリックスティック（<c>Mapping.ProcessFlickStick</c>／<c>HandleFlickStickAngle</c>／<c>WarpEaseOut</c>）の<b>値の特性化テスト</b>（ゴールデン方式）。
+    /// フリックスティック（<c>Mapping.ProcessFlickStick</c>／<c>HandleFlickStickAngle</c>／<c>WarpEaseOut</c>）の<b>値の特性化テスト</b>（ゴールデン方式）。
     /// スティックの列（中立→フリック→保持→戻す、旋回、小さな動き）と、設定（しきい値、フリック時間、補正係数、最小角度）、フレーム間隔の場面を組み合わせ、
     /// 1 フレームごとのマウス X 移動量と、持ち越しの端数をそのまま記録する。時刻には依存しない（フレーム間隔は <c>elapsedTime</c> で与える）。
     /// 切り出し前は、private メソッド（<c>ProcessFlickStick</c>）をリフレクションで呼んでゴールデンを作った。切り出し後は、<c>IFlickStickProcessor</c> を呼ぶ（<c>Rig.Step</c> だけが違う）。ゴールデンは同じ（1 バイトも変わらない）。

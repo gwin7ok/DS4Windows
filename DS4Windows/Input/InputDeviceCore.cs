@@ -92,7 +92,7 @@ namespace DS4Windows.Input
         protected bool readyQuickChargeDisconnect;
         protected int warnInterval = WARN_INTERVAL_USB;
 
-        // Phase11 K-W6-10: Debouncer（デバウンスのフィルター）は機能廃止で削除した（Phase11-Debounce-Removal-Plan.md）
+        // Debouncer（デバウンスのフィルター）は機能廃止で削除した
         public int GetWarnInterval()
         {
             return warnInterval;
@@ -107,8 +107,8 @@ namespace DS4Windows.Input
         public ControllerOptionsStore optionsStore = null!; // 派生クラスのコンストラクターで設定する
         DS4Windows.Core.Settings.ControllerOptionsStore DS4Windows.Core.Abstractions.IConfigurableDevice.OptionsStore => optionsStore;
 
-        // Phase9 Steering 削除 W2: 旧「ステアリング（ジャイロでハンドル操作）の較正の状態」（wheelCenterPoint／wheel90DegPointLeft／Right／wheelCircle…／wheelPrev…／wheelFullTurnCount／WheelRecalibrateActiveState／
-        // WheelCalibrationPoint／wheelCalibratedAxisBitmask）は、機能ごと削除した（ユーザーの承認。Phase9-SteeringWheel-Removal-Plan.md）。
+        // 旧「ステアリング（ジャイロでハンドル操作）の較正の状態」（wheelCenterPoint／wheel90DegPointLeft／Right／wheelCircle…／wheelPrev…／wheelFullTurnCount／WheelRecalibrateActiveState／
+        // WheelCalibrationPoint／wheelCalibratedAxisBitmask）は、機能ごと削除した。
 
         protected bool exitOutputThread = false;
         public bool ExitOutputThread => exitOutputThread;
@@ -293,7 +293,7 @@ namespace DS4Windows.Input
 
         public int Battery => battery;
         public delegate void BatteryUpdateHandler(object sender, EventArgs e);
-        // Phase11 電池残量の一本化: 通知用のイベントは基底の 1 組だけ（各機種の override 再宣言は廃止）。
+        // 通知用のイベントは基底の 1 組だけ（各機種の override 再宣言は廃止）。
         // 書き込みは UpdateBattery／UpdateCharging を通す（値が変わったときだけ通知する）
         public event EventHandler? BatteryChanged;
         public int getBattery()
@@ -427,7 +427,7 @@ namespace DS4Windows.Input
         public DS4Touchpad Touchpad { get { return touchpad; } }
         public DS4SixAxis SixAxis { get { return sixAxis; } }
 
-        // Phase7-Step10d W3（Q4＝A）: デバウンス時間などの設定値。InputDeviceRegistry が、デバイスの生成直後（入力の開始前）に設定する。
+        // デバウンス時間などの設定値。InputDeviceRegistry が、デバイスの生成直後（入力の開始前）に設定する。
         // 未設定のとき（テスト）は、デバウンス 0ms として扱う。
         private DS4Windows.Input.Abstractions.IDeviceLayerSettings? layerSettings;
         public DS4Windows.Input.Abstractions.IDeviceLayerSettings? LayerSettings

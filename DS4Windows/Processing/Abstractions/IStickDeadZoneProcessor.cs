@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-A(1) (b)（Phase9-A1-Plan.md §2）: スティック 1 本のデッドゾーンの補正（Radial と Axial。Radial のときは外側の出力［Outer Binding］も）。
+    /// スティック 1 本のデッドゾーンの補正（Radial と Axial。Radial のときは外側の出力［Outer Binding］も）。
     /// 以前は <c>Mapping.SetCurveAndDeadzone</c> の中に、左右のスティックで、ほぼ同じコードが 2 回あった。左右とも、このメソッドを呼ぶ。状態は持たない。
     /// </summary>
     public interface IStickDeadZoneProcessor

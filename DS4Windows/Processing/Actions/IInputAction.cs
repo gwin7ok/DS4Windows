@@ -5,10 +5,10 @@ namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// トリガー条件の判定（副作用なし。<c>delayTime</c> の基準時刻の更新だけは、判定の一部として <see cref="ITriggerInput.Delay"/> を更新する）。
-    /// Phase8-Step3 W1 で改訂した（旧: <c>ITriggerContext Evaluate(ControllerState)</c>。入力が <c>ControllerState</c> だけでタッチ・ジャイロを判定できず、
+    /// <c>ITriggerContext Evaluate(ControllerState)</c>。入力が <c>ControllerState</c> だけでタッチ・ジャイロを判定できず、
     /// 呼ぶたびにオブジェクトを作るため、ホットパスで使えなかった。呼び出し元は 0 件だった）。
     /// 実装: <c>ComboTriggerInputAction</c>（Step3 W3。D2＝B1: Controls タブとスペシャルアクションの両方を 1 つの汎用クラスで扱う）、
-    /// <c>MultiTapInputAction</c>（Step7.7）。設計は Phase8-Step2-Design.md §4。
+    /// <c>MultiTapInputAction</c>（Step7.7）。
     /// </summary>
     public interface IInputAction
     {

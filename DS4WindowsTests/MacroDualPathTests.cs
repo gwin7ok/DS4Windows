@@ -9,11 +9,11 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.3-W1（Phase8-Step7-3-Plan.md §3 W1）: Macro 種別の「旧経路（<c>MapCustomAction</c> の Macro の分岐）」と「新経路（エンジン）」の特性化。
+    /// Macro 種別の「旧経路（<c>MapCustomAction</c> の Macro の分岐）」と「新経路（エンジン）」の特性化。
     /// 同じ入力の列を両経路に流し、フレームごとの状態（<c>BeingTriggered</c>、再生中の旗［<c>IMacroPlayer.IsPlaying</c>］）が一致することを確かめる。
     /// マクロの再生（キーの送出の時系列）は、非同期のタスクのため固定しない。再生の入口（<c>Play</c>）と停止（<c>Stop</c>）が呼ばれるかを、再生中の旗で見る。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class MacroDualPathTests

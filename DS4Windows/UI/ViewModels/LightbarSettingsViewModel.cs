@@ -347,7 +347,7 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(LowColorBString));
         }
 
-        // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（Device）ではなく実機（targetDevice）に対して行う
+        // ライトバー強制色のプレビューは、編集スロット（Device）ではなく実機（targetDevice）に対して行う
         public void UpdateForcedColor(DS4Color color)
         {
             if (HasTargetDevice)

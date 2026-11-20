@@ -7,9 +7,9 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6a: GyroCalibrate（ジャイロの較正のやり直し）の出力。立ち上がりのとき 1 回だけ実行する（保持中・離したときは何もしない）。
+    /// GyroCalibrate（ジャイロの較正のやり直し）の出力。立ち上がりのとき 1 回だけ実行する（保持中・離したときは何もしない）。
     /// 旧 <c>MapCustomAction</c> の GyroCalibrate の分岐と同じ順序: LogSpecialActionTrace（Trace の立ち上がり 4 行）→ 較正のやり直し → LogActionDoneCountOnTrigger（Debug の「SpecialAction GyroCalibrate: …」）。
-    /// 実機のコントローラーの操作は <see cref="IGyroCalibrationPort"/> 越し（Phase8-Step7-6-Plan.md Q2＝A）。
+    /// 実機のコントローラーの操作は <see cref="IGyroCalibrationPort"/> 越し。
     /// </summary>
     public sealed class GyroCalibrateAction : IOutputAction
     {

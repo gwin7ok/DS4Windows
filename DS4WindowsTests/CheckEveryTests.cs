@@ -13,7 +13,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W5（Issue #4 の 4、Q4）: 「更新確認」が OFF のとき、更新確認の間隔（数値）の変更は保存されない。
+    /// 「更新確認」が OFF のとき、更新確認の間隔（数値）の変更は保存されない。
     /// これは仕様であり、不具合ではない: OFF のときは、数値を入力する行ごと無効（<c>IsEnabled</c>）で、利用者は数値を操作できない。
     /// setter が OFF のとき何もしないのは、無効な入力欄のバインディングの再評価が、更新確認を ON に戻してしまうのを防ぐための安全弁
     /// （<c>SettingsViewModel.CheckEvery</c> のコメント）。この意図を、テストで固定する。

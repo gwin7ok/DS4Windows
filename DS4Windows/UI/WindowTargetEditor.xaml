@@ -6,7 +6,7 @@
              lex:ResxLocalizationProvider.DefaultAssembly="DS4Windows"
              lex:ResxLocalizationProvider.DefaultDictionary="Strings"
              x:Name="root">
-    <!-- Phase12-Step2 2e（R-4）: 対象のウィンドウの指定（プログラムのパスとウィンドウタイトル）。Auto-Profile と同じ書式（^先頭 / 末尾$ / *含む）。
+    <!-- 対象のウィンドウの指定（プログラムのパスとウィンドウタイトル）。Auto-Profile と同じ書式（^先頭 / 末尾$ / *含む）。
          入力の検証エラーは、外側の結びつき（Path／Title）に付き、この部品全体に赤い枠で出る。
          Phase12-Step2 2h: ウインドウ名の一致方法は、入力欄の下の一覧で選ぶ（保存の形式は印のまま）。パス欄の右上に「実行ファイル名のみで判定」ボタン -->
     <StackPanel>
@@ -20,7 +20,7 @@
             <TextBox Text="{Binding Path, ElementName=root, UpdateSourceTrigger=PropertyChanged}" ToolTip="{lex:Loc AutoProfPathTip}" />
         </DockPanel>
         <DockPanel Margin="0,0,0,2">
-            <!-- Phase12-Step2 2i: ターゲットマーク。ドラッグして他のウィンドウの上で離すと、そのウィンドウのパスとタイトルを入れる -->
+            <!-- ターゲットマーク。ドラッグして他のウィンドウの上で離すと、そのウィンドウのパスとタイトルを入れる -->
             <Border x:Name="targetMark" DockPanel.Dock="Right" Width="22" Height="22" Background="Transparent"
                     BorderBrush="{DynamicResource ForegroundBrush}" BorderThickness="1.5" Cursor="Cross"
                     ToolTip="{lex:Loc SpecialActionEdit.FocusWindowDragTip}"

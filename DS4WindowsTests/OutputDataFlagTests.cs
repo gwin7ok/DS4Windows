@@ -8,7 +8,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6c（K-W6-12）: 「物理コントローラーへ出力データを送る」［EnableOutputDataToDS4］の仕様変更。
+    /// 「物理コントローラーへ出力データを送る」［EnableOutputDataToDS4］の仕様変更。
     /// C1: ON でも Emulated Controller を DS4 へ強制しない。C3（D2＝案 B）: ON → OFF では、フラグを立てる前に消灯・振動ゼロを 1 度だけ書く。
     /// C4: 表示名と説明文（英語・日本語）。HID の書き込みは単体で動かせないため、呼び出しの順序とガードをコードで検査する。
     /// </summary>

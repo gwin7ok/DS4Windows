@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace DS4Windows.Core.Model
 {
     /// <summary>
-    /// Phase7-Step10b W1（Q1＝A）: Xbox 360／DS4 仮想コントローラーのボタンの既定割り当てと名前の表（旧: <c>Global</c> の静的メンバー。宣言は移動のみ）。
+    /// Xbox 360／DS4 仮想コントローラーのボタンの既定割り当てと名前の表。
     /// </summary>
     public static class X360ControlTables
     {
@@ -224,7 +224,7 @@ namespace DS4Windows.Core.Model
             return "Unbound";
         }
 
-        // Phase8-Step4b W9（Q6＝A）: 旧 BackingStore.getX360ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
+        // 旧 BackingStore.getX360ControlsByName（インスタンスの状態を使わない名前引き）。本体は移動のみ
         public static X360Controls getX360ControlsByName(string key)
         {
             X360Controls x3c;

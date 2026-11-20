@@ -9,7 +9,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// <see cref="IRuntimeFeatureSwitch"/> の実装。本物のサービスへ委譲するだけ（旧 <c>ControlService</c> の転送メンバーを、そのまま移したもの）。
+    /// <see cref="IRuntimeFeatureSwitch"/> の実装。本物のサービスへ委譲するだけ。
     /// </summary>
     public class RuntimeFeatureSwitch : IRuntimeFeatureSwitch
     {

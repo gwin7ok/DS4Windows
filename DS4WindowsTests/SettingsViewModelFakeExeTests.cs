@@ -6,7 +6,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step9-3d（K9-2）: 偽装 exe 名の作成・削除の回帰テスト。
+    /// 偽装 exe 名の作成・削除の回帰テスト。
     /// 以前は設定ファイルの元を <c>実行ファイル名.exe.runtimeconfig.json</c>（実在しない）から組み立てていたため、
     /// コピーが例外になり、設定ファイルが作られず、古いファイルも消えなかった。
     /// 実在しないフォルダ・ファイルを使わず、一時フォルダで検証する。

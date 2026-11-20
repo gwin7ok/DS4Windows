@@ -3,7 +3,7 @@ using System.Text;
 namespace DS4Windows.UI
 {
     /// <summary>
-    /// Phase9 9-F F-2a（Phase9-F-Plan.md §6）: IPC コマンド（WM_COPYDATA）の文字列の読み取り。旧 <c>MainWindow.WndProc</c> の中の同じ処理を、そのまま移した（状態なし）。
+    /// IPC コマンド（WM_COPYDATA）の文字列の読み取り。旧 <c>MainWindow.WndProc</c> の中の同じ処理を、そのまま移した（状態なし）。
     /// </summary>
     public static class IpcCommandParser
     {
@@ -14,7 +14,7 @@ namespace DS4Windows.UI
         public static bool IsValidSize(int byteCount) => byteCount >= MinCommandBytes && byteCount <= MaxCommandBytes;
 
         /// <summary>
-        /// UTF-8 の文字列（ASCII を含む）を「.」で分け、先頭（コマンド名）を小文字にして返す（旧コードと同じ。小文字化は、現在のカルチャーの規則）。
+        /// UTF-8 の文字列（ASCII を含む）を「.」で分け、先頭（コマンド名）を小文字にして返す。
         /// 例: 「Disconnect.1」→ { "disconnect", "1" }。
         /// </summary>
         public static string[] Parse(byte[] buffer)

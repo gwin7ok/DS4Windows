@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6 K-W6-11: 切断したら一時プロファイルの状態［UseTempProfile／TempProfileName／TempProfileDistance］を維持しない。
+    /// 切断したら一時プロファイルの状態［UseTempProfile／TempProfileName／TempProfileDistance］を維持しない。
     /// 再接続では通常のルールでプロファイルが決まり、その後の再照合［CheckProfilesForConnectedController］が自動プロファイルを割り当てる。
     /// </summary>
     public class DisconnectClearsTempProfileTests

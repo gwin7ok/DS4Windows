@@ -1,7 +1,7 @@
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase8-Step8 8-0: <see cref="RemovedGyroSwipeNotice.Apply"/> の結果。
+    /// <see cref="RemovedGyroSwipeNotice.Apply"/> の結果。
     /// </summary>
     public enum RemovedGyroSwipeOutcome
     {

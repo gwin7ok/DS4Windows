@@ -5,7 +5,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step3 3b（R-3）: マクロの「マウスポインターの移動」ステップの値の体系（整数 1 個との相互変換）と、リストの表示名。
+    /// マクロの「マウスポインターの移動」ステップの値の体系（整数 1 個との相互変換）と、リストの表示名。
     /// </summary>
     public class MacroPointerMoveTests
     {

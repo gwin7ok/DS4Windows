@@ -14,10 +14,10 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step8 W1: <c>Mouse</c>／<c>ControlService</c> が保持クラスをコンストラクターで受けること、
+    /// <c>Mouse</c>／<c>ControlService</c> が保持クラスをコンストラクターで受けること、
     /// <c>MapClick</c>／<c>ResetRuntimeStateForKey</c> を <c>SyntheticInputState</c> へ移したこと、
     /// 本体の呼び出しが 0 件だった <c>Mapping</c> の 4 メンバーを削除したことの回帰ガード。
-    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は Phase7-Step8-Plan.md（Q5・Q7・Q9）。
+    /// ソースが見つからない環境では、ソースの検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step8-Plan.md（Q5・Q7・Q9）。
     /// </summary>
     public class StateHolderInjectionGuardTests
     {
@@ -71,7 +71,7 @@ namespace DS4WindowsTests
         [Fact]
         public void MouseAndControlService_ReceiveTheHoldersByConstructor()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、コンストラクターの引数とコンテナの登録を確かめる（Shared の撤去は RemovedApiRuleTests）
+            // ソースの文字列ではなく、コンストラクターの引数とコンテナの登録を確かめる（Shared の撤去は RemovedApiRuleTests）
             var mouseParameters = typeof(DS4Windows.Processing.Touchpad.TouchpadMouse).GetConstructors().SelectMany(c => c.GetParameters()).Select(p => p.ParameterType).ToArray();
             Assert.Contains(typeof(DS4Windows.Processing.StickMotionState), mouseParameters);
             Assert.Contains(typeof(DS4Windows.Processing.Synthetic.SyntheticInputState), mouseParameters);
@@ -89,7 +89,7 @@ namespace DS4WindowsTests
             if (repository == null) return;
 
             int save = repository.IndexOf("SaveActionAndReload(", System.StringComparison.Ordinal);
-            // Phase14b-Step14（D14）: リセットは契約 ISpecialActionRuntimeReset 経由（旧: _syntheticInput.ResetRuntimeStateForKey）。順序の検査は同じ
+            // リセットは契約 ISpecialActionRuntimeReset 経由。順序の検査は同じ
             int reset = repository.IndexOf("_runtimeReset.ResetRuntimeStateForKey(", System.StringComparison.Ordinal);
             Assert.True(save >= 0 && reset > save, "SaveActionAndReload（旧 Global.SaveAction）の後に ResetRuntimeStateForKey を呼ぶこと");
             Assert.Contains("mode == 4", repository);

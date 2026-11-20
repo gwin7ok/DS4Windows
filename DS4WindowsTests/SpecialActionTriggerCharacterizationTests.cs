@@ -12,14 +12,14 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7c W2（Phase7c-Plan.md §3 W2）: スペシャルアクションの「トリガー成立→実行」（<c>Mapping.MapCustom</c>／<c>MapCustomAction</c>／Stage3）の特性化テスト。
+    /// スペシャルアクションの「トリガー成立→実行」（<c>Mapping.MapCustom</c>／<c>MapCustomAction</c>／Stage3）の特性化テスト。
     /// 現在の挙動を固定することが目的で、Phase8 で経路を統一ディスパッチへ移しても、入力 → 出力・状態が変わらないことを保証する。
     /// 対象: ボタン種別の Press の出力、トリガーの AND 条件、トリガーボタンの抑制と解除、Fresh-press ガードの解除条件（80ms の連続した未成立）、
     ///       Profile／Program の実行ブロック（ガード中・実行中）、Stage3 の並行変更への耐性。
-    /// 範囲外（Phase7c の続き）: Key の Press／Toggle の出力、`uTrigger`／`delayTime`／`pressRelease`、プロファイル切替の復帰とチェーン、`shiftTrigger`。
-    /// Phase8-Step7 7.2-W1: Key 種別のテスト（成立・保持・解放、ガード、Toggle）も同じく <c>[Theory]</c>。<c>UntriggerIndex</c> だけは Q1 により、新経路は書かない（-1）。
-    /// Phase8-Step7 7.1-W1: Button 種別のテスト（Press の出力、AND 条件、抑制、Fresh-press）は、
-    /// 新経路（実物のビルダーが作る束縛を登録簿へ登録）で流す。Phase8-Step8 8d: 移行のスイッチは削除した（Phase8-Step7-Plan.md §3・Q3）。
+    /// 範囲外: Key の Press／Toggle の出力、`uTrigger`／`delayTime`／`pressRelease`、プロファイル切替の復帰とチェーン、`shiftTrigger`。
+    /// Key 種別のテスト（成立・保持・解放、ガード、Toggle）も同じく <c>[Theory]</c>。<c>UntriggerIndex</c> だけは Q1 により、新経路は書かない（-1）。
+    /// Button 種別のテスト（Press の出力、AND 条件、抑制、Fresh-press）は、
+    /// 新経路（実物のビルダーが作る束縛を登録簿へ登録）で流す。Phase8-Step8 8d: 移行のスイッチは削除した（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-Plan.md §3・Q3）。
     /// `Mapping` の静的な状態と `ActionManager`（静的）を共有するため、<c>ServiceProviderHolder</c> のコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -96,7 +96,7 @@ namespace DS4WindowsTests
         {
             using var t = new SpecialActionTestScope();
             t.AddButtonPress("L1/R1");
-            // Phase8-Step4 W4: 抑制の集合はエンジンの所有。IsSuppressed で観測する
+            // 抑制の集合はエンジンの所有。IsSuppressed で観測する
             bool Suppressed(DS4Controls control) => t.Engine.IsSuppressed(t.Device, control);
 
             ControllerState both = SpecialActionTestScope.Neutral();
@@ -271,7 +271,7 @@ namespace DS4WindowsTests
             Assert.Equal(-1, t.Mapping.deviceRuntime[t.Device].UntriggerIndex);
         }
 
-        // ---- Stage3 の並行変更への耐性（Phase7c W1 の回帰ガード）----
+        // ---- Stage3 の並行変更への耐性----
 
         [Fact]
         public void Stage3_SurvivesProfileActionListBeingReloadedConcurrently()

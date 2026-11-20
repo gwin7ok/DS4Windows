@@ -5,10 +5,10 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8e（Phase8-Step7-8e-Plan.md §3.2）: Controls タブの Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）の出力。
+    /// Controls タブの Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）の出力。
     /// 旧 <c>Mapping.ProcessControlSettingAction</c> の Extras の枝と同じ流れ:
     ///  - 立ち上がり（<see cref="Execute"/>）と押している間の毎フレーム（<see cref="WhileHeld"/>）: 同じ「適用」。振動が両方 0 でなければ振動を出す。
-    ///    ライトバーが有効なら強制色と点滅を設定する。感度が有効なら、一時の感度がまだないときだけ設定する（1 回だけ）。全体を try で囲み、例外は握りつぶす（旧経路と同じ）。
+    ///    ライトバーが有効なら強制色と点滅を設定する。感度が有効なら、一時の感度がまだないときだけ設定する（1 回だけ）。全体を try で囲み、例外は握りつぶす。
     ///  - 離したとき（<see cref="Stop"/>）: ライトバーの強制を解除、一時の感度を戻す、振動を出していたら 0,0 に戻す（ライトバーが無効の設定でも、強制を解除する。旧経路と同じ）。
     /// 旧経路との違い（承認済み）: 旧 <c>held</c>（デバイスに 1 つ）は持たず、ボタンごとに自分の分を元に戻す（Q3＝B）。押したままのプロファイル適用・切断では、
     /// <see cref="OnReset"/> で元に戻す（Q6＝B）。値は解釈済み（<see cref="ExtrasBindingValues"/>）で受け取る。実機・静的な状態の操作は <see cref="IControlExtrasPort"/> 越し。

@@ -11,11 +11,11 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7c W2: <c>Mapping.MapCustom</c>／<c>MapCustomAction</c>（スペシャルアクションのトリガー成立→実行）を実走行させる最小のハーネス。
+    /// <c>Mapping.MapCustom</c>／<c>MapCustomAction</c>（スペシャルアクションのトリガー成立→実行）を実走行させる最小のハーネス。
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字（<see cref="Device"/>）に対し、プロファイルのアクション一覧
     /// （<c>profileActions</c>／<c>profileActionDict</c>／<c>profileActionIndexDict</c>／<c>profileActionCount</c>）と
     /// <c>BackingStore.actions</c> へ、テスト用の <see cref="SpecialAction"/> を登録する。終了時にすべて元へ戻す。
-    /// Phase8-Step8 8d: 全種別を常に新経路で処理する（移行のスイッチは削除した）。
+    /// 全種別を常に新経路で処理する（移行のスイッチは削除した）。
     /// <see cref="Add"/> のたびに本番の <c>PublishBindings</c> と同じ経路（<c>IActionBindingBuilder.Build</c> → <c>IActionRegistry.Replace</c>）で束縛を登録する。
     /// 偽の束縛ではなく、実物のビルダーが作る束縛を使う。終了時に元へ戻す。
     /// <c>MapCustomAction</c> は <c>async void</c> だが、初期化待ちが完了済みの <c>Task</c> のため、最初の実際の <c>await</c>
@@ -35,10 +35,10 @@ namespace DS4WindowsTests
         public MappingCharacterizationScope Scope => _inner;
         public Mapping Mapping { get; }
 
-        /// <summary>Phase8-Step4 W4: ホストの <c>Mapping</c> が使うエンジン（抑制の集合の所有者）。</summary>
+        /// <summary>ホストの <c>Mapping</c> が使うエンジン（抑制の集合の所有者）。</summary>
         public DS4Windows.Processing.Actions.ITriggerDispatchEngine Engine { get; } = TestHost.GetService<DS4Windows.Processing.Actions.ITriggerDispatchEngine>();
 
-        /// <summary>Phase8-Step4 W4: このデバイスの遅延の基準時刻（旧 <c>Mapping.nowAction</c>／<c>oldnowAction</c>）。</summary>
+        /// <summary>このデバイスの遅延の基準時刻。</summary>
         public DS4Windows.Processing.Actions.DelayClock Delay
         {
             get
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
             if (Mapping == null)
                 throw new InvalidOperationException("IMapping の実体が Mapping ではない");
 
-            // Phase8-Step8 8b・8d: SA の旧経路と移行のスイッチ（BindingMigrationOptions）を削除したため、常に新経路で処理する
+            // SA の旧経路と移行のスイッチ（BindingMigrationOptions）を削除したため、常に新経路で処理する
             _savedNames = _store.profileActions[Device];
             _savedDict = new Dictionary<string, SpecialAction>(_store.profileActionDict[Device]);
             _savedIndexDict = new Dictionary<string, int>(_store.profileActionIndexDict[Device]);
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
             _store.profileActionDict[Device].Clear();
             _store.profileActionIndexDict[Device].Clear();
             _store.profileActionCount[Device] = 0;
-            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）
+            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする
             // 遅延の基準時刻は、デバイスの切断では戻らない。前のテストが遅延つきのアクションを動かした後だと、初期値（最小値）を前提にした検査が落ちる。
             // テストの実行順はクラス名から決まるため、改名で順序が変わっても結果が変わらないよう、開始時に初期状態へ戻す
             Delay.Reset();
@@ -89,8 +89,8 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Phase8-Step7 7.1-W2: プロファイルの適用の後始末を再現する（<c>ProfileApplicationService</c> の掃除と同じ順序: <c>ClearDeviceState</c> → <c>PreallocateForProfileApply</c> →
-        /// 新経路のときは <c>PublishBindings</c>）。<c>OnProfileApplied</c> は、判断が済むまで呼ばない（Phase8-Step7-Plan.md Q5）。
+        /// プロファイルの適用の後始末を再現する（<c>ProfileApplicationService</c> の掃除と同じ順序: <c>ClearDeviceState</c> → <c>PreallocateForProfileApply</c> →
+        /// 新経路のときは <c>PublishBindings</c>）。<c>OnProfileApplied</c> は、判断が済むまで呼ばない（docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-Plan.md Q5）。
         /// </summary>
         public void SimulateProfileApply()
         {
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
             PublishBindings();
         }
 
-        /// <summary>Phase8-Step7: 登録済みのスペシャルアクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
+        /// <summary>登録済みのスペシャルアクションから、本番と同じ経路で束縛を作って登録簿へ差し替える（新経路のときだけ使う）。</summary>
         public void PublishBindings()
         {
             var builder = TestHost.GetService<DS4Windows.Processing.Actions.IActionBindingBuilder>();
@@ -124,7 +124,7 @@ namespace DS4WindowsTests
         public int IndexOf(SpecialAction action) => _store.actions.IndexOf(action);
 
         /// <summary>
-        /// Phase8-Step1 W2: ホストの <c>DefaultProfileSwitcher</c>（アクションと <c>Mapping</c> の両方が使う Singleton）が持つ
+        /// ホストの <c>DefaultProfileSwitcher</c>（アクションと <c>Mapping</c> の両方が使う Singleton）が持つ
         /// <c>IProfileApplicationService</c> を、記録用の実装に差し替える（終了時に元へ戻す）。実際のプロファイルの読込・適用は走らない。
         /// </summary>
         public RecordingProfileApplicationService InstallProfileRecorder()
@@ -168,7 +168,7 @@ namespace DS4WindowsTests
             if (_switcherField != null)
                 _switcherField.SetValue(_switcherInstance, _savedProfileApp);
 
-            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする（旧: suppressedTriggerButtons のクリア）。登録簿の束縛も消える
+            Engine.OnDeviceDisconnected(Device); // 抑制の集合を空にする。登録簿の束縛も消える
             Mapping.deviceRuntime[Device].UntriggerAction = null;
             Mapping.deviceRuntime[Device].UntriggerIndex = -1;
 

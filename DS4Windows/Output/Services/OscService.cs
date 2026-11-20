@@ -11,10 +11,10 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Output.Services
 {
     /// <summary>
-    /// Phase9 9-E E-1（Phase9-E-Plan.md）: <see cref="IOscService"/> の実装（DI の Singleton）。
+    /// <see cref="IOscService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の OSC 系（受信の解釈 <c>CreateOSCCallback</c>、リスナー／送信側のライフサイクル、<c>SendOsc</c>、<c>OSCPreMappingStep</c>／<c>OSCPostMappingStep</c>、
     /// <c>CompareAndSendChangesToOSC</c>、状態 <c>oscState</c>）を、そのまま移したもの（SharpOSC の型は <see cref="IOscTransportFactory"/> の実装の中に閉じた。送信する値は旧実装と同じ型のまま渡す）。
-    /// 値の特性化は <c>Phase9EOscServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は 対応するテスト（旧実装との差分テスト）が守る。
     /// 現行の癖: リスナーが null のときの停止は <see cref="NullReferenceException"/>（計画書 E3。呼び出し側が <see cref="HasListener"/> を確かめてから呼ぶ）。
     /// 範囲外のコントローラー番号・値・不正なメッセージ（計画書 E1・E2）は、旧実装では例外だったが、ユーザー承認により是正した（範囲外の番号は捨てる／値は 0〜255 に丸める／不正なメッセージはログに出して捨てる）。
     /// </summary>
@@ -74,7 +74,7 @@ namespace DS4Windows.Output.Services
             else
             {
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Osc_SenderStopped");
-                // Phase6-Step9-3c: フィールドを先に null にしてから閉じる（入力スレッドが閉じたソケットへ送らないようにする）
+                // フィールドを先に null にしてから閉じる（入力スレッドが閉じたソケットへ送らないようにする）
                 IOscMessageSender? sender = _sender;
                 if (sender == null) { return; }
                 _sender = null;
@@ -87,8 +87,8 @@ namespace DS4Windows.Output.Services
             SendOsc("/ds4windows/monitor/" + index + "/plug", plugged ? 1 : 0);
         }
 
-        // Phase6-Step9-3c（K9-1）: UseOscSender が先に true になり、_sender の生成（ChangeSenderStatus）が
-        // 終わる前に入力スレッドが送信すると NullReferenceException でアプリが終了していた（Step2 より前から存在した競合）。
+        // UseOscSender が先に true になり、_sender の生成（ChangeSenderStatus）が
+        // 終わる前に入力スレッドが送信すると NullReferenceException でアプリが終了していた（以前から存在した競合）。
         // 送信側が未生成・破棄済みの間は送信しない。フィールドをローカルに取り、取得後に null になっても安全にする。
         private void SendOsc(string address, object value)
         {
@@ -141,7 +141,7 @@ namespace DS4Windows.Output.Services
                 return;
             }
 
-            // Phase9 9-E E-1 の是正（ユーザー承認）: 不正なメッセージ（アドレスの要素不足、引数の数・型の不一致、NaN など）で、例外を外へ出さない。
+            // 不正なメッセージ（アドレスの要素不足、引数の数・型の不一致、NaN など）で、例外を外へ出さない。
             // 旧実装は、受信スレッドで例外が出ていた（スレッドが落ちて、アプリの異常終了になりうる）。ログに出して捨てる。
             try
             {
@@ -194,7 +194,7 @@ namespace DS4Windows.Output.Services
                 stateInd = -1;
             }
 
-            // Phase9 9-E E-1 の是正: 範囲外のコントローラー番号（負、スロット数以上）も不正なアドレスとして捨てる（旧実装は IndexOutOfRangeException）
+            // 範囲外のコントローラー番号（負、スロット数以上）も不正なアドレスとして捨てる（旧実装は IndexOutOfRangeException）
             if (stateInd < 0 || stateInd >= _oscState.Length)
             {
                 AppLogger.LogUser(AppLogLevel.Warn, "Log_Osc_MalformedAddress", address);

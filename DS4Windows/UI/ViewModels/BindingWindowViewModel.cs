@@ -46,24 +46,24 @@ namespace DS4Windows.UI.ViewModels
         public bool RumbleActive { get => rumbleActive; set => rumbleActive = value; }
         public DS4ControlSettings Settings { get => settings; }
 
-        // Phase6-Step7b: 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ランブルテスト・ライトバーの
+        // 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ランブルテスト・ライトバーの
         // プレビューで実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」
-        // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
-        // Phase6-Step10-2-4b: Global.RefreshActionAlias の置換先（必須引数）
+        // （プロファイル一覧から開いた場合）
+        // Global.RefreshActionAlias の置換先（必須引数）
         private readonly IProfileSettingsService profileSettingsService;
-        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        // スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService environmentService;
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 
         /// <summary>
         /// 実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。
-        /// Phase6-Step7b: 実機に触れる処理はこの判定を使う（編集スロット DeviceNum ではない）。
+        /// 実機に触れる処理はこの判定を使う（編集スロット DeviceNum ではない）。
         /// </summary>
         public bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public BindingWindowViewModel(DS4Windows.Core.Model.LightbarOverrides lightbar, int deviceNum, DS4ControlSettings settings,
@@ -143,7 +143,7 @@ namespace DS4Windows.UI.ViewModels
             bind.outputType = OutBinding.OutType.Macro;
             bind.macro = (int[])setting.action.actionMacro;
             bind.macroType = settings.keyType;
-            // Phase10-Step1 W2: 記録画面（RecordBox）で設定した Scan Code を、WriteBind が書く hasScanCode へ渡す。
+            // 記録画面（RecordBox）で設定した Scan Code を、WriteBind が書く hasScanCode へ渡す。
             // 渡さないと、記録画面でチェックしても、保存時に落ちていた（WriteBind の Macro は、hasScanCode［選択ダイアログのチェックボックス］から書く）
             bind.hasScanCode = settings.keyType.HasFlag(DS4KeyType.ScanCode);
         }
@@ -153,7 +153,7 @@ namespace DS4Windows.UI.ViewModels
             currentOutBind.WriteBind(settings, profileSettingsService);
         }
 
-        // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う
+        // ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う
         public void StartForcedColor(DS4Color color)
         {
             if (HasTargetDevice)

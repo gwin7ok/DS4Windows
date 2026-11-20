@@ -27,7 +27,7 @@ namespace DS4WindowsTests
 
         /// <summary>
         /// <c>#nullable enable</c> を、全ファイルに持たせるフォルダー（本体からの相対パス。末尾が <c>/</c> でなければ、そのファイル 1 つ）。
-        /// 層ごとに有効にしていく（PhaseRV9）。増やす方向だけで、減らさない。プロジェクト全体の <c>&lt;Nullable&gt;</c> へ切り替えたら、この表は不要になる。
+        /// 層ごとに有効にしていく。増やす方向だけで、減らさない。プロジェクト全体の <c>&lt;Nullable&gt;</c> へ切り替えたら、この表は不要になる。
         /// </summary>
         public static readonly string[] NullableEnabledFolders =
         {
@@ -76,6 +76,9 @@ namespace DS4WindowsTests
 
         /// <summary>イベントハンドラーの形（第 1 引数が <c>object</c>）ではない <c>async void</c>。<c>async Task</c> にして、呼び出し側で <c>await</c> する。</summary>
         public const int NonHandlerAsyncVoid = 0;
+
+        /// <summary>経緯の参照（<c>Phase</c> ＋数字）を含む行（本体の .cs）。減らしたら基準も下げる。増やさない。</summary>
+        public const int PhaseReferenceLines = 225;
 
         /// <summary><c>#pragma warning disable</c> で null 許容の警告（CS86xx・CS87xx）を消している行。使わない。</summary>
         public const int NullableWarningPragmas = 0;

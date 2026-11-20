@@ -7,7 +7,7 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step6 6-e: テスト用の <see cref="IProfileLoadTarget"/>。共有のホストから、初めて使うときに解決して転送する。
+    /// テスト用の <see cref="IProfileLoadTarget"/>。共有のホストから、初めて使うときに解決して転送する。
     /// 旧: テストの既定値 <c>() =&gt; TestHost.GetService&lt;ControlService&gt;()</c>（<c>Func&lt;ControlService&gt;</c> の遅延）と同じ意味で、
     /// 生成の時点ではホストを構築しない（ホストを作る前に <c>TestGlobals</c> などを準備するテストがあるため）。
     /// </summary>

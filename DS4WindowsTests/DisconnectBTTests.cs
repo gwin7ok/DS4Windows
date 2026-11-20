@@ -15,7 +15,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.6b（Phase8-Step7-6-Plan.md §3.3。Q3＝B: 切断の成功／失敗と再試行）: DisconnectBT の新経路の確認。
+    /// DisconnectBT の新経路の確認。
     /// 実機のコントローラーがないため、旧経路は効果の分岐（<c>ctrl.Controllers[device]</c>）で止まる。効果は記録用のポートで確かめる。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
@@ -75,8 +75,8 @@ namespace DS4WindowsTests
 
             t.RunFrame(Frame(true));
             t.RunFrame(Frame(true));
-            Assert.Equal(1, port.BluetoothCalls);                           // 成功したので、繰り返さない（旧経路は切断の完了まで毎フレーム繰り返した）
-            Assert.False(TestActions.Manager.IsBeingTriggered(key, t.Device));   // 切断の完了までの間、フレームの打ち切りは続く（旧経路の return と同じ）
+            Assert.Equal(1, port.BluetoothCalls);                           // 成功したので、繰り返さない
+            Assert.False(TestActions.Manager.IsBeingTriggered(key, t.Device));   // 切断の完了までの間、フレームの打ち切りは続く
         }
 
         [Fact]
@@ -349,7 +349,7 @@ namespace DS4WindowsTests
             ControllerState held = Frame(true);
             for (int i = 0; i < 300; i++) t.RunFrame(held);   // 立ち上がりと JIT は、測定の外へ
 
-            // Phase10-Step4 W4: 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）
+            // 5 ラウンド測って最小値を使う（一度きりの割り当てが測定の窓に入っても結果が変わらないように。BatteryCheckTests と同じ）
             long min = long.MaxValue;
             for (int round = 0; round < 5; round++)
             {
@@ -399,7 +399,7 @@ namespace DS4WindowsTests
             Assert.Equal(DisconnectTargetKind.None, port.GetTargetKind(-1));
             Assert.Equal(DisconnectTargetKind.None, port.GetTargetKind(99));
 
-            // Phase13-Step5: 窓口は直接注入（必須）。null は受け付けない
+            // 窓口は直接注入（必須）。null は受け付けない
             Assert.Throws<ArgumentNullException>(() => new DefaultControllerDisconnectPort(null));
         }
 

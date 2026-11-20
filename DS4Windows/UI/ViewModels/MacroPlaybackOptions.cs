@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step1 W1（Phase10-Step1-Plan.md §3.1）: マクロの再生オプション（繰り返し、Scan Code）の共通の ViewModel。
+    /// マクロの再生オプション（繰り返し、Scan Code）の共通の ViewModel。
     /// Controls の <c>RecordBox</c> と SA の Macro タブが、同じ部品（<c>MacroPlaybackOptionsPanel</c>。W2 以降）で編集する。
     /// 値は、<see cref="DS4KeyType"/> の <see cref="DS4KeyType.RepeatMacro"/>（Phase8-Fix-MacroRepeatUnify で
     /// 旧 <c>HoldMacro</c> から統合）、<see cref="DS4KeyType.RepeatLatchMacro"/>（R-2: 繰り返しをトグルする）、<see cref="DS4KeyType.ScanCode"/> の有無で表す。

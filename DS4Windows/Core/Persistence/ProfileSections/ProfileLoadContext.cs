@@ -7,9 +7,9 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W2（Phase8-Step4b-Plan.md §3.2、Q4＝A）: プロファイル 1 回分の読込で、節をまたいで共有する状態。
+    /// プロファイル 1 回分の読込で、節をまたいで共有する状態。
     /// 節ごとの局所変数（<c>Item</c> など）は、各節が自前で持つ。
-    /// <see cref="LightbarSettings"/>／<see cref="LightInfo"/> は、<c>store.ResetProfile</c> の前に取得した参照のまま使う（旧コードと同じ）。
+    /// <see cref="LightbarSettings"/>／<see cref="LightInfo"/> は、<c>store.ResetProfile</c> の前に取得した参照のまま使う。
     /// </summary>
     internal sealed class ProfileLoadContext
     {

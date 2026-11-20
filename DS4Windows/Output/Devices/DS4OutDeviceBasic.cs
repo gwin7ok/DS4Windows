@@ -52,7 +52,7 @@ namespace DS4Windows.Output.Devices
             cont.LeftTrigger = state.L2;
             cont.RightTrigger = state.R2;
 
-            // Phase9 Steering 削除 W3: 旧「ステアリング（ジャイロでハンドル操作）の軸の出力先」の switch は削除した（機能ごと削除。Phase9-SteeringWheel-Removal-Plan.md）。通常の軸の出力だけを行う
+            // 旧「ステアリング（ジャイロでハンドル操作）の軸の出力先」の switch は削除した（機能ごと削除）。通常の軸の出力だけを行う
             cont.LeftThumbX = state.LX;
             cont.LeftThumbY = state.LY;
             cont.RightThumbX = state.RX;

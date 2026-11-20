@@ -12,8 +12,8 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9-0（Phase9-0-Plan.md §3）: <c>Mapping.SetCurveAndDeadzone</c>（毎フレーム、毎秒 250〜1000 回呼ばれるホットパス）の 1 回あたりの処理時間の<b>手動計測</b>。
-    /// Phase9 の各 Wave（9-A の切り出しなど）の前後で実行し、中央値を比べる（許容: 悪化 5% 以内。承認済みの初期値）。
+    /// <c>Mapping.SetCurveAndDeadzone</c>（毎フレーム、毎秒 250〜1000 回呼ばれるホットパス）の 1 回あたりの処理時間の<b>手動計測</b>。
+    /// 悪化 5% 以内。承認済みの初期値）。
     /// 通常のテスト実行では、何もせず合格する（環境変数 <c>DS4W_RUN_BENCH=1</c> のときだけ計測する。処理時間は実行環境の負荷で揺れるため、合否の基準にしない）。
     /// 割り当て 0 の検査は <c>MappingHotPathAllocationTests</c> が担う。実行例（PowerShell）:
     /// <c>$env:DS4W_RUN_BENCH='1'; dotnet test ./DS4WindowsTests/DS4Windows.Actions.Tests.csproj -c Release /p:platform=x64 --filter FullyQualifiedName~HotPathTimingBenchmark -v n</c>

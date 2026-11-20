@@ -10,11 +10,11 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.1-W2（Phase8-Step7-Plan.md §5.2・Q5＝A）: (1) プロファイル適用の前後で、新旧の出力・抑制の集合に差が出るかの特性化
+    /// (1) プロファイル適用の前後で、新旧の出力・抑制の集合に差が出るかの特性化
     /// （差が出なければ <c>OnProfileApplied</c> は接続しない）、(2) 複数の Button の実行順序と二重ディスパッチの検出。
     /// 適用は <see cref="SpecialActionTestScope.SimulateProfileApply"/> で再現する（本番の掃除と同じ順序）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ApplyAndOrderTests
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
             ControllerState output = t.RunFrame(Frame(true));
 
             Assert.True(output.Cross);
-            // Phase8-Step8 8b: 旧 Stage3（lastButtonTriggerState のキャッシュ）は削除した。新経路だけが処理する
+            // 旧 Stage3（lastButtonTriggerState のキャッシュ）は削除した。新経路だけが処理する
             var field = typeof(Mapping).GetField("lastButtonTriggerState", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
             Assert.Null(field);
         }

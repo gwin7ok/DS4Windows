@@ -30,9 +30,9 @@ namespace DS4Windows.UI
     {
         private LanguagePackViewModel langPackVM;
         private Func<bool> _saveSettings;
-        private DS4Windows.UI.Abstractions.IUiThemeAndLanguage _themeLanguage;   // Phase14b-Step16（D11）: 旧 Application.Current as App
+        private DS4Windows.UI.Abstractions.IUiThemeAndLanguage _themeLanguage;   // 旧 Application.Current as App
 
-        // Phase6-Step10-1-4: 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
+        // 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、生成直後に呼ぶ）。
         public LanguagePackControl()
         {
@@ -71,7 +71,7 @@ namespace DS4Windows.UI
         {
             if (langPackVM.ChangeLanguagePack())
             {
-                // Apply language change immediately（Phase14b-Step16: 旧 Application.Current as App → IUiThemeAndLanguage）
+                // Apply language change immediately
                 {
                     LangPackItem selectedItem = langPackVM.LangPackList[langPackVM.SelectedIndex];
                     string cultureCode = selectedItem.Name;

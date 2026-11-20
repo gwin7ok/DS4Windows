@@ -17,7 +17,7 @@ namespace DS4Windows.UI.ViewModels
 
         public ReaderWriterLockSlim LogListLocker => _logListLocker;
 
-        // Phase6-Step10-1-3: Global.exeversion の置換先（必須引数）。引数なしのコンストラクタは、DI の解決テスト
+        // Global.exeversion の置換先（必須引数）。引数なしのコンストラクタは、DI の解決テスト
         // （PatternAViewModelTests）と ServiceRegistration の Transient 登録のために残している。
         public LogViewModel(DS4Windows.Core.Abstractions.IEnvironmentService environmentService, DS4Windows.UI.Abstractions.IUiDispatcher uiDispatcher)
         {

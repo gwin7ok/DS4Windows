@@ -11,12 +11,11 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.4-W1（Phase8-Step7-4-Plan.md §3 W1）: Program 種別の「旧経路（<c>MapCustomAction</c> の Program の分岐）」と「新経路（エンジン）」の特性化。
+    /// Program 種別の「旧経路（<c>MapCustomAction</c> の Program の分岐）」と「新経路（エンジン）」の特性化。
     /// 実際のプログラムを起動しないよう、存在しない実行ファイルのパスを使う。<c>DefaultProcessLauncher</c> は、起動に失敗すると
-    /// <c>AppLogger.LogToGui("Process launch failed for '&lt;パス&gt;': …")</c> を出すため、<c>AppLogger.GuiLog</c> を購読して、パスごとの起動の試行を数える
-    /// （旧・新とも同じ部品を通るため、回数を比べられる）。
+    /// <c>AppLogger.LogToGui("Process launch failed for '&lt;パス&gt;': …")</c> を出すため、<c>AppLogger.GuiLog</c> を購読して、パスごとの起動の試行を数える。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ProgramDualPathTests

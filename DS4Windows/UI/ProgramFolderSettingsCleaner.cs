@@ -5,7 +5,7 @@ namespace DS4Windows.UI
 {
     /// <summary>
     /// 保存先に「Appdata」を選んだとき、プログラムフォルダに残っている設定ファイルを削除する。
-    /// Phase6-Step10-1: 置換前は Profiles フォルダ・Profiles.xml・Auto Profiles.xml の 3 つだけを削除しており、
+    /// 置換前は Profiles フォルダ・Profiles.xml・Auto Profiles.xml の 3 つだけを削除しており、
     /// Actions.xml／LinkedProfiles.xml／ControllerConfigs.xml／OutputSlots.xml が残っていた（実機確認で判明）。
     /// 設定フォルダに保存されるアプリ管理のファイルを削除対象に加えた。Macros や Logs などのフォルダには触れない
     /// （ユーザーのマクロや実行中のログを誤って消さないため）。

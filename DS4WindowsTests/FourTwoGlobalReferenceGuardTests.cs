@@ -26,7 +26,7 @@ namespace DS4WindowsTests
         [Fact]
         public void SpecialActionRepository_RequiresStoreAndPathService()
         {
-            // Phase14b-Step14（D14）: 旧 引数の SyntheticInputState・IManagedActionManager は、リセットの契約 1 つにまとめた
+            // 旧 引数の SyntheticInputState・IManagedActionManager は、リセットの契約 1 つにまとめた
             Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(null, new PathService(), TestRepositoryFactory.CreateActionsXml(), TestActions.RuntimeReset));
             Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), null, TestRepositoryFactory.CreateActionsXml(), TestActions.RuntimeReset));
             Assert.Throws<ArgumentNullException>(() => new SpecialActionRepository(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()), new PathService(), null, TestActions.RuntimeReset));
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
             var actionsXml = TestRepositoryFactory.CreateActionsXml(config);
             var legacyXml = TestRepositoryFactory.CreateLegacyProfileXml(config);
             var path = new PathService();
-            IProfileLoadTarget control = new LazyProfileLoadTarget();   // Phase13-Step6 6-e: 旧 Func<ControlService>
+            IProfileLoadTarget control = new LazyProfileLoadTarget();   // 旧 Func<ControlService>
 
             Assert.Throws<ArgumentNullException>(() => new ProfileRepository(null, settings, store, path, control, linkedXml, actionsXml, legacyXml, new EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() => new ProfileXmlStore(null, new DS4Windows.Core.Persistence.ControllerConfigsXmlSerializer(config), TestRepositoryFactory.CreateAppSettingsXml(config), TestRepositoryFactory.CreateLegacyProfileXml(config)));
@@ -131,7 +131,7 @@ namespace DS4WindowsTests
         public void OutputSlot_Services_RequireAllDependencies()
         {
             var store = new OutputSlotStore(new PathService());
-            IVirtualPadService virtualPad = new FakeVirtualPadService(null);   // Phase13-Step7 7-d: 旧 Func<OutputSlotManager>／Func<IVirtualPadService>
+            IVirtualPadService virtualPad = new FakeVirtualPadService(null);   // 旧 Func<OutputSlotManager>／Func<IVirtualPadService>
             var types = new DS4Windows.Output.Services.OutputDeviceTypeState();
 
             Assert.Throws<ArgumentNullException>(() => new OutputSlotStore(null));
@@ -150,7 +150,7 @@ namespace DS4WindowsTests
                 var store = new OutputSlotStore(new PathService(dir));
                 var manager = TestRepositoryFactory.CreateOutputSlotManager();
 
-                Assert.True(store.Save(manager)); // 書き込み成功時は true を返す（Phase6-Step10-4-Plan.md §26 で是正）
+                Assert.True(store.Save(manager)); // 書き込み成功時は true を返す（docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-4-Plan.md §26 で是正）
                 Assert.True(System.IO.File.Exists(System.IO.Path.Combine(dir, "OutputSlots.xml")));
             }
             finally
@@ -175,14 +175,14 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new DefaultActionManager(null));
         }
 
-        // Phase10-Step4d W7: 以前ここにあった、ReplaceLinkedProfileName／AutoProfileHolder.ReplaceProfileName／MainWindow の追従の検査は、撤去したメンバーのため削除した。
+        // 以前ここにあった、ReplaceLinkedProfileName／AutoProfileHolder.ReplaceProfileName／MainWindow の追従の検査は、撤去したメンバーのため削除した。
         // 名前変更の共通の経路（SyncProfileListAndControllers）を通ることの検査は、RenameFollowUpRemovalTests に移した
 
         [Fact]
         public void OutputSlotService_PluginAndUnplug_AreRejectedWithoutControlService_AndRaiseNoEvent()
         {
             // ControlService が無い（ホストが無い）場合は、何もできないため false を返し、変更の通知も出さない
-            // Phase13-Step7 7-d: 操作先（スロット管理）が無い仮想パッド窓口。旧: virtualPadProvider が null を返す
+            // 操作先（スロット管理）が無い仮想パッド窓口。旧: virtualPadProvider が null を返す
             var service = new OutputSlotService(new FakeVirtualPadService(null),
                 new OutputSlotStore(new PathService()), new DS4Windows.Output.Services.OutputDeviceTypeState());
             int fired = 0;
@@ -223,12 +223,12 @@ namespace DS4WindowsTests
         public void ProfileApplicationService_RequiresAllDependencies()
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService();
-            IProfileLoadTarget control = new LazyProfileLoadTarget();   // Phase13-Step6 6-e: 旧 Func<ControlService>
+            IProfileLoadTarget control = new LazyProfileLoadTarget();   // 旧 Func<ControlService>
             var repo = TestRepositoryFactory.CreateProfileRepository(settings, null, null);
             var env = new EnvironmentService();
 
             Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(null, control, repo, env));
-            // Phase7-Step10b W3: IDeviceStateService は ProfileApplicationService の依存ではなくなった
+            // IDeviceStateService は ProfileApplicationService の依存ではなくなった
             Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, null, repo, env));
             Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, control, null, env));
             Assert.Throws<ArgumentNullException>(() => TestRepositoryFactory.CreateProfileApplicationService(settings, control, repo, null));
@@ -243,7 +243,7 @@ namespace DS4WindowsTests
             var service = TestRepositoryFactory.CreateProfileApplicationService(settings, new LazyProfileLoadTarget(), repo, env);
             int limit = env.ControllerSlotLimit;
 
-            // 上限（範囲外）は拒否され、何も変更されない（Phase8-Step6 W3: ClearPendingRestore の削除に伴い、保留中の復帰先の検査は外した）
+            // 上限（範囲外）は拒否され、何も変更されない
             Assert.False(service.RestoreFromAction(limit));
             Assert.False(service.RestoreFromAction(-1));
             Assert.False(service.ApplyProfile(limit, "NoSuchProfile"));

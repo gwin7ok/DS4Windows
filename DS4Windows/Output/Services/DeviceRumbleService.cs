@@ -6,7 +6,7 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Output.Services
 {
-    /// <summary>Phase13-Step3: <see cref="IDeviceRumbleService"/> の実装。旧 <c>ControlService.SetDevRumble</c> の本体をそのまま移した。</summary>
+    /// <summary><see cref="IDeviceRumbleService"/> の実装。旧 <c>ControlService.SetDevRumble</c> の本体をそのまま移した。</summary>
     public sealed class DeviceRumbleService : IDeviceRumbleService
     {
         private readonly IProfileSettingsService _profileSettings;

@@ -3,7 +3,7 @@
 
 namespace DS4Windows.Core.Abstractions
 {
-    /// <summary>Phase12-Step2 2b-2: <see cref="IWindowFocuser.Focus"/> の結果。</summary>
+    /// <summary><see cref="IWindowFocuser.Focus"/> の結果。</summary>
     public enum WindowFocusResult
     {
         /// <summary>対象のウィンドウを前面へ出した（すでに前面だった場合を含む）。</summary>

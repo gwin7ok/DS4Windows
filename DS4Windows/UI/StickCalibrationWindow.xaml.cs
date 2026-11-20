@@ -18,7 +18,7 @@ public partial class StickCalibrationWindow : Window
         _stick = stick;
         _device = device;
         _profileSettingsVM = profileSettingsVm;
-        // Phase6-Step10-2-4b: AppHost/Program.rootHub への後退を廃止（必須引数）
+        // AppHost/Program.rootHub への後退を廃止（必須引数）
         ArgumentNullException.ThrowIfNull(readings);
         _readings = readings;
         InitializeComponent();

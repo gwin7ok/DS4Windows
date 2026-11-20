@@ -13,12 +13,12 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-3-1: グループ3（スペシャルアクション系）の View／ViewModel の Global 直接参照解消に先立って
+    /// グループ3（スペシャルアクション系）の View／ViewModel の Global 直接参照解消に先立って
     /// 追加した契約が、<c>Global.SaveAction</c>／<c>Global.RemoveAction</c> と同じ動作（薄い委譲）であることを検証する。
     /// - ISpecialActionRepository.SaveAction: Actions.xml へ保存し、メモリ上のリストが読み直されること
     /// - ISpecialActionRepository.RemoveActionAndSave: メモリ上のリストとファイルの両方から削除されること
     ///   （メモリ上のリストだけを変えていた旧 RemoveAction は Phase7-Step2 W6 で削除した。別物）
-    /// Global 状態を変更するため、保存先とアクションの一覧を必ず元に戻す（Phase6-Status.md §6.4-1）。
+    /// Global 状態を変更するため、保存先とアクションの一覧を必ず元に戻す。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class SpecialActionContractTests
@@ -107,7 +107,7 @@ namespace DS4WindowsTests
             Assert.Equal("C:/b.exe", action.details);
         }
 
-        // Phase7-Step10c W2: SaveAction_MatchesGlobalSaveAction は削除した（比較対象の Global.SaveAction を、SpecialActionRepository の
+        // SaveAction_MatchesGlobalSaveAction は削除した（比較対象の Global.SaveAction を、SpecialActionRepository の
         // プライベートメソッドへ移したため）。保存→読み直しの結果は、上の SaveAction_AddsNewAction_SavesFileAndNotifies ほかが確認する。
 
         [Fact]
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
             Assert.True(repo.ActionExists("Step10_3_Keep"));
         }
 
-        // ---- Phase6-Step10-3c: ボタン（Button）の割り当てでの SwitchMode の保存・読込、戻った直後の表示 ----
+        // ---- ボタン（Button）の割り当てでの SwitchMode の保存・読込、戻った直後の表示 ----
 
         private static DS4ControlSettings ButtonSettings(X360Controls button)
         {

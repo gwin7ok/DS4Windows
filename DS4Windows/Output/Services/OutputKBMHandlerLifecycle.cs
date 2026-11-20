@@ -11,7 +11,7 @@ namespace DS4Windows.Output.Services
     /// <summary>
     /// <see cref="IVirtualKBMLifecycle"/> の既定実装。ハンドラの実体を持つ <see cref="OutputKBMHandlerAdapter"/> へ書き込み、
     /// KBM マッピングは <see cref="IProfileSettingsService.OutputKBMMapping"/> へ設定する。
-    /// Phase7-Step8 W3（Q6＝A）: 旧 <c>Global.outputKBMHandler</c>／<c>Global.outputKBMMapping</c>／<c>Global.InitOutputKBMHandler</c>／
+    /// 旧 <c>Global.outputKBMHandler</c>／<c>Global.outputKBMMapping</c>／<c>Global.InitOutputKBMHandler</c>／
     /// <c>Global.InitOutputKBMMapping</c> を削除し、ここへ移した。挙動・ログ（<c>AppLogger.LogDebug</c>）は従来と同一。
     /// </summary>
     public class OutputKBMHandlerLifecycle : IVirtualKBMLifecycle

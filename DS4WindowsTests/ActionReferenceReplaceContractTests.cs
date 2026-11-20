@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-3b-1: アクションの名前変更・削除を全プロファイルへ反映する契約
+    /// アクションの名前変更・削除を全プロファイルへ反映する契約
     /// （<see cref="IProfileRepository.ReplaceActionReference"/>／<see cref="IProfileRepository.RemoveActionReference"/>）の検証。
     /// - すべてのプロファイル XML の &lt;ProfileActions&gt; が対象であること
     /// - 項目単位の完全一致であること（部分一致では書き換えない）

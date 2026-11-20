@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消のために
+    /// ControlService の Global 直接参照解消のために
     /// IAppSettingsService / IEnvironmentService へ追加した薄い委譲シムが、
     /// Global（m_Config / BackingStore）と完全に同一の実体を共有していることを検証する。
     ///
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         public void RunHotPlug_RoundTripsThroughTheService_AndNotifiesOnChange()
         {
             // ControlService.Start/Stop は runHotPlug を IAppSettingsService.RunHotPlug 経由で書き込む。
-            // Phase7-Step4 W3: 旧 Global.runHotPlug は、サービスのインスタンスの状態にした
+            // 旧 Global.runHotPlug は、サービスのインスタンスの状態にした
             var changed = new System.Collections.Generic.List<string>();
             _appSettings.SettingChanged += (s, name) => changed.Add(name);
 
@@ -170,7 +170,7 @@ namespace DS4WindowsTests
                 _appSettings.UDPServerSmoothingMincutoff = original + 1.0;
                 Assert.Equal(1, fired);
 
-                // Phase7-Step3 W4: イベントはサービスのインスタンスイベント。購読解除後は発火しないこと。
+                // イベントはサービスのインスタンスイベント。購読解除後は発火しないこと。
                 _appSettings.UDPServerSmoothingMincutoffChanged -= handler;
                 _appSettings.UDPServerSmoothingMincutoff = original;
                 Assert.Equal(1, fired);

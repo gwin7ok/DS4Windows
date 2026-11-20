@@ -6,11 +6,11 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-3（Phase8-Step7-8f-Plan.md §3.2。Q5＝B）: Controls タブの Button のうち、元がスティック・トリガー・ジャイロのアナログのホイール（WUP／WDOWN）の出力。
+    /// Controls タブの Button のうち、元がスティック・トリガー・ジャイロのアナログのホイール（WUP／WDOWN）の出力。
     /// 旧経路の <c>GetMouseWheelMapping</c> と同じ計算: 10ms ごとに、元のバイト値から量（0.05〜1.0 を 3 で割った値）を求め、端数を持ち越し、1 以上になったら整数分だけホイールを送る。
     /// <b>Q5＝B（承認済みの動作変更）</b>: 旧経路は、端数・向き・間隔の基準時刻が Mapping 全体で 1 つ（<c>stickWheelRemainder</c>、<c>stickWheelDownDir</c>、<c>oldnow</c>。
     /// デジタルのホイールの繰り返し［<c>Commit</c> の 150ms］とも共有）だった。新経路は、束縛ごとに持つ。向きは束縛ごとに固定のため、向きの変更で端数を捨てる処理はない。
-    /// 成立している間だけ進む（<see cref="IFrameOutputAction"/>）。離している間も、持ち越した端数は残る（旧経路と同じ）。
+    /// 成立している間だけ進む（<see cref="IFrameOutputAction"/>）。離している間も、持ち越した端数は残る。
     /// </summary>
     public sealed class ControlAnalogWheelOutputAction : IFrameOutputAction
     {

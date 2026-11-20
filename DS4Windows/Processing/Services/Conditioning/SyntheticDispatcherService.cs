@@ -11,7 +11,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase7-Step8 W3（Q6＝A）: <see cref="ISyntheticDispatcher"/> の実装。旧 静的クラス <c>SyntheticDispatcher</c> の処理を、
+    /// <see cref="ISyntheticDispatcher"/> の実装。旧 静的クラス <c>SyntheticDispatcher</c> の処理を、
     /// ログ・例外の握りつぶし・状態の更新の順序まで変えずに移した。旧: 合成状態は <c>SyntheticInputState.Shared</c>、出力先の既定は
     /// <c>Global.outputKBMHandler</c>、キー変換は <c>Global.outputKBMMapping</c> だった。コンストラクターで受ける。
     /// 出力先の既定（<paramref name="handlerOwner"/>）は、ハンドラが未決定（<c>Handler == null</c>）のとき、従来どおり何もせず戻る。

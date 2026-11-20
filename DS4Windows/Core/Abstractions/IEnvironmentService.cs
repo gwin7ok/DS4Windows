@@ -33,7 +33,7 @@ namespace DS4Windows.Core.Abstractions
         void RefreshHidHideInfo();
         void RefreshFakerInputInfo();
 
-        // ---- Phase6-Step2-1 (PR-1): ControlService の Global 直接参照解消（Global への薄い委譲）----
+        // ---- ControlService の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>HidHide が導入済みかどうか（RefreshHidHideInfo で更新される現在値）。</summary>
         bool HidHideInstalled { get; }
         /// <summary>導入済みの HidHide ドライバーのバージョン（RefreshHidHideInfo で更新される現在値。未導入や不明のときは 0.0.0.0）。</summary>
@@ -52,15 +52,15 @@ namespace DS4Windows.Core.Abstractions
         /// </summary>
         int ControllerSlotLimit { get; }
         /// <summary><see cref="ControllerSlotLimit"/> が拡張スロット数（8）であるか。</summary>
-        // Phase7-Step10b W4（接続済み）: Phase7-Step2 W4 の調査で「接続」と判断した契約。ControlService.USING_MAX_CONTROLLERS（static 互換シム）の置換先で、
+        // Phase7-Step2 W4 の調査で「接続」と判断した契約。ControlService.USING_MAX_CONTROLLERS（static 互換シム）の置換先で、
         // 呼び出し元 3 箇所を本プロパティの注入に切り替え、シムを削除した。利用者: AutoProfileHolder.UsingMaxControllers（保存時の 4〜8 番目の書き出し）、
         // AutoProfilesViewModel.UsingExpandedControllers、ProgramItem（生成元が値を渡す）。
         bool UsingMaxControllers { get; }
 
-        // ---- Phase6-Step2-3 (PR-3): FakerInput 導入バージョン（Global への薄い委譲。利用者は IVirtualKBMLifecycle 実装）----
+        // ---- FakerInput 導入バージョン（Global への薄い委譲。利用者は IVirtualKBMLifecycle 実装）----
         string FakerInputVersion { get; }
 
-        // ---- Phase6-Step9-1: MainWindowsViewModel／ProfileSettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
+        // ---- MainWindowsViewModel／ProfileSettingsViewModel の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>ViGEmBus が導入済みか（<c>EnvironmentService.IsViGEmBusInstalled</c>）。</summary>
         bool IsViGEmBusInstalled();
         /// <summary>導入済みの ViGEmBus が、サポートする最小バージョン以上か（<c>EnvironmentService.IsRunningSupportedViGEmBus</c>）。</summary>
@@ -70,7 +70,7 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>プログラムフォルダへの書き込みに管理者権限が要るか（<c>Global.AdminNeeded</c>。テストファイルの作成・削除を試す）。</summary>
         bool AdminNeeded();
 
-        // ---- Phase6-Step10-1-1: WelcomeDialog の Global 直接参照解消（Global への薄い委譲）----
+        // ---- WelcomeDialog の Global 直接参照解消（Global への薄い委譲）----
         /// <summary>Windows 10 以降か（<c>EnvironmentService.IsWin10OrGreater</c>）。</summary>
         bool IsWin10OrGreater();
         /// <summary>Windows 8 以降か（<c>EnvironmentService.IsWin8OrGreater</c>）。</summary>

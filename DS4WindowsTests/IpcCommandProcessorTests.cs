@@ -13,7 +13,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step11 11-c（台帳 F-2c）: IPC コマンドの実行を、UI なしで検査する。受け付けの順序、引数の個数の条件、範囲の検査は旧 <c>MainWindow.Ipc.cs</c> のまま。
+    /// IPC コマンドの実行を、UI なしで検査する。受け付けの順序、引数の個数の条件、範囲の検査は旧 <c>MainWindow.Ipc.cs</c> のまま。
     /// 実サービスは <see cref="TestHost"/> から取り、UI に頼む操作は記録するだけの <see cref="RecordingHost"/> で受ける。
     /// </summary>
     public class IpcCommandProcessorTests

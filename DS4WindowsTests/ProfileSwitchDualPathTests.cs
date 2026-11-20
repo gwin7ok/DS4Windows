@@ -12,13 +12,13 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5a-W1（Phase8-Step7-5-Plan.md §3 7.5a の W1）: Profile 種別（復帰を持たない「切替のみ」）の特性化。
+    /// Profile 種別（復帰を持たない「切替のみ」）の特性化。
     /// 前半は、すでに新経路が旧経路と同じ動きをするはずの項目（切替の回数、保持中、ガード中、実行中、AND 条件、押している最中の適用）を、旧・新の両経路で比べる。
     /// 後半は、新経路に **まだ無い** 項目（フレームの打ち切り、トリガーのボタンのキーの解放、連鎖の防止）の、旧経路の挙動の固定。
     /// 後半は、W2 で新経路を実装したあと、旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）の検査にした（7.5a-W2）。
     /// 観察は、<see cref="RecordingProfileApplicationService"/>（<c>InstallProfileRecorder</c>）で、実際のプロファイルの読込・適用は走らせない。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileSwitchDualPathTests
@@ -108,12 +108,12 @@ namespace DS4WindowsTests
             Assert.Equal(1, result.Last().Applies);
         }
 
-        // ---- 後半: 新経路に、まだ無い項目（旧経路の挙動の固定。W2 で新経路を足す）----
+        // ---- 後半: 新経路に、まだ無い項目----
 
         [Fact]
         public void AfterTheSwitch_TheRestOfTheFrameIsNotProcessed()
         {
-            // 切替（Intent-Decisions 項目 5）のあと、同じフレームの後ろのスペシャルアクションは処理されない（旧ループの return）。
+            // 切替（Intent-Decisions 項目 5）のあと、同じフレームの後ろのスペシャルアクションは処理されない。
             // 後ろの Key は、次のフレーム（切替が済んでいる）で処理される。
             using var t = new SpecialActionTestScope();
             t.InstallProfileRecorder().SimulateStateReset = false;   // 状態の掃除をしない（Key の状態を、そのまま観察する）

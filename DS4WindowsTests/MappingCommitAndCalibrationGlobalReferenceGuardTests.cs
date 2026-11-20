@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step3-5: `Mapping.ApplyStickCalibration`（ドリフト補正 8件）と `Mapping.Commit`（出力確定 24件）が、
+    /// `Mapping.ApplyStickCalibration`（ドリフト補正 8件）と `Mapping.Commit`（出力確定 24件）が、
     /// `using static DS4Windows.Global;` 経由の非修飾参照（または `Global.` 修飾参照）へ戻っていないことを固定する回帰ガード。
     /// `Mapping.cs` は Step3-7 まで `using static DS4Windows.Global;` を残すため、非修飾の Global メンバ呼び出しが
     /// 誤って再導入されてもコンパイルは通る。本テストはその混入を検出する。
@@ -20,11 +20,11 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingCommitAndCalibrationGlobalReferenceGuardTests
     {
-        // Phase9 MapCustom の分割 M1: Commit の本体は SyntheticInputCommitter へ移した（検査の対象も、移動先のファイルにした）
+        // Commit の本体は SyntheticInputCommitter へ移した（検査の対象も、移動先のファイルにした）
         private const string CommitPath = "DS4Windows/Processing/Services/Conditioning/SyntheticInputCommitter.cs";
         private const string CommitStart = "public void Commit(";
-        // Phase7-Step8 W1: MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバーを終端にする
-        // Phase8-Fix-MacroRepeatUnify（D5）: DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
+        // MapClick を SyntheticInputState.CountClick へ移したため、Commit の次のメンバーを終端にする
+        // DS4ControltoInt を削除したため、次のメンバー（TValue）を終端にする
         private const string CommitEnd = "_virtualKbm.Sync();";
 
         private readonly ITestOutputHelper _output;
@@ -59,7 +59,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ApplyDrift_TakesProfileSettingsAsParameter()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数の型を確かめる
+            // ソースの文字列ではなく、メソッドの引数の型を確かめる
             var methods = typeof(DS4Windows.Processing.Services.Conditioning.StickInputConditioner).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Where(m => m.Name == "ApplyDrift").ToArray();
             Assert.NotEmpty(methods);
             Assert.All(methods, m => Assert.Contains(m.GetParameters(), p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IProfileSettingsService)));
@@ -68,7 +68,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Commit_TakesProfileSettingsAsParameter()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、メソッドの引数の型を確かめる
+            // ソースの文字列ではなく、メソッドの引数の型を確かめる
             var methods = typeof(DS4Windows.Processing.Services.Conditioning.SyntheticInputCommitter).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly).Where(m => m.Name == "Commit").ToArray();
             Assert.NotEmpty(methods);
             Assert.All(methods, m => Assert.Contains(m.GetParameters(), p => p.ParameterType == typeof(DS4Windows.Core.Abstractions.IProfileSettingsService)));

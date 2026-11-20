@@ -39,14 +39,14 @@ namespace DS4Windows.Core.Model
             return i >= 0;
         }
 
-        /// <summary>プロファイルに保存するキー。None は X360 として保存する（旧と同じ）。</summary>
+        /// <summary>プロファイルに保存するキー。None は X360 として保存する。</summary>
         public static string SaveKey(OutContType type)
         {
             int i = System.Array.IndexOf(ProfileChoices, type);
             return ProfileKeys[i < 0 ? 0 : i];
         }
 
-        /// <summary>保存されたキーから種類を求める。"None" と未知のキーは X360（旧と同じ）。</summary>
+        /// <summary>保存されたキーから種類を求める。"None" と未知のキーは X360。</summary>
         public static OutContType FromSaveKey(string key)
         {
             int i = System.Array.IndexOf(ProfileKeys, key);
@@ -60,7 +60,7 @@ namespace DS4Windows.Core.Model
             return i < 0 ? 0 : i;
         }
 
-        /// <summary>選択肢の番号から種類を求める。範囲外は X360（旧の「1 なら DS4、それ以外は X360」と同じ）。</summary>
+        /// <summary>選択肢の番号から種類を求める。範囲外は X360。</summary>
         public static OutContType FromProfileChoiceIndex(int index)
         {
             return TryFromProfileChoiceIndex(index, out OutContType type) ? type : DefaultType;

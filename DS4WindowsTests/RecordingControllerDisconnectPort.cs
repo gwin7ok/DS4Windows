@@ -4,7 +4,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.6b: <see cref="IControllerDisconnectPort"/> の記録用の実装。呼び出しの回数だけを記録し、実機のコントローラーには触れない。
+    /// <see cref="IControllerDisconnectPort"/> の記録用の実装。呼び出しの回数だけを記録し、実機のコントローラーには触れない。
     /// <see cref="BluetoothResults"/> に結果を積むと、その順に成功／失敗を返す（空になったら <see cref="DefaultBluetoothResult"/>）。
     /// </summary>
     public sealed class RecordingControllerDisconnectPort : IControllerDisconnectPort

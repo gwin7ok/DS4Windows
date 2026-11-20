@@ -14,7 +14,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-3 W2/W3（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、マウスの移動とアナログのホイールの新経路。
+    /// Controls タブの Button のうち、マウスの移動とアナログのホイールの新経路。
     /// 解釈、ビルダーの所有の条件と束縛の形、加算器（Q6＝A）、ホイールの状態を束縛ごとに持つこと（Q5＝B）、ロールバック、ソースのガード。
     /// 旧・新の比べは <c>ControlsAnalogMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
@@ -94,7 +94,7 @@ namespace DS4WindowsTests
             Assert.IsType<ControlAnalogWheelOutputAction>(Assert.Single(wheel.Outputs));
 
             IActionBinding toggled = Assert.Single(bindings, b => b.Source.name == $"Synthetic_AnalogMouse_{Device}_{(int)DS4Controls.Circle}");
-            // Phase9: マウス移動＋Toggle は、SA の Button と同じ出力（以前は Toggle の出力が移動に効かなかった。ON の間は固定量で動く）
+            // マウス移動＋Toggle は、SA の Button と同じ出力（以前は Toggle の出力が移動に効かなかった。ON の間は固定量で動く）
             Assert.IsType<ButtonOutputAction>(Assert.Single(toggled.Outputs));
             Assert.True(toggled.Policy.ErasesOutputEveryFrame);
         }
@@ -144,7 +144,7 @@ namespace DS4WindowsTests
             ControllerState down = ControlsKeyTestScope.Neutral();
             down.R2 = 255;
             h.Step(down);
-            h.Step(down); // 下の束縛は自分の端数（2/3）。上の端数は捨てられない（旧経路は、向きを変えると捨てていた）
+            h.Step(down); // 下の束縛は自分の端数（2/3）。上の端数は捨てられない
             Assert.Empty(h.Wheels);
 
             h.Step(up);   // 上の束縛が 3 回目で 1 目盛り（離している間も端数は残っていた）

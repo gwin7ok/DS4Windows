@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W4（Phase8-Step4b-Plan.md §3.2）: SA トリガー・SA ステアリング・ジャイロの制御・ジャイロのマウススティック（SATriggers〜GyroMouseStickSmoothingSettings）の読込。
+    /// SA トリガー・SA ステアリング・ジャイロの制御・ジャイロのマウススティック（SATriggers〜GyroMouseStickSmoothingSettings）の読込。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileGyroControlsLoadSection : IProfileLoadSection
@@ -35,14 +35,13 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SATriggerCond"); store.gyroSlots[device].MouseTriggerCondAnd = BackingStore.SaTriggerCondValue(Item.InnerText); }
             catch { store.gyroSlots[device].MouseTriggerCondAnd = true; missingSetting = true; }
 
-            // Phase9 Steering 削除 W4: 旧「SASteeringWheelEmulationAxis／SASteeringWheelEmulationRange／SASteeringWheelFuzz／SASteeringWheelSmoothingOptions」（ステアリングの設定）は、機能ごと削除した。
             // 古いプロファイルに要素が残っていても、読み込まずに無視する（再保存すると、書かれなくなる）。
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroOutputMode");
                 string tempMode = Item.InnerText;
-                // Phase8-Step8 8-0: 廃止された DirectionalSwipe のモードは、なかったことにして（None）、保持だけする
+                // 廃止された DirectionalSwipe のモードは、なかったことにして（None）、保持だけする
                 store.gyroSlots[device].RemovedSwipe.CaptureGyroOutputMode(tempMode);
                 //gyroSlots[device].OutputMode = GetGyroOutModeType(tempMode);
                 { Enum.TryParse(tempMode, out GyroOutMode parsedMode); store.gyroSlots[device].OutputMode = parsedMode; };

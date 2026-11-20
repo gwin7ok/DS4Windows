@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 Steering 削除 W3（Phase9-SteeringWheel-Removal-Plan.md）: 出力デバイス 3 つ（Xbox 360、DS4 の 2 種）の <c>ConvertandSendReport</c> から、ステアリングの軸の分岐（<c>switch</c>）が除かれ、
+    /// Phase9 Steering 削除 W3（docs-forDIMG/MadeByAgent/Archive/Phase9-SteeringWheel-Removal-Plan.md）: 出力デバイス 3 つ（Xbox 360、DS4 の 2 種）の <c>ConvertandSendReport</c> から、ステアリングの軸の分岐（<c>switch</c>）が除かれ、
     /// 通常の軸（左右スティックの X・Y）の出力だけが残っていること（ソースの走査。出力デバイスは ViGEmBus の実体が要るため、挙動のテストは作れない）。
     /// vJoy（<c>VJoyFeeder</c>）と <c>SASteeringWheelEmulationUnit</c> の参照が、コードから無くなっていることも調べる。
     /// </summary>

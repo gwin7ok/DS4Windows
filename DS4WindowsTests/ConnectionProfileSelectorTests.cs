@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6a（Phase9-E6-Plan.md）: <see cref="ConnectionProfileSelector"/>（旧 <c>ControlService.PrepareConnectedInputControllerSettingEvents</c> の前半）の値の特性化。
+    /// <see cref="ConnectionProfileSelector"/>の値の特性化。
     /// 一時プロファイルのときは束縛の差し替えだけ、初回接続は OlderProfilePath、再接続は直前のプロファイル。
     /// 共有のストアを一時的に書き換えるため、ほかのテストが使わない添字（6）を使い、終わりに元へ戻す。
     /// </summary>

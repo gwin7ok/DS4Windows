@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Actions
 {
     /// <summary>
     /// <see cref="ISpecialActionOutputFactory"/> の実装（DI の Singleton）。種別ごとの出力アクション・実行方針の組み立ては、
-    /// 種別 1 つにつき 1 つの <see cref="ISpecialActionOutputBuilder"/> が持ち、ここは定義の種別で選んで呼ぶだけ（種別ごとの構成は Phase8-Step2-Design.md §6）。
+    /// 種別 1 つにつき 1 つの <see cref="ISpecialActionOutputBuilder"/> が持ち、ここは定義の種別で選んで呼ぶだけ（種別ごとの構成は docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Design.md §6）。
     /// 種別に対応する部品が登録されていないとき（テスト）は、束縛を作らない（null）。
     /// </summary>
     public sealed class SpecialActionOutputFactory : ISpecialActionOutputFactory

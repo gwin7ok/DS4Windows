@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3（ユーザー承認、2026-10-21）: 手順が空のマクロも、SA として保存できる（従来は「No macro defined」で保存できなかった）。
+    /// 手順が空のマクロも、SA として保存できる（従来は「No macro defined」で保存できなかった）。
     /// 保存できること、保存した値を読み込み直しても空のマクロになること、空のマクロを「押している間繰り返す」で空回りしないこと（ソース走査）を固定する。
     /// </summary>
     public class EmptyMacroTests
@@ -65,7 +65,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheRepeatLoop_WaitsBetweenRuns_OfAnEmptyMacro_InsteadOfSpinningOrStopping()
         {
-            // Phase9 9-C: 旧 Mapping.PlayMacroTask は MacroPlayback へ移した
+            // 旧 Mapping.PlayMacroTask は MacroPlayback へ移した
             string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Conditioning/MacroPlayback.cs");
             if (path == null)
             {

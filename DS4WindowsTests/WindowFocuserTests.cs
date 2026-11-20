@@ -8,7 +8,7 @@ using DS4Windows.Core.Platform;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step2 2b-2: <see cref="WindowFocuser"/> の手順（探索→応答なし→復元→前面確認→素の前面化→入力の結び付け→Alt の擬似入力）を、
+    /// <see cref="WindowFocuser"/> の手順（探索→応答なし→復元→前面確認→素の前面化→入力の結び付け→Alt の擬似入力）を、
     /// 偽の <see cref="IWindowSystem"/> で確かめる。Win32 の実装（<see cref="Win32WindowSystem"/>）は、列挙が例外なく動くことだけを確かめる。
     /// </summary>
     public class WindowFocuserTests
@@ -112,7 +112,7 @@ namespace DS4WindowsTests
         private static WindowFocusResult Focus(FakeWindowSystem system, string path, string title)
             => new WindowFocuser(system).Focus(new WindowTargetMatcher(path, title));
 
-        // ---- Phase12-Step2 2j: 前面化のあと、ウィンドウの中央へマウスポインターを移動する ----
+        // ---- 前面化のあと、ウィンドウの中央へマウスポインターを移動する ----
 
         private static WindowFocusResult FocusCentering(FakeWindowSystem system, bool centerCursor, string path = "c:\\games\\game.exe")
             => new WindowFocuser(system).Focus(new WindowTargetMatcher(path, null), centerCursor);

@@ -11,7 +11,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase7-Step10c W2（Q1＝A）: スペシャルアクション（<c>Actions.xml</c>）の保存・読込。
+    /// スペシャルアクション（<c>Actions.xml</c>）の保存・読込。
     /// 保存は <c>SaveActionNew</c>（種別ごとの <c>SpecialAction</c> を作って一覧へ入れる）→ <c>SaveActions</c>（一覧全体を <c>ActionsDTO</c> で書く）の 1 本だけ。
     /// <c>BackingStore</c> の公開状態を <c>store.</c> で読み書きする。
     /// <c>LoadActions</c> は、読み込みの後に <c>BackingStore.RaiseActionsLoaded</c>（<c>ActionsLoaded</c> イベント）を発行する。
@@ -20,10 +20,10 @@ namespace DS4Windows.Core.Persistence
     {
         private readonly BackingStore store;
 
-        // Phase10-Step4d W3: Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
+        // Load Profile の切り替え先の ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
 
-        // Phase13-Step4: 旧 静的 ActionManager.ClearAllEntries の代わり。Phase14b-Step14（D14）: 第2層の IManagedActionManager の代わりに、リセットだけの契約を受ける
+        // 旧 静的 ActionManager.ClearAllEntries の代わり。Phase14b-Step14（D14）: 第2層の IManagedActionManager の代わりに、リセットだけの契約を受ける
         private readonly DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset _runtimeReset;
 
         public SpecialActionsXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.ISpecialActionRuntimeReset runtimeReset,
@@ -64,7 +64,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step4d W3: Load Profile の SA の切り替え先を、ID で解決する。ID が見つかれば、現在の名前（details）に置き換える（名前変更への追従。ID が勝つ）。
+        /// Load Profile の SA の切り替え先を、ID で解決する。ID が見つかれば、現在の名前（details）に置き換える（名前変更への追従。ID が勝つ）。
         /// ID がない（古いファイル）SA には、名前から引いた ID を割り当てる（割り当てたら真。呼び出し側が、Actions.xml を 1 回保存する）。見つからなければ、名前のまま。
         /// </summary>
         private bool ResolveProfileTargets()
@@ -97,7 +97,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step4d W7: プロファイルの名前変更の直後に、Load Profile の SA の切り替え先を更新する。切り替え先の ID が引ければ、現在の名前（details）に引き直す（ID が勝つ）。
+        /// プロファイルの名前変更の直後に、Load Profile の SA の切り替え先を更新する。切り替え先の ID が引ければ、現在の名前（details）に引き直す（ID が勝つ）。
         /// ID のない（または不正な）SA は、details が <paramref name="oldName"/> と一致すれば（大文字小文字を区別しない）<paramref name="newName"/> に置き換え、ID を引ける場合は割り当てる。
         /// 更新した件数を返す。1 件以上あれば、Actions.xml へ保存する（保存の前に、切り替え先の ID も確定する）。
         /// </summary>
@@ -136,7 +136,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step4d W3: 保存の前に、Load Profile の SA の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
+        /// 保存の前に、Load Profile の SA の切り替え先の ID を、名前から引いて更新する（ID が確定していなければ、ここで確定する）。
         /// プロファイルが見つからなければ（名前だけの参照、削除済み）、そのままにする。
         /// </summary>
         private void FillProfileTargetIds()
@@ -153,7 +153,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step4d W2: 同じ ID を持つ SA があれば、ファイルの順で先のものが保ち、後のものに新しい ID を振る。変えたら真。
+        /// 同じ ID を持つ SA があれば、ファイルの順で先のものが保ち、後のものに新しい ID を振る。変えたら真。
         /// </summary>
         private bool FixDuplicateIds()
         {
@@ -173,7 +173,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <param name="actionId">
-        /// Phase10-Step4d W2: 保つ ID。名前の変更（削除して作り直す経路）で、編集前の SA の ID を引き継ぐために、呼び出し側が渡す。
+        /// 保つ ID。名前の変更（削除して作り直す経路）で、編集前の SA の ID を引き継ぐために、呼び出し側が渡す。
         /// null のときは、編集（<paramref name="edit"/>）なら同じ名前の SA の ID を、新規なら新しい ID を使う。
         /// </param>
         public void SaveActionNew(string name, string controls, int mode, string details, bool edit, double delayTime = 0.0, string extras = "",
@@ -218,7 +218,7 @@ namespace DS4Windows.Core.Persistence
                     tempAction = new SpecialAction(name, controls, "GyroCalibration", details, delayTime);
                     break;
                 case 11:
-                    // Phase12-Step2 2c（R-4）: ウィンドウのフォーカス。details＝プログラムのパス、extras＝ウィンドウタイトル
+                    // ウィンドウのフォーカス。details＝プログラムのパス、extras＝ウィンドウタイトル
                     tempAction = new SpecialAction(name, controls, "FocusWindow", details, delayTime, extras);
                     tempAction.centerCursor = centerCursor;   // 2j: 前面化のあと、ウィンドウの中央へマウスポインターを移動する
                     break;
@@ -226,7 +226,7 @@ namespace DS4Windows.Core.Persistence
                     break;
             }
 
-            // Phase10-Step4d W2: ID は、編集では同じ名前の SA のものを、名前の変更では渡された ID を保つ。新規は新しい ID（SpecialAction が作る）
+            // ID は、編集では同じ名前の SA のものを、名前の変更では渡された ID を保つ。新規は新しい ID（SpecialAction が作る）
             if (tempAction != null)
             {
                 if (edit)
@@ -256,7 +256,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step6 I5a: 名前で探した SA に、Extras（<see cref="SpecialAction.outputExtras"/>）を設定して保存する。null／空白で、付けない状態にする。
+        /// 名前で探した SA に、Extras（<see cref="SpecialAction.outputExtras"/>）を設定して保存する。null／空白で、付けない状態にする。
         /// SA の保存（<see cref="SaveActionNew"/>）は、SA を作り直すため Extras を持たない。エディターは、SA の保存のあとにこれを呼ぶ。
         /// </summary>
         /// <returns>SA が見つかれば true</returns>
@@ -271,7 +271,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         /// <summary>
-        /// Phase10-Step6 後の Step5: 名前で探した Button の SA に、アナログな出力の強さ（<see cref="SpecialAction.analogStrength"/>。0〜100 に丸める）を設定して保存する。
+        /// 名前で探した Button の SA に、アナログな出力の強さ（<see cref="SpecialAction.analogStrength"/>。0〜100 に丸める）を設定して保存する。
         /// SA の保存（<see cref="SaveActionNew"/>）は、SA を作り直すため強さを持たない（既定の 100）。エディターは、SA の保存のあとにこれを呼ぶ。
         /// </summary>
         /// <returns>Button の SA が見つかれば true</returns>
@@ -364,7 +364,7 @@ namespace DS4Windows.Core.Persistence
                     try
                     {
                         try { _runtimeReset.ClearAllActionStates(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
-                        // Phase7-Step7 W2（Q4＝A）: 合成入力・マクロの実行時状態のリセット（旧: Mapping の静的な状態を直接書き換え）は、
+                        // 合成入力・マクロの実行時状態のリセットは、
                         // ActionsLoaded の購読者（ServiceRegistration が登録する ActionsLoadedRuntimeReset）が行う。
                         store.RaiseActionsLoaded();
                     }
@@ -396,7 +396,7 @@ namespace DS4Windows.Core.Persistence
                 }
             }
 
-            // Phase10-Step4d W2（Q4 の変更、2026-10-21）: ID のない SA（古いファイル）に新しい ID を割り当て、ID が重複した SA（ファイルの手編集・コピー）に新しい ID を振って、
+            // ID のない SA（古いファイル）に新しい ID を割り当て、ID が重複した SA（ファイルの手編集・コピー）に新しい ID を振って、
             // Actions.xml へ 1 回保存する（変更がなければ書き換えない）。ファイルの読み込みが終わってから書く
             if (loaded && FixDuplicateIds()) idsChanged = true;
             if (loaded && ResolveProfileTargets()) idsChanged = true;

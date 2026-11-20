@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
-    /// <summary>Phase13-Step5 5a: <see cref="DeviceSlotState"/> の単体テスト（配列の長さ、参照の不変、範囲外の扱い）。</summary>
+    /// <summary><see cref="DeviceSlotState"/> の単体テスト（配列の長さ、参照の不変、範囲外の扱い）。</summary>
     public class DeviceSlotStateTests
     {
         [Fact]

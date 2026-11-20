@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3）: Controls のモードの編集の対象。名前は、対象のボタンの表示名で固定（編集不可）で、
+    /// Controls のモードの編集の対象。名前は、対象のボタンの表示名で固定（編集不可）で、
     /// 名前の重複の検査はない。既存の割り当ての編集のため、<see cref="EditMode"/> は真。
     /// <para>
     /// TODO(Phase10-Step4): W3 では、画面（名前・トリガー・種別の一覧）の骨格だけ。<c>DS4ControlSettings</c> との変換と、編集用のコピー

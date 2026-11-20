@@ -11,7 +11,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step14（決定 D14）: <see cref="SpecialActionRuntimeReset"/>（Core の契約 <see cref="ISpecialActionRuntimeReset"/> の第2層の実装）が、
+    /// <see cref="SpecialActionRuntimeReset"/>（Core の契約 <see cref="ISpecialActionRuntimeReset"/> の第2層の実装）が、
     /// 旧呼び出し（<c>IManagedActionManager.ClearAllEntries</c>、<c>SyntheticInputState.ResetRuntimeStateForKey</c>）と同じことをする。
     /// </summary>
     public class SpecialActionRuntimeResetTests

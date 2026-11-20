@@ -13,8 +13,8 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W4（実機確認での追加要望）: 割り当てエディターの種別の一覧（Controls のモード）で、出力ピッカーの Default／Unbound ボタンと同じ設定を選べる。
-    /// Controls のモードだけの 2 項目（添字 10＝Default、11＝Unbound（Phase12-Step2 2e で FocusWindow を 9 に足した））を末尾に足す。モードごとの入力の制限は、一覧の項目の表示・非表示だけで行う
+    /// 割り当てエディターの種別の一覧（Controls のモード）で、出力ピッカーの Default／Unbound ボタンと同じ設定を選べる。
+    /// Controls のモードだけの 2 項目（添字 10＝Default、11＝Unbound）を末尾に足す。モードごとの入力の制限は、一覧の項目の表示・非表示だけで行う
     /// （Controls のモードでは、添字 0 の「種別を選んでください」を隠し、SA のモードでは、足した 2 項目を隠す。検証・保存ボタンは、モードを区別しない）。
     /// SA のモードの一覧は、従来のまま。左ペインのタブを隠す表示（SA の編集画面も、Controls の割り当てエディターと同じ場所に重ねる）のソース走査も含む。
     /// </summary>
@@ -22,7 +22,7 @@ namespace DS4WindowsTests
     {
         private const string SomeExtras = "10,20,1,255,0,0,1,0,25";
         private const int KeyIndex = 4;
-        private const int DefaultIndex = 10;   // Phase12-Step2 2e: FocusWindow を 9 に足したため 10
+        private const int DefaultIndex = 10;   // FocusWindow を 9 に足したため 10
         private const int UnboundIndex = 11;
 
         private readonly ITestOutputHelper _output;
@@ -127,7 +127,7 @@ namespace DS4WindowsTests
         {
             var rig = new Rig();
 
-            // Phase9 UI 変更: Default も Press Key の項目（添字 4）で開く（出力の欄が「Default (既定の出力名)」）
+            // Default も Press Key の項目（添字 4）で開く（出力の欄が「Default (既定の出力名)」）
             Assert.Equal(4, new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile).InitialTypeIndex);
 
             DS4ControlSettings unbound = Settings(DS4ControlSettings.ActionType.Button, DS4KeyType.Unbound);
@@ -196,7 +196,7 @@ namespace DS4WindowsTests
             var toDefault = new ControlSettingsEditTarget(original, rig.Profile);
             toDefault.WriteFrom(DefaultIndex, rig.PressKey, rig.Macro);
             toDefault.Apply();
-            // Phase9 UI 変更: Default は Press Key の項目（添字 4）で開き直す。保存し直しても Default のまま
+            // Default は Press Key の項目（添字 4）で開き直す。保存し直しても Default のまま
             Assert.Equal(4, new ControlSettingsEditTarget(original, rig.Profile).InitialTypeIndex);
             Assert.Equal(DS4ControlSettings.ActionType.Default, original.actionType);
         }

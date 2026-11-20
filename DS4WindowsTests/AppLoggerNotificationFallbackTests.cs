@@ -6,7 +6,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step3（R-03）: <see cref="AppLogger.NotificationService"/> が未設定のときは、何もしない <see cref="NullNotificationService"/> を使い、
+    /// <see cref="AppLogger.NotificationService"/> が未設定のときは、何もしない <see cref="NullNotificationService"/> を使い、
     /// 2 つ目の <c>BackingStore</c> を作らないこと（旧: <c>new AppNotificationService(new BackingStore(new EnvironmentService()))</c>）。
     /// 設定後の委譲は <see cref="LogToTrayNotificationBridgeTests"/> が検査する。
     /// </summary>

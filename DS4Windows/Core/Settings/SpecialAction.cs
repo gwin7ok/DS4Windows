@@ -29,15 +29,15 @@ namespace DS4Windows.Core.Settings
         public enum KeyButtonSwitchModeEnum { Press, Toggle }
 
         public string name;
-        // Phase10-Step4d W2（Phase10-Step4d-Plan.md §3）: SA の固定 ID（GUID の N 形式）。Actions.xml の Action の Id 属性に保存する。名前を変えても変わらない
+        // SA の固定 ID（GUID の N 形式）。Actions.xml の Action の Id 属性に保存する。名前を変えても変わらない
         // （編集では、保存済みの SA の ID を引き継ぐ）。新しく作る SA は、ここで新しい ID になる。保存済みのものは、読み込みで、ファイルの ID に置き換える
         public string id = Guid.NewGuid().ToString("N");
-        // Phase10-Step4d W3: 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（details は名前）。Actions.xml の ProfileId 要素に保存する。ない（古いファイル）ときは null
+        // 種別が Profile の SA の、切り替え先のプロファイルの固定 ID（details は名前）。Actions.xml の ProfileId 要素に保存する。ない（古いファイル）ときは null
         public string profileId;
-        // Phase10-Step6 I5a（Phase10-Step6-Plan.md §4）: SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras（DS4ControlSettings.extras）と同じ書式
+        // SA に付ける Extras（振動、ライトバーの強制色と点滅、ボタン感度の一時変更）。Controls の Extras（DS4ControlSettings.extras）と同じ書式
         // （カンマ区切りの 9 個）。Actions.xml の OutputExtras 要素に保存する。付けないときは null。その SA が成立している間だけ有効（束縛は I5b で作る）
         public string outputExtras;
-        // Phase10-Step6 後の Step5（SA 側のアナログ出力）: Button の出力先がアナログ（パッドの軸・トリガー、マウス移動。AnalogOutputTargets）のときの強さ（0〜100%）。
+        // Button の出力先がアナログ（パッドの軸・トリガー、マウス移動。AnalogOutputTargets）のときの強さ（0〜100%）。
         // SA の組み合わせトリガーはオン／オフのため、成立中はこの固定値で出す。Actions.xml の Button の Strength 要素（100 以外のときだけ）に保存する。既定は 100（古いファイルも 100 として読む）
         public int analogStrength = 100;
         public List<DS4Controls> trigger = new List<DS4Controls>();
@@ -50,7 +50,7 @@ namespace DS4Windows.Core.Settings
         public string ucontrols;
         public double delayTime = 0;
         public string extra;
-        /// <summary>Phase12-Step2 2j（R-4）: FocusWindow で、前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する。他の種別では使わない。</summary>
+        /// <summary>FocusWindow で、前面化に成功したあと、そのウィンドウの中央へマウスポインターを移動する。他の種別では使わない。</summary>
         public bool centerCursor = false;
         // null when not applicable (type != Key && type != Button) or not set
         public KeyButtonSwitchModeEnum? KeyButtonSwitchMode = null;
@@ -146,7 +146,7 @@ namespace DS4Windows.Core.Settings
             }
             else if (type == "FocusWindow")
             {
-                // Phase12-Step2 2c（R-4）: 指定のウィンドウを前面へ出す。details＝プログラムのパス、extra＝ウィンドウタイトル
+                // 指定のウィンドウを前面へ出す。details＝プログラムのパス、extra＝ウィンドウタイトル
                 // （どちらも Auto-Profile と同じ規則の指定。WindowTargetMatcher）。タイトルは、extras 先頭の「トリガー解除」の解釈（下）から外す
                 typeID = ActionTypeId.FocusWindow;
                 this.details = details;
@@ -207,9 +207,9 @@ namespace DS4Windows.Core.Settings
                 typeID = ActionTypeId.MultiAction;
                 this.details = details;
             }
-            // Phase8-Step7 7.7a: XboxGameDVR 種別は、機能ごと削除した（ユーザーの決定。実行時にマクロが実行されず、新しく作れない機能だったため）。
+            // XboxGameDVR 種別は、機能ごと削除した（ユーザーの決定。実行時にマクロが実行されず、新しく作れない機能だったため）。
             // 古い Actions.xml に Type が XboxGameDVR の項目が残っていても、種別が不明（None）の項目になり、何も実行されない。
-            // Phase9 Steering 削除 W1: SASteeringWheelEmulationCalibrate 種別は、機能ごと削除した（ユーザーの承認。Phase9-SteeringWheel-Removal-Plan.md）。
+            // SASteeringWheelEmulationCalibrate 種別は、機能ごと削除した（ユーザーの承認。docs-forDIMG/MadeByAgent/Archive/Phase9-SteeringWheel-Removal-Plan.md）。
             // 古い Actions.xml・プロファイルに残っていても、読み込み時に取り除かれる（ActionsDTO／ControlSpecialItemXml が [DI] ログで通知する）。直接この型で作ると、種別が不明（None）の項目になる
             else if (type == "GyroCalibration")
             {
@@ -291,7 +291,7 @@ namespace DS4Windows.Core.Settings
                 case "Touch Started": return DS4Controls.TouchStarted;
                 case "Touch Ended": return DS4Controls.TouchEnded;
 
-                // Phase10-Step4c W5（項目 9）: スティックの Outer（Controls の一覧にあった仮想ボタン）。判定は SA の閾値（100 を超える）
+                // スティックの Outer（Controls の一覧にあった仮想ボタン）。判定は SA の閾値（100 を超える）
                 case "LS Outer": return DS4Controls.LSOuter;
                 case "RS Outer": return DS4Controls.RSOuter;
 

@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step5 W1（Phase8-Step5-Plan.md §3.1・§4）: <see cref="ActionBindingBuilder"/> の単体テスト。
+    /// <see cref="ActionBindingBuilder"/> の単体テスト。
     /// 種別ごとの構成（入力・出力・方針）、順序、フィルタ（移行対象が空／一部）、未対応の種別を作らないこと。
     /// </summary>
     public class ActionBindingBuilderTests
@@ -145,7 +145,7 @@ namespace DS4WindowsTests
 
             IReadOnlyList<IActionBinding> result = NewBuilder(provider).Build(0);
 
-            // Phase8-Step7 7.5b: 自動の復帰（AutomaticUntrigger）の Profile も束縛になる。解除トリガー（uTrigger）を持つ Profile も、Phase8-Step8 8b（機能廃止）で束縛になる（解除ボタンによる復帰はなし）
+            // 自動の復帰（AutomaticUntrigger）の Profile も束縛になる。解除トリガー（uTrigger）を持つ Profile も、Phase8-Step8 8b（機能廃止）で束縛になる（解除ボタンによる復帰はなし）
             Assert.Equal(3, result.Count);
             Assert.Equal(UntriggerPolicy.None, Assert.IsType<TriggerBinding>(result[2]).Policy.Untrigger);
             var auto = Assert.IsType<TriggerBinding>(result[1]);
@@ -177,7 +177,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ATypeWithoutABinding_IsNotBuilt()
         {
-            // Phase8-Step8 8d: 移行のスイッチは削除した。全種別を組み立てるが、束縛を持たない種別（None）は作らない
+            // 移行のスイッチは削除した。全種別を組み立てるが、束縛を持たない種別（None）は作らない
             var provider = new FakeProvider();
             provider.Add(new SpecialAction("n", "Cross", "None", "", 0, ""));
             provider.Add(Button("b", "Circle", "Press"));

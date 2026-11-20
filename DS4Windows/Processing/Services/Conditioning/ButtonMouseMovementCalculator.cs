@@ -9,11 +9,11 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-B（Phase9-B-Plan.md）: <see cref="IButtonMouseMovementCalculator"/> の実装（DI の Singleton）。
+    /// <see cref="IButtonMouseMovementCalculator"/> の実装（DI の Singleton）。
     /// 旧 <c>Mapping.getMouseMapping</c> の計算を、そのまま移したもの（<c>ctrl</c>／<c>eState</c> の引数を外し、設定と経過時間は引数で受ける。計算結果は変わらない）。
-    /// マウス加速の状態（旧 <c>Mapping.mcounter</c>／<c>mouseaccel</c>／<c>prevmouseaccel</c>。全コントローラーで 1 つを共有していた）は、
+    /// マウス加速の状態は、
     /// ユーザー判断（Q2）によりデバイスごとに持つ（2 台以上のとき、互いの加速を邪魔しない。1 台のときの挙動は変わらない）。
-    /// 値の特性化は <c>Phase9BButtonMouseMovementDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class ButtonMouseMovementCalculator : IButtonMouseMovementCalculator
     {
@@ -77,8 +77,8 @@ namespace DS4Windows.Processing.Services.Conditioning
                 // Cap mouse offset to final mouse velocity
                 //double mouseOffset = mouseVelocity >= MOUSESTICKMINVELOCITY ? MOUSESTICKMINVELOCITY : mouseVelocity;
 
-                // Phase9 9-B（Q5）: 旧 8 方向の case（ほぼ同じコードの繰り返し）を AxisDirMovement に畳んだ。式と演算の順序は変えていない
-                // （旧実装との一致は Phase9BButtonMouseMovementDifferentialTests が守る）。コメントアウトされていた旧式は、AxisDirMovement の上にまとめて残した。
+                // 旧 8 方向の case（ほぼ同じコードの繰り返し）を AxisDirMovement に畳んだ。式と演算の順序は変えていない。
+                // コメントアウトされていた旧式は、AxisDirMovement の上にまとめて残した。
                 DeltaSettingsProcessor lsAccel = deltaAccelProcessorGroup.LSProcessor;
                 DeltaSettingsProcessor rsAccel = deltaAccelProcessorGroup.RSProcessor;
                 switch (control)
@@ -122,8 +122,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 //double SXD = getSXDeadzone(device);
                 //double SZD = getSZDeadzone(device);
 
-                // Phase9 9-B（Q5）: 旧 4 方向の case は、正方向（X／Z）と負方向（X／Z）の 2 つにまとめた。式は変えていない
-                // （旧: 値は byte に切り詰められる。上限の 255 を超えると桁あふれする。旧実装から同じ癖。計画書 K2）。
+                // 旧 4 方向の case は、正方向（X／Z）と負方向（X／Z）の 2 つにまとめた。式は変えていない。
                 switch (control)
                 {
                     case DS4Controls.GyroXPos:

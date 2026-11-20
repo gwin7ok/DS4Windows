@@ -32,7 +32,7 @@ namespace DS4Windows.UI
             get => renameProfileVM;
         }
 
-        // Phase6-Step10-2-3: 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
+        // 呼び出し側（MainWindow）が保持済みのサービスを渡す（Pure DI）
         public RenameProfileWindow(RenameProfileViewModel viewModel)
         {
             InitCommands();

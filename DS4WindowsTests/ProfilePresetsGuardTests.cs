@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W6（Q1・Q6＝A）: プロファイルのプリセット（空のプロファイルと既定の割り当て）の読込を <c>BackingStore</c> から
+    /// プロファイルのプリセット（空のプロファイルと既定の割り当て）の読込を <c>BackingStore</c> から
     /// <c>ProfilePresets</c> へ移したことの回帰ガード。読込後の状態の同一性は <c>GoldenPersistenceTests.Presets_LoadedState_MatchesGolden</c>
     /// （10 種）が固定する。ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>

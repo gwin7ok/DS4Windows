@@ -5,7 +5,7 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Output.Services
 {
-    /// <summary>Phase9 9-E E-1: <see cref="IOscMessageSender"/> の実装。SharpOSC の <c>UDPSender</c> を包む（旧 <c>ControlService.oscSender</c>）。</summary>
+    /// <summary><see cref="IOscMessageSender"/> の実装。SharpOSC の <c>UDPSender</c> を包む（旧 <c>ControlService.oscSender</c>）。</summary>
     public sealed class SharpOscMessageSender : IOscMessageSender
     {
         private readonly UDPSender _sender;

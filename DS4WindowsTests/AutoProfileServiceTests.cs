@@ -212,7 +212,7 @@ namespace DS4WindowsTests
             Assert.Equal(expected, AutoProfileNotificationPolicy.ShouldNotify(source, choice, itemExists));
         }
 
-        // Phase5-Step13-4で追加: Global.autoProfileSwitchNotifyChoiceへの薄い委譲であることを検証。
+        // Global.autoProfileSwitchNotifyChoiceへの薄い委譲であることを検証。
         [Fact]
         public void AutoProfileSwitchNotifyChoice_ShouldReadWriteSameEntityAsGlobal()
         {

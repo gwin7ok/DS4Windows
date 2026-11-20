@@ -15,8 +15,8 @@ namespace DS4WindowsTests
     /// 「IDeviceStateAccessorのDI登録・配線を完了した」としていたにもかかわらず、
     /// 実際にはServiceRegistration.csに登録されておらず、常にフォールバック経路
     /// （Program.rootHub直接参照）のみが動作していた、という不具合が発覚した
-    /// （詳細: Phase3-Step3-5-IElevatedProcessLauncher-Design.md §0.5、
-    /// Phase3-Step3-6-Completion-Report.md §4）。
+    /// （詳細: docs-forDIMG/MadeByAgent/Archive/Phase3-Step3-5-IElevatedProcessLauncher-Design.md §0.5、
+    /// docs-forDIMG/MadeByAgent/Archive/Phase3-Step3-6-Completion-Report.md §4）。
     ///
     /// このテストは「新設インターフェースがAppHostから実際に解決できること」を
     /// 機械的に検証することで、同種の「登録し忘れたままドキュメントだけ完了扱いになる」
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
 
             Assert.Null(ex);
             Assert.NotNull(accessor);
-            // Phase13-Step5: 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
+            // 持ち主は IDeviceSlotState（DeviceSlotState）。ControlService は同じ配列を保持する
             Assert.Same(TestHost.GetService<DS4Windows.Processing.Abstractions.IDeviceSlotState>(), accessor);
         }
     }

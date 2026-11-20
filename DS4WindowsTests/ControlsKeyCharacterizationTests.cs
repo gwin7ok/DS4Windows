@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8b-W1（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key（<c>ProcessControlSettingAction</c> の Key の枝）の特性化。
+    /// Controls タブの Key（<c>ProcessControlSettingAction</c> の Key の枝）の特性化。
     /// 旧・新の両経路（<c>InlineData(false)</c>／<c>InlineData(true)</c>）で同じ期待値。W1 の時点では新経路が未実装のため、新経路の指定でも旧経路が処理する。
     /// 押下の観測は、旧経路が使う合成 SpecialAction（<c>Synthetic_Key_{device}_{control}</c>）の状態（<c>BeingTriggered</c>／<c>IsToggledOn</c>）。状態は名前で引かれるため、W2 の新経路の識別用 SA も同じ状態を指す。
     /// 押下の判定は <c>GetBoolActionMapping</c>（スティックは角度の扇形、L2／R2 は 0 より大きい）で、スペシャルアクションのトリガー判定（±55、100 より大きい）とは違う。
@@ -186,8 +186,8 @@ namespace DS4WindowsTests
         public void SharesTheStateWithAKeySpecialActionOfTheSameKey()
         {
             // 旧経路の癖（FindSpecialActionForLogicalKey）: 同じ論理キーの Key スペシャルアクションが登録されていれば、Controls の Key はその状態を使う。
-            // Q4＝B（Phase8-Step2b-ControlsTab-Design.md §10）で、新経路では共有をやめる。W2 で、新経路の期待値をこのテストで切り替える
-            // Phase14c-Step5（決定 E3）: 旧 静的な ActionRegistry（本番では一度も初期化されない）への登録は、型ごと削除したため外した。
+            // Q4＝B（docs-forDIMG/MadeByAgent/Archive/Phase8-Step2b-ControlsTab-Design.md §10）で、新経路では共有をやめる。W2 で、新経路の期待値をこのテストで切り替える
+            // 旧 静的な ActionRegistry（本番では一度も初期化されない）への登録は、型ごと削除したため外した。
             // 同じ論理キーの Key スペシャルアクションがあっても、新経路は共有しないことを確かめる
             var keyAction = new SpecialAction("p8s78b_shared_" + Guid.NewGuid().ToString("N"), "R1", "Key", Key.ToString(), 0, "Press\n");
             {

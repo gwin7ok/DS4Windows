@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6f1（Phase9-E6-Plan.md §9.2）: 接続の組み立て（旧 <c>PrepareConnectedInputControllerSettingEvents</c> ほか）の切り出しの守り。
+    /// 接続の組み立ての切り出しの守り。
     /// 本体が <c>DeviceConnector</c> へ移り、<c>ControlService</c> は薄い委譲だけを持つこと。組み立ての順序が変わっていないこと。
     /// </summary>
     public class ConnectorGuardTests
@@ -34,7 +34,7 @@ namespace DS4WindowsTests
                 "_profileXmlStore.LoadControllerConfigsForDevice(device);",
                 "device.LoadStoreSettings();",
                 "device.CheckControllerNumDeviceSettings(numControllers);",
-                "slots.SlotManager.AddController(device, index);",   // Phase13-Step5: スロット状態は IDeviceSlotState（slots）から読む
+                "slots.SlotManager.AddController(device, index);",   // スロット状態は IDeviceSlotState（slots）から読む
                 "_outputs.NotifyPlugged(index);",
                 "device.Removal += _deviceDisconnect.OnRemoval;",
                 "device.SyncChange += _deviceDisconnect.OnSyncChange;",
@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
             if (text == null) return;
 
-            Assert.Contains("inputReport.OnReport(sender, e, tempIdx);", text);   // Phase13-Step5b: 旧 host.OnReport
+            Assert.Contains("inputReport.OnReport(sender, e, tempIdx);", text);   // 旧 host.OnReport
         }
 
         [Fact]
@@ -84,12 +84,12 @@ namespace DS4WindowsTests
         public void TheOtherFiles_NoLongerHoldsOnReport_AndTheLifecycleCallsTheConnector()
         {
 
-            // Phase9 9-E E-6f2: Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
+            // Start／HotPlug の本体が ServiceLifecycle へ移ったため、薄い委譲は不要になった（ライフサイクルが DeviceConnector を直接呼ぶ）
             string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecycle == null) return;
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, index: i)", lifecycle);
             Assert.Contains("_deviceConnector.PrepareConnected(numControllers, device, Index)", lifecycle);
-            // Phase13-Step5b: 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
+            // 入力レポートの処理（ホットパス）は InputReportProcessor へ移した。ControlService には窓口（IDeviceSlotHost）も残っていない
             string processor = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs");
             Assert.Contains("public void OnReport(InputDeviceCore device, EventArgs e, int ind)", processor);
         }

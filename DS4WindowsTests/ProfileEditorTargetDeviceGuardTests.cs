@@ -8,14 +8,14 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7b-3: プロファイル編集画面の「編集内容の即時反映」を廃止した構造を固定する回帰ガード。
+    /// プロファイル編集画面の「編集内容の即時反映」を廃止した構造を固定する回帰ガード。
     /// - 編集スロットは常に作業スロット（Global.TEST_PROFILE_INDEX）で、呼び出し元（MainWindow）は編集スロットを指定しない。
     /// - キャンセルはコントローラーのスロットへプロファイルを読み込み直さない。
     /// - 適用は実機（targetDevice）へ ApplyProfileToSlot する。
     /// - 実機に触れるサブ画面・ViewModel の生成には targetDevice を渡す（省略可能な引数の渡し忘れの検出）。
     /// - 到達しなくなった即時フック（決定7＝H1）と ProfileEditor.DeviceNum（決定5＝D1）が再混入しない。
     /// `ProfileEditor` は WPF の UserControl で単体駆動が困難なため、ソース走査で担保する
-    /// （Phase6-Step7b-Plan.md §3 Step7b-3）。ソースファイルが見つからない環境では、検査を行わず合格とする。
+    /// （docs-forDIMG/MadeByAgent/Archive/Phase6-Step7b-Plan.md §3 Step7b-3）。ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class ProfileEditorTargetDeviceGuardTests
     {
@@ -85,7 +85,7 @@ namespace DS4WindowsTests
         /// 決定8: Save と Apply の違いは画面を閉じるかどうかだけで、どちらも ProfileSaved を通知し、
         /// 再適用は MainWindow.SyncProfileListAndControllers（そのプロファイルを使っているスロットだけ）に任せる。
         /// 編集画面が特定のコントローラーへ直接 ApplyProfileToSlot すると、新規作成したプロファイルで
-        /// そのコントローラーが切り替わってしまう（Phase6-Step7b-Plan.md §2A 決定8）。
+        /// そのコントローラーが切り替わってしまう（docs-forDIMG/MadeByAgent/Archive/Phase6-Step7b-Plan.md §2A 決定8）。
         /// </summary>
         [Fact]
         public void ProfileEditor_SaveAndApplyBothDelegateReapplyToMainWindow()
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
 
             var checks = new (string Call, int MinCount)[]
             {
-                ("CreateControlActionEditor(", 1),   // Phase10-Step3 W4: Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった（旧: CreateBindingWindow の 6 か所）
+                ("CreateControlActionEditor(", 1),   // Controls の割り当ての編集は、6 か所の呼び出しが ShowControlAssignmentEditor の 1 か所へまとまった
                 ("CreateAssignmentEditor(", 1),
                 ("CreateAssignmentEditorFor(", 1),
                 ("CreateProfileSettingsViewModel(", 1),
@@ -156,11 +156,11 @@ namespace DS4WindowsTests
                 }
             }
 
-            // Phase6-Step9-4: ファクトリ以外での ProfileSettingsViewModel の生成（レガシーフォールバック）は無い
+            // ファクトリ以外での ProfileSettingsViewModel の生成（レガシーフォールバック）は無い
             Assert.DoesNotContain("new ProfileSettingsViewModel(", text);
 
             // スティック再校正は、実機がなければ不可とし、ウィンドウには実機（targetDevice）を渡す
-            // （Phase6-Step10-2-4a: StickCalibrationWindow は IEditorWindowFactory 経由で生成する）
+            //
             string calibrate = SourceText.Method(text, "private void CalibrateStick_OnClick(");
             Assert.Contains("if (!HasTargetDevice)", calibrate);
             Assert.Contains("CreateStickCalibrationWindow(stick, targetDevice, profileSettingsVM)", calibrate);
@@ -213,7 +213,7 @@ namespace DS4WindowsTests
                     $"ShowProfileEditor({a}) に編集スロットが渡されている（編集スロットは ProfileEditor 内部で決める）");
             }
 
-            // Phase7-Step5 W5: ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
+            // ProfileEditor の生成は IEditorWindowFactory.CreateProfileEditor に集約した（実機のスロット番号は、そのまま渡す）
             Assert.Contains("profileSelection.CreateEditor(targetDevice)", text);
             Assert.Contains("_editorWindowFactory.CreateProfileEditor(targetDevice)", SourceText.ReadCode("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs"));
             string factory = SourceText.ReadCode("DS4Windows/UI/Services/ProfileEditorFactory.cs");

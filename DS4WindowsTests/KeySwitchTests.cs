@@ -9,7 +9,7 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.2-W3（Phase8-Step7-2-Plan.md §3 W3）: Key をスイッチに入れた状態の、ロールバック・割り当て・性能の確認。
+    /// Key をスイッチに入れた状態の、ロールバック・割り当て・性能の確認。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

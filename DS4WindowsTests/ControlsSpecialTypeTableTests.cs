@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I6b（Phase10-Step6-Plan.md §4）: Controls で実行時に束縛を作る SA 専用の種別の規則の表（<see cref="ControlsSpecialTypeTable"/>）と、
+    /// Controls で実行時に束縛を作る SA 専用の種別の規則の表（<see cref="ControlsSpecialTypeTable"/>）と、
     /// 割り当て編集画面の種別の一覧（<see cref="ActionTypeCatalog"/>）の「Controls で保存できる」が、同じ規則に従うこと。種別ごとの入力（<see cref="IActionTypeEditor"/>）の
     /// 型のある項目との往復の既定の動作。
     /// </summary>

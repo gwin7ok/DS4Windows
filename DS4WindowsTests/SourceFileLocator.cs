@@ -8,7 +8,7 @@ namespace DS4WindowsTests
     /// <summary>
     /// ソースコードの静的検査（回帰ガード）を行うテストが、リポジトリ内のソースファイルを探すための共通ヘルパー。
     /// ソースが見つからない環境（リポジトリのルート［DS4Windows/DS4WinWPF.csproj］が見つからない。配布物だけで実行する場合）では null を返し、検査を省略する。
-    /// Phase14d-Step1: ルートが見つかるのにファイルがないときは、null を返さずに失敗する。ファイルを移す・消すと、検査が黙って消えていた
+    /// ルートが見つかるのにファイルがないときは、null を返さずに失敗する。ファイルを移す・消すと、検査が黙って消えていた
     /// （存在しないファイルを読み、何も検査せずに合格するテストが 9 件あった）。ファイルが「ないこと」を確かめるときは <see cref="Exists"/> を使う。
     /// </summary>
     internal static class SourceFileLocator
@@ -33,7 +33,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Phase14d-Step1: ファイルがあるか（ないことを確かめる検査に使う）。ソースが見つからない環境では false。
+        /// ファイルがあるか（ないことを確かめる検査に使う）。ソースが見つからない環境では false。
         /// </summary>
         public static bool Exists(string relativePath, [CallerFilePath] string callerFile = "")
         {
@@ -41,7 +41,7 @@ namespace DS4WindowsTests
             return root != null && File.Exists(Combine(root, relativePath));
         }
 
-        /// <summary>Phase14d-Step1: リポジトリのルート（DS4Windows/DS4WinWPF.csproj を持つフォルダー）。見つからなければ null。</summary>
+        /// <summary>リポジトリのルート（DS4Windows/DS4WinWPF.csproj を持つフォルダー）。見つからなければ null。</summary>
         public static string RepoRoot([CallerFilePath] string callerFile = "")
         {
             if (!string.IsNullOrEmpty(callerFile) && Path.IsPathRooted(callerFile))
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
             return RootFromAnchor(Path.Combine(AppContext.BaseDirectory, "anchor"));
         }
 
-        /// <summary>Phase14: アンカー（DS4Windows 配下のソースファイル）から、リポジトリのルートを深さに依存せず求める。</summary>
+        /// <summary>アンカー（DS4Windows 配下のソースファイル）から、リポジトリのルートを深さに依存せず求める。</summary>
         public static string ProjectDirFromAnchor(string anchor)
         {
             string root = RootFromAnchor(anchor);

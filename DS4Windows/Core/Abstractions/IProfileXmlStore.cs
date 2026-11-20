@@ -18,10 +18,10 @@ namespace DS4Windows.Core.Abstractions
         /// </summary>
         bool SaveAppSettingsXml();
 
-        // ---- Phase6-Step2-2 (PR-2): 接続時のコントローラー固有設定の読込（Global への薄い委譲）----
+        // ---- 接続時のコントローラー固有設定の読込（Global への薄い委譲）----
         bool LoadControllerConfigsForDevice(IConfigurableDevice device);
 
-        // ---- Phase6-Step3-1: 切断時のコントローラー固有設定の保存（Global への薄い委譲）----
+        // ---- 切断時のコントローラー固有設定の保存（Global への薄い委譲）----
         bool SaveControllerConfigsForDevice(IConfigurableDevice device);
     }
 }

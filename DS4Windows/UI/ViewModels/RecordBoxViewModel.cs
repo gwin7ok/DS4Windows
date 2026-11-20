@@ -45,7 +45,7 @@ namespace DS4Windows.UI.ViewModels
         private bool recordDelays;
         public bool RecordDelays { get => recordDelays; set => recordDelays = value; }
 
-        // Phase10-Step1 W2: 繰り返し（Execute Mode）と Scan Code は、共通の MacroPlaybackOptions に持つ（旧: macroModeIndex、useScanCode）
+        // 繰り返し（Execute Mode）と Scan Code は、共通の MacroPlaybackOptions に持つ
         private MacroPlaybackOptions playbackOptions;
         public MacroPlaybackOptions PlaybackOptions { get => playbackOptions; }
 
@@ -55,10 +55,10 @@ namespace DS4Windows.UI.ViewModels
         private bool toggleLightbar;
         public bool ToggleLightbar { get => toggleLightbar; set => toggleLightbar = value; }
 
-        /// <summary>Phase12-Step3 3e（R-3）: 記録中に、ほかのウィンドウの上も含めて、マウスの移動とボタンを記録する。</summary>
+        /// <summary>記録中に、ほかのウィンドウの上も含めて、マウスの移動とボタンを記録する。</summary>
         public bool RecordMouseMovement { get; set; }
 
-        /// <summary>Phase12-Step3 3e: 記録する座標の基準。0＝画面の座標、1＝ポインターの下のウィンドウ内の座標（<see cref="MacroPointerMoveMode"/> と同じ番号）。</summary>
+        /// <summary>記録する座標の基準。0＝画面の座標、1＝ポインターの下のウィンドウ内の座標（<see cref="MacroPointerMoveMode"/> と同じ番号）。</summary>
         public int PointerRecordModeIndex { get; set; }
 
         private bool toggleRummble;
@@ -110,19 +110,19 @@ namespace DS4Windows.UI.ViewModels
         /// </summary>
         private TouchpadOutMode oldTouchpadMode = TouchpadOutMode.None;
         /// <summary>
-        /// Phase6-Step7b: 記録中の Passthru を実機（targetDevice）に設定したか。設定した場合だけ元に戻す
+        /// 記録中の Passthru を実機（targetDevice）に設定したか。設定した場合だけ元に戻す
         /// </summary>
         private bool touchpadModeOverridden;
         private readonly IProfileSettingsService profileSettingsService;
-        // Phase7-Step10e W2: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
+        // スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、注入された環境サービスから読む
         private readonly IEnvironmentService environmentService;
         private readonly IMacroRecordingState macroRecording;
         // マクロのプリセットを置くフォルダ（プリセットの選択の初期位置）。null は指定なし（単体テスト）
         private readonly Func<string> macrosFolder;
 
-        // Phase6-Step7b: 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
+        // 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ライトバーのプレビューと
         // 記録中のタッチパッド Passthru で実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」。
-        // 詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
+        //
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 
@@ -132,7 +132,7 @@ namespace DS4Windows.UI.ViewModels
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
         private readonly IDialogService dialogs;
 
@@ -154,7 +154,7 @@ namespace DS4Windows.UI.ViewModels
             this.targetDevice = targetDevice;
             ArgumentNullException.ThrowIfNull(profileSettingsService);
             this.profileSettingsService = profileSettingsService;
-            // Phase6-Step10-2-4b: Program.rootHub への後退を廃止。ControlService は EditorWindowFactory から渡す。
+            // Program.rootHub への後退を廃止。ControlService は EditorWindowFactory から渡す。
             // null は「コントローラーを持たない」（単体テスト）を表し、記録中の入力の取り込み（ProcessDS4Tick）だけが使う。
             this.macroRecording = macroRecording;
 
@@ -181,7 +181,7 @@ namespace DS4Windows.UI.ViewModels
 
             // Temporarily use Passthru mode for Touchpad. Store old TouchOutMode.
             // Don't conflict Touchpad Click with default output Mouse button controls
-            // Phase6-Step7b: 対象は実機（targetDevice）のタッチパッド。編集スロットの設定は変えない。
+            // 対象は実機（targetDevice）のタッチパッド。編集スロットの設定は変えない。
             // 実機なし（-1）の場合は何もしない
             if (HasTargetDevice)
             {
@@ -227,7 +227,7 @@ namespace DS4Windows.UI.ViewModels
 
             settings.action.actionMacro = outmac;
             settings.actionType = DS4ControlSettings.ActionType.Macro;
-            // Phase8-Fix-MacroRepeatUnify（D1）: 「Repeat while held」は RepeatMacro だけで表す（旧: HoldMacro と RepeatMacro の両方）
+            // 「Repeat while held」は RepeatMacro だけで表す
             settings.keyType = playbackOptions.ApplyTo(DS4KeyType.Macro);
         }
 
@@ -376,7 +376,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase12-Step3 3d（R-3）: マウスポインターの移動ステップ（<paramref name="mode"/> の (0, 0)）を、選択した位置の前へ入れる。選択がなければ末尾へ足す。入れた位置を返す。
+        /// マウスポインターの移動ステップ（<paramref name="mode"/> の (0, 0)）を、選択した位置の前へ入れる。選択がなければ末尾へ足す。入れた位置を返す。
         /// モードは、記録の基準の一覧（<see cref="PointerRecordModeIndex"/>）の選択に合わせる。座標は、リストのダブルクリックで直す。
         /// </summary>
         public int AddPointerMoveStep(int index, MacroPointerMoveMode mode = MacroPointerMoveMode.Absolute)
@@ -449,7 +449,7 @@ namespace DS4Windows.UI.ViewModels
             macroSteps.Insert(index, item);
         }
 
-        // Phase6-Step7b: ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う
+        // ライトバー強制色のプレビューは、編集スロット（DeviceNum）ではなく実機（targetDevice）に対して行う
         public void StartForcedColor(DS4Color color)
         {
             if (HasTargetDevice)
@@ -520,7 +520,7 @@ namespace DS4Windows.UI.ViewModels
         /// </summary>
         public void RevertControlsSettings()
         {
-            // Phase6-Step7b: コンストラクタで実機（targetDevice）に Passthru を設定した場合だけ元に戻す。
+            // コンストラクタで実機（targetDevice）に Passthru を設定した場合だけ元に戻す。
             // Save と Cancel の両方から呼ばれ得るため、2 回目以降は何もしない
             if (touchpadModeOverridden)
             {

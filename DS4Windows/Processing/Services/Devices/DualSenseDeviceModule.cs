@@ -10,7 +10,7 @@ using DS4Windows.Input;
 namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
-    /// Phase9 9-E E-6c: DualSense の部品。設定の有効／無効、追加ボタン（Edge の FnL／FnR／BLP／BRP）、LED モード変更への反応、振動エミュレーションと触覚の強さの反映。
+    /// DualSense の部品。設定の有効／無効、追加ボタン（Edge の FnL／FnR／BLP／BRP）、LED モード変更への反応、振動エミュレーションと触覚の強さの反映。
     /// 旧 <c>ControlService</c> の該当する分岐を、そのまま移したもの。
     /// </summary>
     public sealed class DualSenseDeviceModule : InputDeviceModuleBase

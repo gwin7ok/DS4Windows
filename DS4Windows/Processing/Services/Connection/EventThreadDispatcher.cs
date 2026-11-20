@@ -8,7 +8,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// Phase13-Step3: <see cref="IEventThreadDispatcher"/> の実装。旧 <c>ControlService</c> のコンストラクターにあったスレッドの生成
+    /// <see cref="IEventThreadDispatcher"/> の実装。旧 <c>ControlService</c> のコンストラクターにあったスレッドの生成
     /// （名前 "ControlService Events"、<c>BelowNormal</c>、<c>IsBackground</c>、<c>Dispatcher.Run</c>）と、<c>ShutDown</c> の
     /// <c>InvokeShutdown</c> → <c>Join</c> を、そのまま移した。生成直後に使っても失われないよう、スレッド内の Dispatcher の確定を待つ。
     /// </summary>

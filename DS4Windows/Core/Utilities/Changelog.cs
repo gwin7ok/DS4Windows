@@ -33,12 +33,12 @@ namespace DS4Windows.Core.Utilities
 
     /// <summary>
     /// <see cref="IChangelogService"/> の実装（DI の Singleton）。Phase14b-Step17（決定 D10）: 旧 静的メソッドと静的なキャッシュをインスタンスにし、
-    /// 通信には注入した HttpClient を使う（旧: App.requestClient）。処理の中身は変えていない。
+    /// 通信には注入した HttpClient を使う。処理の中身は変えていない。
     /// </summary>
     public sealed class Changelog : IChangelogService
     {
         // Use the GitHub REST API /repos/ path so the app queries releases for the correct repo.
-        // Phase10 以降: リポジトリの定義は ReleaseSource（Updater/）の 1 か所
+        // リポジトリの定義は ReleaseSource（Updater/）の 1 か所
         public const string GITHUB_RELEASES_API_URI = DS4Windows.Core.Updater.ReleaseSource.ReleasesApiUri;
         public const string GITHUB_LATEST_RELEASE_API_URI = DS4Windows.Core.Updater.ReleaseSource.LatestReleaseApiUri;
 
@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Utilities
         // passing a string to the function that displays the updater window.
         // I wanted to make this method async, but these can't have an out parameter and this is the signature i wanted
         // it to have
-        // Phase7-Step10d W4: lastVersionChecked は、旧 Global.LastVersionChecked（スキップ済みの更新バージョン）の値。呼び出し側が IAppSettingsService.LastVersionChecked から渡す。
+        // lastVersionChecked は、旧 Global.LastVersionChecked（スキップ済みの更新バージョン）の値。呼び出し側が IAppSettingsService.LastVersionChecked から渡す。
         public bool CheckNewerVersionExists(out Version? version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)
         {
             version = Version.Parse("0.0.0");

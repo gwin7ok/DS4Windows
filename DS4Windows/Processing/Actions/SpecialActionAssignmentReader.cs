@@ -4,14 +4,14 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 I3（Phase10-Step6-Plan.md §4）: 読み込みの部品（SpecialActions タブ側）。<see cref="SpecialAction"/> を、共通の割り当て定義（<see cref="AssignmentDefinition"/>）にする。
+    /// 読み込みの部品（SpecialActions タブ側）。<see cref="SpecialAction"/> を、共通の割り当て定義（<see cref="AssignmentDefinition"/>）にする。
     /// 種別ごとの文字列の解釈は <see cref="SpecialActionItemMapper"/>（Program、Profile ほか）と、<see cref="ActionBindingBuilder.InterpretKey"/>／<see cref="ActionBindingBuilder.InterpretButton"/>（Key、Button）が行う。
     /// 定義は設定の静的な内容だけで、実行時の状態（<c>prevProfileName</c>、<c>tappedOnce</c> など）は、引き続き <see cref="SpecialAction"/> のオブジェクトが持つ。
     /// </summary>
     public static class SpecialActionAssignmentReader
     {
         /// <summary>
-        /// 定義にする。SA が null、種別が不明（None）、トリガーのボタンがない SA は null（旧経路でも束縛を作らない）。
+        /// 定義にする。SA が null、種別が不明（None）、トリガーのボタンがない SA は null。
         /// <paramref name="origin"/> が Controls のとき、トリガーは 1 つ目だけを使う（Controls の合成の SA は、トリガーがそのボタン 1 つ）。
         /// </summary>
         public static AssignmentDefinition Read(SpecialAction sa, AssignmentOrigin origin = AssignmentOrigin.SpecialAction)
@@ -30,7 +30,7 @@ namespace DS4Windows.Processing.Actions
                 macro: sa.macro, keyType: sa.keyType, extras: ReadExtras(sa));
         }
 
-        // Phase10-Step6 I5b: SA に付けた Extras（Controls と同じ書式）。付けていない・読めないときは null
+        // SA に付けた Extras（Controls と同じ書式）。付けていない・読めないときは null
         private static ExtrasBindingValues? ReadExtras(SpecialAction sa)
             => DS4Windows.Processing.Services.Slots.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
     }

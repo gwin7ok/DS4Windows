@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DS4Windows.Core.Abstractions
 {
     /// <summary>
-    /// Phase14b-Step17（決定 D10）: 更新の確認と変更履歴の取得（GitHub のリリース API）。実装は <c>Core/Utilities/Changelog</c>（DI の Singleton。HttpClient を注入）。
+    /// 更新の確認と変更履歴の取得（GitHub のリリース API）。実装は <c>Core/Utilities/Changelog</c>（DI の Singleton。HttpClient を注入）。
     /// 旧: 静的クラス <c>Changelog</c> が、アプリの起点の静的フィールド <c>App.requestClient</c> を直接使っていた。
     /// </summary>
     public interface IChangelogService

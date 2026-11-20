@@ -15,7 +15,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W1／W5（Phase8-Step4-Plan.md §2.1／§3）: <c>Mapping.MapCustom</c> 全体の簡易ベンチマーク（出力のみ。失敗条件にしない）。
+    /// Phase8-Step4 W1／W5（docs-forDIMG/MadeByAgent/Archive/Phase8-Step4-Plan.md §2.1／§3）: <c>Mapping.MapCustom</c> 全体の簡易ベンチマーク（出力のみ。失敗条件にしない）。
     /// ボタン種別（Press）30 件のスペシャルアクションを登録し、何も押さない状態と、トリガーのボタンを押した状態を、それぞれ繰り返し評価する。
     /// W4（配線）の追加分の費用は、<see cref="WiringOverhead_PerFrame_IsReported"/> が、同じ実行の中で <c>MapCustom</c> 全体と並べて出力する
     /// （配線の前のコードを別に実行しなくても、割合を比べられる。許容: +5% 以内）。
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
             return list;
         }
 
-        [Trait("Category", "Benchmark")]   // Phase14d-Step4: 時間を出力するだけ（Assert なし）。通常の実行（Debug ALL を含む）から外し、性能を比べるときだけ --filter "Category=Benchmark" で流す
+        [Trait("Category", "Benchmark")]   // 時間を出力するだけ（Assert なし）。通常の実行（Debug ALL を含む）から外し、性能を比べるときだけ --filter "Category=Benchmark" で流す
         [Fact]
         public void MapCustom_PerFrameTime_IsReported()
         {
@@ -63,8 +63,8 @@ namespace DS4WindowsTests
             }
         }
 
-        [Trait("Category", "Benchmark")]   // Phase14d-Step4: 時間を出力するだけ（Assert なし）。通常の実行（Debug ALL を含む）から外し、性能を比べるときだけ --filter "Category=Benchmark" で流す
-        /// <summary>Phase8-Step7 7.1-W3: Button を新経路（エンジン）で処理した状態の <c>MapCustom</c> の費用（出力のみ。旧経路の <see cref="MapCustom_PerFrameTime_IsReported"/> と並べて見る。許容: +5% 以内）。</summary>
+        [Trait("Category", "Benchmark")]   // 時間を出力するだけ（Assert なし）。通常の実行（Debug ALL を含む）から外し、性能を比べるときだけ --filter "Category=Benchmark" で流す
+        /// <summary>Button を新経路（エンジン）で処理した状態の <c>MapCustom</c> の費用（出力のみ。旧経路の <see cref="MapCustom_PerFrameTime_IsReported"/> と並べて見る。許容: +5% 以内）。</summary>
         [Fact]
         public void MapCustom_ButtonMigrated_PerFrameTime_IsReported()
         {

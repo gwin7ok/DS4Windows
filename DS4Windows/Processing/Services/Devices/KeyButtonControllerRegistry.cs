@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
-    /// Phase7-Step8 W2（Q3＝A）: <see cref="IKeyButtonControllerRegistry"/> の実装。旧 <c>Mapping</c> の静的な登録簿
+    /// <see cref="IKeyButtonControllerRegistry"/> の実装。旧 <c>Mapping</c> の静的な登録簿
     /// （<c>keyButtonControllers</c>／<c>keyButtonControllerLock</c>／<c>GetOrCreateKeyButtonController</c>×2／
     /// <c>ClearKeyButtonControllersForDevice</c>／<c>GetOrCreateKeyButtonControllerForAction</c>）を、キー形式（"{device}:{actionName}"）、
     /// ログ、ファクトリーが無いときの直接生成（<c>new KeyButtonActionController</c>）まで変えずに移した。
@@ -18,7 +18,7 @@ namespace DS4Windows.Processing.Services.Devices
     /// </summary>
     public class KeyButtonControllerRegistry : IKeyButtonControllerRegistry
     {
-        // Phase14c-Step3（R-06）: 合成キーの送出（旧: 静的な橋渡し SyntheticDispatcher）
+        // 合成キーの送出
         private readonly ISyntheticDispatcher _dispatcher;
 
         public ISyntheticDispatcher Dispatcher => _dispatcher;
@@ -28,7 +28,7 @@ namespace DS4Windows.Processing.Services.Devices
         private readonly IKeyButtonActionControllerFactory _factory;
         private readonly IControllerRegistry _controllerRegistry;
         private readonly TimeProvider _time;
-        private readonly IManagedActionManager _manager;   // Phase13-Step4: ファクトリーが無いときの直接生成（new KeyButtonActionController）に渡す
+        private readonly IManagedActionManager _manager;   // ファクトリーが無いときの直接生成（new KeyButtonActionController）に渡す
 
         public KeyButtonControllerRegistry(IKeyButtonActionControllerFactory factory, IControllerRegistry controllerRegistry, IManagedActionManager manager,
             ISyntheticDispatcher dispatcher, TimeProvider timeProvider)

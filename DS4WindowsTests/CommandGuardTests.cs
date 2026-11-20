@@ -9,7 +9,7 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// コマンドの共通の窓口 <see cref="CommandGuard"/> の規則: 実行中は CanExecute が false、再入は拒む、例外は外へ出さず記録して通知、
-    /// 取り消しは失敗ではない、CanExecuteChanged が発火する。ViewModel のコマンドはこの窓口を通して作る（旧 RelayCommand の観点を引き継ぐ）。
+    /// 取り消しは失敗ではない、CanExecuteChanged が発火する。ViewModel のコマンドはこの窓口を通して作る。
     /// </summary>
     public class CommandGuardTests
     {

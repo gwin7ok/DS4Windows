@@ -30,7 +30,7 @@ namespace DS4WindowsTests
 
         /// <summary>
         /// ViewModel は INotifyPropertyChanged を持たず、WPF は「プロパティ名 + Changed」のイベントで更新を知る。
-        /// イベント名がずれると、行を選んでも設定欄が出ない（Phase34 の名前変更で起きた）。
+        /// イベント名がずれると、行を選んでも設定欄が出ない。
         /// </summary>
         [Theory]
         [InlineData("SidePanelShown")]

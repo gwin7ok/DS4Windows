@@ -9,8 +9,8 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step9-2: <c>MainWindowsViewModel</c> と <c>TrayIconViewModel</c> の Global 直接参照解消の回帰ガード
-    /// （<c>Phase6-Step9-Plan.md</c> §0A.2 表B・表C、決定1＝S9-A、決定6＝D1）。
+    /// <c>MainWindowsViewModel</c> と <c>TrayIconViewModel</c> の Global 直接参照解消の回帰ガード
+    /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step9-Plan.md</c> §0A.2 表B・表C、決定1＝S9-A、決定6＝D1）。
     /// - 非定数の <c>Global.</c> 参照と Service Locator（<c>AppHost</c>）が再混入していないこと。
     /// - コンストラクタの依存が必須（null で <see cref="ArgumentNullException"/>）であること。
     /// - 削除した呼出元 0 件のメンバーが戻っていないこと。

@@ -8,7 +8,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
-    /// Phase14b-Step14（決定 D14）: <see cref="ISpecialActionRuntimeReset"/> の実装（DI の Singleton）。
+    /// <see cref="ISpecialActionRuntimeReset"/> の実装（DI の Singleton）。
     /// スペシャルアクションの保存・読込の後に、第2層の実行時状態（アクションの状態の管理役と、合成入力のキーの状態）を消す。中身は旧呼び出しと同じ。
     /// </summary>
     public sealed class SpecialActionRuntimeReset : ISpecialActionRuntimeReset

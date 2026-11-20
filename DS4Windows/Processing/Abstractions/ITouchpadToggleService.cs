@@ -6,7 +6,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: タッチパッドの動作の切り替え（PS ボタンを押しながらタッチ）、起動時の OFF、スライドの判定。
+    /// タッチパッドの動作の切り替え（PS ボタンを押しながらタッチ）、起動時の OFF、スライドの判定。
     /// 以前は <c>ControlService.CheckForTouchToggle</c>／<c>StartTPOff</c>／<c>TouchpadSlide</c> と、状態 <c>touchreleased</c>／<c>touchslid</c> だった。
     /// <c>ControlService</c> の同名のメソッドは、薄い委譲として残す（画面と読み込み処理が使う）。
     /// </summary>

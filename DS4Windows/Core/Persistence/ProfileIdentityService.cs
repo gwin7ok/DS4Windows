@@ -8,10 +8,10 @@ using DS4Windows.Core.Logging;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase10-Step4d W1（Phase10-Step4d-Plan.md §3）: <see cref="IProfileIdentityService"/> の実装（DI の Singleton）。
+    /// <see cref="IProfileIdentityService"/> の実装（DI の Singleton）。
     /// プロファイルのフォルダー（<see cref="IPathService.ProfilesPath"/>）の各ファイルの <c>&lt;ProfileId&gt;</c> を、同一 XML 排他ロックの下で読み書きする。
     /// <para>
-    /// Phase10-Step4d W5a: ID ↔ 名前の<b>メモリの索引</b>を持つ（実行時に頻繁に引くため。挙動は変えない）。索引の鮮度は、プロファイルのフォルダーの最終更新時刻で判定する
+    /// ID ↔ 名前の<b>メモリの索引</b>を持つ（実行時に頻繁に引くため。挙動は変えない）。索引の鮮度は、プロファイルのフォルダーの最終更新時刻で判定する
     /// （ファイルの追加・削除・名前変更・コピーはフォルダーの時刻を変える）。フォルダーの時刻が変わった、またはフォルダーのパスが変わったら、作り直す。
     /// ファイルシステムの時刻の粗さで直後の変更を見逃さないよう、フォルダーの時刻が <see cref="TrustAfter"/> 以内に新しいあいだは、索引を信用せず、毎回作り直す。
     /// 例外: ファイルの中身だけを外から書き換えた場合（ID の手編集）は、フォルダーの時刻が変わらないため、次にフォルダーが変わるまで反映されない

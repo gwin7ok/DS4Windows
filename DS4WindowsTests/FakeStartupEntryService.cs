@@ -4,8 +4,8 @@ namespace DS4WindowsTests
 {
     /// <summary>
     /// Windows のスタートアップ登録（スタートアップ フォルダーのショートカットと、タスク スケジューラー）に触れない偽物。
-    /// 本物の <c>StartupEntryService.HasTaskEntry</c> は COM のタスク スケジューラーへ問い合わせるため、1 回約 0.35 秒かかり、利用者の環境の状態にも左右される
-    /// （Phase14d-Step4 で、設定画面の ViewModel を作るテストの時間の大半がここだと分かった）。登録の有無は、プロパティで与える。
+    /// 本物の <c>StartupEntryService.HasTaskEntry</c> は COM のタスク スケジューラーへ問い合わせるため、1 回約 0.35 秒かかり、利用者の環境の状態にも左右される。
+    /// 登録の有無は、プロパティで与える。
     /// </summary>
     internal sealed class FakeStartupEntryService : IStartupEntryService
     {

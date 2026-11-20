@@ -8,7 +8,7 @@ namespace DS4Windows.UI.Abstractions
     /// <summary>
     /// プロファイル編集画面などから開く、補助ウィンドウ（ボタン割り当て、マクロ記録、プリセット、スティック校正、
     /// スペシャルアクション編集）を生成する窓口。
-    /// Phase6-Step10-2（決定 E1＝A）: 呼び出し側（<c>ProfileEditor</c> など）が <c>new</c> で生成し、必要なサービスを
+    /// 呼び出し側（<c>ProfileEditor</c> など）が <c>new</c> で生成し、必要なサービスを
     /// 連鎖して渡す代わりに、この窓口へ生成を依頼する。必要なサービスは実装（<c>EditorWindowFactory</c>）が必須引数で保持する。
     /// ウィンドウは UI スレッドで生成すること。
     /// </summary>
@@ -41,13 +41,13 @@ namespace DS4Windows.UI.Abstractions
         AssignmentEditor CreateControlActionEditor(int deviceNum, MappedControl control, ProfileList profileList, int targetDevice);
 
         /// <summary>
-        /// Phase10-Step2 W3: 共通の編集画面の、Controls のモード（Controls のボタン 1 つの割り当ての編集）。
-        /// Phase10-Step3 W4: <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、従来の選択ダイアログ（<c>BindingWindow</c> の Full のモード）の代わりに、これを使う。
+        /// 共通の編集画面の、Controls のモード（Controls のボタン 1 つの割り当ての編集）。
+        /// <c>ProfileEditor</c> の <c>ShowControlAssignmentEditor</c> が、従来の選択ダイアログ（<c>BindingWindow</c> の Full のモード）の代わりに、これを使う。
         /// </summary>
         AssignmentEditor CreateControlActionEditor(int deviceNum, DS4ControlSettings controlSettings, ProfileList profileList, int targetDevice);
 
         /// <summary>
-        /// プロファイル編集画面（メイン画面に埋め込む）を生成する（Phase7-Step5 W5）。
+        /// プロファイル編集画面（メイン画面に埋め込む）を生成する。
         /// 旧: <c>MainWindow</c> が <c>new ProfileEditor(...)</c> で生成し、<c>ProfileEditor</c> が <c>AppHost</c> から 4 つのサービスを解決していた。
         /// </summary>
         /// <param name="targetDevice">編集の対象にする実機のスロット番号。-1 は実機なし</param>

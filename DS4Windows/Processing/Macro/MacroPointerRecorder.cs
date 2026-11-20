@@ -6,8 +6,8 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Processing.Macro
 {
     /// <summary>
-    /// Phase12-Step3 3e（R-3）: マクロの記録で、マウスのポインターの移動とボタンの位置を、移動ステップの値へ変える部分（フックから切り離した純粋なロジック）。
-    /// 次の決定（Phase12-Step3-Plan.md D3・D4）に従う。
+    /// マクロの記録で、マウスのポインターの移動とボタンの位置を、移動ステップの値へ変える部分（フックから切り離した純粋なロジック）。
+    /// 次の決定に従う。
     /// <list type="bullet">
     /// <item>移動は、前回の記録から <see cref="MinDistance"/> px 以上動き、かつ <see cref="MinIntervalMilliseconds"/> ms 以上経ったときだけ記録する。</item>
     /// <item>ボタンの押下・離上の直前に、位置が記録済みの最後の位置と違えば、その位置の移動を先に入れる（クリック位置の取りこぼしを防ぐ）。</item>

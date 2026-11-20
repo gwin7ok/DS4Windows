@@ -9,7 +9,7 @@ using System.Text;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W1: <c>BackingStore</c> の公開状態（フィールドとプロパティ）を、決定的な文字列にするテスト用ヘルパー。
+    /// <c>BackingStore</c> の公開状態（フィールドとプロパティ）を、決定的な文字列にするテスト用ヘルパー。
     /// 読込後の状態をゴールデンと照合するために使う。メンバーは名前の順、配列は添字の順、辞書・集合は並べ替えて出力する。
     /// サービス・デリゲート・XML ノードなど、状態ではない型は出力しない。揺れる値（日時）は出力しない。
     /// </summary>
@@ -21,11 +21,11 @@ namespace DS4WindowsTests
         private static readonly HashSet<string> ExcludedNames = new HashSet<string>(StringComparer.Ordinal)
         {
             "m_Profile", "m_Actions", "m_linkedProfiles", "m_controllerConfigs", "ProcessInspector", "loggedInvalidActions",
-            // Phase10-Step4d W2: SpecialAction.id（SA の固定 ID。新しく作ったものはランダム）。検査は ActionIdTests が持つ
+            // SpecialAction.id（SA の固定 ID。新しく作ったものはランダム）。検査は ActionIdTests が持つ
             "id",
-            "profileId",   // Phase10-Step4d W3: SpecialAction.profileId（Load Profile の切り替え先の ID）。検査は ActionAndProfileReferenceIdTests が持つ
-            "outputExtras",   // Phase10-Step6 I5a: SpecialAction.outputExtras（SA に付ける Extras。ゴールデンの SA にはない。検査は SaExtrasStorageTests が持つ）
-            "analogStrength",   // Phase10-Step6 後の Step5: SpecialAction.analogStrength（Button のアナログな出力の強さ。既定 100。ゴールデンの SA は既定のまま。検査は SaAnalogStrengthStorageTests が持つ）
+            "profileId",   // SpecialAction.profileId（Load Profile の切り替え先の ID）。検査は ActionAndProfileReferenceIdTests が持つ
+            "outputExtras",   // SpecialAction.outputExtras（SA に付ける Extras。ゴールデンの SA にはない。検査は SaExtrasStorageTests が持つ）
+            "analogStrength",   // SpecialAction.analogStrength（Button のアナログな出力の強さ。既定 100。ゴールデンの SA は既定のまま。検査は SaAnalogStrengthStorageTests が持つ）
         };
 
         public static string Dump(object root)
@@ -98,9 +98,9 @@ namespace DS4WindowsTests
         private static void Visit(StringBuilder sb, string path, object value, int depth, List<object> stack)
         {
             if (value == null) { Line(sb, path, "null"); return; }
-            // Phase10-Step4d W5b: スロットの名前の窓口（ProfileSlotNames）は、従来の string[] と同じ出力にする（現在の名前の配列として）
+            // スロットの名前の窓口（ProfileSlotNames）は、従来の string[] と同じ出力にする（現在の名前の配列として）
             if (value is DS4Windows.Core.Settings.ProfileSlotNames slotNames) value = slotNames.ToArray();
-            // Phase10-Step4d W5d: リンクプロファイルの窓口（LinkedProfileMap）は、従来の辞書と同じ出力にする（現在の名前の辞書として）
+            // リンクプロファイルの窓口（LinkedProfileMap）は、従来の辞書と同じ出力にする（現在の名前の辞書として）
             if (value is DS4Windows.Core.Settings.LinkedProfileMap linkedMap) value = linkedMap.ToDictionary();
             // 機種の系統ごとの設定は、型付きのプロパティがあった頃と同じ名前で出力する（保存・読み込みの基準の出力を変えないため）
             if (value is DS4Windows.Core.Settings.ControlServiceDeviceOptions deviceOptions) value = new LegacyDeviceOptionsView(deviceOptions);

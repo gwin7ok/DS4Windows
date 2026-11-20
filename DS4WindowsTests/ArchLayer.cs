@@ -1,7 +1,7 @@
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step1（R-01）: 層の依存の検査で使う層の区分（規約 §1、§3.4 R1）。名前空間から <see cref="LayerMap.Classify"/> が決める。
+    /// 層の依存の検査で使う層の区分（規約 §1、§3.4 R1）。名前空間から <see cref="LayerMap.Classify"/> が決める。
     /// </summary>
     public enum ArchLayer
     {

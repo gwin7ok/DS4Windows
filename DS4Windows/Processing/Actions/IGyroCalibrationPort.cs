@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6a（Phase8-Step7-6-Plan.md Q2＝A）: GyroCalibrate の出力が、実機のコントローラー（<c>InputDeviceCore</c>）を操作するための窓口。
+    /// GyroCalibrate の出力が、実機のコントローラー（<c>InputDeviceCore</c>）を操作するための窓口。
     /// 出力アクションが <c>InputDeviceCore</c> を直接持たないようにし、単体テストでは記録用の偽の実装に差し替える。
     /// </summary>
     public interface IGyroCalibrationPort

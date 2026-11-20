@@ -31,7 +31,7 @@ namespace DS4Windows.UI.ViewModels
         public ObservableCollection<MappedControl> Mappings { get => mappings; }
 
         /// <summary>
-        /// Phase9 UI 変更: 一覧の<b>表示用</b>の並び。LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下に置く。
+        /// 一覧の<b>表示用</b>の並び。LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下に置く。
         /// <see cref="Mappings"/>（添字がコントローラーの入力による選択、ホバーの表などに使われる）の順序は、変えない。同じ <see cref="MappedControl"/> を、別の順で並べるだけ。
         /// </summary>
         private ObservableCollection<MappedControl> displayMappings = new ObservableCollection<MappedControl>();
@@ -159,7 +159,7 @@ namespace DS4Windows.UI.ViewModels
             mappings.Add(l2FullPullControl);
             mappings.Add(r2FullPullControl);
 
-            // Phase10-Step4c W5（項目 9、ユーザー承認 2026-10-21）: SA のトリガーにあって Controls の一覧になかった Touch Started／Touch Ended を、末尾の後ろに足す
+            // SA のトリガーにあって Controls の一覧になかった Touch Started／Touch Ended を、末尾の後ろに足す
             // （既存の項目の添字、コントローラーの入力による選択の添字は変えない）。SA の一覧と入力の集合を同じにするため
             mappings.Add(new MappedControl(devIndex, DS4Controls.TouchStarted, InputControlCatalog.LabelOf(DS4Controls.TouchStarted), devType, profileSettingsService));
             mappings.Add(new MappedControl(devIndex, DS4Controls.TouchEnded, InputControlCatalog.LabelOf(DS4Controls.TouchEnded), devType, profileSettingsService));
@@ -175,7 +175,7 @@ namespace DS4Windows.UI.ViewModels
             BuildDisplayMappings();
         }
 
-        // Phase9 UI 変更: 表示用の並びは、InputControlCatalog（SA のトリガーの一覧と共通）の順。カタログにない項目は、末尾に足す
+        // 表示用の並びは、InputControlCatalog（SA のトリガーの一覧と共通）の順。カタログにない項目は、末尾に足す
         private void BuildDisplayMappings()
         {
             var added = new HashSet<MappedControl>();

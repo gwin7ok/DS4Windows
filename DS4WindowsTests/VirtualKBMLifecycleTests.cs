@@ -8,10 +8,10 @@ using DS4Windows.Output.Services;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step2-3 (PR-3, 決定D3): OutputKBMHandlerLifecycle が、旧 ControlService の
+    /// OutputKBMHandlerLifecycle が、旧 ControlService の
     /// RefreshOutputKBMHandler / InitOutputKBMHandler が行っていたハンドラ操作と等価であることを検証する。
-    /// Phase7-Step8 W3（Q6＝A）: ハンドラの実体は <see cref="OutputKBMHandlerAdapter.Handler"/>（旧 Global.outputKBMHandler）、
-    /// KBM マッピングは <c>IProfileSettingsService.OutputKBMMapping</c>（旧 Global.outputKBMMapping）へ移った。
+    /// ハンドラの実体は <see cref="OutputKBMHandlerAdapter.Handler"/>、
+    /// KBM マッピングは <c>IProfileSettingsService.OutputKBMMapping</c>へ移った。
     /// 各テストは、独立の adapter・設定サービスを使うため、静的な状態を共有せず、元へ戻す必要もない。
     /// </summary>
     public class VirtualKBMLifecycleTests

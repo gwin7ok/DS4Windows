@@ -8,7 +8,7 @@ namespace DS4Windows.Output.Services
 {
     /// <summary>
     /// 出力 KBM ハンドラの所有者であり、<see cref="IVirtualKBM"/> の実装。
-    /// Phase7-Step8 W3（Q6＝A）: 旧 <c>Global.outputKBMHandler</c>（public static フィールド）の実体を、本クラスの <see cref="Handler"/> が持つ。
+    /// 旧 <c>Global.outputKBMHandler</c>（public static フィールド）の実体を、本クラスの <see cref="Handler"/> が持つ。
     /// 書き込むのは <c>OutputKBMHandlerLifecycle</c>（決定・破棄・フォールバック）だけで、読み取りは各メソッドが呼ぶたびに行う
     /// （実行時に初期化されるハンドラへ転送する遅延委譲の動作は従来と同じ）。ハンドラが無い間は、各操作は何もせず、戻り値は既定値になる。
     /// </summary>

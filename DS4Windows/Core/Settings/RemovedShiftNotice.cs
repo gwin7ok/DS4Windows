@@ -4,7 +4,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase8-Step7 7.8d（Phase8-Step7-8d-Plan.md §4.2）: 編集画面を開いたときの、廃止された「シフト」の設定の警告の判定（画面から独立。状態を持たない）。
+    /// 編集画面を開いたときの、廃止された「シフト」の設定の警告の判定（画面から独立。状態を持たない）。
     /// 保持した内容があれば、警告を出し（<see cref="IRemovedShiftPrompt.Ask"/>）、選択に従う。<b>選択は記憶しない</b>: 「残す」なら内容はそのままで、
     /// 次に編集画面を開いたときも、また警告を出す。
     /// </summary>

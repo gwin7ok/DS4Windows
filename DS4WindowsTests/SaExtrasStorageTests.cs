@@ -8,7 +8,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I5a（Phase10-Step6-Plan.md §4）: SA に付ける Extras の保存・読み込み。<c>Actions.xml</c> の <c>OutputExtras</c> 要素（あるときだけ）に、Controls と同じ書式
+    /// SA に付ける Extras の保存・読み込み。<c>Actions.xml</c> の <c>OutputExtras</c> 要素（あるときだけ）に、Controls と同じ書式
     /// （カンマ区切りの 9 個）で保存する。旧ファイル（要素なし）は、Extras なしとして読む。SA の保存は SA を作り直すため、Extras は別の呼び出し（<c>SetActionExtras</c>）で設定する。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

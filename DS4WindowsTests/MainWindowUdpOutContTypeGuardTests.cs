@@ -7,7 +7,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step5-3: UDP 診断コマンド `query.&lt;device&gt;.outconttype` の分岐（`MainWindow.xaml.cs`）が、
+    /// UDP 診断コマンド `query.&lt;device&gt;.outconttype` の分岐（`MainWindow.xaml.cs`）が、
     /// 正本である永続設定 `profileSettingsService.OutputType(tdevice).ContType` を返し、
     /// 削除済みの孤立 API（`GetOutputDeviceType`）へ戻っていないことを固定する回帰ガード。
     /// UDP 受信処理は `MainWindow` の中にあり単体で駆動できないため、ソース走査で担保する。
@@ -24,7 +24,7 @@ namespace DS4WindowsTests
 
         private string ReadSourceWithoutComments()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");   // Phase13-Step11 11-b: IPC コマンドの実行は IpcCommandProcessor へ移した
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");   // IPC コマンドの実行は IpcCommandProcessor へ移した
             if (path == null)
             {
                 _output.WriteLine("MainWindow.xaml.cs が見つからないため検査を省略した。");

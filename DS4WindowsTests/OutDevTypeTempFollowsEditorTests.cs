@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase11 W6 K-W6-4: 編集画面で Emulated Controller（<see cref="ProfileSettingsViewModel.TempControllerIndex"/>）を DS4 ↔ Xbox 360 に変えたとき、
+    /// 編集画面で Emulated Controller（<see cref="ProfileSettingsViewModel.TempControllerIndex"/>）を DS4 ↔ Xbox 360 に変えたとき、
     /// 出力ピッカー（BindingWindow）が Pad タブの種類を決めるのに使う <c>OutDevTypeTemp</c> も、同じ種類へ更新される。
     /// 以前は <c>OutContType</c> だけが変わり、<c>OutDevTypeTemp</c> は編集画面を開いたときにしか書かれなかったため、
     /// 保存せずに出力ピッカーを開くと、前の種類の表示のままだった。

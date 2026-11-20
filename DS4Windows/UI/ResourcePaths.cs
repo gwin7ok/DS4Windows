@@ -3,7 +3,7 @@ namespace DS4Windows.UI
 
     public class ResourcePaths
     {
-        // Phase7-Step10a W3（Q1＝A）: 旧 Global.RESOURCES_PREFIX／ASSEMBLY_RESOURCE_PREFIX（値は同じ）。画面側の資源パスの組み立てに使う。
+        // 旧 Global.RESOURCES_PREFIX／ASSEMBLY_RESOURCE_PREFIX（値は同じ）。画面側の資源パスの組み立てに使う。
         public const string ResourcesPrefix = "/DS4Windows;component/Resources";
         public const string AssemblyResourcePrefix = "pack://application:,,,/DS4Windows;";
 

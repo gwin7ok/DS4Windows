@@ -3,7 +3,7 @@
 作成日: 2026-11-11
 最終更新日: 2026-11-12（現在のコードと照合して、現状・設計の方針・決めること・Step 案を改めた。変更点は末尾の「2026-11-12 の見直し」）
 状態: **下書き。実施するかどうかは未定**（入力側は DS4 のボタン名・画像だけで維持する可能性がある）。実施する場合は、一番最後の Phase として行い、そのとき番号を振る。実施しないと決めたら、KI-7 を「対応しない（仕様）」として解消済みへ移す。
-関連: `Known-Issues-Ledger.md` の KI-7、`Phase22-Xbox-Parity-Plan.md` §7、`Model-Diagram/02-Extension-Guide.md`、全体計画書 `DI-App-Wide-Migration-Plan.md` §6.16
+関連: `Known-Issues-Ledger.md` の KI-7、`Archive/Phase22-Xbox-Parity-Plan.md` §7、`Model-Diagram/02-Extension-Guide.md`、全体計画書 `DI-App-Wide-Migration-Plan.md` §6.16
 調査の対象: `master`（コミット `070095f9` の時点のコード）。本文の `ファイル:行` は、その時点の行番号。着手時に再確認する。
 
 ## 1. 目的と、実施しない場合の姿
@@ -96,7 +96,7 @@
 ## 8. ほかの計画との関係（2026-11-12 追加）
 - 「一番最後の Phase」とする（ユーザーの指示）。次の計画が同じファイルに触れるため、先に済ませてから行うのがよい。
   - `Phase33-Plan.md`（左右スティックの設定画面の一本化）: スティックのパネルの XAML と ViewModel を作り直す。見出し・ラベル（D5 の (C)）は、そのあとの形に対して差し替える。
-  - `Phase26-Plan.md` の残り（`ProfileEditor`・`BindingWindow` の code-behind の整理）: 図の固定をしている箇所（`BindingWindow.xaml.cs:815`）が動く。
+  - `Archive/Phase26-Plan.md` の残り（`ProfileEditor`・`BindingWindow` の code-behind の整理）: 図の固定をしている箇所（`BindingWindow.xaml.cs:815`）が動く。
   - `Phase32-Plan.md` の 32-B3（出力ピッカーの `use360Mode` を、出力の種類から表示を引く形にする）: 出力側の図の出し分けの整理。入力側（本計画）は、同じ考え方を系統で行う。
 - `Phase31-Plan.md`（機種の名指しの解消）とは独立。
 

@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase9 UI 変更（Phase9-ControlsList-Display-Proposal.md。ユーザー承認 2026-10-22）: 割り当ての説明文を作る、唯一の場所。
+    /// Phase9 UI 変更（docs-forDIMG/MadeByAgent/Archive/Phase9-ControlsList-Display-Proposal.md。ユーザー承認 2026-10-22）: 割り当ての説明文を作る、唯一の場所。
     /// Controls タブの一覧、出力ピッカーのボタンのラベル（<c>PressKeyViewModel.DescribeText</c>）、SA タブの一覧のアクション列が、同じ書式を使う。
     /// 書式: 基本は「出力名 (Press／Toggle)」。括弧の中に、モード・オプションを順に足す。固定語（Press、Toggle、steps ほか）は、英語固定（ユーザー決定）。
     /// 状態を持たず、画面の部品（ListView、サービス）に依存しない（ボタン名の取得だけ、関数で受ける）。
@@ -84,7 +84,7 @@ namespace DS4Windows.UI.ViewModels
                     text = setting.action.actionBtn == X360Controls.Unbound ? UnboundText : ForButton(buttonName(setting.action.actionBtn), toggle);
                     break;
                 default:
-                    // Phase9 UI 変更: 対応するボタンがない Default は「Default (No matching button)」（以前は「未割り当て」）
+                    // 対応するボタンがない Default は「Default (No matching button)」（以前は「未割り当て」）
                     text = isExtraControl || defaultOutput == X360Controls.None ? DefaultNoMatchText : ForDefault(buttonName(defaultOutput));
                     break;
             }

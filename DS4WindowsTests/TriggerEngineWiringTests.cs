@@ -11,7 +11,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step4 W4（Phase8-Step4-Plan.md §2.4／§3）: <c>Mapping</c> へのエンジンの配線（旧ループのフック）の結合テスト。
+    /// <c>Mapping</c> へのエンジンの配線の結合テスト。
     /// ホストの <c>Mapping</c>・エンジン・登録簿・移行スイッチを使い、<c>MapCustom</c> を実走行させる。
     /// Step7.1（Button の切替）の予行も兼ねる: 同じ入力の列を、旧経路（移行なし）と新経路（Button を移行し、実物の束縛を登録）で流し、出力を比較する。
     /// </summary>
@@ -84,7 +84,7 @@ namespace DS4WindowsTests
             // 旧経路なら Button の Press は Cross を出力する。新経路（偽の出力）では、旧ループが通らないので Cross は出ない
             Assert.False(first.Cross);
             Assert.Equal(1, output.Executes);
-            Assert.True(t.Engine.IsSuppressed(t.Device, DS4Controls.L1));  // 抑制の集合はエンジンのもの（旧ループと共通）
+            Assert.True(t.Engine.IsSuppressed(t.Device, DS4Controls.L1));  // 抑制の集合はエンジンのもの
             Assert.False(first.L1);                                        // トリガーのボタンの出力は消される
 
             t.RunFrame(Frame(true));

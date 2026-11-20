@@ -12,7 +12,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W0（Phase10-Step4d-Plan.md §4 W0）: プロファイルと SA を<b>名前で識別・参照</b>している現行の挙動を固定する特性化テスト。
+    /// プロファイルと SA を<b>名前で識別・参照</b>している現行の挙動を固定する特性化テスト。
     /// 名前変更・削除の追従（リンクプロファイル、自動プロファイル、全プロファイルの <c>&lt;ProfileActions&gt;</c>）、名前の比較規則、保存形式（ID がないこと）、
     /// 実行時の鍵（<c>ActionManager</c> の登録簿が SA の名前で状態を引くこと）を固定する。製品コードは変えない。
     /// W1 以降で ID を足し、参照を ID に替えるとき、変わらないべき部分（既存の形式、名前の併記）と、替わる部分（追従）を、このテストで見分ける。
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
 
         // ---- リンクプロファイル ----
 
-        // Phase10-Step4d W7: 以前ここにあった、リンクプロファイル（ReplaceLinkedProfileName）と自動プロファイル（ReplaceProfileName）の名前変更の追従のテストは、撤去したメンバーのため削除した。
+        // 以前ここにあった、リンクプロファイル（ReplaceLinkedProfileName）と自動プロファイル（ReplaceProfileName）の名前変更の追従のテストは、撤去したメンバーのため削除した。
         // 同じ振る舞い（名前変更に追従し、保存し直すと新しい名前と ID が書かれる）は、AutoAndLinkedProfileRuntimeIdTests／RenameFollowUpRemovalTests が固定する
 
         [Fact]
@@ -129,7 +129,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("ActionId", xml);
         }
 
-        // Phase10-Step4d W2: 以前ここにあった「Actions.xml に ID がない」の検査は、W2 で Action に Id 属性を足したため、ActionIdTests に置き換えた
+        // 以前ここにあった「Actions.xml に ID がない」の検査は、W2 で Action に Id 属性を足したため、ActionIdTests に置き換えた
 
         // ---- 実行時の鍵 ----
 
@@ -152,6 +152,6 @@ namespace DS4WindowsTests
 
         // ---- 画面の経路（ソースの検査）----
 
-        // Phase10-Step4d W7: MainWindow の名前変更の追従の検査は、RenameFollowUpRemovalTests に置き換えた（SA の名前変更が ReplaceActionReference を呼ぶ検査は、同ファイルに移した）
+        // MainWindow の名前変更の追従の検査は、RenameFollowUpRemovalTests に置き換えた（SA の名前変更が ReplaceActionReference を呼ぶ検査は、同ファイルに移した）
     }
 }

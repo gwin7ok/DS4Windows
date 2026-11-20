@@ -7,9 +7,9 @@ using DS4Windows.Core.Logging;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step9b-1（F04）: NLog.config の async="false" では logfile が直接の FileTarget になる。
+    /// NLog.config の async="false" では logfile が直接の FileTarget になる。
     /// UpdateLogSettings／RestoreArchiveSetting が使う検索が、ラッパーの有無の両方で FileTarget を返すことを固定する。
-    /// （旧実装はラッパー前提で NullReferenceException になり、設定の保存も止めていた）
+    ///
     /// </summary>
     public class LoggerHolderFindLogFileTargetTests
     {

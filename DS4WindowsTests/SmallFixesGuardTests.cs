@@ -8,7 +8,7 @@ using DS4Windows.Output.Kbm;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7b W2・W3（Phase7b-Plan.md §2 項目 5・6、Q3＝A、Q4＝A）の回帰ガード。
+    /// Phase7b W2・W3（docs-forDIMG/MadeByAgent/Archive/Phase7b-Plan.md §2 項目 5・6、Q3＝A、Q4＝A）の回帰ガード。
     /// - W2（K4-1）: <c>Mouse.SixMouseStick</c> がジャイロのマウススティックの水平軸を、固定の 0（1 台目）ではなく、
     ///   受け持つ台（<c>deviceNum</c>）の設定から読む。ソースが見つからない環境では、この検査を省略する。
     /// - W3（K7-2）: FakerInput が未導入のとき、<c>-virtualkbm fakerinput</c> の明示指定でも SendInput にする。

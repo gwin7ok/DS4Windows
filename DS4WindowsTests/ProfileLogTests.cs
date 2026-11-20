@@ -12,10 +12,10 @@ using DS4Windows.Input;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.5a-W2（Phase8-Step7-5-Plan.md Q4＝A）: 旧 <c>MapCustomAction</c> の Profile の分岐が出していたログを、新経路が同じ文言・順序で出すことを確かめる。
+    /// 旧 <c>MapCustomAction</c> の Profile の分岐が出していたログを、新経路が同じ文言・順序で出すことを確かめる。
     /// NLog の設定をテストの間だけ Trace 有効のメモリ出力へ差し替え、旧経路と新経路のログの行を比べる（7.4 の <c>ProgramLogTests</c> と同じ方式）。
     /// プロファイルの適用は、記録用の実装で置き換える。他の Host 構築テストと同じコレクションで直列に実行する。
-    /// Phase8-Step8 8d（持ち越し C-2）: 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
+    /// 旧経路は削除済み。以前の「旧・新の両経路の比べ」は、新経路の期待値の固定（比べを除いた、残りの検査）に変えた。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileLogTests
@@ -29,7 +29,7 @@ namespace DS4WindowsTests
 
         private static bool IsProfileLogLine(string line, string name)
         {
-            // 「SpecialAction PROFILE: beingTriggered=…, useTempProfile=…」の行は、スペシャルアクションの名前を含まない（旧経路と同じ文言）
+            // 「SpecialAction PROFILE: beingTriggered=…, useTempProfile=…」の行は、スペシャルアクションの名前を含まない
             if (line.Contains("SpecialAction PROFILE: beingTriggered=")) return true;
             if (!line.Contains(name)) return false;
             return line.Contains("SpecialAction PROFILE") || line.Contains("SpecialAction Profile:") || line.Contains("Trigger detected for SA")

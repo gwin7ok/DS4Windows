@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14d-Step1: ソースを文字列として検査するテストの、共通の読み取り部品（旧: 各ファイルが自前で持っていた Read／StripComments の複製）。
+    /// ソースを文字列として検査するテストの、共通の読み取り部品。
     /// 探し方と「見つからないとき」の扱いは <see cref="SourceFileLocator.Find"/> と同じ（ソースなしの環境では null、リポジトリがあるのにファイルがなければ失敗）。
     /// </summary>
     internal static class SourceText
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
             return code == null ? null : Whitespace.Replace(code, " ");
         }
 
-        /// <summary>コメント（<c>/* */</c> と <c>//</c>）を除く。文字列の中の <c>//</c> も除く（旧来の各テストの処理と同じ）。</summary>
+        /// <summary>コメント（<c>/* */</c> と <c>//</c>）を除く。文字列の中の <c>//</c> も除く。</summary>
         public static string StripComments(string text)
         {
             text = BlockComment.Replace(text, string.Empty);

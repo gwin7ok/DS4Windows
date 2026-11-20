@@ -10,10 +10,10 @@ namespace DS4Windows.Processing.Abstractions
         IReadOnlyList<string>? GetProfileActionNames(int deviceIndex);
         SpecialAction? GetProfileAction(int deviceIndex, string actionName);
 
-        // ---- Phase6-Step2-5 (PR-5): プロファイルに設定されたスペシャルアクション数（毎レポート評価。割り当てなし）----
+        // ---- プロファイルに設定されたスペシャルアクション数（毎レポート評価。割り当てなし）----
         int GetProfileActionCount(int deviceIndex);
 
-        // ---- Phase6-Step3-1: プロファイルに設定されたスペシャルアクション名から定義済みインデックスを引く（Global への薄い委譲）----
+        // ---- プロファイルに設定されたスペシャルアクション名から定義済みインデックスを引く（Global への薄い委譲）----
         int GetProfileActionIndexOf(int deviceIndex, string actionName);
 
         /// <summary>

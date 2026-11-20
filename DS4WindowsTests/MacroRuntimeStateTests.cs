@@ -9,8 +9,8 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="MacroRuntimeState"/> のデバイスごとの形と、<see cref="MacroRuntimeState.ApplyHeldControls"/>
-    /// （旧 <c>Mapping.MapCustom</c> の末尾の「マクロが押しているボタンを出力へ重ねる」ブロック）の値の特性化。
+    /// <see cref="MacroRuntimeState"/> のデバイスごとの形と、<see cref="MacroRuntimeState.ApplyHeldControls"/>
+    ///の値の特性化。
     /// </summary>
     public class MacroRuntimeStateTests
     {
@@ -38,7 +38,7 @@ namespace DS4WindowsTests
         public void ApplyHeldControls_DoesNothing_WhenTheCountIsZero()
         {
             var state = new MacroRuntimeState();
-            state.MacroControl[0][0] = true;   // フラグがあっても、個数が 0 なら重ねない（旧: MacroCount > 0 の条件）
+            state.MacroControl[0][0] = true;   // フラグがあっても、個数が 0 なら重ねない
             var mapped = new ControllerState();
             state.ApplyHeldControls(0, mapped);
             Assert.False(mapped.Cross);
@@ -78,7 +78,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ApplyHeldControls_OnlyAffectsTheDeviceThatHoldsTheFlags()
         {
-            // ユーザー判断 Q2: デバイス 1 のマクロが押したボタンは、デバイス 2 の出力に重ならない（旧: 全コントローラーに重なっていた）
+            // ユーザー判断 Q2: デバイス 1 のマクロが押したボタンは、デバイス 2 の出力に重ならない
             ControllerState other = Apply(0, device: 1, applyDevice: 2);
             Assert.False(other.Cross);
 

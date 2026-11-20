@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W0（Phase10-Step4c-Plan.md §2 項目 1・§4 W0）: 押下判定の閾値の、SA（<see cref="TriggerInput.IsActive"/>）と Controls（<see cref="TriggerInput.IsControlActive"/>）の
+    /// 押下判定の閾値の、SA（<see cref="TriggerInput.IsActive"/>）と Controls（<see cref="TriggerInput.IsControlActive"/>）の
     /// <b>現行の差</b>を、同じ入力で並べて固定する特性化テスト。製品コードは変えない。
     /// W4（項目 1: デジタルな出力だけ SA の閾値に揃える）で、Controls 側の期待値のうち、デジタルな出力に使う判定の分を書き換える。
     /// </summary>

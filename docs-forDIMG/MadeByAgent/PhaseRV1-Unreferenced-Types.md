@@ -18,7 +18,7 @@
 **経緯**
 - 2025-12-18、`5e231d18`（フォーク。「`TriggerContext` を導入」）で、`DS4Control/Trigger.cs` に `TriggerContext`・`TriggerType`・`ITrigger`・`SingleButtonTrigger` の 4 型が追加された。
 - 2026-10-15、Phase6-Step10b W1（`9217b2c1`）の「1 ファイル 1 型」の分割で、`TriggerType.cs` が単独のファイルになった（内容は変えていない）。
-- 2026-10-19、Phase8-Step1 の孤立コードの判断（`Phase8-Step1-Orphan-Decisions.md`）で、`ITrigger`・`SingleButtonTrigger` を「**使うべきでない**」（D2＝B1 の `ComboTriggerInputAction`［`IInputAction.Evaluate`］が同じ役割を担う並行実装）と判断し、Phase8-Step3 W4（`985f9fbb`）で削除した。この判断は、「`TriggerType`／`TriggerContext` は利用中のため残す」とも書いていた。
+- 2026-10-19、Phase8-Step1 の孤立コードの判断（`Archive/Phase8-Step1-Orphan-Decisions.md`）で、`ITrigger`・`SingleButtonTrigger` を「**使うべきでない**」（D2＝B1 の `ComboTriggerInputAction`［`IInputAction.Evaluate`］が同じ役割を担う並行実装）と判断し、Phase8-Step3 W4（`985f9fbb`）で削除した。この判断は、「`TriggerType`／`TriggerContext` は利用中のため残す」とも書いていた。
 - 今は、`TriggerContext` も存在せず、`TriggerType` を使う箇所は、ソース・テスト・XAML のどこにもない。
 
 **判断**: 使うべきでない（削除候補）。

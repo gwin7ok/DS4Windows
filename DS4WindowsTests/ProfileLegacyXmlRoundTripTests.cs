@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step12（U-8 の是正）: 旧形式（3.9.9 互換）のプロファイル XML の保存・読込で欠けていた 10 要素
+    /// 旧形式（3.9.9 互換）のプロファイル XML の保存・読込で欠けていた 10 要素
     /// （DebouncingMs、InverseRumbleMotors、UseDs3PitchRollSim、スティックのドリフト補正 4 件、DS4OutputTriggerMode、
     /// ジャイロマウス／ジャイロマウススティックのジッター補正）が、保存して読み込むと同じ値に戻ることを固定する。
     /// 実ファイルと Global の状態には触れず、独立した BackingStore と XmlDocument だけを使う。
@@ -17,7 +17,7 @@ namespace DS4WindowsTests
         private const int Device = 2;
         private const string Root = "DS4Windows";
 
-        // Phase7-Step10c W4: 読込（LoadLegacyExtraSettings）は LegacyProfileXmlSerializer へ移した。作業用の XmlDocument はその m_Xdoc
+        // 読込（LoadLegacyExtraSettings）は LegacyProfileXmlSerializer へ移した。作業用の XmlDocument はその m_Xdoc
         private static readonly FieldInfo SerializerXdocField =
             typeof(DS4Windows.Core.Persistence.LegacyProfileXmlSerializer).GetField("m_Xdoc", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -28,11 +28,11 @@ namespace DS4WindowsTests
             return serializer;
         }
 
-        // ResetProfile は、プロファイルの読込を担う型が呼ぶため公開にした（Phase7-Step10c W4）
+        // ResetProfile は、プロファイルの読込を担う型が呼ぶため公開にした
         private static readonly MethodInfo ResetProfileMethod =
             typeof(BackingStore).GetMethod("ResetProfile", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-        // Phase7-Step10c W5: 作業用の XmlDocument は、読み書きのどちらも LegacyProfileXmlSerializer の m_Xdoc（NewSerializer で設定）
+        // 作業用の XmlDocument は、読み書きのどちらも LegacyProfileXmlSerializer の m_Xdoc（NewSerializer で設定）
         private static XmlDocument NewDocument(BackingStore store)
         {
             var doc = new XmlDocument();
@@ -75,7 +75,7 @@ namespace DS4WindowsTests
             Assert.Equal(!GyroMouseInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].Mouse.jitterCompensation);
             Assert.Equal(!GyroMouseStickInfo.JITTER_COMPENSATION_DEFAULT, target.gyroSlots[Device].MouseStick.jitterCompensation);
 
-            // 要素名は ProfileDTO と同じ（旧版・DTO 経路との互換）
+            // 要素名は ProfileDTO と同じ
             foreach (string name in new[]
             {
                 "InverseRumbleMotors", "LeftStickDriftXAxis", "LeftStickDriftYAxis",
@@ -140,7 +140,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Save_DoesNotWriteDebouncingMs_AndLoad_IgnoresAnOldDebouncingMsElement()
         {
-            // Phase11 K-W6-10: デバウンス機能の廃止。保存はしない。古いプロファイルの <DebouncingMs> は、読み捨てる（エラーにしない）
+            // デバウンス機能の廃止。保存はしない。古いプロファイルの <DebouncingMs> は、読み捨てる（エラーにしない）
             var store = new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService());
             XmlDocument doc = NewDocument(store);
             var xml = NewSerializer(store, doc);
@@ -159,7 +159,7 @@ namespace DS4WindowsTests
         public void SaveProfileAndLoadProfile_CallTheExtraSettingsHelpers()
         {
             // 往復テストは補助メソッド単体の確認。SaveProfile／LoadProfile から呼ばれていることは、ソース走査で固定する。
-            // Phase7-Step10c W4: 読込側は LegacyProfileXmlSerializer へ移した（保存側は W5 まで BackingStore）。両方のソースを合わせて確認する
+            // 読込側は LegacyProfileXmlSerializer へ移した（保存側は W5 まで BackingStore）。両方のソースを合わせて確認する
             string path = SourceFileLocator.Find("DS4Windows/Core/Settings/BackingStore.cs");
             string serializerPath = SourceFileLocator.Find("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
             if (path == null || serializerPath == null) return;

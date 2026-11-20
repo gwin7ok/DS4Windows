@@ -12,7 +12,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Connection
 {
     /// <summary>
-    /// Phase9 9-E E-6e（Phase9-E6-Plan.md §3.4）: <see cref="IDeviceDisconnectHandler"/> の実装（DI の Singleton。状態なし）。
+    /// <see cref="IDeviceDisconnectHandler"/> の実装（DI の Singleton。状態なし）。
     /// 旧 <c>ControlService</c> の <c>On_DS4Removal</c>／<c>On_SyncChange</c>／<c>On_SerialChange</c> を、そのまま移したもの
     /// （スロットの配列は、<see cref="IDeviceSlotState"/> から受ける。Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IDeviceSlotHost&gt;</c>）。切断の後始末の順序は、旧コードのまま保つ（ガードレール: 切断時クリーンアップ）。
     /// </summary>
@@ -26,7 +26,7 @@ namespace DS4Windows.Processing.Services.Connection
         private readonly ILatencyMonitor _latencyMonitor;
         private readonly IDeviceStateService _deviceStateService;
         private readonly IVirtualPadService _virtualPad;
-        private readonly OutContType[] _activeOutDevType;   // Phase13-Step7 7-c: 旧: 遅延取得デリゲート。配列の参照は再代入されない
+        private readonly OutContType[] _activeOutDevType;   // 旧: 遅延取得デリゲート。配列の参照は再代入されない
         private readonly IDeviceSlotState _host;
         private readonly int _controllerSlotLimit;
 
@@ -104,7 +104,7 @@ namespace DS4Windows.Processing.Services.Connection
                     }
                     catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[DeviceDisconnectHandler:96] ignored {caught.GetType().Name}: {caught.Message}"); }
 
-                    // Phase8-Step6 W2: 物理的な切断だけが、エンジンの状態と登録簿の束縛を消す（HandleDeviceDisconnect は適用のたびにも呼ばれるため、そこには足さない）
+                    // 物理的な切断だけが、エンジンの状態と登録簿の束縛を消す（HandleDeviceDisconnect は適用のたびにも呼ばれるため、そこには足さない）
                     _profileSlotApplier.ReleaseSlot(ind);
 
                     string removed = DS4Windows.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
@@ -148,7 +148,7 @@ namespace DS4Windows.Processing.Services.Connection
                     //Global.useTempProfile[ind] = false;
                     //Global.tempprofilename[ind] = string.Empty;
                     //Global.tempprofileDistance[ind] = false;
-                    // Phase11 W6 K-W6-11（ユーザー承認済み仕様）: 切断したら一時プロファイルの状態は維持しない。
+                    // 切断したら一時プロファイルの状態は維持しない。
                     // 再接続では通常のルールでプロファイルが決まり、その後に AutoProfileService.CheckProfilesForConnectedController が
                     // 前面のプログラムに従って自動プロファイルを割り当てる（上のコメントアウトは、この仕様へ置き換えた）。
                     _profileSettings.SetTempProfileName(ind, string.Empty);
@@ -213,7 +213,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             if (ind >= 0)
             {
-                _deviceStateService.OnDeviceSerialChange(host, ind, device.GetMacAddress());   // Phase13-Step5: 送り主は IDeviceSlotState（旧: ControlService）。購読者はいない
+                _deviceStateService.OnDeviceSerialChange(host, ind, device.GetMacAddress());   // 送り主は IDeviceSlotState。購読者はいない
             }
         }
     }

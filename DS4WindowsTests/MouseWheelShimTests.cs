@@ -12,7 +12,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step4-1: `MouseWheel` が `Global`（静的な状態）ではなく、コンストラクタで受け取った
+    /// `MouseWheel` が `Global`（静的な状態）ではなく、コンストラクタで受け取った
     /// `IProfileSettingsService`（`ScrollSensitivity`、`OutputKBMMapping.WHEEL_TICK_*`）と
     /// `IVirtualKBM`（`PerformMouseWheelEvent`）を使うことを検証する。
     /// `MouseWheel` と `Touch` のコンストラクタは internal のため、リフレクションで生成する

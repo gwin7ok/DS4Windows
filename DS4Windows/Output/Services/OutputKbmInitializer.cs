@@ -9,9 +9,9 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Output.Services
 {
     /// <summary>
-    /// Phase13-Step3: <see cref="IOutputKbmInitializer"/> の実装。旧 <c>ControlService.InitOutputKBMHandler</c> の手順
+    /// <see cref="IOutputKbmInitializer"/> の実装。旧 <c>ControlService.InitOutputKBMHandler</c> の手順
     /// （DetermineHandler → Connect → フォールバック／FakerInput のバージョン → InitializeMapping → PopulateConstants／PopulateMappings）を
-    /// そのまま移した。経緯（旧 ServiceRegistration のコメント、Phase6-Step7-4）: 起動引数 -virtualkbm は、AppHost.CreateHost(config, parser) が IStartupArguments に
+    /// そのまま移した。理由: 起動引数 -virtualkbm は、AppHost.CreateHost(config, parser) が IStartupArguments に
     /// 設定した実際の値を使う（コンテナへの登録ではなく保持役を経由する。2026-09-04［4c89cd91］以降、空のパーサーを渡していて無視された不具合の修正）。
     /// 旧 ControlService は生成時の値を保持したためホスト構築前に解決してはならなかったが、本クラスは呼び出し時に読むので、その制約はない。
     /// 起動引数は <c>Initialize()</c> の呼び出し時に <see cref="IStartupArguments"/> から読む（未設定なら空のパーサー）。

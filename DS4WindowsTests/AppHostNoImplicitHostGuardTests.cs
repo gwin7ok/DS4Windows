@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10e W3（Q3＝A, Q4＝A）: <c>AppHost.GetService</c> が暗黙にホストを作らないことの回帰ガード。
+    /// <c>AppHost.GetService</c> が暗黙にホストを作らないことの回帰ガード。
     /// - <c>GetService</c>（2 つ）の本体で <c>CreateHost</c> を呼ばない。
     /// - <c>CreationNote</c> に、呼び出し元スタックを組み立てない（プロパティと App.xaml.cs のログは維持）。
     /// - テストは <c>AppHost.GetService</c> を直接呼ばず、<c>TestHost</c> を通す。

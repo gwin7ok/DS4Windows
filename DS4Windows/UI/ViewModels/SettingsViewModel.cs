@@ -189,10 +189,10 @@ namespace DS4Windows.UI.ViewModels
                 // underlying `CheckWhen` from the numeric control. This prevents
                 // the numeric binding from re-enabling checks when the checkbox
                 // is unchecked.
-                // Phase11 W5（Issue #4 の 4、Q4）: 「OFF のとき数値が保存されない」のは仕様。OFF のときは、数値を入力する行
+                // 「OFF のとき数値が保存されない」のは仕様。OFF のときは、数値を入力する行
                 // （MainWindow.xaml の checkEveryOptionsStack）ごと IsEnabled で無効になり、利用者は数値を操作できない。
                 // ここで何もしないのは、無効な入力欄のバインディングが値を書き戻して、更新確認を ON に戻すのを防ぐ安全弁。
-                // 意図は Phase11W5CheckEveryTests で固定している。
+                // 意図は 対応するテスト で固定している。
                 if (!_appSettings.CheckUpdateStartupEnabled)
                 {
                     return;
@@ -324,7 +324,7 @@ namespace DS4Windows.UI.ViewModels
             get => _appSettings.CustomSteamFolder;
             set
             {
-                // Phase11 W5（Issue #4 の 3、Q3）: 存在しないフォルダーでも、入力を黙って捨てない。値は保存し、警告を出す。
+                // 存在しないフォルダーでも、入力を黙って捨てない。値は保存し、警告を出す。
                 // 旧コードは、存在するフォルダーか空文字のときだけ保存し、それ以外は何も言わずに捨てていた
                 // （TextBox には入力が残るため、保存されたように見えた）。使う側（AutoProfiles）は Directory.Exists で確かめ、
                 // 無ければ既定の Steam フォルダーへ戻るため、存在しないパスを保存しても害はない。
@@ -358,7 +358,7 @@ namespace DS4Windows.UI.ViewModels
                 string temp = _appSettings.FakeExeName;
                 if (temp == value) return;
                 _appSettings.FakeExeName = value;
-                // Phase6-Step9-3d（K9-2）: 古いファイルの削除（Compare）を、新しいファイルの作成（Changed）より先に行う。
+                // 古いファイルの削除（Compare）を、新しいファイルの作成（Changed）より先に行う。
                 // 作成が例外になっても、古いファイルが残らないようにする（以前は作成が先で、例外で削除が実行されなかった）。
                 FakeExeNameChangeCompare?.Invoke(this, temp, value);
                 OnPropertyChanged(nameof(FakeExeName));
@@ -390,10 +390,10 @@ namespace DS4Windows.UI.ViewModels
 
         }
 
-        // Phase6-Step9-3: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
-        // Phase6-Step10-1-5（決定D7＝A）: App.logHolder（静的フィールド）の直接参照の置換先。必須引数（null は拒否する）。
+        // 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
+        // App.logHolder（静的フィールド）の直接参照の置換先。必須引数（null は拒否する）。
         private readonly ILogSettingsApplier _logSettingsApplier;
-        // Phase14b-Step15（決定 D12）: 旧 静的クラス StartupMethods（ルート直下）の直接呼び出しの置換先。必須引数
+        // 旧 静的クラス StartupMethods（ルート直下）の直接呼び出しの置換先。必須引数
         private readonly IStartupEntryService _startupEntries;
 
         public SettingsViewModel(IAppSettingsService appSettings, IAppearanceSettingsService appearanceSettings,
@@ -637,7 +637,7 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>
         /// 偽装名の exe と、その設定ファイル（<c>.runtimeconfig.json</c>／<c>.deps.json</c>）を作る。
-        /// Phase6-Step9-3d（K9-2）: 設定ファイルの元は、<c>実行ファイル名.exe.runtimeconfig.json</c>（実在しない）ではなく、
+        /// 設定ファイルの元は、<c>実行ファイル名.exe.runtimeconfig.json</c>（実在しない）ではなく、
         /// 拡張子を除いた <c>実行ファイル名.runtimeconfig.json</c>／<c>.deps.json</c>。元が無い場合は、コピーを省略する。
         /// </summary>
         public static void CreateFakeExeFiles(string programDirectory, string exeLocation, string fakeName)

@@ -15,7 +15,7 @@
 - 193件（上位計画暫定値）のa/b/c確定: 未開始（`FULL_AUDIT_CLASSIFICATION_STATUS=not_started_for_all_193_items`）。
 - 全参照式の網羅性証明（修飾／無修飾／コメント／文字列／同名別シンボルの完全区別）: 未証明（抽出器の限界記録済み）。
 - 分類別実測集計（a別、b別、c別、除外理由別、ホットパス別）の生成と193件暫定値との差分検証: 未実施。
-- サービス別紙（`Phase6-Step1-Service-Reference-Evidence.md`、未検証メモ）の個別参照展開と分類確定: 未実施。
+- サービス別紙（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step1-Service-Reference-Evidence.md`、未検証メモ）の個別参照展開と分類確定: 未実施。
 - `Phase5-Step14`（自動テスト・実機検証）と`Step15`（Legacy shim削除判断）の完了証跡確認: 未確認（`FULL_AUDIT_STEP5_COMPLETION=not_confirmed`、`FULL_AUDIT_STEP15_COMPLETION=not_started`）。
 - 実機での入力・出力動作確認（ホットパス性能維持、スロット再接続連動を含む）: 未実施（`FULL_AUDIT_REAL_DEVICE_STATUS=not_executed`）。
 - `Phase6-Step2`（`ControlService.cs` の39件解消）の承認: 未取得（`FULL_AUDIT_STEP2_APPROVAL=not_granted`）。
@@ -35,4 +35,4 @@
 - 抽出器（`GlobalInventory.cs`）は固定コミット `aa0e503c1b6f241dd14d0f01224d211f2a20f008` に更新済み（`SOURCE` 変数を変更）。
 - 抽出結果（503メンバ、2,142候補、188未束縛、190非本番）は前固定（`62e69387…`）と同数（本番コード変更なしのため）。
 - 分類（a/b/c/除外）の手動確定は未開始。次のステップで、主要ファイル（`ControlService.cs`、`Mapping.cs`、`App.xaml.cs`、`ProfileEditor.xaml.cs`、`SettingsViewModel.cs`）の候補を個別に分類して記録する予定。
-- 完了判定基準（全件一覧表、ホットパス判定、移行先特定、要設計草案、差分記録、実装なしの確認）は変更なし（`Phase6-Step1-Plan.md` §5 参照）。
+- 完了判定基準（全件一覧表、ホットパス判定、移行先特定、要設計草案、差分記録、実装なしの確認）は変更なし（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step1-Plan.md` §5 参照）。

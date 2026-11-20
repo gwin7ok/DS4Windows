@@ -107,7 +107,7 @@ namespace DS4WindowsTests
 
                 Assert.Equal(buttons, state.L2Btn);
                 Assert.Equal(buttons, state.R2Btn);
-                Assert.Equal(l2, state.L2);   // 状態は呼び出し元と共有で、書き換えが見える（旧・入力レポートの処理と同じ）
+                Assert.Equal(l2, state.L2);   // 状態は呼び出し元と共有で、書き換えが見える
                 Assert.Equal(r2, state.R2);
                 Assert.Equal(l2, t.Target.LeftTriggerValue);
                 Assert.Equal(r2, t.Target.RightTriggerValue);

@@ -4,7 +4,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-1（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当ての出力。
+    /// Controls タブの Button のうち、パッド（X360 の軸・トリガー・ボタン）への割り当ての出力。
     /// 現行の <c>customMapQueue</c> の処理（全 dcs のあと）と同じ規則で、出力の表へ書く。評価されたフレームだけ、毎フレーム呼ばれる（<see cref="IEvaluatedFrameOutputAction"/>）:
     ///  - 軸: 元の値を <see cref="IAnalogTriggerInput.GetAxisValue"/> で読み（出力先の添字が偶数なら正の向き）、128（中立）でなければ、軸のペアの両方に書く。
     ///  - トリガー: 元の値を <see cref="IAnalogTriggerInput.GetByteValue"/> で読み、0 でなければ書く。

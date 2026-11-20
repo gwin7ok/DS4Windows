@@ -11,9 +11,9 @@ using DS4Windows.Processing;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step7 W4: スティック・ジャイロ・トリガーの処理状態を <c>StickMotionState</c> へ切り出したことと、
+    /// スティック・ジャイロ・トリガーの処理状態を <c>StickMotionState</c> へ切り出したことと、
     /// 外から使われる入れ子の型（<c>PostMapStickData</c> ほか）をトップレベルへ出したことの回帰ガード。
-    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は Phase7-Step7-Plan.md（Q2・Q3・Q5）。
+    /// ソースが見つからない環境では、ソース検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step7-Plan.md（Q2・Q3・Q5）。
     /// </summary>
     public class StickMotionStateGuardTests
     {
@@ -46,11 +46,11 @@ namespace DS4WindowsTests
             Assert.Equal(count, state.DeltaAccelProcessors.Length);
             Assert.All(state.DeltaAccelProcessors, g => { Assert.NotNull(g.LSProcessor); Assert.NotNull(g.RSProcessor); });
 
-            // L2 と R2 は別の instance（旧: 別々の配列）
+            // L2 と R2 は別の instance
             Assert.NotSame(state.L2TwoStageMappingData[0], state.R2TwoStageMappingData[0]);
         }
 
-        // Phase7-Step8 W2: 転送プロパティは削除した。Mapping のコンストラクターが、受け取った保持クラスの配列を、同じ参照のまま readonly で持つこと
+        // 転送プロパティは削除した。Mapping のコンストラクターが、受け取った保持クラスの配列を、同じ参照のまま readonly で持つこと
         [Fact]
         public void MappingCopies_ReferenceTheSameArraysAsTheHolder()
         {
@@ -76,7 +76,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Mapping_HoldsNoStickMotionStateOfItsOwn_AndNoNestedStateTypes()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、Mapping のフィールド（readonly と型）と入れ子の型を確かめる（配列が保持クラスと同じ参照であることは MappingCopies_ReferenceTheSameArraysAsTheHolder）
+            // ソースの文字列ではなく、Mapping のフィールド（readonly と型）と入れ子の型を確かめる（配列が保持クラスと同じ参照であることは MappingCopies_ReferenceTheSameArraysAsTheHolder）
             Type mapping = typeof(DS4Windows.Processing.Mapping);
             foreach ((string field, Type type) in new[]
             {
@@ -99,7 +99,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_RegistersTheSharedState()
         {
-            // Phase14d-Step3: 登録の文字列ではなく、コンテナが同じインスタンスを返すことを確かめる
+            // 登録の文字列ではなく、コンテナが同じインスタンスを返すことを確かめる
             var first = TestHost.GetService<DS4Windows.Processing.StickMotionState>();
             Assert.NotNull(first);
             Assert.Same(first, TestHost.GetService<DS4Windows.Processing.StickMotionState>());

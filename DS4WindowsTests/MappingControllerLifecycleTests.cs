@@ -13,15 +13,15 @@ namespace DS4WindowsTests
 {
         public class MappingControllerLifecycleTests
     {
-        // Phase7-Step8 W2: 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
-        // Phase13-Step4: 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。
+        // 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
+        // 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。
         // ここでは IMapping の代わりに、登録簿を破棄するだけの偽物を差す。
         private class DisconnectOnlyMapping : DS4Windows.Processing.Abstractions.IMapping
         {
             private readonly DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry registry;
             public DisconnectOnlyMapping(DS4Windows.Processing.Abstractions.IKeyButtonControllerRegistry registry) { this.registry = registry; }
             public void HandleDeviceDisconnect(int device) { registry.ClearForDevice(device); }
-            // Phase7b W1: 復帰の合図の退避・復元（このスタブは合図を持たない）
+            // 復帰の合図の退避・復元（このスタブは合図を持たない）
             public ProfileUntriggerSnapshot CaptureProfileUntrigger(int device) { return default; }
             public void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot) { }
             public ControllerState SetCurveAndDeadzone(int device, ControllerState cState, ControllerState dState, DS4Windows.Core.Abstractions.IProfileSettingsService settings) { throw new NotSupportedException(); }

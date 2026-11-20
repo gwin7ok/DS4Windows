@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10c W2（Q1・Q3＝A）: Actions.xml・LinkedProfiles.xml・ControllerConfigs.xml の保存・読込を
+    /// Actions.xml・LinkedProfiles.xml・ControllerConfigs.xml の保存・読込を
     /// <c>BackingStore</c> から 3 つのシリアライザーへ移したことの回帰ガード。
     /// 内容（保存結果と読込後の状態）の同一性は <c>GoldenPersistenceTests</c> が固定する。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。

@@ -3,7 +3,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8a（Phase8-Step7-8a-Plan.md W2。Q9＝A）: Button の出力が受け取る「解釈済みの値」。
+    /// Button の出力が受け取る「解釈済みの値」。
     /// 設定から何を出すかを決める解釈は変換層（ビルダー）が行い、出力（<see cref="ButtonOutputAction"/>）は、この値を実行するだけにする。
     /// </summary>
     public readonly struct ButtonBindingValues
@@ -26,7 +26,7 @@ namespace DS4Windows.Processing.Actions
         public bool Toggle { get; }
 
         /// <summary>
-        /// Phase10-Step6 後の Step5: アナログな出力（軸・トリガー・マウス移動。<see cref="AnalogOutputTargets"/>）の強さ（0〜100%。既定 100）。
+        /// アナログな出力（軸・トリガー・マウス移動。<see cref="AnalogOutputTargets"/>）の強さ（0〜100%。既定 100）。
         /// アナログでない出力先では、使わない。
         /// </summary>
         public int Strength { get; }

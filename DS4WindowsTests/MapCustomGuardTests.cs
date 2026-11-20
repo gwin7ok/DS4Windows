@@ -8,9 +8,9 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 MapCustom の分割（Phase9-MapCustom-Plan.md）の守り（段階ごとに検査を足していく）。
-    /// M1: 合成入力の確定（旧 <c>Mapping.Commit</c>）が <c>SyntheticInputCommitter</c> へ移り、<c>Mapping</c> は薄い委譲だけを持つこと。
-    /// M2: 2 段階トリガーの状態機械（旧 <c>Mapping.ProcessTwoStageTrigger</c>）が <c>TwoStageTriggerProcessor</c> へ移り、<c>MapCustom</c> は呼び出しだけを持つこと。
+    /// Phase9 MapCustom の分割（docs-forDIMG/MadeByAgent/Archive/Phase9-MapCustom-Plan.md）の守り（段階ごとに検査を足していく）。
+    /// M1: 合成入力の確定が <c>SyntheticInputCommitter</c> へ移り、<c>Mapping</c> は薄い委譲だけを持つこと。
+    /// M2: 2 段階トリガーの状態機械が <c>TwoStageTriggerProcessor</c> へ移り、<c>MapCustom</c> は呼び出しだけを持つこと。
     /// </summary>
     public class MapCustomGuardTests
     {
@@ -109,7 +109,7 @@ namespace DS4WindowsTests
         public void TheTwoStageProcessor_IsRegistered_AndHasNoStaticEntryPoints()
         {
             Assert.IsType<TwoStageTriggerProcessor>(TestHost.GetService<ITwoStageTriggerProcessor>());
-            // Phase14d-Step2: 静的な窓口（AppHost・ServiceProviderHolder・Global）がないことの検査は RemovedApiRuleTests へ畳んだ
+            // 静的な窓口（AppHost・ServiceProviderHolder・Global）がないことの検査は RemovedApiRuleTests へ畳んだ
         }
     }
 }

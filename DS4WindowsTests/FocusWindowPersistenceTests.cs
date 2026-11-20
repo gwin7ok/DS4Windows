@@ -9,7 +9,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase12-Step2 2c（R-4）: 新しい種別 <see cref="SpecialAction.ActionTypeId.FocusWindow"/>（ウィンドウのフォーカス）の保存と読込。
+    /// 新しい種別 <see cref="SpecialAction.ActionTypeId.FocusWindow"/>（ウィンドウのフォーカス）の保存と読込。
     /// SA は Actions.xml（Details＝プログラムのパス、WindowTitle＝ウィンドウタイトル、Delay）、Controls はプロファイル XML の
     /// <c>WindowPath</c>／<c>WindowTitle</c>。古いバージョンは、未知の種別として読み飛ばす（既存の寛容な読込）ことも確かめる。
     /// </summary>

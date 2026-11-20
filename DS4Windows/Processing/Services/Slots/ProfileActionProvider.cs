@@ -48,7 +48,7 @@ namespace DS4Windows.Processing.Services.Slots
                 action = act;
             }
 
-            // Phase6-Step3-2是正: このメソッドは Mapping.cs の毎レポート評価（MapCustom の
+            // このメソッドは Mapping.cs の毎レポート評価（MapCustom の
             // Stage3、MapCustomAction のアクション走査）から、プロファイル内のアクション数分
             // （実測で最大約40回）呼ばれるホットパスである。[DI] ログをここに置くと、Trace有効時に
             // 秒間数百〜数千行のログが流れ続け、他のTraceログが実質的に読めなくなる実害が
@@ -58,15 +58,15 @@ namespace DS4Windows.Processing.Services.Slots
             return action;
         }
 
-        // ---- Phase6-Step2-5 (PR-5): スペシャルアクション数 ----
+        // ---- スペシャルアクション数 ----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の値を直接返す（従来の Global.getProfileActionCount と同一）。
         public int GetProfileActionCount(int deviceIndex) => _config.profileActionCount[deviceIndex];
 
-        // ---- Phase6-Step3-1: スペシャルアクション名→定義済みインデックス ----
+        // ---- スペシャルアクション名→定義済みインデックス ----
         public int GetProfileActionIndexOf(int deviceIndex, string actionName)
         {
-            // Phase7-Step1 W2（K2 の是正）: Dictionary.TryGetValue は未検出時に out 引数を 0 で上書きするため、
-            // 戻り値で判定して、未検出は -1 を返す（旧実装は未検出でも 0 を返していた）。
+            // Dictionary.TryGetValue は未検出時に out 引数を 0 で上書きするため、
+            // 戻り値で判定して、未検出は -1 を返す。
             if (_config != null && actionName != null &&
                 _config.profileActionIndexDict[deviceIndex].TryGetValue(actionName, out int index))
             {
@@ -76,7 +76,7 @@ namespace DS4Windows.Processing.Services.Slots
             return -1;
         }
 
-        // ---- Phase6-Step3-1: アクション名一覧（コピーなし）----
+        // ---- アクション名一覧（コピーなし）----
         // 毎レポート評価される経路から呼ばれるため、BackingStore の List<string> を直接返す
         // （従来の Global.getProfileActions と同一。GetProfileActionNames の ToArray() は使わない）。
         public IReadOnlyList<string>? GetProfileActionsRaw(int deviceIndex) => _config?.profileActions[deviceIndex];

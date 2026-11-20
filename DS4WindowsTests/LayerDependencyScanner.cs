@@ -9,7 +9,7 @@ using DS4Windows.Composition;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step1（R-01）: 本体のアセンブリ（DS4WinWPF.csproj の出力）を ArchUnitNET で読み、型どうしの参照の辺を返す。
+    /// 本体のアセンブリ（DS4WinWPF.csproj の出力）を ArchUnitNET で読み、型どうしの参照の辺を返す。
     /// 参照はメソッド本体（呼び出し、<c>new</c>、フィールドの読み書き）、シグネチャ、基底型、属性、ジェネリックの実引数を含む。
     /// <c>const</c> の値・列挙型の定数・<c>nameof</c>・<c>using</c>・コメントは IL に残らないため、辺にならない（計画書 §3.3 の限界）。
     /// 読み込みは重いので、1 回だけ行って使い回す。
@@ -39,7 +39,7 @@ namespace DS4WindowsTests
         private static readonly Lazy<IReadOnlyList<Edge>> s_edges = new Lazy<IReadOnlyList<Edge>>(Scan);
 
         /// <summary>
-        /// Phase14d-Step3: 本体の型（トップレベル。入れ子の型の参照も含めてまとめる）が参照する型の完全名（本体の外の型も含む。例: SharpOSC の型）。
+        /// 本体の型（トップレベル。入れ子の型の参照も含めてまとめる）が参照する型の完全名（本体の外の型も含む。例: SharpOSC の型）。
         /// 外部のライブラリへの依存を特定の型に閉じ込めていることの検査に使う。
         /// </summary>
         public static IReadOnlyCollection<string> AllTargetsOf(string topLevelTypeFullName)
@@ -62,7 +62,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Phase16-Step4a: 本体のトップレベルの型のうち、名前空間が <paramref name="externalNamespacePrefix"/> で始まる型（本体の外の型。例: ViGEm）を参照するものの完全名。
+        /// 本体のトップレベルの型のうち、名前空間が <paramref name="externalNamespacePrefix"/> で始まる型（本体の外の型。例: ViGEm）を参照するものの完全名。
         /// 外部のドライバーへの依存を特定の名前空間に閉じ込めていることの検査に使う。
         /// </summary>
         public static IReadOnlyCollection<string> TopLevelTypesReferencingNamespace(string externalNamespacePrefix)
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
         /// <summary>
         /// 名前空間が <paramref name="sourceNamespacePrefix"/> で始まる本体のトップレベルの型が、
         /// 名前空間が <paramref name="targetNamespacePrefix"/> で始まる型を参照する組を "参照元|参照先" の形で返す（重複なし、序数順）。
-        /// 画面の部品（ViewModel）が WPF の型を参照しないことの検査に使う（Phase34-7）。
+        /// 画面の部品（ViewModel）が WPF の型を参照しないことの検査に使う。
         /// </summary>
         public static IReadOnlyList<string> ReferencesBetweenNamespaces(string sourceNamespacePrefix, string targetNamespacePrefix)
         {

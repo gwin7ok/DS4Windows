@@ -11,9 +11,9 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-E E-5（Phase9-E5-Plan.md）: <see cref="ITouchpadToggleService"/> の実装（DI の Singleton）。
+    /// <see cref="ITouchpadToggleService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService.CheckForTouchToggle</c>／<c>StartTPOff</c>／<c>TouchpadSlide</c> を、そのまま移したもの。
-    /// 値の特性化は <c>Phase9EInputReportPartsTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class TouchpadToggleService : ITouchpadToggleService
     {

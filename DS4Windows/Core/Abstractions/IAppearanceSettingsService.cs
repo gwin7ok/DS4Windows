@@ -15,12 +15,12 @@ namespace DS4Windows.Core.Abstractions
         AppThemeChoice UseCurrentTheme { get; set; }
         TrayIconChoice UseIconChoice { get; set; }
 
-        // Phase14b-Step13（決定 D13）: 旧 GetIconResourcePath（トレイアイコンの画像パス）は外した。パスは UI が TrayIconResources から引く
+        // 旧 GetIconResourcePath（トレイアイコンの画像パス）は外した。パスは UI が TrayIconResources から引く
 
-        // ---- Phase6-Step2-5 (PR-5): バッテリー残量の変化通知（このサービスのイベント）----
+        // ---- バッテリー残量の変化通知（このサービスのイベント）----
         void InvokeBatteryChanged(byte percentage);
 
-        // ---- Phase6-Step9-1: バッテリー残量の変化の購読（このサービスのイベント）----
+        // ---- バッテリー残量の変化の購読（このサービスのイベント）----
         /// <summary>
         /// バッテリー残量が変化したときの通知（<see cref="InvokeBatteryChanged"/> と対）。
         /// 購読者へ通知する。送信元はこのサービス（旧: <c>typeof(Global)</c>）、引数は従来と同じ。

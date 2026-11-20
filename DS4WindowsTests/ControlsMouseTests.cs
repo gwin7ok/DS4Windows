@@ -15,7 +15,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8f-2 W2/W3（Phase8-Step7-8f-Plan.md §3.2）: Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle の新経路。
+    /// Controls タブの Button のうち、マウスのボタン・タッチパッドクリック・デジタルのホイール・Toggle の新経路。
     /// 解釈、ビルダーの所有の条件と束縛の形、Toggle の是正（Q8＝A: 立ち上がりで 1 回だけ反転）、ロールバック、ソースのガード。
     /// 旧・新の比べは <c>ControlsMouseCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
@@ -126,11 +126,11 @@ namespace DS4WindowsTests
             Assert.IsType<ControlTouchpadClickOutputAction>(Assert.Single(touch.Outputs));
 
             IActionBinding mouseToggle = Assert.Single(bindings, b => b.Source.name == $"Synthetic_Mouse_{Device}_{(int)DS4Controls.Circle}");
-            // Phase9: マウスのボタン＋Toggle は、SA の Button と同じ出力（ボタンごとの Toggle の状態）
+            // マウスのボタン＋Toggle は、SA の Button と同じ出力（ボタンごとの Toggle の状態）
             Assert.IsType<ButtonOutputAction>(Assert.Single(mouseToggle.Outputs));
             Assert.True(mouseToggle.Policy.ErasesOutputEveryFrame);
 
-            // パッド＋Toggle（Phase9: Controls のパッドボタンの Toggle）: SA の Button と同じ出力（ButtonOutputAction）が、Toggle の反転と出力を担う。
+            // パッド＋Toggle: SA の Button と同じ出力（ButtonOutputAction）が、Toggle の反転と出力を担う。
             // 元のボタンの通常の出力は、方針（毎フレーム消す）で消える
             IActionBinding padToggle = Assert.Single(bindings, b => b.Source.name == $"Synthetic_Pad_{Device}_{(int)DS4Controls.Square}");
             Assert.IsType<ButtonOutputAction>(Assert.Single(padToggle.Outputs));
@@ -169,7 +169,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Toggle_FlipsOnceAtTheRisingEdge_AndHoldsTheClickWhileOn()
         {
-            // Phase9: 旧テストはデバイスの toggle フラグを見ていた。SA の Button と同じ部品になり、ON の間は、クリックが押され続ける（ボタンごとの状態）
+            // 旧テストはデバイスの toggle フラグを見ていた。SA の Button と同じ部品になり、ON の間は、クリックが押され続ける（ボタンごとの状態）
             using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse, DS4KeyType.Toggle);
             t.Publish();
@@ -195,7 +195,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TwoToggledMouseButtons_KeepTheirOwnState()
         {
-            // Phase9: 以前は、デバイスに 1 つの toggle フラグを共有し、2 つの Toggle が連動した
+            // 以前は、デバイスに 1 つの toggle フラグを共有し、2 つの Toggle が連動した
             using var t = new ControlsKeyTestScope();
             t.MapButton(DS4Controls.Cross, X360Controls.LeftMouse, DS4KeyType.Toggle);
             t.MapButton(DS4Controls.Circle, X360Controls.RightMouse, DS4KeyType.Toggle);

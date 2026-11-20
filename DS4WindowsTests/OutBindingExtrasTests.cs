@@ -8,7 +8,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W0（Phase10-Step3-Plan.md §3.1・§5）: Extras（振動・ライトバー・マウス感度）の読み書きの特性化。
+    /// Extras（振動・ライトバー・マウス感度）の読み書きの特性化。
     /// Extras は、出力ピッカー（<c>BindingWindow</c>）に残すため、<see cref="OutBinding"/> の <c>ParseExtras</c>／<c>CompileExtras</c>／<c>IsUsingExtras</c>
     /// の現在の挙動（書式、境界、不正な値）を固定する。製品コードは変えない。
     /// </summary>

@@ -5,7 +5,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 I4c: テスト用の補助。本体から削除した互換の入口 <c>Create(device, sa, index, forControls)</c> の代わりに、SA を読み込みの部品で定義にして、
+    /// テスト用の補助。本体から削除した互換の入口 <c>Create(device, sa, index, forControls)</c> の代わりに、SA を読み込みの部品で定義にして、
     /// 定義を受ける <see cref="ISpecialActionOutputFactory.Create(int, AssignmentDefinition, SpecialAction, int)"/> を呼ぶ（<paramref name="forControls"/> は由来に置き換わった）。
     /// 定義にならない SA（種別が不明、トリガーなし）は null。
     /// </summary>

@@ -51,7 +51,7 @@ namespace DS4Windows.Output.Kbm
             }
             else if (identifier == FakerInputHandler.IDENTIFIER)
             {
-                // Phase7b W3（K7-2）: 外部ライブラリの Connect() は FakerInput が未導入でも成功を返し、
+                // 外部ライブラリの Connect() は FakerInput が未導入でも成功を返し、
                 // ControlService.InitOutputKBMHandler の SendInput へのフォールバックが働かなかった（上流の元からの動作）。
                 // 明示指定でも、導入判定が偽なら SendInput にする。
                 if (EnvironmentService.FakerInputInstalledState)

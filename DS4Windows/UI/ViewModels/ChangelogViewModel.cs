@@ -23,7 +23,7 @@ namespace DS4Windows.UI.ViewModels
 {
     public class ChangelogViewModel
     {
-        // Phase14b-Step17（決定 D10）: 変更履歴の取得（旧 静的 Changelog.GetChangelogMarkdown）
+        // 変更履歴の取得
         private readonly DS4Windows.Core.Abstractions.IChangelogService _changelogService;
         private string markdown;
 

@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3・§5）: 共通の編集画面の、Controls のモードの ViewModel
+    /// 共通の編集画面の、Controls のモードの ViewModel
     /// （<see cref="ControlActionEditorViewModel"/>）。名前は、ボタンの表示名で編集不可、トリガーは、そのボタンだけで変更不可、
     /// 種別の一覧は、Controls で現在保存できる種別（Key・Button・Macro）だけ選べる。SA のモードの ViewModel は、従来どおり。
     /// </summary>
@@ -67,12 +67,12 @@ namespace DS4WindowsTests
         [Theory]
         [InlineData(0, true)]    // 種別を選んでください（常に選べる）
         [InlineData(1, true)]    // Macro
-        [InlineData(2, true)]   // Launch Program（Phase10-Step4 W5 で保存可能になった）
+        [InlineData(2, true)]   // Launch Program
         [InlineData(3, true)]   // Load Profile
         [InlineData(4, true)]    // Output Key/Mouse/Button（Key・Button）
         [InlineData(5, true)]   // Disconnect BT
-        [InlineData(6, true)]   // Check Battery（Phase10-Step6 W7 相当で保存可能になった）
-        [InlineData(7, true)]   // Multi Action（Phase10-Step6 W8 相当で保存可能になった）
+        [InlineData(6, true)]   // Check Battery
+        [InlineData(7, true)]   // Multi Action
         [InlineData(8, true)]   // ジャイロ較正（Phase10-Step4 W4 で保存可能になった。Phase9 Steering 削除 W1 で添字を 9→8 に詰めた）
         [InlineData(9, true)]   // Default（Controls のモードだけの項目。出力ピッカーの Default ボタンと同じ）
         [InlineData(10, true)]   // Unbound（同上）

@@ -9,7 +9,7 @@ namespace DS4WindowsTests
     /// SpecialActionsListViewModel.SortActions の是正（チェックボックス列クリック時に
     /// 「直前のソート列・方向」が第2ソートキーとして使われず、Active 列の昇順の向きも
     /// 逆になっていたバグの修正。さらに、XAML 側のヘッダー Tag="Trigger"/"Action" と
-    /// GetColumnComparison のキー名（旧: "TypeName"/"Controls"）が不一致で、
+    /// GetColumnComparison のキー名が不一致で、
     /// これら2列をクリックしてもヘッダーの矢印だけ動いて実際には並び替わらなかった
     /// バグの修正）を検証する。
     /// </summary>

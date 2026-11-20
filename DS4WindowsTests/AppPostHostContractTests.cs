@@ -13,14 +13,14 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7-1: `App.xaml.cs`（Post-Host）の Global 直接参照解消に先立って既存サービスへ追加した契約
+    /// `App.xaml.cs`（Post-Host）の Global 直接参照解消に先立って既存サービスへ追加した契約
     /// （<see cref="IPathService.RoamingAppDataPath"/>／<see cref="IPathService.HasMultipleSaveLocations"/>、
     /// <see cref="IAppSettingsService.UseLang"/>、<see cref="IDeviceStateService.ResetConnectionFlags"/>、
     /// <see cref="IProfileRepository.SaveAsProfile"/>／<see cref="IProfileRepository.LoadLinkedProfiles"/>、
     /// <see cref="ISpecialActionRepository.CreateStandardActions"/>）が Global と同じ実体を扱うこと、
     /// および決定2（L2）で是正した <see cref="SpecialActionRepository.LoadActions"/> が、
     /// Actions.xml がないときに Global.LoadActions と同じく既定アクションを作ることを検証する。
-    /// 各テストは変更した Global 状態を必ず元に戻す（Phase6-Step2 の教訓）。
+    /// 各テストは変更した Global 状態を必ず元に戻す。
     /// </summary>
     public class AppPostHostContractTests
     {
@@ -36,7 +36,7 @@ namespace DS4WindowsTests
         [Fact]
         public void RoamingAppDataPath_ReturnsRoamingAppDataFolder()
         {
-            // Phase7-Step4 W3: 旧 Global.appDataPpath は PathService へ移した
+            // 旧 Global.appDataPpath は PathService へ移した
             var pathService = new PathService();
             Assert.Equal(PathService.RoamingAppDataPathState, pathService.RoamingAppDataPath);
             Assert.Equal(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\DS4Windows",
@@ -157,7 +157,7 @@ namespace DS4WindowsTests
         }
 
         // ---- 実ファイルを書き換える委譲（SaveAsProfile／LoadLinkedProfiles／CreateStandardActions）はソース走査で確認 ----
-        // Step3-1 の SaveControllerConfigsForDevice と同じ扱い。挙動は実機確認（Phase6-Step7-Plan.md §6）で担保する。
+        // Step3-1 の SaveControllerConfigsForDevice と同じ扱い。挙動は実機確認（docs-forDIMG/MadeByAgent/Archive/Phase6-Step7-Plan.md §6）で担保する。
 
         [Fact]
         public void ProfileRepository_NewMembers_DelegateToGlobal()
@@ -165,9 +165,9 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Core/Persistence/ProfileRepository.cs");
             if (text == null) return;
 
-            // Phase7-Step10c W5: プロファイルの保存は LegacyProfileXmlSerializer へ移した
+            // プロファイルの保存は LegacyProfileXmlSerializer へ移した
             Assert.Matches(@"public bool SaveAsProfile\(int deviceIndex, string profileName\)\s*=>\s*_legacyProfileXml\.SaveAsProfile\(deviceIndex, profileName\);", text);
-            // Phase7-Step10c W2: リンクプロファイルの読込は LinkedProfilesXmlSerializer へ移した（BackingStore から削除）
+            // リンクプロファイルの読込は LinkedProfilesXmlSerializer へ移した（BackingStore から削除）
             Assert.Matches(@"public bool LoadLinkedProfiles\(\)\s*=>\s*_linkedProfilesXml\.LoadLinkedProfiles\(\);", text);
         }
 
@@ -180,7 +180,7 @@ namespace DS4WindowsTests
             Assert.Matches(@"public void CreateStandardActions\(\)\s*\{\s*CreateStdActions\(\);", text);
 
             // LoadActions の本体に、Actions.xml の有無で早期に false を返す判定が再混入していないこと。
-            // Phase7-Step2 W7: 終端を、LoadActions の次のメンバー（SaveActions を削除したため GetAction）に変更した。
+            // 終端を、LoadActions の次のメンバー（SaveActions を削除したため GetAction）に変更した。
             Match m = Regex.Match(text, @"public bool LoadActions\(\)(?<body>.*?)public SpecialAction GetAction\(", RegexOptions.Singleline);
             Assert.True(m.Success, "LoadActions の本体を特定できなかった。");
             Assert.DoesNotContain("File.Exists", m.Groups["body"].Value);

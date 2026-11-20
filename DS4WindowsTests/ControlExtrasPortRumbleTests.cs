@@ -10,7 +10,7 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase13-Step6 6-b: <c>DefaultControlExtrasPort.SetRumble</c> は、旧 <c>ControlService.setRumble</c> と同じ検査
+    /// <c>DefaultControlExtrasPort.SetRumble</c> は、旧 <c>ControlService.setRumble</c> と同じ検査
     /// （スロット上限 → コントローラーの有無）を経てから <see cref="IDeviceRumbleService"/> を呼ぶ。
     /// </summary>
     public class ControlExtrasPortRumbleTests

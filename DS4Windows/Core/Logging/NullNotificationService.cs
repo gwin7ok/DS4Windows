@@ -7,7 +7,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Core.Logging
 {
     /// <summary>
-    /// Phase14b-Step3（R-03）: 通知を何もしない <see cref="INotificationService"/>。<see cref="AppLogger.NotificationService"/> が
+    /// 通知を何もしない <see cref="INotificationService"/>。<see cref="AppLogger.NotificationService"/> が
     /// まだ設定されていないとき（App の <c>InitializePostHostServices</c> より前、テスト）に使う。
     /// 旧フォールバックは <c>new AppNotificationService(new BackingStore(new EnvironmentService()))</c> で、設定の唯一の実体とは別の
     /// <c>BackingStore</c> を作っていた。その通知には購読者がいなかった（画面は DI の Singleton を購読する）ため、表示の挙動は同じ。

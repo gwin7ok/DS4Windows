@@ -4,7 +4,7 @@ using System.Xml;
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase8-Step7 7.8d（Phase8-Step7-8d-Plan.md §4.1）: 廃止された「シフト」機能の設定（プロファイル設定ファイルの <c>&lt;ShiftControl&gt;</c> ノード）を、
+    /// 廃止された「シフト」機能の設定（プロファイル設定ファイルの <c>&lt;ShiftControl&gt;</c> ノード）を、
     /// <b>解釈せずに、そのまま保持する</b>入れ物（プロファイルごと）。設定値としては使わず、実行にも関わらない。
     /// ユーザーが編集画面で「残す」を選んだとき、プロファイルを保存しても、設定ファイルに内容が残る（<see cref="AppendTo"/>）。「削除」を選ぶと、内容を捨てる（<see cref="Clear"/>）。
     /// </summary>

@@ -7,7 +7,7 @@ using DS4Windows.Core.Utilities;
 namespace DS4Windows.Core.Platform
 {
     /// <summary>
-    /// Phase6-Step7-4（決定7＝案H）: <see cref="IStartupArguments"/> の実装。起動引数を保持するだけで、解析はしない。
+    /// <see cref="IStartupArguments"/> の実装。起動引数を保持するだけで、解析はしない。
     /// </summary>
     public class StartupArguments : IStartupArguments
     {

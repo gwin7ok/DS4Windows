@@ -8,7 +8,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step8 8-0-W3（Phase8-Step8-Plan.md §5.6。Q9＝A）: 編集画面の警告の配線のテスト。
+    /// 編集画面の警告の配線のテスト。
     /// 警告の判定（<see cref="RemovedGyroSwipeNotice"/>）は W1 のテスト。ここでは、(1) 編集画面が、保持の入れ物を、サービス経由で得られること、
     /// (2) 警告の文言（英語・日本語）が、書式として使えること、(3) <c>ProfileEditor.Reload</c> が、プロファイルの読込の直後に、警告を呼ぶことを確かめる。
     /// ダイアログそのもの（<c>MessageBoxRemovedGyroSwipePrompt</c>）は画面なので、Step9 の実機の確認（U-48）。

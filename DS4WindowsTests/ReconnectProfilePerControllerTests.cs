@@ -7,7 +7,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// 再接続時のプロファイルを、コントローラー単位で管理する修正（docs-forDIMG/MadeByAgent/Reconnect-Profile-PerController-Fix-Plan.md）の確認。
+    /// 再接続時のプロファイルを、コントローラー単位で管理する修正の確認。
     /// 症状: コントローラー 1（Linked = A）を接続して切断し、コントローラー 2（Linked = B）を接続すると、2 は初回接続なのに、
     /// 同じスロットの「再接続」と判定されて A が適用された（初回／再接続の判定と直前のプロファイルが、スロット番号で管理されていたため）。
     /// 初回接続のフラグ（BackingStore の配列）を共有するため、他の Host 構築テストと同じコレクションで直列に実行し、終了時に元へ戻す。
@@ -121,7 +121,7 @@ namespace DS4WindowsTests
             if (path == null) return;
 
             string controlServiceText = File.ReadAllText(path);
-            // Phase9 9-E E-6a: 判定の本体は ConnectionProfileSelector へ移った
+            // 判定の本体は ConnectionProfileSelector へ移った
             string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
             if (selectorPath == null) return;
             string text = File.ReadAllText(selectorPath);

@@ -9,13 +9,13 @@ using DS4Windows.Processing.Actions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step1 W2（Phase8-Step1-Plan.md 項目 B-1・B-2、Q2＝A）: プロファイル切替のスペシャルアクション（Profile 種別）の、成立 → 切替 → 復帰の特性化テスト。
+    /// プロファイル切替のスペシャルアクション（Profile 種別）の、成立 → 切替 → 復帰の特性化テスト。
     /// <see cref="RecordingProfileApplicationService"/> を <c>DefaultProfileSwitcher</c> に差し込み、実際のプロファイルの読込・適用は走らせない。
     /// 固定する挙動:
     ///  - 成立のたびに 1 回だけ、<c>ApplyFromAction</c>（<c>ActionManager</c> 経由）で切り替わる。直接の <c>ApplyProfile</c>（フォールバック、チェーン）は呼ばれない。
     ///  - 「Unload on trigger release」（<c>AutomaticUntrigger</c>）: トリガーを離すと、<c>RestoreFromAction</c> が 1 回だけ呼ばれ、復帰の合図が消える。
     ///  - 解除トリガー（<c>uTrigger</c>）あり: 解除トリガーがすべて押されたときだけ復帰する。
-    /// 台帳: <c>Phase8-Step1-Trigger-Spec-Ledger.md</c> §3・§5（Profile）。
+    /// 台帳: <c>docs-forDIMG/MadeByAgent/Archive/Phase8-Step1-Trigger-Spec-Ledger.md</c> §3・§5（Profile）。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
     public class ProfileSwitchCharacterizationTests
@@ -71,7 +71,7 @@ namespace DS4WindowsTests
             var recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "AutomaticUntrigger");
 
-            // Phase8-Step8 8b: 復帰の合図は、エンジンが持つ（Mapping の deviceRuntime には書かない）
+            // 復帰の合図は、エンジンが持つ（Mapping の deviceRuntime には書かない）
             t.RunFrame(Held(DS4Controls.L1));
             Assert.Null(t.Mapping.deviceRuntime[t.Device].UntriggerAction);
             Assert.Empty(recorder.RestoreFromActionCalls);
@@ -92,7 +92,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Profile_WithUntriggerButtons_SwitchesButNeverRestores_AfterTheRemovalOfTheUnloadTrigger()
         {
-            // Phase8-Step8 8b（機能廃止。ユーザー承認）: 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は行い、復帰はしない
+            // 解除トリガー（uTrigger）のボタンによる復帰は廃止した。切替は行い、復帰はしない
             using var t = new SpecialActionTestScope();
             var recorder = t.InstallProfileRecorder();
             SpecialAction sa = AddProfile(t, "L1", "R1"); // トリガー L1、解除トリガー R1

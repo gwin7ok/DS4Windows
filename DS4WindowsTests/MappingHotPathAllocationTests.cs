@@ -11,9 +11,9 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step3-4: 毎入力レポートで実行される `Mapping` のホットパスが、`Global` 直接参照から
+    /// 毎入力レポートで実行される `Mapping` のホットパスが、`Global` 直接参照から
     /// 引数で渡された `IProfileSettingsService` の参照に変わっても、ヒープ割り当て（GC Alloc）を
-    /// 発生させないこと（ゼロアロケーション方針、Phase6-Step3-Plan.md §6）を検証する。
+    /// 発生させないこと（ゼロアロケーション方針、docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §6）を検証する。
     /// 処理時間の厳密な比較は実機（On_Report 全体の計測）で行う。
     /// Step3-5 で `SetCurveAndDeadzone` のジャイロ系と `ApplyStickCalibration` の検証を追加した。
     /// `Commit` は実際の入力送出を伴うため割り当てテストの対象外（`MappingArgumentPassThroughTests` の冒頭コメント参照）。
@@ -21,9 +21,9 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingHotPathAllocationTests
     {
-        // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
+        // Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
         private static readonly Mapping Mapper = TestMappingFactory.Create();
-        private static readonly IStickInputConditioner Conditioner = new StickInputConditioner();   // Phase9 9-A(2)-B: ApplyStickCalibration は StickInputConditioner.ApplyDrift へ移した
+        private static readonly IStickInputConditioner Conditioner = new StickInputConditioner();   // ApplyStickCalibration は StickInputConditioner.ApplyDrift へ移した
 
         private const int Slot = 0;
         private const int Iterations = 20000;

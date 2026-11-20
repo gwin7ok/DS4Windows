@@ -19,7 +19,7 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8b-W2/W3（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の新経路。
+    /// Controls タブの Key の新経路。
     /// 押下の判定（<c>TriggerInput.IsControlActive</c> ＝ 現行の <c>GetBoolActionMapping</c>）の一致、所有の条件、ビルダー、連結、ロールバック、割り当て、ログ。
     /// 動作の旧・新の比べは <c>ControlsKeyCharacterizationTests</c>（同じテストが新経路を走らせる）。
     /// 他の Host 構築テストと同じコレクションで直列に実行する。
@@ -83,7 +83,7 @@ namespace DS4WindowsTests
             Assert.True(v.ScanCode);
             Assert.True(v.Toggle);
             Assert.Equal(7u, v.AliasKey);
-            Assert.False(v.SuppressSpecialActionLogs);   // Phase10-Step4c W2（ユーザー承認、2026-10-21）: Controls の Key も、SA と同じ形式のログを出す（以前は Q4＝A で抑止していた）
+            Assert.False(v.SuppressSpecialActionLogs);   // Controls の Key も、SA と同じ形式のログを出す（以前は Q4＝A で抑止していた）
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace DS4WindowsTests
 
             var logged = RunLogged(frames);
 
-            // Phase10-Step4c W2（ユーザー承認、2026-10-21）: Controls タブの Key も、スペシャルアクションの書式のログを出す（立ち上がりは Trace と Debug、離したときは KeyReleased。以前は抑止していた［Q4＝A］）
+            // Controls タブの Key も、スペシャルアクションの書式のログを出す（立ち上がりは Trace と Debug、離したときは KeyReleased。以前は抑止していた［Q4＝A］）
             Assert.Contains(logged, l => l.Contains("Trigger detected for SA '" + name + "'"));
             Assert.Contains(logged, l => l.Contains("SpecialAction KEY triggered: name=" + name));
             Assert.Contains(logged, l => l.Contains("SpecialAction KeyReleased: device=" + Device + ", name=" + name));

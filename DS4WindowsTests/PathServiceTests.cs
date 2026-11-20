@@ -5,7 +5,7 @@ using DS4Windows.Core.Platform;
 
 namespace DS4WindowsTests
 {
-    // Phase7-Step3c W1: Global.appdatapath を書き換えるため、同じ静的状態を使うテストと直列に実行する
+    // Global.appdatapath を書き換えるため、同じ静的状態を使うテストと直列に実行する
     [Xunit.Collection(SharedHostStateCollection.Name)]
     public class PathServiceTests
     {

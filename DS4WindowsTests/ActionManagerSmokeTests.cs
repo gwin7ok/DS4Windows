@@ -8,7 +8,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ActionDoneFlagRoundtrip()
         {
-            // Phase13-Step4: 静的 ActionManager（と、それを支えた ServiceProviderHolder）は廃止した。管理役（DefaultActionManager）を直接使う。
+            // 静的 ActionManager（と、それを支えた ServiceProviderHolder）は廃止した。管理役（DefaultActionManager）を直接使う。
             // Func<IMapping> は切断時の後始末（ClearDeviceState）にだけ使われ、このテストでは呼ばれない。
             var manager = new DS4Windows.Processing.Actions.DefaultActionManager(() => null);
 

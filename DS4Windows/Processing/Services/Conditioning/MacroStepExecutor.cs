@@ -12,10 +12,10 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 9-C（Phase9-C-Plan.md）: <see cref="IMacroStepExecutor"/> の実装（DI の Singleton）。
+    /// <see cref="IMacroStepExecutor"/> の実装（DI の Singleton）。
     /// 旧 <c>Mapping.PlayMacroCodeValue</c> を、そのまま移したもの（キー・マウスボタンの送出は <c>IVirtualKBM</c>、設定は <c>IProfileSettingsService</c>、
     /// ゲームパッドのボタンの出力フラグは <c>MacroRuntimeState</c> へ。フラグと個数は、ユーザー判断（Q2）によりデバイスごとに持つ）。
-    /// 値の特性化は <c>Phase9CMacroStepExecutorDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// TODO(技術的負債・Phase9 9-E 付近): ライトバーの強制色（<c>DS4LightBar.forcelight</c>／<c>forcedColor</c>／<c>forcedFlash</c>）は、旧実装どおり静的な配列へ直接書く。
     /// ライトバーのサービス化（<c>ILightbarService</c>）のときに、窓口経由へ置き換える。
     /// </summary>
@@ -24,12 +24,12 @@ namespace DS4Windows.Processing.Services.Conditioning
         private readonly IVirtualKBM _virtualKbm;
         private readonly IProfileSettingsService _profileSettings;
         private readonly MacroRuntimeState _macroRuntime;
-        // Phase13-Step5: IDeviceStateAccessor の実装者はスロット状態（依存なし）になったため、直接注入で受ける（マクロの振動イベントで使う。旧: 循環を避けて Func で遅延取得）
+        // IDeviceStateAccessor の実装者はスロット状態（依存なし）になったため、直接注入で受ける（マクロの振動イベントで使う。旧: 循環を避けて Func で遅延取得）
         private readonly IDeviceStateAccessor _deviceStateAccessor;
-        // Phase12-Step3 3c（R-3）: マウスポインターの移動（絶対／前面ウィンドウ基準）
+        // マウスポインターの移動（絶対／前面ウィンドウ基準）
         private readonly IWindowSystem _windowSystem;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public MacroStepExecutor(DS4Windows.Core.Model.LightbarOverrides lightbar, IVirtualKBM virtualKbm, IProfileSettingsService profileSettings,
@@ -50,12 +50,12 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public bool Execute(int device, DS4KeyType keyType, int macroCodeValue, bool[] keydown)
         {
-            // Phase6-Step3-6c（決定P2）: 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
-            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む（Phase7c W3 でコメントを訂正）。
+            // 非同期マクロ経路（別スレッド、ctrl を持たない連鎖）のため、Mapping が保持する profileSettings から読む。
+            // Phase7-Step8 W2 で instance 化（コンストラクター注入）済み。この経路も instance の profileSettings を読む。
             bool doDelayOnCaller = false;
             if (MacroPointerMove.IsPointerMoveValue(macroCodeValue))
             {
-                // Phase12-Step3 3c（R-3）: マウスポインターの移動。ライトバー（1,000,000,000〜）より上の範囲なので、先に判定する
+                // マウスポインターの移動。ライトバー（1,000,000,000〜）より上の範囲なので、先に判定する
                 MovePointer(device, macroCodeValue);
             }
             else if (macroCodeValue >= 261 && macroCodeValue <= DS4ControlSettings.MAX_MACRO_VALUE)
@@ -75,8 +75,8 @@ namespace DS4Windows.Processing.Services.Conditioning
             else if (macroCodeValue < 300)
             {
                 // Keyboard key or mouse button macro event
-                // Phase9 9-C（Q4）: 旧・押下と離上の 2 つの switch（マウスボタン 5 種、キー、スキャンコード）は、SendKeyOrMouseButton にまとめた。
-                // 送出するイベント、その順序、ログの文言は変えていない（旧実装との一致は Phase9CMacroStepExecutorDifferentialTests が守る）。
+                // 旧・押下と離上の 2 つの switch（マウスボタン 5 種、キー、スキャンコード）は、SendKeyOrMouseButton にまとめた。
+                // 送出するイベント、その順序、ログの文言は変えていない。
                 if (!keydown[macroCodeValue])
                 {
                     SendKeyOrMouseButton(device, keyType, macroCodeValue, down: true);
@@ -117,7 +117,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                     if (accessor != null) d = accessor.GetController(device);
                 }
                 catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
-                // Phase7-Step5 W2: IDeviceStateAccessor は ControlService 自身の登録のため、旧 Program.rootHub のフォールバックは冗長だった
+                // IDeviceStateAccessor は ControlService 自身の登録のため、旧 Program.rootHub のフォールバックは冗長だった
                 string r = macroCodeValue.ToString().Substring(1);
                 byte heavy = (byte)(int.Parse(r[0].ToString()) * 100 + int.Parse(r[1].ToString()) * 10 + int.Parse(r[2].ToString()));
                 byte light = (byte)(int.Parse(r[3].ToString()) * 100 + int.Parse(r[4].ToString()) * 10 + int.Parse(r[5].ToString()));

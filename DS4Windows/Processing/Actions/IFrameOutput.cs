@@ -3,7 +3,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step4 W1: 1 フレームの出力への書き込み口（Phase8-Step2-Design.md §5）。Button の毎フレームの出力と、成立中のトリガーのボタンの出力の消去に使う。
+    /// 1 フレームの出力への書き込み口。Button の毎フレームの出力と、成立中のトリガーのボタンの出力の消去に使う。
     /// 実装（W2）は、デバイスごとに再利用し、<c>Mapping</c> が毎フレーム出力の表を差し替える（割り当て 0）。
     /// </summary>
     public interface IFrameOutput

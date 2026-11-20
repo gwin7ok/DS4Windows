@@ -9,12 +9,12 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M1（Phase9-MapCustom-Plan.md §3）: <see cref="ISyntheticInputCommitter"/> の実装（DI の Singleton）。
+    /// Phase9 MapCustom の分割 M1: <see cref="ISyntheticInputCommitter"/> の実装（DI の Singleton）。
     /// 旧 <c>Mapping.Commit</c>（合成入力のクリック・ホイールの確定と出力）を、そのまま移したもの
     /// （旧 <c>oldnow</c>／<c>wheel</c> も、ここが持つ。<b>全デバイスで共有</b>のまま。<c>GlobalState</c> が全デバイスの合計で遷移を検出するため、
     /// 繰り返しの状態だけをデバイスごとにすると、押した側と離した側が別のデバイスのとき、繰り返しが止まらなくなる）。
     /// 常に <c>false</c> だった <c>pressagain</c>（上流 DS4Windows 由来の残骸）は削除した。
-    /// 値の特性化は <c>Phase7Step7CommitCharacterizationTests</c> と <c>Phase9MapCustomCommitterDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 値の特性化は 対応するテストが守る。
     /// </summary>
     public sealed class SyntheticInputCommitter : ISyntheticInputCommitter
     {
@@ -63,7 +63,6 @@ namespace DS4Windows.Processing.Services.Conditioning
                 {
                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                     AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
-                    // Phase7-Step8 W2（Q8＝A）: 旧 MouseOutputAction の検索（未登録のため常に null で、下の出力が実際の経路だった）を削除した。
                     _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
 
                     if (_syntheticInput.GlobalState.currentClicks.rightCount != 0 && _syntheticInput.GlobalState.previousClicks.rightCount == 0)
@@ -111,7 +110,6 @@ namespace DS4Windows.Processing.Services.Conditioning
                     {
                         if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"SYNTHETIC TRACE device={device} event=MouseLeftDown");
                         AppLogger.LogDebug($"EVENT SENT [SYNTHETIC] device={device} event=MouseLeftDown");
-                        // Phase7-Step8 W2（Q8＝A）: 旧 MouseOutputAction の検索（未登録のため常に null で、下の出力が実際の経路だった）を削除した。
                         _virtualKbm.PerformMouseButtonEvent(settings.OutputKBMMapping.MOUSEEVENTF_LEFTDOWN);
                     }
                     else if (_syntheticInput.GlobalState.currentClicks.leftCount == 0 && _syntheticInput.GlobalState.previousClicks.leftCount != 0)

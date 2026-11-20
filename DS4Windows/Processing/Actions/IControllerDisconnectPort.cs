@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6b（Phase8-Step7-6-Plan.md Q2＝A）: DisconnectBT の出力が、実機のコントローラー（<c>InputDeviceCore</c>）を操作するための窓口。
+    /// DisconnectBT の出力が、実機のコントローラー（<c>InputDeviceCore</c>）を操作するための窓口。
     /// 出力アクションが <c>InputDeviceCore</c> を直接持たないようにし、単体テストでは記録用の偽の実装に差し替える。
     /// </summary>
     public interface IControllerDisconnectPort
@@ -10,13 +10,13 @@ namespace DS4Windows.Processing.Actions
         DisconnectTargetKind GetTargetKind(int deviceIndex);
 
         /// <summary>
-        /// Bluetooth を切断する（<c>InputDeviceCore.DisconnectBT()</c>）。戻り値は、切断の要求が受け付けられたか（Phase8-Step7-6-Plan.md Q3＝B: 失敗なら再試行する）。
+        /// Bluetooth を切断する（<c>InputDeviceCore.DisconnectBT()</c>）。戻り値は、切断の要求が受け付けられたか。
         /// 注意: <c>InputDeviceCore.DisconnectBT()</c> は、Windows の API の結果を使わず、MAC アドレスがあれば true を返す（既存の挙動。ほかの呼び出し元が依存するため変えない）。
         /// そのため、実際に失敗として観測できるのは、コントローラーがいない・MAC アドレスがない・例外のときに限られる。
         /// </summary>
         bool DisconnectBluetooth(int deviceIndex);
 
-        /// <summary>ドングル接続（SONYWA）で同期済みか（旧経路の、離したときの切断待ちの条件）。</summary>
+        /// <summary>ドングル接続（SONYWA）で同期済みか。</summary>
         bool IsDongleSynced(int deviceIndex);
 
         /// <summary>コントローラーが無操作か（<c>InputDeviceCore.IsDS4Idle()</c>）。コントローラーがいなければ false。</summary>

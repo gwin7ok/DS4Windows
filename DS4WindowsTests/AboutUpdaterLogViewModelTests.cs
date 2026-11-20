@@ -7,7 +7,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-1-3: AboutViewModel／UpdaterWindowViewModel／LogViewModel が、依存を必須引数で受け取り
+    /// AboutViewModel／UpdaterWindowViewModel／LogViewModel が、依存を必須引数で受け取り
     /// （null を拒否）、Global と同じ値・動作を保つこと。
     /// </summary>
     public class AboutUpdaterLogViewModelTests
@@ -45,7 +45,7 @@ namespace DS4WindowsTests
         {
             try
             {
-                return Activator.CreateInstance(UpdaterVmType, version, settings, (IChangelogService)new StubChangelog());   // Phase14b-Step17（D10）: 変更履歴の取得（通信しない偽物）
+                return Activator.CreateInstance(UpdaterVmType, version, settings, (IChangelogService)new StubChangelog());   // 変更履歴の取得（通信しない偽物）
             }
             catch (System.Reflection.TargetInvocationException ex)
             {
@@ -122,7 +122,7 @@ namespace DS4WindowsTests
             Assert.Throws<ArgumentNullException>(() => new LogViewModel(null, new ImmediateUiDispatcher()));
         }
 
-        // Phase14b-Step17（D10）: UpdaterWindowViewModel のコンストラクターが受ける変更履歴のサービス（通信しない）
+        // UpdaterWindowViewModel のコンストラクターが受ける変更履歴のサービス（通信しない）
         private sealed class StubChangelog : IChangelogService
         {
             public bool CheckNewerVersionExists(out Version version, string lastVersionChecked, bool allowCached = true, bool respectSkip = true)

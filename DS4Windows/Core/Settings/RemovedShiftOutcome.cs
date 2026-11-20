@@ -1,7 +1,7 @@
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase8-Step7 7.8d: <see cref="RemovedShiftNotice.Apply"/> の結果。
+    /// <see cref="RemovedShiftNotice.Apply"/> の結果。
     /// </summary>
     public enum RemovedShiftOutcome
     {

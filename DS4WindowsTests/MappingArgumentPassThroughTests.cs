@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Conditioning;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step3-4: `Mapping.SetCurveAndDeadzone` が、`Global`（静的な BackingStore）ではなく、
+    /// `Mapping.SetCurveAndDeadzone` が、`Global`（静的な BackingStore）ではなく、
     /// 呼び出し元から引数で渡された `IProfileSettingsService` の値を参照していることを検証する。
     /// 検証方法: 互いに独立した BackingStore を持つ2つの `ProfileSettingsService` を用意し、
     /// 片方だけ設定値を変えて同じ入力を与え、出力が変わることを確認する。
@@ -23,9 +23,9 @@ namespace DS4WindowsTests
     /// </summary>
     public class MappingArgumentPassThroughTests
     {
-        // Phase7-Step8 W2: Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
+        // Mapping は instance になった。他のテストと状態を共有しない独立の instance を使う
         private static readonly Mapping Mapper = TestMappingFactory.Create();
-        private static readonly IStickInputConditioner Conditioner = new StickInputConditioner();   // Phase9 9-A(2)-B: ApplyStickCalibration は StickInputConditioner.ApplyDrift へ移した
+        private static readonly IStickInputConditioner Conditioner = new StickInputConditioner();   // ApplyStickCalibration は StickInputConditioner.ApplyDrift へ移した
 
         private const int Slot = 0;
 

@@ -33,7 +33,7 @@ namespace DS4Windows.Core.Profiles
     public class AutoProfileHolder
     {
         private object _colLockobj = new object();
-        // Phase6-Step10-4-2b: Global.appdatapath の直接参照を廃止し、IPathService を必須の依存として受け取る
+        // Global.appdatapath の直接参照を廃止し、IPathService を必須の依存として受け取る
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
         private ObservableCollection<AutoProfileEntity> autoProfileColl;
         public ObservableCollection<AutoProfileEntity> AutoProfileColl { get => autoProfileColl; }
@@ -41,12 +41,12 @@ namespace DS4Windows.Core.Profiles
 
         //private Dictionary<string, AutoProfileEntity> autoProfileDict;
 
-        // Phase7-Step10b W4: 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。保存時（AutoProfilesDTO.MapFrom）に、
+        // 旧 ControlService.USING_MAX_CONTROLLERS（静的シム）の置換。保存時（AutoProfilesDTO.MapFrom）に、
         // 4〜8 番目のコントローラーのプロファイルを書くかの判定に使う。
         private readonly DS4Windows.Core.Abstractions.IEnvironmentService environmentService;
         public bool UsingMaxControllers => environmentService.UsingMaxControllers;
 
-        // Phase10-Step4d W4: 各ルールのプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）。Load が使うため、先に設定する
+        // 各ルールのプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）。Load が使うため、先に設定する
         private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity;
 
         public AutoProfileHolder(DS4Windows.Core.Abstractions.IPathService pathService, DS4Windows.Core.Abstractions.IEnvironmentService environmentService,
@@ -56,7 +56,7 @@ namespace DS4Windows.Core.Profiles
             this.pathService = pathService ?? throw new System.ArgumentNullException(nameof(pathService));
             this.environmentService = environmentService ?? throw new System.ArgumentNullException(nameof(environmentService));
             autoProfileColl = new ObservableCollection<AutoProfileEntity>();
-            // Phase10-Step4d W5d: ルールが入るとき（ファイルの読み込み、画面からの追加）に、登録簿を結ぶ（各コントローラーのプロファイルの保管は ID）。Load より前に結ぶ
+            // ルールが入るとき（ファイルの読み込み、画面からの追加）に、登録簿を結ぶ（各コントローラーのプロファイルの保管は ID）。Load より前に結ぶ
             autoProfileColl.CollectionChanged += (sender, e) =>
             {
                 if (e.NewItems == null) return;
@@ -114,10 +114,10 @@ namespace DS4Windows.Core.Profiles
             return saved;
         }
 
-        // Phase10-Step4d W7: 以前ここにあった ReplaceProfileName（ルールが参照している旧名の置き換え）は撤去した。各ルールのプロファイルの保持は、W5d で、
+        // 以前ここにあった ReplaceProfileName（ルールが参照している旧名の置き換え）は撤去した。各ルールのプロファイルの保持は、W5d で、
         // プロファイルの固定 ID を保管する窓口になり、名前を変えても、読み出す名前が現在の名前になるため。保存先のファイルの名前と ID は、名前変更の直後に Save で書き直す（MainWindow）
 
-        /// <summary>Phase10-Step4d W7: 既定の保存先（Auto Profiles.xml）へ保存する。</summary>
+        /// <summary>既定の保存先（Auto Profiles.xml）へ保存する。</summary>
         public bool Save() => Save(Path.Combine(pathService.AppDataPath, "Auto Profiles.xml"));
 
         public void Remove(AutoProfileEntity item)

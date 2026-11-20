@@ -6,7 +6,6 @@ using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Processing.Gyro
 {
-    // Phase7-Step7 W4: 旧 Mapping の入れ子の型をトップレベルへ移した（Q5＝A。中身は変えていない）。
     public class DeltaSettingsProcessor
     {
         double previousPointerX = 0.0;

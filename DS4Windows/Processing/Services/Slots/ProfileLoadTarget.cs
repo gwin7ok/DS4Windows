@@ -9,7 +9,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
-    /// Phase13-Step6 6-d: <see cref="IProfileLoadTarget"/> の実装（DI の Singleton。状態なし）。
+    /// <see cref="IProfileLoadTarget"/> の実装（DI の Singleton。状態なし）。
     /// プロファイル読込の鎖が <c>ControlService</c> に求めていた 8 つのメンバーを、既に独立したサービス（<see cref="IDeviceSlotState"/>、
     /// <see cref="IVirtualPadService"/>、<see cref="IDeviceConnectionSetup"/>、<see cref="ITouchpadToggleService"/>、<see cref="StickMotionState"/>）へ
     /// 直接つなぐ。<c>ControlService</c>、<c>ProfileRepository</c>、<c>ProfileApplicationService</c> のいずれにも依存しない（循環しない。6-a のプローブで確認）。

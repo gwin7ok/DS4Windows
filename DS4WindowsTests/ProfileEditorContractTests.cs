@@ -9,12 +9,12 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step8-1: <c>ProfileEditor.xaml.cs</c> の Global 直接参照解消に先立って追加した契約を検証する。
+    /// <c>ProfileEditor.xaml.cs</c> の Global 直接参照解消に先立って追加した契約を検証する。
     /// - <see cref="ISpecialActionRepository.GetActionOrPlaceholder"/>: <c>Global.GetAction</c> と同じ契約
     ///   （前後の空白と大文字小文字を無視、未発見は <c>null</c> ではなく placeholder）。
     ///   既存の <see cref="ISpecialActionRepository.GetAction"/> は <c>null</c> を返す別契約のため、置換できない。
     /// - （<c>IProfileRepository.LoadBlankProfile</c> の確認は、Phase7-Step3c W2 で契約ごと削除した。<c>IProfilePresetLoader.LoadBlank</c> に統合）
-    /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Step2 の教訓）。
+    /// Global 状態を変更するテストは、変更を必ず元に戻す。
     /// </summary>
     public class ProfileEditorContractTests
     {

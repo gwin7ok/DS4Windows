@@ -7,7 +7,7 @@ namespace DS4Windows.Core.Platform
 {
     /// <summary>
     /// プロセス優先度の選択肢の表。設定（<c>IAppSettingsService.ProcessPriority</c>）は、この表の添字で保存されている。
-    /// 旧 <c>MainWindow.ProcessPriorityClasses</c>（UI の静的リスト）と <c>ServiceLifecycle</c> の複製を、1 か所へまとめたもの（Phase9 9-F F-5）。
+    /// 旧 <c>MainWindow.ProcessPriorityClasses</c>（UI の静的リスト）と <c>ServiceLifecycle</c> の複製を、1 か所へまとめたもの。
     /// 並び順を変えると、保存済みの設定が別の優先度にずれるため、変えてはならない。
     /// </summary>
     public static class ProcessPriorityOptions

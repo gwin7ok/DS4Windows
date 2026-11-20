@@ -10,7 +10,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step16（決定 D11）: UI が <c>App</c> を直接呼ばず、<see cref="IUiThemeAndLanguage"/>（実装は UI/Services の <see cref="AppThemeAndCultureService"/>）を使う。
+    /// UI が <c>App</c> を直接呼ばず、<see cref="IUiThemeAndLanguage"/>（実装は UI/Services の <see cref="AppThemeAndCultureService"/>）を使う。
     /// </summary>
     public class UiThemeAndLanguageTests
     {
@@ -25,7 +25,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_ResolvesTheIpcResultWriterAsASingleton()
         {
-            // Phase14b-Step16: CLI の問い合わせの結果の書き込み（旧 MainWindow → (Application.Current as App).WriteIPCResultDataMMF）
+            // CLI の問い合わせの結果の書き込み（旧 MainWindow → (Application.Current as App).WriteIPCResultDataMMF）
             var first = TestHost.GetService<IIpcResultWriter>();
             Assert.IsType<IpcResultWriterAdapter>(first);
             Assert.Same(first, TestHost.GetService<IIpcResultWriter>());

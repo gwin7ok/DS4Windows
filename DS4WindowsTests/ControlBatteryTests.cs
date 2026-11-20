@@ -14,7 +14,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step6 W7 相当（Check Battery を Controls へ）: 保存（通知とライトバーの on／off、2 色、押し続ける秒数）、実行（共通の出力の部品と Controls 由来の方針）、
+    /// 保存（通知とライトバーの on／off、2 色、押し続ける秒数）、実行（共通の出力の部品と Controls 由来の方針）、
     /// 画面の入力（<see cref="CheckBatteryViewModel"/> の型のある項目との往復）。SA と同じ処理で、Controls 固有の分岐はない。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]

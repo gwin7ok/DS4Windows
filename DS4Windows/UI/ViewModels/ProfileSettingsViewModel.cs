@@ -57,7 +57,7 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>「その他」タブの一般項目（入力の表示、マウス移動、プログラムの同時起動、無操作での切断、ポーリング間隔）。</summary>
         public GeneralSettingsViewModel General { get; }
         private readonly IProfileSettingsService profileSettings;
-        private readonly IProfileLoadTarget loadTarget;   // Phase13-Step6 6-e: 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
+        private readonly IProfileLoadTarget loadTarget;   // 旧 ControlService controlService（ジャイロ系 setter と空プロファイルの読込に渡すだけだった）
         private readonly IEnvironmentService environmentService;
         private readonly IPathService pathService;
         private readonly IOutputSlotService outputSlotService;
@@ -67,15 +67,15 @@ namespace DS4Windows.UI.ViewModels
         private int funcDevNum;
         public int FuncDevNum { get => funcDevNum; }
 
-        // Phase6-Step7b: 設定の読み書き先（Device＝編集スロット）とは別に、ランブルテスト・ライトバーの
+        // 設定の読み書き先（Device＝編集スロット）とは別に、ランブルテスト・ライトバーの
         // プレビュー・校正などで実際に使うコントローラーのスロット番号を持つ。-1 は「実機なし」
-        // （プロファイル一覧から開いた場合）。詳細は docs-forDIMG/MadeByAgent/Phase6-Step7b-Plan.md §2.1
+        // （プロファイル一覧から開いた場合）
         private readonly int targetDevice;
         public int TargetDevice { get => targetDevice; }
 
-        // Phase11 K-W6-10: DebouncingMs（デバウンス時間）のプロパティとイベントは機能廃止で削除した
+        // DebouncingMs（デバウンス時間）のプロパティとイベントは機能廃止で削除した
 
-        // ---- Phase6-Step8-4: ProfileEditor のバックエンド操作（保存・ブランク読み込み・キャッシュ更新）----
+        // ---- ProfileEditor のバックエンド操作（保存・ブランク読み込み・キャッシュ更新）----
         // 編集スロット（device）に対する操作だけを行い、コントローラーのスロットへの再適用はしない
         // （再適用は ProfileSaved を受けた MainWindow.SyncProfileListAndControllers の責務。Step7b 決定8）。
 
@@ -87,7 +87,7 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>
         /// 編集スロットへ空のプロファイルを読み込む（新規作成でプリセット選択をキャンセルしたとき）。
-        /// Phase13-Step6 6-e: 読込先の窓口（<see cref="IProfileLoadTarget"/>）は、呼び出し元から渡さず、この ViewModel が持つものを使う。
+        /// 読込先の窓口（<see cref="IProfileLoadTarget"/>）は、呼び出し元から渡さず、この ViewModel が持つものを使う。
         /// </summary>
         public void LoadBlankProfile()
         {
@@ -133,12 +133,12 @@ namespace DS4Windows.UI.ViewModels
 
 
 
-        // Phase6-Step9-4: 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
+        // 依存はコンストラクタで必須引数として受け取る（Pure DI。決定1＝S9-A）。
         // 以前は ?? AppHost.GetService／Global.*Instance／Program.rootHub のフォールバックを持っていた。
         // loadTarget は、ジャイロ系 setter が IProfileSettingsService へ渡す引数と、空プロファイルの読込にだけ使われ、従来も
         // Program.rootHub が null の環境（テスト等）では null だったため、null を許容する（Phase13-Step6 6-e: 旧 ControlService controlService。
         // 生成側の ViewModelFactory が IProfileLoadTarget を直接渡す）。
-        // targetDevice は、編集スロット（device）と実機を分けて渡す引数（Phase6-Step7b）。変更しない。
+        // targetDevice は、編集スロット（device）と実機を分けて渡す引数。変更しない。
         // 廃止された設定が残るプロファイルを開いたときの警告の画面（null は警告を出さない。単体テスト）
         private readonly IRemovedShiftPrompt removedShiftPrompt;
         private readonly IRemovedGyroSwipePrompt removedGyroSwipePrompt;
@@ -184,7 +184,7 @@ namespace DS4Windows.UI.ViewModels
             this.environmentService = environmentService;
             ArgumentNullException.ThrowIfNull(pathService);
             this.pathService = pathService;
-            // Phase6-Step7b: 実機を使う機能（ランブルテスト、校正、入力ハイライト等）の対象。
+            // 実機を使う機能（ランブルテスト、校正、入力ハイライト等）の対象。
             // 実機なし（-1）の場合は、プロファイル一覧から開いたときの従来動作（コントローラー0）を維持する
             funcDevNum = HasTargetDevice ? targetDevice : 0;
 
@@ -220,19 +220,19 @@ namespace DS4Windows.UI.ViewModels
 
         private void SetupEvents()
         {
-            // Phase6-Step7b（決定7＝H1）: 編集操作のたびに実機へ即時に効かせていた 6 件のフックを削除した
+            // 編集操作のたびに実機へ即時に効かせていた 6 件のフックを削除した
             // （GyroOutModeIndexChanging／TouchpadOutputIndexChanging の touchPad.Reset()、TouchpadOutputIndexChanged の
             // PostSetup()、TouchMouseStickTrackballFrictionChanged の ResetTouchStickAccel、LS／RSDeltaAccelEnabledChanged の
             // deltaAccelProcessors のリセット）。プロファイル編集画面の編集スロットが常に作業スロット（8）になり、
             // device < CURRENT_DS4_CONTROLLER_LIMIT の判定を通らなくなったため。同じ処理は、適用・保存時の
-            // ApplyProfile → ControlService.PreLoadReset／CheckProfileOptions で行われる（Phase6-Step7b-Plan.md §1A.3）
+            // ApplyProfile → ControlService.PreLoadReset／CheckProfileOptions で行われる
         }
 
 
 
         /// <summary>
         /// 実機（targetDevice）が指定され、かつ有効なコントローラースロットの範囲内であるか。
-        /// Phase6-Step7b: ライトバーのプレビュー等、実機に触れる処理はこの判定を使う（編集スロット Device ではない）。
+        /// ライトバーのプレビュー等、実機に触れる処理はこの判定を使う（編集スロット Device ではない）。
         /// </summary>
         private bool HasTargetDevice =>
             targetDevice >= 0 && targetDevice < environmentService.ControllerSlotLimit;
@@ -303,7 +303,6 @@ namespace DS4Windows.UI.ViewModels
         // （Reload()、およびStopEditorBindings()+RefreshEditorBindings()のペア）という規約を
         // 守っているためである。将来、本メソッドを新たな呼び出し元から呼ぶ場合、このDataContext
         // 再設定の規約を守らないと、値は正しく更新されてもUI上には反映されない不具合が再発する。
-        // 詳細: docs-forDIMG/MadeByAgent/Phase5-Step14-FormSettings-Unification-Status.md タスク(c)-1
         public void UpdateLateProperties()
         {
             // 読み取り側は保存された種類（OutContType）、書き込み先の一時の種類（OutDevTypeTemp）は outputSlotService 側

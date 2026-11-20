@@ -7,8 +7,7 @@ using DS4Windows.Input.Abstractions;
 namespace DS4Windows.Processing.Services.Devices
 {
     /// <summary>
-    /// Phase7-Step10d W3（Q4＝A）: <see cref="IDeviceLayerSettings"/> の実装。アプリ設定とプロファイル設定のサービスを読むだけの薄い窓口
-    /// （旧: 第 1 層が <c>Global</c> 経由で読んでいたのと同じ実体）。
+    /// <see cref="IDeviceLayerSettings"/> の実装。アプリ設定とプロファイル設定のサービスを読むだけの薄い窓口。
     /// </summary>
     public class DeviceLayerSettings : IDeviceLayerSettings
     {

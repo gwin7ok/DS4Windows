@@ -6,7 +6,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Core.Settings
 {
     /// <summary>
-    /// Phase10-Step4d W5b（Phase10-Step4d-Plan.md §4 W5）: スロットごとのプロファイルの<b>名前を読み書きする窓口</b>で、保管は<b>プロファイルの固定 ID</b>
+    /// スロットごとのプロファイルの<b>名前を読み書きする窓口</b>で、保管は<b>プロファイルの固定 ID</b>
     /// （と、見つからないときの名前の控え）。<c>BackingStore</c> の <c>profilePath</c>（現在）、<c>olderProfilePath</c>（直前）、<c>selectedProfile</c>（選択）の型。
     /// <list type="bullet">
     /// <item>書く（<c>slots[i] = 名前</c>）: 名前の控えを保存し、登録簿（<see cref="IProfileIdentityService"/>）から ID を引いて保存する。見つからない名前（まだ作っていない、空、「(none)」）は、ID なしで名前の控えだけ。</item>

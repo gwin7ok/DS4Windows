@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 I2（Phase10-Step6-Plan.md §4）: <see cref="SpecialAction"/>（<c>details</c>／<c>extra</c> の文字列に種別ごとの意味を詰めた形）と、
+    /// <see cref="SpecialAction"/>（<c>details</c>／<c>extra</c> の文字列に種別ごとの意味を詰めた形）と、
     /// 型のある項目（<see cref="ControlSpecialItem"/>）の、<b>相互の変換</b>。種別ごとの文字列の解釈規則を、この 1 か所に集める。
     /// <para>
     /// 保存形式（<c>Actions.xml</c> と <see cref="SpecialAction"/>）は変えない（2026-10-22 ユーザー決定。旧版との互換を保つため）。文字列は、保存の境界にだけ残る。

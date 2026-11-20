@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 I4a: Controls タブの束縛の出力の種類（<see cref="ControlOutputNature"/>）を決める、唯一の場所。
+    /// Controls タブの束縛の出力の種類（<see cref="ControlOutputNature"/>）を決める、唯一の場所。
     /// 規則（Phase10-Step4c W4 の判定の表と同じ。判定の中身は変えない）: パッドの軸・トリガー、素通し、アナログマウス（マウスの移動・アナログのホイール）、
     /// 出力先のない（消すだけの）パッドはアナログ。それ以外はデジタル。
     /// </summary>

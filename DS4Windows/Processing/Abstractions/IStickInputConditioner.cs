@@ -7,7 +7,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 9-A(2)-B（Phase9-A2-Plan.md）: スティックの入力の前処理（ドリフト補正、アンチスナップバック、ファズ）。
+    /// スティックの入力の前処理（ドリフト補正、アンチスナップバック、ファズ）。
     /// 以前は <c>Mapping.SetCurveAndDeadzone</c> の冒頭と、<c>Mapping</c> の private メソッド（<c>CalcAntiSnapbackStick</c>／<c>CalcStickAxisFuzz</c>）、
     /// <c>ApplyStickCalibration</c> にあった。状態は持たない（履歴・前回の値は呼び出し側［<see cref="StickMotionState"/>］が持ち、引数で渡す）。時刻も引数で受ける。
     /// 回転は、<c>ControllerState.RotateLSCoordinates</c>／<c>RotateRSCoordinates</c>（すでに <c>ControllerState</c> のメソッド）のまま。

@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step1 W2（実機確認で発見。以前からの不具合）: Controls で、記録画面（<c>RecordBox</c>）の Scan Code にチェックを入れてマクロを保存しても、
+    /// Controls で、記録画面（<c>RecordBox</c>）の Scan Code にチェックを入れてマクロを保存しても、
     /// 開き直すとチェックが外れていた。原因は、<c>BindingWindowViewModel.PrepareSaveMacro</c> が <c>macroType</c> だけを渡し、
     /// <c>WriteBind</c>（Macro）が見る <c>hasScanCode</c> を渡していなかったこと。
     /// </summary>

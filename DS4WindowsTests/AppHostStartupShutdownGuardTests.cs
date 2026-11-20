@@ -9,13 +9,13 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step4 W2: <c>AppHost</c> の整理と、起動・終了の手順（Q2・Q3・Q5）の回帰ガード。
+    /// <c>AppHost</c> の整理と、起動・終了の手順（Q2・Q3・Q5）の回帰ガード。
     /// ホストは全テストが共有する static のため、実際に破棄はせず、ソースの構造で確かめる。
     /// - <c>CreateHost(string[])</c> と、未使用だった引数は削除済みで、再び宣言されない。
     /// - <c>-driverinstall</c> 分岐は、設定の読込の前に <c>CreateHost(config, parser)</c> を明示的に呼ぶ（<c>Global.Load</c> は削除済み）。
     /// - （終了の手順の順序は、<c>AppShutdownSequenceTests</c> が呼ばれた順で固定する）
     /// - <c>Dispose</c> の後は、<c>GetService</c> が暗黙にホストを作り直さない。
-    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>Phase7-Step4-Plan.md</c>。
+    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は <c>docs-forDIMG/MadeByAgent/Archive/Phase7-Step4-Plan.md</c>。
     /// </summary>
     public class AppHostStartupShutdownGuardTests
     {
@@ -29,7 +29,7 @@ namespace DS4WindowsTests
         [Fact]
         public void AppHost_DoesNotDeclareRemovedOverloads()
         {
-            // Phase14d-Step3: ソースの文字列ではなく、CreateHost の多重定義の引数を確かめる
+            // ソースの文字列ではなく、CreateHost の多重定義の引数を確かめる
             var overloads = typeof(DS4Windows.Composition.AppHost).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Where(m => m.Name == "CreateHost")
                 .Select(m => m.GetParameters().Select(p => p.ParameterType).ToArray())
@@ -48,7 +48,7 @@ namespace DS4WindowsTests
             string text = SourceText.ReadCode("DS4Windows/Composition/AppHost.cs");
             if (text == null) return;
 
-            // Phase7-Step10e W3: Dispose 後だけでなく、未構築のときも暗黙に作らない（_disposed フラグは不要になった）
+            // Dispose 後だけでなく、未構築のときも暗黙に作らない（_disposed フラグは不要になった）
             Assert.DoesNotContain("_disposed", text);
             Assert.Equal(2, Regex.Matches(text, @"_host\s*=\s*builder\.Build\(\)").Count);
         }

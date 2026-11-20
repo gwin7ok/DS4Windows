@@ -5,7 +5,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
-    /// Phase9 MapCustom の分割 M2（Phase9-MapCustom-Plan.md §3）: 2 段階トリガー（L2／R2 の浅い引きと深い引き）の状態機械。
+    /// Phase9 MapCustom の分割 M2: 2 段階トリガー（L2／R2 の浅い引きと深い引き）の状態機械。
     /// 以前は <c>Mapping.ProcessTwoStageTrigger</c>。モード（Normal／ExclusiveButtons／HairTrigger／HipFire／HipFireExclusiveButtons）に従い、
     /// どちらの割り当て（浅い引き／深い引き）を有効にするかを決める。毎フレーム呼ばれる高頻度の経路のため、割り当てをしない。
     /// </summary>

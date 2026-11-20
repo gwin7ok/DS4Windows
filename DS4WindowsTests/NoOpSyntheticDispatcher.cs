@@ -3,8 +3,8 @@
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14c-Step3（R-06）: キーの操作の部品（KeyButtonControllerRegistry など）がコンストラクターで受ける合成キーの送出の、何もしない偽物。
-    /// ホストを作らないテストでは、これを渡す（旧: 静的な橋渡し SyntheticDispatcher が未束縛のときと同じく、キーの解決はそのまま返す）。
+    /// キーの操作の部品（KeyButtonControllerRegistry など）がコンストラクターで受ける合成キーの送出の、何もしない偽物。
+    /// ホストを作らないテストでは、これを渡す。
     /// </summary>
     public sealed class NoOpSyntheticDispatcher : ISyntheticDispatcher
     {

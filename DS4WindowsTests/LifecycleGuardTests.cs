@@ -10,7 +10,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-6f2（Phase9-E6-Plan.md §9）: 開始・停止・ホットプラグの切り出しの守り。
+    /// 開始・停止・ホットプラグの切り出しの守り。
     /// 本体と状態・イベントが <c>ServiceLifecycle</c> へ移り、<c>ControlService</c> は転送だけを持つこと。
     /// <b>安全弁（ガードレール）の順序</b>: <c>Start</c>（ViGEm の開始 → KBM の初期化 → 2 秒待ち → 排他モード → HidHide → OSC／UDP → 恒久スロット → 列挙 → <c>running</c> → UDP の待ち受け → 通知）、
     /// <c>Stop</c>（<c>running = false</c> → 事前通知 → デバイス停止と仮想パッドの取り外し → 登録簿の停止 → OSC／UDP の停止 → 出力キューの待ち → <c>OutputSlotManager.Stop</c> → 待ち → <c>StopViGEm</c> → KBM の切断 → 通知）が変わっていないこと。
@@ -186,7 +186,7 @@ namespace DS4WindowsTests
             Assert.IsType<ServiceLifecycle>(lifecycle);
             Assert.Same(lifecycle, TestHost.GetService<IServiceLifecycle>());
 
-            // 起動直後の状態（旧: running = false、loopControllers = true、inServiceTask = false、activeControllers = 0）
+            // 起動直後の状態
             var fresh = new ServiceLifecycle(TestLightbar.State, TestHost.GetService<DS4Windows.Processing.Abstractions.ILightbarService>(), TestHost.GetService<IAppSettingsService>(), TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IProfileSettingsService>(), TestHost.GetService<IInputDeviceRegistry>(),
                 TestHost.GetService<IVirtualPadService>(), TestHost.GetService<ILatencyMonitor>(),

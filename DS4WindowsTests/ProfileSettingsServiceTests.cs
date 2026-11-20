@@ -61,7 +61,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileActions_GetSet_ShouldPersist()
         {
-            // Phase7-Step2 W2: 旧 ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify から、
+            // 旧 ProfileSettingsServiceSubSettingsTests.ProfileActions_GetSet_ShouldPersistAndNotify から、
             // 通知（ProfileSettingChanged）の確認を除いて移した。
             var service = TestRepositoryFactory.CreateProfileSettingsService();
 
@@ -71,9 +71,9 @@ namespace DS4WindowsTests
                 newActions[i] = new System.Collections.Generic.List<string> { $"Action_{i}_A", $"Action_{i}_B" };
             }
 
-            // Phase6-Step9-1: ProfileActions の setter は Global.store.profileActions の配列そのものを置き換える。
-            // 戻さないと、後続のテストが編集スロット（Global.TEST_PROFILE_INDEX = 8）を引いたときに範囲外になる
-            // （Phase6-Status.md §6.4-1）。置き換え前の配列へ必ず戻す。
+            // ProfileActions の setter は Global.store.profileActions の配列そのものを置き換える。
+            // 戻さないと、後続のテストが編集スロット（Global.TEST_PROFILE_INDEX = 8）を引いたときに範囲外になる。
+            // 置き換え前の配列へ必ず戻す。
             System.Collections.Generic.List<string>[] originalActions = TestGlobals.Store.profileActions;
             try
             {
@@ -122,7 +122,7 @@ namespace DS4WindowsTests
         [Fact]
         public void OutContType_ShouldShareBackingStoreWithGlobalShim()
         {
-            // Issue7是正（Phase5-Step14-Issue7-Fix-Plan.md タスク7）の回帰防止テスト。
+            // Issue7是正（docs-forDIMG/MadeByAgent/Archive/Phase5-Step14-Issue7-Fix-Plan.md タスク7）の回帰防止テスト。
             // IOutputSlotService.GetOutputDeviceType が参照していた孤立配列（Global非連動）に
             // 起因するバグの再発を検知するため、ProfileSettingsService.OutContType が
             // Global.OutContType（m_Config.outputDevType）と同一の実体を参照していることを

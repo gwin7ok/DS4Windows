@@ -13,12 +13,12 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-2-1: グループ2（プロファイル・マッピング系）の View／ViewModel の Global 直接参照解消に先立って
+    /// グループ2（プロファイル・マッピング系）の View／ViewModel の Global 直接参照解消に先立って
     /// 追加した契約が、いずれも <c>Global</c> と同じ値・同じ動作であること（薄い委譲）を検証する。
     /// - IAppSettingsService: UseMoonlight／UseAdvancedMoonlight
     /// - IAutoProfileService: CreateAutoProfilesFile（Global.CreateAutoProfiles）
     /// - IProfilePresetLoader: 10 メソッドが、それぞれ対応する Global.Load…Profile へ委譲していること
-    /// Global 状態を変更するテストは、変更を必ず元に戻す（Phase6-Status.md §6.4-1）。
+    /// Global 状態を変更するテストは、変更を必ず元に戻す。
     /// </summary>
     public class ProfileMappingContractTests
     {
@@ -164,7 +164,7 @@ namespace DS4WindowsTests
 
             foreach (var kv in expected)
             {
-                // Phase7-Step3c W2: 実装はプリセットの読み込みを呼び、後処理（CompleteLoad）を行う（Phase7-Step10c W6: 呼び出し先は ProfilePresets）
+                // 実装はプリセットの読み込みを呼び、後処理（CompleteLoad）を行う
                 string target = kv.Value == "LoadBlankDevProfile" ? "LoadBlankProfile" : kv.Value;
                 string pattern = @"public void " + kv.Key + @"\([^)]*\)\s*\{\s*_presets\." + target +
                     @"\(deviceIndex, launchProgram, control, """", xinputChange, postLoad\);\s*CompleteLoad\(deviceIndex\);\s*\}";

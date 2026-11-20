@@ -17,7 +17,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10b W4（Q4＝A・Q6＝A）: <c>ControlService.USING_MAX_CONTROLLERS</c>（静的シム）を削除し、
+    /// <c>ControlService.USING_MAX_CONTROLLERS</c>（静的シム）を削除し、
     /// <c>IEnvironmentService.UsingMaxControllers</c> の注入に切り替えたことと、孤立定数の整理の回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
@@ -34,7 +34,7 @@ namespace DS4WindowsTests
         public void TheStaticShims_AreGone()
         {
             Assert.Null(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper).GetProperty("USING_MAX_CONTROLLERS", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
-            // Phase7-Step10e W2: CURRENT_DS4_CONTROLLER_LIMIT も削除した
+            // CURRENT_DS4_CONTROLLER_LIMIT も削除した
             Assert.Null(typeof(DS4Windows.Processing.Services.Connection.RuntimeBootstrapper).GetProperty("CURRENT_DS4_CONTROLLER_LIMIT", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
         }
 

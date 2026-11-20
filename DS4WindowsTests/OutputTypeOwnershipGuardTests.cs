@@ -9,12 +9,12 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step6: 出力デバイス種別の配列（OutDevTypeTemp／ActiveOutDevType）の所有権を、Global から OutputSlotService へ移したことの回帰ガード。
+    /// 出力デバイス種別の配列（OutDevTypeTemp／ActiveOutDevType）の所有権を、Global から OutputSlotService へ移したことの回帰ガード。
     /// - Global に配列がない。BackingStore は Global から読まず、自身の ActiveOutDevType を読む。
     /// - 配列の実体は OutputSlotService の readonly フィールド（参照は再代入されない。ControlService のキャッシュの前提）。
     /// - BackingStore への配列の受け渡しは IOutputSlotService の登録内で行い、BackingStore の登録内で IOutputSlotService を解決しない
     ///   （IOutputSlotStore → IPathService → BackingStore と循環し、スタックオーバーフローになる）。
-    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は Phase7-Step6-Plan.md。
+    /// ソースが見つからない環境では、検査を行わず合格とする。判断の根拠は docs-forDIMG/MadeByAgent/Archive/Phase7-Step6-Plan.md。
     /// </summary>
     public class OutputTypeOwnershipGuardTests
     {
@@ -32,8 +32,8 @@ namespace DS4WindowsTests
             if (store == null) return;
 
             Assert.Matches(@"public\s+OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*set;\s*\}", store);
-            // Phase7-Step10c W4: プロファイルの読込（1 件）は LegacyProfileXmlSerializer へ移した（store.ActiveOutDevType）。合計は変わらない
-            // Phase7-Step10c W6: プリセットの読込（7 件）も ProfilePresets へ移した。3 つのソースを合わせて 8 件
+            // プロファイルの読込（1 件）は LegacyProfileXmlSerializer へ移した（store.ActiveOutDevType）。合計は変わらない
+            // プリセットの読込（7 件）も ProfilePresets へ移した。3 つのソースを合わせて 8 件
             string serializer = SourceText.ReadCode("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
             string presets = SourceText.ReadCode("DS4Windows/Core/Persistence/ProfilePresets.cs");
             if (serializer == null || presets == null) return;
@@ -43,7 +43,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheArrays_AreOwnedByTheDeviceTypeState_AndTheServiceForwardsThem()
         {
-            // Phase13-Step7 7-b: 配列の持ち主は OutputSlotService から IOutputDeviceTypeState（OutputDeviceTypeState）へ移った
+            // 配列の持ち主は OutputSlotService から IOutputDeviceTypeState（OutputDeviceTypeState）へ移った
             string state = SourceText.ReadCode("DS4Windows/Output/Services/OutputDeviceTypeState.cs");
             string service = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
             if (state == null || service == null) return;
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         [Fact]
         public void Registration_HandsTheArrayToBackingStore_WithoutResolvingTheServiceFromTheStoreRegistration()
         {
-            // Phase14d-Step3: 配線は、コンテナが組み立てた結果で確かめる（IOutputDeviceTypeState の配列を BackingStore が同じ参照で持つ）
+            // 配線は、コンテナが組み立てた結果で確かめる（IOutputDeviceTypeState の配列を BackingStore が同じ参照で持つ）
             var state = TestHost.GetService<DS4Windows.Processing.Abstractions.IOutputDeviceTypeState>();
             Assert.Same(state.ActiveOutDevType, TestHost.GetService<DS4Windows.Core.Settings.BackingStore>().ActiveOutDevType);
 

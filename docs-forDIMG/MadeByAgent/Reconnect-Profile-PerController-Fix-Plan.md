@@ -63,7 +63,7 @@
 - **W2（実装）**: `IDeviceStateService`／`DeviceStateService`（MAC 版と記憶）、`ProfileApplicationService.CompleteProfileApplication`（記憶の書き込み。`IDeviceStateService` を受け取る必要があるかは、実装時に確認）、`ControlService` の選択部分。W1 のテストを、新しい期待値（2 つ目のコントローラーは「初回」）に更新する。
 - **W3（テスト）**: 仕様の 4 つの場合を、`DeviceStateService` の単体テストで確認する。(a) 別のコントローラーが同じスロットに入ったら初回、(b) 同じコントローラーが別のスロットに再接続したら記憶したプロファイル、(c) 記憶の更新（切替のたび）、(d) MAC なしはスロット単位のまま、(e) `ResetConnectionFlags` で記憶も消える。
 - **W4（実機確認 U-34）**: コントローラー 2 台（それぞれ別の LinkedProfile）で、症状の手順を確認する。
-- **文書**: 完了報告書（本ファイルに追記）、`Phase6-Step11-RealDevice-Verification-Checklist.md` に U-34、`Phase8-Status.md` に別件として 1 行。クラス図（`03-Class-Interface-Diagram.md`）の `IDeviceStateService` の記載は、更新するかをユーザーの指示で決める。
+- **文書**: 完了報告書（本ファイルに追記）、`Archive/Phase6-Step11-RealDevice-Verification-Checklist.md` に U-34、`Archive/Phase8-Status.md` に別件として 1 行。クラス図（`03-Class-Interface-Diagram.md`）の `IDeviceStateService` の記載は、更新するかをユーザーの指示で決める。
 
 ### 実装の記録（2026-10-20）
 

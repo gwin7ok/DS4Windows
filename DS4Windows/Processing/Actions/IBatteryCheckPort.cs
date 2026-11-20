@@ -3,7 +3,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6c（Phase8-Step7-6-Plan.md Q2＝A・Q6＝A）: BatteryCheck の出力が、実機のコントローラー（<c>InputDeviceCore</c>）と、ライトバーの強制色（静的な <c>DS4LightBar</c>）、
+    /// BatteryCheck の出力が、実機のコントローラー（<c>InputDeviceCore</c>）と、ライトバーの強制色（静的な <c>DS4LightBar</c>）、
     /// 通知（静的な <c>AppLogger.LogToTray</c>）を操作するための窓口。出力アクションが <c>InputDeviceCore</c> と静的な窓口を直接呼ばないようにし、単体テストでは記録用の偽の実装に差し替える。
     /// </summary>
     public interface IBatteryCheckPort

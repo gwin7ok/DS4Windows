@@ -4,7 +4,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase10-Step6 I4c（Phase10-Step6-Plan.md §4）: 共通の割り当て定義（<see cref="AssignmentDefinition"/>）から、束縛（<see cref="TriggerBinding"/>）を組み立てる、1 つの部品。
+    /// 共通の割り当て定義（<see cref="AssignmentDefinition"/>）から、束縛（<see cref="TriggerBinding"/>）を組み立てる、1 つの部品。
     /// 出力と方針は <see cref="ISpecialActionOutputFactory"/>（種別 × 由来の表）、入力は定義の由来と種別から決める:
     /// Controls 由来は <see cref="ControlButtonInputAction"/>（押下の判定は出力の種類から決まる性質、押し続ける秒数、離したとき成立）、
     /// SA 由来は <see cref="MultiTapInputAction"/>（MultiAction）か <see cref="ComboTriggerInputAction"/>（複数ボタンの組み合わせ）。
@@ -14,7 +14,7 @@ namespace DS4Windows.Processing.Actions
     {
         private readonly ISpecialActionOutputFactory _outputFactory;
 
-        private readonly IControlExtrasPort _extrasPort;   // Phase10-Step6 I5b: SA に付ける Extras の実行。省略時（テスト）は、Extras の束縛を作らない
+        private readonly IControlExtrasPort _extrasPort;   // SA に付ける Extras の実行。省略時（テスト）は、Extras の束縛を作らない
 
         public AssignmentBindingBuilder(ISpecialActionOutputFactory outputFactory,
             IControlExtrasPort extrasPort = null)
@@ -25,7 +25,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         /// <summary>
-        /// Phase10-Step6 I5b: SA に付けた Extras（<see cref="AssignmentDefinition.Extras"/>）の束縛を組み立てる。Extras がないとき、窓口が未接続のとき（テスト）は null。
+        /// SA に付けた Extras（<see cref="AssignmentDefinition.Extras"/>）の束縛を組み立てる。Extras がないとき、窓口が未接続のとき（テスト）は null。
         /// 動作は Controls の Extras と同じ出力（<see cref="ControlExtrasOutputAction"/>。押している間、毎フレーム適用し、離したときに元へ戻す）。
         /// 「その SA が成立している間だけ」有効にするため、入力は SA のトリガー（複数ボタンの組み合わせ）と押し続ける秒数を同じにした、押している間の入力
         /// （離したとき成立の反転は使わない。MultiAction は遅延なし）。Fresh-press ガードは、SA 本体の方針と同じ（プロファイル適用直後の押しっぱなしで、SA より先に効かないため）。
@@ -72,7 +72,7 @@ namespace DS4Windows.Processing.Actions
 
         private IInputAction CreateInput(AssignmentDefinition definition, SpecialAction source, SpecialActionOutputs outputs)
         {
-            // Phase10-Step6 W8 相当: Multi-action は、Controls 由来でも、タップ・長押し・ダブルタップを判定する独立した入力（トリガーは 1 つのボタン。押下の判定は SA と同じ閾値）。
+            // Multi-action は、Controls 由来でも、タップ・長押し・ダブルタップを判定する独立した入力（トリガーは 1 つのボタン。押下の判定は SA と同じ閾値）。
             // 元のボタンの出力は、方針（Controls は毎フレーム消す）で、待ち時間のあいだだけでなく常に消す（ユーザー決定）
             if (definition.Origin == AssignmentOrigin.Controls && outputs.IsMultiTap)
                 return new ControlMultiTapInputAction(source.name, definition.Triggers[0], definition.HoldSeconds);

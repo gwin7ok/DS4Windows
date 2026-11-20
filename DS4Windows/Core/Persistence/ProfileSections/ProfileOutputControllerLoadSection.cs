@@ -6,7 +6,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
-    /// Phase8-Step4b W5（Phase8-Step4b-Plan.md §3.2）: 出力コントローラーの種別（OutputContDevice）の読込と、必要なときの出力デバイスの状態確認。確認の結果（xinputPlug／xinputStatus）は文脈に書き戻し、読込の最後の PostLoadSnippet が使う。
+    /// 出力コントローラーの種別（OutputContDevice）の読込と、必要なときの出力デバイスの状態確認。確認の結果（xinputPlug／xinputStatus）は文脈に書き戻し、読込の最後の PostLoadSnippet が使う。
     /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
     /// </summary>
     internal sealed class ProfileOutputControllerLoadSection : IProfileLoadSection

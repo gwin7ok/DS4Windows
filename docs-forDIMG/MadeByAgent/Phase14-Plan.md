@@ -1,9 +1,9 @@
 # Phase14 個別計画書: 名前空間・フォルダの再編
 
 作成日: 2026-11-04
-状態: **承認済み（2026-11-04）→ 完了（実機確認済み）。結果は Phase14-Completion-Report.md**
+状態: **承認済み（2026-11-04）→ 完了（実機確認済み）。結果は Archive/Phase14-Completion-Report.md**
 ブランチ: `Phase14`（Phase13b を master に取り込んだ後、master から作成。決定済み）
-根拠: `Phase11-and-Beyond-Roadmap.md` §3 Phase14、規約 §3.3 原則3・§3.4（R1〜R7）、`Phase6-Step13-Plan.md`、モデル図 `Model-Diagram/02-Layer-Architecture-Diagram.md`
+根拠: `Archive/Phase11-and-Beyond-Roadmap.md` §3 Phase14、規約 §3.3 原則3・§3.4（R1〜R7）、`Archive/Phase6-Step13-Plan.md`、モデル図 `Model-Diagram/02-Layer-Architecture-Diagram.md`
 
 ## 1. 目的
 

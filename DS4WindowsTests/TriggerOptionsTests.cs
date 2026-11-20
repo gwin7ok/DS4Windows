@@ -9,7 +9,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W2（Phase10-Step2-Plan.md §3.2・§5）: トリガーの行（<see cref="TriggerOptionViewModel"/>）と、
+    /// トリガーの行（<see cref="TriggerOptionViewModel"/>）と、
     /// それを一覧にして持つ編集画面の ViewModel（<see cref="ActionEditorViewModel.TriggerOptions"/>）。
     /// 従来、<c>AssignmentEditor</c> のコードビハインドが、名前つきのチェックボックス 49 個の <c>Click</c> と、読み込み時の照合で行っていた動作と同じ。
     /// </summary>

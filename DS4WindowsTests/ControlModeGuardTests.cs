@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3・§7 Q2）: 共通の編集画面の Controls のモードは、Step4 まで、ユーザーの操作からは開かない
+    /// 共通の編集画面の Controls のモードは、Step4 まで、ユーザーの操作からは開かない
     /// （呼び出し元がない）。また、名前の欄は、読み取り専用の指定（<c>IsReadOnly</c>）を ViewModel に結ぶ。再混入・早すぎる接続を検出するソース走査ガード。
     /// ソースファイルが見つからない環境では、検査を行わず合格とする。
     /// </summary>
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
                 .OrderBy(n => n, StringComparer.Ordinal)
                 .ToArray();
 
-            // 宣言（インターフェース）と実装（窓口）と、呼び出し元の ProfileEditor だけ（Phase10-Step3 W4 で、ProfileEditor に接続した）
+            // 宣言（インターフェース）と実装（窓口）と、呼び出し元の ProfileEditor だけ
             Assert.Equal(new[] { "AssignmentWindowFactory.cs", "EditorWindowFactory.cs", "IEditorWindowFactory.cs", "ProfileEditor.xaml.cs" }, callers);
         }
     }

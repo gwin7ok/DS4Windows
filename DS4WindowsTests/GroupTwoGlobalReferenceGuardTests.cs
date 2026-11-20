@@ -16,8 +16,8 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step10-2: グループ2（プロファイル・マッピング系）の View／ViewModel の Global 直接参照解消の回帰ガード
-    /// （<c>Phase6-Step10-2-Plan.md</c>、<c>Phase6-Step10-Plan.md</c> §0A.3）。Step10-2 の各マイクロステップで、
+    /// グループ2（プロファイル・マッピング系）の View／ViewModel の Global 直接参照解消の回帰ガード
+    /// （<c>docs-forDIMG/MadeByAgent/Archive/Phase6-Step10-2-Plan.md</c>、<c>Phase6-Step10-Plan.md</c> §0A.3）。Step10-2 の各マイクロステップで、
     /// 置換済みのファイルを本クラスの一覧へ追加していく。
     /// - 置換済みのファイルに、温存項目（定数・不変の静的表）以外の <c>Global.</c> が再混入していないこと。
     /// - <c>AppHost</c>（Service Locator）・<c>Program.rootHub</c> を持たないこと。

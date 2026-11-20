@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step3 W1（Phase10-Step3-Plan.md §3.2）: 出力ピッカー（<c>BindingWindow</c>）の表示モードの整理を固定するソース走査ガード。
+    /// 出力ピッカー（<c>BindingWindow</c>）の表示モードの整理を固定するソース走査ガード。
     /// <c>SpecialAction</c>（SA の Press Key 用。旧 <c>ForPressToggle</c>）と <c>Control</c>（Controls の割り当てエディター用）を追加した。
     /// <c>Control</c> は、Default／Unbound（<c>modePanel</c>）と Extras（<c>extrasSidePanel</c>）を出し、Record A Macro・Toggle・Scan Code を出さない。
     /// ウィンドウは WPF の STA 上でしか作れないため、ソースの構成で検査する。ソースファイルが見つからない環境では、検査を行わず合格とする。
@@ -52,7 +52,7 @@ namespace DS4WindowsTests
             Match m = Regex.Match(source, @"public enum ExposeMode : uint\s*\{(?<body>.*?)\}", RegexOptions.Singleline);
             Assert.True(m.Success);
             string body = Regex.Replace(m.Groups["body"].Value, @"//[^\r\n]*", "");
-            Assert.Matches(@"^\s*SpecialAction\s*,\s*Control\s*,\s*$", body);   // Phase10-Step6 I6c: Full と Keyboard は撤去した
+            Assert.Matches(@"^\s*SpecialAction\s*,\s*Control\s*,\s*$", body);   // Full と Keyboard は撤去した
             // コメント（「旧 ForPressToggle」の説明）は除いて、旧名の使用が残っていないことを検査する
             Assert.DoesNotContain("ForPressToggle", Regex.Replace(source, @"//[^\r\n]*", ""));
         }
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
             Assert.DoesNotContain("extrasSidePanel.Visibility = Visibility.Collapsed", body);
         }
 
-        // Phase10-Step6 I5c（ユーザー承認）: SA のモードも Extras を出す（SA に保存先ができたため）。Default／Unbound・Record A Macro・Toggle／Scan Code は、引き続き隠す。
+        // SA のモードも Extras を出す（SA に保存先ができたため）。Default／Unbound・Record A Macro・Toggle／Scan Code は、引き続き隠す。
         // 以前は「Extras も隠す」検査だった（TheSpecialActionMode_StillHidesDefaultUnboundExtrasAndRecord）
         [Fact]
         public void TheSpecialActionMode_ShowsExtras_AndStillHidesDefaultUnboundAndRecord()

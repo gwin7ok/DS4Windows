@@ -9,10 +9,10 @@ using Xunit.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step12: 呼び出し元 0 件の旧静的シムを削除した結果の回帰ガード。
+    /// 呼び出し元 0 件の旧静的シムを削除した結果の回帰ガード。
     /// (1) 削除済みのメンバーが <c>Global.cs</c> に再び現れないこと、
     /// (2) 削除禁止の防壁（定数、Pre-Host、ViGEm クライアント依存ほか）にあたるメンバーが残っていること、を固定する。
-    /// 削除した名前は Wave ごとに <see cref="RemovedFromGlobal"/> へ追記する（名簿は Phase6-Step12-Plan.md §0A.8）。
+    /// 削除した名前は Wave ごとに <see cref="RemovedFromGlobal"/> へ追記する（名簿は docs-forDIMG/MadeByAgent/Archive/Phase6-Step12-Plan.md §0A.8）。
     /// ソースが見つからない環境では、検査を行わず合格とする。
     /// </summary>
     public class DeadShimRemovalGuardTests
@@ -95,7 +95,7 @@ namespace DS4WindowsTests
         public void Wave5_RemovedApiSurface_DoesNotReappear()
         {
             // IPathService.AppDataPath のセッターを再導入しない（Global.appdatapath と連動しない孤立した実装だった）
-            // Phase14d-Step3: ソースの文字列ではなく、プロパティの読み書きを確かめる
+            // ソースの文字列ではなく、プロパティの読み書きを確かめる
             System.Reflection.PropertyInfo property = typeof(DS4Windows.Core.Abstractions.IPathService).GetProperty("AppDataPath");
             Assert.NotNull(property);
             Assert.Equal(typeof(string), property.PropertyType);

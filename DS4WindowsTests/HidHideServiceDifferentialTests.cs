@@ -15,7 +15,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-2（Phase9-E-Plan.md）: <see cref="HidHideService"/> を、旧実装（<c>ControlService.CheckHidHidePresence</c>／<c>UpdateHidHideAttributes</c> を逐語的に写したもの。
+    /// <see cref="HidHideService"/> を、旧実装（<c>ControlService.CheckHidHidePresence</c>／<c>UpdateHidHideAttributes</c> を逐語的に写したもの。
     /// ドライバーの窓口は <see cref="FakeHidHideApi"/>、ログは一覧に記録）と<b>突き合わせる差分テスト</b>。
     /// ホワイトリストの確認（HidHide の未導入、制御デバイスが開けない、インバース、既にある／ない × 追加／削除）の書き込みとログ、有効状態と非表示の一覧の読み直しを調べる。
     /// ドライバーと InputDeviceCore が必要な <c>IsAffected</c> の判定そのものは、実機でなければ確かめられないため、ここでは「無効のとき false」だけを調べる。

@@ -41,7 +41,7 @@ namespace DS4WindowsTests
 
             setting.DeadZone = 15;
 
-            // Phase7-Step10b W3: OnSubPropertyChanged（親への中継）は削除した。PropertyChanged は従来どおり発火する
+            // OnSubPropertyChanged（親への中継）は削除した。PropertyChanged は従来どおり発火する
             Assert.True(propertyChangedFired);
         }
 

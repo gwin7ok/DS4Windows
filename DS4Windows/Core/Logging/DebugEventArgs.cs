@@ -37,7 +37,7 @@ namespace DS4Windows.Core.Logging
             level = warn ? AppLogLevel.Warn : AppLogLevel.Info;
         }
 
-        // Phase13b-Step1: 新 API（AppLogger.Log）が、利用者向けのログのレベルを運ぶために追加。Warning は Warn 以上で真。
+        // 新 API（AppLogger.Log）が、利用者向けのログのレベルを運ぶために追加。Warning は Warn 以上で真。
         public DebugEventArgs(string Data, AppLogLevel level, bool temporary = false)
         {
             m_Data = Data;

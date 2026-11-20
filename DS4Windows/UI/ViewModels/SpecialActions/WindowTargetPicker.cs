@@ -4,7 +4,7 @@ using DS4Windows.Core.Abstractions;
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>
-    /// Phase12-Step2 2i（R-4）: ターゲットマークをドロップした位置のウィンドウから、対象の指定（実行ファイルのフルパスとタイトル全文）を取り出す。
+    /// ターゲットマークをドロップした位置のウィンドウから、対象の指定（実行ファイルのフルパスとタイトル全文）を取り出す。
     /// DS4Windows 自身のウィンドウは対象にしない（自分自身を前面に出す割り当てを作らないため）。マウス操作は画面の部品（<c>WindowTargetEditor</c>）が受け持つ。
     /// </summary>
     public sealed class WindowTargetPicker

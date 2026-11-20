@@ -8,9 +8,9 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8e: <see cref="IControlExtrasPort"/> の本番の実装。旧 <c>Mapping.ProcessControlSettingAction</c> の Extras の枝と同じ操作を、この窓口の内側に閉じ込める。
+    /// <see cref="IControlExtrasPort"/> の本番の実装。旧 <c>Mapping.ProcessControlSettingAction</c> の Extras の枝と同じ操作を、この窓口の内側に閉じ込める。
     /// 振動は <see cref="IDeviceRumbleService"/>（ブースト込み。旧 <c>ControlService.setRumble</c> と同じ、スロット上限・コントローラーの有無の検査つき。コントローラーがいなければ何もしない）、ライトバーは静的な <c>DS4LightBar</c> の配列、感度は <c>ButtonMouseInfo</c>。
-    /// Phase13-Step6 6-b: <c>Func&lt;ControlService&gt;</c> をやめ、狭い窓口を直接注入で受ける。
+    /// <c>Func&lt;ControlService&gt;</c> をやめ、狭い窓口を直接注入で受ける。
     /// </summary>
     public sealed class DefaultControlExtrasPort : IControlExtrasPort
     {
@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Actions
         private readonly IEnvironmentService _environment;
         private readonly IProfileSettingsService _profileSettings;
 
-        // Phase14c-Step4（R-05 の前半）: ライトバーの強制表示の状態（旧: DS4LightBar の静的な配列）
+        // ライトバーの強制表示の状態
         private readonly DS4Windows.Core.Model.LightbarOverrides _lightbar;
 
         public DefaultControlExtrasPort(DS4Windows.Core.Model.LightbarOverrides lightbar, IDeviceStateAccessor devices, IDeviceRumbleService rumble, IEnvironmentService environment, IProfileSettingsService profileSettings)

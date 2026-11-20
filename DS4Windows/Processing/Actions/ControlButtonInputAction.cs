@@ -5,10 +5,10 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.8b（Phase8-Step7-8b-Plan.md §3.2）: Controls タブの 1 ボタンの入力アクション（D2＝B1 の「要素数 1」の特殊ケース。ただし押下の判定が
+    /// Controls タブの 1 ボタンの入力アクション（D2＝B1 の「要素数 1」の特殊ケース。ただし押下の判定が
     /// スペシャルアクションと違う）。成立 ＝ 入力（<see cref="IControlTriggerInput"/>）が、そのボタンを押していると判定すること。入力が <see cref="IControlTriggerInput"/> でなければ未成立。
-    /// 遅延・ジェスチャーはない（旧経路の Controls タブの Key にもない）。割り当て 0。
-    /// Phase10-Step4 W3: Macro の「Run on trigger release」のために、離したときに成立する反転（<c>invertOnRelease</c>）を持てる
+    /// 遅延・ジェスチャーはない。割り当て 0。
+    /// Macro の「Run on trigger release」のために、離したときに成立する反転（<c>invertOnRelease</c>）を持てる
     /// （<see cref="ComboTriggerInputAction"/> と同じ規則: 押された時点で準備、離された時点で 1 回だけ成立。既定は偽で、従来と同じ）。
     /// </summary>
     public sealed class ControlButtonInputAction : IControlBoundInput
@@ -19,7 +19,7 @@ namespace DS4Windows.Processing.Actions
         private bool _armed;
 
         /// <param name="kind">所属の区分。束縛の区分（情報用）。</param>
-        /// <param name="outputNature">出力の種類（Phase10-Step6 I4a）。デジタルは SA と同じ判定、アナログは Controls の従来の判定。決める箇所は <see cref="ControlOutputNatureTable"/>。</param>
+        /// <param name="outputNature">出力の種類。デジタルは SA と同じ判定、アナログは Controls の従来の判定。決める箇所は <see cref="ControlOutputNatureTable"/>。</param>
         /// <param name="invertOnRelease">true なら、離したときに 1 回だけ成立する（Macro の Run on trigger release）。</param>
         /// <param name="delaySeconds">0 より大きいと、押し続けてこの秒数が経ったときに成立する（SA の <c>delayTime</c> と同じ規則）。</param>
         public ControlButtonInputAction(string name, DS4Controls control, ControlBindingKind kind = ControlBindingKind.Key,
@@ -51,13 +51,13 @@ namespace DS4Windows.Processing.Actions
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            // Digital: SA のトリガーと同じ判定（Phase8-Step7-8c-Plan.md §0、Phase10-Step4c W4）。R-5（ユーザー決定 2026-10-23）: 閾値なしのデジタルな判定（IsDigitalActive）。
+            // Digital: SA のトリガーと同じ判定。R-5（ユーザー決定 2026-10-23）: 閾値なしのデジタルな判定（IsDigitalActive）。
             // Analog: Controls の従来の判定
             bool active = OutputNature == ControlOutputNature.Digital
                 ? input.IsDigitalActive(_triggers[0])
                 : input is IControlTriggerInput control && control.IsControlActive(_triggers[0]);
 
-            // Phase10-Step4 W4: 押し続ける秒数。遅延つきのときは、反転を無視する（ComboTriggerInputAction と同じ）
+            // 押し続ける秒数。遅延つきのときは、反転を無視する（ComboTriggerInputAction と同じ）
             if (_delaySeconds > 0.0)
                 return EvaluateDelayed(input, active);
 

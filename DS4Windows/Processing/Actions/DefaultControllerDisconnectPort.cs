@@ -6,7 +6,7 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.6b: <see cref="IControllerDisconnectPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作する。
+    /// <see cref="IControllerDisconnectPort"/> の本番の実装。<c>IDeviceStateAccessor</c>（＝IDeviceSlotState。Phase13-Step5 で直接注入に変更）越しに <c>InputDeviceCore</c> を操作する。
     /// ControlService は後から作られるため、遅延（<c>Func</c>）で受ける（<see cref="DefaultGyroCalibrationPort"/> と同じ方式）。
     /// 旧経路と違い、コントローラーがいなくても例外にしない。
     /// </summary>

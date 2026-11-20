@@ -10,11 +10,11 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase6-Step7b-2: ボタン設定画面の ViewModel（`BindingWindowViewModel`）が、設定の読み書き先
+    /// ボタン設定画面の ViewModel（`BindingWindowViewModel`）が、設定の読み書き先
     /// （`DeviceNum`＝編集スロット）とは別に実機のスロット番号 `targetDevice` を持ち、ライトバー強制色の
     /// プレビューが `targetDevice` にだけ効くことを固定する。
     /// Step7b-3 以降、編集スロットは常に `Global.TEST_PROFILE_INDEX`（8）になるため、編集スロットに 8 を渡して確認する。
-    /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する（Phase6-Status.md §6.4-1）。
+    /// `DS4LightBar` の静的配列は、テストの前後で保存・復元する。
     /// </summary>
     [Xunit.Collection(SharedHostStateCollection.Name)]
     public class BindingWindowViewModelTargetDeviceTests

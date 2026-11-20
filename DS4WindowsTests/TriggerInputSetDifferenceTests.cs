@@ -10,7 +10,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4c W0／W5（Phase10-Step4c-Plan.md §2 項目 9・§4 W0・W5）: SA のトリガーとして選べる入力と、Controls の一覧に出る入力の差を固定するテスト。
+    /// Phase10-Step4c W0／W5（docs-forDIMG/MadeByAgent/Archive/Phase10-Step4c-Plan.md §2 項目 9・§4 W0・W5）: SA のトリガーとして選べる入力と、Controls の一覧に出る入力の差を固定するテスト。
     /// W0 では、SA だけにあるのは Touch Started／Touch Ended、Controls だけにあるのは LS Outer／RS Outer だった。
     /// W5（ユーザー承認、2026-10-21）で、SA に LS Outer／RS Outer、Controls に Touch Started／Touch Ended を足し、<b>入力の集合を同じにした</b>（差は空）。
     /// </summary>
@@ -70,7 +70,7 @@ namespace DS4WindowsTests
             var items = new TriggerCatalog().Items;
 
             Assert.Equal(51, items.Count);
-            // Phase9 UI 変更: Outer は、スティックの 4 方向の下（InputControlCatalog の並び）。末尾は Touch Ended
+            // Outer は、スティックの 4 方向の下（InputControlCatalog の並び）。末尾は Touch Ended
             Assert.Equal("Touch Ended", items[50].Name);
             Assert.Equal("LS Outer", items[items.ToList().FindIndex(i => i.Name == "Left Stick Right") + 1].Name);
             Assert.Equal("RS Outer", items[items.ToList().FindIndex(i => i.Name == "Right Stick Right") + 1].Name);

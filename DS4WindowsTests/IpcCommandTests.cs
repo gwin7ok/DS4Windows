@@ -9,7 +9,7 @@ using DS4Windows.Processing.Services.Connection;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-F F-2（Phase9-F-Plan.md §6）: <c>MainWindow.WndProc</c> の分割。F-2a: コマンドの読み取りの値、F-2b: 分岐の順序とコマンド名の集合（ソースの照合）。
+    /// <c>MainWindow.WndProc</c> の分割。F-2a: コマンドの読み取りの値、F-2b: 分岐の順序とコマンド名の集合（ソースの照合）。
     /// </summary>
     public class IpcCommandTests
     {
@@ -55,7 +55,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheCommands_AreDispatchedInTheOriginalOrder_WithTheOriginalConditions()
         {
-            // Phase13-Step11 11-b: コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序と条件は同じ）
+            // コマンドの実行は IpcCommandProcessor へ移した（受け付けの順序と条件は同じ）
             string ipc = SourceText.Read("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");
             if (ipc == null) return;
 

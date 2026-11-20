@@ -9,7 +9,7 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase14b-Step15（決定 D12）: 旧 静的クラス <c>StartupMethods</c>（ルート直下）を、<see cref="IStartupEntryService"/> の実装
+    /// 旧 静的クラス <c>StartupMethods</c>（ルート直下）を、<see cref="IStartupEntryService"/> の実装
     /// <see cref="StartupEntryService"/>（Core/Platform、DI の Singleton）にした。設定画面は契約だけを受ける。
     /// </summary>
     public class StartupEntryServiceTests

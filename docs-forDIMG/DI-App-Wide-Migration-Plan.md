@@ -30,10 +30,10 @@ DI化すべきでない、またはDI化する実益がない項目を**カテ�
    持ち越し事項（K 番号）の扱いを §6.8 に反映した。
 
 **2026-10-18改訂の要旨**: 次の3点を反映した（上記の記述は、当時の状態の記録として残す）。
-1. **Phase6 は完了**（2026-10-17。Step11 の総合検証 GO、Step12 の旧シムの物理削除。`Phase6-Completion-Report.md`）。
-2. **Phase7 は完了**（2026-10-18。Step1〜Step10e、総合検証 GO。`Phase7-Completion-Report.md`）。射程は、当初の
+1. **Phase6 は完了**（2026-10-17。Step11 の総合検証 GO、Step12 の旧シムの物理削除。`docs-forDIMG/MadeByAgent/Archive/Phase6-Completion-Report.md`）。
+2. **Phase7 は完了**（2026-10-18。Step1〜Step10e、総合検証 GO。`docs-forDIMG/MadeByAgent/Archive/Phase7-Completion-Report.md`）。射程は、当初の
    「`Mapping.cs` の instance 化」から、`Global`／`BackingStore` の解体、起動・終了シーケンスの近代化、
-   `Program.rootHub` と Service Locator の削減へ拡大した（`Phase7-Plan.md`。§6.9.4）。結果として、
+   `Program.rootHub` と Service Locator の削減へ拡大した（`docs-forDIMG/MadeByAgent/Archive/Phase7-Plan.md`。§6.9.4）。結果として、
    **`Global` 型は存在せず**、`Program.rootHub` は 0、`Mapping` は DI の Singleton の instance、互換 `AppHost` は削除済み。
 3. 全域の直接参照の最終値: `Global.*` 2（ログ文言の文字列のみ）／`AppHost.GetService|Services` 3／`Program.rootHub` 0／
    `ServiceProviderHolder` 17（`Actions/`。Phase8）。残る課題は Phase8 へ引き継ぐ（§6.9.4）。
@@ -82,9 +82,9 @@ Phase5完了間際の実地調査により**Phase6・Phase7**を追加し（2026
 | 3. 入力監視層・信号変換層の整理 | `IDs4DeviceRegistry`, 循環依存解消 | 1〜2週間 | 3日 |
 | 4. `Global` 分割 + ViewModel DI化 | 10サービス + 33ViewModel | 6〜8週間 | 3日 |
 | 5. 仕上げ・整流化（DIサービス内部Legacy経路監査） | シム削除判断、`AppHost` 完全移行 | 1〜2週間（実施の結果15ステップへ再編） | **完了**（Step1〜15、2026-09-02〜09-18） |
-| **6.（新設）残存Global実利用箇所の解体** | 呼出元の実参照式 約404箇所（Step1 再監査で193件から確定）をDIサービス経由へ置換。仮想コントローラー部分は対象外 | 実績ベース見積り: 実働4〜8日 → 再監査後に約17〜22日へ改訂 | **完了**（2026-10-17。Step11 総合検証 GO、Step12 旧シム削除。`Phase6-Completion-Report.md`） |
-| **7.（新設・延期）`Mapping.cs`完全instance化** | 8,500行超のstatic中心ファイルを段階的にinstance化。射程は `Global`／`BackingStore` の解体、起動の近代化、Service Locator の削減へ拡大 | 実績: 約2日（2026-10-17〜10-18） | **完了**（2026-10-18。Step1〜10e、総合検証 GO。`Phase7-Completion-Report.md`） |
-| **8.（新設、2026-09-23）Controls／SpecialActions統一トリガーディスパッチ** | 2つのタブの「トリガー成立→処理実行」を単一の実行時経路へ統合 | Phase7完了後に個別見積り | **完了**（2026-10-20。Step1〜9。`Phase8-Completion-Report.md`。§6.13.6）【2026-11-12 更新。旧記載は「未着手」】 |
+| **6.（新設）残存Global実利用箇所の解体** | 呼出元の実参照式 約404箇所（Step1 再監査で193件から確定）をDIサービス経由へ置換。仮想コントローラー部分は対象外 | 実績ベース見積り: 実働4〜8日 → 再監査後に約17〜22日へ改訂 | **完了**（2026-10-17。Step11 総合検証 GO、Step12 旧シム削除。`docs-forDIMG/MadeByAgent/Archive/Phase6-Completion-Report.md`） |
+| **7.（新設・延期）`Mapping.cs`完全instance化** | 8,500行超のstatic中心ファイルを段階的にinstance化。射程は `Global`／`BackingStore` の解体、起動の近代化、Service Locator の削減へ拡大 | 実績: 約2日（2026-10-17〜10-18） | **完了**（2026-10-18。Step1〜10e、総合検証 GO。`docs-forDIMG/MadeByAgent/Archive/Phase7-Completion-Report.md`） |
+| **8.（新設、2026-09-23）Controls／SpecialActions統一トリガーディスパッチ** | 2つのタブの「トリガー成立→処理実行」を単一の実行時経路へ統合 | Phase7完了後に個別見積り | **完了**（2026-10-20。Step1〜9。`docs-forDIMG/MadeByAgent/Archive/Phase8-Completion-Report.md`。§6.13.6）【2026-11-12 更新。旧記載は「未着手」】 |
 
 **Phase9 以降（2026-11-12 追記。Phase ごとの内容と記録は §6.14、計画中の Phase29〜38 は §6.15）**
 
@@ -626,10 +626,10 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 | フェーズ2 | KBM出力の抽象化 | 3-b | `outputKBMHandler` を `IVirtualKBM` としてDI登録（ステップA:マクロ逐次送出14箇所、ステップB:通常1:1マッピング48箇所の2段階） | 新規設計 | 完了 |
 | フェーズ3 | 入力監視層・信号変換層の整理 | 1, 2 | `IDs4DeviceRegistry` 化、`IDeviceStateAccessor` による循環依存解消 | 新規設計 | 完了 |
 | フェーズ4 | `Global` 分割とViewModel DI化 | 横断/UI層 | `Global` を10種以上のサービスへ分割、33件のViewModelをDI/ファクトリへ移行 | 新規設計 | 完了 |
-| フェーズ5 | DIサービス内部Legacy経路監査と責務分離 | 横断 | サービス内部の`Global`/`Program.rootHub`再委譲の監査・是正（Step1〜15） | 新規設計 | **完了**（Step1〜15。2026-09-18 正式クローズ、`Phase5-Status.md`） |
-| **フェーズ6（新設）** | **残存Global実利用箇所の解体** | 横断（信号変換層/入力監視層境界・信号出力層・UI層） | 呼出元の実参照式 約404箇所をDIサービス経由へ置換。仮想コントローラー部分（カテゴリE）は対象外。全16ステップ（Step1〜13、7b、9b、10b） | `Phase6-Plan.md`、`Phase6-Status.md` | **完了**（2026-10-17。Step1〜13・7b・9b・10b、Step11 総合検証 GO［自動テスト 595 件成功、実機 70 項目のうち ○67／不能 3／×0］、Step12 旧シム削除。`Phase6-Completion-Report.md`） |
-| **フェーズ7（新設・延期）** | **`Mapping.cs`完全instance化** | 2-a（信号変換層） | `Mapping`のstatic中心設計を段階的にinstance化。Phase6 からの引き継ぎ（`Mapping` の静的 `profileSettings` 束縛［方針P2、TODO付き］、実行時状態配列、K3・K7-1）を含む（§6.9.3） | `Phase7-Plan.md`、`Phase7-Status.md`、`Phase7-Residual-Ledger.md` | **完了**（2026-10-18。Step1〜10e。総合検証 GO。`Phase7-Completion-Report.md`） |
-| **フェーズ8（新設、2026-09-23）** | **Controls／SpecialActions統一トリガーディスパッチ** | 2-a/2-b（信号変換層の統合） | Controlsタブ・SpecialActionsタブの「トリガー成立→処理実行」を単一の実行時経路に統合。UI・設定の保存/読込は分離を維持 | `Phase8-Unified-Trigger-Dispatch-Plan.md`（既存の未配線抽象化`IActionBinding`系、稼働中の`Actions.Action`系の両方を調査済み） | **完了**（2026-10-20。Step1〜9。`Phase8-Completion-Report.md`。§6.13.6）【2026-11-12 更新。旧記載: 決定事項D1〜D5確定済み（2026-09-23）。未着手（Phase7完了後に着手）。Phase6-Step9b で判明した未配線コードの扱いも本フェーズへ申し送り】 |
+| フェーズ5 | DIサービス内部Legacy経路監査と責務分離 | 横断 | サービス内部の`Global`/`Program.rootHub`再委譲の監査・是正（Step1〜15） | 新規設計 | **完了**（Step1〜15。2026-09-18 正式クローズ、`docs-forDIMG/MadeByAgent/Archive/Phase5-Status.md`） |
+| **フェーズ6（新設）** | **残存Global実利用箇所の解体** | 横断（信号変換層/入力監視層境界・信号出力層・UI層） | 呼出元の実参照式 約404箇所をDIサービス経由へ置換。仮想コントローラー部分（カテゴリE）は対象外。全16ステップ（Step1〜13、7b、9b、10b） | `docs-forDIMG/MadeByAgent/Archive/Phase6-Plan.md`、`Phase6-Status.md` | **完了**（2026-10-17。Step1〜13・7b・9b・10b、Step11 総合検証 GO［自動テスト 595 件成功、実機 70 項目のうち ○67／不能 3／×0］、Step12 旧シム削除。`docs-forDIMG/MadeByAgent/Archive/Phase6-Completion-Report.md`） |
+| **フェーズ7（新設・延期）** | **`Mapping.cs`完全instance化** | 2-a（信号変換層） | `Mapping`のstatic中心設計を段階的にinstance化。Phase6 からの引き継ぎ（`Mapping` の静的 `profileSettings` 束縛［方針P2、TODO付き］、実行時状態配列、K3・K7-1）を含む（§6.9.3） | `docs-forDIMG/MadeByAgent/Archive/Phase7-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase7-Status.md`、`Phase7-Residual-Ledger.md` | **完了**（2026-10-18。Step1〜10e。総合検証 GO。`docs-forDIMG/MadeByAgent/Archive/Phase7-Completion-Report.md`） |
+| **フェーズ8（新設、2026-09-23）** | **Controls／SpecialActions統一トリガーディスパッチ** | 2-a/2-b（信号変換層の統合） | Controlsタブ・SpecialActionsタブの「トリガー成立→処理実行」を単一の実行時経路に統合。UI・設定の保存/読込は分離を維持 | `docs-forDIMG/MadeByAgent/Archive/Phase8-Unified-Trigger-Dispatch-Plan.md`（既存の未配線抽象化`IActionBinding`系、稼働中の`Actions.Action`系の両方を調査済み） | **完了**（2026-10-20。Step1〜9。`docs-forDIMG/MadeByAgent/Archive/Phase8-Completion-Report.md`。§6.13.6）【2026-11-12 更新。旧記載: 決定事項D1〜D5確定済み（2026-09-23）。未着手（Phase7完了後に着手）。Phase6-Step9b で判明した未配線コードの扱いも本フェーズへ申し送り】 |
 
 ※ 2026-11-12 追記: フェーズ9 以降（Phase7b・7c、Phase9〜28）の完了記録は §6.14、計画中のフェーズ29〜38 は §6.15 にまとめた。上の表は、フェーズ0〜8 の記録として残す。
 
@@ -667,7 +667,7 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 **完了判定基準**: `Mapping.cs` 内の直接呼び出し件数が0になり `ActionManager` 経由に統一されること。
 **PR粒度**: 1PR = 1機能（各機能のフォールバック削除も別PR）。
 
-**実績**: 2026-08-26〜2026-08-27（実働2日）。詳細は`Phase1-Status.md`参照。
+**実績**: 2026-08-26〜2026-08-27（実働2日）。詳細は`docs-forDIMG/MadeByAgent/Archive/Phase1-Status.md`参照。
 
 ### 6.4 フェーズ2: KBM出力の抽象化（3-b層、3〜5日 → 通常マッピング分離により見積もり改訂、詳細は下記）
 
@@ -676,10 +676,10 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 3. `Global.outputKBMHandler` を `IVirtualKBM` への薄いデリゲートに置き換え（Strangler Fig）。
 
 フェーズ1完了済みなら `Mapping.cs` 側の変更は不要（`Actions/` 配下に閉じる）という想定だったが、
-実装フェーズでの詳細調査（`docs-forDIMG/MadeByAgent/Phase2-Plan.md`）により、`Mapping.cs` 内の
+実装フェーズでの詳細調査（`docs-forDIMG/MadeByAgent/Archive/Phase2-Plan.md`）により、`Mapping.cs` 内の
 `outputKBMHandler` 直接呼び出しは合計62箇所存在し、そのうち **14箇所はマクロ実行（`PlayMacro`/`EndMacro`）**、
 **残り48箇所は通常の1入力→1出力マッピング処理（`Mapping.cs` の中核データフロー）**であることが判明した。
-このためフェーズ2を以下の**2つの独立したステップ**に分割する（詳細は `Phase2-Plan.md` 参照）：
+このためフェーズ2を以下の**2つの独立したステップ**に分割する（詳細は `docs-forDIMG/MadeByAgent/Archive/Phase2-Plan.md` 参照）：
 
 - **ステップA（マクロ実行、14箇所）**: §3.3の再整理により、マクロの逐次送出（`PlayMacroTask`のタイマー
   ループ）も3-b（KBM出力）としてこのステップで`IVirtualKBM`経由に統合する（`IMacroDecomposer`が生成した
@@ -698,7 +698,7 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 連打・ホールド・同時押し等のタイミング依存挙動について実機回帰テストを必須とする。
 
 **実績**: 2026-08-27〜2026-08-31（中核実装は約3日、Phase3着手後に判明したバグ修正3件の遡及対応を含めて
-最大5日）。詳細は`Phase2-Status.md`参照。
+最大5日）。詳細は`docs-forDIMG/MadeByAgent/Archive/Phase2-Status.md`参照。
 
 ### 6.5 フェーズ3: 入力監視層・信号変換層の整理（1・2層、1〜2週間）
 
@@ -711,7 +711,7 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 
 #### フェーズ3完了記録（2026-08-31）
 
-フェーズ3の実装、自動テスト、実機確認結果の記録を完了し、本フェーズを完了扱いとする。自動テストは全件成功した。実機確認の詳細は `docs-forDIMG/MadeByAgent/Phase3-Step5-RealDevice-Verification-Checklist.md`、自動テストの詳細は `docs-forDIMG/MadeByAgent/Phase3-Step4-Automated-Test-Coverage-Report.md` を参照する。
+フェーズ3の実装、自動テスト、実機確認結果の記録を完了し、本フェーズを完了扱いとする。自動テストは全件成功した。実機確認の詳細は `docs-forDIMG/MadeByAgent/Archive/Phase3-Step5-RealDevice-Verification-Checklist.md`、自動テストの詳細は `docs-forDIMG/MadeByAgent/Archive/Phase3-Step4-Automated-Test-Coverage-Report.md` を参照する。
 
 実機確認で `△`、`×`、未実施となった項目は、DI 化完了後に対応する未対応事項として引き継ぐ。対象は、Bluetooth 切断後の再接続条件、非管理者起動時の UAC 昇格経路、UAC 承認／拒否時の結果反映、新経路の実使用確認、ラムブル動作および `IDeviceStateAccessor` 経路、`LaunchProgram` の起動・多重起動防止および `IProcessInspector` 経路である。これらは Phase 3 の実装完了を取り消すものではなく、後続の DI 化完了後に確認・修正する。
 
@@ -729,7 +729,7 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 
 フェーズ4は、`DS4Windows/DS4Control/ScpUtil.cs` 内の巨大な静的 `Global` と、`DS4Windows/DS4Forms` の ViewModel 直接生成を、責務別サービス・`AppHost`・Factory へ段階移行するフェーズである。既存機能、ログ、配列インデックス、初期化順序を維持し、旧 API は新経路の確認まで互換シムとして残す。
 
-実コードの棚卸し、具体的なサービス境界、対象 ViewModel、Step ごとの作業手順は [Phase4-Plan.md](MadeByAgent/Phase4-Plan.md) を正本とする。
+実コードの棚卸し、具体的なサービス境界、対象 ViewModel、Step ごとの作業手順は [docs-forDIMG/MadeByAgent/Archive/Phase4-Plan.md](MadeByAgent/Archive/Phase4-Plan.md) を正本とする。
 
 #### 6.6.2 全体から見た実施項目
 
@@ -750,7 +750,7 @@ Viewの改修は最小限に抑えられる。17件全てに個別インター�
 - Phase3 からの積み残しが解消済み、または再現条件・理由・次の対応先とともに文書化される。
 - Phase2/3 を含む全自動テスト、ビルド、主要画面の起動・操作確認が成功する。
 
-詳細なサービス境界、Step 別完了基準、テストケース、リスク対策は [Phase4-Plan.md](MadeByAgent/Phase4-Plan.md) の更新内容を正とする。
+詳細なサービス境界、Step 別完了基準、テストケース、リスク対策は [docs-forDIMG/MadeByAgent/Archive/Phase4-Plan.md](MadeByAgent/Archive/Phase4-Plan.md) の更新内容を正とする。
 
 **実績**: 2026-08-31〜2026-09-02（実働3日）。当初見積り6〜8週間に対し約14〜19倍の速度で完了。
 
@@ -770,7 +770,7 @@ Phase4 完了後、DIサービスの内部実装が `Global`／`Program.rootHub`
 **進捗（2026-10-14時点）**: **完了**。Step1〜13は2026-09-09までに完了し、Step14（総合自動テストと実機不具合の
 調査・修正の反復。プロファイル切替カスケードループ、通知二重表示、`RumbleSettings` の並行コピー等を解消、
 全16サブ設定の宣言的配線化）、Step15（Legacy shim の棚卸しと削除判断）は2026-09-18に完了し、Phase5 は
-正式クローズした。詳細は`Phase5-Status.md`参照。実働は2026-09-02〜2026-09-18。
+正式クローズした。詳細は`docs-forDIMG/MadeByAgent/Archive/Phase5-Status.md`参照。実働は2026-09-02〜2026-09-18。
 
 ### 6.8 フェーズ6: 残存Global実利用箇所の解体（新設、横断、**完了［2026-10-17。2026-10-19 に訂正］**。実働見込みは再監査後に約17〜22日だった）
 
@@ -784,12 +784,12 @@ Phase4・5にて`Global`の主要責務はDIサービスへ再編されたが、
 DIサービス経由で一貫して動作する状態**を完成させる。
 
 目的は、完全にDI化された4層構造への移行そのものに加え、**新機能追加時の実装容易性を恒常的に向上させる
-こと**である。詳細な対象棚卸し、Step別作業内容、ガードレールは [Phase6-Plan.md](MadeByAgent/Phase6-Plan.md)
+こと**である。詳細な対象棚卸し、Step別作業内容、ガードレールは [docs-forDIMG/MadeByAgent/Archive/Phase6-Plan.md](MadeByAgent/Archive/Phase6-Plan.md)
 を正本とする。
 
 #### 6.8.2 全体から見た実施項目
 
-進捗は 2026-10-14 時点。詳細は `Phase6-Plan.md`（計画）と `Phase6-Status.md`（進捗）を正とする。
+進捗は 2026-10-14 時点。詳細は `docs-forDIMG/MadeByAgent/Archive/Phase6-Plan.md`（計画）と `Phase6-Status.md`（進捗）を正とする。
 
 1. 詳細監査による対象確定（Step1）。**完了**（2026-09-18。全762参照走査、実参照式 約404箇所）。
 2. コア層のGlobal直参照解消（Step2〜3）。**完了**。Step2 は `ControlService.cs` 66箇所（2026-09-20〜21）。
@@ -806,7 +806,7 @@ DIサービス経由で一貫して動作する状態**を完成させる。
    是正。2026-10-14 追加）も**完了**（登録欠落 F02、ログ設定 F04、プログラム起動 F06、8 スロット F05 を修正）。**Step10**（残存小型 View・ViewModel）は、グループ1（起動・環境系）、グループ2（プロファイル・マッピング系）、グループ3（スペシャルアクション系）が**完了**（2026-10-14）。残りは Step10-4（サービス実装のコンストラクタのフォールバック、全域の再走査・分類）と Step10-5（`PluginSlot`／`UnplugSlot` の接続）。Step10 の途中で、Vader 4 Pro のデバイスサポートの廃止（ユーザー承認）と、アクションの名前変更・削除の全プロファイルへの反映（機能追加。Step10-3b）を実施した。
 5. 構造整理（Step13、Step10b）。Step13（`.cs` ファイル配置の統一、44件）は**完了**（2026-09-21）。
    Step10b（1ファイル1型の全数是正）は**完了**（2026-10-15）。【2026-10-19 訂正】
-6. 自動テスト・実機検証（Step11）。**完了**（2026-10-17、判定 GO。2026-10-19 に訂正）。先送りした実機確認項目の台帳を `Phase6-Step11-Plan.md` §3.3 で
+6. 自動テスト・実機検証（Step11）。**完了**（2026-10-17、判定 GO。2026-10-19 に訂正）。先送りした実機確認項目の台帳を `docs-forDIMG/MadeByAgent/Archive/Phase6-Step11-Plan.md` §3.3 で
    管理している。
 7. 呼出元0件シムの物理削除と Phase6 の完了判定（Step12）。**完了**（2026-10-17。2026-10-19 に訂正）。
 
@@ -827,7 +827,7 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 - 既存の全自動テストが成功を維持していること。
 - `ProfileEditor.xaml.cs`を含むUI層全体で、Phase5-Step13と同水準の静的参照撲滅が完了していること。
 
-詳細は [Phase6-Plan.md](MadeByAgent/Phase6-Plan.md) および [Phase6-Status.md](MadeByAgent/Phase6-Status.md) を正とする。
+詳細は [docs-forDIMG/MadeByAgent/Archive/Phase6-Plan.md](MadeByAgent/Archive/Phase6-Plan.md) および [Phase6-Status.md](MadeByAgent/Phase6-Status.md) を正とする。
 
 **着手前提**: Phase5-Step14（自動テスト・実機検証）およびStep15（Legacy shim削除判断）の完了（2026-09-18 に
 充足済み）。
@@ -867,15 +867,15 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 #### 6.9.3 現時点で確定している事項
 
 - フェーズ6完了後、専用の事前監査（フェーズ6-Step1と同様の手法）から独立して開始する。
-- 詳細なStep構成、見積もり、ガードレールは、フェーズ6完了後に`Phase7-Plan.md`として個別策定する。
-- **Phase7 の射程に含める項目（2026-09-24 追記、Phase6-Step5 の決定2に基づく）**: 実行時状態の静的配列 `Global.outDevTypeTemp`／`Global.activeOutDevType` の所有権を `OutputSlotService` へ移し、`Global` 側を転送プロパティ（または削除）にする。Phase6 では、配列が `ScpUtil.cs` 8 箇所・UI 3 箇所・`ControlService` の参照キャッシュから直接使われているため温存した。前提条件と詳細は `Phase6-Step5-Plan.md` §9、`Phase6-Step12-Plan.md` §4 を参照。`Phase7-Plan.md` の策定時に、この項目を必ず取り込むこと。
+- 詳細なStep構成、見積もり、ガードレールは、フェーズ6完了後に`docs-forDIMG/MadeByAgent/Archive/Phase7-Plan.md`として個別策定する。
+- **Phase7 の射程に含める項目（2026-09-24 追記、Phase6-Step5 の決定2に基づく）**: 実行時状態の静的配列 `Global.outDevTypeTemp`／`Global.activeOutDevType` の所有権を `OutputSlotService` へ移し、`Global` 側を転送プロパティ（または削除）にする。Phase6 では、配列が `ScpUtil.cs` 8 箇所・UI 3 箇所・`ControlService` の参照キャッシュから直接使われているため温存した。前提条件と詳細は `docs-forDIMG/MadeByAgent/Archive/Phase6-Step5-Plan.md` §9、`docs-forDIMG/MadeByAgent/Archive/Phase6-Step12-Plan.md` §4 を参照。`docs-forDIMG/MadeByAgent/Archive/Phase7-Plan.md` の策定時に、この項目を必ず取り込むこと。
 
 **着手前提**: フェーズ6の完了。
 
 #### 6.9.4 フェーズ7の完了記録（2026-10-18）
 
-- 状態: **完了**（2026-10-17 着手、2026-10-18 完了）。個別計画書は `Phase7-Plan.md`、進捗は `Phase7-Status.md`、
-  各 Step の完了報告書と全体の `Phase7-Completion-Report.md`、残存台帳は `Phase7-Residual-Ledger.md`。
+- 状態: **完了**（2026-10-17 着手、2026-10-18 完了）。個別計画書は `docs-forDIMG/MadeByAgent/Archive/Phase7-Plan.md`、進捗は `docs-forDIMG/MadeByAgent/Archive/Phase7-Status.md`、
+  各 Step の完了報告書と全体の `docs-forDIMG/MadeByAgent/Archive/Phase7-Completion-Report.md`、残存台帳は `Phase7-Residual-Ledger.md`。
 - 射程の拡大: 当初は `Mapping.cs` の instance 化が中心だったが、Phase6 の引き継ぎ（`Global` に残る実体、`BackingStore` の
   静的な生成、K7-1、K3）を取り込み、次の順に実施した。
   - Step1〜2: 整理と台帳、DI インターフェースの 0 件メンバー（49）の個別判断。
@@ -887,17 +887,17 @@ DIサービス経由で一貫して動作する状態**を完成させる。
     `AppHost` の暗黙構築の廃止、ラチェットの最終化、総合検証。
 - 最終の姿: `Global` 型なし。`BackingStore` は `IEnvironmentService` を受けるコンストラクター注入で、永続化は 6 つの型に切り出し済み。
   `Mapping` は DI の Singleton。`AppHost` は暗黙にホストを作らない。ラチェット: `Global.*` 2（文字列）／`AppHost` 3／`Program.rootHub` 0／`ServiceProviderHolder` 17。
-- 実機確認: 総合検証（必須の 8 項目）は GO（○7、△1、×0）。先送りの項目と U-1〜U-7 はリスク受容（`Phase7-Completion-Report.md` §4）。
+- 実機確認: 総合検証（必須の 8 項目）は GO（○7、△1、×0）。先送りの項目と U-1〜U-7 はリスク受容（`docs-forDIMG/MadeByAgent/Archive/Phase7-Completion-Report.md` §4）。
 - **Phase8 への引き継ぎ**:
-  - `Actions/` の `ServiceProviderHolder` 17 件と、未配線の抽象 11 メンバー。第 1 層（`DS4Devices`／`DS4LightBar`／`HidDevices`）の静的な状態。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
+  - `Actions/` の `ServiceProviderHolder` 17 件と、未配線の抽象 11 メンバー。第 1 層（`DS4Devices`／`DS4LightBar`／`HidDevices`）の静的な状態。 （【2026-10-19 訂正】「12」「11」は不一致。実際に本体の呼び出しが 0 件なのは 8 メンバー＋`IMacroPlayer.IsPlaying`［テスト以外の呼び出しなし］で、`IKeyController` の 3 つは未配線ではない。`docs-forDIMG/MadeByAgent/Archive/Phase8-Unified-Trigger-Dispatch-Plan.md` の 2026-10-19 追記 §2 を正とする）
   - 維持して `TODO(Phase8)` を付けたメンバー（`SettingChanged`／`ActionsChanged`／`UseTempProfileArray`）の接続。
   - `BackingStore` のフィールド群の分解、`Mapping` の依存 11・`MainWindow` の引数 18 の整理、K3 の恒久的な再設計。
 - 【2026-10-19 訂正: 下記 2 件は Phase7b で対処済み。末尾の「Phase7b・Phase7c の記録」を参照】Phase7 の範囲外として別の計画書で扱う件（総合検証で判明）: 「Unload on trigger release」で元のプロファイルに戻らない既存の不具合
   （Phase6 完了時点から同じ構造。上流の元の実装は復帰できていた）、L2／R2 のデッドゾーンの仕様変更の要望。
 
 - **Phase7b・Phase7c の記録（2026-10-19 追記）**:
-  - Phase7b（`Phase7b-Plan.md`、`Phase7b-Completion-Report.md`、完了・一部先送り）: 「Unload on trigger release」の復帰（`ClearDeviceState` が復帰の合図を消していた。DI 移行前のフォーク独自の追加が原因）、K4-1（`Mouse` の水平軸）、K7-2（FakerInput の明示指定）、L2／R2 のデッドゾーンの上下ボタンの丸め誤差を是正。L2／R2 の Cutoff モードは取り下げ（デッドゾーンとアンチデッドゾーンを同じ値にする設定で実現できる）。K7b-1（異常終了）と K9-3（プリセットのサブメニュー）は先送り。
-  - Phase7c（`Phase7c-Plan.md`、実施中）: Phase8 の前に、Stage3 の列挙競合（`Collection was modified`。Phase6-Step10-3d で足した Stage3 に複製がなかった）の是正（W1）、`MapCustomAction` の特性化テスト（W2）、文書とコメントの整合（W3）、K7b-1 の切り分け手順の整理（W4）を行う。
+  - Phase7b（`docs-forDIMG/MadeByAgent/Archive/Phase7b-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase7b-Completion-Report.md`、完了・一部先送り）: 「Unload on trigger release」の復帰（`ClearDeviceState` が復帰の合図を消していた。DI 移行前のフォーク独自の追加が原因）、K4-1（`Mouse` の水平軸）、K7-2（FakerInput の明示指定）、L2／R2 のデッドゾーンの上下ボタンの丸め誤差を是正。L2／R2 の Cutoff モードは取り下げ（デッドゾーンとアンチデッドゾーンを同じ値にする設定で実現できる）。K7b-1（異常終了）と K9-3（プリセットのサブメニュー）は先送り。
+  - Phase7c（`docs-forDIMG/MadeByAgent/Archive/Phase7c-Plan.md`、実施中）: Phase8 の前に、Stage3 の列挙競合（`Collection was modified`。Phase6-Step10-3d で足した Stage3 に複製がなかった）の是正（W1）、`MapCustomAction` の特性化テスト（W2）、文書とコメントの整合（W3）、K7b-1 の切り分け手順の整理（W4）を行う。
 
 ### 6.10 全体スケジュール見積もり
 
@@ -942,7 +942,7 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 
 **2026-10-18時点の実績（Phase7 完了）**: `Global.*` 2（ログ文言の文字列のみ。`Global` 型は削除済み）、`Program.rootHub` 0、
 `AppHost.GetService|Services` 3（`App` の窓口 1＋ログ文言 2）、`ServiceProviderHolder` 17（`Actions/`。Phase8）。`Mapping.cs` は DI の Singleton の instance。
-複数型ファイル 0、ビルド警告 0。推移は `Phase7-Status.md` §2。
+複数型ファイル 0、ビルド警告 0。推移は `docs-forDIMG/MadeByAgent/Archive/Phase7-Status.md` §2。
 
 **2026-11-12時点の実績（Phase28 完了。コミット `070095f9` の実測）**: 上の表の指標は、対象の型そのものがなくなったため、次の指標へ置き換わっている。
 
@@ -991,7 +991,7 @@ DIサービス経由で一貫して動作する状態**を完成させる。
 委譲する**（D1=A2採用）。トリガー条件はControls/SpecialActions共通の汎用クラスに統合し（D2）、
 既存経路と並行構築のうえアクション種別ごとに段階移行する（D3）。決定の詳細・根拠、および
 移行過程で判明したKeyタイプ固有の注意点（`KeyOutputAction`を`KeyAction`へ委譲する形に書き直す
-必要がある）は `docs-forDIMG/MadeByAgent/Phase8-Unified-Trigger-Dispatch-Plan.md` の
+必要がある）は `docs-forDIMG/MadeByAgent/Archive/Phase8-Unified-Trigger-Dispatch-Plan.md` の
 決定事項D1〜D5を参照。
 
 #### 6.13.4 着手前提
@@ -1010,7 +1010,7 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 
 #### 6.13.6 フェーズ8の完了記録（2026-11-12 追記）
 
-- 状態: **完了**（2026-10-20。Step1〜Step9。最低限の実機確認［★ 18 項目］はすべて合格）。記録は `Phase8-Completion-Report.md`、各 Step の完了報告書、`Phase8-Step9-RealDevice-Checklist.md`。
+- 状態: **完了**（2026-10-20。Step1〜Step9。最低限の実機確認［★ 18 項目］はすべて合格）。記録は `docs-forDIMG/MadeByAgent/Archive/Phase8-Completion-Report.md`、各 Step の完了報告書、`docs-forDIMG/MadeByAgent/Archive/Phase8-Step9-RealDevice-Checklist.md`。
 - 到達した姿: `TriggerDispatchEngine`（束縛があれば常に処理）、`ActionBindingBuilder`／`ControlBindingBuilder`（全種別・全区分の束縛の組み立て）、`ActionBindingRegistry`。旧経路（`Mapping.cs` の SA の Stage3、`MapCustomAction` の種別ごとの旧枝、系統 B の `IActionFactory`・アダプターなど）と、移行スイッチ（`BindingMigrationOptions`）は削除した。
 - 規模: `Mapping.cs` は 7,322 行 → 4,626 行。`ServiceProviderHolder` の参照は 17 → 10（残りは Phase13 で撤廃）。
 - 承認済みの機能廃止（規約 2.2）: ジャイロスワイプ、シフト、Lightbar マクロ、XboxGameDVR、Profile 切替の解除トリガーのボタンによる復帰。動作変更の一覧は完了報告書 §2。
@@ -1018,17 +1018,17 @@ static結合を先に減らしておくことが本フェーズの下地にな�
 
 ### 6.14 フェーズ7b〜28 の完了記録（2026-11-12 追記）
 
-Phase7 の完了のあとに行った Phase を、実施した順にまとめる。詳細は、各行の「記録」の文書を正とする。Phase11 以降の位置づけと経緯は `MadeByAgent/Phase11-and-Beyond-Roadmap.md`、Phase23 以降の発端は `MadeByAgent/Structure-Review-2026-11.md`。
+Phase7 の完了のあとに行った Phase を、実施した順にまとめる。詳細は、各行の「記録」の文書を正とする。Phase11 以降の位置づけと経緯は `MadeByAgent/Archive/Phase11-and-Beyond-Roadmap.md`、Phase23 以降の発端は `MadeByAgent/Structure-Review-2026-11.md`。
 
 #### 6.14.1 DI 化の仕上げと、実行時の経路の統合（Phase7b〜10）
 
 | フェーズ | 完了日 | 内容と結果 | 記録 |
 |---|---|---|---|
-| 7b | 2026-10-19 | Phase7 の総合検証で見つかった件の是正（「Unload on trigger release」の復帰、K4-1、K7-2、L2／R2 のデッドゾーンの丸め誤差）。K7b-1・K9-3 は先送り（どちらも後に解消。`Known-Issues-Ledger.md`） | `Phase7b-Plan.md`、`Phase7b-Completion-Report.md` |
-| 7c | 2026-10-19 | Phase8 の前の整理（Stage3 の列挙の競合の是正、`MapCustomAction` の特性化テスト、文書の整合）。一部は Phase8 の Step1 へ移管 | `Phase7c-Plan.md`、`Phase7c-Completion-Report.md` |
-| 8 | 2026-10-20 | Controls／SpecialActions の統一トリガーディスパッチ（§6.13.6） | `Phase8-Completion-Report.md` |
-| 9 | 2026-10-23 | 巨大ファイルの責務分割。9-A〜9-F と MapCustom の分割（補正の部品、マウスの計算、マクロの再生、OSC・HidHide・仮想パッド・UDP、接続・切断・開始と停止）。`Mapping.cs` は約 4,400 → 約 1,100 行、`ControlService.cs` は約 3,400 → 約 1,075 行。9-G は先送り、9-H（第 1 層のデバイスの分離）は Phase16〜18 で実施 | `Phase9-Completion-Report.md`、`Phase9-Deferred-Ledger.md` |
-| 10 | 2026-10-22 | 割り当て編集画面の統合（Controls タブと SpecialActions タブ）。Step1〜6、3b、4c、4d。プロファイルの固定 ID（`IProfileIdentityService`）を含む | `Phase10-Status.md`、`Phase10-Step6-Completion-Report.md` |
+| 7b | 2026-10-19 | Phase7 の総合検証で見つかった件の是正（「Unload on trigger release」の復帰、K4-1、K7-2、L2／R2 のデッドゾーンの丸め誤差）。K7b-1・K9-3 は先送り（どちらも後に解消。`Known-Issues-Ledger.md`） | `docs-forDIMG/MadeByAgent/Archive/Phase7b-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase7b-Completion-Report.md` |
+| 7c | 2026-10-19 | Phase8 の前の整理（Stage3 の列挙の競合の是正、`MapCustomAction` の特性化テスト、文書の整合）。一部は Phase8 の Step1 へ移管 | `docs-forDIMG/MadeByAgent/Archive/Phase7c-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase7c-Completion-Report.md` |
+| 8 | 2026-10-20 | Controls／SpecialActions の統一トリガーディスパッチ（§6.13.6） | `docs-forDIMG/MadeByAgent/Archive/Phase8-Completion-Report.md` |
+| 9 | 2026-10-23 | 巨大ファイルの責務分割。9-A〜9-F と MapCustom の分割（補正の部品、マウスの計算、マクロの再生、OSC・HidHide・仮想パッド・UDP、接続・切断・開始と停止）。`Mapping.cs` は約 4,400 → 約 1,100 行、`ControlService.cs` は約 3,400 → 約 1,075 行。9-G は先送り、9-H（第 1 層のデバイスの分離）は Phase16〜18 で実施 | `docs-forDIMG/MadeByAgent/Archive/Phase9-Completion-Report.md`、`docs-forDIMG/MadeByAgent/Archive/Phase9-Deferred-Ledger.md` |
+| 10 | 2026-10-22 | 割り当て編集画面の統合（Controls タブと SpecialActions タブ）。Step1〜6、3b、4c、4d。プロファイルの固定 ID（`IProfileIdentityService`）を含む | `docs-forDIMG/MadeByAgent/Archive/Phase10-Status.md`、`docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Completion-Report.md` |
 
 公開: 4.0.0（2026-10-23。Phase1〜10 の成果）、4.1.0（リポジトリの移転）、4.2.0〜4.2.3。版と項目の対応は `MadeByAgent/Release-Backlog.md` §4。
 
@@ -1036,35 +1036,35 @@ Phase7 の完了のあとに行った Phase を、実施した順にまとめる
 
 | フェーズ | 完了日 | 内容と結果 | 記録 |
 |---|---|---|---|
-| 11 | 2026-11-03 | 安定化と不具合修正（先送りの実機確認の消化、Issue #4、テストの整備、Debouncing の削除、電池残量の一本化）。4.2.4。K7b-1 は解消として閉じた | `Phase11-Completion-Report.md` |
-| 12 | 2026-11-03 | 機能追加。L1（ログの方針 `Log-Policy.md`。規約 2.3 を改定）→ R-4（ウィンドウのフォーカス。Issue #3）→ R-3（マクロのマウスポインタ移動。Issue #2）。4.3.0 | `Phase12-Completion-Report.md` |
-| 13 | 2026-11-04 | `ControlService` の整理。コンストラクターの引数 34 → 17、約 1,075 → 約 527 行。`Func<T>` の削減、`ServiceProviderHolder` の撤廃、スロットの状態の持ち主 `IDeviceSlotState`、入力レポートの処理 `InputReportProcessor` の切り出し | `Phase13-Completion-Report.md` |
-| 13b | 2026-11-04 | ログの一括整理（L2）。入口を `AppLogger.Log(level, message, options)` に一本化し、レベル・経路・接頭辞を整理（GUI・トレイの変更は一覧で承認済み） | `Phase13b-Completion-Report.md`、`Phase13b-Log-Change-List.md` |
+| 11 | 2026-11-03 | 安定化と不具合修正（先送りの実機確認の消化、Issue #4、テストの整備、Debouncing の削除、電池残量の一本化）。4.2.4。K7b-1 は解消として閉じた | `docs-forDIMG/MadeByAgent/Archive/Phase11-Completion-Report.md` |
+| 12 | 2026-11-03 | 機能追加。L1（ログの方針 `Log-Policy.md`。規約 2.3 を改定）→ R-4（ウィンドウのフォーカス。Issue #3）→ R-3（マクロのマウスポインタ移動。Issue #2）。4.3.0 | `docs-forDIMG/MadeByAgent/Archive/Phase12-Completion-Report.md` |
+| 13 | 2026-11-04 | `ControlService` の整理。コンストラクターの引数 34 → 17、約 1,075 → 約 527 行。`Func<T>` の削減、`ServiceProviderHolder` の撤廃、スロットの状態の持ち主 `IDeviceSlotState`、入力レポートの処理 `InputReportProcessor` の切り出し | `docs-forDIMG/MadeByAgent/Archive/Phase13-Completion-Report.md` |
+| 13b | 2026-11-04 | ログの一括整理（L2）。入口を `AppLogger.Log(level, message, options)` に一本化し、レベル・経路・接頭辞を整理（GUI・トレイの変更は一覧で承認済み） | `docs-forDIMG/MadeByAgent/Archive/Phase13b-Completion-Report.md`、`docs-forDIMG/MadeByAgent/Archive/Phase13b-Log-Change-List.md` |
 
 #### 6.14.3 フォルダ・名前空間と、依存の向きの検査（Phase14〜14d）
 
 | フェーズ | 完了日 | 内容と結果 | 記録 |
 |---|---|---|---|
-| 14 | 2026-11-04 | 名前空間・フォルダの再編。本体の約 730 ファイルを層別フォルダ（`Input`／`Processing`／`Output`／`UI`／`Composition`／`Core`）へ `git mv` で移し、名前空間を `DS4Windows.<フォルダ>` に統一。旧 `DS4WinWPF.*`・`DS4Windows.DI`・`DS4Windows.Services` などは廃止。規約 3.3 原則 3 を達成、3.4 を R1〜R7 へ改定 | `Phase14-Completion-Report.md` |
-| 14b・14b-2 | 2026-11-05 | 依存の向きの是正。層の依存のアーキテクチャテスト `LayerDependencyRuleTests`（ArchUnitNET。規則 L1〜L7）を導入し、違反 108 件を 0 件にした（許可リストは空）。共有型を `Core/` へ、UI のファクトリーの契約を移動。CLI の Query の出力の不具合 2 件を修正 | `Phase14b-Completion-Report.md`、`Repository-Review-2026-11-05.md` |
-| 14c | 2026-11-05 | 共有の値の型を `Core/Model` へ。UI に触れない静的な状態（`SyntheticDispatcher` の橋渡し、ライトバーの静的な配列、`ActionRegistry`）を撤廃。`ServiceRegistration` を層ごとの partial へ分割し、後付けの配線を `Wiring.cs` に集約。規約に原則 5（コメントには意図を書く）とテストの命名を追加 | `Phase14c-Plan.md` |
-| 14d | 2026-11-05 | テストの整理。ソースの文字列を読むガードを型の検査へ置き換え、`RemovedApiRuleTests` を新設。3,264 → 3,150 件、実行は約 50 秒。Slow・Benchmark の印 | `Phase14d-Plan.md` |
+| 14 | 2026-11-04 | 名前空間・フォルダの再編。本体の約 730 ファイルを層別フォルダ（`Input`／`Processing`／`Output`／`UI`／`Composition`／`Core`）へ `git mv` で移し、名前空間を `DS4Windows.<フォルダ>` に統一。旧 `DS4WinWPF.*`・`DS4Windows.DI`・`DS4Windows.Services` などは廃止。規約 3.3 原則 3 を達成、3.4 を R1〜R7 へ改定 | `docs-forDIMG/MadeByAgent/Archive/Phase14-Completion-Report.md` |
+| 14b・14b-2 | 2026-11-05 | 依存の向きの是正。層の依存のアーキテクチャテスト `LayerDependencyRuleTests`（ArchUnitNET。規則 L1〜L7）を導入し、違反 108 件を 0 件にした（許可リストは空）。共有型を `Core/` へ、UI のファクトリーの契約を移動。CLI の Query の出力の不具合 2 件を修正 | `docs-forDIMG/MadeByAgent/Archive/Phase14b-Completion-Report.md`、`Repository-Review-2026-11-05.md` |
+| 14c | 2026-11-05 | 共有の値の型を `Core/Model` へ。UI に触れない静的な状態（`SyntheticDispatcher` の橋渡し、ライトバーの静的な配列、`ActionRegistry`）を撤廃。`ServiceRegistration` を層ごとの partial へ分割し、後付けの配線を `Wiring.cs` に集約。規約に原則 5（コメントには意図を書く）とテストの命名を追加 | `docs-forDIMG/MadeByAgent/Archive/Phase14c-Plan.md` |
+| 14d | 2026-11-05 | テストの整理。ソースの文字列を読むガードを型の検査へ置き換え、`RemovedApiRuleTests` を新設。3,264 → 3,150 件、実行は約 50 秒。Slow・Benchmark の印 | `docs-forDIMG/MadeByAgent/Archive/Phase14d-Plan.md` |
 
 #### 6.14.4 UI の共通化（Phase15-0・15）
 
 | フェーズ | 完了日 | 内容と結果 | 記録 |
 |---|---|---|---|
-| 15-0 | 2026-11-08 | Phase14 系の持ち越し。利用者向けのログ文言を `AppLogger.LogUser` とリソースのキーへ、Phase 名のテスト 303 件を機能名へ改名（対応表は `Phase15-0-Test-Rename-Map.md`）、KI-4 | `Phase15-0-Plan.md` |
-| 15 | 2026-11-10（実機確認済み） | UI の共通化。UI が具象の `ControlService` を経由して第 1 層・第 3 層へ抜ける経路を、第 2 層の小さな契約（`IControllerSlotQuery` ほか）へ置き換え（L7 の違反 80 → 5 → その後 0）。テーマのトークン、数値入力の共有スタイル、コントローラーの図の配置表、変更通知の基底 `ObservableObject`、ViewModel の生成の集約。プロファイル編集画面を 8 つの領域に分け、設定の領域の窓口（`ForSlot(slot)`）を導入 | `Phase15-Completion-Report.md` |
+| 15-0 | 2026-11-08 | Phase14 系の持ち越し。利用者向けのログ文言を `AppLogger.LogUser` とリソースのキーへ、Phase 名のテスト 303 件を機能名へ改名（対応表は `Phase15-0-Test-Rename-Map.md`）、KI-4 | `docs-forDIMG/MadeByAgent/Archive/Phase15-0-Plan.md` |
+| 15 | 2026-11-10（実機確認済み） | UI の共通化。UI が具象の `ControlService` を経由して第 1 層・第 3 層へ抜ける経路を、第 2 層の小さな契約（`IControllerSlotQuery` ほか）へ置き換え（L7 の違反 80 → 5 → その後 0）。テーマのトークン、数値入力の共有スタイル、コントローラーの図の配置表、変更通知の基底 `ObservableObject`、ViewModel の生成の集約。プロファイル編集画面を 8 つの領域に分け、設定の領域の窓口（`ForSlot(slot)`）を導入 | `docs-forDIMG/MadeByAgent/Archive/Phase15-Completion-Report.md` |
 
 #### 6.14.5 第 1 層・第 3 層の差し替え口と、入力機種の追加（Phase16〜18、22）
 
 | フェーズ | 完了日 | 内容と結果 | 記録 |
 |---|---|---|---|
-| 16 | 2026-11-10 | 通信 `IHidTransport`、解析 `IInputReportParser`（旧実装との差分テスト）、ライトバーの色の計算 `ILightbarService`（`TimeProvider`）、出力の種類 `IOutputDeviceCartridge`・`OutContTypeInfo`、仮想パッドのドライバーの窓口 `IVirtualPadBackend`（ViGEm の型は `Output/Backend` だけ）。DS3 と Joy-Con は廃止 | `Phase16-Completion-Report.md` |
-| 17 | 2026-11-10 | 機種を足しやすくする仕組み。`[InputDeviceFamily]` と `AddInputDevice<TCartridge, TModule>()` の 1 行、設定の定義 `ControllerSetting`（保存・読み込み・画面を定義から作る。DTO 10 ファイルを廃止）、単純な機種の `IDeviceProtocol`＋`ProtocolDevice`、編集画面の工場の分割、ライトバーの設定画面の整理。モデル図を 3 文書（`01-Structure`／`02-Extension-Guide`／`03-Lifecycle-and-DI`）へ作り直した | `Phase17-Plan.md`、`Phase17-5-Plan.md` |
-| 18 | 2026-11-10 | 読み取りの骨組み `InputLoopDevice` に 4 機種（DS4・DualSense・Switch Pro・`ProtocolDevice`）を載せ、全機種の基底を抽象の `InputDeviceCore`（旧 `DS4Device`）にした。到達できなかった 2 台結合の仕組みを削除 | `Phase18-Plan.md` |
-| 22 | 2026-11-11 | Xbox（XInput）を入力機種として追加。通信路 `XInputTransport`・供給元 `XInputTransportSource`、`XboxProtocol`、USB／Bluetooth の判定、電池（GATT）、HidHide で元の XInput を隠す設定。BLE の Xbox は切断できない（KI-6。非対応と決定）、入力側の画像とボタン名は DS4 のまま（KI-7。実施は未定） | `Phase22-Plan.md`、`Phase22-Xbox-Parity-Plan.md`、`Xbox-Input-Research.md` |
+| 16 | 2026-11-10 | 通信 `IHidTransport`、解析 `IInputReportParser`（旧実装との差分テスト）、ライトバーの色の計算 `ILightbarService`（`TimeProvider`）、出力の種類 `IOutputDeviceCartridge`・`OutContTypeInfo`、仮想パッドのドライバーの窓口 `IVirtualPadBackend`（ViGEm の型は `Output/Backend` だけ）。DS3 と Joy-Con は廃止 | `docs-forDIMG/MadeByAgent/Archive/Phase16-Completion-Report.md` |
+| 17 | 2026-11-10 | 機種を足しやすくする仕組み。`[InputDeviceFamily]` と `AddInputDevice<TCartridge, TModule>()` の 1 行、設定の定義 `ControllerSetting`（保存・読み込み・画面を定義から作る。DTO 10 ファイルを廃止）、単純な機種の `IDeviceProtocol`＋`ProtocolDevice`、編集画面の工場の分割、ライトバーの設定画面の整理。モデル図を 3 文書（`01-Structure`／`02-Extension-Guide`／`03-Lifecycle-and-DI`）へ作り直した | `Phase17-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase17-5-Plan.md` |
+| 18 | 2026-11-10 | 読み取りの骨組み `InputLoopDevice` に 4 機種（DS4・DualSense・Switch Pro・`ProtocolDevice`）を載せ、全機種の基底を抽象の `InputDeviceCore`（旧 `DS4Device`）にした。到達できなかった 2 台結合の仕組みを削除 | `docs-forDIMG/MadeByAgent/Archive/Phase18-Plan.md` |
+| 22 | 2026-11-11 | Xbox（XInput）を入力機種として追加。通信路 `XInputTransport`・供給元 `XInputTransportSource`、`XboxProtocol`、USB／Bluetooth の判定、電池（GATT）、HidHide で元の XInput を隠す設定。BLE の Xbox は切断できない（KI-6。非対応と決定）、入力側の画像とボタン名は DS4 のまま（KI-7。実施は未定） | `docs-forDIMG/MadeByAgent/Archive/Phase22-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase22-Xbox-Parity-Plan.md`、`Xbox-Input-Research.md` |
 
 DualSense・Switch Pro は実機がなく、差分テストだけで守っている（`Known-Issues-Ledger.md` §3）。
 
@@ -1072,15 +1072,15 @@ DualSense・Switch Pro は実機がなく、差分テストだけで守ってい
 
 | フェーズ | 完了日 | 内容と結果 | 記録 |
 |---|---|---|---|
-| 19 | 2026-11-10 | 工場の廃止（その 1）。`MainWindowFactory` を `Composition` へ移し、コンテナが窓を直接つくる形にして 18 → 1 引数。ほかの工場は基準内のため見送り | `Phase19-Plan.md` |
-| 20 | 2026-11-10 | 責務の分割。`MainWindow` 18 → 15（`TrayAppearanceController`、`ProfileSelectionCoordinator`）、`InputReportProcessor` 15 → 13。引数の基準を 15 → 12 に引き下げ、超える型を `ConstructorArityBaseline` に凍結 | `Phase20-Plan.md` |
-| 21 | 2026-11-10 | 同じ契約の依存を列で受ける候補の調査。該当 0 件で、コードの変更なし | `Phase21-Plan.md` |
+| 19 | 2026-11-10 | 工場の廃止（その 1）。`MainWindowFactory` を `Composition` へ移し、コンテナが窓を直接つくる形にして 18 → 1 引数。ほかの工場は基準内のため見送り | `docs-forDIMG/MadeByAgent/Archive/Phase19-Plan.md` |
+| 20 | 2026-11-10 | 責務の分割。`MainWindow` 18 → 15（`TrayAppearanceController`、`ProfileSelectionCoordinator`）、`InputReportProcessor` 15 → 13。引数の基準を 15 → 12 に引き下げ、超える型を `ConstructorArityBaseline` に凍結 | `docs-forDIMG/MadeByAgent/Archive/Phase20-Plan.md` |
+| 21 | 2026-11-10 | 同じ契約の依存を列で受ける候補の調査。該当 0 件で、コードの変更なし | `docs-forDIMG/MadeByAgent/Archive/Phase21-Plan.md` |
 | 23 | 2026-11-10 | 構造の見直しの D・F。`Processing` の直下を `Touchpad`／`Gyro`／`Macro`／`Synthetic` へ分け、機種に依らない型の名前を一般化（`DS4State` → `ControllerState`、`IDs4DeviceRegistry` → `IInputDeviceRegistry` など。`DS4Controls` などプロファイルの語彙は、保存の互換のため残した） | `Structure-Review-2026-11.md` §4 |
 | 24 | 2026-11-10 | 構造の見直しの C。`App.xaml.cs` を 1,323 → 約 940 行（IPC、CLI のクライアント、単一起動、テーマと言語を部品へ） | `Structure-Review-2026-11.md` §4 |
-| 25 | 2026-11-11 | 構造の見直しの A。設定を「項目ごとの配列」から「領域ごとの持ち主のオブジェクト」（`GyroSlotSettings`、`TriggerSlotSettings`、`StickSlotSettings`、`LightbarSlotSettings`、`SixAxisSlotSettings` ほか）へ。`IProfileSettingsService` は 156 → 約 54 メンバー | `Phase25-Plan.md` |
-| 26 | 一部完了（2026-11-11） | 構造の見直しの B。画面のロジックを、テストできる部品へ（`TouchpadSwipeProfileRule`、`RumbleTestController`、`ReadingsDeadZoneSnapshot`、`UpdateCheckPolicy`、`ActionRumbleTestController`）。`BindingWindow`・`RecordBox`・`AssignmentEditor` の残りは続く | `Phase26-Plan.md` |
-| 27 | 2026-11-11 | 構造の見直しの E。`ControlService` は Phase9・13 のあとの殻と分かり、起動時の取り付けと終了の後始末を `RuntimeBootstrapper` へ移して、型を削除した | `Phase27-Plan.md` |
-| 28 | 2026-11-11 | 構造の見直しの G。`IViewModelFactory`（30 メンバー）を 3 つの窓口へ分割、`ShellViewModelFactory` 14 → 12、`SpecialActionOutputFactory` 14 → 1（種別ごとの組み立て部品 10 個の列） | `Phase28-Plan.md` |
+| 25 | 2026-11-11 | 構造の見直しの A。設定を「項目ごとの配列」から「領域ごとの持ち主のオブジェクト」（`GyroSlotSettings`、`TriggerSlotSettings`、`StickSlotSettings`、`LightbarSlotSettings`、`SixAxisSlotSettings` ほか）へ。`IProfileSettingsService` は 156 → 約 54 メンバー | `docs-forDIMG/MadeByAgent/Archive/Phase25-Plan.md` |
+| 26 | 一部完了（2026-11-11） | 構造の見直しの B。画面のロジックを、テストできる部品へ（`TouchpadSwipeProfileRule`、`RumbleTestController`、`ReadingsDeadZoneSnapshot`、`UpdateCheckPolicy`、`ActionRumbleTestController`）。`BindingWindow`・`RecordBox`・`AssignmentEditor` の残りは続く | `docs-forDIMG/MadeByAgent/Archive/Phase26-Plan.md` |
+| 27 | 2026-11-11 | 構造の見直しの E。`ControlService` は Phase9・13 のあとの殻と分かり、起動時の取り付けと終了の後始末を `RuntimeBootstrapper` へ移して、型を削除した | `docs-forDIMG/MadeByAgent/Archive/Phase27-Plan.md` |
+| 28 | 2026-11-11 | 構造の見直しの G。`IViewModelFactory`（30 メンバー）を 3 つの窓口へ分割、`ShellViewModelFactory` 14 → 12、`SpecialActionOutputFactory` 14 → 1（種別ごとの組み立て部品 10 個の列） | `docs-forDIMG/MadeByAgent/Archive/Phase28-Plan.md` |
 
 Phase16〜28 のうち、実機で未確認の項目は `Known-Issues-Ledger.md` §3 に残っている。
 
@@ -1280,25 +1280,25 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 | 3 | `03-目標アーキテクチャ設計.md` | Composition Root、サービスライフタイム、3層モデル対応 |
 | 4 | `04-理想の3層構造と現状のズレ.md` | 3層モデルの理想形と実コードの対応検証（補足ステージ） |
 | 5 | `05-段階移行ロードマップ.md` | フェーズ分割、PR粒度、リスクと回避策、スケジュール見積もり |
-| - | `docs-forDIMG/MadeByAgent/Phase4-Plan.md` / `Phase4-Status.md` | フェーズ4の実施計画・進捗 |
-| - | `docs-forDIMG/MadeByAgent/Phase5-Plan.md` / `Phase5-Status.md` | フェーズ5の実施計画・進捗 |
-| - | `docs-forDIMG/MadeByAgent/Phase5-Watchpoints-Investigation-Report.md` | UI層残存静的参照・スレッド安全性・二重実体化の調査（2026-09-09実地確認により一部訂正） |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase4-Plan.md` / `docs-forDIMG/MadeByAgent/Archive/Phase4-Status.md` | フェーズ4の実施計画・進捗 |
+| - | `docs-forDIMG/MadeByAgent/Phase5-Plan.md` / `docs-forDIMG/MadeByAgent/Archive/Phase5-Status.md` | フェーズ5の実施計画・進捗 |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase5-Watchpoints-Investigation-Report.md` | UI層残存静的参照・スレッド安全性・二重実体化の調査（2026-09-09実地確認により一部訂正） |
 | - | `docs-forDIMG/MadeByAgent/Phase5-Step13+14-Addendum-Findings-Report-Part1.md` / `-Part2.md` | Global参照・`Program.rootHub`残存状況の実地調査 |
-| - | `docs-forDIMG/MadeByAgent/Phase5-Step14-pretest-cleanup-plan.md` / 完了報告書 | Step14前の`Global.*`残存参照解消・`Program.rootHub`統一 |
-| - | `docs-forDIMG/MadeByAgent/Phase6-Plan.md` / `Phase6-Status.md` | フェーズ6の実施計画・進捗（新設） |
-| - | `docs-forDIMG/MadeByAgent/Phase6-Step1-Plan.md` 〜 `Phase6-Step13-Plan.md`（Step7b・9b・10b を含む）および各 `-Completion-Report.md` | フェーズ6の個別Step計画と完了報告（Step9 までの完了報告書あり） |
-| - | `docs-forDIMG/MadeByAgent/Phase8-Unified-Trigger-Dispatch-Plan.md` | フェーズ8（統一トリガーディスパッチ）の調査・決定事項D1〜D5 |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase5-Step14-pretest-cleanup-plan.md` / 完了報告書 | Step14前の`Global.*`残存参照解消・`Program.rootHub`統一 |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase6-Plan.md` / `Phase6-Status.md` | フェーズ6の実施計画・進捗（新設） |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase6-Step1-Plan.md` 〜 `docs-forDIMG/MadeByAgent/Archive/Phase6-Step13-Plan.md`（Step7b・9b・10b を含む）および各 `-Completion-Report.md` | フェーズ6の個別Step計画と完了報告（Step9 までの完了報告書あり） |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase8-Unified-Trigger-Dispatch-Plan.md` | フェーズ8（統一トリガーディスパッチ）の調査・決定事項D1〜D5 |
 | - | `docs-forDIMG/Model-Diagram/01〜04` | 理想構造のモデル図（契約・登録を変えたら同じ Step 内で更新する） |
 | - | `docs/DI-Migration-Plan.md`（既存） | フェーズ1のベースとして採用 |
 | - | `docs/DI-Implementation-Guide.md`（既存） | 推奨パッケージ・導入手順のベースとして採用 |
 | - | `docs/DI/DI-ObjectGraph.md`（既存） | Composition Root設計のベースとして採用 |
 | - | `docs/Direct-Callsites-Inventory.md`（既存） | `Process.Start`等の分類のベースとして活用 |
 
-| - | `docs-forDIMG/MadeByAgent/Phase8-Completion-Report.md`、`Phase9-Completion-Report.md`、`Phase10-Status.md`／`Phase10-Step6-Completion-Report.md` | フェーズ8〜10 の完了の記録（2026-11-12 追記） |
-| - | `docs-forDIMG/MadeByAgent/Phase11-and-Beyond-Roadmap.md` | フェーズ11 以降の構成と経緯（2026-11-12 追記） |
-| - | `docs-forDIMG/MadeByAgent/Phase11`〜`Phase16-Completion-Report.md`（13b・14b を含む）、`Phase14c-Plan.md`、`Phase14d-Plan.md`、`Phase15-0-Plan.md` | フェーズ11〜16 の完了の記録（2026-11-12 追記） |
-| - | `docs-forDIMG/MadeByAgent/Phase17-Plan.md`〜`Phase22-Plan.md`、`Phase22-Xbox-Parity-Plan.md` | フェーズ17〜22 の計画と履歴（完了の記録は、各計画書の履歴の節。2026-11-12 追記） |
-| - | `docs-forDIMG/MadeByAgent/Structure-Review-2026-11.md`、`Phase25-Plan.md`〜`Phase28-Plan.md` | 構造の見直し（A〜G）と、フェーズ23〜28 の計画と履歴（2026-11-12 追記） |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase8-Completion-Report.md`、`docs-forDIMG/MadeByAgent/Archive/Phase9-Completion-Report.md`、`docs-forDIMG/MadeByAgent/Archive/Phase10-Status.md`／`docs-forDIMG/MadeByAgent/Archive/Phase10-Step6-Completion-Report.md` | フェーズ8〜10 の完了の記録（2026-11-12 追記） |
+| - | `docs-forDIMG/MadeByAgent/Archive/Phase11-and-Beyond-Roadmap.md` | フェーズ11 以降の構成と経緯（2026-11-12 追記） |
+| - | `docs-forDIMG/MadeByAgent/Phase11`〜`docs-forDIMG/MadeByAgent/Archive/Phase16-Completion-Report.md`（13b・14b を含む）、`docs-forDIMG/MadeByAgent/Archive/Phase14c-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase14d-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase15-0-Plan.md` | フェーズ11〜16 の完了の記録（2026-11-12 追記） |
+| - | `docs-forDIMG/MadeByAgent/Phase17-Plan.md`〜`docs-forDIMG/MadeByAgent/Archive/Phase22-Plan.md`、`docs-forDIMG/MadeByAgent/Archive/Phase22-Xbox-Parity-Plan.md` | フェーズ17〜22 の計画と履歴（完了の記録は、各計画書の履歴の節。2026-11-12 追記） |
+| - | `docs-forDIMG/MadeByAgent/Structure-Review-2026-11.md`、`docs-forDIMG/MadeByAgent/Archive/Phase25-Plan.md`〜`docs-forDIMG/MadeByAgent/Archive/Phase28-Plan.md` | 構造の見直し（A〜G）と、フェーズ23〜28 の計画と履歴（2026-11-12 追記） |
 | - | `docs-forDIMG/Code-Review-2026-11/00-Summary.md`〜`06-Performance.md` | 全体のコードレビュー（2026-11）の調査報告書（2026-11-12 追記） |
 | - | `docs-forDIMG/MadeByAgent/Phase29-Plan.md`〜`Phase38-Plan.md`、`docs-forDIMG/Code-Review-2026-11/07-External-Review-2026-11-12.md` | コードレビューと外部レビューの照合から作った修正計画書（未着手・承認待ち。番号は進める順。§6.15。2026-11-12 追記、11-13 付け替え） |
 | - | `docs-forDIMG/MadeByAgent/PhaseX-Input-Device-Visuals-Plan.md`、`PhaseX2-Custom-Exe-Name-Plan.md` | 時期が未定の計画の下書き（§6.16。2026-11-12 追記） |
@@ -1347,22 +1347,22 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 **（2026-10-18更新）Phase6・Phase7 は完了した。次は、次の順で進める。**
 
 1. Phase7 の完了宣言: 済み（2026-10-18、ユーザー承認）。
-2. 別の計画書で扱う件: 【2026-10-19 更新】「Unload on trigger release」の復帰の是正と、L2／R2 のデッドゾーンの要望（コードの変更なし）は Phase7b で対処済み。K7b-1（異常終了）・K9-3（プリセットのサブメニュー）は先送り。Phase8 の前の整理は Phase7c（`Phase7c-Plan.md`）で実施中。
-3. Phase8（`Phase8-Unified-Trigger-Dispatch-Plan.md` の D1〜D5）は Phase7c の完了後に着手する。実行順序は同計画書の 2026-10-19 追記のとおり（Step4 と Step5 の間に Step4b を挿入）。Phase8 の後は Phase9（`MadeByAgent/Phase9-Responsibility-Split-Plan.md`。巨大クラスの責務分割）。着手前に、Phase7 からの引き継ぎ（§6.9.4）と、同計画書の 2026-10-19 追記（事実誤認の訂正）を取り込む。
-4. 先送りした実機確認（`Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）は、任意のタイミングで実施する。
+2. 別の計画書で扱う件: 【2026-10-19 更新】「Unload on trigger release」の復帰の是正と、L2／R2 のデッドゾーンの要望（コードの変更なし）は Phase7b で対処済み。K7b-1（異常終了）・K9-3（プリセットのサブメニュー）は先送り。Phase8 の前の整理は Phase7c（`docs-forDIMG/MadeByAgent/Archive/Phase7c-Plan.md`）で実施中。
+3. Phase8（`docs-forDIMG/MadeByAgent/Archive/Phase8-Unified-Trigger-Dispatch-Plan.md` の D1〜D5）は Phase7c の完了後に着手する。実行順序は同計画書の 2026-10-19 追記のとおり（Step4 と Step5 の間に Step4b を挿入）。Phase8 の後は Phase9（`MadeByAgent/Archive/Phase9-Responsibility-Split-Plan.md`。巨大クラスの責務分割）。着手前に、Phase7 からの引き継ぎ（§6.9.4）と、同計画書の 2026-10-19 追記（事実誤認の訂正）を取り込む。
+4. 先送りした実機確認（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step11-RealDevice-Verification-Checklist.md` §12.6）は、任意のタイミングで実施する。
 
 （以下は 2026-10-14 時点の記述。履歴として残す。）
 
 （2026-10-14時点。Phase5 完了、Phase6-Step1〜9・9b 完了）
 
-1. **Phase6-Step9b** は完了（`Phase6-Step9b-Completion-Report.md`）。PR #1 の Copilot レビューへの返信は、
+1. **Phase6-Step9b** は完了（`docs-forDIMG/MadeByAgent/Archive/Phase6-Step9b-Completion-Report.md`）。PR #1 の Copilot レビューへの返信は、
    文面案を提示し、許可を得たものだけを書き込む（完了報告書 §7）。
 2. **Phase6-Step10**（残存小型 View・ViewModel の Pure DI 化、72箇所）を実施する。
 3. Phase6-Step10b（1ファイル1型の全数是正）→ Step11（2層総合検証）→ Step12（旧シム物理削除・完了判定）。
 4. フェーズ6の各Step完了時に、§6.12の定量指標を計測し、`Phase6-Status.md`に記録する。
 5. フェーズ6完了後、フェーズ7（`Mapping.cs`完全instance化）の個別計画書を新規策定する（Phase6 から
    の引き継ぎは §6.9.3、Step12 計画書 §4 を取り込む）。
-6. フェーズ7完了後、`Phase8-Unified-Trigger-Dispatch-Plan.md`の決定事項D1〜D5に基づき、フェーズ8
+6. フェーズ7完了後、`docs-forDIMG/MadeByAgent/Archive/Phase8-Unified-Trigger-Dispatch-Plan.md`の決定事項D1〜D5に基づき、フェーズ8
    （Controls／SpecialActions統一トリガーディスパッチ）に着手する。
 
 ---
@@ -1377,9 +1377,9 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 
 ### 追記（2026-10-23）: Phase9 の完了とリリース前の状況
 
-- Phase9（巨大クラスの責務分割）は、9-A〜9-F・MapCustom・9-I が完了（9-G は先送り、9-H は K7b-1 の観察の完了待ち）。結果は `MadeByAgent/Phase9-Completion-Report.md`、先送りは `MadeByAgent/Phase9-Deferred-Ledger.md`。
+- Phase9（巨大クラスの責務分割）は、9-A〜9-F・MapCustom・9-I が完了（9-G は先送り、9-H は K7b-1 の観察の完了待ち）。結果は `MadeByAgent/Archive/Phase9-Completion-Report.md`、先送りは `MadeByAgent/Archive/Phase9-Deferred-Ledger.md`。
 - リリース前の追加・修正は `MadeByAgent/Release-Backlog.md`（R-1・R-2・R-5・R-6 は実装済み・実機確認合格。R-2 は 4.2.0 向け［`R2-MacroToggleRepeat-Plan.md`］。R-3・R-4 は Phase12 で実装し、4.3.0 で公開済み）。公開済みの最新は 4.3.0（2026-11-04 に更新。リリースと R 項目の対応は `MadeByAgent/Release-Backlog.md` §4）。Phase11（安定化）と Phase12（機能追加）は完了し、次の大きな作業は Phase13（`ControlService` の整理）。名前空間・フォルダの再編は Phase14（旧 Phase11）で、F-4・G-1・9-H の判断は Phase15・16。
-- 追記（2026-11-02）: `FurtherImprovements/01〜06`（アーキテクチャ分析、リファクタリング設計、移行ランブック、入力パイプライン仕様、プラグイン開発ガイド、UI デザイン仕様。2026-10-24 追加）は、DI 移行後の発展案の参考資料。Phase11 以降の計画（Phase11 安定化／12 機能追加／13 ControlService 整理／13b ログの一括整理／14 名前空間・フォルダ再編／15 UI 共通化／16 Layer 1）に再配置済みで、対応関係は `MadeByAgent/Phase11-and-Beyond-Roadmap.md` に記載している（Phase11・12 は完了。2026-11-04 に更新）。
+- 追記（2026-11-02）: `FurtherImprovements/01〜06`（アーキテクチャ分析、リファクタリング設計、移行ランブック、入力パイプライン仕様、プラグイン開発ガイド、UI デザイン仕様。2026-10-24 追加）は、DI 移行後の発展案の参考資料。Phase11 以降の計画（Phase11 安定化／12 機能追加／13 ControlService 整理／13b ログの一括整理／14 名前空間・フォルダ再編／15 UI 共通化／16 Layer 1）に再配置済みで、対応関係は `MadeByAgent/Archive/Phase11-and-Beyond-Roadmap.md` に記載している（Phase11・12 は完了。2026-11-04 に更新）。
 
 ### 追記（2026-11-12）: Phase7b〜Phase28 の完了の反映と、Phase29〜38 の新設
 

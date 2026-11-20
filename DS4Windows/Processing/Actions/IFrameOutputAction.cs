@@ -1,7 +1,7 @@
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step4 W1: 毎フレームの出力を持つ出力アクション（Button の Press／Toggle。Phase8-Step2-Design.md §5）。
+    /// 毎フレームの出力を持つ出力アクション（Button の Press／Toggle。docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Design.md §5）。
     /// エンジンの <c>ApplyFrameOutputs</c> が、通常の割り当ての後（現行の Stage3 の位置）に、束縛ごとに呼ぶ。
     /// </summary>
     public interface IFrameOutputAction : IOutputAction

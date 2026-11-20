@@ -16,8 +16,8 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase9 9-E E-3（Phase9-E-Plan.md）: <see cref="UdpMotionService"/> の特性化テスト。
-    /// ソケットとイベントスレッドは、スタブ（<see cref="FakeUdpMotionServerFactory"/>）に替える。スロットの状態は、実物の <see cref="DeviceSlotState"/>（Phase13-Step5）に、空の入力を入れて使う。
+    /// <see cref="UdpMotionService"/> の特性化テスト。
+    /// ソケットとイベントスレッドは、スタブ（<see cref="FakeUdpMotionServerFactory"/>）に替える。スロットの状態は、実物の <see cref="DeviceSlotState"/>に、空の入力を入れて使う。
     /// サーバーの作成・開始・停止（イベントスレッドで実行、ポートの開始の失敗のログ）、モーションの送出のハンドラー（スムージングの有無、経過時間 0 の読み飛ばし、
     /// 出力バッファーの再利用）、スムージングのフィルターの作り直しを調べる。
     /// 旧実装は <c>ControlService</c> の private メンバーで、検査できる入口がなかったため、旧実装との差分テストではなく、期待する動作を直接確かめる。
@@ -165,7 +165,7 @@ namespace DS4WindowsTests
 
             f.Service.ChangeStatus(true);
 
-            Assert.True(f.Service.HasServer);   // サーバーは作られたまま（旧実装と同じ）
+            Assert.True(f.Service.HasServer);   // サーバーは作られたまま
             Assert.Contains(f.Logs, l => l.Warning && l.Text.StartsWith("Couldn't start UDP server on address"));
         }
 

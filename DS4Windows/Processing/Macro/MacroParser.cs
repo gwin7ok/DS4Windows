@@ -163,7 +163,7 @@ namespace DS4Windows.Processing.Macro
 
             if (MacroPointerMove.IsPointerMoveValue(value))
             {
-                // Phase12-Step3 3b（R-3）: マウスポインターの移動。ライトバー（最大 1,255,255,255）より上の範囲なので、先に判定する
+                // マウスポインターの移動。ライトバー（最大 1,255,255,255）より上の範囲なので、先に判定する
                 outType = MacroStep.StepOutput.PointerMove;
                 type = MacroStep.StepType.ActDown;
                 name = MacroPointerMove.TryFromMacroValue(value, out MacroPointerMove move) ? move.DisplayName : "Move (unsupported)";

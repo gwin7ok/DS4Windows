@@ -7,7 +7,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Core.Persistence
 {
     /// <summary>
-    /// Phase7-Step10c W6（Q1・Q6＝A）: プロファイルのプリセット（空のプロファイルと、既定の割り当て 8 種）の読込。
+    /// プロファイルのプリセット（空のプロファイルと、既定の割り当て 8 種）の読込。
     /// 旧: <c>BackingStore</c> の <c>LoadBlankDS4Profile</c>／<c>LoadBlankProfile</c>／<c>LoadDefault*Profile</c>（8 種）／<c>PrepareBlankingProfile</c>（移動のみ。
     /// ロジック・値・ログは変えない）。<c>BackingStore</c> の公開状態を <c>store.</c> で書き換える。呼び出し元は <see cref="ProfilePresetLoader"/> だけ。
     /// </summary>

@@ -6,7 +6,7 @@ using DS4Windows.UI.ViewModels.SpecialActions;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1）: 種別ごとの入力（<see cref="IActionTypeEditor"/>）の一式。種別（<c>ActionTypeId</c>）から、
+    /// 種別ごとの入力（<see cref="IActionTypeEditor"/>）の一式。種別（<c>ActionTypeId</c>）から、
     /// 対応する入力を選んで、読み込み・検証・保存を中継する。従来は、<c>AssignmentEditor</c> のコードビハインドの、3 つの <c>switch</c>
     /// （<c>LoadAction</c>、<c>CheckActionValid</c>、<c>SaveBtn_Click</c>）が、同じ対応を 3 回書いていた。
     /// <para>
@@ -47,7 +47,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase10-Step6 I6b: Controls のモードで、保存済みの割り当ての型のある項目を、項目の種別に対応する入力へ読み込む（<c>ControlSpecialEditors</c> の後継）。
+        /// Controls のモードで、保存済みの割り当ての型のある項目を、項目の種別に対応する入力へ読み込む（<c>ControlSpecialEditors</c> の後継）。
         /// 対応する入力がなければ、何もしない。
         /// </summary>
         public void LoadControlItem(ControlSpecialItem item)
@@ -59,7 +59,7 @@ namespace DS4Windows.UI.ViewModels
         }
 
         /// <summary>
-        /// Phase10-Step6 I6b: Controls のモードで、種別に対応する入力から、型のある項目を作る。対応する入力がなければ、種別だけを持つ項目（秒数 0）。
+        /// Controls のモードで、種別に対応する入力から、型のある項目を作る。対応する入力がなければ、種別だけを持つ項目（秒数 0）。
         /// </summary>
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId typeId)
         {

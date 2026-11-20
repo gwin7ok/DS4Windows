@@ -13,9 +13,9 @@ using DS4Windows.Processing.Services.Slots;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase8-Step7 7.8b-W1（Phase8-Step7-8b-Plan.md §4）: Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
+    /// Controls タブの Key の割り当て（<c>DS4ControlSettings</c>）で <c>Mapping.MapCustom</c> を実走行させる最小のハーネス。
     /// <see cref="MappingCharacterizationScope"/> の専用デバイス添字に対して、ボタンの割り当てを「キー」に変える（終了時に既定へ戻す）。
-    /// Phase8-Step8 8d: 常に新経路で処理する（旧経路と移行のスイッチは削除した）。
+    /// 常に新経路で処理する。
     /// </summary>
     public sealed class ControlsKeyTestScope : IDisposable
     {
@@ -33,7 +33,7 @@ namespace DS4WindowsTests
             ResetExtrasObservables();
         }
 
-        /// <summary>Phase8-Step7 7.8e: 新経路の Extras が使う窓口（振動は記録、ライトバーと感度は本番の窓口へ転送）。<see cref="PublishControlsOnly"/> が使う。</summary>
+        /// <summary>新経路の Extras が使う窓口（振動は記録、ライトバーと感度は本番の窓口へ転送）。<see cref="PublishControlsOnly"/> が使う。</summary>
         public RecordingControlExtrasPort ExtrasPort { get; }
 
         public Mapping Mapping { get; }
@@ -67,7 +67,7 @@ namespace DS4WindowsTests
             return dcs;
         }
 
-        /// <summary>Phase10-Step4 W4: ボタンの割り当てを、SA 専用の種別（型のある項目）にする。</summary>
+        /// <summary>ボタンの割り当てを、SA 専用の種別（型のある項目）にする。</summary>
         public DS4ControlSettings MapSpecial(DS4Controls control, ControlSpecialItem item)
         {
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
@@ -78,13 +78,13 @@ namespace DS4WindowsTests
             return dcs;
         }
 
-        /// <summary>Phase10-Step4 W4: 指定のビルダー（記録用の窓口つき）で組み立てた束縛を、登録簿へ差し替える。</summary>
+        /// <summary>指定のビルダー（記録用の窓口つき）で組み立てた束縛を、登録簿へ差し替える。</summary>
         public void PublishWith(IControlBindingBuilder builder)
         {
             TestHost.GetService<IActionRegistry>().Replace(Device, builder.Build(Device));
         }
 
-        /// <summary>Phase8-Step7 7.8e: ボタンに Extras（振動・ライトバー・感度の 9 個の値）だけを付ける（通常の割り当ては Default）。</summary>
+        /// <summary>ボタンに Extras（振動・ライトバー・感度の 9 個の値）だけを付ける（通常の割り当ては Default）。</summary>
         public DS4ControlSettings MapExtras(DS4Controls control, string extras)
         {
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
@@ -94,7 +94,7 @@ namespace DS4WindowsTests
             return dcs;
         }
 
-        // ---- Phase8-Step7 7.8e: Extras の観察窓口（旧経路が書く、公開の状態・静的配列） ----
+        // ---- Extras の観察窓口 ----
         public bool ForceLight => TestLightbar.State.forcelight[Device];
         public DS4Color ForcedColor => TestLightbar.State.forcedColor[Device];
         public byte ForcedFlash => TestLightbar.State.forcedFlash[Device];
@@ -113,7 +113,7 @@ namespace DS4WindowsTests
 
         }
 
-        /// <summary>Phase8-Step7 7.8f: ボタンの割り当てを Button（X360 のボタン・軸・トリガー、マウスなど）にする（通常。Extras なし）。</summary>
+        /// <summary>ボタンの割り当てを Button（X360 のボタン・軸・トリガー、マウスなど）にする（通常。Extras なし）。</summary>
         public DS4ControlSettings MapButton(DS4Controls control, X360Controls target, DS4KeyType keyType = DS4KeyType.None)
         {
             DS4ControlSettings dcs = TestGlobals.Store.GetDS4CSetting(Device, control);
@@ -139,7 +139,7 @@ namespace DS4WindowsTests
         }
 
         /// <summary>
-        /// Phase8-Step7 7.8e: Controls タブの束縛だけを、記録用の窓口つきのビルダーで組み立てて登録する（SA タブの束縛は含めない）。
+        /// Controls タブの束縛だけを、記録用の窓口つきのビルダーで組み立てて登録する（SA タブの束縛は含めない）。
         /// Extras の振動を、新経路でも観察するため（本番の窓口は、実機がないと振動が見えない）。
         /// </summary>
         public void PublishControlsOnly()

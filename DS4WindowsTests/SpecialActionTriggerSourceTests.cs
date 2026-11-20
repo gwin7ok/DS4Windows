@@ -4,7 +4,7 @@ using DS4Windows.UI.ViewModels;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step2 W1（Phase10-Step2-Plan.md §3.1・§5）: SA のモードのトリガーの供給元（<see cref="SpecialActionTriggerSource"/>）。
+    /// SA のモードのトリガーの供給元（<see cref="SpecialActionTriggerSource"/>）。
     /// 従来の <c>SpecialActEditorViewModel</c> の、トリガーのリストと「トリガーが 1 つ以上」の検証と同じ。
     /// </summary>
     public class SpecialActionTriggerSourceTests

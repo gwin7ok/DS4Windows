@@ -10,7 +10,7 @@ using Button = System.Windows.Controls.Button;
 namespace DS4Windows.UI
 {
     /// <summary>
-    /// Phase8-Step4b W10（Phase8-Step4b-Plan.md §3.4、Q7＝A）: プロファイル編集画面のホバー表示用の表（ボタンごとの画像・位置・割り当て一覧の番号）を組み立てる関数。
+    /// プロファイル編集画面のホバー表示用の表（ボタンごとの画像・位置・割り当て一覧の番号）を組み立てる関数。
     /// <c>ProfileEditor.xaml.cs</c> から移したもの（同じ部分クラス）。ボタンごとの違いは、下の表（配列）に 1 行ずつ書く。
     /// 表そのものの保持用のフィールド（<c>hoverImages</c>／<c>hoverLocations</c>／<c>hoverIndexes</c>／<c>reverseHoverIndexes</c>）と呼び出しは、<c>ProfileEditor.xaml.cs</c> に残る。
     /// </summary>

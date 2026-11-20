@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DS4Windows.UI.ViewModels
 {
     /// <summary>
-    /// Phase10-Step2 W3（Phase10-Step2-Plan.md §3.3）: Controls のモードのトリガーの供給元。割り当てを編集する対象のボタン 1 つに固定で、
+    /// Controls のモードのトリガーの供給元。割り当てを編集する対象のボタン 1 つに固定で、
     /// ユーザーは、選んで変えられない（<see cref="CanChange"/> は偽）。SA のモード（<see cref="SpecialActionTriggerSource"/>）と違い、
     /// 解除トリガーはない。
     /// </summary>

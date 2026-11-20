@@ -36,7 +36,7 @@ namespace DS4Windows.UI.ViewModels
         private string tooltipText = "DS4Windows";
         private string iconSource;
         public const string ballonTitle = "DS4Windows";
-        // Phase6-Step9-2: static の初期化子（Global.exeversion）から、コンストラクタで解決するインスタンスの値へ変更
+        // static の初期化子（Global.exeversion）から、コンストラクタで解決するインスタンスの値へ変更
         // （利用者は PopulateToolText のみ。静的初期化から Global を呼ばない）。
         private readonly string trayTitle;
         private readonly List<TrayMenuItemModel> menuItems = new List<TrayMenuItemModel>();
@@ -113,7 +113,7 @@ namespace DS4Windows.UI.ViewModels
         {
             ArgumentNullException.ThrowIfNull(dispatcher);
             this.uiDispatcher = dispatcher;
-            // Phase6-Step9-2: 依存はすべて必須引数（Pure DI。決定1＝S9-A）
+            // 依存はすべて必須引数（Pure DI。決定1＝S9-A）
             ArgumentNullException.ThrowIfNull(appearanceSettings);
             this.appearanceSettings = appearanceSettings;
             ArgumentNullException.ThrowIfNull(profileRepository);
@@ -125,7 +125,7 @@ namespace DS4Windows.UI.ViewModels
             this.profileListHolder = profileListHolder;
             this.slots = slots;
             ArgumentNullException.ThrowIfNull(lifecycle);
-            this.lifecycle = lifecycle;   // Phase13-Step9: 旧 ControlService.running の転送
+            this.lifecycle = lifecycle;   // 旧 ControlService.running の転送
             trayTitle = $"DS4Windows v{environmentService.ApplicationVersion}";
             iconSource = TrayIconResources.iconChoiceResources[appearanceSettings.UseIconChoice];
             appearanceSettings.BatteryChanged += UpdateTrayBattery;

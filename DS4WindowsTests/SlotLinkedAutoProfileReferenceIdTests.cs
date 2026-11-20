@@ -12,7 +12,7 @@ using DS4Windows.Core.Settings;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase10-Step4d W4（Phase10-Step4d-Plan.md §3.2・§4 W4）: スロットの選択（<c>Profiles.xml</c> の Controller1〜8）、リンクプロファイル（<c>LinkedProfiles.xml</c>）、
+    /// スロットの選択（<c>Profiles.xml</c> の Controller1〜8）、リンクプロファイル（<c>LinkedProfiles.xml</c>）、
     /// 自動プロファイル（<c>Auto Profiles.xml</c>）の参照を、ID を主・名前を併記にする。読み込みでは、ID が見つかれば現在の名前に引き直し（ID が勝つ）、
     /// ない・見つからないときは名前のまま。実行時の内部（<c>ProfilePath</c> ほか）は名前のまま。
     /// </summary>

@@ -3,7 +3,7 @@
 namespace DS4Windows.Core.Platform
 {
     /// <summary>
-    /// Phase12-Step2 2b-1: ウィンドウの「対象の指定」（実行ファイルのパスとウィンドウタイトル）と、その照合の規則。
+    /// ウィンドウの「対象の指定」（実行ファイルのパスとウィンドウタイトル）と、その照合の規則。
     /// Auto-Profile の <c>AutoProfileEntity</c> が持っていた規則を、そのまま取り出した部品（動作は変えない）。
     /// プロファイルの自動切替（前面ウィンドウとの照合）と、ウィンドウをフォーカスする割り当て（全ウィンドウからの探索）が、同じ規則で対象を特定するために共有する。
     /// <para>
@@ -11,7 +11,7 @@ namespace DS4Windows.Core.Platform
     /// 先頭 <c>*</c>＝部分一致。パスは小文字化し <c>/</c> を <c>\</c> にそろえる。照合の入力（<c>searchPath</c>・<c>searchTitle</c>）は、
     /// 呼び出し側が小文字にそろえて渡す（<c>IProcessInspector.GetForegroundProcessInfo</c> と同じ約束）。
     /// </para>
-    /// 検索語は、毎秒の照合で文字列を作り直さないよう、設定時に小文字化・記号の除去を済ませておく（旧実装から継承）。
+    /// 検索語は、毎秒の照合で文字列を作り直さないよう、設定時に小文字化・記号の除去を済ませておく。
     /// </summary>
     public class WindowTargetMatcher
     {

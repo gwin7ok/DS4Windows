@@ -8,7 +8,7 @@ using DS4Windows.Core.Settings;
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
-    /// Phase8-Step7 7.4-W2（Q1＝A）: 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Program の分岐が出していたログ
+    /// 統一ディスパッチ（エンジン）から使うときは、旧 <c>MapCustomAction</c> の Program の分岐が出していたログ
     /// （Trace の立ち上がり 4 行、Debug の「SpecialAction Program: …」）を、同じ文言・順序で出す。
     /// 旧経路のアダプター（<c>LaunchProcessActionAdapter</c>）は、<c>Mapping</c> が同じログを出すため、このログを出さない（添字つきのコンストラクターを使ったときだけ出す）。
     /// </summary>
@@ -33,7 +33,7 @@ namespace DS4Windows.Processing.Actions
         {
             this.sa = sa;
             ArgumentNullException.ThrowIfNull(launcher);
-            this._launcher = launcher; // Phase6-Step10-4-4: 必須の依存
+            this._launcher = launcher; // 必須の依存
         }
 
         public string Id => sa?.name ?? "LaunchProcess";
@@ -70,7 +70,7 @@ namespace DS4Windows.Processing.Actions
 
                 if (sa == null || string.IsNullOrWhiteSpace(sa.details)) return;
 
-                // Phase6-Step9b-3（F06）: DI 移行前（Mapping.cs の specActionLaunchProc、79170f73 の直前）の仕様へ戻した。
+                // DI 移行前（Mapping.cs の specActionLaunchProc、79170f73 の直前）の仕様へ戻した。
                 // - extra に "$hidden"（大文字小文字不問）を含むときだけ、その語を 1 回取り除き、ウィンドウを非表示にして起動する。
                 //   .bat/.cmd のときは %COMSPEC% /C "<details>" <引数> で起動する。
                 // - それ以外は、OS の既定動作（UseShellExecute = true）で details を起動し、extra をそのまま引数に渡す

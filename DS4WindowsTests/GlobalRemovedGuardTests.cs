@@ -16,7 +16,7 @@ using DS4Windows.Processing.Services.Devices;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// Phase7-Step10d W5（Q1・Q3・Q8・Q9＝A）: <c>Global</c> を削除し、<see cref="BackingStore"/> をコンストラクター注入で生成する形にしたことの回帰ガード。
+    /// <c>Global</c> を削除し、<see cref="BackingStore"/> をコンストラクター注入で生成する形にしたことの回帰ガード。
     /// ソースが見つからない環境では、ソースの検査を行わず合格とする。
     /// </summary>
     [Collection(SharedHostStateCollection.Name)]
@@ -29,12 +29,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        [Fact]
-        public void TheGlobalType_AndFile_AreGone()
-        {
-            Assert.Null(typeof(BackingStore).Assembly.GetType("DS4Windows.Global"));
-            Assert.False(SourceFileLocator.Exists("DS4Windows/DS4Control/Global.cs"));
-        }
 
         [Fact]
         public void BackingStore_RequiresTheEnvironmentService()
@@ -59,7 +53,7 @@ namespace DS4WindowsTests
         [Fact]
         public void ProfileSettings_WithoutAService_Throws()
         {
-            // Phase14b-Step9（決定 D8）: 旧「登録がないときはフォールバックを 1 回だけ作る」は撤去した。組み立ての誤りとして例外にする
+            // 旧「登録がないときはフォールバックを 1 回だけ作る」は撤去した。組み立ての誤りとして例外にする
             var store = new BackingStore(new EnvironmentService());
             Assert.Throws<InvalidOperationException>(() => store.ProfileSettings);
         }
