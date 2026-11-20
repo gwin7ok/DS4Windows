@@ -43,16 +43,17 @@ namespace DS4WindowsTests
         [Fact]
         public void TheArrays_AreOwnedByTheDeviceTypeState_AndTheServiceForwardsThem()
         {
-            // 配列の持ち主は OutputSlotService から IOutputDeviceTypeState（OutputDeviceTypeState）へ移った
-            string state = SourceText.ReadCode("DS4Windows/Output/Services/OutputDeviceTypeState.cs");
-            string service = SourceText.ReadCode("DS4Windows/Output/Services/OutputSlotService.cs");
-            if (state == null || service == null) return;
+            // 配列の持ち主は IOutputDeviceTypeState。一時の種別は既定の種別、実行時の種別は None で埋める。サービスは同じ配列を返すだけ
+            var state = new DS4Windows.Output.Services.OutputDeviceTypeState();
+            Assert.Equal(DS4Windows.Core.Settings.ControllerLimits.TestProfileItemCount, state.OutDevTypeTemp.Length);
+            Assert.All(state.OutDevTypeTemp, t => Assert.Equal(DS4Windows.Core.Model.OutContTypeInfo.DefaultType, t));
+            Assert.All(state.ActiveOutDevType, t => Assert.Equal(DS4Windows.Core.Model.OutContType.None, t));
 
-            Assert.Matches(@"OutContType\[\]\s+OutDevTypeTemp\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContTypeInfo\.DefaultType\)", state);
-            Assert.Matches(@"OutContType\[\]\s+ActiveOutDevType\s*\{\s*get;\s*\}\s*=\s*CreateFilled\(OutContType\.None\)", state);
-            Assert.DoesNotContain("CreateFilled", service);
-            Assert.Contains("OutContType[] OutDevTypeTemp => _types.OutDevTypeTemp;", service);
-            Assert.Contains("OutContType[] ActiveOutDevType => _types.ActiveOutDevType;", service);
+            var service = new DS4Windows.Output.Services.OutputSlotService(
+                RecordingProxy.Create<DS4Windows.Processing.Abstractions.IVirtualPadService>(),
+                RecordingProxy.Create<DS4Windows.Output.Abstractions.IOutputSlotStore>(), state);
+            Assert.Same(state.OutDevTypeTemp, service.OutDevTypeTemp);
+            Assert.Same(state.ActiveOutDevType, service.ActiveOutDevType);
         }
 
         [Fact]

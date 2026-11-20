@@ -243,27 +243,35 @@ namespace DS4WindowsTests
         [Fact]
         public void EveryTypeEditor_PassesTheActionsIdToTheRepository()
         {
-            // 8 か所の保存の呼び出しが、actionId: action.id を渡す（名前の変更で ID が変わらないようにするため）
-            string folder = SourceFileLocator.Find("DS4Windows/UI/ViewModels/SpecialActions/MacroViewModel.cs");
-            if (folder == null) return;
+            // 名前の変更で ID が変わらないよう、各種別の入力は、保存のとき、SA の ID をリポジトリへ渡す
+            var pathService = new DS4Windows.Core.Platform.PathService();
+            var profiles = new DS4Windows.Core.Profiles.ProfileList(pathService);
+            profiles.ProfileListCol.Add(new DS4Windows.Core.Profiles.ProfileEntity(pathService) { Name = "ProfileA" });
 
-            string dir = Path.GetDirectoryName(folder);
-            int calls = 0, withId = 0;
-            foreach (string file in Directory.GetFiles(dir, "*.cs"))
+            var factories = new Dictionary<string, Func<DS4Windows.Core.Abstractions.ISpecialActionRepository, DS4Windows.UI.ViewModels.SpecialActions.IActionTypeEditor>>
             {
-                string text = File.ReadAllText(file);
-                int index = 0;
-                while ((index = text.IndexOf("specialActionRepository.SaveAction(", index, StringComparison.Ordinal)) >= 0)
-                {
-                    calls++;
-                    int end = text.IndexOf(");", index, StringComparison.Ordinal);
-                    if (text.Substring(index, end - index).Contains("actionId: action.id")) withId++;
-                    index = end;
-                }
-            }
+                ["CheckBattery"] = r => new DS4Windows.UI.ViewModels.SpecialActions.CheckBatteryViewModel(TestLightbar.State, r, new DS4Windows.Core.Platform.EnvironmentService()),
+                ["FocusWindow"] = r => new DS4Windows.UI.ViewModels.SpecialActions.FocusWindowViewModel(r),
+                ["LaunchProgram"] = r => new DS4Windows.UI.ViewModels.SpecialActions.LaunchProgramViewModel(r),
+                ["LoadProfile"] = r => new DS4Windows.UI.ViewModels.SpecialActions.LoadProfileViewModel(profiles, r) { ProfileIndex = 1 },
+                ["Macro"] = r => new DS4Windows.UI.ViewModels.SpecialActions.MacroViewModel(r),
+                ["MultiAct"] = r => new DS4Windows.UI.ViewModels.SpecialActions.MultiActButtonViewModel(r),
+                ["PressKey"] = r => new DS4Windows.UI.ViewModels.SpecialActions.PressKeyViewModel(r, TestRepositoryFactory.CreateProfileSettingsService(), TestRepositoryFactory.CreateOutputSlotService()),
+                ["Hold"] = r => new DS4Windows.UI.ViewModels.SpecialActions.SpecialActionViewModel(5, r),
+            };
 
-            Assert.Equal(9, calls);
-            Assert.Equal(calls, withId);
+            foreach (var pair in factories)
+            {
+                var repo = DS4WindowsTests.RecordingProxy.Create<DS4Windows.Core.Abstractions.ISpecialActionRepository>();
+                var editor = pair.Value(repo);
+                var action = new SpecialAction("N", "Cross", "Key", "65");
+                editor.SaveAction(action, edit: false);
+
+                var saves = DS4WindowsTests.RecordingProxy.Of(repo).ArgsOf("SaveAction").ToList();
+                Assert.True(saves.Count == 1, pair.Key + " の保存が 1 回でない");
+                object[] args = saves[0];
+                Assert.True(action.id == (string)args[7], pair.Key + " が、SA の ID を渡していない");
+            }
         }
     }
 }

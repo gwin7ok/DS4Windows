@@ -210,13 +210,25 @@ namespace DS4WindowsTests
                 Assert.DoesNotContain("AttachUnboundOutDev(", text);
                 Assert.DoesNotContain("DetachUnboundOutDev(", text);
             }
+        }
 
-            string vm = SourceText.ReadCode("DS4Windows/UI/ViewModels/CurrentOutDeviceViewModel.cs");
-            if (vm != null)
-            {
-                Assert.Contains("outputSlotService.PluginSlot(", vm);
-                Assert.Contains("outputSlotService.UnplugSlot(", vm);
-            }
+        [Fact]
+        public void TheOutputSlotViewModel_PlugsAndUnplugsThroughTheOutputSlotService()
+        {
+            // 抜き差しの要求は、サービスの正式な入口へ、スロット番号（と種別）を渡して伝わる
+            var service = RecordingProxy.Create<DS4Windows.Processing.Abstractions.IOutputSlotService>();
+            var slot = RecordingProxy.Create<DS4Windows.Processing.Abstractions.IOutputSlotView>();
+            RecordingProxy.Of(slot).Returns["get_CurrentType"] = DS4Windows.Core.Model.OutContType.DS4;
+            RecordingProxy.Of(service).Returns["get_SlotViews"] = new List<DS4Windows.Processing.Abstractions.IOutputSlotView> { slot };
+
+            var vm = new DS4Windows.UI.ViewModels.CurrentOutDeviceViewModel(service);
+            var entry = vm.SlotDeviceEntries[0];
+            entry.RequestPlugin();
+            entry.RequestUnplug();
+
+            var recorder = RecordingProxy.Of(service);
+            Assert.Equal(new object[] { 0, DS4Windows.Core.Model.OutContType.DS4 }, recorder.ArgsOf("PluginSlot").Single());
+            Assert.Equal(new object[] { 0 }, recorder.ArgsOf("UnplugSlot").Single());
         }
 
         [Fact]
