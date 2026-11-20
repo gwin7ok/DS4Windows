@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Xml.Serialization;
 using System.Globalization;
 using DS4Windows.Core.Settings;

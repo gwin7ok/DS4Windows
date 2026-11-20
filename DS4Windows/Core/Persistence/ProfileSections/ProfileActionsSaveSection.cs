@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Xml;
 using static DS4Windows.Core.Utilities.Util;
 using DS4Windows.Core.Settings;
