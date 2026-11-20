@@ -101,7 +101,7 @@ namespace DS4Windows.Processing.Services.Slots
 
             bool hasExtras = !dcs.IsExtrasEmpty(dcs.extras);
             ExtrasBindingValues extrasValues = default;
-            if (hasExtras && (!extras || !TryInterpretExtras(dcs.extras, out extrasValues))) return;
+            if (hasExtras && (!extras || !ControlAssignmentInterpreter.TryInterpretExtras(dcs.extras, out extrasValues))) return;
 
             switch (dcs.actionType)
             {
@@ -145,7 +145,7 @@ namespace DS4Windows.Processing.Services.Slots
                         bool toggle = dcs.keyType.HasFlag(DS4KeyType.Toggle);
                         if (toggle && !mice) break;
 
-                        if (TryInterpretMouse(dcs, out X360Controls mouseTarget))
+                        if (ControlAssignmentInterpreter.TryInterpretMouse(dcs, out X360Controls mouseTarget))
                         {
                             if (!mice) break;
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
@@ -163,7 +163,7 @@ namespace DS4Windows.Processing.Services.Slots
 
                             AddMouse(device, dcs, mouseTarget, toggle, result);
                         }
-                        else if (TryInterpretAnalogMouse(dcs, out X360Controls analogTarget))
+                        else if (ControlAssignmentInterpreter.TryInterpretAnalogMouse(dcs, out X360Controls analogTarget))
                         {
                             if (!analogMice) break;
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
@@ -181,7 +181,7 @@ namespace DS4Windows.Processing.Services.Slots
 
                             AddAnalogMouse(device, dcs, analogTarget, toggle, result);
                         }
-                        else if (pads && TryInterpretPadTarget(dcs, out PadBindingValues pad, out bool eraseOnly))
+                        else if (pads && ControlAssignmentInterpreter.TryInterpretPadTarget(dcs, out PadBindingValues pad, out bool eraseOnly))
                         {
                             if (hasExtras) AddExtras(device, dcs, extrasValues, result);
 

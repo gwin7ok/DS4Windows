@@ -56,42 +56,42 @@ namespace DS4WindowsTests
         [Fact]
         public void TryInterpretPad_ClassifiesTheTarget_ByTheReverseMappedControl()
         {
-            Assert.True(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.B), out PadBindingValues button, out bool erase));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.B), out PadBindingValues button, out bool erase));
             Assert.False(erase);
             Assert.Equal(PadTargetKind.Button, button.Kind);
             Assert.Equal(DS4Controls.Circle, button.Output);   // B の標準の割り当ては Circle
             Assert.Equal(DS4Controls.Cross, button.Source);
 
-            Assert.True(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.LXPos), out PadBindingValues axis, out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.LXPos), out PadBindingValues axis, out _));
             Assert.Equal(PadTargetKind.Axis, axis.Kind);
             Assert.Equal(DS4Controls.LXPos, axis.Output);
 
-            Assert.True(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.LT), out PadBindingValues trigger, out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.LT), out PadBindingValues trigger, out _));
             Assert.Equal(PadTargetKind.Trigger, trigger.Kind);
             Assert.Equal(DS4Controls.L2, trigger.Output);
 
-            Assert.True(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.Start), out PadBindingValues start, out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.Start), out PadBindingValues start, out _));
             Assert.Equal(PadTargetKind.Button, start.Kind);
         }
 
         [Fact]
         public void TryInterpretPad_UnboundAndNone_OnlyErase()
         {
-            Assert.True(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.Unbound), out _, out bool unbound));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.Unbound), out _, out bool unbound));
             Assert.True(unbound);
-            Assert.True(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.None), out _, out bool none));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.None), out _, out bool none));
             Assert.True(none);
         }
 
         [Fact]
         public void TryInterpretPad_RejectsEverythingElse_SoTheLegacyPathKeepsHandlingIt()
         {
-            Assert.False(ControlBindingBuilder.TryInterpretPad(null, out _, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretPad(new DS4ControlSettings(DS4Controls.Cross), out _, out _));   // Default
+            Assert.False(ControlAssignmentInterpreter.TryInterpretPad(null, out _, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretPad(new DS4ControlSettings(DS4Controls.Cross), out _, out _));   // Default
 
             DS4ControlSettings key = Button(X360Controls.B);
             key.actionType = DS4ControlSettings.ActionType.Key;
-            Assert.False(ControlBindingBuilder.TryInterpretPad(key, out _, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretPad(key, out _, out _));
 
             foreach (X360Controls other in new[]
             {
@@ -99,10 +99,10 @@ namespace DS4WindowsTests
                 X360Controls.MouseUp, X360Controls.MouseRight,
             })
             {
-                Assert.False(ControlBindingBuilder.TryInterpretPad(Button(other), out _, out _), $"{other} は 7.8f-2・7.8f-3 の範囲");
+                Assert.False(ControlAssignmentInterpreter.TryInterpretPad(Button(other), out _, out _), $"{other} は 7.8f-2・7.8f-3 の範囲");
             }
 
-            Assert.False(ControlBindingBuilder.TryInterpretPad(Button(X360Controls.B, DS4KeyType.Toggle), out _, out _));   // Toggle は 7.8f-2
+            Assert.False(ControlAssignmentInterpreter.TryInterpretPad(Button(X360Controls.B, DS4KeyType.Toggle), out _, out _));   // Toggle は 7.8f-2
         }
 
         // ---- ビルダー ----

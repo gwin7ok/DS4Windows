@@ -8,20 +8,20 @@ namespace DS4Windows.Processing.Services.Slots
 {
     /// <summary>
     /// 読み込みの部品（Controls タブ側）。Controls のボタン 1 つの割り当て（<see cref="DS4ControlSettings"/>）のうち、
-    /// SA と共通の種別（現在は SA 専用の種別 5 つ［<see cref="ControlBindingBuilder.TryInterpretSpecial"/>］）を、共通の割り当て定義（<see cref="AssignmentDefinition"/>）にする。
+    /// SA と共通の種別（現在は SA 専用の種別 5 つ［<see cref="ControlAssignmentInterpreter.TryInterpretSpecial"/>］）を、共通の割り当て定義（<see cref="AssignmentDefinition"/>）にする。
     /// Key と Macro は I4b で追加した（<see cref="TryReadKey"/>、<see cref="TryReadMacro"/>）。Controls 固有の種別（パッドへの出力、マウス、アナログマウス、素通し）は、定義にしない（2026-10-21 ユーザー決定）。
     /// </summary>
     public static class ControlsAssignmentReader
     {
         /// <summary>
         /// 定義と、実行時の状態の入れ物（合成の <see cref="SpecialAction"/>。名前は <c>Synthetic_Special_{device}_{control}</c>）を作る。
-        /// 共通の種別の割り当てでないとき（<see cref="ControlBindingBuilder.TryInterpretSpecial"/> が偽）は偽。
+        /// 共通の種別の割り当てでないとき（<see cref="ControlAssignmentInterpreter.TryInterpretSpecial"/> が偽）は偽。
         /// </summary>
         public static bool TryReadSpecial(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
-            if (!ControlBindingBuilder.TryInterpretSpecial(dcs, out ControlSpecialItem? item)) return false;
+            if (!ControlAssignmentInterpreter.TryInterpretSpecial(dcs, out ControlSpecialItem? item)) return false;
 
             string name = $"Synthetic_Special_{device}_{(int)dcs.control}";
             var triggers = new List<DS4Controls> { dcs.control };
@@ -33,13 +33,13 @@ namespace DS4Windows.Processing.Services.Slots
         /// <summary>
         /// Key の割り当てを定義にする。解釈済みの値（別名キー、ScanCode、Toggle）は定義の <see cref="AssignmentDefinition.Key"/> が運ぶ。
         /// 実行時の状態の入れ物は、旧経路の合成と同じ名前・種別（<c>Synthetic_Key_{device}_{control}</c>。状態は名前で引かれる）。
-        /// Key の新経路の条件（<see cref="ControlBindingBuilder.TryInterpretKey"/>）を満たさないときは偽。
+        /// Key の新経路の条件（<see cref="ControlAssignmentInterpreter.TryInterpretKey"/>）を満たさないときは偽。
         /// </summary>
         public static bool TryReadKey(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
-            if (!ControlBindingBuilder.TryInterpretKey(dcs, out KeyBindingValues values)) return false;
+            if (!ControlAssignmentInterpreter.TryInterpretKey(dcs, out KeyBindingValues values)) return false;
 
             string name = $"Synthetic_Key_{device}_{(int)dcs.control}";
             var identity = new SpecialAction(name, "Synthetic", "Key", "Key", 0, string.Empty);
@@ -68,7 +68,7 @@ namespace DS4Windows.Processing.Services.Slots
             definition = null;
             source = null;
             if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
-            if (!ControlBindingBuilder.TryInterpretPadTarget(dcs, out _, out bool eraseOnly) || eraseOnly) return false;
+            if (!ControlAssignmentInterpreter.TryInterpretPadTarget(dcs, out _, out bool eraseOnly) || eraseOnly) return false;
 
             return TryBuildButtonToggle(device, dcs, "Synthetic_Pad", out definition, out source);
         }
@@ -82,7 +82,7 @@ namespace DS4Windows.Processing.Services.Slots
             definition = null;
             source = null;
             if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
-            if (!ControlBindingBuilder.TryInterpretMouse(dcs, out _)) return false;
+            if (!ControlAssignmentInterpreter.TryInterpretMouse(dcs, out _)) return false;
 
             return TryBuildButtonToggle(device, dcs, "Synthetic_Mouse", out definition, out source);
         }
@@ -96,7 +96,7 @@ namespace DS4Windows.Processing.Services.Slots
             definition = null;
             source = null;
             if (dcs == null || !dcs.keyType.HasFlag(DS4KeyType.Toggle)) return false;
-            if (!ControlBindingBuilder.TryInterpretAnalogMouse(dcs, out _)) return false;
+            if (!ControlAssignmentInterpreter.TryInterpretAnalogMouse(dcs, out _)) return false;
 
             return TryBuildButtonToggle(device, dcs, "Synthetic_AnalogMouse", out definition, out source);
         }
@@ -120,13 +120,13 @@ namespace DS4Windows.Processing.Services.Slots
         /// <summary>
         /// Macro の割り当てを定義にする。手順と keyType は定義へ、「Run on trigger release」などの 3 項目（型のある項目）は <see cref="AssignmentDefinition.Item"/> へ。
         /// 実行時の状態の入れ物は、旧経路の合成と同じ名前（<c>Synthetic_Macro_{device}_{control}</c>。再生のキューの識別子は、ボタンごとに別）。
-        /// Macro の新経路の条件（<see cref="ControlBindingBuilder.TryInterpretMacro"/>）を満たさないときは偽。
+        /// Macro の新経路の条件（<see cref="ControlAssignmentInterpreter.TryInterpretMacro"/>）を満たさないときは偽。
         /// </summary>
         public static bool TryReadMacro(int device, DS4ControlSettings dcs, [NotNullWhen(true)] out AssignmentDefinition? definition, [NotNullWhen(true)] out SpecialAction? source)
         {
             definition = null;
             source = null;
-            if (!ControlBindingBuilder.TryInterpretMacro(dcs, out int[]? steps)) return false;
+            if (!ControlAssignmentInterpreter.TryInterpretMacro(dcs, out int[]? steps)) return false;
 
             string name = $"Synthetic_Macro_{device}_{(int)dcs.control}";
             var identity = new SpecialAction(name, "Synthetic", "Macro", string.Join("/", steps), 0, string.Empty);

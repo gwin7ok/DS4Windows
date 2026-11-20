@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TryInterpretExtras_ReadsTheNineValues()
         {
-            Assert.True(ControlBindingBuilder.TryInterpretExtras(Full, out ExtrasBindingValues v));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretExtras(Full, out ExtrasBindingValues v));
 
             Assert.Equal(100, v.HeavyRumble);
             Assert.Equal(50, v.LightRumble);
@@ -53,21 +53,21 @@ namespace DS4WindowsTests
         [Fact]
         public void TryInterpretExtras_TreatsUnreadableValuesAsZero_AndAcceptsMoreThanNine()
         {
-            Assert.True(ControlBindingBuilder.TryInterpretExtras("x,y,1,a,b,c,d,0,0", out ExtrasBindingValues v));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretExtras("x,y,1,a,b,c,d,0,0", out ExtrasBindingValues v));
             Assert.Equal(0, v.HeavyRumble);
             Assert.True(v.LightbarEnabled);
             Assert.Equal(0, v.Red);
 
-            Assert.True(ControlBindingBuilder.TryInterpretExtras("1,2,0,0,0,0,0,0,0,99", out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretExtras("1,2,0,0,0,0,0,0,0,99", out _));
         }
 
         [Fact]
         public void TryInterpretExtras_RejectsEmptyAndShortValues_SoTheLegacyPathKeepsHandlingThem()
         {
-            Assert.False(ControlBindingBuilder.TryInterpretExtras(null, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretExtras(string.Empty, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretExtras("0,0,0,0,0,0,0,0,0", out _));   // 空の Extras
-            Assert.False(ControlBindingBuilder.TryInterpretExtras("5,5,1", out _));                 // 9 個未満: 旧経路は途中で例外になる
+            Assert.False(ControlAssignmentInterpreter.TryInterpretExtras(null, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretExtras(string.Empty, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretExtras("0,0,0,0,0,0,0,0,0", out _));   // 空の Extras
+            Assert.False(ControlAssignmentInterpreter.TryInterpretExtras("5,5,1", out _));                 // 9 個未満: 旧経路は途中で例外になる
         }
 
         // ---- 出力 ----
@@ -86,7 +86,7 @@ namespace DS4WindowsTests
 
         private static ControlExtrasOutputAction Output(FakePort port, string extras = Full)
         {
-            Assert.True(ControlBindingBuilder.TryInterpretExtras(extras, out ExtrasBindingValues v));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretExtras(extras, out ExtrasBindingValues v));
             return new ControlExtrasOutputAction(new SpecialAction("Synthetic_Extras_t", "Synthetic", "Extras", "Extras", 0, string.Empty), v, port);
         }
 

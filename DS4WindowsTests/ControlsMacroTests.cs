@@ -43,25 +43,25 @@ namespace DS4WindowsTests
         [Fact]
         public void TryInterpretMacro_AcceptsAPlainMacro_AndRejectsEverythingElse()
         {
-            Assert.True(ControlBindingBuilder.TryInterpretMacro(Macro(Steps), out int[] steps));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretMacro(Macro(Steps), out int[] steps));
             Assert.Same(Steps, steps);
 
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(null, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(new DS4ControlSettings(DS4Controls.Cross), out _));   // Default
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMacro(null, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMacro(new DS4ControlSettings(DS4Controls.Cross), out _));   // Default
 
             DS4ControlSettings key = Macro(Steps);
             key.actionType = DS4ControlSettings.ActionType.Key;
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(key, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMacro(key, out _));
 
-            Assert.False(ControlBindingBuilder.TryInterpretMacro(Macro(null), out _));            // 手順そのものがない（null）ものは、所有しない
+            Assert.False(ControlAssignmentInterpreter.TryInterpretMacro(Macro(null), out _));            // 手順そのものがない（null）ものは、所有しない
             // 手順が空のマクロは、SA と同じく所有する（何も出力しない空のマクロを実行し、通常の出力を消す）
-            Assert.True(ControlBindingBuilder.TryInterpretMacro(Macro(new int[0]), out int[] emptySteps));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretMacro(Macro(new int[0]), out int[] emptySteps));
             Assert.Empty(emptySteps);
 
             // Extras は、通常の割り当てと直交する部品（7.8e）。Macro の解釈は、Extras の有無を見ない（Extras は別の束縛）
             DS4ControlSettings extras = Macro(Steps);
             extras.extras = "1,2,0,0,0,0,0,0,0";
-            Assert.True(ControlBindingBuilder.TryInterpretMacro(extras, out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretMacro(extras, out _));
 
         }
 

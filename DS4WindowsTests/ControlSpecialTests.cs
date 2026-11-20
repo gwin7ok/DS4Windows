@@ -184,15 +184,15 @@ namespace DS4WindowsTests
             foreach (SpecialAction.ActionTypeId type in Built)
             {
                 var dcs = new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(type) };
-                Assert.True(ControlBindingBuilder.TryInterpretSpecial(dcs, out ControlSpecialItem item));
+                Assert.True(ControlAssignmentInterpreter.TryInterpretSpecial(dcs, out ControlSpecialItem item));
                 Assert.Same(dcs.special, item);
             }
 
-            Assert.False(ControlBindingBuilder.TryInterpretSpecial(null, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretSpecial(new DS4ControlSettings(DS4Controls.Cross), out _));
-            Assert.False(ControlBindingBuilder.TryInterpretSpecial(
+            Assert.False(ControlAssignmentInterpreter.TryInterpretSpecial(null, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretSpecial(new DS4ControlSettings(DS4Controls.Cross), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretSpecial(
                 new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special }, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretSpecial(
+            Assert.False(ControlAssignmentInterpreter.TryInterpretSpecial(
                 new DS4ControlSettings(DS4Controls.Cross) { actionType = DS4ControlSettings.ActionType.Special, special = Item(SpecialAction.ActionTypeId.Macro) }, out _));   // Macro は Macro の割り当て（3 項目の入れ物）で扱う（Check Battery・Multi-action は、Phase10-Step6 W7・W8 相当で対象になった）
         }
 

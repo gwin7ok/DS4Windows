@@ -9,8 +9,8 @@ using DS4Windows.Processing.Actions;
 
 namespace DS4Windows.Processing.Services.Slots
 {
-    /// <summary>割り当て（DS4ControlSettings）の解釈（TryInterpret…）。</summary>
-    public partial class ControlBindingBuilder
+    /// <summary>割り当て（DS4ControlSettings）の解釈（TryInterpret…）。状態を持たない。<see cref="ControlBindingBuilder"/> と、割り当ての読み取りが使う。</summary>
+    public static class ControlAssignmentInterpreter
     {
         /// <summary>
         /// Macro の新経路の条件（Key と同じ形。Macro、手順あり、Extras なし）を満たすか。満たすとき、手順を返す。

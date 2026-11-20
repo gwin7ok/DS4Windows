@@ -32,6 +32,6 @@ namespace DS4Windows.Processing.Actions
 
         // SA に付けた Extras（Controls と同じ書式）。付けていない・読めないときは null
         private static ExtrasBindingValues? ReadExtras(SpecialAction sa)
-            => DS4Windows.Processing.Services.Slots.ControlBindingBuilder.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
+            => DS4Windows.Processing.Services.Slots.ControlAssignmentInterpreter.TryInterpretExtras(sa.outputExtras, out ExtrasBindingValues values) ? values : (ExtrasBindingValues?)null;
     }
 }

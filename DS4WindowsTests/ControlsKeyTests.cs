@@ -77,7 +77,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TryInterpretKey_AcceptsAPlainKey_AndInterpretsTheValues()
         {
-            Assert.True(ControlBindingBuilder.TryInterpretKey(Key(65, DS4KeyType.ScanCode | DS4KeyType.Toggle, 7), out KeyBindingValues v));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretKey(Key(65, DS4KeyType.ScanCode | DS4KeyType.Toggle, 7), out KeyBindingValues v));
 
             Assert.Equal((ushort)65, v.LogicalKey);
             Assert.True(v.ScanCode);
@@ -89,26 +89,26 @@ namespace DS4WindowsTests
         [Fact]
         public void TryInterpretKey_RejectsEverythingElse_SoTheLegacyPathKeepsHandlingIt()
         {
-            Assert.False(ControlBindingBuilder.TryInterpretKey(null, out _));
-            Assert.False(ControlBindingBuilder.TryInterpretKey(new DS4ControlSettings(DS4Controls.Cross), out _));   // Default
+            Assert.False(ControlAssignmentInterpreter.TryInterpretKey(null, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretKey(new DS4ControlSettings(DS4Controls.Cross), out _));   // Default
 
             DS4ControlSettings macro = Key();
             macro.actionType = DS4ControlSettings.ActionType.Macro;
-            Assert.False(ControlBindingBuilder.TryInterpretKey(macro, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretKey(macro, out _));
 
             DS4ControlSettings button = Key();
             button.actionType = DS4ControlSettings.ActionType.Button;
-            Assert.False(ControlBindingBuilder.TryInterpretKey(button, out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretKey(button, out _));
 
             // Extras は、通常の割り当てと直交する部品（7.8e）。Key の解釈は、Extras の有無を見ない（Extras は別の束縛。ビルダーが dcs 全体の所有を決める）
             DS4ControlSettings extras = Key();
             extras.extras = "1,2,0,0,0,0,0,0,0";
-            Assert.True(ControlBindingBuilder.TryInterpretKey(extras, out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretKey(extras, out _));
 
-            Assert.False(ControlBindingBuilder.TryInterpretKey(Key(-1), out _));      // 旧経路は範囲外で例外になる。新経路は所有しない
-            Assert.False(ControlBindingBuilder.TryInterpretKey(Key(70000), out _));
-            Assert.True(ControlBindingBuilder.TryInterpretKey(Key(0), out _));
-            Assert.True(ControlBindingBuilder.TryInterpretKey(Key(65535), out _));
+            Assert.False(ControlAssignmentInterpreter.TryInterpretKey(Key(-1), out _));      // 旧経路は範囲外で例外になる。新経路は所有しない
+            Assert.False(ControlAssignmentInterpreter.TryInterpretKey(Key(70000), out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretKey(Key(0), out _));
+            Assert.True(ControlAssignmentInterpreter.TryInterpretKey(Key(65535), out _));
         }
 
         // ---- ビルダー ----
