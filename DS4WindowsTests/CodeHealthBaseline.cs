@@ -46,6 +46,7 @@ namespace DS4WindowsTests
             "UI/Converters/",
             "UI/Services/",
             "UI/Controls/",
+            "UI/ViewModels/",
             "Input/",
             "Output/",
             "Processing/Abstractions/",

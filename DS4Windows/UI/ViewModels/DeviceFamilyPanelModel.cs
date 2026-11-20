@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;

@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.UI.ViewModels.SpecialActions
+﻿#nullable enable
+
+namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>
     /// FocusWindow の編集画面で選ぶ、ウインドウ名の一致方法。順番は、一覧（ComboBox）の項目の並びと同じ（添字で対応づける）。

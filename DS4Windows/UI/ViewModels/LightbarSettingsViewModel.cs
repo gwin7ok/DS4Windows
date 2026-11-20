@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;

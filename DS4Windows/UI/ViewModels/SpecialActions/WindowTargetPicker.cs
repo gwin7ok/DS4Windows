@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Abstractions;
 
 namespace DS4Windows.UI.ViewModels.SpecialActions
