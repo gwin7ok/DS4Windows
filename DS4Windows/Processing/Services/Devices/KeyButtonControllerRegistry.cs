@@ -94,11 +94,11 @@ namespace DS4Windows.Processing.Services.Devices
                         KeyButtonActionController? temp = null;
                         try
                         {
-                            temp = _factory.Create(device, sa, name);
+                            temp = _factory.Create(device, sa!, name);   // null のときの例外は、下の catch が拾い、後段で作り直す
                         }
                         catch (Exception caught) { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"[KeyButtonControllerRegistry:94] ignored {caught.GetType().Name}: {caught.Message}"); }
 
-                        inst = temp ?? new KeyButtonActionController(device, sa, _manager, _dispatcher, _time, name);
+                        inst = temp ?? new KeyButtonActionController(device, sa!, _manager, _dispatcher, _time, name);   // 同上（生成側の検査が拾う）
                         _controllers[dictKey] = inst;
                         if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"KBC DIAGNOSTIC: Created controller dictKey={dictKey} id={inst.InstanceId} assignedAction={(inst.AssignedActionName ?? "(null)")} device={device}");
                     }

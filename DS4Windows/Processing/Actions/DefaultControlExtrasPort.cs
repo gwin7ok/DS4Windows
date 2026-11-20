@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
@@ -43,7 +45,7 @@ namespace DS4Windows.Processing.Actions
             // 旧 ControlService.setRumble と同じ（スロット上限の検査 → コントローラーがいれば、ブースト・反転つきの振動）
             if (deviceIndex < _environment.ControllerSlotLimit)
             {
-                InputDeviceCore device = _devices.GetController(deviceIndex);
+                InputDeviceCore? device = _devices.GetController(deviceIndex);
                 if (device != null)
                     _rumble.SetDevRumble(device, heavy, light, deviceIndex);
             }
@@ -66,7 +68,7 @@ namespace DS4Windows.Processing.Actions
 
         public void TrySetTemporarySensitivity(int deviceIndex, int sensitivity)
         {
-            ButtonMouseInfo info = InfoOf(deviceIndex);
+            ButtonMouseInfo? info = InfoOf(deviceIndex);
             if (info == null) return;
 
             if (info.tempButtonSensitivity == -1)
@@ -78,7 +80,7 @@ namespace DS4Windows.Processing.Actions
 
         public void RestoreSensitivity(int deviceIndex)
         {
-            ButtonMouseInfo info = InfoOf(deviceIndex);
+            ButtonMouseInfo? info = InfoOf(deviceIndex);
             if (info == null) return;
 
             if (info.tempButtonSensitivity != -1)
@@ -88,7 +90,7 @@ namespace DS4Windows.Processing.Actions
             }
         }
 
-        private ButtonMouseInfo InfoOf(int deviceIndex)
+        private ButtonMouseInfo? InfoOf(int deviceIndex)
         {
             if (!InRange(deviceIndex)) return null;
             ButtonMouseInfo[] infos = _profileSettings.ButtonMouseInfos;

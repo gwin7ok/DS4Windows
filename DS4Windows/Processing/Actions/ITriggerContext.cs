@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Actions
@@ -13,6 +15,6 @@ namespace DS4Windows.Processing.Actions
         ushort LogicalValue { get; }
         uint NativeValue { get; }
         DateTime Timestamp { get; }
-        IVirtualKBM OutputHandler { get; }
+        IVirtualKBM? OutputHandler { get; }
     }
 }

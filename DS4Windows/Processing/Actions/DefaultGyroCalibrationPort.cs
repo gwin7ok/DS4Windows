@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
@@ -22,7 +24,7 @@ namespace DS4Windows.Processing.Actions
         public void ResetContinuousCalibration(int deviceIndex)
         {
             IDeviceStateAccessor accessor = _deviceStateAccessor;
-            InputDeviceCore d = accessor?.GetController(deviceIndex);
+            InputDeviceCore? d = accessor?.GetController(deviceIndex);
             if (d == null) return;
 
             d.SixAxis.ResetContinuousCalibration();

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -27,12 +29,12 @@ namespace DS4Windows.Processing.Actions
         private readonly uint _aliasKey;
         private readonly bool _suppressLogs;
         private readonly int _index;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
 
         // TODO(Phase8-Step8。docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8a-Plan.md Q4＝A): 設定の解釈（details → 論理キー、keyType → ScanCode／Toggle）を、この互換のコンストラクターが
         // ActionBindingBuilder.InterpretKey を呼んで行う。ビルダーは解釈済みの値を渡す下のコンストラクターを使う。既存のテストが使うため残す。Step8 で整理する。
         public KeyOutputAction(SpecialAction sa, IProfileSettingsService profileSettings, IManagedActionManager manager, IKeyButtonControllerRegistry controllers,
-            int index = -1, ISpecialActionRepository actionRepository = null)
+            int index = -1, ISpecialActionRepository? actionRepository = null)
             : this(Require(sa), ActionBindingBuilder.InterpretKey(sa), profileSettings, manager, controllers, index, actionRepository)
         {
         }
@@ -42,7 +44,7 @@ namespace DS4Windows.Processing.Actions
         /// （docs-forDIMG/MadeByAgent/Archive/Phase8-Step7-8a-Plan.md §2.2。識別用の SpecialAction を中立な型に替えるのは Step8 以降）。
         /// </summary>
         public KeyOutputAction(SpecialAction identity, KeyBindingValues values, IProfileSettingsService profileSettings, IManagedActionManager manager, IKeyButtonControllerRegistry controllers,
-            int index = -1, ISpecialActionRepository actionRepository = null)
+            int index = -1, ISpecialActionRepository? actionRepository = null)
         {
             _index = index;
             _actionRepository = actionRepository;
@@ -136,7 +138,7 @@ namespace DS4Windows.Processing.Actions
                 if (AppLogger.IsDebugEnabled) AppLogger.LogDebug($"SpecialAction KeyReleased: device={device}, name={_sa.name}, index={_index}, ActionEntries={ActionEntryCount}");
 
                 string released = "(unknown)";
-                ITriggerInput input = (ctx as IOutputContextInput)?.Input;
+                ITriggerInput? input = (ctx as IOutputContextInput)?.Input;
                 if (input != null)
                 {
                     if (_sa.trigger != null)

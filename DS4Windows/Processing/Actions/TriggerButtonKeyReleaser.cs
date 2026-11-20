@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
@@ -20,14 +22,14 @@ namespace DS4Windows.Processing.Actions
             _settings = settings;
         }
 
-        public void Release(SpecialAction sa, int device, IVirtualKBM kbm)
+        public void Release(SpecialAction sa, int device, IVirtualKBM? kbm)
         {
             if (kbm == null || sa == null || sa.trigger == null) return;
 
             for (int i = 0, count = sa.trigger.Count; i < count; i++)
             {
-                DS4ControlSettings dcs = _settings.GetDS4CSetting(device, sa.trigger[i]);
-                if (dcs.actionType == DS4ControlSettings.ActionType.Default) continue;
+                DS4ControlSettings? dcs = _settings.GetDS4CSetting(device, sa.trigger[i]);
+                if (dcs!.actionType == DS4ControlSettings.ActionType.Default) continue;   // トリガーのボタンは、実在するコントロール
 
                 if (dcs.actionType == DS4ControlSettings.ActionType.Key)
                 {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,10 +20,10 @@ namespace DS4Windows.Processing.Actions
         private readonly IProcessLauncher _launcher;
         private readonly bool _logTrigger;
         private readonly int _actionIndex;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
 
         /// <summary>エンジン用: 旧経路のログ（立ち上がり）も出す。<paramref name="actionIndex"/> と <paramref name="actionRepository"/> は、ログの「index」「ActionEntries」用。</summary>
-        public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher, int actionIndex, ISpecialActionRepository actionRepository)
+        public LaunchProcessAction(SpecialAction sa, IProcessLauncher launcher, int actionIndex, ISpecialActionRepository? actionRepository)
             : this(sa, launcher)
         {
             _logTrigger = true;
@@ -89,7 +91,7 @@ namespace DS4Windows.Processing.Actions
                     string ext = Path.GetExtension(path).ToLowerInvariant();
                     if (ext == ".bat" || ext == ".cmd")
                     {
-                        targetPath = Environment.GetEnvironmentVariable("COMSPEC");
+                        targetPath = Environment.GetEnvironmentVariable("COMSPEC") ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(targetPath)) targetPath = "cmd.exe";
                         arguments = "/C \"" + path + "\" " + cmdArgs;
                     }

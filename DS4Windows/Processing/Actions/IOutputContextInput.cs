@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>
@@ -6,6 +8,6 @@ namespace DS4Windows.Processing.Actions
     /// </summary>
     public interface IOutputContextInput
     {
-        ITriggerInput Input { get; }
+        ITriggerInput? Input { get; }
     }
 }

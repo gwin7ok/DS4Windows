@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 
@@ -8,9 +10,9 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
     public sealed class BatteryCheckOutputBuilder : ISpecialActionOutputBuilder
     {
         private readonly IBatteryCheckPort _batteryCheckPort;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
 
-        public BatteryCheckOutputBuilder(IBatteryCheckPort batteryCheckPort, ISpecialActionRepository actionRepository = null)
+        public BatteryCheckOutputBuilder(IBatteryCheckPort batteryCheckPort, ISpecialActionRepository? actionRepository = null)
         {
             ArgumentNullException.ThrowIfNull(batteryCheckPort);
             _batteryCheckPort = batteryCheckPort;
@@ -19,7 +21,7 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
 
         public SpecialAction.ActionTypeId Kind => SpecialAction.ActionTypeId.BatteryCheck;
 
-        public SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
+        public SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             AssignmentOrigin origin = definition.Origin;
             SpecialAction sa = source;

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 
@@ -12,7 +14,7 @@ namespace DS4Windows.Processing.Actions
     {
         private readonly List<IOutputAction> outputs = new List<IOutputAction>();
 
-        public KeyActionBinding(SpecialAction sa)
+        public KeyActionBinding(SpecialAction? sa)
         {
             Special = sa;
         }
@@ -22,15 +24,15 @@ namespace DS4Windows.Processing.Actions
             if (output != null) outputs.Add(output);
         }
 
-        public SpecialAction Special { get; }
+        public SpecialAction? Special { get; }
 
-        public IInputAction Input => null;
+        public IInputAction? Input => null;
 
         public IReadOnlyList<IOutputAction> Outputs => outputs.AsReadOnly();
 
         public BindingPolicy Policy => BindingPolicy.Default;
 
-        public SpecialAction Source => Special;
+        public SpecialAction? Source => Special;
 
         public int Index => -1;
     }

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -25,7 +27,7 @@ namespace DS4Windows.Processing.Actions
         private readonly int _deviceIndex;
         private readonly IBatteryCheckPort _port;
         private readonly int _actionIndex;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
 
         private bool _parsed;
         private bool _valid;
@@ -36,7 +38,7 @@ namespace DS4Windows.Processing.Actions
         private int _fadeTimer;
         private DS4Color _lastColor;
 
-        public BatteryCheckAction(SpecialAction sa, int deviceIndex, IBatteryCheckPort port, int actionIndex, ISpecialActionRepository actionRepository)
+        public BatteryCheckAction(SpecialAction sa, int deviceIndex, IBatteryCheckPort port, int actionIndex, ISpecialActionRepository? actionRepository)
         {
             ArgumentNullException.ThrowIfNull(sa);
             _sa = sa;
@@ -118,7 +120,7 @@ namespace DS4Windows.Processing.Actions
             if (_parsed) return;
             _parsed = true;
 
-            string[] dets = _sa.details.Split('|');
+            string[] dets = _sa.details!.Split('|');   // BatteryCheck は、詳細（秒数）を必ず持つ
             if (dets.Length == 1)
                 dets = _sa.details.Split(',');
 
@@ -134,7 +136,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 旧 MapCustomAction の BatteryCheck の分岐と同じ: LogSpecialActionTrace（Trace の 4 行）→ LogActionDoneCountOnTrigger("BatteryCheck")（Debug）
-        private void LogRising(IOutputContext ctx, int dev)
+        private void LogRising(IOutputContext? ctx, int dev)
         {
             try
             {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -22,13 +24,13 @@ namespace DS4Windows.Processing.Actions
         private readonly IProfileSettingsService _profileSettings;
         private readonly ISpecialActionOutputFactory _outputFactory;     // 種別ごとの出力アクション・方針の作り方（Controls タブの束縛を作る側と共有）
         private readonly AssignmentBindingBuilder _assignmentBuilder;   // 定義 → 束縛の組み立て（Controls タブ側と同じ部品）
-        private readonly IControlBindingBuilder _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
+        private readonly IControlBindingBuilder? _controlBuilder;         // Controls タブの束縛（7.8b）。省略時（テスト）は連結しない
 
         /// <param name="outputFactory">種別ごとの出力と方針の作り方（Controls タブの束縛を作る側と共有する）。窓口（ポート）の束ねは、この部品が持つ。</param>
         /// <param name="controlBuilder">Controls タブの束縛。省略時（テスト）は連結しない。</param>
         public ActionBindingBuilder(IProfileActionProvider profileActions, IProfileSettingsService profileSettings,
-            ISpecialActionOutputFactory outputFactory, IControlBindingBuilder controlBuilder = null,
-            IControlExtrasPort extrasPort = null)
+            ISpecialActionOutputFactory outputFactory, IControlBindingBuilder? controlBuilder = null,
+            IControlExtrasPort? extrasPort = null)
         {
             _controlBuilder = controlBuilder;
             ArgumentNullException.ThrowIfNull(profileActions);
@@ -45,7 +47,7 @@ namespace DS4Windows.Processing.Actions
             IReadOnlyList<IActionBinding> special = BuildSpecialActions(device);
 
             // Controls タブの束縛を、同じ一覧に連結する（Q5＝A。入力アクションの型で見分ける）。空なら、連結しない
-            IReadOnlyList<IActionBinding> controls = _controlBuilder?.Build(device);
+            IReadOnlyList<IActionBinding>? controls = _controlBuilder?.Build(device);
             if (controls == null || controls.Count == 0) return special;
 
             var all = new List<IActionBinding>(special.Count + controls.Count);
@@ -57,13 +59,13 @@ namespace DS4Windows.Processing.Actions
         private IReadOnlyList<IActionBinding> BuildSpecialActions(int device)
         {
             // 名前の一覧は、読込側が Clear→Add するリストの複製を使う（適用の途中で変わっても、この呼び出しの中では一貫させる）
-            IReadOnlyList<string> names = _profileActions.GetProfileActionNames(device);
+            IReadOnlyList<string>? names = _profileActions.GetProfileActionNames(device);
             if (names == null || names.Count == 0) return Array.Empty<IActionBinding>();
 
             var result = new List<IActionBinding>(names.Count);
             for (int i = 0; i < names.Count; i++)
             {
-                SpecialAction sa = _profileActions.GetProfileAction(device, names[i]);
+                SpecialAction? sa = _profileActions.GetProfileAction(device, names[i]);
                 if (sa == null) continue;   // 旧ループと同じ: 見つからない名前は飛ばす（警告ログは EmitMissingActionLogsForDevice が出す）
 
                 AddBindings(device, sa, _profileActions.GetProfileActionIndexOf(device, names[i]), result);
@@ -80,15 +82,15 @@ namespace DS4Windows.Processing.Actions
 
             // 種別ごとの出力アクションと方針は、共通の部品が作る（動作は変えない）。未対応の種別・窓口が未接続の種別は null
             // SA を読み込みの部品で定義にして、定義を受ける Create へ渡す（実行時の状態は、プロファイルの SpecialAction の実物が持つ）
-            AssignmentDefinition definition = SpecialActionAssignmentReader.Read(sa);
+            AssignmentDefinition? definition = SpecialActionAssignmentReader.Read(sa);
             if (definition == null) return;
 
             // 出力・方針・入力・包みは、共通の組み立て（AssignmentBindingBuilder）が行う。入力は SA 由来（複数ボタンの組み合わせ。MultiAction は独立した入力）
-            TriggerBinding binding = _assignmentBuilder.Build(device, definition, sa, index);
+            TriggerBinding? binding = _assignmentBuilder.Build(device, definition, sa, index);
             if (binding == null) return;
 
             // Extras は、SA の束縛が作れたときだけ（SA の束縛がなければ、Extras だけが効くことはない）
-            TriggerBinding extras = _assignmentBuilder.BuildExtras(device, definition, sa, binding.Policy);
+            TriggerBinding? extras = _assignmentBuilder.BuildExtras(device, definition, sa, binding.Policy);
             if (extras != null) result.Add(extras);
             result.Add(binding);
         }

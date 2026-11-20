@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Processing.Actions
@@ -10,6 +12,6 @@ namespace DS4Windows.Processing.Actions
     public interface IPendingUntriggerQuery
     {
         /// <summary>復帰待ちのスペシャルアクション（切替前の Profile）。合図がなければ null。</summary>
-        SpecialAction PendingUntriggerAction { get; }
+        SpecialAction? PendingUntriggerAction { get; }
     }
 }

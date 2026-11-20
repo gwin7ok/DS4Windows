@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Settings;
 
@@ -14,10 +16,10 @@ namespace DS4Windows.Processing.Actions
     {
         private readonly ISpecialActionOutputFactory _outputFactory;
 
-        private readonly IControlExtrasPort _extrasPort;   // SA に付ける Extras の実行。省略時（テスト）は、Extras の束縛を作らない
+        private readonly IControlExtrasPort? _extrasPort;   // SA に付ける Extras の実行。省略時（テスト）は、Extras の束縛を作らない
 
         public AssignmentBindingBuilder(ISpecialActionOutputFactory outputFactory,
-            IControlExtrasPort extrasPort = null)
+            IControlExtrasPort? extrasPort = null)
         {
             ArgumentNullException.ThrowIfNull(outputFactory);
             _outputFactory = outputFactory;
@@ -32,7 +34,7 @@ namespace DS4Windows.Processing.Actions
         /// トリガーのボタンの抑制・通常の出力の消去はしない（それは SA 本体の束縛が行う）。SA の束縛の<b>前</b>に並べる（Controls の Extras と同じ）。
         /// </summary>
         /// <param name="mainPolicy">同じ SA の本体の束縛の方針（Fresh-press ガードの規則を合わせる）。</param>
-        public TriggerBinding BuildExtras(int device, AssignmentDefinition definition, SpecialAction source, BindingPolicy mainPolicy)
+        public TriggerBinding? BuildExtras(int device, AssignmentDefinition definition, SpecialAction source, BindingPolicy mainPolicy)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -59,12 +61,12 @@ namespace DS4Windows.Processing.Actions
         /// </summary>
         /// <param name="source">実行時の状態の入れ物（SA 由来はプロファイルの実物、Controls 由来は合成のもの）。</param>
         /// <param name="index">SA の一覧での位置（Controls 由来は -1）。</param>
-        public TriggerBinding Build(int device, AssignmentDefinition definition, SpecialAction source, int index)
+        public TriggerBinding? Build(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
             if (source == null) throw new ArgumentNullException(nameof(source));
 
-            SpecialActionOutputs outputs = _outputFactory.Create(device, definition, source, index);
+            SpecialActionOutputs? outputs = _outputFactory.Create(device, definition, source, index);
             if (outputs == null) return null;
 
             return new TriggerBinding(CreateInput(definition, source, outputs), outputs.Outputs, outputs.Policy, source, index);

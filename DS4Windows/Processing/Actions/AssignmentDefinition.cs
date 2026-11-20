@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
@@ -32,9 +34,9 @@ namespace DS4Windows.Processing.Actions
         /// <param name="macro">Macro の手順（SA の <c>macro</c>）。Macro 以外は null。</param>
         /// <param name="keyType">Macro の再生の指定（ScanCode、Repeat。SA の <c>keyType</c>）。</param>
         public AssignmentDefinition(string id, string name, AssignmentOrigin origin, SpecialAction.ActionTypeId kind,
-            IReadOnlyList<DS4Controls> triggers, double holdSeconds = 0, ControlSpecialItem item = null,
+            IReadOnlyList<DS4Controls> triggers, double holdSeconds = 0, ControlSpecialItem? item = null,
             KeyBindingValues? key = null, ButtonBindingValues? button = null, ExtrasBindingValues? extras = null,
-            IReadOnlyList<int> macro = null, DS4KeyType keyType = DS4KeyType.None)
+            IReadOnlyList<int>? macro = null, DS4KeyType keyType = DS4KeyType.None)
         {
             if (triggers == null || triggers.Count == 0)
                 throw new ArgumentException("トリガーのボタンは 1 つ以上必要です。", nameof(triggers));
@@ -70,7 +72,7 @@ namespace DS4Windows.Processing.Actions
         public double HoldSeconds { get; }
 
         /// <summary>型のある項目。取り出すたびに独立した複製を返す（定義を不変に保つため）。</summary>
-        public ControlSpecialItem Item { get; }
+        public ControlSpecialItem? Item { get; }
 
         public KeyBindingValues? Key { get; }
 

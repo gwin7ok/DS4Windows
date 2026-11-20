@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -31,8 +33,8 @@ namespace DS4Windows.Processing.Actions
         /// Controls の Key と Macro だけを作る最小の部品（<see cref="ControlBindingBuilder"/> が、出力の部品を渡されなかったとき［テスト］に使う）。
         /// 他の種別（窓口が必要なもの）は、null を返す。
         /// </summary>
-        public static SpecialActionOutputFactory ForControlsKeyAndMacro(IProfileSettingsService profileSettings, IManagedActionManager manager,
-            IKeyButtonControllerRegistry controllers, IMacroPlayer macroPlayer)
+        public static SpecialActionOutputFactory ForControlsKeyAndMacro(IProfileSettingsService profileSettings, IManagedActionManager? manager,
+            IKeyButtonControllerRegistry? controllers, IMacroPlayer? macroPlayer)
         {
             if (profileSettings == null) throw new ArgumentNullException(nameof(profileSettings));
             var builders = new List<ISpecialActionOutputBuilder>();
@@ -42,13 +44,13 @@ namespace DS4Windows.Processing.Actions
             return new SpecialActionOutputFactory(builders);
         }
 
-        public SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
+        public SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
             if (source == null) throw new ArgumentNullException(nameof(source));
 
             // 設定の内容は定義から、実行時の状態の入れ物（出力アクションが受け取る SpecialAction）は source から。由来が Controls のときは、方針を Controls の形にする
-            return _builders.TryGetValue(definition.Kind, out ISpecialActionOutputBuilder builder)
+            return _builders.TryGetValue(definition.Kind, out ISpecialActionOutputBuilder? builder)
                 ? builder.Create(device, definition, source, index)
                 : null;
         }

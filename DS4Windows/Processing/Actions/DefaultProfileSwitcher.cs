@@ -1,3 +1,5 @@
+#nullable enable
+
 using DS4Windows.Core.Settings;
 using DS4Windows.Processing.Abstractions;
 
@@ -5,7 +7,7 @@ namespace DS4Windows.Processing.Actions
 {
     public class DefaultProfileSwitcher : IProfileSwitcher
     {
-        private readonly IProfileApplicationService profileAppService;
+        private readonly IProfileApplicationService? profileAppService;
 
         public DefaultProfileSwitcher()
         {

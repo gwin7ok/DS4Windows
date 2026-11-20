@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
@@ -17,11 +19,11 @@ namespace DS4Windows.Processing.Actions
         private readonly int _deviceIndex;
         private readonly IGyroCalibrationPort _port;
         private readonly int _actionIndex;
-        private readonly ISpecialActionRepository _actionRepository;
+        private readonly ISpecialActionRepository? _actionRepository;
 
         /// <param name="actionIndex">ログの「index」用。</param>
         /// <param name="actionRepository">ログの「ActionEntries」用。省略可（テスト）。</param>
-        public GyroCalibrateAction(SpecialAction sa, int deviceIndex, IGyroCalibrationPort port, int actionIndex, ISpecialActionRepository actionRepository)
+        public GyroCalibrateAction(SpecialAction sa, int deviceIndex, IGyroCalibrationPort port, int actionIndex, ISpecialActionRepository? actionRepository)
         {
             ArgumentNullException.ThrowIfNull(sa);
             _sa = sa;

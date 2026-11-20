@@ -1,4 +1,6 @@
-﻿using DS4Windows.Core.Settings;
+﻿#nullable enable
+
+using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Processing.Actions.OutputBuilders
 {
@@ -10,6 +12,6 @@ namespace DS4Windows.Processing.Actions.OutputBuilders
         SpecialAction.ActionTypeId Kind { get; }
 
         /// <summary>定義が、この種別に必要な値を持たないときは null（束縛を作らない）。</summary>
-        SpecialActionOutputs Create(int device, AssignmentDefinition definition, SpecialAction source, int index);
+        SpecialActionOutputs? Create(int device, AssignmentDefinition definition, SpecialAction source, int index);
     }
 }

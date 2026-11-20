@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,7 +21,7 @@ namespace DS4Windows.Processing.Actions
         private readonly int device;
         private readonly Mode mode;
         private readonly string assignedActionName;
-        private readonly SpecialAction assignedActionDef;
+        private readonly SpecialAction? assignedActionDef;
         private readonly IKeyController impl;
         private readonly Action<SpecialAction, int, bool, bool> toggledOnHandler;
         // 旧 静的 ActionManager の代わりに、トグル状態の管理役をコンストラクターで受ける
@@ -28,7 +30,7 @@ namespace DS4Windows.Processing.Actions
         private readonly ISyntheticDispatcher _dispatcher;
         // 長押しのリピートの開始待ち・間隔の時計。テストが仮想の時計を渡す
         private readonly TimeProvider _time;
-        private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;   // 繰り返しの部品の差し替え（null なら RepeatHelper。主にテスト）
+        private readonly Func<Func<RepeatHelper>, IRepeater>? _repeaterFactory;   // 繰り返しの部品の差し替え（null なら RepeatHelper。主にテスト）
 
         // Expose assigned action name for diagnostics
         public string AssignedActionName => assignedActionName;
@@ -36,8 +38,8 @@ namespace DS4Windows.Processing.Actions
         // Expose whether this controller was created in Toggle mode (used by adapters)
         public bool IsToggleMode { get { return this.mode == Mode.Toggle; } }
 
-        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string actionName = "<unknown>",
-            Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
+        public KeyButtonActionController(int device, Mode mode, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string? actionName = "<unknown>",
+            Func<Func<RepeatHelper>, IRepeater>? repeaterFactory = null)
         {
             _repeaterFactory = repeaterFactory;
             ArgumentNullException.ThrowIfNull(timeProvider);
@@ -59,7 +61,7 @@ namespace DS4Windows.Processing.Actions
             // Create concrete implementation based on mode. These implementations are lightweight wrappers
             // around the existing static controllers for now; this allows per-device instance semantics later.
             if (mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time, _repeaterFactory);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef!, _manager, _dispatcher, _time, _repeaterFactory);   // Toggle の生成は、SpecialAction を渡された場合だけ
             else
                 impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
 
@@ -80,8 +82,8 @@ namespace DS4Windows.Processing.Actions
         }
 
         // New constructor: determine mode from SpecialAction info (KeyButtonSwitchMode or keyType flags)
-        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string actionName = "<unknown>",
-            Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
+        public KeyButtonActionController(int device, SpecialAction sa, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider timeProvider, string? actionName = "<unknown>",
+            Func<Func<RepeatHelper>, IRepeater>? repeaterFactory = null)
         {
             _repeaterFactory = repeaterFactory;
             ArgumentNullException.ThrowIfNull(timeProvider);
@@ -109,7 +111,7 @@ namespace DS4Windows.Processing.Actions
             catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
 
             if (this.mode == Mode.Toggle)
-                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef, _manager, _dispatcher, _time, _repeaterFactory);
+                impl = new ToggleImpl(device, this.GetHashCode(), this.assignedActionDef!, _manager, _dispatcher, _time, _repeaterFactory);   // Toggle の生成は、SpecialAction を渡された場合だけ
             else
                 impl = new PressImpl(device, this.GetHashCode(), _dispatcher, _time, _repeaterFactory);
 
@@ -132,10 +134,10 @@ namespace DS4Windows.Processing.Actions
         // Internal interface for per-mode controllers
         private interface IKeyController
         {
-            void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction);
-            void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler);
+            void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler, bool isSpecialAction);
+            void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler);
             // Invoked when a Toggle-mode action is explicitly toggled OFF (controller-level stop + release).
-            void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler);
+            void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler);
             void Clear(ushort kvpKey);
             void ClearAll();
         }
@@ -145,7 +147,7 @@ namespace DS4Windows.Processing.Actions
         {
             private readonly int device;
             private readonly int controllerId;
-            private readonly SpecialAction assignedActionDef;
+            private readonly SpecialAction? assignedActionDef;
             private readonly IManagedActionManager manager;
             private readonly ISyntheticDispatcher _dispatcher;   // Phase14c-Step3（R-06）
             private readonly TimeProvider _time;
@@ -154,16 +156,16 @@ namespace DS4Windows.Processing.Actions
             {
                 public uint nativeKey;
                 public bool useScanCode;
-                public IVirtualKBM handler;
-                public IRepeater repeater;
+                public IVirtualKBM? handler;
+                public IRepeater? repeater;
             }
 
             private readonly Dictionary<ushort, Entry> entries = new Dictionary<ushort, Entry>();
 
-            private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;
+            private readonly Func<Func<RepeatHelper>, IRepeater>? _repeaterFactory;
 
             public ToggleImpl(int device, int controllerId, SpecialAction assignedActionDef, IManagedActionManager manager, ISyntheticDispatcher dispatcher, TimeProvider time,
-                Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null)
+                Func<Func<RepeatHelper>, IRepeater>? repeaterFactory = null)
             {
                 _repeaterFactory = repeaterFactory;
                 _time = time;
@@ -174,9 +176,9 @@ namespace DS4Windows.Processing.Actions
                 this.manager = manager;
             }
 
-            public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction)
+            public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler, bool isSpecialAction)
             {
-                if (!entries.TryGetValue(kvpKey, out Entry e))
+                if (!entries.TryGetValue(kvpKey, out Entry? e))
                 {
                     e = new Entry() { nativeKey = nativeKey, useScanCode = useScanCode, handler = handler };
                     entries[kvpKey] = e;
@@ -200,7 +202,7 @@ namespace DS4Windows.Processing.Actions
                                 if (e.repeater == null)
                                 {
                                     if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
-                                    e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
+                                    e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler!, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);   // 押下のとき（OnDown）に、必ず handler を受けて設定している
                                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}");
                                     try { e.repeater.Start(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                 }
@@ -221,16 +223,16 @@ namespace DS4Windows.Processing.Actions
                 catch { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
             }
 
-            public void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+            public void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler)
             {
                     // For Toggle mode, input-edge release should not stop repeaters or clear IsToggledOn.
                     // Ignore input-level release here; rely on explicit toggle-off path.
                 try { _dispatcher.ResetKeyTiming(device, kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
             }
 
-            public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+            public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler)
             {
-                if (entries.TryGetValue(kvpKey, out Entry e) && e.repeater != null)
+                if (entries.TryGetValue(kvpKey, out Entry? e) && e.repeater != null)
                 {
                     try
                     {
@@ -255,7 +257,7 @@ namespace DS4Windows.Processing.Actions
 
             public void Clear(ushort kvpKey)
             {
-                if (entries.TryGetValue(kvpKey, out Entry e))
+                if (entries.TryGetValue(kvpKey, out Entry? e))
                 {
                     try { e.repeater?.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     try
@@ -306,20 +308,20 @@ namespace DS4Windows.Processing.Actions
                 public bool isPressed;
                 public uint nativeKey;
                 public bool useScanCode;
-                public IVirtualKBM handler;
-                public IRepeater repeater;
-                public CancellationTokenSource delayCts;
+                public IVirtualKBM? handler;
+                public IRepeater? repeater;
+                public CancellationTokenSource? delayCts;
             }
             private readonly Dictionary<ushort, Entry> entries = new Dictionary<ushort, Entry>();
 
             private readonly ISyntheticDispatcher _dispatcher;   // Phase14c-Step3（R-06）
             private readonly TimeProvider _time;
-            private readonly Func<Func<RepeatHelper>, IRepeater> _repeaterFactory;
-            public PressImpl(int device, int controllerId, ISyntheticDispatcher dispatcher, TimeProvider time, Func<Func<RepeatHelper>, IRepeater> repeaterFactory = null) { _repeaterFactory = repeaterFactory; _time = time; this.device = device; this.controllerId = controllerId; _dispatcher = dispatcher; }
+            private readonly Func<Func<RepeatHelper>, IRepeater>? _repeaterFactory;
+            public PressImpl(int device, int controllerId, ISyntheticDispatcher dispatcher, TimeProvider time, Func<Func<RepeatHelper>, IRepeater>? repeaterFactory = null) { _repeaterFactory = repeaterFactory; _time = time; this.device = device; this.controllerId = controllerId; _dispatcher = dispatcher; }
 
-            public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction)
+            public void OnDown(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler, bool isSpecialAction)
             {
-                if (!entries.TryGetValue(kvpKey, out Entry e))
+                if (!entries.TryGetValue(kvpKey, out Entry? e))
                 {
                     e = new Entry() { isPressed = false, nativeKey = nativeKey, useScanCode = useScanCode, handler = handler };
                     entries[kvpKey] = e;
@@ -353,7 +355,7 @@ namespace DS4Windows.Processing.Actions
                                     {
                                         if (localEntry.repeater == null)
                                         {
-                                            localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
+                                            localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler!, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);   // 同上
                                             try { localEntry.repeater.Start(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                         }
                                         else
@@ -371,9 +373,9 @@ namespace DS4Windows.Processing.Actions
 
             }
 
-            public void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+            public void OnUp(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler)
             {
-                if (entries.TryGetValue(kvpKey, out Entry e) && e.isPressed)
+                if (entries.TryGetValue(kvpKey, out Entry? e) && e.isPressed)
                 {
                     try
                     {
@@ -396,7 +398,7 @@ namespace DS4Windows.Processing.Actions
                 }
             }
 
-            public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+            public void OnToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler)
             {
                 // For press-mode controller, treat toggle-off as a clear of any press state.
                 try { Clear(kvpKey); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
@@ -404,7 +406,7 @@ namespace DS4Windows.Processing.Actions
 
             public void Clear(ushort kvpKey)
             {
-                if (entries.TryGetValue(kvpKey, out Entry e))
+                if (entries.TryGetValue(kvpKey, out Entry? e))
                 {
                     try { e.delayCts?.Cancel(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
                     try { e.repeater?.Stop(); } catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
@@ -438,7 +440,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // New, clearer API names reflecting Mapping-trigger notifications
-        public void OnSATriggerEstablished(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler, bool isSpecialAction)
+        public void OnSATriggerEstablished(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler, bool isSpecialAction)
         {
             try
             {
@@ -448,7 +450,7 @@ namespace DS4Windows.Processing.Actions
             impl.OnDown(kvpKey, nativeKey, useScanCode, handler, isSpecialAction);
         }
 
-        public void OnSATriggerReleased(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+        public void OnSATriggerReleased(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler)
         {
             try
             {
@@ -460,7 +462,7 @@ namespace DS4Windows.Processing.Actions
         }
 
         // Explicit API to indicate Toggle OFF (called by KeyAction when it decides to toggle off)
-        public void OnSATriggerToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM handler)
+        public void OnSATriggerToggleOff(ushort kvpKey, uint nativeKey, bool useScanCode, IVirtualKBM? handler)
         {
             try
             {

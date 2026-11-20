@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Settings;
 
@@ -5,7 +7,7 @@ namespace DS4Windows.Processing.Actions
 {
     public interface IManagedActionManager
     {
-        ActionInstanceState GetStateFor(SpecialAction action, int device);
+        ActionInstanceState? GetStateFor(SpecialAction action, int device);
         // 旧 静的 ActionManager.IsBeingTriggered。トリガーが成立中か（状態を取れないときは false）。
         bool IsBeingTriggered(SpecialAction action, int device);
         void ClearToggledOnForKey(ushort key);

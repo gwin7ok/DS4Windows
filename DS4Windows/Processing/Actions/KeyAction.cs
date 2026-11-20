@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
@@ -65,13 +67,13 @@ namespace DS4Windows.Processing.Actions
         }
 
         // 旧 ActionManager.GetOrCreateControllerForAction と同じ（登録簿から取得。例外のときは null）
-        private IActionController GetController(int device)
+        private IActionController? GetController(int device)
         {
             try { return controllers.GetOrCreateForAction(device, action); }
             catch { return null; }
         }
 
-        public void OnTrigger(int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM handler)
+        public void OnTrigger(int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM? handler)
         {
             try
             {
@@ -102,7 +104,7 @@ namespace DS4Windows.Processing.Actions
             }
         }
 
-        public void OnRelease(int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM handler)
+        public void OnRelease(int device, ushort logicalValue, uint nativeValue, bool useScanCode, IVirtualKBM? handler)
         {
             try
             {
