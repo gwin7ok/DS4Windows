@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DS4Windows.Composition.Startup
 {
     /// <summary>
-    /// Phase9 9-F F-1a（Phase9-F-Plan.md §5）: 昇格した更新の完了モード（<c>--complete-install</c>、<c>--complete-install-target</c>）のコマンドライン引数の読み取り。
+    /// 昇格した更新の完了モード（<c>--complete-install</c>、<c>--complete-install-target</c>）のコマンドライン引数の読み取り。
     /// 旧 <c>App.Application_Startup</c> の中の同じループを、そのまま移した（状態なし）。
     /// </summary>
     public static class CompleteInstallArguments

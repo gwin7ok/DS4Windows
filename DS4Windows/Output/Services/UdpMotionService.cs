@@ -13,10 +13,10 @@ using DS4Windows.Core.Model;
 namespace DS4Windows.Output.Services
 {
     /// <summary>
-    /// Phase9 9-E E-3（Phase9-E-Plan.md）: <see cref="IUdpMotionService"/> の実装（DI の Singleton）。
+    /// <see cref="IUdpMotionService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の UDP モーション系（Cemuhook 互換サーバーの作成・開始・停止、モーションの送出のハンドラー <c>PrepareDevUDPMotion</c>、
     /// スムージングのフィルター、出力バッファー、状態 <c>_udpServer</c>／<c>udpChangeStatus</c>）を、そのまま移したもの。
-    /// <c>ControlService</c> が持つもの（デバイスの状態、イベントスレッド、パッドの情報）は <see cref="IDeviceSlotState"/>（スロットごとの状態。Phase13-Step5 で直接注入に変更。旧: <c>Func&lt;IUdpMotionHost&gt;</c>）から受ける。パッドの情報（<c>GetPadDetailForIdx</c>）は、旧 <c>ControlService</c> から本クラスへ移した。
+    /// <c>ControlService</c> が持つもの（デバイスの状態、イベントスレッド、パッドの情報）は <see cref="IDeviceSlotState"/>（スロットごとの状態。直接注入で受ける）から受ける。パッドの情報（<c>GetPadDetailForIdx</c>）は、旧 <c>ControlService</c> から本クラスへ移した。
     /// 値の特性化は <c>Phase9EUdpMotionServiceTests</c> が守る。
     /// </summary>
     public sealed class UdpMotionService : IUdpMotionService
@@ -177,7 +177,7 @@ namespace DS4Windows.Output.Services
         }
 
         private bool udpChangeStatus = false;
-        /// <summary>ポートを開き直している最中か（旧: 公開フィールド <c>changingUDPPort</c>。<see cref="UsePort"/> が立てる）。</summary>
+        /// <summary>ポートを開き直している最中か（<see cref="UsePort"/> が立てる）。</summary>
         public bool ChangingPort { get; private set; }
 
         // TODO(技術的負債・Phase9 9-F 付近): 旧 ControlService.UseUDPPort の移し先。呼び出し元は 0 件（UDP のポートを変えて開き直す処理の名残り。
@@ -218,7 +218,7 @@ namespace DS4Windows.Output.Services
 
         /// <summary>
         /// そのスロットのパッドの情報を <paramref name="meta"/> に書く（UDP モーションのサーバーが問い合わせる）。
-        /// Phase13-Step5: 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.Controllers"/> と <c>InputDeviceCore</c> のメソッドだけ）。
+        /// 旧 <c>ControlService.GetPadDetailForIdx</c> を、本文を変えずにここへ移した（読むのは <see cref="IDeviceSlotState.Controllers"/> と <c>InputDeviceCore</c> のメソッドだけ）。
         /// </summary>
         public void GetPadDetailForIdx(int padIdx, ref DualShockPadMeta meta)
         {

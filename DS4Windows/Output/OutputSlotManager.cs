@@ -61,7 +61,7 @@ namespace DS4Windows.Output
 
         private Dictionary<int, OutputDevice> deviceDict = new Dictionary<int, OutputDevice>();
         private Dictionary<OutputDevice, int> revDeviceDict = new Dictionary<OutputDevice, int>();
-        // Phase7-Step10e W1: スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、コンストラクターで受ける
+        // スロット数の上限は、静的な ControlService.CURRENT_DS4_CONTROLLER_LIMIT ではなく、コンストラクターで受ける
         private readonly OutputDevice?[] outputDevices;
 
         private int queuedTasks = 0;

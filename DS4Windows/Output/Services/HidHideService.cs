@@ -13,9 +13,9 @@ using DS4Windows.Core.Platform;
 namespace DS4Windows.Output.Services
 {
     /// <summary>
-    /// Phase9 9-E E-2（Phase9-E-Plan.md）: <see cref="IHidHideService"/> の実装（DI の Singleton）。
+    /// <see cref="IHidHideService"/> の実装（DI の Singleton）。
     /// 旧 <c>ControlService</c> の HidHide 系（<c>CheckHidHidePresence</c>、<c>UpdateHidHideAttributes</c>、<c>CheckAffected</c>、<c>ChangeExclusiveStatus</c>、
-    /// 状態 <c>hidDeviceHiding*</c>）を、そのまま移したもの（ドライバーの窓口 <c>HidHideAPIDevice</c> は <see cref="IHidHideApiFactory"/> 経由。ログは <c>AppLogger</c> へ出す［Phase13b-Step3］）。値の特性化は <c>Phase9EHidHideServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
+    /// 状態 <c>hidDeviceHiding*</c>）を、そのまま移したもの（ドライバーの窓口 <c>HidHideAPIDevice</c> は <see cref="IHidHideApiFactory"/> 経由。ログは <c>AppLogger</c> へ出す）。値の特性化は <c>Phase9EHidHideServiceDifferentialTests</c>（旧実装との差分テスト）が守る。
     /// </summary>
     public sealed class HidHideService : IHidHideService
     {

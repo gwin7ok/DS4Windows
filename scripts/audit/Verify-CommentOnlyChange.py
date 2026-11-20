@@ -10,6 +10,7 @@
 終了コード: 0 = 同じ、1 = 構文が違う、2 = 使い方の誤り
 """
 import argparse, re, subprocess, sys
+sys.stdout.reconfigure(encoding="utf-8")
 
 
 def strip_cs(src: str) -> str:

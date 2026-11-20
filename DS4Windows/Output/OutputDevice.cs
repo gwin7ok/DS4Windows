@@ -26,7 +26,7 @@ namespace DS4Windows.Output
     {
         protected bool connected;
 
-        // Phase9 Steering 削除 W3: 旧「SteeringWheelAxisProvider／GetSteeringWheelEmulationAxis」（ステアリングの軸の出力先の取得口）は、機能ごと削除した。
+        // 旧「SteeringWheelAxisProvider／GetSteeringWheelEmulationAxis」（ステアリングの軸の出力先の取得口）は、機能ごと削除した。
         public abstract void ConvertandSendReport(ControllerState state, int device);
 
         public abstract void Connect();

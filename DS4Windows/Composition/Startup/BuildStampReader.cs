@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace DS4Windows.Composition.Startup
 {
     /// <summary>
-    /// Phase9 9-F F-1a: 実行フォルダの <c>build_timestamp.txt</c> の内容から、起動時のログの文言を作る。
+    /// 実行フォルダの <c>build_timestamp.txt</c> の内容から、起動時のログの文言を作る。
     /// 旧 <c>App.Application_Startup</c> の中の同じ処理を、そのまま移した（状態なし。ファイルの読み込みと、ログの出力は、呼び出し側が行う）。
     /// </summary>
     public static class BuildStampReader

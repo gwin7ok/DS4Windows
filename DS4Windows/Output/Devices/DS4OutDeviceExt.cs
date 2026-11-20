@@ -74,7 +74,7 @@ namespace DS4Windows.Output.Devices
             outDS4Report.bTriggerL = state.L2;
             outDS4Report.bTriggerR = state.R2;
 
-            // Phase9 Steering 削除 W3: 旧「ステアリング（ジャイロでハンドル操作）の軸の出力先」の switch は削除した（機能ごと削除。Phase9-SteeringWheel-Removal-Plan.md）。通常の軸の出力だけを行う
+            // 旧「ステアリング（ジャイロでハンドル操作）の軸の出力先」の switch は削除した（機能ごと削除）。通常の軸の出力だけを行う
             outDS4Report.bThumbLX = state.LX;
             outDS4Report.bThumbLY = state.LY;
             outDS4Report.bThumbRX = state.RX;
