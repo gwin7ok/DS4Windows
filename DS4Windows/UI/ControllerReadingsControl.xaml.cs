@@ -32,13 +32,6 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class ControllerReadingsControl : UserControl
     {
-        private enum LatencyWarnMode : uint
-        {
-            None,
-            Caution,
-            Warn,
-        }
-
         private int deviceNum;
         private int profileDeviceNum;
         private event EventHandler DeviceNumChanged;
