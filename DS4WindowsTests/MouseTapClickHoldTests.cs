@@ -75,7 +75,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TouchUnchanged_ContinuesSynthesis_WhileTapPendingOrHeld()
         {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
+            string text = SourceText.ReadCodeWithPartials("DS4Windows/Processing/Touchpad/TouchpadMouse.cs");
             if (text == null) return;
 
             Assert.Matches(@"_buttons\.ReleaseButtonActive\s*\|\|\s*releaseButtonChanged\s*\|\|\s*_tap\.IsPendingOrHolding", text);

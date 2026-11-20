@@ -48,6 +48,16 @@ namespace DS4WindowsTests
             return sb.ToString();
         }
 
+        /// <summary>ファイルの全文に、<c>partial</c> で分けた同じ場所の <c>Name.*.cs</c> を続けた全文。</summary>
+        public static string ReadFileWithPartials(string path)
+        {
+            string stem = Path.GetFileNameWithoutExtension(path);
+            var sb = new StringBuilder(File.ReadAllText(path));
+            foreach (string f in Directory.GetFiles(Path.GetDirectoryName(path), stem + ".*.cs").OrderBy(x => x, StringComparer.Ordinal))
+                sb.Append('\n').Append(File.ReadAllText(f));
+            return sb.ToString();
+        }
+
         /// <summary>コメントを除き、空白（改行を含む）の連続を 1 つの空白にした全文（書式に依存しない照合用）。ソースなしの環境では null。</summary>
         public static string ReadNormalized(string relativePath, [CallerFilePath] string callerFile = "")
         {

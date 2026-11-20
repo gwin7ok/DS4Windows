@@ -180,7 +180,7 @@ namespace DS4WindowsTests
             string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (registration == null || mapping == null) return;
 
-            string text = File.ReadAllText(mapping);
+            string text = SourceText.ReadFileWithPartials(mapping);
             Assert.Contains("MouseSampler", text);
             Assert.Contains("frameOutput.MouseDeltaX", text);
         }
