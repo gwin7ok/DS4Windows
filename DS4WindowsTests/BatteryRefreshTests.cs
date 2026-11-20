@@ -36,14 +36,14 @@ namespace DS4WindowsTests
         [Fact]
         public void TheNotification_ReachesTheBinding_ThroughPropertyChanged()
         {
-            // 根本原因: CompositeDeviceModel は INotifyPropertyChanged を実装しているため、WPF は BatteryStateChanged（旧式のイベント）を無視する
+            // 根本原因: CompositeDeviceModel は ObservableObject（INotifyPropertyChanged）のため、WPF は BatteryStateChanged（旧式のイベント）を無視する
             string code = SourceText.ReadNormalized("DS4Windows/UI/ViewModels/CompositeDeviceModel.cs");
             if (code == null) return;
 
             int raise = code.IndexOf("private void RaiseBatteryStateChanged(", System.StringComparison.Ordinal);
             Assert.True(raise >= 0);
             string body = code.Substring(raise, 700);
-            Assert.Contains("PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BatteryState)));", body);
+            Assert.Contains("OnPropertyChanged(nameof(BatteryState));", body);
         }
 
         [Fact]

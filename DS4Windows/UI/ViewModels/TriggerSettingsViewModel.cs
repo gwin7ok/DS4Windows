@@ -1,4 +1,5 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;

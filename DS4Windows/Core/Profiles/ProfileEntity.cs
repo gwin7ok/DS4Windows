@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #nullable enable
 
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using System.IO;
 
@@ -28,7 +29,7 @@ namespace DS4Windows.Core.Profiles
     // WPF は {Binding Name} に、リフレクションによる旧式の購読（ValueChangedEventManager）を使っていた。リンクのコンボの選択項目が
     // 一覧から削除されると、選択欄の中身の型が入れ替わる途中で、この購読が TargetException（Object does not match target type）で
     // 失敗し、アプリが落ちた。NameChanged は、既存の購読先のために残す。
-    public class ProfileEntity : INotifyPropertyChanged
+    public class ProfileEntity : ObservableObject
     {
         private string? name;
         public string? Name
@@ -39,12 +40,11 @@ namespace DS4Windows.Core.Profiles
                 if (name == value) return;
                 name = value;
                 NameChanged?.Invoke(this, EventArgs.Empty);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+                OnPropertyChanged(nameof(Name));
             }
         }
 
         public event EventHandler? NameChanged;
-        public event PropertyChangedEventHandler? PropertyChanged;
         // Phase6-Step10-4-1: Global.appdatapath の直接参照を廃止し、IPathService を ProfileList から受け取る
         private readonly DS4Windows.Core.Abstractions.IPathService pathService;
 

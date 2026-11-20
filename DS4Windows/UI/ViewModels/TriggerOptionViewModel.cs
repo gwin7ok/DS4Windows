@@ -1,4 +1,5 @@
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -9,12 +10,11 @@ namespace DS4Windows.UI.ViewModels
     /// トリガーの供給元（<see cref="IActionTriggerSource"/>）が持つ値そのもの（このクラスは、値を重複して持たない）。
     /// 従来は、<c>AssignmentEditor</c> のコードビハインドが、名前つきのチェックボックス 49 個の <c>Click</c> で、リストを書き換えていた。
     /// </summary>
-    public sealed class TriggerOptionViewModel : INotifyPropertyChanged
+    public sealed class TriggerOptionViewModel : ObservableObject
     {
         private readonly TriggerItem item;
         private readonly IActionTriggerSource source;
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public TriggerOptionViewModel(TriggerItem item, IActionTriggerSource source)
         {
@@ -54,9 +54,5 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(IsEnabled));
         }
 
-        private void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
     }
 }

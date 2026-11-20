@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -31,7 +32,7 @@ using DS4Windows.UI.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class SpecialActionsListViewModel : INotifyPropertyChanged
+    public class SpecialActionsListViewModel : ObservableObject
     {
         private ObservableCollection<SpecialActionItem> actionCol = new ObservableCollection<SpecialActionItem>();
         private int specialActionIndex = -1;
@@ -47,7 +48,6 @@ namespace DS4Windows.UI.ViewModels
 
         public event EventHandler SpecialActionIndexChanged;
         public event EventHandler ItemSelectedChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// プロファイル XML に保存されるスラッシュ区切りの Special Actions 文字列 (例: "Action1/Action2")
@@ -565,9 +565,5 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

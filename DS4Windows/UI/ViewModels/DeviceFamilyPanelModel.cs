@@ -1,4 +1,5 @@
 using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DS4Windows.UI.ViewModels
     /// 選んだコントローラーの設定パネル: 系統ごとの設定（先頭の「使う」を除く）と、そのコントローラー固有の設定を、順に並べた項目。
     /// 「使う」が無効の系統では、パネルを隠す。新しいデバイスの接続から効く項目があれば、注意書きを出す。
     /// </summary>
-    public sealed class DeviceFamilyPanelModel : INotifyPropertyChanged
+    public sealed class DeviceFamilyPanelModel : ObservableObject
     {
         private readonly DeviceOptionsBase familyOptions;
 
@@ -26,7 +27,7 @@ namespace DS4Windows.UI.ViewModels
                 .ToList();
             ShowNewConnectionNotice = Items.Any(i => i.AppliesOnNewConnection);
             NewConnectionNotice = LocalizedText.Get("ChangeOnNewDeviceConn");
-            familyOptions.EnabledChanged += (sender, e) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Visible)));
+            familyOptions.EnabledChanged += (sender, e) => OnPropertyChanged(nameof(Visible));
         }
 
         public IReadOnlyList<DeviceSettingItem> Items { get; }
@@ -38,6 +39,5 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>系統の「使う」が有効か（無効のときパネルを隠す）。</summary>
         public bool Visible => familyOptions.Enabled;
 
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
