@@ -1,4 +1,6 @@
 
+#nullable enable
+
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>

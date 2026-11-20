@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Processing.Actions
 {
     // Per-action per-device instance state

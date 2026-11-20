@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.Processing.Actions
 {
     /// <summary>パッド（X360）への割り当ての出力先の種類。</summary>
