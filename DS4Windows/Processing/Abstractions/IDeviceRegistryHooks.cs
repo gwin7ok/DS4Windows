@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Processing.Abstractions
+﻿namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// デバイスの登録簿（<see cref="IInputDeviceRegistry"/>）が、列挙・初期化の途中で呼び返すフックを結ぶ。

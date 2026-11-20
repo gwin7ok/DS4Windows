@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace DS4Windows.UI

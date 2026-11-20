@@ -1,5 +1,3 @@
-#nullable enable
-
 using DS4Windows.Core.Model;
 using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;

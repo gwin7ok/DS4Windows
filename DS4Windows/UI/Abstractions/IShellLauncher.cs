@@ -1,4 +1,3 @@
-#nullable enable
 namespace DS4Windows.UI.Abstractions
 {
     /// <summary>

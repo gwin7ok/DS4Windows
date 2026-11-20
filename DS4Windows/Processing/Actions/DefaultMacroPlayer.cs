@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Threading;
 using DS4Windows.Core.Settings;

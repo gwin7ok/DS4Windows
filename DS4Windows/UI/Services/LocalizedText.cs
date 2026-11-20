@@ -1,5 +1,3 @@
-#nullable enable
-
 using WPFLocalizeExtension.Engine;
 
 namespace DS4Windows.UI.Services

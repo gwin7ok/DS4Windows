@@ -1,5 +1,3 @@
-#nullable enable
-
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing.Actions

@@ -1,5 +1,3 @@
-#nullable enable
-
 using DS4Windows.Output.Udp;
 using System;
 using System.Collections.Generic;

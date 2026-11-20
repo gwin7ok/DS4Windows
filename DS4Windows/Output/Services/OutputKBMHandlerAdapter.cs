@@ -1,6 +1,4 @@
 
-#nullable enable
-
 using DS4Windows.Output.Kbm;
 using DS4Windows.Processing.Abstractions;
 

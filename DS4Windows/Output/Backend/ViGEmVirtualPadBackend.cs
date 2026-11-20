@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Threading;
 using Nefarius.ViGEm.Client;
 using DS4Windows.Core.Logging;

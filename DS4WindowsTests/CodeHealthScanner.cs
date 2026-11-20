@@ -68,9 +68,6 @@ namespace DS4WindowsTests
             return unused;
         }
 
-        private static readonly Regex NullableDirective = new Regex(
-            @"^[ \t]*#nullable[ \t]+enable\b", RegexOptions.Multiline | RegexOptions.Compiled);
-
         private static readonly Regex NullableWarningPragma = new Regex(
             @"^[ \t]*#pragma[ \t]+warning[ \t]+disable\b[^\r\n]*\b(CS86\d\d|CS87\d\d|nullable)\b", RegexOptions.Multiline | RegexOptions.Compiled);
 
@@ -80,29 +77,13 @@ namespace DS4WindowsTests
         private static readonly Regex StringLiteral = new Regex("@?\"(?:[^\"\\\\]|\\\\.|\"\")*\"|'(?:[^'\\\\]|\\\\.)'", RegexOptions.Compiled);
 
         /// <summary>
-        /// <paramref name="folders"/>（本体からの相対パスの先頭。例 <c>Core/Abstractions/</c>）に属するのに、<c>#nullable enable</c> を持たないファイル。
-        /// 末尾が <c>/</c> でない項目は、そのファイル 1 つを指す。
-        /// </summary>
-        public static IReadOnlyList<string> FilesMissingNullableDirective(IEnumerable<SourceFile> files, IEnumerable<string> folders)
-        {
-            string[] prefixes = folders.Select(f => f.Replace('\\', '/')).ToArray();
-            return files
-                .Where(f => prefixes.Any(p => IsUnder(f.RelativePath, p)))
-                .Where(f => !NullableDirective.IsMatch(f.Text))
-                .Select(f => f.RelativePath.Replace('\\', '/'))
-                .OrderBy(f => f, StringComparer.Ordinal)
-                .ToList();
-        }
-
-        /// <summary>
-        /// <c>#nullable enable</c> を持つファイルの中で、同じ行か直前の行に <c>//</c> の理由コメントがない、後置の <c>!</c>（null 許容の抑止）の数。
+        /// 全ファイルの中で、同じ行か直前の行に <c>//</c> の理由コメントがない、後置の <c>!</c>（null 許容の抑止）の数。
         /// </summary>
         public static int CountNullForgivingWithoutReason(IEnumerable<SourceFile> files)
         {
             int count = 0;
             foreach (SourceFile file in files)
             {
-                if (!NullableDirective.IsMatch(file.Text)) continue;
                 string[] lines = file.Text.Split('\n');
                 for (int i = 0; i < lines.Length; i++)
                 {

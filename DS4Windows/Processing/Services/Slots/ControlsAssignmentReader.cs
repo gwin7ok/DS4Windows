@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using DS4Windows.Core.Model;

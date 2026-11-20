@@ -1,5 +1,3 @@
-#nullable enable
-
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Settings;
 

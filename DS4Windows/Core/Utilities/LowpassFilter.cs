@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace Sensorit.Base
+﻿namespace Sensorit.Base
 {
 
     public class LowpassFilter

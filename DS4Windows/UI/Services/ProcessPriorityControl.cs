@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using DS4Windows.UI.Abstractions;
 
 namespace DS4Windows.UI.Services

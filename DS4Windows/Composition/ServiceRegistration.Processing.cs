@@ -1,5 +1,3 @@
-#nullable enable
-
 using DS4Windows.Processing.Macro;
 using DS4Windows.Processing.Synthetic;
 using System;

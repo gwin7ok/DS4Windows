@@ -1,5 +1,3 @@
-#nullable enable
-
 using Microsoft.Win32;
 using System;
 using DS4Windows.Core.Logging;

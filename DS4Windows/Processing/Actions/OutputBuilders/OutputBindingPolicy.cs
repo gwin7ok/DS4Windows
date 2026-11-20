@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Processing.Actions.OutputBuilders
+﻿namespace DS4Windows.Processing.Actions.OutputBuilders
 {
     /// <summary>
     /// 実行方針。SA 用（由来が SA）は、種別ごとの値のまま（すべて既定なら共有の <see cref="BindingPolicy.Default"/>）。

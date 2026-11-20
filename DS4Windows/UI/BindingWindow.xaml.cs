@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using DS4Windows.UI.Controls;
+﻿using DS4Windows.UI.Controls;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles

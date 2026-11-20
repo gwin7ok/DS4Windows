@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#nullable enable
-
 using System.Collections.Generic;
 using DS4Windows.Core.Model;
 namespace DS4Windows.Core.Settings

@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;

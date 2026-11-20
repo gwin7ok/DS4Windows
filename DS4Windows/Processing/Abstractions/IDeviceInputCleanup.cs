@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Processing.Abstractions
+﻿namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
     /// 入力デバイスの切断（またはプロファイルの適用）のときの、スロット単位の後始末: 保持中の合成キーの解放、マクロのキューの消去、

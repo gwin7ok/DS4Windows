@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace DS4Windows.Output.Backend
+﻿namespace DS4Windows.Output.Backend
 {
     /// <summary>仮想 Xbox 360 のボタンのビット。値はドライバー（<c>Xbox360Button</c>）と同じ（差分テストで固定）。</summary>
     public static class Xbox360Buttons

@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using DS4Windows.Core.Platform;
 using DS4Windows.Processing.Abstractions;

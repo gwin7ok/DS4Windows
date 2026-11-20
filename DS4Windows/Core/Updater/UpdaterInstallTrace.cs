@@ -5,5 +5,3 @@
 // to use `DS4Windows.AppLogger` directly; this file is intentionally left as a placeholder
 // to avoid reintroducing duplicate logging helpers.
 
-
-#nullable enable

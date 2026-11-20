@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using static System.Math;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;

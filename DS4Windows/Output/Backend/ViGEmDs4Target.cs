@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Linq;
+﻿using System.Linq;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.DualShock4;

@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary><see cref="IXboxParentHider.Apply"/> の結果。</summary>

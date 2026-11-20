@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using DS4Windows.Processing.Touchpad;
+﻿using DS4Windows.Processing.Touchpad;
 using System;
 using System.Collections.Generic;
 using System.Xml;

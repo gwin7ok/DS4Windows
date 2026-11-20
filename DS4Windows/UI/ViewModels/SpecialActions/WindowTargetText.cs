@@ -1,6 +1,4 @@
 ﻿
-#nullable enable
-
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
     /// <summary>

@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using System.Xml;
 using DS4Windows.Core.Settings;

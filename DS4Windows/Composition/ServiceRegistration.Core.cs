@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using DS4Windows.Core.Abstractions;

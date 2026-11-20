@@ -1,5 +1,3 @@
-#nullable enable
-
 using DS4Windows.Processing.Touchpad;
 using System;
 using System.Diagnostics;

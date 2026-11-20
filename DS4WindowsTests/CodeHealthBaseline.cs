@@ -25,45 +25,7 @@ namespace DS4WindowsTests
         /// <summary>別名 <c>using NonFormTimer = System.Timers.Timer;</c> を宣言しているのに、ファイルの中で使っていない行。</summary>
         public const int UnusedNonFormTimerAliasLines = 0;
 
-        /// <summary>
-        /// <c>#nullable enable</c> を、全ファイルに持たせるフォルダー（本体からの相対パス。末尾が <c>/</c> でなければ、そのファイル 1 つ）。
-        /// 層ごとに有効にしていく。増やす方向だけで、減らさない。プロジェクト全体の <c>&lt;Nullable&gt;</c> へ切り替えたら、この表は不要になる。
-        /// </summary>
-        public static readonly string[] NullableEnabledFolders =
-        {
-            "Core/Abstractions/",
-            "Composition/",
-            "Core/Model/",
-            "Core/Logging/",
-            "Core/Utilities/",
-            "Core/Updater/",
-            "Core/Profiles/",
-            "Core/Platform/",
-            "Core/Settings/",
-            "Core/Persistence/",
-            "Processing/Actions/",
-            "UI/",
-            "Input/",
-            "Output/",
-            "Processing/Abstractions/",
-            "Processing/Gyro/",
-            "Processing/Macro/",
-            "Processing/Services/",
-            "Processing/Synthetic/",
-            "Processing/Touchpad/",
-            "Processing/ControllerSlotManager.cs",
-            "Processing/ControllerStateFieldMapping.cs",
-            "Processing/DS4TimedStickAxisValue.cs",
-            "Processing/DeviceRuntimeState.cs",
-            "Processing/Mapping.cs",
-            "Processing/PostMapStickData.cs",
-            "Processing/ProfileUntriggerSnapshot.cs",
-            "Processing/RepeatHelper.cs",
-            "Processing/StickMotionState.cs",
-            "App.xaml.cs",
-        };
-
-        /// <summary><c>#nullable enable</c> のファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>
+        /// <summary>全ファイルで、理由コメントのない後置の <c>!</c>（null 許容の抑止）。理由は同じ行か直前の行の <c>//</c> に書く。</summary>
         public const int NullForgivingWithoutReason = 0;
 
         /// <summary>何も書かない空の <c>catch</c>（<c>Core/Persistence/ProfileSections</c> を除く）。0 を保つ。理由のコメントか、型の限定を書く（<c>Log-Policy.md</c> §12）。</summary>

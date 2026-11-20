@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.IO;
 using System.Xml;
 using DS4Windows.Core.Abstractions;

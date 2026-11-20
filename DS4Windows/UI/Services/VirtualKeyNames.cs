@@ -1,5 +1,3 @@
-#nullable enable
-
 using System.Windows.Input;
 
 namespace DS4Windows.UI.Services
