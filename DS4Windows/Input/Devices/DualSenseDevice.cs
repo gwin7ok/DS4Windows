@@ -60,6 +60,7 @@ namespace DS4Windows.Input.Devices
         {
         }
 
+        // TODO(RV6-0 で保留): 現在は参照 0。DualSense の Bluetooth のレポートの形を表す説明として残す。接続予定: DualSense の BT 対応の Phase（未定）。
         public class InputReportDataBytesBT : InputReportDataBytesUSB
         {
             public new const int REPORT_OFFSET = 2;
