@@ -165,3 +165,11 @@
 - **表へ統合**: `RemovedApiRuleTests` の撤去メンバーの表に `Mapping.IsUsingGyroForControls`・`Mapping.outputKBMMapping` を追加。
 - **負の確認**: 一時的に `Mapping` へ `IsUsingGyroForControls` を、`DS4Windows` へ型 `Global` を足してから実行し、`RemovedMembers_AreNotDeclaredAgain` と `RemovedTypes_DoNotExist` が失敗することを確かめた（その後、元へ戻した）。
 - **未実施（理由）**: 残りの「型へ」45 件・「要確認」46 件・「残す」28 件は、1 つのファイルの中に、型の検査にできる Fact と、実際の挙動を確かめる Fact（コンストラクターの null の拒否など）が混在しており、1 件ずつ中身を読んで分ける作業になる。守りの喪失のリスクが大きいため、この Phase では行わず、別の Phase の候補とした（分類表の第 1 案はそのまま、次の Phase の入力になる）。
+
+## 実施の記録（RV8b。RV8-5 から外した分の置き換え）
+- **表へ統合して廃止**: 撤去した識別子の文字列検査を `RemovedApiRuleTests` の表へ移し、元のテストを削除・縮小した（`MacroGuardTests`・`MouseGuardTests`・`MapCustomGuardTests`・`NameFunctionsTests`・`XboxGameDvrRemovalTests`・`AltTabRemovalGuardTests`・`RemovedShiftWiringTests`［縮小］・`SteeringW3OutputDeviceGuardTests`［ファイルごと］）。表へ足した型: `VJoyFeeder`・`SASteeringWheelEmulationUnit`・`SteeringWheelAxisProvider`。足したメンバー: `Mapping` の撤去済み群、`MacroPlayback`／`MacroStepExecutor` の Alt+Tab 関連、`DS4ControlSettings` の Shift 関連、`OutputDevice` のステアリング関連、`BackingStore` の名前関数。
+- **定数の固定をリフレクションへ**: `HoverSelectDelayTests`・`BatteryRefreshTests`・`MouseTapToleranceTests`・`MouseTapClickHoldTests` を、ソース文字列ではなく `ConstantValueReader`（const の値を型から読む）へ置き換えた。
+- **コンパイルが担保する重複行を削除**: 型ごと撤去済みの `ControlService` を、ソース文字列で「参照していない」と確かめる行（`ConnectionGuardTests`・`ConnectorGuardTests`・`DisconnectGuardTests`）を削除した。型は `RemovedTypeNames` にあり、参照すればビルドが通らない。
+- **負の確認**: 表への統合は、違反を一時的に注入して失敗を確かめた。定数 4 件は、`HoverSelectDelayMs`・`TapMaxMoveHw`・`TapClickHoldMs`・`BatteryRefreshIntervalMs` を一時的に変えて 4 件とも失敗することを確かめた（その後、元へ戻した）。
+- **残す（理由つき）**: 呼び出し順・安全順序の検査（ドライバーの破棄順など）、XAML・resx・csproj・テーマのキー・名前空間・ファイル名・ラチェットの走査、挙動のテストを新しく書かないと置き換えられない「コードの文字列そのものを固定する」検査。これらは、型の検査では同じ守りにならないため、ソース文字列の検査のまま残す。
+- **結果**: 全テスト 3,665 件が合格（ビルドは警告 0・エラー 0）。

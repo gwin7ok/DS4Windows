@@ -57,11 +57,6 @@ namespace DS4WindowsTests
         {
             Assert.IsType<DeviceDisconnectHandler>(TestHost.GetService<IDeviceDisconnectHandler>());
             Assert.Null(typeof(IDeviceDisconnectHandler).Assembly.GetType("DS4Windows.DI.IDeviceSlotHost"));   // ホストの窓口は削除した
-
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceDisconnectHandler が ControlService を参照している");
         }
 
         [Fact]

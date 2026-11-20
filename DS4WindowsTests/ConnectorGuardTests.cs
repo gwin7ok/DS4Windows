@@ -73,11 +73,6 @@ namespace DS4WindowsTests
         {
             Assert.IsType<DeviceConnector>(TestHost.GetService<IDeviceConnector>());
             Assert.Same(TestHost.GetService<IDeviceConnector>(), TestHost.GetService<IDeviceConnector>());
-
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
-            if (text == null) return;
-
-            Assert.False(Regex.IsMatch(text, @"\bControlService\b"), "DeviceConnector が ControlService を参照している");
         }
 
         [Fact]
