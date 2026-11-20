@@ -148,3 +148,15 @@
 | K5 | `MacroGuardTests.cs` | 1 |
 | K5 | `MouseGuardTests.cs` | 1 |
 | K5 | `OrphanMembersGuardTests.cs` | 1 |
+
+## K4 の書き換え（RV8e）
+
+K4 の 47 件のうち、次の 10 件を、挙動・リフレクション・表の検査へ書き換えた（いずれも、本体へ違反を一時的に注入して失敗を確かめ、元へ戻した。ただし `SlotLinkedAutoProfileReferenceIdTests` のコンストラクター引数の検査は、注入が大きいため負の確認をしていない）。
+
+- `RuntimeFeatureSwitch` の転送 4 件（`HidHideGuardTests`・`OscGuardTests`・`UdpMotionGuardTests`・`InputReportGuardTests` の `TheOtherFiles_ForTheCallers`）: 新しい `RuntimeFeatureSwitchForwardingTests`（偽の相手 `RecordingProxy` を差し、呼び出しと引数を確かめる）へ。
+- `EnvironmentServiceStaticInitGuardTests`: 実行時のスロット上限が 1 以上で上限以内であることの検査へ。
+- `CustomSteamFolderTests`: `MainWindowsViewModel.CustomSteamFolderIfValid` の挙動（無効・存在しない・存在する）の検査へ。
+- `ControlsMouseTests`・`ControlsPadTests`・`ControlsExtrasTests` の配線の文字列: `FrameOutput` の実装関係の検査、挙動のテストが覆うため削除、撤去した `Mapping` のメンバーを `RemovedMembers` の表へ。
+- `SlotLinkedAutoProfileReferenceIdTests`: 3 つのシリアライザーが `IProfileIdentityService` をコンストラクターで受けることの検査へ。
+
+残り 37 件の K4 は、挙動のテストにするには、対象の準備が大きい（`MainWindow`・`ProfileEditor` などの画面、`App.xaml.cs` の起動、`Mapping`・`AutoProfileService` などの組み立て）。1 件ずつ負の確認をしながら、別の Phase で進める。

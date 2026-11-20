@@ -236,15 +236,5 @@ namespace DS4WindowsTests
         }
 
         // ---- ソースのガード ----
-
-        [Fact]
-        public void TheSources_CarryThePadWiring()
-        {
-            string engine = SourceFileLocator.Find("DS4Windows/Processing/Actions/TriggerDispatchEngine.cs");
-            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            if (engine == null || registration == null) return;
-
-            Assert.Contains("IEvaluatedFrameOutputAction", File.ReadAllText(engine));
-        }
     }
 }

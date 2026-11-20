@@ -29,18 +29,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ProcessControllerSlotLimit_IsInitializedFromTheSelfContainedCalculation()
+        public void TheSlotLimit_IsFixedBeforeAnyOtherTypeReadsIt()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Core/Platform/EnvironmentService.cs");
-            if (path == null)
-            {
-                _output.WriteLine("EnvironmentService.cs が見つからないため検査を省略した。");
-                return;
-            }
-
-            string source = File.ReadAllText(path);
-
-            Assert.Contains("ProcessControllerSlotLimit = CalculateControllerSlotLimit();", source);
+            // 静的初期化が循環の途中の値 0 を確定させると、スロットが 0 個になる。実際の値が、1 以上で上限以内であることを確かめる
+            int limit = new DS4Windows.Core.Platform.EnvironmentService().ControllerSlotLimit;
+            Assert.InRange(limit, 1, DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount);
         }
     }
 }

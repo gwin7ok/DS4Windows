@@ -90,6 +90,8 @@ namespace DS4WindowsTests
             ("ActionEditorViewModel", new[] { "IndexZeroMeansDefault" }),
             ("MainWindow", new[] { "MainTabCon_SelectionChanged" }),
             ("AppHost", new[] { "_disposed" }),
+            // ライトバーのマクロの廃止で、Mapping から撤去したもの
+            ("Mapping", new[] { "LightbarMacroTrigger", "lightbarMacroTask", "threadCts", "RunLightbarMacro", "BoolDS4Controls" }),
             // 静的な差し替え口は、コンストラクターで受ける工場に替えた
             ("RepeatHelperToIRepeaterAdapter", new[] { "RepeaterFactoryOverride" }),
             // 呼び出し元 0 件のメソッド
