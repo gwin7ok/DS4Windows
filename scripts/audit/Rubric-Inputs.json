@@ -1,14 +1,14 @@
 {
   "_comment": "Score-CodeReview.py が読む、手で記録する値と、はい／いいえの確認項目。Phase の最終 Step で、根拠を確かめてから answer / value を更新する。答えを変えるときは evidence に、確かめた方法（実行したテスト名・コマンド・日付）を書く。",
-  "snapshot_label": "2026-11-20 RV4 完了（一部）",
+  "snapshot_label": "2026-11-20 RV5 完了",
   "manual": {
     "nullable_layers_enabled": {
       "value": 3,
       "evidence": "2026-11-19（RV2 完了）: RV9 A 組の完了で、Composition・Input・Output の 3 層が全ファイル #nullable enable（警告 0、CodeHealthRatchetTests.NullableIsEnabledInEveryFileOfTheEnabledFolders が検査）。Core は Settings・Persistence が、Processing は Actions が B 組で未着手のため、層としては数えない。"
     },
     "profile_setting_files": {
-      "value": 5,
-      "evidence": "2026-11-19: 報告書 §3 の手作業の確認で 4〜6 ファイル（読み込みと保存が別の場所）。中央値の 5 を置いた。PhaseRV5-1 で、設定の項目を 1 つ足す手順を実際にたどって数え直す"
+      "value": 2,
+      "evidence": "2026-11-20（RV5）: 項目を 1 つ足す手順を数え直した。General 領域は定義の並び 1 ファイル（保存・読み込みとも）、他の領域は保存の並び 1＋読み込みの節 1 の 2 ファイル（値の入れ物・画面を除く）。docs Model-Diagram/02-Extension-Guide.md §5"
     }
   },
   "checklist": {
@@ -45,7 +45,7 @@
     "safety_net_green": {
       "text": "ArchUnitNET の層の検査・黄金テスト・ラチェットの一致検査が、Debug ALL（0 警告・0 エラー）で通る",
       "answer": true,
-      "evidence": "2026-11-20（RV4）: Debug ALL（Build-Debug 相当: DS4WinWPF と DS4Windows.Actions.Tests のビルドが警告 0・エラー 0）、xUnit 3,682 件＋StandaloneTests 11 件の合格（--blame-hang 15s）。ArchUnitNET の層の検査・ガードテスト・ラチェットの一致検査（新設の ViewCommandBindingRatchetTests を含む）を含む"
+      "evidence": "2026-11-20（RV5）: Debug ALL（Build-Debug 相当: DS4WinWPF と DS4Windows.Actions.Tests のビルドが警告 0・エラー 0）、xUnit 3,687 件（StandaloneTests は未実行）の合格（--blame-hang 15s）。ArchUnitNET の層の検査・ガードテスト・ラチェットの一致検査（新設の ViewCommandBindingRatchetTests を含む）を含む"
     }
   }
 }
