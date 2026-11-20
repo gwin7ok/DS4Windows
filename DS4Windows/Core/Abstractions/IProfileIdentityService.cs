@@ -25,25 +25,25 @@ namespace DS4Windows.Core.Abstractions
         void Refresh();
 
         /// <summary>名前のプロファイルの ID を読む（メモリの索引から引く）。ファイルがない・ID がないときは null。</summary>
-        string? GetId(string profileName);
+        string? GetId(string? profileName);
 
         /// <summary>ID のプロファイルの名前を探す。見つからなければ null。</summary>
-        string? GetName(string profileId);
+        string? GetName(string? profileId);
 
         /// <summary>名前のプロファイルが ID を持つようにし、その ID を返す（なければ書く）。ファイルがない・書けないときは null。</summary>
-        string? EnsurePersisted(string profileName);
+        string? EnsurePersisted(string? profileName);
 
         /// <summary>
         /// 名前のプロファイルに、<b>新しい ID を振って書く</b>（すでに ID があっても置き換える）。アプリ内の複製（Duplicate）が、
         /// ファイルのコピーの直後に、コピー側が元と同じ ID を持たないようにするために呼ぶ。書いた ID を返す。ファイルがない・書けないときは null
         /// （起動時の <see cref="EnsureAllPersisted"/> が、重複を直す）。
         /// </summary>
-        string AssignNewId(string profileName);
+        string? AssignNewId(string profileName);
 
         /// <summary>
         /// 参照の解決。ID でプロファイルを探し、見つかればその名前を返す。見つからないとき（古いファイル、手編集）は、<paramref name="nameHint"/> の
         /// プロファイルがあれば、その名前を返す。どちらもなければ偽。
         /// </summary>
-        bool TryResolve(string profileId, string nameHint, out string profileName);
+        bool TryResolve(string profileId, string nameHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? profileName);
     }
 }

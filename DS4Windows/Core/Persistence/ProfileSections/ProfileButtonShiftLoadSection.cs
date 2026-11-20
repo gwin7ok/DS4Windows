@@ -14,7 +14,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
     {
         public void Load(ProfileLoadContext context)
         {
-            XmlNode shiftControl = context.Xdoc.SelectSingleNode("/" + context.RootName + "/ShiftControl");
+            XmlNode? shiftControl = context.Xdoc.SelectSingleNode("/" + context.RootName + "/ShiftControl");
             context.Store.removedShiftSettings[context.Device].Capture(shiftControl);
         }
     }

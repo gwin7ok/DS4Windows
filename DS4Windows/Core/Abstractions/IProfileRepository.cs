@@ -27,7 +27,7 @@ namespace DS4Windows.Core.Abstractions
         ProfileSlotNames SelectedProfile { get; }
         ProfileSlotNames LinkedProfileUI { get; }   // 保管はプロファイルの固定 ID（名前を読み書きする窓口）
 
-        event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged;
+        event EventHandler<SelectedProfileChangedEventArgs>? SelectedProfileChanged;
         void RaiseSelectedProfileChanged(int deviceIndex, string profileName);
 
         // ---- LinkedProfile（コントローラーMAC単位のプロファイル紐付け）管理 ----
@@ -52,7 +52,7 @@ namespace DS4Windows.Core.Abstractions
         /// </summary>
         IReadOnlyList<string> ReplaceControlProfileSwitchTarget(string oldName, string newName);
         // ---- デバイス別・割当済みSpecialAction名リスト ----
-        List<string>[] ProfileActions { get; }
+        List<string>?[] ProfileActions { get; }
         void CacheExtraProfileInfo(int deviceIndex);
 
         // ---- プロファイルのカスタムフラグキャッシュ更新 ----

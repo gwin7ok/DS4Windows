@@ -135,16 +135,16 @@ public class AppSettingsDTO
 
     // ルート属性として保存するアプリ/設定バージョン
     [XmlAttribute("app_version")]
-    public string AppVersion { get; set; }
+    public string? AppVersion { get; set; }
 
     [XmlAttribute("config_version")]
-    public string ConfigVersion { get; set; }
+    public string? ConfigVersion { get; set; }
 
     [XmlElement("ProcessPriority")]
     public int ProcessPriority { get; set; }
 
     [XmlElement("Controller1")]
-    public string Controller1CurrentProfile
+    public string? Controller1CurrentProfile
     {
         get; set;
     }
@@ -154,7 +154,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller2")]
-    public string Controller2CurrentProfile
+    public string? Controller2CurrentProfile
     {
         get; set;
     }
@@ -164,7 +164,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller3")]
-    public string Controller3CurrentProfile
+    public string? Controller3CurrentProfile
     {
         get; set;
     }
@@ -174,7 +174,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller4")]
-    public string Controller4CurrentProfile
+    public string? Controller4CurrentProfile
     {
         get; set;
     }
@@ -184,7 +184,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller5")]
-    public string Controller5CurrentProfile
+    public string? Controller5CurrentProfile
     {
         get; set;
     }
@@ -195,7 +195,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller6")]
-    public string Controller6CurrentProfile
+    public string? Controller6CurrentProfile
     {
         get; set;
     }
@@ -206,7 +206,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller7")]
-    public string Controller7CurrentProfile
+    public string? Controller7CurrentProfile
     {
         get; set;
     }
@@ -217,7 +217,7 @@ public class AppSettingsDTO
     }
 
     [XmlElement("Controller8")]
-    public string Controller8CurrentProfile
+    public string? Controller8CurrentProfile
     {
         get; set;
     }
@@ -230,48 +230,48 @@ public class AppSettingsDTO
     // 各スロットの選択（Controller1〜8）のプロファイルの固定 ID を、同じ並びで「/」区切りに書く（名前の要素は、古いバージョンのために残す）。
     // 読み込みは、ID を主にして、現在の名前に引き直す（プロファイルの名前変更に追従する。ID が勝つ）。ない・見つからないときは、名前のまま。1 つも ID がなければ、書かない
     [XmlElement("ControllerProfileIds")]
-    public string ControllerProfileIds { get; set; }
+    public string? ControllerProfileIds { get; set; }
     public bool ShouldSerializeControllerProfileIds() => !string.IsNullOrEmpty(ControllerProfileIds);
 
     /// <summary>名前 → ID（保存で使う）。省略可（登録簿がなければ、ID を書かない）。シリアライザーが設定する。</summary>
     [XmlIgnore]
-    public Func<string, string> ProfileIdOf { get; set; }
+    public Func<string, string?>? ProfileIdOf { get; set; }
 
     /// <summary>ID → 現在の名前（読み込みで使う）。見つからなければ null を返す。省略可。シリアライザーが設定する。</summary>
     [XmlIgnore]
-    public Func<string, string> ProfileNameOf { get; set; }
+    public Func<string, string?>? ProfileNameOf { get; set; }
 
     // Selected Profile settings
     [XmlElement("SelectedProfile1")]
-    public string SelectedProfile1 { get; set; }
+    public string? SelectedProfile1 { get; set; }
     public bool ShouldSerializeSelectedProfile1() => !string.IsNullOrEmpty(SelectedProfile1);
 
     [XmlElement("SelectedProfile2")]
-    public string SelectedProfile2 { get; set; }
+    public string? SelectedProfile2 { get; set; }
     public bool ShouldSerializeSelectedProfile2() => !string.IsNullOrEmpty(SelectedProfile2);
 
     [XmlElement("SelectedProfile3")]
-    public string SelectedProfile3 { get; set; }
+    public string? SelectedProfile3 { get; set; }
     public bool ShouldSerializeSelectedProfile3() => !string.IsNullOrEmpty(SelectedProfile3);
 
     [XmlElement("SelectedProfile4")]
-    public string SelectedProfile4 { get; set; }
+    public string? SelectedProfile4 { get; set; }
     public bool ShouldSerializeSelectedProfile4() => !string.IsNullOrEmpty(SelectedProfile4);
 
     [XmlElement("SelectedProfile5")]
-    public string SelectedProfile5 { get; set; }
+    public string? SelectedProfile5 { get; set; }
     public bool ShouldSerializeSelectedProfile5() => !string.IsNullOrEmpty(SelectedProfile5) && ControllerLimits.MaxControllerCount >= 5;
 
     [XmlElement("SelectedProfile6")]
-    public string SelectedProfile6 { get; set; }
+    public string? SelectedProfile6 { get; set; }
     public bool ShouldSerializeSelectedProfile6() => !string.IsNullOrEmpty(SelectedProfile6) && ControllerLimits.MaxControllerCount >= 6;
 
     [XmlElement("SelectedProfile7")]
-    public string SelectedProfile7 { get; set; }
+    public string? SelectedProfile7 { get; set; }
     public bool ShouldSerializeSelectedProfile7() => !string.IsNullOrEmpty(SelectedProfile7) && ControllerLimits.MaxControllerCount >= 7;
 
     [XmlElement("SelectedProfile8")]
-    public string SelectedProfile8 { get; set; }
+    public string? SelectedProfile8 { get; set; }
     public bool ShouldSerializeSelectedProfile8() => !string.IsNullOrEmpty(SelectedProfile8) && ControllerLimits.MaxControllerCount >= 8;
 
 
@@ -705,7 +705,7 @@ public class AppSettingsDTO
         }
     }
 
-    public string CustomSteamFolder
+    public string? CustomSteamFolder
     {
         get; set;
     } = string.Empty;
@@ -975,7 +975,7 @@ public class AppSettingsDTO
             for (int i = 0; i < ids.Length; i++)
             {
                 string selected = source.GetPersistedProfileName(i);
-                string id = !string.IsNullOrEmpty(selected) ? ProfileIdOf(selected) : null;
+                string? id = !string.IsNullOrEmpty(selected) ? ProfileIdOf(selected) : null;
                 ids[i] = id ?? string.Empty;
                 anyId |= ids[i].Length > 0;
             }
@@ -1109,7 +1109,7 @@ public class AppSettingsDTO
             {
                 if (ids[i].Length == 0) continue;
 
-                string resolved = ProfileNameOf(ids[i]);
+                string? resolved = ProfileNameOf(ids[i]);
                 if (!string.IsNullOrEmpty(resolved))
                     destination.profilePath[i] = destination.olderProfilePath[i] = destination.selectedProfile[i] = resolved;
             }

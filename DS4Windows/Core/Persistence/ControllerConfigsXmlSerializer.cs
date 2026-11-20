@@ -59,7 +59,7 @@ namespace DS4Windows.Core.Persistence
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(store.m_controllerConfigs);
 
-                XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
+                XmlNode? node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
                 if (node != null)
                 {
                     // 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
@@ -91,12 +91,12 @@ namespace DS4Windows.Core.Persistence
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(store.m_controllerConfigs);
 
-                XmlNode node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
-                XmlNode xmlControllersNode = xmlDoc.SelectSingleNode("/Controllers");
+                XmlNode? node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
+                XmlNode? xmlControllersNode = xmlDoc.SelectSingleNode("/Controllers");
                 if (node == null)
                 {
                     XmlElement el = xmlDoc.CreateElement("Controller");
-                    node = xmlControllersNode.AppendChild(el);
+                    node = xmlControllersNode.Required().AppendChild(el);
                 }
                 else
                 {
@@ -105,13 +105,13 @@ namespace DS4Windows.Core.Persistence
 
                 XmlAttribute macAttr = xmlDoc.CreateAttribute("Mac");
                 macAttr.Value = device.GetMacAddress();
-                node.Attributes.Append(macAttr);
+                node.Required().Attributes!.Append(macAttr);   // 要素ノードは、必ず属性のコレクションを持つ
 
                 XmlAttribute contTypeAttr = xmlDoc.CreateAttribute("ControllerType");
                 contTypeAttr.Value = device.DeviceType.ToString();
-                node.Attributes.Append(contTypeAttr);
+                node.Required().Attributes!.Append(contTypeAttr);   // 同上
 
-                device.OptionsStore?.PersistSettings(xmlDoc, node);
+                device.OptionsStore?.PersistSettings(xmlDoc, node.Required());
 
                 // Remove old elements
                 xmlDoc.RemoveAll();
@@ -127,7 +127,7 @@ namespace DS4Windows.Core.Persistence
                 xmlDoc.AppendChild(Node);
 
                 // Write old Controllers node back in
-                xmlDoc.AppendChild(xmlControllersNode);
+                xmlDoc.AppendChild(xmlControllersNode.Required());
 
                 // Save XML to file
                 xmlDoc.Save(store.m_controllerConfigs);

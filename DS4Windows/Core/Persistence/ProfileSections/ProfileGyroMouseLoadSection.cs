@@ -25,7 +25,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             IProfileLoadTarget control = context.Control;
             bool tpForControlsPresent = context.TpForControlsPresent;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             // 廃止された「ジャイロスワイプ」の設定は解釈せず、既定値と異なるときだけ、そのまま保持する（編集画面で「残す」を選んだとき、保存で書き戻す）
             store.gyroSlots[device].RemovedSwipe.CaptureSettings(m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSwipeSettings"));
@@ -36,7 +36,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 try
                 {
                     Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadOutputMode");
-                    string tempMode = Item.InnerText;
+                    string tempMode = Item.Required().InnerText;
                     { Enum.TryParse(tempMode, out TouchpadOutMode parsedMode); store.touchpadSlots[device].OutputMode = parsedMode; };
                 }
                 catch { store.touchpadSlots[device].OutputMode = TouchpadOutMode.Mouse; missingSetting = true; }
@@ -45,7 +45,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchDisInvTriggers");
-                string[] triggers = Item.InnerText.Split(',');
+                string[] triggers = Item.Required().InnerText.Split(',');
                 int temp = -1;
                 List<int> tempIntList = new List<int>();
                 for (int i = 0, arlen = triggers.Length; i < arlen; i++)
@@ -58,16 +58,16 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { store.touchpadSlots[device].DisInvertTriggers = new int[1] { -1 }; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSensitivity"); { int.TryParse(Item.InnerText, out int parsedValue); store.gyroSlots[device].Sensitivity = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSensitivity"); { int.TryParse(Item.Required().InnerText, out int parsedValue); store.gyroSlots[device].Sensitivity = parsedValue; }; }
             catch { store.gyroSlots[device].Sensitivity = 100; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSensVerticalScale"); { int.TryParse(Item.InnerText, out int parsedValue); store.gyroSlots[device].SensVerticalScale = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSensVerticalScale"); { int.TryParse(Item.Required().InnerText, out int parsedValue); store.gyroSlots[device].SensVerticalScale = parsedValue; }; }
             catch { store.gyroSlots[device].SensVerticalScale = 100; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroInvert"); { int.TryParse(Item.InnerText, out int parsedValue); store.gyroSlots[device].Invert = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroInvert"); { int.TryParse(Item.Required().InnerText, out int parsedValue); store.gyroSlots[device].Invert = parsedValue; }; }
             catch { store.gyroSlots[device].Invert = 0; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroTriggerTurns"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.gyroSlots[device].TriggerTurns = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroTriggerTurns"); { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.gyroSlots[device].TriggerTurns = parsedValue; }; }
             catch { store.gyroSlots[device].TriggerTurns = true; missingSetting = true; }
 
             /*try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroSmoothing"); bool.TryParse(Item.InnerText, out gyroSmoothing[device]); }
@@ -78,7 +78,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             */
 
             bool gyroSmoothingGroup = false;
-            XmlNode xmlGyroSmoothingElement =
+            XmlNode? xmlGyroSmoothingElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseSmoothingSettings");
             gyroSmoothingGroup = xmlGyroSmoothingElement != null;
 
@@ -86,15 +86,15 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 try
                 {
-                    Item = xmlGyroSmoothingElement.SelectSingleNode("UseSmoothing");
-                    bool.TryParse(Item.InnerText, out bool temp);
+                    Item = xmlGyroSmoothingElement.Required().SelectSingleNode("UseSmoothing");
+                    bool.TryParse(Item.Required().InnerText, out bool temp);
                     store.gyroSlots[device].Mouse.enableSmoothing = temp;
                 }
                 catch { store.gyroSlots[device].Mouse.enableSmoothing = false; missingSetting = true; }
 
                 try
                 {
-                    Item = xmlGyroSmoothingElement.SelectSingleNode("SmoothingMethod");
+                    Item = xmlGyroSmoothingElement.Required().SelectSingleNode("SmoothingMethod");
                     string temp = Item?.InnerText ?? GyroMouseInfo.DEFAULT_SMOOTH_TECHNIQUE;
                     store.gyroSlots[device].Mouse.DetermineSmoothMethod(temp);
                 }
@@ -102,24 +102,24 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlGyroSmoothingElement.SelectSingleNode("SmoothingWeight");
-                    int.TryParse(Item.InnerText, out int temp);
+                    Item = xmlGyroSmoothingElement.Required().SelectSingleNode("SmoothingWeight");
+                    int.TryParse(Item.Required().InnerText, out int temp);
                     store.gyroSlots[device].Mouse.smoothingWeight = Math.Min(Math.Max(0.0, Convert.ToDouble(temp * 0.01)), 1.0);
                 }
                 catch { store.gyroSlots[device].Mouse.smoothingWeight = 0.5; missingSetting = true; }
 
                 try
                 {
-                    Item = xmlGyroSmoothingElement.SelectSingleNode("SmoothingMinCutoff");
-                    double.TryParse(Item.InnerText, out double temp);
+                    Item = xmlGyroSmoothingElement.Required().SelectSingleNode("SmoothingMinCutoff");
+                    double.TryParse(Item.Required().InnerText, out double temp);
                     store.gyroSlots[device].Mouse.minCutoff = Math.Min(Math.Max(0.0, temp), 100.0);
                 }
                 catch { store.gyroSlots[device].Mouse.minCutoff = GyroMouseInfo.DEFAULT_MINCUTOFF; missingSetting = true; }
 
                 try
                 {
-                    Item = xmlGyroSmoothingElement.SelectSingleNode("SmoothingBeta");
-                    double.TryParse(Item.InnerText, out double temp);
+                    Item = xmlGyroSmoothingElement.Required().SelectSingleNode("SmoothingBeta");
+                    double.TryParse(Item.Required().InnerText, out double temp);
                     store.gyroSlots[device].Mouse.beta = Math.Min(Math.Max(0.0, temp), 1.0);
                 }
                 catch { store.gyroSlots[device].Mouse.beta = GyroMouseInfo.DEFAULT_BETA; missingSetting = true; }
@@ -129,12 +129,12 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 missingSetting = true;
             }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseHAxis"); int temp = 0; int.TryParse(Item.InnerText, out temp); store.gyroSlots[device].MouseHorizontalAxis = Math.Min(Math.Max(0, temp), 1); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseHAxis"); int temp = 0; int.TryParse(Item.Required().InnerText, out temp); store.gyroSlots[device].MouseHorizontalAxis = Math.Min(Math.Max(0, temp), 1); }
             catch { store.gyroSlots[device].MouseHorizontalAxis = 0; missingSetting = true; }
 
             try
             {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseDeadZone"); int.TryParse(Item.InnerText, out int temp);
+                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseDeadZone"); int.TryParse(Item.Required().InnerText, out int temp);
                 store.SetGyroMouseDZ(device, temp, control);
             }
             catch { store.SetGyroMouseDZ(device, MouseCursor.GYRO_MOUSE_DEADZONE, control); missingSetting = true; }
@@ -142,7 +142,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseMinThreshold");
-                double.TryParse(Item.InnerText, out double temp);
+                double.TryParse(Item.Required().InnerText, out double temp);
                 temp = Math.Min(Math.Max(temp, 1.0), 40.0);
                 store.gyroSlots[device].Mouse.minThreshold = temp;
             }
@@ -151,7 +151,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseToggle");
-                bool.TryParse(Item.InnerText, out bool temp);
+                bool.TryParse(Item.Required().InnerText, out bool temp);
                 store.SetGyroMouseToggle(device, temp, control);
             }
             catch

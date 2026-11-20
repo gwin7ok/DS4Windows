@@ -82,7 +82,7 @@ namespace DS4Windows.Core.Settings
         /// 以前の設定は、常に置き換わる。
         /// </summary>
         /// <returns>保持する設定があるか。</returns>
-        public bool CaptureSettings(XmlNode swipeSettings)
+        public bool CaptureSettings(XmlNode? swipeSettings)
         {
             if (swipeSettings == null || IsAllDefault(swipeSettings))
             {

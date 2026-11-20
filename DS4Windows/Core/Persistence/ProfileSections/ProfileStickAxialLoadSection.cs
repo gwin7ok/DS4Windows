@@ -19,33 +19,33 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             bool lsAxialDeadGroup = false;
-            XmlNode lsAxialDeadElement =
+            XmlNode? lsAxialDeadElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/LSAxialDeadOptions");
             lsAxialDeadGroup = lsAxialDeadElement != null;
 
             if (lsAxialDeadGroup)
             {
-                context.ReadInt(lsAxialDeadElement, "DeadZoneX", 0, 127, v => store.stickSlots[device].LSMod.xAxisDeadInfo.deadZone = v);
+                context.ReadInt(lsAxialDeadElement.Required(), "DeadZoneX", 0, 127, v => store.stickSlots[device].LSMod.xAxisDeadInfo.deadZone = v);
 
-                context.ReadInt(lsAxialDeadElement, "DeadZoneY", 0, 127, v => store.stickSlots[device].LSMod.yAxisDeadInfo.deadZone = v);
+                context.ReadInt(lsAxialDeadElement.Required(), "DeadZoneY", 0, 127, v => store.stickSlots[device].LSMod.yAxisDeadInfo.deadZone = v);
 
-                context.ReadInt(lsAxialDeadElement, "MaxZoneX", 0, 100, v => store.stickSlots[device].LSMod.xAxisDeadInfo.maxZone = v);
+                context.ReadInt(lsAxialDeadElement.Required(), "MaxZoneX", 0, 100, v => store.stickSlots[device].LSMod.xAxisDeadInfo.maxZone = v);
 
-                context.ReadInt(lsAxialDeadElement, "MaxZoneY", 0, 100, v => store.stickSlots[device].LSMod.yAxisDeadInfo.maxZone = v);
+                context.ReadInt(lsAxialDeadElement.Required(), "MaxZoneY", 0, 100, v => store.stickSlots[device].LSMod.yAxisDeadInfo.maxZone = v);
 
-                context.ReadInt(lsAxialDeadElement, "AntiDeadZoneX", 0, 100, v => store.stickSlots[device].LSMod.xAxisDeadInfo.antiDeadZone = v);
+                context.ReadInt(lsAxialDeadElement.Required(), "AntiDeadZoneX", 0, 100, v => store.stickSlots[device].LSMod.xAxisDeadInfo.antiDeadZone = v);
 
-                context.ReadInt(lsAxialDeadElement, "AntiDeadZoneY", 0, 100, v => store.stickSlots[device].LSMod.yAxisDeadInfo.antiDeadZone = v);
+                context.ReadInt(lsAxialDeadElement.Required(), "AntiDeadZoneY", 0, 100, v => store.stickSlots[device].LSMod.yAxisDeadInfo.antiDeadZone = v);
 
-                context.ReadDouble(lsAxialDeadElement, "MaxOutputX", 0.0, 100.0, v => store.stickSlots[device].LSMod.xAxisDeadInfo.maxOutput = v);
+                context.ReadDouble(lsAxialDeadElement.Required(), "MaxOutputX", 0.0, 100.0, v => store.stickSlots[device].LSMod.xAxisDeadInfo.maxOutput = v);
 
-                context.ReadDouble(lsAxialDeadElement, "MaxOutputY", 0.0, 100.0, v => store.stickSlots[device].LSMod.yAxisDeadInfo.maxOutput = v);
+                context.ReadDouble(lsAxialDeadElement.Required(), "MaxOutputY", 0.0, 100.0, v => store.stickSlots[device].LSMod.yAxisDeadInfo.maxOutput = v);
             }
 
-            XmlNode lsDeltaAccelElement =
+            XmlNode? lsDeltaAccelElement =
                 m_Xdoc.SelectSingleNode($"/{rootname}/LSDeltaAccelSettings");
             if (lsDeltaAccelElement != null)
             {
@@ -110,38 +110,38 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             context.ReadEnum<StickDeadZoneInfo.DeadZoneType>(m_Xdoc, "/" + rootname + "/RSDeadZoneType", v => store.stickSlots[device].RSMod.deadzoneType = v);
 
             bool rsAxialDeadGroup = false;
-            XmlNode rsAxialDeadElement =
+            XmlNode? rsAxialDeadElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/RSAxialDeadOptions");
             rsAxialDeadGroup = rsAxialDeadElement != null;
 
             if (rsAxialDeadGroup)
             {
-                context.ReadInt(rsAxialDeadElement, "DeadZoneX", 0, 127, v => store.stickSlots[device].RSMod.xAxisDeadInfo.deadZone = v);
+                context.ReadInt(rsAxialDeadElement.Required(), "DeadZoneX", 0, 127, v => store.stickSlots[device].RSMod.xAxisDeadInfo.deadZone = v);
 
-                context.ReadInt(rsAxialDeadElement, "DeadZoneY", 0, 127, v => store.stickSlots[device].RSMod.yAxisDeadInfo.deadZone = v);
+                context.ReadInt(rsAxialDeadElement.Required(), "DeadZoneY", 0, 127, v => store.stickSlots[device].RSMod.yAxisDeadInfo.deadZone = v);
 
-                context.ReadInt(rsAxialDeadElement, "MaxZoneX", 0, 100, v => store.stickSlots[device].RSMod.xAxisDeadInfo.maxZone = v);
+                context.ReadInt(rsAxialDeadElement.Required(), "MaxZoneX", 0, 100, v => store.stickSlots[device].RSMod.xAxisDeadInfo.maxZone = v);
 
-                context.ReadInt(rsAxialDeadElement, "MaxZoneY", 0, 100, v => store.stickSlots[device].RSMod.yAxisDeadInfo.maxZone = v);
+                context.ReadInt(rsAxialDeadElement.Required(), "MaxZoneY", 0, 100, v => store.stickSlots[device].RSMod.yAxisDeadInfo.maxZone = v);
 
-                context.ReadInt(rsAxialDeadElement, "AntiDeadZoneX", 0, 100, v => store.stickSlots[device].RSMod.xAxisDeadInfo.antiDeadZone = v);
+                context.ReadInt(rsAxialDeadElement.Required(), "AntiDeadZoneX", 0, 100, v => store.stickSlots[device].RSMod.xAxisDeadInfo.antiDeadZone = v);
 
-                context.ReadInt(rsAxialDeadElement, "AntiDeadZoneY", 0, 100, v => store.stickSlots[device].RSMod.yAxisDeadInfo.antiDeadZone = v);
+                context.ReadInt(rsAxialDeadElement.Required(), "AntiDeadZoneY", 0, 100, v => store.stickSlots[device].RSMod.yAxisDeadInfo.antiDeadZone = v);
 
-                context.ReadDouble(rsAxialDeadElement, "MaxOutputX", 0.0, 100.0, v => store.stickSlots[device].RSMod.xAxisDeadInfo.maxOutput = v);
+                context.ReadDouble(rsAxialDeadElement.Required(), "MaxOutputX", 0.0, 100.0, v => store.stickSlots[device].RSMod.xAxisDeadInfo.maxOutput = v);
 
-                context.ReadDouble(rsAxialDeadElement, "MaxOutputY", 0.0, 100.0, v => store.stickSlots[device].RSMod.yAxisDeadInfo.maxOutput = v);
+                context.ReadDouble(rsAxialDeadElement.Required(), "MaxOutputY", 0.0, 100.0, v => store.stickSlots[device].RSMod.yAxisDeadInfo.maxOutput = v);
             }
 
-            XmlNode rsDeltaAccelElement =
+            XmlNode? rsDeltaAccelElement =
                 m_Xdoc.SelectSingleNode($"/{rootname}/RSDeltaAccelSettings");
             if (lsDeltaAccelElement != null)
             {
-                context.ReadBool(rsDeltaAccelElement, "Enabled", v => store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled = v);
+                context.ReadBool(rsDeltaAccelElement.Required(), "Enabled", v => store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.enabled = v);
 
                 try
                 {
-                    Item = rsDeltaAccelElement.SelectSingleNode("Multiplier");
+                    Item = rsDeltaAccelElement.Required().SelectSingleNode("Multiplier");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.multiplier =
@@ -152,7 +152,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = rsDeltaAccelElement.SelectSingleNode("MaxTravel");
+                    Item = rsDeltaAccelElement.Required().SelectSingleNode("MaxTravel");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.maxTravel =
@@ -163,7 +163,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = rsDeltaAccelElement.SelectSingleNode("MinTravel");
+                    Item = rsDeltaAccelElement.Required().SelectSingleNode("MinTravel");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.minTravel =
@@ -174,7 +174,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = rsDeltaAccelElement.SelectSingleNode("EasingDuration");
+                    Item = rsDeltaAccelElement.Required().SelectSingleNode("EasingDuration");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.easingDuration =
@@ -185,7 +185,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = rsDeltaAccelElement.SelectSingleNode("MinFactor");
+                    Item = rsDeltaAccelElement.Required().SelectSingleNode("MinFactor");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.stickSlots[device].RSOutput.outputSettings.controlSettings.deltaAccelSettings.minfactor =

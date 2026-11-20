@@ -19,7 +19,7 @@ public class InputDeviceOptions : IXmlSerializable
     /// <summary>節の値を持つ入れ物（既定値で始まる）。</summary>
     public ControlServiceDeviceOptions Options { get; } = new ControlServiceDeviceOptions();
 
-    public XmlSchema GetSchema()
+    public XmlSchema? GetSchema()
     {
         return null;
     }
@@ -51,11 +51,11 @@ public class InputDeviceOptions : IXmlSerializable
         }
 
         XmlDocument doc = new XmlDocument();
-        XmlNode node = doc.ReadNode(reader);
+        XmlNode? node = doc.ReadNode(reader);
         foreach (InputDeviceFamily family in Enum.GetValues(typeof(InputDeviceFamily)))
         {
             DeviceOptionsBase options = Options[family];
-            XmlNode section = node.SelectSingleNode(options.SectionName);
+            XmlNode? section = node.Required().SelectSingleNode(options.SectionName);
             if (section == null)
             {
                 continue;
@@ -63,8 +63,8 @@ public class InputDeviceOptions : IXmlSerializable
 
             foreach (ControllerSetting setting in options.Settings)
             {
-                string text = section.SelectSingleNode(setting.XmlName)?.InnerText;
-                Action apply = setting.ParseOrKeep(text);
+                string? text = section.SelectSingleNode(setting.XmlName)?.InnerText;
+                Action? apply = setting.ParseOrKeep(text);
                 if (apply != null)
                 {
                     apply();

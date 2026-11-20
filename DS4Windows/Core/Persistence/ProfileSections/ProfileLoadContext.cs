@@ -38,13 +38,13 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         public LightbarSettingInfo LightbarSettings { get; }
         public LightbarDS4WinInfo LightInfo { get; }
 
-        public DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettings { get; set; }
+        public DS4Windows.Core.Abstractions.IProfileSettingsService ProfileSettings { get; set; } = null!;   // 生成の直後に、LegacyProfileXmlSerializer の初期化子が必ず設定する
 
 
         /// <summary><c>UseTPforControls</c> 要素の有無。雑多の節が書き、<c>TouchpadOutputMode</c> を読む節が読む。</summary>
         public bool TpForControlsPresent { get; set; }
 
-        public DS4Windows.Core.Abstractions.IEnvironmentService Environment { get; set; }
+        public DS4Windows.Core.Abstractions.IEnvironmentService Environment { get; set; } = null!;   // 同上
 
         /// <summary>読込の引数 <c>xinputChange</c>（起動前の読込では、出力デバイスの状態を確認しない）。</summary>
         public bool XinputChange { get; set; }
@@ -67,7 +67,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         /// </summary>
         public void ReadInt(XmlNode source, string xpath, int min, int max, Action<int> assign)
         {
-            XmlNode node = source.SelectSingleNode(xpath);
+            XmlNode? node = source.SelectSingleNode(xpath);
             if (node == null) return;
             if (int.TryParse(node.InnerText, out int value)) assign(Math.Min(Math.Max(value, min), max));
         }
@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         /// <summary><see cref="ReadInt"/> の実数版。</summary>
         public void ReadDouble(XmlNode source, string xpath, double min, double max, Action<double> assign)
         {
-            XmlNode node = source.SelectSingleNode(xpath);
+            XmlNode? node = source.SelectSingleNode(xpath);
             if (node == null) return;
             if (double.TryParse(node.InnerText, out double value)) assign(Math.Min(Math.Max(value, min), max));
         }
@@ -83,14 +83,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         /// <summary>真偽値の要素を読む。要素がない、または解析に失敗したときは何もしない。</summary>
         public void ReadBool(XmlNode source, string xpath, Action<bool> assign)
         {
-            XmlNode node = source.SelectSingleNode(xpath);
+            XmlNode? node = source.SelectSingleNode(xpath);
             if (node != null && bool.TryParse(node.InnerText ?? string.Empty, out bool value)) assign(value);
         }
 
         /// <summary>列挙型の要素を読む。要素がない、または解析に失敗したときは何もしない。</summary>
         public void ReadEnum<T>(XmlNode source, string xpath, Action<T> assign) where T : struct
         {
-            XmlNode node = source.SelectSingleNode(xpath);
+            XmlNode? node = source.SelectSingleNode(xpath);
             if (node != null && Enum.TryParse(node.InnerText ?? string.Empty, out T value)) assign(value);
         }
 

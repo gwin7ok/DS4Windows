@@ -116,7 +116,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 if (hasvalue)
                 {
                     XmlNode extraNode = m_Xdoc.CreateNode(XmlNodeType.Element, dcs.control.ToString(), null);
-                    extraNode.InnerText = dcs.extras;
+                    extraNode.InnerText = dcs.extras!;   // hasvalue が真のときは、extras は空でない
                     Extras.AppendChild(extraNode);
                 }
             }

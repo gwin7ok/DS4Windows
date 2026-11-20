@@ -177,7 +177,7 @@ namespace DS4Windows.Core.Persistence
 
         // Global の静的イベントから、このリポジトリ（DI のシングルトン）のインスタンスイベントにした。
         // 発火元は ProfileApplicationService（RaiseSelectedProfileChanged 経由）。購読者は ControllerListViewModel のみ。
-        public event EventHandler<SelectedProfileChangedEventArgs> SelectedProfileChanged;
+        public event EventHandler<SelectedProfileChangedEventArgs>? SelectedProfileChanged;
 
         public void RaiseSelectedProfileChanged(int deviceIndex, string profileName)
             => SelectedProfileChanged?.Invoke(this, new SelectedProfileChangedEventArgs(deviceIndex, profileName));
@@ -245,7 +245,7 @@ namespace DS4Windows.Core.Persistence
                         doc.Load(file);
 
                         bool modified = false;
-                        System.Xml.XmlNodeList nodes = doc.SelectNodes("DS4Windows/Control/Special/*[@Type='Profile']/ProfileName");
+                        System.Xml.XmlNodeList? nodes = doc.SelectNodes("DS4Windows/Control/Special/*[@Type='Profile']/ProfileName");
                         if (nodes == null || nodes.Count == 0)
                             continue;
 
@@ -280,7 +280,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         // ---- デバイス別・割当済みSpecialAction名リスト ----
-        public List<string>[] ProfileActions => _config.profileActions;
+        public List<string>?[] ProfileActions => _config.profileActions;
         public void CacheExtraProfileInfo(int deviceIndex) => _config.CacheExtraProfileInfo(deviceIndex);
 
         // ---- プロファイルのカスタムフラグキャッシュ更新 ----
@@ -302,7 +302,7 @@ namespace DS4Windows.Core.Persistence
         }
 
         // ---- プロファイル未定義アクションの警告ログ出力 ----
-        public void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string overrideProfileName = null)
+        public void EmitMissingActionLogsForDevice(int deviceIndex, bool forceEmit = false, string? overrideProfileName = null)
             => _config.EmitMissingActionLogsForDevice(deviceIndex, forceEmit, overrideProfileName);
 
         // ---- App.xaml.cs（Post-Host）の Global 直接参照解消 ----
@@ -337,7 +337,7 @@ namespace DS4Windows.Core.Persistence
             if (string.IsNullOrWhiteSpace(actionName))
                 return result;
 
-            List<string>[] actions = ProfileActions;
+            List<string>?[] actions = ProfileActions;
             ProfileSlotNames paths = ProfilePath;
             if (actions == null || paths == null)
                 return result;
@@ -345,8 +345,8 @@ namespace DS4Windows.Core.Persistence
             int slotCount = Math.Min(_environment.ControllerSlotLimit, Math.Min(actions.Length, paths.Length));
             for (int i = 0; i < slotCount; i++)
             {
-                if (actions[i] != null && !string.IsNullOrEmpty(paths[i]) &&
-                    actions[i].Contains(actionName, StringComparer.Ordinal) &&
+                if (actions[i] is { } slotActions && !string.IsNullOrEmpty(paths[i]) &&
+                    slotActions.Contains(actionName, StringComparer.Ordinal) &&
                     !result.Contains(paths[i], StringComparer.OrdinalIgnoreCase))
                 {
                     result.Add(paths[i]);
@@ -358,7 +358,7 @@ namespace DS4Windows.Core.Persistence
 
         // newName が null のときは、oldName を取り除く。
         // XmlIoLock（同一 XML 排他ロック）の下で、プロファイルごとに読み込み → 置換 → 保存を行う。
-        private IReadOnlyList<string> UpdateActionReferences(string oldName, string newName)
+        private IReadOnlyList<string> UpdateActionReferences(string oldName, string? newName)
         {
             var changed = new List<string>();
             string[] files;
@@ -382,7 +382,7 @@ namespace DS4Windows.Core.Persistence
                     {
                         var doc = new System.Xml.XmlDocument { PreserveWhitespace = true };
                         doc.Load(file);
-                        System.Xml.XmlNode node = doc.SelectSingleNode("DS4Windows/ProfileActions");
+                        System.Xml.XmlNode? node = doc.SelectSingleNode("DS4Windows/ProfileActions");
                         if (node == null || string.IsNullOrEmpty(node.InnerText))
                             continue;
 
@@ -393,7 +393,7 @@ namespace DS4Windows.Core.Persistence
                         var result = new List<string>();
                         foreach (string n in names)
                         {
-                            string value = string.Equals(n, oldName, StringComparison.Ordinal) ? newName : n;
+                            string? value = string.Equals(n, oldName, StringComparison.Ordinal) ? newName : n;
                             if (value == null || result.Contains(value, StringComparer.Ordinal))
                                 continue;
                             result.Add(value);

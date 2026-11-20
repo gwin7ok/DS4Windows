@@ -20,9 +20,9 @@ namespace DS4Windows.Core.Persistence
         private readonly BackingStore store;
 
         // 紐付けたプロファイルの ID と名前を結ぶ。省略可（登録簿がなければ、従来どおり名前だけ）
-        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentity;
+        private readonly DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentity;
 
-        public LinkedProfilesXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IProfileIdentityService profileIdentityService = null)
+        public LinkedProfilesXmlSerializer(BackingStore store, DS4Windows.Core.Abstractions.IProfileIdentityService? profileIdentityService = null)
         {
             ArgumentNullException.ThrowIfNull(store);
             this.store = store;
@@ -87,17 +87,17 @@ namespace DS4Windows.Core.Persistence
                 using StreamReader sr = new StreamReader(store.m_linkedProfiles);
                 try
                 {
-                    LinkedProfilesDTO dto = serializer.Deserialize(sr) as LinkedProfilesDTO;
-                    if (profileIdentity != null) dto.ProfileNameOf = profileIdentity.GetName;   // Phase10-Step4d W4
-                    dto.MapTo(store);
+                    LinkedProfilesDTO? dto = serializer.Deserialize(sr) as LinkedProfilesDTO;
+                    if (profileIdentity != null) dto!.ProfileNameOf = profileIdentity.GetName;   // Phase10-Step4d W4
+                    dto!.MapTo(store);   // LinkedControllers の根要素なら、必ずこの型で返る
                 }
                 catch (InvalidOperationException e)
                 {
-                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedInvalidData", e.InnerException.Message);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedInvalidData", e.InnerException?.Message ?? e.Message);
                 }
                 catch (XmlException e)
                 {
-                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedInvalidSyntax", e.InnerException.Message);
+                    AppLogger.LogUser(AppLogLevel.Warn, "Log_Xml_LinkedInvalidSyntax", e.InnerException?.Message ?? e.Message);
                 }
             }
             else

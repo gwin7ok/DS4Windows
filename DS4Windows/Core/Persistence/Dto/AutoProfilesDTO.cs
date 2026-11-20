@@ -33,11 +33,11 @@ namespace DS4Windows.Core.Persistence.Dto
 
         /// <summary>名前 → ID（保存で使う）。省略可（なければ、ID を書かない）。ホルダーが設定する。</summary>
         [XmlIgnore]
-        public System.Func<string, string> ProfileIdOf { get; set; }
+        public System.Func<string, string?>? ProfileIdOf { get; set; }
 
         /// <summary>ID → 現在の名前（読み込みで使う）。見つからなければ null。省略可。ホルダーが設定する。</summary>
         [XmlIgnore]
-        public System.Func<string, string> ProfileNameOf { get; set; }
+        public System.Func<string, string?>? ProfileNameOf { get; set; }
 
         public AutoProfilesDTO()
         {
@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Persistence.Dto
                     for (int i = 0; i < ids.Length; i++)
                     {
                         string profileName = entity.ProfileNames[i];
-                        string id = !string.IsNullOrEmpty(profileName) && profileName != AutoProfileEntity.NONE_STRING ? ProfileIdOf(profileName) : null;
+                        string? id = !string.IsNullOrEmpty(profileName) && profileName != AutoProfileEntity.NONE_STRING ? ProfileIdOf(profileName) : null;
                         ids[i] = id ?? string.Empty;
                         anyId |= ids[i].Length > 0;
                     }
@@ -115,7 +115,7 @@ namespace DS4Windows.Core.Persistence.Dto
                     {
                         if (ids[i].Length == 0) continue;
 
-                        string resolved = ProfileNameOf(ids[i]);
+                        string? resolved = ProfileNameOf(ids[i]);
                         if (!string.IsNullOrEmpty(resolved)) autoprof.ProfileNames[i] = resolved;
                     }
                 }

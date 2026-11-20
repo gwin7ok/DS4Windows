@@ -852,6 +852,18 @@ namespace DS4Windows.Core.Settings
             return null;
         }
 
+        /// <summary>実在するコントロール（<see cref="DS4Controls.None"/> 以外）の設定を返す。プリセットの読み込みなど、コントロールが固定のときに使う（なければ例外）。</summary>
+        /// <summary>スロットの有効なスペシャルアクション名のリスト。リストは、プロファイルの読み込み前の既定値の設定（ResetProfile）で作られるため、読み込み中・保存中は必ずある。</summary>
+        public List<string> GetRequiredProfileActions(int device)
+        {
+            return profileActions[device] ?? throw new InvalidOperationException($"スロット {device} のスペシャルアクション名のリストがない");
+        }
+
+        public DS4ControlSettings GetRequiredDS4CSetting(int deviceNum, DS4Controls dc)
+        {
+            return GetDS4CSetting(deviceNum, dc) ?? throw new InvalidOperationException($"コントロール {dc} の設定がない");
+        }
+
         public DS4ControlSettings? GetDS4CSetting(int deviceNum, DS4Controls dc)
         {
             int temp = (int)dc;

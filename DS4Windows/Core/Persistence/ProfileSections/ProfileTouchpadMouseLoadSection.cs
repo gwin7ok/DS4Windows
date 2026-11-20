@@ -19,18 +19,18 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballMode"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].Trackball = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballMode"); { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.touchpadSlots[device].Trackball = parsedValue; }; }
             catch { store.touchpadSlots[device].Trackball = false; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballFriction"); { double.TryParse(Item.InnerText, out double parsedValue); store.touchpadSlots[device].TrackballFriction = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TrackballFriction"); { double.TryParse(Item.Required().InnerText, out double parsedValue); store.touchpadSlots[device].TrackballFriction = parsedValue; }; }
             catch { store.touchpadSlots[device].TrackballFriction = 10.0; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchRelMouseRotation");
-                int.TryParse(Item.InnerText, out int temp);
+                int.TryParse(Item.Required().InnerText, out int temp);
                 temp = Math.Min(Math.Max(temp, -180), 180);
                 store.touchpadSlots[device].RelMouse.rotation = temp * Math.PI / 180.0;
             }
@@ -39,7 +39,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchRelMouseMinThreshold");
-                double.TryParse(Item.InnerText, out double temp);
+                double.TryParse(Item.Required().InnerText, out double temp);
                 temp = Math.Min(Math.Max(temp, 1.0), 40.0);
                 store.touchpadSlots[device].RelMouse.minThreshold = temp;
             }
@@ -47,11 +47,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
 
             bool touchMStickGroup = false;
-            XmlNode xmlTouchMStickSmoothingElement =
+            XmlNode? xmlTouchMStickSmoothingElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadMouseStick");
             touchMStickGroup = xmlTouchMStickSmoothingElement != null;
 
-            if (touchMStickGroup && xmlTouchMStickSmoothingElement.HasChildNodes)
+            if (touchMStickGroup && xmlTouchMStickSmoothingElement.Required().HasChildNodes)
             {
                 //try
                 //{
@@ -65,7 +65,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("DeadZone");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("DeadZone");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
                         store.touchpadSlots[device].MouseStick.deadZone = temp;
@@ -75,7 +75,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("MaxZone");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("MaxZone");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
                         store.touchpadSlots[device].MouseStick.maxZone = Math.Max(temp, 1);
@@ -85,7 +85,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("OutputStick");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("OutputStick");
                     if (Enum.TryParse(Item?.InnerText ?? "",
                         out TouchMouseStickInfo.OutputStick temp))
                     {
@@ -96,11 +96,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("OutputStickAxes");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("OutputStickAxes");
                     if (Item == null)
                     {
                         // 互換。以前の保存（上流の 2022-10-20 以来の不具合）は、軸を 2 つ目の <OutputStick> として書いていた
-                        XmlNodeList legacyOutputStickNodes = xmlTouchMStickSmoothingElement.SelectNodes("OutputStick");
+                        XmlNodeList? legacyOutputStickNodes = xmlTouchMStickSmoothingElement.Required().SelectNodes("OutputStick");
                         if (legacyOutputStickNodes != null && legacyOutputStickNodes.Count > 1)
                             Item = legacyOutputStickNodes[1];
                     }
@@ -114,7 +114,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("AntiDeadX");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("AntiDeadX");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.touchpadSlots[device].MouseStick.antiDeadX = temp;
@@ -124,7 +124,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("AntiDeadY");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("AntiDeadY");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.touchpadSlots[device].MouseStick.antiDeadY = temp;
@@ -134,7 +134,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("Invert");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("Invert");
                     if (uint.TryParse(Item?.InnerText ?? "",
                         out uint temp))
                     {
@@ -145,7 +145,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("MaxOutput");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("MaxOutput");
                     if (double.TryParse(Item?.InnerText ?? "", out double temp))
                     {
                         store.touchpadSlots[device].MouseStick.maxOutput = Math.Clamp(temp, 0.0, 100.0);
@@ -153,11 +153,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 }
                 catch { }
 
-                context.ReadBool(xmlTouchMStickSmoothingElement, "MaxOutputEnabled", v => store.touchpadSlots[device].MouseStick.maxOutputEnabled = v);
+                context.ReadBool(xmlTouchMStickSmoothingElement.Required(), "MaxOutputEnabled", v => store.touchpadSlots[device].MouseStick.maxOutputEnabled = v);
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("VerticalScale");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("VerticalScale");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
                         store.touchpadSlots[device].MouseStick.vertScale = temp;
@@ -165,11 +165,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 }
                 catch { }
 
-                context.ReadEnum<StickOutCurve.Curve>(xmlTouchMStickSmoothingElement, "OutputCurve", v => store.touchpadSlots[device].MouseStick.outputCurve = v);
+                context.ReadEnum<StickOutCurve.Curve>(xmlTouchMStickSmoothingElement.Required(), "OutputCurve", v => store.touchpadSlots[device].MouseStick.outputCurve = v);
 
                 try
                 {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("Rotation");
+                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("Rotation");
                     if (int.TryParse(Item?.InnerText ?? "", out int temp))
                     {
                         temp = Math.Clamp(temp, -180, 180);
@@ -180,11 +180,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
 
                 bool stickSmoothingGroup = false;
-                XmlNode xmlStickSmoothingElement =
-                    xmlTouchMStickSmoothingElement.SelectSingleNode("SmoothingSettings");
+                XmlNode? xmlStickSmoothingElement =
+                    xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingSettings");
                 stickSmoothingGroup = xmlStickSmoothingElement != null;
 
-                if (stickSmoothingGroup && xmlStickSmoothingElement.HasChildNodes)
+                if (stickSmoothingGroup && xmlStickSmoothingElement.Required().HasChildNodes)
                 {
                     //try
                     //{
@@ -196,7 +196,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                     try
                     {
-                        Item = xmlTouchMStickSmoothingElement.SelectSingleNode("SmoothingMethod");
+                        Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingMethod");
                         if (Enum.TryParse(Item?.InnerText ?? "",
                             out TouchMouseStickInfo.SmoothingMethod temp))
                         {
@@ -207,7 +207,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                     try
                     {
-                        Item = xmlTouchMStickSmoothingElement.SelectSingleNode("SmoothingMinCutoff");
+                        Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingMinCutoff");
                         if (double.TryParse(Item?.InnerText ?? "", out double temp))
                         {
                             store.touchpadSlots[device].MouseStick.minCutoff = Math.Clamp(temp, 0.0, 100.0);
@@ -217,7 +217,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
                     try
                     {
-                        Item = xmlTouchMStickSmoothingElement.SelectSingleNode("SmoothingBeta");
+                        Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingBeta");
                         if (double.TryParse(Item?.InnerText ?? "", out double temp))
                         {
                             store.touchpadSlots[device].MouseStick.beta = Math.Clamp(temp, 0.0, 1.0);

@@ -29,17 +29,17 @@ namespace DS4Windows.Core.Persistence.Dto
         public string Serial
         {
             get; set;
-        }
+        } = string.Empty;
 
         [XmlIgnore]
         public string Profile
         {
             get; set;
-        }
+        } = string.Empty;
 
         /// <summary>紐付けたプロファイルの固定 ID（要素の Id 属性）。古いファイルにはない。</summary>
         [XmlIgnore]
-        public string ProfileId
+        public string? ProfileId
         {
             get; set;
         }

@@ -19,19 +19,19 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXDeadZone");
-                { double.TryParse(Item.InnerText, out double parsedValue); store.sixAxisSlots[device].SXDeadZone = parsedValue; };
+                { double.TryParse(Item.Required().InnerText, out double parsedValue); store.sixAxisSlots[device].SXDeadZone = parsedValue; };
             }
             catch { store.sixAxisSlots[device].SXDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE; missingSetting = true; }
 
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZDeadZone");
-                { double.TryParse(Item.InnerText, out double parsedValue); store.sixAxisSlots[device].SZDeadZone = parsedValue; };
+                { double.TryParse(Item.Required().InnerText, out double parsedValue); store.sixAxisSlots[device].SZDeadZone = parsedValue; };
             }
             catch { store.sixAxisSlots[device].SZDeadZone = BackingStore.DEFAULT_SX_TILT_DEADZONE; missingSetting = true; }
 
@@ -39,7 +39,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXMaxZone");
                 int temp = 0;
-                int.TryParse(Item.InnerText, out temp);
+                int.TryParse(Item.Required().InnerText, out temp);
                 store.sixAxisSlots[device].SXMaxZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
             catch { store.sixAxisSlots[device].SXMaxZone = 1.0; missingSetting = true; }
@@ -48,7 +48,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZMaxZone");
                 int temp = 0;
-                int.TryParse(Item.InnerText, out temp);
+                int.TryParse(Item.Required().InnerText, out temp);
                 store.sixAxisSlots[device].SZMaxZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
             catch { store.sixAxisSlots[device].SZMaxZone = 1.0; missingSetting = true; }
@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXAntiDeadZone");
                 int temp = 0;
-                int.TryParse(Item.InnerText, out temp);
+                int.TryParse(Item.Required().InnerText, out temp);
                 store.sixAxisSlots[device].SXAntiDeadZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
             catch { store.sixAxisSlots[device].SXAntiDeadZone = 0.0; missingSetting = true; }
@@ -66,7 +66,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZAntiDeadZone");
                 int temp = 0;
-                int.TryParse(Item.InnerText, out temp);
+                int.TryParse(Item.Required().InnerText, out temp);
                 store.sixAxisSlots[device].SZAntiDeadZone = Math.Min(Math.Max(temp * 0.01, 0.0), 1.0);
             }
             catch { store.sixAxisSlots[device].SZAntiDeadZone = 0.0; missingSetting = true; }
@@ -74,9 +74,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try
             {
                 Item = m_Xdoc.SelectSingleNode("/" + rootname + "/Sensitivity");
-                string[] s = Item.InnerText.Split('|');
+                string[] s = Item.Required().InnerText.Split('|');
                 if (s.Length == 1)
-                    s = Item.InnerText.Split(',');
+                    s = Item.Required().InnerText.Split(',');
 
                 bool parsedOk1 = double.TryParse(s[0], out double parsedValue1); store.stickSlots[device].LSSens = parsedValue1;
                 if (parsedOk1)

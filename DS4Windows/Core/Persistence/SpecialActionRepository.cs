@@ -19,7 +19,7 @@ namespace DS4Windows.Core.Persistence
         // Actions.xml の保存・読込
         private readonly DS4Windows.Core.Persistence.SpecialActionsXmlSerializer _actionsXml;
 
-        public event EventHandler ActionsChanged;
+        public event EventHandler? ActionsChanged;
 
         // キー型スペシャルアクションの保存後に、そのキーの実行時状態（合成入力の押下、トグル）をリセットする。
         // 旧 SyntheticInputState・IManagedActionManager（第2層）の代わりに、リセットだけの契約を受ける
@@ -66,7 +66,7 @@ namespace DS4Windows.Core.Persistence
 
         public List<SpecialAction> ActionList
         {
-            get => _config != null ? _config.actions : null;
+            get => _config != null ? _config.actions : null!;   // 契約は null を許さないが、設定を持たない生成でも例外にしない（従来どおり）
         }
 
         // Phase4-Step3（c06a1c9b）で作られたが App 側が未接続だった契約。
@@ -94,7 +94,7 @@ namespace DS4Windows.Core.Persistence
             }
         }
 
-        public SpecialAction GetAction(string actionName)
+        public SpecialAction? GetAction(string actionName)
         {
             if (string.IsNullOrWhiteSpace(actionName) || _config == null || _config.actions == null)
                 return null;
@@ -137,7 +137,7 @@ namespace DS4Windows.Core.Persistence
         // 対象は Global.store（Global.m_Config と同じ実体）。本リポジトリの _config が Global.store 以外の場合でも、
         // Global と同じ実体に対して動作する。
         public void SaveAction(string name, string controls, int mode, string details, bool edit,
-            double delayTime = 0.0, string extras = "", string actionId = null,
+            double delayTime = 0.0, string extras = "", string? actionId = null,
             MacroExecuteMode macroExecuteMode = MacroExecuteMode.Once, bool centerCursor = false)
         {
             SaveActionAndReload(name, controls, mode, details, edit, delayTime, extras, actionId, macroExecuteMode, centerCursor);
@@ -196,7 +196,7 @@ namespace DS4Windows.Core.Persistence
 
 
         // R-1: アクションの複製。保存と同じ順序（実行中の状態のクリア → Actions.xml への書き込み → 読み直しと件数の検証）
-        public string DuplicateAction(string actionName)
+        public string? DuplicateAction(string actionName)
         {
             if (ActionList == null || !ActionList.Exists(item => item.name == actionName)) return null;
 
@@ -243,7 +243,7 @@ namespace DS4Windows.Core.Persistence
             catch { /* 後始末・解放の失敗は無視してよい（解放済み・切断済みでも続ける） */ }
         }
 
-        private void SaveActionAndReload(string name, string controls, int mode, string details, bool edit, double delayTime, string extras, string actionId,
+        private void SaveActionAndReload(string name, string controls, int mode, string details, bool edit, double delayTime, string extras, string? actionId,
             MacroExecuteMode macroExecuteMode, bool centerCursor)
         {
             // Mark actionDone as uninitialized before mutating actions to reduce
@@ -281,7 +281,7 @@ namespace DS4Windows.Core.Persistence
                 {
                     XmlDocument xd = new XmlDocument();
                     xd.Load(_config.m_Actions);
-                    XmlNodeList nodes = xd.SelectNodes("/Actions/Action");
+                    XmlNodeList? nodes = xd.SelectNodes("/Actions/Action");
                     fileCount = nodes?.Count ?? 0;
                 }
                 catch (Exception ex)
@@ -326,7 +326,7 @@ namespace DS4Windows.Core.Persistence
                     if (Path.GetExtension(s) == ".xml")
                     {
                         xDoc.Load(s);
-                        XmlNode el = xDoc.SelectSingleNode("DS4Windows/ProfileActions");
+                        XmlNode? el = xDoc.SelectSingleNode("DS4Windows/ProfileActions");
                         if (el != null)
                         {
                             if (string.IsNullOrEmpty(el.InnerText))
@@ -336,10 +336,10 @@ namespace DS4Windows.Core.Persistence
                         }
                         else
                         {
-                            XmlNode Node = xDoc.SelectSingleNode("DS4Windows");
+                            XmlNode? Node = xDoc.SelectSingleNode("DS4Windows");
                             el = xDoc.CreateElement("ProfileActions");
                             el.InnerText = "Disconnect Controller";
-                            Node.AppendChild(el);
+                            Node!.AppendChild(el);   // 保存済みのプロファイルは、必ず DS4Windows の根要素を持つ
                         }
 
                         xDoc.Save(s);

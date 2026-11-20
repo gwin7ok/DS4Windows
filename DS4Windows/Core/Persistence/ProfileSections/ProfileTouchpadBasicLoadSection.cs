@@ -19,21 +19,21 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/lowerRCOn"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].LowerRightAsRightClick = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/lowerRCOn"); { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.touchpadSlots[device].LowerRightAsRightClick = parsedValue; }; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/tapSensitivity"); { byte.TryParse(Item.InnerText, out byte parsedValue); store.touchpadSlots[device].TapSensitivity = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/tapSensitivity"); { byte.TryParse(Item.Required().InnerText, out byte parsedValue); store.touchpadSlots[device].TapSensitivity = parsedValue; }; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/doubleTap"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].DoubleTap = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/doubleTap"); { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.touchpadSlots[device].DoubleTap = parsedValue; }; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/scrollSensitivity"); { int.TryParse(Item.InnerText, out int parsedValue); store.touchpadSlots[device].ScrollSensitivity = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/scrollSensitivity"); { int.TryParse(Item.Required().InnerText, out int parsedValue); store.touchpadSlots[device].ScrollSensitivity = parsedValue; }; }
             catch { missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadInvert"); int temp = 0; int.TryParse(Item.InnerText, out temp); store.touchpadSlots[device].Invert = Math.Min(Math.Max(temp, 0), 3); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadInvert"); int temp = 0; int.TryParse(Item.Required().InnerText, out temp); store.touchpadSlots[device].Invert = Math.Min(Math.Max(temp, 0), 3); }
             catch { store.touchpadSlots[device].Invert = 0; missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadClickPassthru"); { bool.TryParse(Item.InnerText, out bool parsedValue); store.touchpadSlots[device].ClickPassthru = parsedValue; }; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/TouchpadClickPassthru"); { bool.TryParse(Item.Required().InnerText, out bool parsedValue); store.touchpadSlots[device].ClickPassthru = parsedValue; }; }
             catch { missingSetting = true; }
 
             context.MissingSetting = missingSetting;

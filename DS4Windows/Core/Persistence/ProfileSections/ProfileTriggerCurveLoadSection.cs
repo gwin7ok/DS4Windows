@@ -20,7 +20,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             string rootname = context.RootName;
             int device = context.Device;
             bool missingSetting = context.MissingSetting;
-            XmlNode Item;
+            XmlNode? Item;
 
             int axisOutputCurveId(string name)
             {
@@ -29,37 +29,37 @@ namespace DS4Windows.Core.Persistence.ProfileSections
 
             // Start of DualSense specific profile load
             //
-            XmlNode xmlDualSenseControllerSettingsElement =
+            XmlNode? xmlDualSenseControllerSettingsElement =
                 m_Xdoc.SelectSingleNode("/" + rootname + "/DualSenseControllerSettings");
             bool dSControllerSettingsGroup = xmlDualSenseControllerSettingsElement != null;
             if (dSControllerSettingsGroup)
             {
-                XmlNode xmlDSRumbleGroupElement =
-                    xmlDualSenseControllerSettingsElement.SelectSingleNode("RumbleSettings");
+                XmlNode? xmlDSRumbleGroupElement =
+                    xmlDualSenseControllerSettingsElement.Required().SelectSingleNode("RumbleSettings");
                 bool dSRumbleGroup = xmlDSRumbleGroupElement != null;
 
                 if (dSRumbleGroup)
                 {
                     try
                     {
-                        Item = xmlDSRumbleGroupElement.SelectSingleNode("EmulationMode");
-                        RumbleEmulationMode.TryParse(Item.InnerText, out RumbleEmulationMode temp);
+                        Item = xmlDSRumbleGroupElement.Required().SelectSingleNode("EmulationMode");
+                        RumbleEmulationMode.TryParse(Item.Required().InnerText, out RumbleEmulationMode temp);
                         store.dualSenseSlots[device].RumbleEmulationMode = temp;
                     }
                     catch { missingSetting = true; }
 
                     try
                     {
-                        Item = xmlDSRumbleGroupElement.SelectSingleNode("EnableGenericRumbleRescale");
-                        bool.TryParse(Item.InnerText, out bool temp);
+                        Item = xmlDSRumbleGroupElement.Required().SelectSingleNode("EnableGenericRumbleRescale");
+                        bool.TryParse(Item.Required().InnerText, out bool temp);
                         store.dualSenseSlots[device].UseGenericRumbleRescale = temp;
                     }
                     catch { missingSetting = true; }
 
                     try
                     {
-                        Item = xmlDSRumbleGroupElement.SelectSingleNode("HapticPowerLevel");
-                        byte.TryParse(Item.InnerText, out byte temp);
+                        Item = xmlDSRumbleGroupElement.Required().SelectSingleNode("HapticPowerLevel");
+                        byte.TryParse(Item.Required().InnerText, out byte temp);
                         store.dualSenseSlots[device].HapticPowerLevel = temp;
                     }
                     catch { missingSetting = true; }
@@ -77,9 +77,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             //
             // End of DualSense specific profile load
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveCustom"); store.triggerSlots[device].L2Bezier.CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveCustom"); store.triggerSlots[device].L2Bezier.CustomDefinition = Item.Required().InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveMode"); store.triggerSlots[device].ApplyL2CurveMode(axisOutputCurveId(Item.InnerText)); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveMode"); store.triggerSlots[device].ApplyL2CurveMode(axisOutputCurveId(Item.Required().InnerText)); }
             catch { store.triggerSlots[device].ApplyL2CurveMode(0); missingSetting = true; }
 
             try
@@ -113,9 +113,9 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveCustom"); store.triggerSlots[device].R2Bezier.CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveCustom"); store.triggerSlots[device].R2Bezier.CustomDefinition = Item.Required().InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveMode"); store.triggerSlots[device].ApplyR2CurveMode(axisOutputCurveId(Item.InnerText)); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveMode"); store.triggerSlots[device].ApplyR2CurveMode(axisOutputCurveId(Item.Required().InnerText)); }
             catch { store.triggerSlots[device].ApplyR2CurveMode(0); missingSetting = true; }
 
             try
@@ -148,14 +148,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveCustom"); store.sixAxisSlots[device].SXCurve.CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveCustom"); store.sixAxisSlots[device].SXCurve.CustomDefinition = Item.Required().InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveMode"); store.sixAxisSlots[device].ApplySXCurveMode(axisOutputCurveId(Item.InnerText)); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveMode"); store.sixAxisSlots[device].ApplySXCurveMode(axisOutputCurveId(Item.Required().InnerText)); }
             catch { store.sixAxisSlots[device].ApplySXCurveMode(0); missingSetting = true; }
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveCustom"); store.sixAxisSlots[device].SZCurve.CustomDefinition = Item.InnerText; }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveCustom"); store.sixAxisSlots[device].SZCurve.CustomDefinition = Item.Required().InnerText; }
             catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveMode"); store.sixAxisSlots[device].ApplySZCurveMode(axisOutputCurveId(Item.InnerText)); }
+            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveMode"); store.sixAxisSlots[device].ApplySZCurveMode(axisOutputCurveId(Item.Required().InnerText)); }
             catch { store.sixAxisSlots[device].ApplySZCurveMode(0); missingSetting = true; }
 
             context.MissingSetting = missingSetting;

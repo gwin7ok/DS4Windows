@@ -40,6 +40,7 @@ namespace DS4WindowsTests
             "Core/Profiles/",
             "Core/Platform/",
             "Core/Settings/",
+            "Core/Persistence/",
             "Input/",
             "Output/",
             "Processing/Abstractions/",
