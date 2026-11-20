@@ -77,6 +77,9 @@ namespace DS4WindowsTests
         /// <summary>イベントハンドラーの形（第 1 引数が <c>object</c>）ではない <c>async void</c>。<c>async Task</c> にして、呼び出し側で <c>await</c> する。</summary>
         public const int NonHandlerAsyncVoid = 0;
 
+        /// <summary>経緯の参照（<c>Phase</c> ＋数字）を含む行（本体の .cs）。減らしたら基準も下げる。増やさない。</summary>
+        public const int PhaseReferenceLines = 258;
+
         /// <summary><c>#pragma warning disable</c> で null 許容の警告（CS86xx・CS87xx）を消している行。使わない。</summary>
         public const int NullableWarningPragmas = 0;
     }

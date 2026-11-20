@@ -95,6 +95,13 @@ namespace DS4WindowsTests
             Check(nameof(CodeHealthBaseline.NonHandlerAsyncVoid), actual, CodeHealthBaseline.NonHandlerAsyncVoid);
         }
 
+        [Fact]
+        public void PhaseReferencesInCommentsDoNotGrow()
+        {
+            int actual = CodeHealthScanner.CountPhaseReferenceLines(ProductionSources());
+            Check(nameof(CodeHealthBaseline.PhaseReferenceLines), actual, CodeHealthBaseline.PhaseReferenceLines);
+        }
+
         private static void Check(string name, int actual, int baseline)
         {
             string failure = CodeHealthRatchet.Evaluate(name, actual, baseline);
