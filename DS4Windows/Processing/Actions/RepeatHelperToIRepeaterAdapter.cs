@@ -6,9 +6,7 @@ namespace DS4Windows.Processing.Actions
     /// Adapter that wraps existing <see cref="RepeatHelper"/> instances
     /// and exposes the <see cref="IRepeater"/> interface.
     /// Note: <see cref="RepeatHelper"/> encapsulates SyntheticDispatcher-based
-    /// key sends and does not accept an external tick Action. If an external
-    /// tick action is supplied to Start(...) it will be ignored and a trace
-    /// will be emitted.
+    /// key sends（間隔・最初の待ちも自前で持つ）ため、<see cref="IRepeater.Start"/> は引数を取らない。
     /// </summary>
     public class RepeatHelperToIRepeaterAdapter : IRepeater
     {
@@ -31,25 +29,23 @@ namespace DS4Windows.Processing.Actions
             this.repeaterFactoryOverride = repeaterFactoryOverride;
         }
 
-        public void Start(TimeSpan initialDelay, TimeSpan interval, System.Action tickAction)
+        public void Start()
         {
             try
             {
-                if (tickAction != null)
-                {
-                    DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: supplied tickAction will be ignored; using RepeatHelper behavior");
-                }
-
                 // 差し替えの工場が渡されていれば、IRepeater の包みを優先して作る
                 if (repeaterFactoryOverride != null)
                 {
                     try
                     {
                         helperIRepeater ??= repeaterFactoryOverride(helperFactory);
-                        helperIRepeater?.Start(initialDelay, interval, tickAction);
+                        helperIRepeater?.Start();
                         return;
                     }
-                    catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                    catch (Exception)
+                    {
+                        DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: override repeater failed; falling back to RepeatHelper");
+                    }
                 }
 
                 if (helper == null && helperFactory != null)
@@ -59,7 +55,11 @@ namespace DS4Windows.Processing.Actions
 
                 helper?.Start();
             }
-            catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+            catch (Exception)
+            {
+                // 連打の開始の失敗は、呼び出し元（入力の処理）へ伝えない
+                DS4Windows.Core.Logging.AppLogger.LogTrace("RepeatHelperToIRepeaterAdapter: start failed");
+            }
         }
 
         public void Stop()

@@ -196,11 +196,11 @@ namespace DS4Windows.Processing.Actions
                                     if (e.nativeKey == 0) e.nativeKey = _dispatcher.ResolveNativeKey(kvpKey);
                                     e.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, e.nativeKey, e.useScanCode, e.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
                                     if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"ToggleImpl.OnDown: controller-repeater link controllerId={controllerId} kvpKey={kvpKey} device={device}");
-                                    try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                    try { e.repeater.Start(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                 }
                                 else
                                 {
-                                    try { e.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                    try { e.repeater.Start(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                 }
                         }
 
@@ -348,11 +348,11 @@ namespace DS4Windows.Processing.Actions
                                         if (localEntry.repeater == null)
                                         {
                                             localEntry.repeater = new RepeatHelperToIRepeaterAdapter(() => new DS4Windows.Processing.RepeatHelper(_dispatcher, device, kvpKey, localEntry.nativeKey, localEntry.useScanCode, localEntry.handler, _time, DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs, true, controllerId), _repeaterFactory);
-                                            try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                            try { localEntry.repeater.Start(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                         }
                                         else
                                         {
-                                            try { localEntry.repeater.Start(TimeSpan.Zero, TimeSpan.FromMilliseconds(DS4Windows.Core.Platform.KeyboardSettings.RepeatIntervalMs), null); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
+                                            try { localEntry.repeater.Start(); } catch { /* 失敗しても処理を続ける（呼び出し元に影響させない） */ }
                                         }
                                     }
                                 }
