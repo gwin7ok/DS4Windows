@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -22,9 +23,19 @@ namespace DS4WindowsTests
             string code = SourceText.ReadNormalized("DS4Windows/Input/InputDeviceCore.cs");
             if (code == null) return;
 
-            Assert.Contains("public event EventHandler? BatteryChanged;", code);
-            Assert.Contains("public event EventHandler? ChargingChanged;", code);
-            Assert.DoesNotContain("virtual event EventHandler BatteryChanged", code);
+            // イベントは基底の 1 組だけ。仮想ではなく、派生クラスは再宣言しない
+            var core = typeof(DS4Windows.Input.InputDeviceCore);
+            foreach (string name in new[] { "BatteryChanged", "ChargingChanged" })
+            {
+                var ev = core.GetEvent(name);
+                Assert.NotNull(ev);
+                Assert.False(ev.AddMethod.IsVirtual, name + " は仮想にしない");
+                var redeclared = core.Assembly.GetTypes()
+                    .Where(t => t != core && core.IsAssignableFrom(t) && t.GetEvent(name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly) != null)
+                    .Select(t => t.Name).ToArray();
+                Assert.True(redeclared.Length == 0, name + " を再宣言している: " + string.Join(", ", redeclared));
+            }
+
             Assert.Contains("protected void UpdateBattery(int percent) { if (percent == battery) return; battery = percent; BatteryChanged?.Invoke(this, EventArgs.Empty); }", code);
             Assert.Contains("protected void UpdateCharging(bool isCharging) { if (isCharging == charging) return; charging = isCharging; ChargingChanged?.Invoke(this, EventArgs.Empty); }", code);
         }
@@ -48,10 +59,6 @@ namespace DS4WindowsTests
                 string code = SourceText.ReadNormalized(file);
                 if (code == null) continue;
 
-                Assert.DoesNotContain("override event EventHandler BatteryChanged", code);
-                Assert.DoesNotContain("override event EventHandler ChargingChanged", code);
-                Assert.DoesNotContain("BatteryChanged?.Invoke", code);
-                Assert.DoesNotContain("ChargingChanged?.Invoke", code);
                 Assert.Contains("UpdateBattery(tempBattery);", code);
                 Assert.Contains("UpdateCharging(tempCharging);", code);
             }

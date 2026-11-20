@@ -33,19 +33,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheCodeBehind_NoLongerMatchesOrClicksTheCheckBoxes()
-        {
-            string code = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
-            if (code == null) return;
-
-            Assert.DoesNotContain("triggerBoxes", code);                  // triggerBoxes／unloadTriggerBoxes
-            Assert.DoesNotContain("TrigCk", code);
-            Assert.DoesNotContain("ControlTriggerCheckBox_Click", code);
-            Assert.DoesNotContain("ControlUnloadTriggerCheckBox_Click", code);
-            Assert.DoesNotContain("unloadTriggersListView", code);
-        }
-
-        [Fact]
         public void TheSaveButton_KeepsTheBindings_WhenTheInputIsInvalid()
         {
             // 実機確認で発見（以前からの不具合）: 無効なとき（トリガーなし、名前が空、種別未選択）に、先に結びつきを外すと、

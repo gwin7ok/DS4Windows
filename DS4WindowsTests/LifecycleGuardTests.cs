@@ -173,10 +173,10 @@ namespace DS4WindowsTests
             Assert.Contains("ProcessPriorityOptions.Classes", ui);
             Assert.Contains("ProcessPriorityOptions.Classes", lifecycle);
 
-            var list = Regex.Match(options, @"Classes\s*=\s*new\[\]\s*\{(?<items>[^}]*)\}", RegexOptions.Singleline);
-            Assert.True(list.Success);
-            string[] names = Regex.Matches(list.Groups["items"].Value, @"ProcessPriorityClass\.(\w+)").Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
-            Assert.Equal(new[] { "Normal", "AboveNormal", "High", "RealTime" }, names);
+            // 保存済みの設定は、この表の添字。並び順を変えない
+            Assert.Equal(
+                new[] { System.Diagnostics.ProcessPriorityClass.Normal, System.Diagnostics.ProcessPriorityClass.AboveNormal, System.Diagnostics.ProcessPriorityClass.High, System.Diagnostics.ProcessPriorityClass.RealTime },
+                DS4Windows.Core.Platform.ProcessPriorityOptions.Classes.ToArray());
         }
 
         [Fact]

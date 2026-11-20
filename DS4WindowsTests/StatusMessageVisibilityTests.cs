@@ -54,7 +54,6 @@ namespace DS4WindowsTests
             // タブの切り替えで欄を隠す処理（タブの番号に依存する SelectionChanged）を持たない
             var tabControl = XamlTestHelper.FindByName(xaml, "mainTabCon");
             Assert.Null(XamlTestHelper.Attr(tabControl, "SelectionChanged"));
-            Assert.DoesNotContain("MainTabCon_SelectionChanged", code);
             Assert.DoesNotContain("lastMsgLb.Visibility", code);
         }
     }

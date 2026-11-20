@@ -84,6 +84,12 @@ namespace DS4WindowsTests
         /// <summary>撤去・移動したメンバー（型の単純名 → メンバー名）。型は本体に 1 つだけあること。</summary>
         private static readonly (string Type, string[] Members)[] RemovedMembers =
         {
+            // 画面の部品から撤去したイベントのハンドラー・フィールド・プロパティ
+            ("ProfileEditor", new[] { "GyroOutModeCombo_SelectionChanged", "FrictionUD_ValueChanged", "DeviceNum" }),
+            ("AssignmentEditor", new[] { "ControlTriggerCheckBox_Click", "ControlUnloadTriggerCheckBox_Click", "triggerBoxes", "unloadTriggerBoxes", "IndexZeroMeansDefault" }),
+            ("ActionEditorViewModel", new[] { "IndexZeroMeansDefault" }),
+            ("MainWindow", new[] { "MainTabCon_SelectionChanged" }),
+            ("AppHost", new[] { "_disposed" }),
             // 静的な差し替え口は、コンストラクターで受ける工場に替えた
             ("RepeatHelperToIRepeaterAdapter", new[] { "RepeaterFactoryOverride" }),
             // 呼び出し元 0 件のメソッド
