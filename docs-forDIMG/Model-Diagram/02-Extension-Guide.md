@@ -83,3 +83,12 @@
 - 左右で挙動が違う項目は作らない。違いが要るときは、`StickSideViewModel` へ引数を足さず、先にユーザーへ相談する。
 - 既定値・リセット・プリセットに入れる場合は、`BackingStore` のリセットと `ProfilePresets` も触る。
 - L2・R2（`TriggerSettingsViewModel`／`TriggerSettingsPanel.xaml`）は、左右を横に並べた 1 枚の表のため、まだ左右で別の項目として持つ（`Phase33-Plan.md` の 33-5）。
+
+### 保存の項目を定義の並びへ足す（PhaseRV5）
+プロファイルの保存は、領域ごとの定義の並び（`ProfileGeneralSettings`・`ProfileTriggerStickSettings`・`ProfileMotionSettings`・`ProfileOutputCurveSettings`。`Core/Persistence/ProfileSections/`）を順に処理する。並びの順が、XML の要素の順序（黄金テストが固定）。
+- 値の型が単純な項目: `ProfileSetting.Bool`／`Int`／`Byte`（要素名、保存の値の取り出し、読み込みの代入）を 1 行足す。読み込みも同じ行から処理される（General 領域）。
+- 保存だけの項目: `ProfileSetting.Text(要素名, (store, device, c) => 文字列)`。子の要素を持つものは `ProfileSetting.Group(要素名, 子…)`。
+- 読み込みを手書きで残している節（Motion・OutputCurve・TriggerStick）は、`ProfileLoadContext` の `ReadInt`／`ReadDouble`／`ReadBool`／`ReadEnum` を使う。要素がない・解析に失敗したときは何も代入しない（既定値のまま）。
+- 足したら、`ProfileLoadMutationGoldenTests` と保存 XML の黄金を更新する（意図した変化だけが差分になること）。
+- アプリ全体の設定（`AppSettingsService`）の定型は `SetIfChanged`。`AppSettingsDTO` は手書きのまま（3 か所: プロパティ・`MapFrom`・`MapTo`。生成は見送り。`PhaseRV5-Plan.md` の履歴）。
+

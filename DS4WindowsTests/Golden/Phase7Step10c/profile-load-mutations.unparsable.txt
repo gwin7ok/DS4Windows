@@ -1,0 +1,1147 @@
+## /DS4Windows/touchToggle [unparsable]
+- $.basicSlots[8].EnableTouchToggle = false
++ $.basicSlots[8].EnableTouchToggle = true
+## /DS4Windows/idleDisconnectTimeout [unparsable]
+- $.basicSlots[8].IdleDisconnectTimeout = 1
++ $.basicSlots[8].IdleDisconnectTimeout = 0
+## /DS4Windows/outputDataToDS4 [unparsable]
+- $.basicSlots[8].EnableOutputDataToDS4 = false
++ $.basicSlots[8].EnableOutputDataToDS4 = true
+## /DS4Windows/Color [unparsable]
+(same)
+## /DS4Windows/RumbleBoost [unparsable]
+- $.rumbleSlots[8].Boost = 101
++ $.rumbleSlots[8].Boost = 100
+## /DS4Windows/RumbleAutostopTime [unparsable]
+- $.rumbleSlots[8].AutostopTime = 1
++ $.rumbleSlots[8].AutostopTime = 0
+## /DS4Windows/LightbarMode [unparsable]
+- $.lightbarSlots[8].Info.Mode = LightbarMode.Passthru
+- $.lightbarSlots[8].Info.mode = LightbarMode.Passthru
++ $.lightbarSlots[8].Info.Mode = LightbarMode.DS4Win
++ $.lightbarSlots[8].Info.mode = LightbarMode.DS4Win
+## /DS4Windows/ledAsBatteryIndicator [unparsable]
+- $.lightbarSlots[8].Info.ds4winSettings.ledAsBattery = true
++ $.lightbarSlots[8].Info.ds4winSettings.ledAsBattery = false
+## /DS4Windows/FlashType [unparsable]
+- $.lightbarSlots[8].Info.ds4winSettings.flashType = 1
++ $.lightbarSlots[8].Info.ds4winSettings.flashType = 0
+## /DS4Windows/flashBatteryAt [unparsable]
+- $.lightbarSlots[8].Info.ds4winSettings.flashAt = 1
++ $.lightbarSlots[8].Info.ds4winSettings.flashAt = 0
+## /DS4Windows/touchSensitivity [unparsable]
+- $.touchpadSlots[8].TouchSensitivity = 101
++ $.touchpadSlots[8].TouchSensitivity = 100
+## /DS4Windows/LowColor [unparsable]
+(same)
+## /DS4Windows/ChargingColor [unparsable]
+(same)
+## /DS4Windows/FlashColor [unparsable]
+(same)
+## /DS4Windows/touchpadJitterCompensation [unparsable]
+- $.touchpadSlots[8].JitterCompensation = false
++ $.touchpadSlots[8].JitterCompensation = true
+## /DS4Windows/InverseRumbleMotors [unparsable]
+- $.rumbleSlots[8].InverseMotors = true
++ $.rumbleSlots[8].InverseMotors = false
+## /DS4Windows/LeftStickDriftXAxis [unparsable]
+(same)
+## /DS4Windows/LeftStickDriftYAxis [unparsable]
+(same)
+## /DS4Windows/RightStickDriftXAxis [unparsable]
+(same)
+## /DS4Windows/RightStickDriftYAxis [unparsable]
+(same)
+## /DS4Windows/DS4OutputTriggerMode [unparsable]
+- $.outputTypeSlots[8].DS4TriggerMode = DS4TriggerOutputMode.Analog
++ $.outputTypeSlots[8].DS4TriggerMode = DS4TriggerOutputMode.Default
+## /DS4Windows/GyroMouseJitterCompensation [unparsable]
+(same)
+## /DS4Windows/GyroMouseStickJitterCompensation [unparsable]
+(same)
+## /DS4Windows/lowerRCOn [unparsable]
+- $.touchpadSlots[8].LowerRightAsRightClick = true
++ $.touchpadSlots[8].LowerRightAsRightClick = false
+## /DS4Windows/tapSensitivity [unparsable]
+- $.touchpadSlots[8].TapSensitivity = 1
++ $.touchpadSlots[8].TapSensitivity = 0
+## /DS4Windows/doubleTap [unparsable]
+- $.touchpadSlots[8].DoubleTap = true
++ $.touchpadSlots[8].DoubleTap = false
+## /DS4Windows/scrollSensitivity [unparsable]
+- $.touchpadSlots[8].ScrollSensitivity = 1
++ $.touchpadSlots[8].ScrollSensitivity = 0
+## /DS4Windows/LeftTriggerMiddle [unparsable]
+- $.triggerSlots[8].L2Mod.DeadZone = 2
+- $.triggerSlots[8].L2Mod.deadZone = 2
++ $.triggerSlots[8].L2Mod.DeadZone = 0
++ $.triggerSlots[8].L2Mod.deadZone = 0
+## /DS4Windows/RightTriggerMiddle [unparsable]
+- $.triggerSlots[8].R2Mod.DeadZone = 2
+- $.triggerSlots[8].R2Mod.deadZone = 2
++ $.triggerSlots[8].R2Mod.DeadZone = 0
++ $.triggerSlots[8].R2Mod.deadZone = 0
+## /DS4Windows/TouchpadInvert [unparsable]
+- $.touchpadSlots[8].Invert = 1
++ $.touchpadSlots[8].Invert = 0
+## /DS4Windows/TouchpadClickPassthru [unparsable]
+- $.touchpadSlots[8].ClickPassthru = true
++ $.touchpadSlots[8].ClickPassthru = false
+## /DS4Windows/L2AntiDeadZone [unparsable]
+- $.triggerSlots[8].L2Mod.AntiDeadZone = 2
+- $.triggerSlots[8].L2Mod.antiDeadZone = 2
++ $.triggerSlots[8].L2Mod.AntiDeadZone = 0
++ $.triggerSlots[8].L2Mod.antiDeadZone = 0
+## /DS4Windows/R2AntiDeadZone [unparsable]
+- $.triggerSlots[8].R2Mod.AntiDeadZone = 2
+- $.triggerSlots[8].R2Mod.antiDeadZone = 2
++ $.triggerSlots[8].R2Mod.AntiDeadZone = 0
++ $.triggerSlots[8].R2Mod.antiDeadZone = 0
+## /DS4Windows/L2MaxZone [unparsable]
+- $.triggerSlots[8].L2Mod.MaxZone = 100
+- $.triggerSlots[8].L2Mod.maxZone = 100
++ $.triggerSlots[8].L2Mod.MaxZone = 0
++ $.triggerSlots[8].L2Mod.maxZone = 0
+## /DS4Windows/R2MaxZone [unparsable]
+- $.triggerSlots[8].R2Mod.MaxZone = 100
+- $.triggerSlots[8].R2Mod.maxZone = 100
++ $.triggerSlots[8].R2Mod.MaxZone = 0
++ $.triggerSlots[8].R2Mod.maxZone = 0
+## /DS4Windows/L2MaxOutput [unparsable]
+(same)
+## /DS4Windows/R2MaxOutput [unparsable]
+(same)
+## /DS4Windows/ButtonMouseSensitivity [unparsable]
+- $.buttonMouseInfos[8].ButtonSensitivity = 27
+- $.buttonMouseInfos[8].activeButtonSensitivity = 27
+- $.buttonMouseInfos[8].buttonSensitivity = 27
++ $.buttonMouseInfos[8].ButtonSensitivity = 0
++ $.buttonMouseInfos[8].activeButtonSensitivity = 0
++ $.buttonMouseInfos[8].buttonSensitivity = 0
+## /DS4Windows/ButtonMouseOffset [unparsable]
+- $.buttonMouseInfos[8].mouseVelocityOffset = 0.26
++ $.buttonMouseInfos[8].mouseVelocityOffset = 0
+## /DS4Windows/Rainbow [unparsable]
+- $.lightbarSlots[8].Info.ds4winSettings.rainbow = 0.25
++ $.lightbarSlots[8].Info.ds4winSettings.rainbow = 0
+## /DS4Windows/MaxSatRainbow [unparsable]
+- $.lightbarSlots[8].Info.ds4winSettings.maxRainbowSat = 1
++ $.lightbarSlots[8].Info.ds4winSettings.maxRainbowSat = 0
+## /DS4Windows/LSDeadZone [unparsable]
+- $.stickSlots[8].LSMod.deadZone = 1
++ $.stickSlots[8].LSMod.deadZone = 0
+## /DS4Windows/RSDeadZone [unparsable]
+- $.stickSlots[8].RSMod.deadZone = 1
++ $.stickSlots[8].RSMod.deadZone = 0
+## /DS4Windows/LSAntiDeadZone [unparsable]
+- $.stickSlots[8].LSMod.antiDeadZone = 1
++ $.stickSlots[8].LSMod.antiDeadZone = 0
+## /DS4Windows/RSAntiDeadZone [unparsable]
+- $.stickSlots[8].RSMod.antiDeadZone = 1
++ $.stickSlots[8].RSMod.antiDeadZone = 0
+## /DS4Windows/LSMaxZone [unparsable]
+- $.stickSlots[8].LSMod.maxZone = 100
++ $.stickSlots[8].LSMod.maxZone = 0
+## /DS4Windows/RSMaxZone [unparsable]
+- $.stickSlots[8].RSMod.maxZone = 100
++ $.stickSlots[8].RSMod.maxZone = 0
+## /DS4Windows/LSVerticalScale [unparsable]
+- $.stickSlots[8].LSMod.verticalScale = 100.25
++ $.stickSlots[8].LSMod.verticalScale = 100
+## /DS4Windows/RSVerticalScale [unparsable]
+- $.stickSlots[8].RSMod.verticalScale = 100.25
++ $.stickSlots[8].RSMod.verticalScale = 100
+## /DS4Windows/LSMaxOutput [unparsable]
+(same)
+## /DS4Windows/RSMaxOutput [unparsable]
+(same)
+## /DS4Windows/LSMaxOutputForce [unparsable]
+- $.stickSlots[8].LSMod.maxOutputForce = true
++ $.stickSlots[8].LSMod.maxOutputForce = false
+## /DS4Windows/RSMaxOutputForce [unparsable]
+- $.stickSlots[8].RSMod.maxOutputForce = true
++ $.stickSlots[8].RSMod.maxOutputForce = false
+## /DS4Windows/LSDeadZoneType [unparsable]
+- $.stickSlots[8].LSMod.deadzoneType = DeadZoneType.Axial
++ $.stickSlots[8].LSMod.deadzoneType = DeadZoneType.Radial
+## /DS4Windows/RSDeadZoneType [unparsable]
+- $.stickSlots[8].RSMod.deadzoneType = DeadZoneType.Axial
++ $.stickSlots[8].RSMod.deadzoneType = DeadZoneType.Radial
+## /DS4Windows/LSAxialDeadOptions/DeadZoneX [unparsable]
+- $.stickSlots[8].LSMod.xAxisDeadInfo.DeadZone = 2
+- $.stickSlots[8].LSMod.xAxisDeadInfo.deadZone = 2
++ $.stickSlots[8].LSMod.xAxisDeadInfo.DeadZone = 0
++ $.stickSlots[8].LSMod.xAxisDeadInfo.deadZone = 0
+## /DS4Windows/LSAxialDeadOptions/DeadZoneY [unparsable]
+- $.stickSlots[8].LSMod.yAxisDeadInfo.DeadZone = 2
+- $.stickSlots[8].LSMod.yAxisDeadInfo.deadZone = 2
++ $.stickSlots[8].LSMod.yAxisDeadInfo.DeadZone = 0
++ $.stickSlots[8].LSMod.yAxisDeadInfo.deadZone = 0
+## /DS4Windows/LSAxialDeadOptions/MaxZoneX [unparsable]
+(same)
+## /DS4Windows/LSAxialDeadOptions/MaxZoneY [unparsable]
+(same)
+## /DS4Windows/LSAxialDeadOptions/AntiDeadZoneX [unparsable]
+- $.stickSlots[8].LSMod.xAxisDeadInfo.AntiDeadZone = 2
+- $.stickSlots[8].LSMod.xAxisDeadInfo.antiDeadZone = 2
++ $.stickSlots[8].LSMod.xAxisDeadInfo.AntiDeadZone = 0
++ $.stickSlots[8].LSMod.xAxisDeadInfo.antiDeadZone = 0
+## /DS4Windows/LSAxialDeadOptions/AntiDeadZoneY [unparsable]
+- $.stickSlots[8].LSMod.yAxisDeadInfo.AntiDeadZone = 2
+- $.stickSlots[8].LSMod.yAxisDeadInfo.antiDeadZone = 2
++ $.stickSlots[8].LSMod.yAxisDeadInfo.AntiDeadZone = 0
++ $.stickSlots[8].LSMod.yAxisDeadInfo.antiDeadZone = 0
+## /DS4Windows/LSAxialDeadOptions/MaxOutputX [unparsable]
+(same)
+## /DS4Windows/LSAxialDeadOptions/MaxOutputY [unparsable]
+(same)
+## /DS4Windows/RSAxialDeadOptions/DeadZoneX [unparsable]
+- $.stickSlots[8].RSMod.xAxisDeadInfo.DeadZone = 2
+- $.stickSlots[8].RSMod.xAxisDeadInfo.deadZone = 2
++ $.stickSlots[8].RSMod.xAxisDeadInfo.DeadZone = 0
++ $.stickSlots[8].RSMod.xAxisDeadInfo.deadZone = 0
+## /DS4Windows/RSAxialDeadOptions/DeadZoneY [unparsable]
+- $.stickSlots[8].RSMod.yAxisDeadInfo.DeadZone = 2
+- $.stickSlots[8].RSMod.yAxisDeadInfo.deadZone = 2
++ $.stickSlots[8].RSMod.yAxisDeadInfo.DeadZone = 0
++ $.stickSlots[8].RSMod.yAxisDeadInfo.deadZone = 0
+## /DS4Windows/RSAxialDeadOptions/MaxZoneX [unparsable]
+(same)
+## /DS4Windows/RSAxialDeadOptions/MaxZoneY [unparsable]
+(same)
+## /DS4Windows/RSAxialDeadOptions/AntiDeadZoneX [unparsable]
+- $.stickSlots[8].RSMod.xAxisDeadInfo.AntiDeadZone = 2
+- $.stickSlots[8].RSMod.xAxisDeadInfo.antiDeadZone = 2
++ $.stickSlots[8].RSMod.xAxisDeadInfo.AntiDeadZone = 0
++ $.stickSlots[8].RSMod.xAxisDeadInfo.antiDeadZone = 0
+## /DS4Windows/RSAxialDeadOptions/AntiDeadZoneY [unparsable]
+- $.stickSlots[8].RSMod.yAxisDeadInfo.AntiDeadZone = 2
+- $.stickSlots[8].RSMod.yAxisDeadInfo.antiDeadZone = 2
++ $.stickSlots[8].RSMod.yAxisDeadInfo.AntiDeadZone = 0
++ $.stickSlots[8].RSMod.yAxisDeadInfo.antiDeadZone = 0
+## /DS4Windows/RSAxialDeadOptions/MaxOutputX [unparsable]
+(same)
+## /DS4Windows/RSAxialDeadOptions/MaxOutputY [unparsable]
+(same)
+## /DS4Windows/LSRotation [unparsable]
+- $.stickSlots[8].LSRotation = 0.24434609527920614
++ $.stickSlots[8].LSRotation = 0
+## /DS4Windows/RSRotation [unparsable]
+- $.stickSlots[8].RSRotation = 0.24434609527920614
++ $.stickSlots[8].RSRotation = 0
+## /DS4Windows/LSFuzz [unparsable]
+- $.stickSlots[8].LSMod.fuzz = 1
++ $.stickSlots[8].LSMod.fuzz = 0
+## /DS4Windows/RSFuzz [unparsable]
+- $.stickSlots[8].RSMod.fuzz = 1
++ $.stickSlots[8].RSMod.fuzz = 0
+## /DS4Windows/LSOuterBindDead [unparsable]
+- $.stickSlots[8].LSMod.outerBindDeadZone = 12
++ $.stickSlots[8].LSMod.outerBindDeadZone = 75
+## /DS4Windows/RSOuterBindDead [unparsable]
+- $.stickSlots[8].RSMod.outerBindDeadZone = 34
++ $.stickSlots[8].RSMod.outerBindDeadZone = 75
+## /DS4Windows/LSOuterBindInvert [unparsable]
+- $.stickSlots[8].LSMod.outerBindInvert = true
++ $.stickSlots[8].LSMod.outerBindInvert = false
+## /DS4Windows/RSOuterBindInvert [unparsable]
+- $.stickSlots[8].RSMod.outerBindInvert = true
++ $.stickSlots[8].RSMod.outerBindInvert = false
+## /DS4Windows/LSDeltaAccelSettings/Enabled [unparsable]
+(same)
+## /DS4Windows/LSDeltaAccelSettings/Multiplier [unparsable]
+(same)
+## /DS4Windows/LSDeltaAccelSettings/MaxTravel [unparsable]
+(same)
+## /DS4Windows/LSDeltaAccelSettings/MinTravel [unparsable]
+(same)
+## /DS4Windows/LSDeltaAccelSettings/EasingDuration [unparsable]
+(same)
+## /DS4Windows/LSDeltaAccelSettings/MinFactor [unparsable]
+(same)
+## /DS4Windows/RSDeltaAccelSettings/Enabled [unparsable]
+(same)
+## /DS4Windows/RSDeltaAccelSettings/Multiplier [unparsable]
+(same)
+## /DS4Windows/RSDeltaAccelSettings/MaxTravel [unparsable]
+(same)
+## /DS4Windows/RSDeltaAccelSettings/MinTravel [unparsable]
+(same)
+## /DS4Windows/RSDeltaAccelSettings/EasingDuration [unparsable]
+(same)
+## /DS4Windows/RSDeltaAccelSettings/MinFactor [unparsable]
+(same)
+## /DS4Windows/SXDeadZone [unparsable]
+- $.sixAxisSlots[8].SXDeadZone = 0.5
++ $.sixAxisSlots[8].SXDeadZone = 0
+## /DS4Windows/SZDeadZone [unparsable]
+- $.sixAxisSlots[8].SZDeadZone = 0.5
++ $.sixAxisSlots[8].SZDeadZone = 0
+## /DS4Windows/SXMaxZone [unparsable]
+- $.sixAxisSlots[8].SXMaxZone = 1
++ $.sixAxisSlots[8].SXMaxZone = 0
+## /DS4Windows/SZMaxZone [unparsable]
+- $.sixAxisSlots[8].SZMaxZone = 1
++ $.sixAxisSlots[8].SZMaxZone = 0
+## /DS4Windows/SXAntiDeadZone [unparsable]
+- $.sixAxisSlots[8].SXAntiDeadZone = 0.25
++ $.sixAxisSlots[8].SXAntiDeadZone = 0
+## /DS4Windows/SZAntiDeadZone [unparsable]
+- $.sixAxisSlots[8].SZAntiDeadZone = 0.25
++ $.sixAxisSlots[8].SZAntiDeadZone = 0
+## /DS4Windows/Sensitivity [unparsable]
+- $.sixAxisSlots[8].SXSens = 1.25
+- $.sixAxisSlots[8].SZSens = 1.25
+- $.stickSlots[8].LSSens = 1.25
+- $.stickSlots[8].RSSens = 1.25
+- $.triggerSlots[8].L2Sens = 1.25
+- $.triggerSlots[8].R2Sens = 1.25
++ $.sixAxisSlots[8].SXSens = 1
++ $.sixAxisSlots[8].SZSens = 1
++ $.stickSlots[8].LSSens = 1
++ $.stickSlots[8].RSSens = 1
++ $.triggerSlots[8].L2Sens = 1
++ $.triggerSlots[8].R2Sens = 1
+## /DS4Windows/ChargingType [unparsable]
+- $.lightbarSlots[8].Info.ds4winSettings.chargingType = 1
++ $.lightbarSlots[8].Info.ds4winSettings.chargingType = 0
+## /DS4Windows/MouseAcceleration [unparsable]
+- $.buttonMouseInfos[8].mouseAccel = true
++ $.buttonMouseInfos[8].mouseAccel = false
+## /DS4Windows/ButtonMouseVerticalScale [unparsable]
+- $.buttonMouseInfos[8].buttonVerticalScale = 1.25
++ $.buttonMouseInfos[8].buttonVerticalScale = 0
+## /DS4Windows/LaunchProgram [unparsable]
+- $.basicSlots[8].LaunchProgram = "_g"
++ $.basicSlots[8].LaunchProgram = "abc"
+## /DS4Windows/DinputOnly [unparsable]
+- $.basicSlots[8].DinputOnly = true
++ $.basicSlots[8].DinputOnly = false
+## /DS4Windows/StartTouchpadOff [unparsable]
+- $.touchpadSlots[8].StartOff = true
++ $.touchpadSlots[8].StartOff = false
+## /DS4Windows/TouchpadOutputMode [unparsable]
+- $.touchpadSlots[8].OutputMode = TouchpadOutMode.Controls
++ $.touchpadSlots[8].OutputMode = TouchpadOutMode.None
+## /DS4Windows/SATriggers [unparsable]
+- $.gyroSlots[8].MouseTriggers = "-1_g"
++ $.gyroSlots[8].MouseTriggers = "abc"
+## /DS4Windows/SATriggerCond [unparsable]
+- $.gyroSlots[8].MouseTriggerCondAnd = false
++ $.gyroSlots[8].MouseTriggerCondAnd = true
+## /DS4Windows/TouchDisInvTriggers [unparsable]
+- $.touchpadSlots[8].DisInvertTriggers.Length = 2
+- $.touchpadSlots[8].DisInvertTriggers[0] = 1
+- $.touchpadSlots[8].DisInvertTriggers[1] = 2
++ $.touchpadSlots[8].DisInvertTriggers.Length = 0
+## /DS4Windows/GyroSensitivity [unparsable]
+- $.gyroSlots[8].Sensitivity = 101
++ $.gyroSlots[8].Sensitivity = 0
+## /DS4Windows/GyroSensVerticalScale [unparsable]
+- $.gyroSlots[8].SensVerticalScale = 101
++ $.gyroSlots[8].SensVerticalScale = 0
+## /DS4Windows/GyroInvert [unparsable]
+- $.gyroSlots[8].Invert = 1
++ $.gyroSlots[8].Invert = 0
+## /DS4Windows/GyroTriggerTurns [unparsable]
+(same)
+## /DS4Windows/GyroControlsSettings/Triggers [unparsable]
+- $.gyroSlots[8].Controls.Triggers = "-1_g_g"
+- $.gyroSlots[8].Controls.triggers = "-1_g_g"
++ $.gyroSlots[8].Controls.Triggers = "abc"
++ $.gyroSlots[8].Controls.triggers = "abc"
+## /DS4Windows/GyroControlsSettings/TriggerCond [unparsable]
+(same)
+## /DS4Windows/GyroControlsSettings/TriggerTurns [unparsable]
+(same)
+## /DS4Windows/GyroControlsSettings/Toggle [unparsable]
+(same)
+## /DS4Windows/GyroMouseSmoothingSettings/UseSmoothing [unparsable]
+- $.gyroSlots[8].Mouse.enableSmoothing = true
++ $.gyroSlots[8].Mouse.enableSmoothing = false
+## /DS4Windows/GyroMouseSmoothingSettings/SmoothingMethod [unparsable]
+- $.gyroSlots[8].Mouse.smoothingMethod = SmoothingMethod.OneEuro
++ $.gyroSlots[8].Mouse.smoothingMethod = SmoothingMethod.None
+## /DS4Windows/GyroMouseSmoothingSettings/SmoothingWeight [unparsable]
+- $.gyroSlots[8].Mouse.smoothingWeight = 0.75
++ $.gyroSlots[8].Mouse.smoothingWeight = 0
+## /DS4Windows/GyroMouseSmoothingSettings/SmoothingMinCutoff [unparsable]
+- $.gyroSlots[8].Mouse.MinCutoff = 1.5
+- $.gyroSlots[8].Mouse.minCutoff = 1.5
++ $.gyroSlots[8].Mouse.MinCutoff = 0
++ $.gyroSlots[8].Mouse.minCutoff = 0
+## /DS4Windows/GyroMouseSmoothingSettings/SmoothingBeta [unparsable]
+- $.gyroSlots[8].Mouse.Beta = 1
+- $.gyroSlots[8].Mouse.beta = 1
++ $.gyroSlots[8].Mouse.Beta = 0
++ $.gyroSlots[8].Mouse.beta = 0
+## /DS4Windows/GyroMouseHAxis [unparsable]
+- $.gyroSlots[8].MouseHorizontalAxis = 1
++ $.gyroSlots[8].MouseHorizontalAxis = 0
+## /DS4Windows/GyroMouseDeadZone [unparsable]
+- $.gyroSlots[8].MouseDeadZone = 11
++ $.gyroSlots[8].MouseDeadZone = 0
+## /DS4Windows/GyroMouseMinThreshold [unparsable]
+- $.gyroSlots[8].Mouse.minThreshold = 1.25
++ $.gyroSlots[8].Mouse.minThreshold = 1
+## /DS4Windows/GyroMouseToggle [unparsable]
+- $.gyroSlots[8].MouseToggle = true
++ $.gyroSlots[8].MouseToggle = false
+## /DS4Windows/GyroOutputMode [unparsable]
+- $.gyroSlots[8].OutputMode = GyroOutMode.Mouse
++ $.gyroSlots[8].OutputMode = GyroOutMode.None
+## /DS4Windows/GyroMouseStickTriggers [unparsable]
+- $.gyroSlots[8].MouseStickTriggers = "-1_g"
++ $.gyroSlots[8].MouseStickTriggers = "abc"
+## /DS4Windows/GyroMouseStickTriggerCond [unparsable]
+- $.gyroSlots[8].MouseStickTriggerCondAnd = false
++ $.gyroSlots[8].MouseStickTriggerCondAnd = true
+## /DS4Windows/GyroMouseStickTriggerTurns [unparsable]
+(same)
+## /DS4Windows/GyroMouseStickHAxis [unparsable]
+- $.gyroSlots[8].MouseStickHorizontalAxis = 1
++ $.gyroSlots[8].MouseStickHorizontalAxis = 0
+## /DS4Windows/GyroMouseStickDeadZone [unparsable]
+- $.gyroSlots[8].MouseStick.deadZone = 31
++ $.gyroSlots[8].MouseStick.deadZone = 0
+## /DS4Windows/GyroMouseStickMaxZone [unparsable]
+- $.gyroSlots[8].MouseStick.maxZone = 831
++ $.gyroSlots[8].MouseStick.maxZone = 1
+## /DS4Windows/GyroMouseStickOutputStick [unparsable]
+- $.gyroSlots[8].MouseStick.outputStick = OutputStick.None
++ $.gyroSlots[8].MouseStick.outputStick = OutputStick.RightStick
+## /DS4Windows/GyroMouseStickOutputStickAxes [unparsable]
+- $.gyroSlots[8].MouseStick.outputStickDir = OutputStickAxes.X
++ $.gyroSlots[8].MouseStick.outputStickDir = OutputStickAxes.XY
+## /DS4Windows/GyroMouseStickAntiDeadX [unparsable]
+- $.gyroSlots[8].MouseStick.antiDeadX = 0.65
++ $.gyroSlots[8].MouseStick.antiDeadX = 0
+## /DS4Windows/GyroMouseStickAntiDeadY [unparsable]
+- $.gyroSlots[8].MouseStick.antiDeadY = 0.65
++ $.gyroSlots[8].MouseStick.antiDeadY = 0
+## /DS4Windows/GyroMouseStickInvert [unparsable]
+- $.gyroSlots[8].MouseStick.inverted = 1
++ $.gyroSlots[8].MouseStick.inverted = 0
+## /DS4Windows/GyroMouseStickToggle [unparsable]
+- $.gyroSlots[8].MouseStickToggle = true
++ $.gyroSlots[8].MouseStickToggle = false
+## /DS4Windows/GyroMouseStickMaxOutput [unparsable]
+(same)
+## /DS4Windows/GyroMouseStickMaxOutputEnabled [unparsable]
+- $.gyroSlots[8].MouseStick.maxOutputEnabled = true
++ $.gyroSlots[8].MouseStick.maxOutputEnabled = false
+## /DS4Windows/GyroMouseStickVerticalScale [unparsable]
+- $.gyroSlots[8].MouseStick.vertScale = 101
++ $.gyroSlots[8].MouseStick.vertScale = 0
+## /DS4Windows/GyroMouseStickSmoothingSettings/UseSmoothing [unparsable]
+- $.gyroSlots[8].MouseStick.useSmoothing = true
++ $.gyroSlots[8].MouseStick.useSmoothing = false
+## /DS4Windows/GyroMouseStickSmoothingSettings/SmoothingMethod [unparsable]
+- $.gyroSlots[8].MouseStick.smoothingMethod = SmoothingMethod.OneEuro
++ $.gyroSlots[8].MouseStick.smoothingMethod = SmoothingMethod.None
+## /DS4Windows/GyroMouseStickSmoothingSettings/SmoothingWeight [unparsable]
+- $.gyroSlots[8].MouseStick.smoothWeight = 0.75
++ $.gyroSlots[8].MouseStick.smoothWeight = 0
+## /DS4Windows/GyroMouseStickSmoothingSettings/SmoothingMinCutoff [unparsable]
+- $.gyroSlots[8].MouseStick.MinCutoff = 0.9
+- $.gyroSlots[8].MouseStick.minCutoff = 0.9
++ $.gyroSlots[8].MouseStick.MinCutoff = 0
++ $.gyroSlots[8].MouseStick.minCutoff = 0
+## /DS4Windows/GyroMouseStickSmoothingSettings/SmoothingBeta [unparsable]
+- $.gyroSlots[8].MouseStick.Beta = 1
+- $.gyroSlots[8].MouseStick.beta = 1
++ $.gyroSlots[8].MouseStick.Beta = 0
++ $.gyroSlots[8].MouseStick.beta = 0
+## /DS4Windows/GyroSwipeSettings/DeadZoneX [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>abc</DeadZoneX><DeadZoneY>80</DeadZoneY><Triggers>-1</Triggers><TriggerCond>and</TriggerCond><TriggerTurns>True</TriggerTurns><XAxis>Yaw</XAxis><DelayTime>0</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/GyroSwipeSettings/DeadZoneY [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>80</DeadZoneX><DeadZoneY>abc</DeadZoneY><Triggers>-1</Triggers><TriggerCond>and</TriggerCond><TriggerTurns>True</TriggerTurns><XAxis>Yaw</XAxis><DelayTime>0</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/GyroSwipeSettings/Triggers [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>80</DeadZoneX><DeadZoneY>80</DeadZoneY><Triggers>abc</Triggers><TriggerCond>and</TriggerCond><TriggerTurns>True</TriggerTurns><XAxis>Yaw</XAxis><DelayTime>0</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/GyroSwipeSettings/TriggerCond [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>80</DeadZoneX><DeadZoneY>80</DeadZoneY><Triggers>-1</Triggers><TriggerCond>abc</TriggerCond><TriggerTurns>True</TriggerTurns><XAxis>Yaw</XAxis><DelayTime>0</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/GyroSwipeSettings/TriggerTurns [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>80</DeadZoneX><DeadZoneY>80</DeadZoneY><Triggers>-1</Triggers><TriggerCond>and</TriggerCond><TriggerTurns>abc</TriggerTurns><XAxis>Yaw</XAxis><DelayTime>0</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/GyroSwipeSettings/XAxis [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>80</DeadZoneX><DeadZoneY>80</DeadZoneY><Triggers>-1</Triggers><TriggerCond>and</TriggerCond><TriggerTurns>True</TriggerTurns><XAxis>abc</XAxis><DelayTime>0</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/GyroSwipeSettings/DelayTime [unparsable]
+- $.gyroSlots[8].RemovedSwipe.HasContent = false
+- $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = null
++ $.gyroSlots[8].RemovedSwipe.HasContent = true
++ $.gyroSlots[8].RemovedSwipe.SettingsOuterXml = "<GyroSwipeSettings><DeadZoneX>80</DeadZoneX><DeadZoneY>80</DeadZoneY><Triggers>-1</Triggers><TriggerCond>and</TriggerCond><TriggerTurns>True</TriggerTurns><XAxis>Yaw</XAxis><DelayTime>abc</DelayTime></GyroSwipeSettings>"
+## /DS4Windows/ProfileActions [unparsable]
+- $.profileActionCount[8] = 3
+- $.profileActionDict[8].Count = 3
+- $.profileActionDict[8]["Golden_Key"].IsTemporaryProfileAction = false
+- $.profileActionDict[8]["Golden_Key"].KeyButtonSwitchMode = null
+- $.profileActionDict[8]["Golden_Key"].TimeofEnd = <DateTime>
+- $.profileActionDict[8]["Golden_Key"].automaticUntrigger = false
+- $.profileActionDict[8]["Golden_Key"].centerCursor = false
+- $.profileActionDict[8]["Golden_Key"].controls = "null"
+- $.profileActionDict[8]["Golden_Key"].delayTime = 0
+- $.profileActionDict[8]["Golden_Key"].details = "null"
+- $.profileActionDict[8]["Golden_Key"].extra = null
+- $.profileActionDict[8]["Golden_Key"].firstTap = <DateTime>
+- $.profileActionDict[8]["Golden_Key"].firstTouch = false
+- $.profileActionDict[8]["Golden_Key"].keepKeyState = false
+- $.profileActionDict[8]["Golden_Key"].keyType = DS4KeyType.None
+- $.profileActionDict[8]["Golden_Key"].macro.Count = 0
+- $.profileActionDict[8]["Golden_Key"].name = "null"
+- $.profileActionDict[8]["Golden_Key"].pastTime = <DateTime>
+- $.profileActionDict[8]["Golden_Key"].pressRelease = false
+- $.profileActionDict[8]["Golden_Key"].prevProfileName = null
+- $.profileActionDict[8]["Golden_Key"].prevProfileWasTemporary = false
+- $.profileActionDict[8]["Golden_Key"].secondtouchbegin = false
+- $.profileActionDict[8]["Golden_Key"].synchronized = false
+- $.profileActionDict[8]["Golden_Key"].tappedOnce = false
+- $.profileActionDict[8]["Golden_Key"].trigger.Count = 1
+- $.profileActionDict[8]["Golden_Key"].trigger[0] = DS4Controls.None
+- $.profileActionDict[8]["Golden_Key"].type = "null"
+- $.profileActionDict[8]["Golden_Key"].typeID = ActionTypeId.None
+- $.profileActionDict[8]["Golden_Key"].uTrigger.Count = 0
+- $.profileActionDict[8]["Golden_Key"].ucontrols = null
+- $.profileActionDict[8]["Golden_Macro"].IsTemporaryProfileAction = false
+- $.profileActionDict[8]["Golden_Macro"].KeyButtonSwitchMode = null
+- $.profileActionDict[8]["Golden_Macro"].TimeofEnd = <DateTime>
+- $.profileActionDict[8]["Golden_Macro"].automaticUntrigger = false
+- $.profileActionDict[8]["Golden_Macro"].centerCursor = false
+- $.profileActionDict[8]["Golden_Macro"].controls = "null"
+- $.profileActionDict[8]["Golden_Macro"].delayTime = 0
+- $.profileActionDict[8]["Golden_Macro"].details = "null"
+- $.profileActionDict[8]["Golden_Macro"].extra = null
+- $.profileActionDict[8]["Golden_Macro"].firstTap = <DateTime>
+- $.profileActionDict[8]["Golden_Macro"].firstTouch = false
+- $.profileActionDict[8]["Golden_Macro"].keepKeyState = false
+- $.profileActionDict[8]["Golden_Macro"].keyType = DS4KeyType.None
+- $.profileActionDict[8]["Golden_Macro"].macro.Count = 0
+- $.profileActionDict[8]["Golden_Macro"].name = "null"
+- $.profileActionDict[8]["Golden_Macro"].pastTime = <DateTime>
+- $.profileActionDict[8]["Golden_Macro"].pressRelease = false
+- $.profileActionDict[8]["Golden_Macro"].prevProfileName = null
+- $.profileActionDict[8]["Golden_Macro"].prevProfileWasTemporary = false
+- $.profileActionDict[8]["Golden_Macro"].secondtouchbegin = false
+- $.profileActionDict[8]["Golden_Macro"].synchronized = false
+- $.profileActionDict[8]["Golden_Macro"].tappedOnce = false
+- $.profileActionDict[8]["Golden_Macro"].trigger.Count = 1
+- $.profileActionDict[8]["Golden_Macro"].trigger[0] = DS4Controls.None
+- $.profileActionDict[8]["Golden_Macro"].type = "null"
+- $.profileActionDict[8]["Golden_Macro"].typeID = ActionTypeId.None
+- $.profileActionDict[8]["Golden_Macro"].uTrigger.Count = 0
+- $.profileActionDict[8]["Golden_Macro"].ucontrols = null
+- $.profileActionDict[8]["Golden_Program"].IsTemporaryProfileAction = false
+- $.profileActionDict[8]["Golden_Program"].KeyButtonSwitchMode = null
+- $.profileActionDict[8]["Golden_Program"].TimeofEnd = <DateTime>
+- $.profileActionDict[8]["Golden_Program"].automaticUntrigger = false
+- $.profileActionDict[8]["Golden_Program"].centerCursor = false
+- $.profileActionDict[8]["Golden_Program"].controls = "null"
+- $.profileActionDict[8]["Golden_Program"].delayTime = 0
+- $.profileActionDict[8]["Golden_Program"].details = "null"
+- $.profileActionDict[8]["Golden_Program"].extra = null
+- $.profileActionDict[8]["Golden_Program"].firstTap = <DateTime>
+- $.profileActionDict[8]["Golden_Program"].firstTouch = false
+- $.profileActionDict[8]["Golden_Program"].keepKeyState = false
+- $.profileActionDict[8]["Golden_Program"].keyType = DS4KeyType.None
+- $.profileActionDict[8]["Golden_Program"].macro.Count = 0
+- $.profileActionDict[8]["Golden_Program"].name = "null"
+- $.profileActionDict[8]["Golden_Program"].pastTime = <DateTime>
+- $.profileActionDict[8]["Golden_Program"].pressRelease = false
+- $.profileActionDict[8]["Golden_Program"].prevProfileName = null
+- $.profileActionDict[8]["Golden_Program"].prevProfileWasTemporary = false
+- $.profileActionDict[8]["Golden_Program"].secondtouchbegin = false
+- $.profileActionDict[8]["Golden_Program"].synchronized = false
+- $.profileActionDict[8]["Golden_Program"].tappedOnce = false
+- $.profileActionDict[8]["Golden_Program"].trigger.Count = 1
+- $.profileActionDict[8]["Golden_Program"].trigger[0] = DS4Controls.None
+- $.profileActionDict[8]["Golden_Program"].type = "null"
+- $.profileActionDict[8]["Golden_Program"].typeID = ActionTypeId.None
+- $.profileActionDict[8]["Golden_Program"].uTrigger.Count = 0
+- $.profileActionDict[8]["Golden_Program"].ucontrols = null
+- $.profileActionIndexDict[8].Count = 3
+- $.profileActionIndexDict[8]["Golden_Key"] = -1
+- $.profileActionIndexDict[8]["Golden_Macro"] = -1
+- $.profileActionIndexDict[8]["Golden_Program"] = -1
+- $.profileActions[8].Count = 3
+- $.profileActions[8][0] = "Golden_Macro"
+- $.profileActions[8][1] = "Golden_Program"
+- $.profileActions[8][2] = "Golden_Key"
++ $.profileActionCount[8] = 1
++ $.profileActionDict[8].Count = 1
++ $.profileActionDict[8]["abc"].IsTemporaryProfileAction = false
++ $.profileActionDict[8]["abc"].KeyButtonSwitchMode = null
++ $.profileActionDict[8]["abc"].TimeofEnd = <DateTime>
++ $.profileActionDict[8]["abc"].automaticUntrigger = false
++ $.profileActionDict[8]["abc"].centerCursor = false
++ $.profileActionDict[8]["abc"].controls = "null"
++ $.profileActionDict[8]["abc"].delayTime = 0
++ $.profileActionDict[8]["abc"].details = "null"
++ $.profileActionDict[8]["abc"].extra = null
++ $.profileActionDict[8]["abc"].firstTap = <DateTime>
++ $.profileActionDict[8]["abc"].firstTouch = false
++ $.profileActionDict[8]["abc"].keepKeyState = false
++ $.profileActionDict[8]["abc"].keyType = DS4KeyType.None
++ $.profileActionDict[8]["abc"].macro.Count = 0
++ $.profileActionDict[8]["abc"].name = "null"
++ $.profileActionDict[8]["abc"].pastTime = <DateTime>
++ $.profileActionDict[8]["abc"].pressRelease = false
++ $.profileActionDict[8]["abc"].prevProfileName = null
++ $.profileActionDict[8]["abc"].prevProfileWasTemporary = false
++ $.profileActionDict[8]["abc"].secondtouchbegin = false
++ $.profileActionDict[8]["abc"].synchronized = false
++ $.profileActionDict[8]["abc"].tappedOnce = false
++ $.profileActionDict[8]["abc"].trigger.Count = 1
++ $.profileActionDict[8]["abc"].trigger[0] = DS4Controls.None
++ $.profileActionDict[8]["abc"].type = "null"
++ $.profileActionDict[8]["abc"].typeID = ActionTypeId.None
++ $.profileActionDict[8]["abc"].uTrigger.Count = 0
++ $.profileActionDict[8]["abc"].ucontrols = null
++ $.profileActionIndexDict[8].Count = 1
++ $.profileActionIndexDict[8]["abc"] = -1
++ $.profileActions[8].Count = 1
++ $.profileActions[8][0] = "abc"
+## /DS4Windows/BTPollRate [unparsable]
+- $.basicSlots[8].BTPollRate = 5
++ $.basicSlots[8].BTPollRate = 0
+## /DS4Windows/LSOutputCurveMode [unparsable]
+- $.stickSlots[8].LSCurveMode = 3
++ $.stickSlots[8].LSCurveMode = 0
+## /DS4Windows/LSOutputCurveCustom [unparsable]
+- $.stickSlots[8].LsBezier.CustomDefinition = "_g"
++ $.stickSlots[8].LsBezier.CustomDefinition = "abc"
+## /DS4Windows/RSOutputCurveMode [unparsable]
+- $.stickSlots[8].RSCurveMode = 2
++ $.stickSlots[8].RSCurveMode = 0
+## /DS4Windows/RSOutputCurveCustom [unparsable]
+- $.stickSlots[8].RsBezier.CustomDefinition = "_g"
++ $.stickSlots[8].RsBezier.CustomDefinition = "abc"
+## /DS4Windows/LSSquareStick [unparsable]
+- $.stickSlots[8].SquStick.lsMode = true
++ $.stickSlots[8].SquStick.lsMode = false
+## /DS4Windows/RSSquareStick [unparsable]
+- $.stickSlots[8].SquStick.rsMode = true
++ $.stickSlots[8].SquStick.rsMode = false
+## /DS4Windows/SquareStickRoundness [unparsable]
+- $.stickSlots[8].SquStick.lsRoundness = 5.25
++ $.stickSlots[8].SquStick.lsRoundness = 0
+## /DS4Windows/SquareRStickRoundness [unparsable]
+- $.stickSlots[8].SquStick.rsRoundness = 5.25
++ $.stickSlots[8].SquStick.rsRoundness = 0
+## /DS4Windows/LSAntiSnapback [unparsable]
+- $.stickSlots[8].LSAntiSnapback.enabled = true
++ $.stickSlots[8].LSAntiSnapback.enabled = false
+## /DS4Windows/RSAntiSnapback [unparsable]
+- $.stickSlots[8].RSAntiSnapback.enabled = true
++ $.stickSlots[8].RSAntiSnapback.enabled = false
+## /DS4Windows/LSAntiSnapbackDelta [unparsable]
+- $.stickSlots[8].LSAntiSnapback.delta = 135.25
++ $.stickSlots[8].LSAntiSnapback.delta = 0
+## /DS4Windows/RSAntiSnapbackDelta [unparsable]
+- $.stickSlots[8].RSAntiSnapback.delta = 135.25
++ $.stickSlots[8].RSAntiSnapback.delta = 0
+## /DS4Windows/LSAntiSnapbackTimeout [unparsable]
+- $.stickSlots[8].LSAntiSnapback.timeout = 51
++ $.stickSlots[8].LSAntiSnapback.timeout = 0
+## /DS4Windows/RSAntiSnapbackTimeout [unparsable]
+- $.stickSlots[8].RSAntiSnapback.timeout = 51
++ $.stickSlots[8].RSAntiSnapback.timeout = 0
+## /DS4Windows/LSOutputMode [unparsable]
+- $.stickSlots[8].LSOutput.mode = StickMode.FlickStick
++ $.stickSlots[8].LSOutput.mode = StickMode.None
+## /DS4Windows/RSOutputMode [unparsable]
+- $.stickSlots[8].RSOutput.mode = StickMode.FlickStick
++ $.stickSlots[8].RSOutput.mode = StickMode.None
+## /DS4Windows/LSOutputSettings/FlickStickSettings/RealWorldCalibration [unparsable]
+- $.stickSlots[8].LSOutput.outputSettings.flickSettings.RealWorldCalibration = 5.3
+- $.stickSlots[8].LSOutput.outputSettings.flickSettings.realWorldCalibration = 5.3
++ $.stickSlots[8].LSOutput.outputSettings.flickSettings.RealWorldCalibration = 0
++ $.stickSlots[8].LSOutput.outputSettings.flickSettings.realWorldCalibration = 0
+## /DS4Windows/LSOutputSettings/FlickStickSettings/FlickThreshold [unparsable]
+- $.stickSlots[8].LSOutput.outputSettings.flickSettings.FlickThreshold = 0.9
+- $.stickSlots[8].LSOutput.outputSettings.flickSettings.flickThreshold = 0.9
++ $.stickSlots[8].LSOutput.outputSettings.flickSettings.FlickThreshold = 0
++ $.stickSlots[8].LSOutput.outputSettings.flickSettings.flickThreshold = 0
+## /DS4Windows/LSOutputSettings/FlickStickSettings/FlickTime [unparsable]
+- $.stickSlots[8].LSOutput.outputSettings.flickSettings.FlickTime = 0.1
+- $.stickSlots[8].LSOutput.outputSettings.flickSettings.flickTime = 0.1
++ $.stickSlots[8].LSOutput.outputSettings.flickSettings.FlickTime = 0
++ $.stickSlots[8].LSOutput.outputSettings.flickSettings.flickTime = 0
+## /DS4Windows/LSOutputSettings/FlickStickSettings/MinAngleThreshold [unparsable]
+(same)
+## /DS4Windows/RSOutputSettings/FlickStickSettings/RealWorldCalibration [unparsable]
+- $.stickSlots[8].RSOutput.outputSettings.flickSettings.RealWorldCalibration = 5.3
+- $.stickSlots[8].RSOutput.outputSettings.flickSettings.realWorldCalibration = 5.3
++ $.stickSlots[8].RSOutput.outputSettings.flickSettings.RealWorldCalibration = 0
++ $.stickSlots[8].RSOutput.outputSettings.flickSettings.realWorldCalibration = 0
+## /DS4Windows/RSOutputSettings/FlickStickSettings/FlickThreshold [unparsable]
+- $.stickSlots[8].RSOutput.outputSettings.flickSettings.FlickThreshold = 0.9
+- $.stickSlots[8].RSOutput.outputSettings.flickSettings.flickThreshold = 0.9
++ $.stickSlots[8].RSOutput.outputSettings.flickSettings.FlickThreshold = 0
++ $.stickSlots[8].RSOutput.outputSettings.flickSettings.flickThreshold = 0
+## /DS4Windows/RSOutputSettings/FlickStickSettings/FlickTime [unparsable]
+- $.stickSlots[8].RSOutput.outputSettings.flickSettings.FlickTime = 0.1
+- $.stickSlots[8].RSOutput.outputSettings.flickSettings.flickTime = 0.1
++ $.stickSlots[8].RSOutput.outputSettings.flickSettings.FlickTime = 0
++ $.stickSlots[8].RSOutput.outputSettings.flickSettings.flickTime = 0
+## /DS4Windows/RSOutputSettings/FlickStickSettings/MinAngleThreshold [unparsable]
+(same)
+## /DS4Windows/L2OutputCurveMode [unparsable]
+- $.triggerSlots[8].L2CurveMode = 4
++ $.triggerSlots[8].L2CurveMode = 0
+## /DS4Windows/L2OutputCurveCustom [unparsable]
+- $.triggerSlots[8].L2Bezier.CustomDefinition = "_g"
++ $.triggerSlots[8].L2Bezier.CustomDefinition = "abc"
+## /DS4Windows/L2TwoStageMode [unparsable]
+- $.triggerSlots[8].L2Output.TwoStageMode = TwoStageTriggerMode.ExclusiveButtons
+- $.triggerSlots[8].L2Output.twoStageMode = TwoStageTriggerMode.ExclusiveButtons
++ $.triggerSlots[8].L2Output.TwoStageMode = TwoStageTriggerMode.Disabled
++ $.triggerSlots[8].L2Output.twoStageMode = TwoStageTriggerMode.Disabled
+## /DS4Windows/R2TwoStageMode [unparsable]
+- $.triggerSlots[8].R2Output.TwoStageMode = TwoStageTriggerMode.ExclusiveButtons
+- $.triggerSlots[8].R2Output.twoStageMode = TwoStageTriggerMode.ExclusiveButtons
++ $.triggerSlots[8].R2Output.TwoStageMode = TwoStageTriggerMode.Disabled
++ $.triggerSlots[8].R2Output.twoStageMode = TwoStageTriggerMode.Disabled
+## /DS4Windows/L2HipFireTime [unparsable]
+- $.triggerSlots[8].L2Output.hipFireMS = 101
++ $.triggerSlots[8].L2Output.hipFireMS = 100
+## /DS4Windows/R2HipFireTime [unparsable]
+- $.triggerSlots[8].R2Output.hipFireMS = 101
++ $.triggerSlots[8].R2Output.hipFireMS = 100
+## /DS4Windows/L2TriggerEffect [unparsable]
+- $.triggerSlots[8].L2Output.TriggerEffect = TriggerEffects.Pulse
+- $.triggerSlots[8].L2Output.triggerEffect = TriggerEffects.Pulse
++ $.triggerSlots[8].L2Output.TriggerEffect = TriggerEffects.None
++ $.triggerSlots[8].L2Output.triggerEffect = TriggerEffects.None
+## /DS4Windows/R2TriggerEffect [unparsable]
+- $.triggerSlots[8].R2Output.TriggerEffect = TriggerEffects.Pulse
+- $.triggerSlots[8].R2Output.triggerEffect = TriggerEffects.Pulse
++ $.triggerSlots[8].R2Output.TriggerEffect = TriggerEffects.None
++ $.triggerSlots[8].R2Output.triggerEffect = TriggerEffects.None
+## /DS4Windows/R2OutputCurveMode [unparsable]
+- $.triggerSlots[8].R2CurveMode = 5
++ $.triggerSlots[8].R2CurveMode = 0
+## /DS4Windows/R2OutputCurveCustom [unparsable]
+- $.triggerSlots[8].R2Bezier.CustomDefinition = "_g"
++ $.triggerSlots[8].R2Bezier.CustomDefinition = "abc"
+## /DS4Windows/SXOutputCurveMode [unparsable]
+- $.sixAxisSlots[8].SXCurveMode = 1
++ $.sixAxisSlots[8].SXCurveMode = 0
+## /DS4Windows/SXOutputCurveCustom [unparsable]
+- $.sixAxisSlots[8].SXCurve.CustomDefinition = "_g"
++ $.sixAxisSlots[8].SXCurve.CustomDefinition = "abc"
+## /DS4Windows/SZOutputCurveMode [unparsable]
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT.Length = 256
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[0] = 0
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[1] = 1
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[2] = 2
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[3] = 3
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[4] = 4
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[5] = 5
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[6] = 6
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[7] = 7
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[8] = 8
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[9] = 9
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[10] = 10
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[11] = 11
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[12] = 12
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[13] = 13
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[14] = 14
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[15] = 15
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[16] = 16
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[17] = 17
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[18] = 18
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[19] = 19
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[20] = 20
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[21] = 21
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[22] = 22
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[23] = 23
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[24] = 24
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[25] = 25
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[26] = 26
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[27] = 27
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[28] = 28
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[29] = 29
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[30] = 30
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[31] = 31
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[32] = 32
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[33] = 33
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[34] = 34
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[35] = 35
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[36] = 36
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[37] = 37
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[38] = 38
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[39] = 39
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[40] = 40
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[41] = 41
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[42] = 42
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[43] = 43
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[44] = 44
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[45] = 45
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[46] = 46
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[47] = 47
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[48] = 48
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[49] = 49
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[50] = 50
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[51] = 51
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[52] = 52
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[53] = 53
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[54] = 54
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[55] = 55
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[56] = 56
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[57] = 57
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[58] = 58
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[59] = 59
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[60] = 60
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[61] = 61
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[62] = 62
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[63] = 63
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[64] = 64
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[65] = 65
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[66] = 66
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[67] = 67
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[68] = 68
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[69] = 69
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[70] = 70
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[71] = 71
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[72] = 72
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[73] = 73
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[74] = 74
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[75] = 75
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[76] = 76
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[77] = 77
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[78] = 78
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[79] = 79
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[80] = 80
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[81] = 81
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[82] = 82
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[83] = 83
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[84] = 84
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[85] = 85
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[86] = 86
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[87] = 87
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[88] = 88
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[89] = 89
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[90] = 90
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[91] = 91
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[92] = 92
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[93] = 93
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[94] = 94
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[95] = 95
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[96] = 96
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[97] = 97
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[98] = 98
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[99] = 99
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[100] = 100
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[101] = 101
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[102] = 102
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[103] = 103
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[104] = 104
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[105] = 105
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[106] = 106
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[107] = 107
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[108] = 108
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[109] = 109
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[110] = 110
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[111] = 111
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[112] = 112
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[113] = 113
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[114] = 114
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[115] = 115
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[116] = 116
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[117] = 117
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[118] = 118
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[119] = 119
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[120] = 120
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[121] = 121
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[122] = 122
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[123] = 123
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[124] = 124
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[125] = 125
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[126] = 126
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[127] = 127
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[128] = 128
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[129] = 129
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[130] = 130
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[131] = 131
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[132] = 132
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[133] = 133
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[134] = 134
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[135] = 135
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[136] = 136
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[137] = 137
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[138] = 138
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[139] = 139
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[140] = 140
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[141] = 141
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[142] = 142
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[143] = 143
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[144] = 144
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[145] = 145
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[146] = 146
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[147] = 147
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[148] = 148
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[149] = 149
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[150] = 150
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[151] = 151
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[152] = 152
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[153] = 153
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[154] = 154
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[155] = 155
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[156] = 156
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[157] = 157
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[158] = 158
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[159] = 159
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[160] = 160
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[161] = 161
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[162] = 162
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[163] = 163
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[164] = 164
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[165] = 165
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[166] = 166
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[167] = 167
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[168] = 168
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[169] = 169
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[170] = 170
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[171] = 171
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[172] = 172
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[173] = 173
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[174] = 174
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[175] = 175
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[176] = 176
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[177] = 177
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[178] = 178
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[179] = 179
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[180] = 180
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[181] = 181
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[182] = 182
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[183] = 183
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[184] = 184
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[185] = 185
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[186] = 186
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[187] = 187
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[188] = 188
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[189] = 189
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[190] = 190
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[191] = 191
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[192] = 192
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[193] = 193
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[194] = 194
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[195] = 195
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[196] = 196
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[197] = 197
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[198] = 198
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[199] = 199
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[200] = 200
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[201] = 201
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[202] = 202
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[203] = 203
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[204] = 204
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[205] = 205
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[206] = 206
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[207] = 207
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[208] = 208
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[209] = 209
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[210] = 210
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[211] = 211
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[212] = 212
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[213] = 213
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[214] = 214
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[215] = 215
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[216] = 216
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[217] = 217
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[218] = 218
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[219] = 219
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[220] = 220
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[221] = 221
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[222] = 222
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[223] = 223
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[224] = 224
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[225] = 225
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[226] = 226
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[227] = 227
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[228] = 228
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[229] = 229
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[230] = 230
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[231] = 231
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[232] = 232
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[233] = 233
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[234] = 234
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[235] = 235
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[236] = 236
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[237] = 237
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[238] = 238
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[239] = 239
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[240] = 240
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[241] = 241
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[242] = 242
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[243] = 243
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[244] = 244
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[245] = 245
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[246] = 246
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[247] = 247
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[248] = 248
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[249] = 249
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[250] = 250
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[251] = 251
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[252] = 252
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[253] = 253
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[254] = 254
+- $.sixAxisSlots[8].SZCurve.arrayBezierLUT[255] = 255
+- $.sixAxisSlots[8].SZCurve.axisType = AxisType.SA
+- $.sixAxisSlots[8].SZCurveMode = 6
++ $.sixAxisSlots[8].SZCurve.arrayBezierLUT = null
++ $.sixAxisSlots[8].SZCurve.axisType = AxisType.LSRS
++ $.sixAxisSlots[8].SZCurveMode = 0
+## /DS4Windows/SZOutputCurveCustom [unparsable]
+- $.sixAxisSlots[8].SZCurve.CustomDefinition = "_g"
++ $.sixAxisSlots[8].SZCurve.CustomDefinition = "abc"
+## /DS4Windows/TrackballMode [unparsable]
+- $.touchpadSlots[8].Trackball = true
++ $.touchpadSlots[8].Trackball = false
+## /DS4Windows/TrackballFriction [unparsable]
+- $.touchpadSlots[8].TrackballFriction = 10.25
++ $.touchpadSlots[8].TrackballFriction = 0
+## /DS4Windows/TouchRelMouseRotation [unparsable]
+- $.touchpadSlots[8].RelMouse.rotation = 0.24434609527920614
++ $.touchpadSlots[8].RelMouse.rotation = 0
+## /DS4Windows/TouchRelMouseMinThreshold [unparsable]
+- $.touchpadSlots[8].RelMouse.minThreshold = 1.25
++ $.touchpadSlots[8].RelMouse.minThreshold = 1
+## /DS4Windows/TouchpadMouseStick/DeadZone [unparsable]
+- $.touchpadSlots[8].MouseStick.deadZone = 1
++ $.touchpadSlots[8].MouseStick.deadZone = 0
+## /DS4Windows/TouchpadMouseStick/MaxZone [unparsable]
+- $.touchpadSlots[8].MouseStick.maxZone = 9
++ $.touchpadSlots[8].MouseStick.maxZone = 8
+## /DS4Windows/TouchpadMouseStick/OutputStick [unparsable]
+- $.touchpadSlots[8].MouseStick.outputStick = OutputStick.None
++ $.touchpadSlots[8].MouseStick.outputStick = OutputStick.RightStick
+## /DS4Windows/TouchpadMouseStick/OutputStickAxes [unparsable]
+- $.touchpadSlots[8].MouseStick.outputStickDir = OutputStickAxes.X
++ $.touchpadSlots[8].MouseStick.outputStickDir = OutputStickAxes.XY
+## /DS4Windows/TouchpadMouseStick/AntiDeadX [unparsable]
+- $.touchpadSlots[8].MouseStick.antiDeadX = 0.65
++ $.touchpadSlots[8].MouseStick.antiDeadX = 0.4
+## /DS4Windows/TouchpadMouseStick/AntiDeadY [unparsable]
+- $.touchpadSlots[8].MouseStick.antiDeadY = 0.65
++ $.touchpadSlots[8].MouseStick.antiDeadY = 0.4
+## /DS4Windows/TouchpadMouseStick/Invert [unparsable]
+- $.touchpadSlots[8].MouseStick.inverted = 1
++ $.touchpadSlots[8].MouseStick.inverted = 0
+## /DS4Windows/TouchpadMouseStick/MaxOutput [unparsable]
+(same)
+## /DS4Windows/TouchpadMouseStick/MaxOutputEnabled [unparsable]
+- $.touchpadSlots[8].MouseStick.maxOutputEnabled = true
++ $.touchpadSlots[8].MouseStick.maxOutputEnabled = false
+## /DS4Windows/TouchpadMouseStick/VerticalScale [unparsable]
+- $.touchpadSlots[8].MouseStick.vertScale = 101
++ $.touchpadSlots[8].MouseStick.vertScale = 100
+## /DS4Windows/TouchpadMouseStick/OutputCurve [unparsable]
+- $.touchpadSlots[8].MouseStick.outputCurve = Curve.EnhancedPrecision
++ $.touchpadSlots[8].MouseStick.outputCurve = Curve.Linear
+## /DS4Windows/TouchpadMouseStick/Rotation [unparsable]
+- $.touchpadSlots[8].MouseStick.rotationRad = 0.24434609527920614
++ $.touchpadSlots[8].MouseStick.rotationRad = 0
+## /DS4Windows/TouchpadMouseStick/SmoothingSettings/SmoothingMethod [unparsable]
+(same)
+## /DS4Windows/TouchpadMouseStick/SmoothingSettings/SmoothingMinCutoff [unparsable]
+(same)
+## /DS4Windows/TouchpadMouseStick/SmoothingSettings/SmoothingBeta [unparsable]
+(same)
+## /DS4Windows/TouchpadButtonMode [unparsable]
+- $.touchpadSlots[8].ButtonMode = TouchButtonActivationMode.Touch
++ $.touchpadSlots[8].ButtonMode = TouchButtonActivationMode.Click
+## /DS4Windows/DualSenseControllerSettings/RumbleSettings/EmulationMode [unparsable]
+- $.dualSenseSlots[8].RumbleEmulationMode = RumbleEmulationMode.Legacy
++ $.dualSenseSlots[8].RumbleEmulationMode = RumbleEmulationMode.Accurate
+## /DS4Windows/DualSenseControllerSettings/RumbleSettings/EnableGenericRumbleRescale [unparsable]
+- $.dualSenseSlots[8].UseGenericRumbleRescale = true
++ $.dualSenseSlots[8].UseGenericRumbleRescale = false
+## /DS4Windows/DualSenseControllerSettings/RumbleSettings/HapticPowerLevel [unparsable]
+- $.dualSenseSlots[8].HapticPowerLevel = 1
++ $.dualSenseSlots[8].HapticPowerLevel = 0
+## /DS4Windows/OutputContDevice [unparsable]
+- $.outputTypeSlots[8].ContType = OutContType.DS4
++ $.outputTypeSlots[8].ContType = OutContType.X360
+## /DS4Windows/Control/Key/L3 [unparsable]
+- $.ds4controlSettings[8].ControlButtons[1].IsDefault = false
+- $.ds4controlSettings[8].ControlButtons[1].actionType = ActionType.Key
+- $.ds4controlSettings[8].ControlButtons[1].extras = ""
+- $.ds4settings[8][10].IsDefault = false
+- $.ds4settings[8][10].actionType = ActionType.Key
+- $.ds4settings[8][10].extras = ""
++ $.ds4controlSettings[8].ControlButtons[1].IsDefault = true
++ $.ds4controlSettings[8].ControlButtons[1].actionType = ActionType.Default
++ $.ds4controlSettings[8].ControlButtons[1].extras = null
++ $.ds4settings[8][10].IsDefault = true
++ $.ds4settings[8][10].actionType = ActionType.Default
++ $.ds4settings[8][10].extras = null
+## /DS4Windows/Control/Key/R3 [unparsable]
+- $.ds4controlSettings[8].ControlButtons[3].IsDefault = false
+- $.ds4controlSettings[8].ControlButtons[3].actionType = ActionType.Key
+- $.ds4controlSettings[8].ControlButtons[3].extras = ""
+- $.ds4settings[8][13].IsDefault = false
+- $.ds4settings[8][13].actionType = ActionType.Key
+- $.ds4settings[8][13].extras = ""
++ $.ds4controlSettings[8].ControlButtons[3].IsDefault = true
++ $.ds4controlSettings[8].ControlButtons[3].actionType = ActionType.Default
++ $.ds4controlSettings[8].ControlButtons[3].extras = null
++ $.ds4settings[8][13].IsDefault = true
++ $.ds4settings[8][13].actionType = ActionType.Default
++ $.ds4settings[8][13].extras = null
+## /DS4Windows/Control/Key/R2FullPull [unparsable]
+- $.ds4controlSettings[8].R2FullPull.IsDefault = false
+- $.ds4controlSettings[8].R2FullPull.actionType = ActionType.Key
+- $.ds4controlSettings[8].R2FullPull.extras = ""
+- $.ds4settings[8][43].IsDefault = false
+- $.ds4settings[8][43].actionType = ActionType.Key
+- $.ds4settings[8][43].extras = ""
++ $.ds4controlSettings[8].R2FullPull.IsDefault = true
++ $.ds4controlSettings[8].R2FullPull.actionType = ActionType.Default
++ $.ds4controlSettings[8].R2FullPull.extras = null
++ $.ds4settings[8][43].IsDefault = true
++ $.ds4settings[8][43].actionType = ActionType.Default
++ $.ds4settings[8][43].extras = null
+## /DS4Windows/Control/Key/Capture [unparsable]
+- $.ds4settings[8][44].IsDefault = false
+- $.ds4settings[8][44].actionType = ActionType.Key
+- $.ds4settings[8][44].extras = ""
++ $.ds4settings[8][44].IsDefault = true
++ $.ds4settings[8][44].actionType = ActionType.Default
++ $.ds4settings[8][44].extras = null
+## /DS4Windows/Control/KeyType/L3 [unparsable]
+- $.ds4controlSettings[8].ControlButtons[1].keyType = DS4KeyType.ScanCode
+- $.ds4settings[8][10].keyType = DS4KeyType.ScanCode
++ $.ds4controlSettings[8].ControlButtons[1].keyType = DS4KeyType.None
++ $.ds4settings[8][10].keyType = DS4KeyType.None
+## /DS4Windows/Control/KeyType/R3 [unparsable]
+- $.ds4controlSettings[8].ControlButtons[3].keyType = DS4KeyType.ScanCode
+- $.ds4settings[8][13].keyType = DS4KeyType.ScanCode
++ $.ds4controlSettings[8].ControlButtons[3].keyType = DS4KeyType.None
++ $.ds4settings[8][13].keyType = DS4KeyType.None
+## /DS4Windows/Control/KeyType/R2FullPull [unparsable]
+- $.ds4controlSettings[8].R2FullPull.keyType = DS4KeyType.ScanCode
+- $.ds4settings[8][43].keyType = DS4KeyType.ScanCode
++ $.ds4controlSettings[8].R2FullPull.keyType = DS4KeyType.None
++ $.ds4settings[8][43].keyType = DS4KeyType.None
+## /DS4Windows/Control/KeyType/Capture [unparsable]
+- $.ds4settings[8][44].keyType = DS4KeyType.ScanCode
++ $.ds4settings[8][44].keyType = DS4KeyType.None
+## /DS4Windows/ShiftControl [unparsable]
+(same)

@@ -66,7 +66,7 @@ namespace DS4WindowsTests
                 Assert.True(lines.Length <= MaxSectionFileLines, Path.GetFileName(file) + " が " + MaxSectionFileLines + " 行を超えている（" + lines.Length + " 行）");
 
                 string name = Path.GetFileNameWithoutExtension(file);
-                int types = lines.Count(l => l.TrimStart().StartsWith("internal sealed class ") || l.TrimStart().StartsWith("internal interface "));
+                int types = lines.Count(l => l.TrimStart().StartsWith("internal sealed class ") || l.TrimStart().StartsWith("internal static class ") || l.TrimStart().StartsWith("internal interface "));
                 Assert.Equal(1, types);
                 Assert.Contains(lines, l => l.Contains(" " + name) && (l.Contains("class ") || l.Contains("interface ")));
             }

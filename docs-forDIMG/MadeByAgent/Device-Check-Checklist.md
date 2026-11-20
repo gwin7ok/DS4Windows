@@ -110,6 +110,11 @@
 - 確認ダイアログ類: プラグイン（Accept／Cancel）、名前変更、保存先、複製、プリセットの Yes／No／Apply、出力スロットの Plug／Unplug／確定。
 - 疑う場所: 各 `*.Commands.cs` と XAML の `Command="{Binding …}"`。`CommandGuard` が失敗をログ（Error）へ出す。
 
+## 9f. プロファイルの読み込み→保存（PhaseRV5）
+- 手持ちのプロファイル（実機のもの）を 1 つ以上、読み込んで保存し直し、保存前後の XML が同じ（要素の順序・値）であること。General・TriggerStick・Motion・OutputCurve の各領域を含むもの。
+- 壊れた値（数値でない要素）を持つプロファイルは、読み込み後の値が既定値になる（`PhaseRV5-ParseFailure-Changes.md` の 13 要素）。該当するプロファイルが実機にあれば、見え方を確かめる（走査では 0 件）。
+- 疑う場所: `ProfileSetting`（`Core/Persistence/ProfileSections`）と `ProfileLoadContext` の補助。
+
 ## 10. 実機がなく、未確認のまま残す項目
 - DualSense: 出力レポート（ライトバー、プレイヤー LED、トリガーの効果、振動、触覚の強さ。USB・Bluetooth）、振動エミュレーションの方式の切替。
 - Switch Pro: スティック・加速度・ジャイロの校正、振動。

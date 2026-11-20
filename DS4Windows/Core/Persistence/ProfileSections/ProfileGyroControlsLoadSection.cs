@@ -130,15 +130,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { }
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickOutputStickAxes");
-                if (Enum.TryParse(Item?.InnerText ?? "", out GyroMouseStickInfo.OutputStickAxes temp))
-                {
-                    store.gyroSlots[device].MouseStick.outputStickDir = temp;
-                }
-            }
-            catch { }
+            context.ReadEnum<GyroMouseStickInfo.OutputStickAxes>(m_Xdoc, "/" + rootname + "/GyroMouseStickOutputStickAxes", v => store.gyroSlots[device].MouseStick.outputStickDir = v);
 
             try
             {

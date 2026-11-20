@@ -151,15 +151,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 }
                 catch { }
 
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("MaxOutputEnabled");
-                    if (bool.TryParse(Item?.InnerText ?? "", out bool temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.maxOutputEnabled = temp;
-                    }
-                }
-                catch { }
+                context.ReadBool(xmlTouchMStickSmoothingElement, "MaxOutputEnabled", v => store.touchpadSlots[device].MouseStick.maxOutputEnabled = v);
 
                 try
                 {
@@ -171,15 +163,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 }
                 catch { }
 
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.SelectSingleNode("OutputCurve");
-                    if (Enum.TryParse(Item?.InnerText ?? "", out StickOutCurve.Curve temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.outputCurve = temp;
-                    }
-                }
-                catch { }
+                context.ReadEnum<StickOutCurve.Curve>(xmlTouchMStickSmoothingElement, "OutputCurve", v => store.touchpadSlots[device].MouseStick.outputCurve = v);
 
                 try
                 {

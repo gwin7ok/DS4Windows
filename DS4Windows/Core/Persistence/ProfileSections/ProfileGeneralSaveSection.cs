@@ -11,53 +11,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
     {
         public void Save(ProfileSaveContext context)
         {
-            BackingStore store = context.Store;
-            XmlDocument m_Xdoc = context.Xdoc;
-            XmlElement rootElement = context.RootElement;
-            int device = context.Device;
-            LightbarSettingInfo lightbarSettings = context.LightbarSettings;
-            LightbarDS4WinInfo lightInfo = context.LightInfo;
 
-            string GetLightbarModeString(LightbarMode mode)
+            foreach (ProfileSetting setting in ProfileGeneralSettings.All)
             {
-                string result = "DS4Win";
-                switch (mode)
-                {
-                    case LightbarMode.DS4Win:
-                        result = "DS4Win";
-                        break;
-                    case LightbarMode.Passthru:
-                        result = "Passthru";
-                        break;
-                    default:
-                        break;
-                }
-                return result;
+                setting.Save(context);
             }
-
-            XmlNode xmlTouchToggle = m_Xdoc.CreateNode(XmlNodeType.Element, "touchToggle", null); xmlTouchToggle.InnerText = store.basicSlots[device].EnableTouchToggle.ToString(); rootElement.AppendChild(xmlTouchToggle);
-            XmlNode xmlIdleDisconnectTimeout = m_Xdoc.CreateNode(XmlNodeType.Element, "idleDisconnectTimeout", null); xmlIdleDisconnectTimeout.InnerText = store.basicSlots[device].IdleDisconnectTimeout.ToString(); rootElement.AppendChild(xmlIdleDisconnectTimeout);
-            XmlNode xmlOutputDataToDS4 = m_Xdoc.CreateNode(XmlNodeType.Element, "outputDataToDS4", null); xmlOutputDataToDS4.InnerText = store.basicSlots[device].EnableOutputDataToDS4.ToString(); rootElement.AppendChild(xmlOutputDataToDS4);
-            XmlNode xmlColor = m_Xdoc.CreateNode(XmlNodeType.Element, "Color", null);
-            xmlColor.InnerText = lightInfo.m_Led.red.ToString() + "," + lightInfo.m_Led.green.ToString() + "," + lightInfo.m_Led.blue.ToString();
-            rootElement.AppendChild(xmlColor);
-            XmlNode xmlRumbleBoost = m_Xdoc.CreateNode(XmlNodeType.Element, "RumbleBoost", null); xmlRumbleBoost.InnerText = store.rumbleSlots[device].Boost.ToString(); rootElement.AppendChild(xmlRumbleBoost);
-            XmlNode xmlRumbleAutostopTime = m_Xdoc.CreateNode(XmlNodeType.Element, "RumbleAutostopTime", null); xmlRumbleAutostopTime.InnerText = store.rumbleSlots[device].AutostopTime.ToString(); rootElement.AppendChild(xmlRumbleAutostopTime);
-            XmlNode xmlLightbarMode = m_Xdoc.CreateNode(XmlNodeType.Element, "LightbarMode", null); xmlLightbarMode.InnerText = GetLightbarModeString(lightbarSettings.mode); rootElement.AppendChild(xmlLightbarMode);
-            XmlNode xmlLedAsBatteryIndicator = m_Xdoc.CreateNode(XmlNodeType.Element, "ledAsBatteryIndicator", null); xmlLedAsBatteryIndicator.InnerText = lightInfo.ledAsBattery.ToString(); rootElement.AppendChild(xmlLedAsBatteryIndicator);
-            XmlNode xmlLowBatteryFlash = m_Xdoc.CreateNode(XmlNodeType.Element, "FlashType", null); xmlLowBatteryFlash.InnerText = lightInfo.flashType.ToString(); rootElement.AppendChild(xmlLowBatteryFlash);
-            XmlNode xmlFlashBatterAt = m_Xdoc.CreateNode(XmlNodeType.Element, "flashBatteryAt", null); xmlFlashBatterAt.InnerText = lightInfo.flashAt.ToString(); rootElement.AppendChild(xmlFlashBatterAt);
-            XmlNode xmlTouchSensitivity = m_Xdoc.CreateNode(XmlNodeType.Element, "touchSensitivity", null); xmlTouchSensitivity.InnerText = store.touchpadSlots[device].TouchSensitivity.ToString(); rootElement.AppendChild(xmlTouchSensitivity);
-            XmlNode xmlLowColor = m_Xdoc.CreateNode(XmlNodeType.Element, "LowColor", null);
-            xmlLowColor.InnerText = lightInfo.m_LowLed.red.ToString() + "," + lightInfo.m_LowLed.green.ToString() + "," + lightInfo.m_LowLed.blue.ToString();
-            rootElement.AppendChild(xmlLowColor);
-            XmlNode xmlChargingColor = m_Xdoc.CreateNode(XmlNodeType.Element, "ChargingColor", null);
-            xmlChargingColor.InnerText = lightInfo.m_ChargingLed.red.ToString() + "," + lightInfo.m_ChargingLed.green.ToString() + "," + lightInfo.m_ChargingLed.blue.ToString();
-            rootElement.AppendChild(xmlChargingColor);
-            XmlNode xmlFlashColor = m_Xdoc.CreateNode(XmlNodeType.Element, "FlashColor", null);
-            xmlFlashColor.InnerText = lightInfo.m_FlashLed.red.ToString() + "," + lightInfo.m_FlashLed.green.ToString() + "," + lightInfo.m_FlashLed.blue.ToString();
-            rootElement.AppendChild(xmlFlashColor);
-            XmlNode xmlTouchpadJitterCompensation = m_Xdoc.CreateNode(XmlNodeType.Element, "touchpadJitterCompensation", null); xmlTouchpadJitterCompensation.InnerText = store.touchpadSlots[device].JitterCompensation.ToString(); rootElement.AppendChild(xmlTouchpadJitterCompensation);
         }
     }
 }
