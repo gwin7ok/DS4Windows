@@ -216,4 +216,4 @@
 | テスト（xUnit） | 3,671 | 3,682 |
 
 ## RV10 の実測（2026-11-20）
-- `BackingStore` の public な可変フィールド: 107（計測の定義による）→ **24**（反射の実測。`BackingStorePublicFieldRatchetTests` が固定）。評価の再算定は未実施。
+- `BackingStore` の public な可変フィールド: 107（計測の定義による）→ **24**（反射の実測。`BackingStorePublicFieldRatchetTests` が固定）。再算定は RV10 の保存（`scorecard/RV10.json`）。計測スクリプトの数え方では 35。
