@@ -12,7 +12,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
     /// （どちらも省略可。両方を指定したときは両方に一致するウィンドウ。Auto-Profile と同じ書式）。パスもタイトルも空は、どのウィンドウにも一致してしまうため、保存を止める。
     /// SA は <c>SaveActionNew</c> のモード 11（Details＝パス、Extras＝タイトル、Delay＝押し続ける秒数）で保存する。
     /// </summary>
-    public class FocusWindowViewModel : NotifyDataErrorBase, IActionTypeEditor, INotifyPropertyChanged
+    public class FocusWindowViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
         private const string PathProperty = nameof(WindowPath);
         private const string TitleProperty = nameof(TitleText);   // 画面の入力欄の結びつき名（検証エラーの付け先）
@@ -23,7 +23,6 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private WindowTitleMatchMode titleMatchMode = WindowTitleMatchMode.Exact;
         private double delay;
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public string WindowPath
         {
@@ -33,7 +32,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 value = value ?? string.Empty;
                 if (windowPath == value) return;
                 windowPath = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PathProperty));
+                OnPropertyChanged(PathProperty);
             }
         }
 
@@ -86,9 +85,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         private void RaiseTitleChanged(bool textChanged, bool modeChanged)
         {
-            if (textChanged) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TitleText)));
-            if (modeChanged) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TitleMatchMode)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WindowTitle)));
+            if (textChanged) OnPropertyChanged(nameof(TitleText));
+            if (modeChanged) OnPropertyChanged(nameof(TitleMatchMode));
+            OnPropertyChanged(nameof(WindowTitle));
         }
 
         public double Delay { get => delay; set => delay = value; }

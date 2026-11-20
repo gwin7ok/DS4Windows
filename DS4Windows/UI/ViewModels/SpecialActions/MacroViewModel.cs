@@ -27,10 +27,8 @@ using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
-    public class MacroViewModel : NotifyDataErrorBase, System.ComponentModel.INotifyPropertyChanged, IActionTypeEditor
+    public class MacroViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
         private bool runTriggerRelease;
         private bool syncRun;
         private bool keepKeyState;

@@ -28,10 +28,8 @@ using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels.SpecialActions
 {
-    public class PressKeyViewModel : NotifyDataErrorBase, INotifyPropertyChanged, IActionTypeEditor
+    public class PressKeyViewModel : NotifyDataErrorBase, IActionTypeEditor
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         private string switchMode = string.Empty;
         public string SwitchMode
         {
