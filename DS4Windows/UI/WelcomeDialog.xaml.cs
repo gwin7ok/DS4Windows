@@ -23,7 +23,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using HttpProgress;
-using NonFormTimer = System.Timers.Timer;
 
 namespace DS4Windows.UI
 {
@@ -58,7 +57,7 @@ namespace DS4Windows.UI
         private string installFileName;
 
         Process monitorProc;
-        NonFormTimer monitorTimer;
+        System.Timers.Timer monitorTimer;
 
         // Phase6-Step10-1-2: Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
         private readonly DS4Windows.UI.Abstractions.IDriverEnvironment _environmentService;
@@ -224,7 +223,7 @@ namespace DS4Windows.UI
             {
                 EnableControls(false);
 
-                monitorTimer = new NonFormTimer();
+                monitorTimer = new System.Timers.Timer();
                 monitorTimer.Elapsed += ViGEmInstallTimer_Tick;
                 monitorTimer.Start();
             }
@@ -237,7 +236,7 @@ namespace DS4Windows.UI
 
         private void ViGEmInstallTimer_Tick(object sender, System.Timers.ElapsedEventArgs e)
         {
-            ((NonFormTimer)sender).Stop();
+            ((System.Timers.Timer)sender).Stop();
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
@@ -262,13 +261,13 @@ namespace DS4Windows.UI
 
                 string currentFilePath = Path.Combine(Path.GetTempPath(), $"{installFileName}");
                 File.Delete(currentFilePath);
-                ((NonFormTimer)sender).Stop();
+                ((System.Timers.Timer)sender).Stop();
                 finished = true;
             }
 
             if (!finished)
             {
-                ((NonFormTimer)sender).Start();
+                ((System.Timers.Timer)sender).Start();
             }
         }
 
@@ -340,7 +339,7 @@ namespace DS4Windows.UI
 
             if (success)
             {
-                monitorTimer = new NonFormTimer();
+                monitorTimer = new System.Timers.Timer();
                 monitorTimer.Elapsed += HidHideInstallTimer_Elapsed;
                 monitorTimer.Start();
             }
@@ -354,7 +353,7 @@ namespace DS4Windows.UI
         private void HidHideInstallTimer_Elapsed(object sender,
             System.Timers.ElapsedEventArgs e)
         {
-            ((NonFormTimer)sender).Stop();
+            ((System.Timers.Timer)sender).Stop();
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
@@ -377,13 +376,13 @@ namespace DS4Windows.UI
 
                 string currentFilePath = Path.Combine(Path.GetTempPath(), $"{InstHidHideFileNameX64}");
                 File.Delete(currentFilePath);
-                ((NonFormTimer)sender).Stop();
+                ((System.Timers.Timer)sender).Stop();
                 finished = true;
             }
 
             if (!finished)
             {
-                ((NonFormTimer)sender).Start();
+                ((System.Timers.Timer)sender).Start();
             }
         }
 
@@ -446,7 +445,7 @@ namespace DS4Windows.UI
 
             if (success)
             {
-                monitorTimer = new NonFormTimer();
+                monitorTimer = new System.Timers.Timer();
                 monitorTimer.Elapsed += FakerInputInstallTimer_Elapsed;
                 monitorTimer.Start();
             }
@@ -460,7 +459,7 @@ namespace DS4Windows.UI
         private void FakerInputInstallTimer_Elapsed(object sender,
             System.Timers.ElapsedEventArgs e)
         {
-            ((NonFormTimer)sender).Stop();
+            ((System.Timers.Timer)sender).Stop();
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
@@ -483,13 +482,13 @@ namespace DS4Windows.UI
 
                 string currentFilePath = Path.Combine(Path.GetTempPath(), $"{instFakerInputFileName}");
                 File.Delete(currentFilePath);
-                ((NonFormTimer)sender).Stop();
+                ((System.Timers.Timer)sender).Stop();
                 finished = true;
             }
 
             if (!finished)
             {
-                ((NonFormTimer)sender).Start();
+                ((System.Timers.Timer)sender).Start();
             }
         }
 

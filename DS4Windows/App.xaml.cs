@@ -55,7 +55,7 @@ namespace DS4Windows
         private readonly SingleInstanceGuard _singleInstance = new SingleInstanceGuard();
         // 起動前（-driverinstall の分岐を含む）は、ブートストラップの BackingStore で作ったもの。ホストの構築後は、コンテナの Singleton に置き換える
         private DS4Windows.UI.Services.AppThemeAndCultureService _themeCulture = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private Timer collectTimer = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
+        private ITimer collectTimer = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
         public static LoggerHolder logHolder = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
 
         // Phase6-Step7（決定1＝A）: Post-Host（明示的なホスト構築と CreateControlService の後）で使う DI サービス。
@@ -869,7 +869,7 @@ namespace DS4Windows
                 _runtimeBootstrapper.Initialize();
                 _lifecycle = ResolvePostHostService<DS4Windows.Processing.Abstractions.IServiceLifecycle>();
 
-                collectTimer = new Timer(GarbageTask, null, 30000, 30000);
+                collectTimer = TimeProvider.System.CreateTimer(GarbageTask, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
 
             });
             controlThread.Priority = ThreadPriority.Normal;
@@ -883,7 +883,7 @@ namespace DS4Windows
         {
             controlThread = new Thread(() =>
             {
-                collectTimer = new Timer(GarbageTask, null, 30000, 30000);
+                collectTimer = TimeProvider.System.CreateTimer(GarbageTask, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             });
             controlThread.Priority = ThreadPriority.Normal;
             controlThread.IsBackground = true;

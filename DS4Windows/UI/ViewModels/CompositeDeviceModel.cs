@@ -89,7 +89,7 @@ namespace DS4Windows.UI.ViewModels
 
         /// <summary>電池表示を読み直す間隔（ミリ秒。ユーザー指定: 60 秒）。</summary>
         public const int BatteryRefreshIntervalMs = 60000;
-        private Timer batteryRefreshTimer;
+        private ITimer batteryRefreshTimer;
         private string lastBatteryState;
 
         private void RaiseBatteryStateChanged(EventArgs e)
@@ -115,7 +115,7 @@ namespace DS4Windows.UI.ViewModels
 
         private void StopBatteryRefresh()
         {
-            Timer timer = Interlocked.Exchange(ref batteryRefreshTimer, null);
+            ITimer timer = Interlocked.Exchange(ref batteryRefreshTimer, null);
             timer?.Dispose();
         }
 
@@ -361,7 +361,7 @@ namespace DS4Windows.UI.ViewModels
             // S9-5 の確認で判明: 変化通知だけでは、表示が古い値のまま止まることがあった（実機: 表示 50%、実際 37%）。
             // 通知に頼らず、一定間隔で読み直す（文字列が変わったときだけ画面へ通知する）。コントローラーが外れたら止める
             lastBatteryState = BatteryState;
-            batteryRefreshTimer = new Timer(_ => RefreshBatteryState(), null, BatteryRefreshIntervalMs, BatteryRefreshIntervalMs);
+            batteryRefreshTimer = TimeProvider.System.CreateTimer(_ => RefreshBatteryState(), null, TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs), TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs));
             device.Removal += (sender, e) => StopBatteryRefresh();
             device.MacAddressChanged += (sender, e) => IdTextChanged?.Invoke(this, e);
             this.devIndex = devIndex;

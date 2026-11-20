@@ -23,7 +23,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using NonFormTimer = System.Timers.Timer;
 
 namespace DS4Windows.UI
 {
@@ -35,7 +34,7 @@ namespace DS4Windows.UI
         private int deviceNum;
         private int profileDeviceNum;
         private event EventHandler DeviceNumChanged;
-        private NonFormTimer readingTimer;
+        private System.Timers.Timer readingTimer;
         private bool useTimer;
         private double lsDeadX;
         private double lsDeadY;
@@ -239,7 +238,7 @@ namespace DS4Windows.UI
             inputContNum.Content = $"#{deviceNum + 1}";
             exposeState = new ControllerStateExposed(baseState);
 
-            readingTimer = new NonFormTimer();
+            readingTimer = new System.Timers.Timer();
             readingTimer.Interval = 66.0; // 約15fps (66ms): 診断用として十分滑らかかつCPU負荷を最小化
 
             LsDeadXChanged += ChangeLsDeadControls;

@@ -24,7 +24,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using NonFormTimer = System.Timers.Timer;
 using Xceed.Wpf.Toolkit;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.Services;
@@ -51,7 +50,7 @@ namespace DS4Windows.UI
         public event EventHandler Cancel;
 
         private ColorPickerWindow colorDialog;
-        private NonFormTimer ds4 = new NonFormTimer();
+        private System.Timers.Timer ds4 = new System.Timers.Timer();
 
         // Phase6-Step10-2-4b: Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
 

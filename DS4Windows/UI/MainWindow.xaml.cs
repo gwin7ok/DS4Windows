@@ -31,7 +31,6 @@ using System.Windows.Interop;
 using System.Diagnostics;
 using System.IO;
 using System.Management;
-using NonFormTimer = System.Timers.Timer;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using DS4Windows.Core.Logging;
@@ -70,7 +69,7 @@ namespace DS4Windows.UI
         private ManagementEventWatcher managementEvWatcher;
         private bool wasrunning = false;
         private AutoProfileHolder autoProfileHolder;
-        private NonFormTimer hotkeysTimer;
+        private System.Timers.Timer hotkeysTimer;
         // タイマーの処理中に止められたとき（終了・サービス停止）、始め直さないための印
         private volatile bool hotkeysTimerActive;
         // 更新の確認の判断（画面に依存しない）
@@ -245,7 +244,7 @@ namespace DS4Windows.UI
             // Don't tie timers to main thread
             Thread timerThread = new Thread(() =>
             {
-                hotkeysTimer = new NonFormTimer();
+                hotkeysTimer = new System.Timers.Timer();
                 hotkeysTimer.Interval = 20;
                 hotkeysTimer.AutoReset = false;
             });

@@ -17,7 +17,7 @@ namespace DS4WindowsTests
             if (code == null) return;
 
             Assert.Contains("public const int BatteryRefreshIntervalMs = 60000;", code);
-            Assert.Contains("new Timer(_ => RefreshBatteryState(), null, BatteryRefreshIntervalMs, BatteryRefreshIntervalMs);", code);
+            Assert.Contains("TimeProvider.System.CreateTimer(_ => RefreshBatteryState(), null, TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs), TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs));", code);
         }
 
         [Fact]
