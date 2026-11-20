@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using DS4Windows.Core.Settings;
 
 namespace DS4Windows.UI.Services

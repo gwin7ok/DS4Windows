@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 
 namespace DS4Windows.UI.Abstractions

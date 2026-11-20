@@ -1,4 +1,6 @@
 
+#nullable enable
+
 using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels;

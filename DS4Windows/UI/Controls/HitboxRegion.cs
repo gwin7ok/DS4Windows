@@ -1,4 +1,6 @@
-﻿namespace DS4Windows.UI.Controls
+﻿#nullable enable
+
+namespace DS4Windows.UI.Controls
 {
     /// <summary>
     /// コントローラーの図の上に置く、ボタン 1 つ分の領域。位置と大きさは、配置の基準の大きさ

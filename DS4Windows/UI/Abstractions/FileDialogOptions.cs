@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace DS4Windows.UI.Abstractions
 {
     /// <summary>ファイルの選択の窓の指定（<see cref="IDialogService.PickOpenFile"/>、<see cref="IDialogService.PickSaveFile"/>）。</summary>

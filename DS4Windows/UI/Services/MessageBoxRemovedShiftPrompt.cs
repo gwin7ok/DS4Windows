@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Windows;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;

@@ -1,4 +1,6 @@
 
+#nullable enable
+
 using DS4Windows.Core.Utilities;
 
 namespace DS4Windows.UI.Abstractions
