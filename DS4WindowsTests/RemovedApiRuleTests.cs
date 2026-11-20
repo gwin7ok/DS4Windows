@@ -90,6 +90,7 @@ namespace DS4WindowsTests
             ("ActionEditorViewModel", new[] { "IndexZeroMeansDefault" }),
             ("MainWindow", new[] { "MainTabCon_SelectionChanged" }),
             ("AppHost", new[] { "_disposed" }),
+            ("AppLogger", new[] { "NotificationServiceInstance" }),
             // 常に None を返していた孤立 API（出力の種類の正本は、プロファイル設定の ContType）
             ("IOutputSlotService", new[] { "GetOutputDeviceType", "SetOutputDeviceType" }),
             ("OutputSlotService", new[] { "GetOutputDeviceType", "SetOutputDeviceType" }),

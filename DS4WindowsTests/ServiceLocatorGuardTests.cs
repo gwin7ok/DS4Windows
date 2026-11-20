@@ -63,14 +63,17 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void AppLogger_UsesItsOwnNotificationService_SetByTheApp()
+        public void AppLogger_HasItsOwnSettableNotificationService()
         {
-            string logger = SourceText.ReadCode("DS4Windows/Core/Logging/AppLogger.cs");
-            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
-            if (logger == null || app == null) return;
+            // 通知の窓口は AppLogger の公開の静的プロパティ。旧 NotificationServiceInstance は撤去済み（RemovedApiRuleTests）
+            var prop = typeof(DS4Windows.Core.Logging.AppLogger).GetProperty("NotificationService", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            Assert.NotNull(prop);
+            Assert.Equal(typeof(DS4Windows.Core.Abstractions.INotificationService), prop.PropertyType);
+            Assert.True(prop.CanWrite);
 
-            Assert.DoesNotContain("NotificationServiceInstance", logger);
-            Assert.Matches(@"public\s+static\s+DS4Windows\.Core\.Abstractions\.INotificationService\s+NotificationService", logger);
+            // App が起動のときに差す
+            string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
+            if (app == null) return;
             Assert.Matches(@"AppLogger\.NotificationService\s*=\s*ResolvePostHostService<INotificationService>\(\)", app);
         }
 
