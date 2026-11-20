@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,10 +26,10 @@ namespace DS4Windows.UI
         }
 
         /// <summary>カスタム曲線の編集が求められた。</summary>
-        public event EventHandler CustomCurveEditorRequested;
+        public event EventHandler? CustomCurveEditorRequested;
 
         /// <summary>スティックの校正が求められた。</summary>
-        public event EventHandler CalibrationRequested;
+        public event EventHandler? CalibrationRequested;
 
         /// <summary>軸別デッドゾーンの部品。編集画面が、機器との結び付け・試験表示への反映に使う。</summary>
         public AxialStickUserControl AxialStick => axialStickControl;

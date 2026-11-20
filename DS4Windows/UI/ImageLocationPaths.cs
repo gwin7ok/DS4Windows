@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 
@@ -25,22 +27,22 @@ namespace DS4Windows.UI
     public class ImageLocationPaths
     {
         public string NewProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("NewProfileImg")}"; }
-        public event EventHandler NewProfileChanged;
+        public event EventHandler? NewProfileChanged;
 
         public string EditProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("EditImg")}"; }
-        public event EventHandler EditProfileChanged;
+        public event EventHandler? EditProfileChanged;
 
         public string DeleteProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("DeleteImg")}"; }
-        public event EventHandler DeleteProfileChanged;
+        public event EventHandler? DeleteProfileChanged;
 
         public string DuplicateProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("CopyImg")}"; }
-        public event EventHandler DuplicateProfileChanged;
+        public event EventHandler? DuplicateProfileChanged;
 
         public string ExportProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("ExportImg")}"; }
-        public event EventHandler ExportProfileChanged;
+        public event EventHandler? ExportProfileChanged;
 
         public string ImportProfile { get => $"{ResourcePaths.ResourcesPrefix}/{Application.Current.FindResource("ImportImg")}"; }
-        public event EventHandler ImportProfileChanged;
+        public event EventHandler? ImportProfileChanged;
 
         // 旧 コンストラクターでの App.ThemeChanged の購読。XAML の資源として作られるため、
         // MainWindow が InitializeComponent の直後に、テーマの切り替えの通知元を渡す
@@ -50,7 +52,7 @@ namespace DS4Windows.UI
             themeSource.ThemeChanged += Current_ThemeChanged;
         }
 
-        private void Current_ThemeChanged(object sender, EventArgs e)
+        private void Current_ThemeChanged(object? sender, EventArgs e)
         {
             NewProfileChanged?.Invoke(this, EventArgs.Empty);
             EditProfileChanged?.Invoke(this, EventArgs.Empty);

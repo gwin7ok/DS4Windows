@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
@@ -24,7 +26,7 @@ namespace DS4Windows.UI
 {
     public static class UtilMethods
     {
-        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj)
+        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject? depObj)
             where T : DependencyObject
         {
             if (depObj != null)
@@ -45,7 +47,7 @@ namespace DS4Windows.UI
             }
         }
 
-        public static childItem FindVisualChild<childItem>(DependencyObject obj)
+        public static childItem? FindVisualChild<childItem>(DependencyObject? obj)
             where childItem : DependencyObject
         {
             foreach (childItem child in FindVisualChildren<childItem>(obj))

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace DS4Windows.UI
@@ -24,7 +26,7 @@ namespace DS4Windows.UI
         {
             try
             {
-                DS4Windows.Core.Platform.COPYDATASTRUCT cds = (DS4Windows.Core.Platform.COPYDATASTRUCT)Marshal.PtrToStructure(lParam, typeof(DS4Windows.Core.Platform.COPYDATASTRUCT));   // 旧 App.COPYDATASTRUCT
+                DS4Windows.Core.Platform.COPYDATASTRUCT cds = Marshal.PtrToStructure<DS4Windows.Core.Platform.COPYDATASTRUCT>(lParam);   // 旧 App.COPYDATASTRUCT
                 if (IpcCommandParser.IsValidSize(cds.cbData))
                 {
                     byte[] buffer = new byte[cds.cbData];

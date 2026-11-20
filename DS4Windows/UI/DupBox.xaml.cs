@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,10 +29,10 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class DupBox : UserControl
     {
-        private string oldfilename;
+        private string? oldfilename;
         public string OldFilename
         {
-            get => oldfilename;
+            get => oldfilename!;   // 複製元の名前は、画面を開く前に渡される
             set
             {
                 oldfilename = value;
@@ -41,14 +43,14 @@ namespace DS4Windows.UI
             }
         }
 
-        public event EventHandler Cancel;
+        public event EventHandler? Cancel;
         public delegate void SaveHandler(DupBox sender, string profilename);
-        public event SaveHandler Save;
+        public event SaveHandler? Save;
 
         // 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが 1 回だけ呼ぶ）。
         // プロファイルの複製（複製元の名前, 複製先の名前）。ファイルのコピーと新しい ProfileId の割り当ては、渡す側（Composition）が行う。
-        private Action<string, string> duplicateProfile;
+        private Action<string, string>? duplicateProfile;
 
         public DupBox()
         {
@@ -71,7 +73,7 @@ namespace DS4Windows.UI
                 !string.Equals(profile, oldfilename, StringComparison.OrdinalIgnoreCase) &&
                 profile.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) == -1)
             {
-                duplicateProfile(oldfilename, profile);
+                duplicateProfile!(oldfilename!, profile);   // Initialize と OldFilename は、画面を開く前に渡される
                 Save?.Invoke(this, profile);
             }
             else

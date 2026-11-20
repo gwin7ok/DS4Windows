@@ -1,4 +1,6 @@
-﻿using DS4Windows.UI.Controls;
+﻿#nullable enable
+
+using DS4Windows.UI.Controls;
 /*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
@@ -51,7 +53,7 @@ namespace DS4Windows.UI
         // コントローラーの図のボタンは、ControllerVisualizerControl が配置表から生成する。元の名前のまま持つ
         private Button guideBtn, aBtn, bBtn, xBtn, yBtn, lbBtn, rbBtn, ltBtn, rtBtn, backBtn, startBtn, lsbBtn, lsuBtn, lsrBtn, lsdBtn, lslBtn, rsbBtn, rsuBtn, rsrBtn, rsdBtn, rslBtn, dpadUBtn, dpadRBtn, dpadDBtn, dpadLBtn, touchpadClickBtn;
 
-        private Button highlightBtn;
+        private Button? highlightBtn;
         private ExposeMode expose;
 
         public enum ExposeMode : uint
@@ -134,9 +136,9 @@ namespace DS4Windows.UI
             ChangeForCurrentAction();
         }
 
-        private void OutConBtn_MouseEnter(object sender, MouseEventArgs e)
+        private void OutConBtn_MouseEnter(object sender, MouseEventArgs? e)
         {
-            Button button = sender as Button;
+            if (sender is not Button button) return;
             //string name = button.Tag.ToString();
             string name = GetControlString(button);
             highlightLb.Content = name;
@@ -158,7 +160,7 @@ namespace DS4Windows.UI
         {
             // 種類がない（None）ときは、既定の種類の表記
             var names = DS4Windows.Core.Model.OutContTypeInfo.ButtonNames(bindingVM.OutputType)
-                ?? DS4Windows.Core.Model.OutContTypeInfo.ButtonNames(DS4Windows.Core.Model.OutContTypeInfo.DefaultType);
+                ?? DS4Windows.Core.Model.OutContTypeInfo.ButtonNames(DS4Windows.Core.Model.OutContTypeInfo.DefaultType)!;   // 既定の種類には、必ず表がある
             return names[associatedBindings[button].control];
         }
 
@@ -173,7 +175,7 @@ namespace DS4Windows.UI
 
         private void ChangeForCurrentAction()
         {
-            OutBinding bind = bindingVM.ActionBinding;
+            OutBinding? bind = bindingVM.ActionBinding;
             topOptsPanel.DataContext = bind;
 
             if (expose == ExposeMode.Control)
@@ -205,13 +207,13 @@ namespace DS4Windows.UI
                 highlightBtn.ClearValue(Button.BackgroundProperty);
             }
 
-            OutBinding binding = bindingVM.ActionBinding;
+            OutBinding binding = bindingVM.ActionBinding!;   // 画面を開くときに、現在の割り当てが入る
             if (binding.outputType == OutBinding.OutType.Default)
             {
                 DS4Windows.Core.Model.X360Controls defaultBind = bindingVM.DefaultMappingFor(binding.input);
                 if (!OutBinding.IsMouseRange(defaultBind))
                 {
-                    if (conBtnMap.TryGetValue(defaultBind, out Button tempBtn))
+                    if (conBtnMap.TryGetValue(defaultBind, out Button? tempBtn))
                     {
                         OutConBtn_MouseEnter(tempBtn, null);
                         //tempBtn.Background = new SolidColorBrush(Colors.LimeGreen);
@@ -219,7 +221,7 @@ namespace DS4Windows.UI
                 }
                 else
                 {
-                    if (mouseBtnMap.TryGetValue(defaultBind, out Button tempBtn))
+                    if (mouseBtnMap.TryGetValue(defaultBind, out Button? tempBtn))
                     {
                         tempBtn.Background = SelectedBrush();
                         highlightBtn = tempBtn;
@@ -230,7 +232,7 @@ namespace DS4Windows.UI
             {
                 if (!binding.IsMouse())
                 {
-                    if (conBtnMap.TryGetValue(binding.control, out Button tempBtn))
+                    if (conBtnMap.TryGetValue(binding.control, out Button? tempBtn))
                     {
                         OutConBtn_MouseEnter(tempBtn, null);
                         //tempBtn.Background = new SolidColorBrush(Colors.LimeGreen);
@@ -238,7 +240,7 @@ namespace DS4Windows.UI
                 }
                 else
                 {
-                    if (mouseBtnMap.TryGetValue(binding.control, out Button tempBtn))
+                    if (mouseBtnMap.TryGetValue(binding.control, out Button? tempBtn))
                     {
                         tempBtn.Background = SelectedBrush();
                         highlightBtn = tempBtn;
@@ -247,7 +249,7 @@ namespace DS4Windows.UI
             }
             else if (binding.outputType == OutBinding.OutType.Key)
             {
-                if (keyBtnMap.TryGetValue(binding.outkey, out Button tempBtn))
+                if (keyBtnMap.TryGetValue(binding.outkey, out Button? tempBtn))
                 {
                     tempBtn.Background = SelectedBrush();
                     highlightBtn = tempBtn;
@@ -264,7 +266,7 @@ namespace DS4Windows.UI
         {
             foreach (Button button in LogicalButtons(this))
             {
-                string path = BindingOperations.GetBinding(button, System.Windows.Controls.Primitives.ButtonBase.CommandProperty)?.Path?.Path;
+                string? path = BindingOperations.GetBinding(button, System.Windows.Controls.Primitives.ButtonBase.CommandProperty)?.Path?.Path;
                 if (path == null || !(button.CommandParameter is string parameter)) continue;
 
                 if (path.EndsWith(nameof(BindingWindowViewModel.SelectKeyCommand), StringComparison.Ordinal))
@@ -337,7 +339,7 @@ namespace DS4Windows.UI
             if (face.BackgroundImageKey == null) return;
 
             ImageSourceConverter sourceConverter = new ImageSourceConverter();
-            ImageSource temp = sourceConverter.
+            ImageSource? temp = sourceConverter.
                 ConvertFromString($"{ResourcePaths.AssemblyResourcePrefix}component/Resources/{App.Current.FindResource(face.BackgroundImageKey)}") as ImageSource;
             conImageBrush.ImageSource = temp;
 
@@ -346,6 +348,7 @@ namespace DS4Windows.UI
         }
 
         /// <summary>配置表から生成されたボタンを元の名前のフィールドに持ち、ホバーの処理を結び付ける</summary>
+        [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(guideBtn), nameof(aBtn), nameof(bBtn), nameof(xBtn), nameof(yBtn), nameof(lbBtn), nameof(rbBtn), nameof(ltBtn), nameof(rtBtn), nameof(backBtn), nameof(startBtn), nameof(lsbBtn), nameof(lsuBtn), nameof(lsrBtn), nameof(lsdBtn), nameof(lslBtn), nameof(rsbBtn), nameof(rsuBtn), nameof(rsrBtn), nameof(rsdBtn), nameof(rslBtn), nameof(dpadUBtn), nameof(dpadRBtn), nameof(dpadDBtn), nameof(dpadLBtn), nameof(touchpadClickBtn))]
         private void InitVisualizerButtons()
         {
             Button Get(string id) => conVisualizer[id];
@@ -390,7 +393,8 @@ namespace DS4Windows.UI
             if (!bindingVM.HasTargetDevice) return;
 
             var outcome = rumbleTest.Toggle(bindingVM.TargetDevice, bindingVM.RumbleActive,
-                bindingVM.ActionBinding.HeavyRumble, bindingVM.ActionBinding.LightRumble,
+                bindingVM.ActionBinding!.HeavyRumble, bindingVM.ActionBinding.LightRumble,   // 同上
+               
                 bindingVM.InverseRumbleMotors);
             if (outcome == RumbleTestOutcome.None) return;
 
@@ -403,7 +407,7 @@ namespace DS4Windows.UI
         {
             ColorPickerWindow dialog = new ColorPickerWindow();
             dialog.Owner = Application.Current.MainWindow;
-            OutBinding actBind = bindingVM.ActionBinding;
+            OutBinding actBind = bindingVM.ActionBinding!;   // 同上
             DS4Color tempcolor = actBind.ExtrasColorValue;
             dialog.colorPicker.SelectedColor = MediaColors.ToMedia(tempcolor);
             bindingVM.StartForcedColor(tempcolor);
@@ -428,7 +432,7 @@ namespace DS4Windows.UI
             {
                 box.Visibility = Visibility.Collapsed;
                 fullPanel.Children.Remove(box);
-                box = null;
+                box = null!;   // 閉じたあとは、参照を手放す
                 mapBindingPanel.Visibility = Visibility.Visible;
                 extrasSidePanel.Visibility = Visibility.Visible;
             };
@@ -437,9 +441,9 @@ namespace DS4Windows.UI
             {
                 box.Visibility = Visibility.Collapsed;
                 fullPanel.Children.Remove(box);
-                box = null;
+                box = null!;   // 閉じたあとは、参照を手放す
                 //mapBindingPanel.Visibility = Visibility.Visible;
-                bindingVM.PrepareSaveMacro(bindingVM.ActionBinding);
+                bindingVM.PrepareSaveMacro(bindingVM.ActionBinding!);   // 同上
                 Close();
             };
         }

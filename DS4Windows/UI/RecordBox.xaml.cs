@@ -1,4 +1,4 @@
-﻿/*
+/*
 DS4Windows
 Copyright (C) 2023  Travis Nickles
 
@@ -15,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+#nullable enable
 
 using System;
 using System.Collections.Generic;
@@ -39,17 +41,17 @@ namespace DS4Windows.UI
         private RecordBoxViewModel recordBoxVM;
         // マウスの移動の記録（画面全体のマウス入力の監視と、記録のロジック）
         private readonly DS4Windows.UI.Services.MouseRecordingHost mouseHook;
-        private DS4Windows.Processing.Macro.MacroPointerRecorder pointerRecorder;
+        private DS4Windows.Processing.Macro.MacroPointerRecorder? pointerRecorder;
         private bool limitStopRequested;
         public RecordBoxViewModel RecordBoxVM { get => recordBoxVM; }
 
         private bool saved;
         public bool Saved { get => saved; }
 
-        public event EventHandler Save;
-        public event EventHandler Cancel;
+        public event EventHandler? Save;
+        public event EventHandler? Cancel;
 
-        private ColorPickerWindow colorDialog;
+        private ColorPickerWindow? colorDialog;
         private System.Timers.Timer ds4 = new System.Timers.Timer();
 
         // Program.rootHub／AppHost への後退を廃止し、必要なサービスを必須引数で受け取る。
@@ -82,7 +84,7 @@ namespace DS4Windows.UI
             SetupLateEvents();
         }
 
-        private void Ds4_Tick(object sender, System.Timers.ElapsedEventArgs e)
+        private void Ds4_Tick(object? sender, System.Timers.ElapsedEventArgs e)
         {
             ds4.Stop();
 
@@ -103,21 +105,21 @@ namespace DS4Windows.UI
             Unloaded += (sender, e) => StopMouseRecording();
         }
 
-        private void RecordBox_Cancel(object sender, EventArgs e)
+        private void RecordBox_Cancel(object? sender, EventArgs e)
         {
             recordBoxVM.RevertControlsSettings();
             ds4.Stop();
             ds4.Elapsed -= Ds4_Tick;
         }
 
-        private void RecordBox_Save(object sender, EventArgs e)
+        private void RecordBox_Save(object? sender, EventArgs e)
         {
             recordBoxVM.RevertControlsSettings();
             ds4.Stop();
             ds4.Elapsed -= Ds4_Tick;
         }
 
-        private void MacroSteps_CollectionChanged(object sender,
+        private void MacroSteps_CollectionChanged(object? sender,
             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
@@ -419,25 +421,25 @@ namespace DS4Windows.UI
                 MacroStepItem item = recordBoxVM.MacroSteps[recordBoxVM.MacroStepIndex];
                 if (item.Step.ActType == DS4Windows.Processing.Macro.MacroStep.StepType.Wait)
                 {
-                    ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
+                    ListBoxItem? lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
                         as ListBoxItem;
-                    lbitem.ContentTemplate = this.FindResource("EditTemplate") as DataTemplate;
+                    if (lbitem != null) lbitem.ContentTemplate = this.FindResource("EditTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
                 else if (item.Step.OutputType == DS4Windows.Processing.Macro.MacroStep.StepOutput.PointerMove)
                 {
                     // マウス移動の座標の編集
-                    ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
+                    ListBoxItem? lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
                         as ListBoxItem;
-                    lbitem.ContentTemplate = this.FindResource("EditPointerMoveTemplate") as DataTemplate;
+                    if (lbitem != null) lbitem.ContentTemplate = this.FindResource("EditPointerMoveTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
                 else if (item.Step.OutputType == DS4Windows.Processing.Macro.MacroStep.StepOutput.Rumble &&
                     item.Step.ActType == DS4Windows.Processing.Macro.MacroStep.StepType.ActDown)
                 {
-                    ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
+                    ListBoxItem? lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.MacroStepIndex)
                         as ListBoxItem;
-                    lbitem.ContentTemplate = this.FindResource("EditRumbleTemplate") as DataTemplate;
+                    if (lbitem != null) lbitem.ContentTemplate = this.FindResource("EditRumbleTemplate") as DataTemplate;
                     recordBoxVM.EditMacroIndex = recordBoxVM.MacroStepIndex;
                 }
                 else if (item.Step.OutputType == DS4Windows.Processing.Macro.MacroStep.StepOutput.Lightbar &&
@@ -458,7 +460,7 @@ namespace DS4Windows.UI
 
                     FocusNavigationDirection focusDirection = FocusNavigationDirection.Next;
                     TraversalRequest request = new TraversalRequest(focusDirection);
-                    UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+                    UIElement? elementWithFocus = Keyboard.FocusedElement as UIElement;
                     elementWithFocus?.MoveFocus(request);
                 }
             }
@@ -468,24 +470,25 @@ namespace DS4Windows.UI
         {
             if (recordBoxVM.EditMacroIndex >= 0)
             {
-                ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.EditMacroIndex)
+                ListBoxItem? lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.EditMacroIndex)
                         as ListBoxItem;
-                lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
+                if (lbitem != null) lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
                 recordBoxVM.EditMacroIndex = -1;
             }
         }
 
         private void UpdateDataRevertTemplate()
         {
-            ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.EditMacroIndex)
+            ListBoxItem? lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.EditMacroIndex)
                         as ListBoxItem;
-            ContentPresenter contentPresenter = UtilMethods.FindVisualChild<ContentPresenter>(lbitem);
+            ContentPresenter? contentPresenter = UtilMethods.FindVisualChild<ContentPresenter>(lbitem);
+            if (contentPresenter == null) return;
             DataTemplate oldDataTemplate = contentPresenter.ContentTemplate;
 
             MacroStepItem item = recordBoxVM.MacroSteps[recordBoxVM.EditMacroIndex];
             if (item.Step.ActType == DS4Windows.Processing.Macro.MacroStep.StepType.Wait)
             {
-                IntegerUpDown integerUpDown = oldDataTemplate.FindName("waitIUD", contentPresenter) as IntegerUpDown;
+                IntegerUpDown? integerUpDown = oldDataTemplate.FindName("waitIUD", contentPresenter) as IntegerUpDown;
                 if (integerUpDown != null)
                 {
                     BindingExpression bindExp = integerUpDown.GetBindingExpression(IntegerUpDown.ValueProperty);
@@ -495,17 +498,17 @@ namespace DS4Windows.UI
             else if (item.Step.OutputType == DS4Windows.Processing.Macro.MacroStep.StepOutput.PointerMove)
             {
                 // モードを先に確定する（座標は、そのモードの範囲へ丸められる）
-                ComboBox modeBox = oldDataTemplate.FindName("pointerModeCb", contentPresenter) as ComboBox;
-                IntegerUpDown pointerX = oldDataTemplate.FindName("pointerXUD", contentPresenter) as IntegerUpDown;
-                IntegerUpDown pointerY = oldDataTemplate.FindName("pointerYUD", contentPresenter) as IntegerUpDown;
+                ComboBox? modeBox = oldDataTemplate.FindName("pointerModeCb", contentPresenter) as ComboBox;
+                IntegerUpDown? pointerX = oldDataTemplate.FindName("pointerXUD", contentPresenter) as IntegerUpDown;
+                IntegerUpDown? pointerY = oldDataTemplate.FindName("pointerYUD", contentPresenter) as IntegerUpDown;
                 modeBox?.GetBindingExpression(ComboBox.SelectedIndexProperty)?.UpdateSource();
                 pointerX?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
                 pointerY?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
             }
             else if (item.Step.OutputType == DS4Windows.Processing.Macro.MacroStep.StepOutput.Rumble)
             {
-                IntegerUpDown heavyRumble = oldDataTemplate.FindName("heavyRumbleUD", contentPresenter) as IntegerUpDown;
-                IntegerUpDown lightRumble = oldDataTemplate.FindName("lightRumbleUD", contentPresenter) as IntegerUpDown;
+                IntegerUpDown? heavyRumble = oldDataTemplate.FindName("heavyRumbleUD", contentPresenter) as IntegerUpDown;
+                IntegerUpDown? lightRumble = oldDataTemplate.FindName("lightRumbleUD", contentPresenter) as IntegerUpDown;
                 if (heavyRumble != null && lightRumble != null)
                 {
                     BindingExpression bindExp = heavyRumble.GetBindingExpression(IntegerUpDown.ValueProperty);
@@ -516,7 +519,7 @@ namespace DS4Windows.UI
                 }
             }
 
-            lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
+            if (lbitem != null) lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
             recordBoxVM.EditMacroIndex = -1;
         }
 
@@ -538,13 +541,12 @@ namespace DS4Windows.UI
         {
             if (e.Key == Key.Enter)
             {
-                IntegerUpDown integerUpDown = sender as IntegerUpDown;
-                BindingExpression bindExp = integerUpDown.GetBindingExpression(IntegerUpDown.ValueProperty);
-                bindExp.UpdateSource();
+                IntegerUpDown? integerUpDown = sender as IntegerUpDown;
+                integerUpDown?.GetBindingExpression(IntegerUpDown.ValueProperty)?.UpdateSource();
 
-                ListBoxItem lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.EditMacroIndex)
+                ListBoxItem? lbitem = macroListBox.ItemContainerGenerator.ContainerFromIndex(recordBoxVM.EditMacroIndex)
                         as ListBoxItem;
-                lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
+                if (lbitem != null) lbitem.ContentTemplate = this.FindResource("DisplayTemplate") as DataTemplate;
                 recordBoxVM.EditMacroIndex = -1;
             }
         }
@@ -754,13 +756,13 @@ namespace DS4Windows.UI
         // ---- 行の選択とドラッグ＆ドロップによる並べ替え ----
         private const string DragFormat = "DS4Windows.MacroStepIndexes";
         private Point? dragStartPoint;
-        private ListBoxItem pendingCollapseItem;
+        private ListBoxItem? pendingCollapseItem;
 
-        private ListBoxItem ItemUnder(DependencyObject source) => ItemsControl.ContainerFromElement(macroListBox, source) as ListBoxItem;
+        private ListBoxItem? ItemUnder(DependencyObject? source) => source == null ? null : ItemsControl.ContainerFromElement(macroListBox, source) as ListBoxItem;
 
-        private static bool IsOnScrollBar(DependencyObject source)
+        private static bool IsOnScrollBar(DependencyObject? source)
         {
-            for (DependencyObject current = source; current != null; current = VisualTreeHelper.GetParent(current))
+            for (DependencyObject? current = source; current != null; current = VisualTreeHelper.GetParent(current))
             {
                 if (current is System.Windows.Controls.Primitives.ScrollBar) return true;
             }
@@ -774,7 +776,7 @@ namespace DS4Windows.UI
             pendingCollapseItem = null;
             if (recordBoxVM.Recording || IsOnScrollBar(e.OriginalSource as DependencyObject)) return;
 
-            ListBoxItem item = ItemUnder(e.OriginalSource as DependencyObject);
+            ListBoxItem? item = ItemUnder(e.OriginalSource as DependencyObject);
             if (item == null)
             {
                 // コマンドのない行（空白）のクリック: 選択を外す（Record／Insert は、いちばん下に足す）
@@ -827,7 +829,7 @@ namespace DS4Windows.UI
         // ドロップ先: 行の上半分なら、その行の前。下半分なら、その行の次の前。行のない所なら、いちばん下
         private int DropTargetIndex(DragEventArgs e)
         {
-            ListBoxItem item = ItemUnder(e.OriginalSource as DependencyObject);
+            ListBoxItem? item = ItemUnder(e.OriginalSource as DependencyObject);
             if (item == null) return recordBoxVM.MacroSteps.Count;
 
             int index = macroListBox.ItemContainerGenerator.IndexFromContainer(item);
@@ -848,7 +850,7 @@ namespace DS4Windows.UI
 
             if (recordBoxVM.EditMacroIndex > -1) UpdateDataRevertTemplate();
             int[] sources = (int[])e.Data.GetData(DragFormat);
-            int[] moved = recordBoxVM.MoveSteps(sources, DropTargetIndex(e));
+            int[]? moved = recordBoxVM.MoveSteps(sources, DropTargetIndex(e));
             if (moved != null)
             {
                 // 移した行を、そのまま選択しておく

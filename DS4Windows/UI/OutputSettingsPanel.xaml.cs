@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿#nullable enable
+
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DS4Windows.UI
@@ -12,7 +14,7 @@ namespace DS4Windows.UI
     public partial class OutputSettingsPanel : UserControl
     {
         /// <summary>振動のテストのボタン（「強」「弱」）が押された。sender はボタン（<see cref="HeavyRumbleTestBtn"/> か <see cref="LightRumbleTestBtn"/>）。</summary>
-        public event RoutedEventHandler RumbleTestClick;
+        public event RoutedEventHandler? RumbleTestClick;
 
         /// <summary>振動のテストのボタン（規則 V3）。パラメーターは押されたボタン。<see cref="RumbleTestClick"/> の sender にそのボタンを渡す。</summary>
         public System.Windows.Input.ICommand RumbleTestCommand { get; }

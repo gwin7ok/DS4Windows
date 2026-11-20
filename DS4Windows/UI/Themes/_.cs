@@ -1,3 +1,5 @@
 ﻿// THIS FILE IS HERE SO RIDER DOESN'T CRY ABOUT NOT BEING ABLE TO RESOLVE NAMESPACE
 
+#nullable enable
+
 namespace DS4Windows.UI.Themes;

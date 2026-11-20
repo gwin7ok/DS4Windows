@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.ViewModels;
 
@@ -21,10 +23,10 @@ namespace DS4Windows.UI
         }
 
         /// <summary>カスタム曲線の編集が求められた。引数は対象（"LS" か "RS"）。</summary>
-        public event EventHandler<string> CustomCurveEditorRequested;
+        public event EventHandler<string>? CustomCurveEditorRequested;
 
         /// <summary>スティックの校正が求められた。引数は 0＝左、1＝右。</summary>
-        public event EventHandler<int> CalibrationRequested;
+        public event EventHandler<int>? CalibrationRequested;
 
         // 軸別デッドゾーンの部品。編集画面が、機器との結び付け・試験表示への反映に使う
         public AxialStickUserControl AxialLeft => leftView.AxialStick;

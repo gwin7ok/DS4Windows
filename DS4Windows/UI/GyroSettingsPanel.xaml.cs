@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +16,7 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class GyroSettingsPanel : UserControl
     {
-        private GyroSettingsViewModel viewModel;
+        private GyroSettingsViewModel? viewModel;
 
         public System.Windows.Input.ICommand TiltControlCommand { get; }
 
@@ -34,10 +36,10 @@ namespace DS4Windows.UI
         public Button TiltXPosButton => gyroXPBtn;
 
         /// <summary>傾き（Tilt）のボタンが押された。引数は対象のコントロール。</summary>
-        public event EventHandler<DS4Controls> TiltControlClicked;
+        public event EventHandler<DS4Controls>? TiltControlClicked;
 
         /// <summary>ジャイロの校正（リセット）が求められた。</summary>
-        public event EventHandler CalibrationRequested;
+        public event EventHandler? CalibrationRequested;
 
         /// <summary>トリガーのメニューの項目を作る。画面を作るときに 1 回だけ呼ぶ。</summary>
         public void CreateTriggerMenus(GyroSettingsViewModel gyro)
@@ -76,7 +78,7 @@ namespace DS4Windows.UI
             TriggerMenuAdapter.Write(menu, entries);
         }
 
-        private static void Update(ContextMenu menu, MenuItem alwaysOnItem, RoutedEventArgs e, Action<IReadOnlyList<TriggerMenuEntry>, bool> update)
+        private static void Update(ContextMenu menu, MenuItem? alwaysOnItem, RoutedEventArgs e, Action<IReadOnlyList<TriggerMenuEntry>, bool> update)
         {
             var entries = TriggerMenuAdapter.Read(menu);
             update(entries, e.OriginalSource == alwaysOnItem);
@@ -101,22 +103,22 @@ namespace DS4Windows.UI
         private void GyroMouseTrigMenuItem_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu menu = gyroMouseTrigBtn.ContextMenu;
-            MenuItem alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            Update(menu, alwaysOnItem, e, viewModel.UpdateGyroMouseTrig);
+            MenuItem? alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
+            Update(menu, alwaysOnItem, e, viewModel!.UpdateGyroMouseTrig);   // CreateTriggerMenus で渡された後にだけ、メニューが開く
         }
 
         private void GyroMouseStickTrigMenuItem_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu menu = gyroMouseStickTrigBtn.ContextMenu;
-            MenuItem alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            Update(menu, alwaysOnItem, e, viewModel.UpdateGyroMouseStickTrig);
+            MenuItem? alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
+            Update(menu, alwaysOnItem, e, viewModel!.UpdateGyroMouseStickTrig);   // 同上
         }
 
         private void GyroControlsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu menu = gyroControlsTrigBtn.ContextMenu;
-            MenuItem alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            Update(menu, alwaysOnItem, e, viewModel.UpdateGyroControlsTrig);
+            MenuItem? alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
+            Update(menu, alwaysOnItem, e, viewModel!.UpdateGyroControlsTrig);   // 同上
         }
     }
 }

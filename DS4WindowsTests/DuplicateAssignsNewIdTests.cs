@@ -111,7 +111,7 @@ namespace DS4WindowsTests
             Assert.True(copy >= 0 && assign > copy, "File.Copy → AssignNewId の順になっていない");
 
             string box = Normalize(File.ReadAllText(boxPath));
-            int duplicate = box.IndexOf("duplicateProfile(oldfilename, profile);", StringComparison.Ordinal);
+            int duplicate = box.IndexOf("duplicateProfile!(oldfilename!, profile);", StringComparison.Ordinal);
             int save = box.IndexOf("Save?.Invoke(this, profile);", StringComparison.Ordinal);
             Assert.True(duplicate >= 0 && save > duplicate, "複製 → Save の順になっていない");
         }

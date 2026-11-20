@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,25 +37,25 @@ namespace DS4Windows.UI
         // 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、AutoProfileHolder を読む前に 1 回だけ呼ぶ）。
         // 列幅の読み書きは、設定を持つ MainWindow が関数で渡す（View は設定のサービスを参照しない）
-        private Func<(int name, int path, int title)> loadColumnWidths;
-        private Action<int, int, int> saveColumnWidths;
-        private DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory;
-        private string autoProfilesFile;
+        private Func<(int name, int path, int title)> loadColumnWidths = null!;   // Initialize で必ず渡される（AutoProfiles は引数なしで XAML から生成されるため）
+        private Action<int, int, int>? saveColumnWidths;
+        private DS4Windows.UI.Abstractions.IShellViewModelFactory? viewModelFactory;
+        private string? autoProfilesFile;
         public const string steamCommx86Loc = @"C:\Program Files (x86)\Steam\steamapps\common";
         public const string steamCommLoc = @"C:\Program Files\Steam\steamapps\common";
-        private string steamgamesdir;
-        private AutoProfilesViewModel autoProfVM;
-        private AutoProfileHolder autoProfileHolder;
-        private ProfileList profileList;
+        private string? steamgamesdir;
+        private AutoProfilesViewModel? autoProfVM;
+        private AutoProfileHolder? autoProfileHolder;
+        private ProfileList? profileList;
 
         public AutoProfileHolder AutoProfileHolder
         {
-            get => autoProfileHolder;
+            get => autoProfileHolder!;   // Initialize の後でだけ読まれる
             set => autoProfileHolder = value;
         }
-        public AutoProfilesViewModel AutoProfVM { get => autoProfVM; }
+        public AutoProfilesViewModel AutoProfVM { get => autoProfVM!; }   // SetupDataContext の後でだけ読まれる
         public bool AutoDebug { get => autoProfVM != null && autoProfVM.AutoDebug; }
-        public event EventHandler AutoDebugChanged;
+        public event EventHandler? AutoDebugChanged;
 
         public AutoProfiles()
         {
@@ -65,7 +67,7 @@ namespace DS4Windows.UI
         /// 行数の調整）を行う。置換前はコンストラクタで行っていた処理で、順序は同じ。
         /// MainWindow のコンストラクタから、AutoProfileHolder を読む前に 1 回だけ呼ぶ。
         /// </summary>
-        public void Initialize(string autoProfilesFile, string steamGamesDir, int slotLimit,
+        public void Initialize(string autoProfilesFile, string? steamGamesDir, int slotLimit,
             AutoProfileHolder autoProfileHolder, DS4Windows.UI.Abstractions.IShellViewModelFactory viewModelFactory,
             Func<(int name, int path, int title)> loadColumnWidths, Action<int, int, int> saveColumnWidths)
         {
@@ -125,8 +127,8 @@ namespace DS4Windows.UI
         public void SetupDataContext(ProfileList profileList)
         {
             RestoreColumnWidths();
-            autoProfVM = viewModelFactory.CreateAutoProfilesViewModel(autoProfileHolder, profileList);
-            autoProfVM.Configure(autoProfilesFile, steamgamesdir);
+            autoProfVM = viewModelFactory!.CreateAutoProfilesViewModel(autoProfileHolder!, profileList);   // Initialize の後でだけ呼ばれる
+            autoProfVM.Configure(autoProfilesFile!, steamgamesdir);   // autoProfilesFile は Initialize で渡される
             DataContext = autoProfVM;
             programListLV.DataContext = autoProfVM;
             programListLV.ItemsSource = autoProfVM.ProgramColl;
@@ -151,11 +153,11 @@ namespace DS4Windows.UI
         }
 
         // 検索中・一覧の差し替え中は、一覧を外す（1 件ずつの追加で、画面の更新が重なるのを避ける）
-        private void AutoProfVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void AutoProfVM_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(AutoProfilesViewModel.IsBusy))
             {
-                programListLV.ItemsSource = autoProfVM.IsBusy ? null : autoProfVM.ProgramColl;
+                programListLV.ItemsSource = autoProfVM!.IsBusy ? null : autoProfVM.ProgramColl;   // 画面の購読は、autoProfVM を作ったあとに始まる
             }
             else if (e.PropertyName == nameof(AutoProfilesViewModel.AutoDebug))
             {
@@ -163,7 +165,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void AutoProfVM_CurrentItemChange(AutoProfilesViewModel sender, ProgramItem item)
+        private void AutoProfVM_CurrentItemChange(AutoProfilesViewModel sender, ProgramItem? item)
         {
             if (item != null)
             {

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿#nullable enable
+
+using System.Windows;
 using System.Windows.Controls;
 using Xceed.Wpf.Toolkit;
 
@@ -13,10 +15,10 @@ namespace DS4Windows.UI
     public partial class GeneralSettingsPanel : UserControl
     {
         /// <summary>「入力の表示にコントローラーを使う」のチェックが押された。</summary>
-        public event RoutedEventHandler UseControllerReadoutClick;
+        public event RoutedEventHandler? UseControllerReadoutClick;
 
         /// <summary>「プロファイルと一緒に起動するプログラム」の参照ボタンが押された。</summary>
-        public event RoutedEventHandler LaunchProgramBrowseClick;
+        public event RoutedEventHandler? LaunchProgramBrowseClick;
 
         /// <summary>「入力の表示にコントローラーを使う」のチェック（規則 V3）。押されたことを <see cref="UseControllerReadoutClick"/> で知らせる。</summary>
         public System.Windows.Input.ICommand UseControllerReadoutCommand { get; }

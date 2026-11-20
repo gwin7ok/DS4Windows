@@ -30,14 +30,14 @@ namespace DS4Windows.UI.ViewModels
     {
         //private int devIndex;
         private ObservableCollection<MappedControl> mappings = new ObservableCollection<MappedControl>();
-        public ObservableCollection<MappedControl>? Mappings { get => mappings; }
+        public ObservableCollection<MappedControl> Mappings { get => mappings; }
 
         /// <summary>
         /// 一覧の<b>表示用</b>の並び。LS／RS Outer は LS／RS の下、L2／R2 Full Pull は L2／R2 の下に置く。
         /// <see cref="Mappings"/>（添字がコントローラーの入力による選択、ホバーの表などに使われる）の順序は、変えない。同じ <see cref="MappedControl"/> を、別の順で並べるだけ。
         /// </summary>
         private ObservableCollection<MappedControl> displayMappings = new ObservableCollection<MappedControl>();
-        public ObservableCollection<MappedControl>? DisplayMappings { get => displayMappings; }
+        public ObservableCollection<MappedControl> DisplayMappings { get => displayMappings; }
 
         private int selectedIndex = -1;
         public int SelectedIndex

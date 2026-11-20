@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,7 +43,7 @@ namespace DS4Windows.UI
 
         private readonly ComboBox playModeCombo;
         private readonly CheckBox scanCodeCk;
-        private MacroPlaybackOptions options;
+        private MacroPlaybackOptions? options;
 
         public HorizontalAlignment ScanCodeAlignment
         {
@@ -95,7 +97,7 @@ namespace DS4Windows.UI
             UpdateModeEnabled();
         }
 
-        private void OnOptionsPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnOptionsPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(MacroPlaybackOptions.Repeatable)) UpdateModeEnabled();
         }

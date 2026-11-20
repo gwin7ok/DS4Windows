@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,9 +30,9 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class LanguagePackControl : UserControl
     {
-        private LanguagePackViewModel langPackVM;
-        private Func<bool> _saveSettings;
-        private DS4Windows.UI.Abstractions.IUiThemeAndLanguage _themeLanguage;   // 旧 Application.Current as App
+        private LanguagePackViewModel? langPackVM;
+        private Func<bool>? _saveSettings;
+        private DS4Windows.UI.Abstractions.IUiThemeAndLanguage? _themeLanguage;   // 旧 Application.Current as App
 
         // 本コントロールは MainWindow.xaml から生成されるため、引数なしのコンストラクタが必要。
         // 依存は Initialize で受け取る（MainWindow のコンストラクタが、生成直後に呼ぶ）。
@@ -61,7 +63,7 @@ namespace DS4Windows.UI
             langPackVM.ScanForLangPacks();
         }
 
-        private void CheckForCultureChange(object sender, EventArgs e)
+        private void CheckForCultureChange(object? sender, EventArgs e)
         {
             // Enable apply button when selection changes
             applyLangBtn.IsEnabled = true;
@@ -69,18 +71,18 @@ namespace DS4Windows.UI
 
         private void ApplyLangBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (langPackVM.ChangeLanguagePack())
+            if (langPackVM!.ChangeLanguagePack())   // Initialize の後でだけ押せる
             {
                 // Apply language change immediately
                 {
-                    LangPackItem selectedItem = langPackVM.LangPackList[langPackVM.SelectedIndex];
+                    LangPackItem selectedItem = langPackVM.LangPackList![langPackVM.SelectedIndex];   // 言語を変えられるのは、一覧ができた後
                     string cultureCode = selectedItem.Name;
                     
                     // Apply to both Global and UI
-                    _themeLanguage.ApplyLanguage(cultureCode);
+                    _themeLanguage!.ApplyLanguage(cultureCode);   // 同上
                     
                     // Save to config
-                    _saveSettings();
+                    _saveSettings!();   // 同上
                     
                     MessageBox.Show(Translations.Strings.ResourceManager.GetString("LangPackControl.LanguageApplied") ?? "Language applied successfully",
                         "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -90,7 +92,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void LangPackVM_ScanFinished(object sender, EventArgs e)
+        private void LangPackVM_ScanFinished(object? sender, EventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {

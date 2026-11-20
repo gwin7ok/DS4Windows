@@ -51,8 +51,8 @@ namespace DS4WindowsTests
             if (editor == null) return;
 
             string text = File.ReadAllText(editor);
-            int load = text.IndexOf("backend.LoadProfileForEditing(deviceNum, profile.Name);", StringComparison.Ordinal);
-            int notice = text.IndexOf("profileSettingsVM.ApplyRemovedSettingNotices(profile.Name);", StringComparison.Ordinal);
+            int load = text.IndexOf("backend.LoadProfileForEditing(deviceNum, profile.Name ?? string.Empty);", StringComparison.Ordinal);
+            int notice = text.IndexOf("profileSettingsVM.ApplyRemovedSettingNotices(profile.Name ?? string.Empty);", StringComparison.Ordinal);
             Assert.True(load >= 0, "プロファイルの読込の呼び出しが見つからない");
             Assert.True(notice > load, "警告の呼び出しが、読込の直後にない");
             Assert.True(notice - load < 800, "警告の呼び出しが、読込から離れている");

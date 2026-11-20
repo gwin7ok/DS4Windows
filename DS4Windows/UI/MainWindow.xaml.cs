@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,10 +68,10 @@ namespace DS4Windows.UI
         private IntPtr regHandle = new IntPtr();
         private IntPtr regHandleXusb = new IntPtr();
         private bool showAppInTaskbar = false;
-        private ManagementEventWatcher managementEvWatcher;
+        private ManagementEventWatcher? managementEvWatcher;
         private bool wasrunning = false;
         private AutoProfileHolder autoProfileHolder;
-        private System.Timers.Timer hotkeysTimer;
+        private System.Timers.Timer? hotkeysTimer;
         // タイマーの処理中に止められたとき（終了・サービス停止）、始め直さないための印
         private volatile bool hotkeysTimerActive;
         // 更新の確認の判断（画面に依存しない）
@@ -86,7 +88,7 @@ namespace DS4Windows.UI
         private readonly DS4Windows.UI.Abstractions.IShellViewModelFactory _viewModelFactory;   // 子画面の ViewModel の生成
         private readonly IpcCommandDispatcher ipcDispatcher;   // CLI のコマンドの実行
         private MainWindowIpcHost ipcHost;   // コマンドが画面に頼む操作（一覧の ViewModel ができてから作る）
-        private ProfileEditor editor;
+        private ProfileEditor? editor;
         private int previousTabIndex = 0;
 #pragma warning disable CS0414 // preserveSize kept for behavior compatibility with older logic
         private bool preserveSize = true;
@@ -223,7 +225,7 @@ namespace DS4Windows.UI
             string autoProfilesFile = mainWinVM.AppDataPath + "\\Auto Profiles.xml";
             _autoProfileService.EnsureFile(autoProfilesFile);
 
-            string steamGamesDir = mainWinVM.CustomSteamFolderIfValid
+            string? steamGamesDir = mainWinVM.CustomSteamFolderIfValid
                 ?? (Directory.Exists(AutoProfiles.steamCommx86Loc) ? AutoProfiles.steamCommx86Loc
                     : Directory.Exists(AutoProfiles.steamCommLoc) ? AutoProfiles.steamCommLoc : null);
 
@@ -281,7 +283,7 @@ namespace DS4Windows.UI
                 {
                     try
                     {
-                        if (updateCheckPolicy.TryFindNewerVersion(startup: true, out var version))
+                        if (updateCheckPolicy.TryFindNewerVersion(startup: true, out var version) && version != null)
                         {
                             DisplayUpdaterWindow(version.ToString());
                         }
@@ -320,7 +322,7 @@ namespace DS4Windows.UI
 
         private void Check_Version(bool showstatus = false)
         {
-            string version = mainWinVM.ApplicationVersion;
+            string? version = mainWinVM.ApplicationVersion;
             string newversion = string.Empty;
             string versionFilePath = Path.Combine(mainWinVM.AppDataPath, "version.txt");
             ulong lastVersionNum = mainWinVM.LastVersionCheckedNum;
@@ -336,10 +338,10 @@ namespace DS4Windows.UI
             // 判断は UpdateCheckPolicy が行い、ここは結果に応じた画面の表示と、記録ファイルの後始末だけをする
             try
             {
-                var outcome = updateCheckPolicy.Evaluate(version, newversion, out Version latest);
+                var outcome = updateCheckPolicy.Evaluate(version ?? string.Empty, newversion, out Version? latest);
                 if (outcome == UpdateCheckOutcome.UpdateAvailable)
                 {
-                    Dispatcher.Invoke(() => DisplayUpdaterWindow(latest.ToString()));
+                    Dispatcher.Invoke(() => DisplayUpdaterWindow(latest!.ToString()));   // 新しい版があるときは、必ず版が返る
                 }
                 else if (outcome == UpdateCheckOutcome.UpToDate && showstatus)
                 {
@@ -359,7 +361,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void TrayIconVM_MenuChanged(object sender, EventArgs e)
+        private void TrayIconVM_MenuChanged(object? sender, EventArgs e)
         {
             // 項目の変更は別のスレッドからも起きるため、UI のスレッドで組み直す
             if (Dispatcher.CheckAccess())
@@ -368,13 +370,13 @@ namespace DS4Windows.UI
                 Dispatcher.BeginInvoke(new Action(() => TrayContextMenuBuilder.Rebuild(trayContextMenu, trayIconVM.MenuItems)));
         }
 
-        private void TrayIconVM_RequestMinimize(object sender, EventArgs e)
+        private void TrayIconVM_RequestMinimize(object? sender, EventArgs e)
         {
             this.WindowState = WindowState.Minimized;
         }
 
         private void TrayIconVM_ProfileSelected(TrayIconViewModel sender,
-            ControllerHolder item, string profile)
+            ControllerHolder item, string? profile)
         {
             int idx = item.Index;
             CompositeDeviceModel devitem = conLvViewModel.ControllerDict[idx];
@@ -443,9 +445,9 @@ namespace DS4Windows.UI
             }
         }
 
-        private void SettingsWrapVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void SettingsWrapVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            trayAppearance.OnSettingsPropertyChanged(e.PropertyName, trayIconVM);
+            trayAppearance.OnSettingsPropertyChanged(e.PropertyName ?? string.Empty, trayIconVM);
             if (e.PropertyName == nameof(SettingsViewModel.ProcessPriorityIndex))
             {
                 ApplyProcessPriorityFromSettings();
@@ -462,17 +464,17 @@ namespace DS4Windows.UI
             }
         }
 
-        private void MainWinVM_FullTabsEnabledChanged(object sender, EventArgs e)
+        private void MainWinVM_FullTabsEnabledChanged(object? sender, EventArgs e)
         {
             settingsWrapVM.ViewEnabled = mainWinVM.FullTabsEnabled;
         }
 
-        private async void TrayIconVM_RequestServiceChange(object sender, EventArgs e)
+        private async void TrayIconVM_RequestServiceChange(object? sender, EventArgs e)
         {
             await ChangeService();
         }
 
-        private void LogItems_CollectionChanged(object sender,
+        private void LogItems_CollectionChanged(object? sender,
             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
@@ -488,7 +490,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ControlServiceStarted(object sender, EventArgs e)
+        private void ControlServiceStarted(object? sender, EventArgs e)
         {
             if (mainWinVM.SwipeProfiles)
             {
@@ -519,13 +521,13 @@ namespace DS4Windows.UI
             }
         }
 
-        private void AutoProfileColl_CollectionChanged(object sender,
+        private void AutoProfileColl_CollectionChanged(object? sender,
             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             CheckAutoProfileStatus();
         }
 
-        private void AutoProfControl_AutoDebugChanged(object sender, EventArgs e)
+        private void AutoProfControl_AutoDebugChanged(object? sender, EventArgs e)
         {
             _autoProfileService.DebugLogLevel = autoProfControl.AutoDebug == true ? 1 : 0;
         }
@@ -596,27 +598,29 @@ namespace DS4Windows.UI
             if (state)
             {
                 hotkeysTimerActive = true;
+                if (hotkeysTimer == null) return;
                 hotkeysTimer.Elapsed += HotkeysTimer_Elapsed;
                 hotkeysTimer.Start();
             }
             else
             {
                 hotkeysTimerActive = false;
+                if (hotkeysTimer == null) return;
                 hotkeysTimer.Stop();
                 hotkeysTimer.Elapsed -= HotkeysTimer_Elapsed;
             }
         }
 
-        private void HotkeysTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void HotkeysTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            hotkeysTimer.Stop();
+            hotkeysTimer?.Stop();
 
             // 例外が出ても始め直す（止まったままになると、スワイプでの切替が以後動かなくなる）。
             // 終了のとき（hotkeysTimerActive が偽）は、始め直さない。
             GuardedTimerTick.Run(
                 SwipeProfileTick,
                 () => hotkeysTimerActive,
-                () => hotkeysTimer.Start(),
+                () => hotkeysTimer?.Start(),
                 ex => DS4Windows.Core.Logging.AppLogger.LogError($"HotkeysTimer tick failed: {ex}"));
         }
 
@@ -639,7 +643,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void PrepareForServiceStop(object sender, EventArgs e)
+        private void PrepareForServiceStop(object? sender, EventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -649,7 +653,7 @@ namespace DS4Windows.UI
             ChangeHotkeysStatus(false);
         }
 
-        private void TrayIconVM_RequestOpen(object sender, EventArgs e)
+        private void TrayIconVM_RequestOpen(object? sender, EventArgs e)
         {
             if (!showAppInTaskbar)
             {
@@ -659,13 +663,13 @@ namespace DS4Windows.UI
             WindowState = WindowState.Normal;
         }
 
-        private void TrayIconVM_RequestShutdown(object sender, EventArgs e)
+        private void TrayIconVM_RequestShutdown(object? sender, EventArgs e)
         {
             contextclose = true;
             this.Close();
         }
 
-        private void UpdateLastStatusMessage(object sender, DS4Windows.Core.Logging.DebugEventArgs e)
+        private void UpdateLastStatusMessage(object? sender, DS4Windows.Core.Logging.DebugEventArgs e)
         {
             if (e.Temporary)
                 return;
@@ -677,7 +681,7 @@ namespace DS4Windows.UI
             lastLogMsg.Warning = e.Warning;
         }
 
-        private void OnProfileChanged(object sender, DS4Windows.Core.Logging.ProfileChangedEventArgs e)
+        private void OnProfileChanged(object? sender, DS4Windows.Core.Logging.ProfileChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -689,7 +693,7 @@ namespace DS4Windows.UI
                     // （再接続の直後は一覧の行がまだ無く、"0" と表示されていた）
                     string battery = _autoProfileService.BatteryText(devIndex);
 
-                    CompositeDeviceModel item = null;
+                    CompositeDeviceModel? item = null;
                     if (conLvViewModel != null && conLvViewModel.ControllerDict != null && conLvViewModel.ControllerDict.ContainsKey(devIndex))
                         item = conLvViewModel.ControllerDict[devIndex];
 
@@ -732,13 +736,13 @@ namespace DS4Windows.UI
         private void CheckAutoProfileStatus()
             => _autoProfileService.UpdateStatus(autoProfileHolder.AutoProfileColl.Count);
 
-        private void ControllerCol_CollectionChanged(object sender,
+        private void ControllerCol_CollectionChanged(object? sender,
             System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
                 ChangeControllerPanel();
-                System.Collections.IList newitems = e.NewItems;
+                System.Collections.IList? newitems = e.NewItems;
                 if (newitems != null)
                 {
                     foreach (CompositeDeviceModel item in newitems)
@@ -767,7 +771,7 @@ namespace DS4Windows.UI
             dialog.ShowDialog();
         }
 
-        private void DS4Device_SyncChange(object sender, EventArgs e)
+        private void DS4Device_SyncChange(object? sender, EventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
@@ -784,12 +788,12 @@ namespace DS4Windows.UI
             mainWinVM.RefreshStartStopText();
         }
 
-        private void OnLocalizationCultureChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnLocalizationCultureChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)UpdateStartStopText);
         }
 
-        private void ControlServiceChanged(object sender, EventArgs e)
+        private void ControlServiceChanged(object? sender, EventArgs e)
         {
             //Tester service = sender as Tester;
             Dispatcher.BeginInvoke((Action)(() =>
@@ -809,7 +813,7 @@ namespace DS4Windows.UI
             if (idx > -1)
             {
                 LogItem temp = logvm.LogItems[idx];
-                LogMessageDisplay msgBox = new LogMessageDisplay(temp.Message);
+                LogMessageDisplay msgBox = new LogMessageDisplay(temp.Message ?? string.Empty);
                 msgBox.Owner = this;
                 msgBox.ShowDialog();
                 //MessageBox.Show(temp.Message, "Log");
@@ -829,10 +833,10 @@ namespace DS4Windows.UI
 
         private void ContStatusImg_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Image img = sender as Image;
+            if (sender is not Image img) return;
             int tag = Convert.ToInt32(img.Tag);
             conLvViewModel.CurrentIndex = tag;
-            CompositeDeviceModel item = conLvViewModel.CurrentItem;
+            CompositeDeviceModel? item = conLvViewModel.CurrentItem;
             //CompositeDeviceModel item = conLvViewModel.ControllerDict[tag];
             if (item != null)
             {
@@ -858,7 +862,7 @@ namespace DS4Windows.UI
 
         private void IdColumnTxtB_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
-            TextBlock statusBk = sender as TextBlock;
+            if (sender is not TextBlock statusBk) return;
             int idx = Convert.ToInt32(statusBk.Tag);
             if (idx >= 0)
             {
@@ -880,7 +884,7 @@ namespace DS4Windows.UI
         /// </summary>
         private void SelectProfCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ComboBox box = sender as ComboBox;
+            ComboBox? box = sender as ComboBox;
             if (box == null) return;
 
             int idx = Convert.ToInt32(box.Tag);
@@ -917,7 +921,7 @@ namespace DS4Windows.UI
 
         private void LightColorBtn_Click(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;
+            if (sender is not Button button) return;
             int idx = Convert.ToInt32(button.Tag);
             CompositeDeviceModel item = conLvViewModel.ControllerDict[idx];
             //(button.ContextMenu.Items[0] as MenuItem).IsChecked = conLvViewModel.ControllerCol[idx].UseCustomColor;
@@ -926,7 +930,7 @@ namespace DS4Windows.UI
             button.ContextMenu.IsOpen = true;
         }
 
-        private void MainDS4Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void MainDS4Window_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             if (editor != null)
             {
@@ -961,7 +965,7 @@ namespace DS4Windows.UI
         private void MainDS4Window_Closed(object sender, EventArgs e)
         {
             hotkeysTimerActive = false;
-            hotkeysTimer.Stop();
+            hotkeysTimer?.Stop();
             _autoProfileService.Stop();
             //autoProfileHolder.Save();
             Util.UnregisterNotify(regHandle);
@@ -1022,7 +1026,7 @@ namespace DS4Windows.UI
             RestoreControllerColumnWidths();
             RestoreLogColumnWidths();
 
-            HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
+            if (PresentationSource.FromVisual(this) is not HwndSource source) return;
             HookWindowMessages(source);
             source.AddHook(WndProc);
         }
@@ -1132,7 +1136,7 @@ namespace DS4Windows.UI
         internal void EditDeviceProfile(int idx)
         {
             controllerLV.SelectedIndex = idx;
-            CompositeDeviceModel item = conLvViewModel.CurrentItem;
+            CompositeDeviceModel? item = conLvViewModel.CurrentItem;
 
             if (item != null && item.SelectedIndex != -1)
             {
@@ -1166,7 +1170,7 @@ namespace DS4Windows.UI
             if (profilesListBox.SelectedIndex >= 0)
             {
                 int idx = profilesListBox.SelectedIndex;
-                filename = profileListHolder.ProfileListCol[idx].Name;
+                filename = profileListHolder.ProfileListCol[idx].Name ?? string.Empty;
                 dupBox.OldFilename = filename;
                 mainWinVM.IsDuplicateBarVisible = true;
                 dupBox.Save -= DupBox_Save;
@@ -1176,7 +1180,7 @@ namespace DS4Windows.UI
             }
         }
 
-        private void DupBox_Cancel(object sender, EventArgs e)
+        private void DupBox_Cancel(object? sender, EventArgs e)
         {
             mainWinVM.IsDuplicateBarVisible = false;
         }
@@ -1272,13 +1276,13 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ProfileEditor_Closed(object sender, EventArgs e)
+        private void ProfileEditor_Closed(object? sender, EventArgs e)
         {
             profDockPanel.Children.Remove(editor);
             profOptsToolbar.Visibility = Visibility.Visible;
             profilesListBox.Visibility = Visibility.Visible;
             // preserveSizeの操作は不要
-            if (!editor.Keepsize)
+            if (editor == null || !editor.Keepsize)
             {
                 this.Width = oldSize.Width;
                 this.Height = oldSize.Height;
@@ -1325,7 +1329,7 @@ namespace DS4Windows.UI
         /// プロファイル一覧から開いた場合は ProfileEditor.NoTargetDevice
         /// </param>
         /// <param name="entity">編集するプロファイル。null は新規作成</param>
-        private void ShowProfileEditor(int targetDevice, ProfileEntity entity)
+        private void ShowProfileEditor(int targetDevice, ProfileEntity? entity)
         {
             if (editor == null)
             {
@@ -1370,8 +1374,8 @@ namespace DS4Windows.UI
         #region Profile List & Controllers Synchronization (4-Stage Transaction)
 
 
-        private void SyncProfileListAndControllers(string oldProfile = null, string newProfile = null,
-            IReadOnlyCollection<string> targetProfiles = null)
+        private void SyncProfileListAndControllers(string? oldProfile = null, string? newProfile = null,
+            IReadOnlyCollection<string>? targetProfiles = null)
             => profileSelection.SyncProfileListAndControllers(ProfileListHolder, () => _autoProfileService?.Holder?.Save(),
                 oldProfile, newProfile, targetProfiles);
 
@@ -1465,13 +1469,13 @@ namespace DS4Windows.UI
                     File.Exists(filename))
                 {
                     RenameProfileWindow renameWin = new RenameProfileWindow(_viewModelFactory.CreateRenameProfileViewModel());
-                    renameWin.ChangeProfileName(entity.Name);
+                    renameWin.ChangeProfileName(entity.Name ?? string.Empty);
                     bool? result = renameWin.ShowDialog();
                     if (result.HasValue && result.Value)
                     {
-                        string oldProfileName = entity.Name;
-                        string newProfileName = renameWin.RenameProfileVM.ProfileName;
-                        entity.RenameProfile(newProfileName);
+                        string oldProfileName = entity.Name ?? string.Empty;
+                        string? newProfileName = renameWin.RenameProfileVM.ProfileName;
+                        entity.RenameProfile(newProfileName ?? string.Empty);
                         // 名前変更を、全スロットの現在のプロファイル名・リンクプロファイルへ反映し、再適用する
                         // （従来はファイルと一覧の名前だけを変えていたため、サービスの再開後に Selected Profile が空欄になった）
                         if (string.Equals(entity.Name, newProfileName, StringComparison.Ordinal) &&

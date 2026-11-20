@@ -53,7 +53,7 @@ namespace DS4Windows.UI
             CommitEnabledActionsCommand = CommandGuard.CreateSync(() => CommitEnabledActions(), name: nameof(CommitEnabledActionsCommand));
             ExportActionsCommand = CommandGuard.CreateSync(() => ExportActions(), name: nameof(ExportActionsCommand));
             EditSelectedControlCommand = CommandGuard.CreateSync(() => EditSelectedControl(), name: nameof(EditSelectedControlCommand));
-            SortColumnCommand = CommandGuard.CreateSync<string>(column => SortByColumn(column), name: nameof(SortColumnCommand));
+            SortColumnCommand = CommandGuard.CreateSync<string?>(column => SortByColumn(column), name: nameof(SortColumnCommand));
         }
     }
 }

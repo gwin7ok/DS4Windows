@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +31,9 @@ namespace DS4Windows.UI
     /// </summary>
     public partial class OutputSlotManagerControl : UserControl
     {
-        private CurrentOutDeviceViewModel currentOutDevVM;
+        private CurrentOutDeviceViewModel? currentOutDevVM;
+        // Initialize の後でだけ使う画面の窓口。まだ渡されていないときは、null
+        private CurrentOutDeviceViewModel Vm => currentOutDevVM!;   // 操作できるのは、Initialize の後だけ
         //private PermanentOutDevViewModel permanentDevVM;
 
         public OutputSlotManagerControl()
@@ -53,12 +57,12 @@ namespace DS4Windows.UI
             //permanentOutDevLV.DataContext = permanentDevVM;
         }
 
-        private void CurrentOutDevVM_SelectedIndexChanged(object sender, EventArgs e)
+        private void CurrentOutDevVM_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            int idx = currentOutDevVM.SelectedIndex;
+            int idx = Vm.SelectedIndex;
             if (idx >= 0)
             {
-                outSlotStackPanel.DataContext = currentOutDevVM.SlotDeviceEntries[idx];
+                outSlotStackPanel.DataContext = Vm.SlotDeviceEntries[idx];
             }
             else
             {
@@ -67,7 +71,7 @@ namespace DS4Windows.UI
         }
 
         /// <summary>列幅をドラッグで変えて離したときに発生する（保存の契機）</summary>
-        public event EventHandler ColumnWidthsChanged;
+        public event EventHandler? ColumnWidthsChanged;
 
         private void CurrentOutDevLV_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -77,7 +81,7 @@ namespace DS4Windows.UI
         /// <summary>列の幅（左から: 出力スロット #、入力スロット #、入力コントローラー ID、現在の種類、予約）</summary>
         public int[] GetColumnWidths()
         {
-            var gridView = currentOutDevLV.View as GridView;
+            if (currentOutDevLV.View is not GridView gridView) return Array.Empty<int>();
             int[] result = new int[gridView.Columns.Count];
             for (int i = 0; i < result.Length; i++)
             {
@@ -89,7 +93,7 @@ namespace DS4Windows.UI
 
         public void SetColumnWidths(int[] widths)
         {
-            var gridView = currentOutDevLV.View as GridView;
+            if (currentOutDevLV.View is not GridView gridView) return;
             for (int i = 0; i < widths.Length && i < gridView.Columns.Count; i++)
             {
                 if (widths[i] > 0)
@@ -106,11 +110,11 @@ namespace DS4Windows.UI
 
         private void PluginBtn()
         {
-            int idx = currentOutDevVM.SelectedIndex;
-            SlotDeviceEntry tempEntry = null;
+            int idx = Vm.SelectedIndex;
+            SlotDeviceEntry? tempEntry = null;
             if (idx >= 0)
             {
-                tempEntry = currentOutDevVM.SlotDeviceEntries[idx];
+                tempEntry = Vm.SlotDeviceEntries[idx];
             }
 
             // 恒久（Permanent）の種類が決まっているスロットは、選ばせずにその種類で接続する
@@ -124,25 +128,25 @@ namespace DS4Windows.UI
             MessageBoxResult result = devWindow.Result;
             if (result == MessageBoxResult.OK)
             {
-                tempEntry.PlugAs(devWindow.ContType, devWindow.ReserveType);
+                tempEntry?.PlugAs(devWindow.ContType, devWindow.ReserveType);
             }
         }
 
         private void UnplugBtn()
         {
-            int idx = currentOutDevVM.SelectedIndex;
+            int idx = Vm.SelectedIndex;
             if (idx >= 0)
             {
-                currentOutDevVM.SlotDeviceEntries[idx].RequestUnplug();
+                Vm.SlotDeviceEntries[idx].RequestUnplug();
             }
         }
 
         private void SlotChangeAcceptBtn()
         {
-            int idx = currentOutDevVM.SelectedIndex;
+            int idx = Vm.SelectedIndex;
             if (idx >= 0)
             {
-                currentOutDevVM.SlotDeviceEntries[idx].ApplyChanges();
+                Vm.SlotDeviceEntries[idx].ApplyChanges();
             }
         }
     }

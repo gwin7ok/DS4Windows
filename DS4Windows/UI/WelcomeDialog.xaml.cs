@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -56,8 +58,8 @@ namespace DS4Windows.UI
         private string installDL = InstallerDLX64;
         private string installFileName;
 
-        Process monitorProc;
-        System.Timers.Timer monitorTimer;
+        Process? monitorProc;
+        System.Timers.Timer? monitorTimer;
 
         // Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
         private readonly DS4Windows.UI.Abstractions.IDriverEnvironment _environmentService;
@@ -234,9 +236,9 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ViGEmInstallTimer_Tick(object sender, System.Timers.ElapsedEventArgs e)
+        private void ViGEmInstallTimer_Tick(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            ((System.Timers.Timer)sender).Stop();
+            (sender as System.Timers.Timer)?.Stop();
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
@@ -261,13 +263,13 @@ namespace DS4Windows.UI
 
                 string currentFilePath = Path.Combine(Path.GetTempPath(), $"{installFileName}");
                 File.Delete(currentFilePath);
-                ((System.Timers.Timer)sender).Stop();
+                (sender as System.Timers.Timer)?.Stop();
                 finished = true;
             }
 
             if (!finished)
             {
-                ((System.Timers.Timer)sender).Start();
+                (sender as System.Timers.Timer)?.Start();
             }
         }
 
@@ -350,10 +352,10 @@ namespace DS4Windows.UI
             }
         }
 
-        private void HidHideInstallTimer_Elapsed(object sender,
+        private void HidHideInstallTimer_Elapsed(object? sender,
             System.Timers.ElapsedEventArgs e)
         {
-            ((System.Timers.Timer)sender).Stop();
+            (sender as System.Timers.Timer)?.Stop();
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
@@ -376,13 +378,13 @@ namespace DS4Windows.UI
 
                 string currentFilePath = Path.Combine(Path.GetTempPath(), $"{InstHidHideFileNameX64}");
                 File.Delete(currentFilePath);
-                ((System.Timers.Timer)sender).Stop();
+                (sender as System.Timers.Timer)?.Stop();
                 finished = true;
             }
 
             if (!finished)
             {
-                ((System.Timers.Timer)sender).Start();
+                (sender as System.Timers.Timer)?.Start();
             }
         }
 
@@ -456,10 +458,10 @@ namespace DS4Windows.UI
             }
         }
 
-        private void FakerInputInstallTimer_Elapsed(object sender,
+        private void FakerInputInstallTimer_Elapsed(object? sender,
             System.Timers.ElapsedEventArgs e)
         {
-            ((System.Timers.Timer)sender).Stop();
+            (sender as System.Timers.Timer)?.Stop();
             bool finished = false;
             if (monitorProc != null && monitorProc.HasExited)
             {
@@ -482,13 +484,13 @@ namespace DS4Windows.UI
 
                 string currentFilePath = Path.Combine(Path.GetTempPath(), $"{instFakerInputFileName}");
                 File.Delete(currentFilePath);
-                ((System.Timers.Timer)sender).Stop();
+                (sender as System.Timers.Timer)?.Stop();
                 finished = true;
             }
 
             if (!finished)
             {
-                ((System.Timers.Timer)sender).Start();
+                (sender as System.Timers.Timer)?.Start();
             }
         }
 

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿#nullable enable
+
+using System.Windows;
 using System.Windows.Controls;
 using DS4Windows.Core.Model;
 using DS4Windows.UI.ViewModels;
@@ -15,12 +17,12 @@ namespace DS4Windows.UI
 
         public TriggerSettingsPanel()
         {
-            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => CustomCurveEditorRequested?.Invoke(this, parameter as string), name: nameof(CustomEditorCommand));
+            CustomEditorCommand = DS4Windows.UI.ViewModels.Util.CommandGuard.CreateSync<object>(parameter => CustomCurveEditorRequested?.Invoke(this, parameter as string ?? string.Empty), name: nameof(CustomEditorCommand));
             InitializeComponent();
         }
 
         /// <summary>カスタム曲線の編集が求められた。引数は対象（"L2" か "R2"）。</summary>
-        public event System.EventHandler<string> CustomCurveEditorRequested;
+        public event System.EventHandler<string>? CustomCurveEditorRequested;
 
         /// <summary>L2・R2 の Full Pull の割り当ての表示を、割り当ての一覧の各コントロールへ結ぶ。</summary>
         public void AssignFullPullAssociation(MappingListViewModel mappingList)
