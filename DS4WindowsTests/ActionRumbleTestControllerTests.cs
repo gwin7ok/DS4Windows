@@ -20,7 +20,7 @@ namespace DS4WindowsTests
             public bool SetHeavyRumble(int slot, byte strength) => true;
             public bool SetLightRumble(int slot, byte strength) => true;
             public bool ApplyDualSenseRumbleOptions(int slot, int rumbleEmulationMode, byte hapticPowerLevel) => false;
-            public bool ResetGyroCalibration(int slot) => true;
+            public bool ResetGyroCalibration(int slot, System.Action? completed = null) => true;
         }
 
         [Fact]

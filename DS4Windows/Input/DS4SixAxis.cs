@@ -244,6 +244,7 @@ namespace DS4Windows.Input
                 {
                     gyroAverageTimer.Stop();
                     AverageGyro(ref gyro_offset_x, ref gyro_offset_y, ref gyro_offset_z, ref gyro_accel_magnitude);
+                    ContinuousCalibrationCompleted?.Invoke(this, EventArgs.Empty);
 #if DEBUG
                     AppLogger.LogDebug($"AverageGyro {gyro_offset_x} {gyro_offset_y} {gyro_offset_z} {gyro_accel_magnitude}");
 #endif
@@ -276,6 +277,9 @@ namespace DS4Windows.Input
         {
             SixAccelMoved?.Invoke(this, args);
         }
+
+        /// <summary>連続較正の平均（約 5 秒の計測）が終わって、オフセットを更新したときに、入力のスレッドから呼ばれる。</summary>
+        public event EventHandler? ContinuousCalibrationCompleted;
 
         public void StartContinuousCalibration()
         {

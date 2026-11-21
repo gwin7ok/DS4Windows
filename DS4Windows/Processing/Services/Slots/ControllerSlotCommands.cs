@@ -53,10 +53,23 @@ namespace DS4Windows.Processing.Services.Slots
             return device != null && device.ApplyRumbleEmulation((RumbleEmulationMode)rumbleEmulationMode, hapticPowerLevel);
         }
 
-        public bool ResetGyroCalibration(int slot)
+        public bool ResetGyroCalibration(int slot, Action? completed = null)
         {
             InputDeviceCore? device = DeviceAt(slot);
             if (device == null) return false;
+
+            if (completed != null)
+            {
+                // 今回の較正が終わったときだけ知らせる（1 回で外す）
+                var sixAxis = device.SixAxis;
+                EventHandler? handler = null;
+                handler = (s, e) =>
+                {
+                    sixAxis.ContinuousCalibrationCompleted -= handler;
+                    completed();
+                };
+                sixAxis.ContinuousCalibrationCompleted += handler;
+            }
 
             device.SixAxis.ResetContinuousCalibration();
             return true;

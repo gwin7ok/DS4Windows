@@ -1201,6 +1201,9 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="GyroSettingsPanel_ResetGyroCalibration" xml:space="preserve">
     <value>ジャイロの校正をリセット</value>
   </data>
+  <data name="GyroSettingsPanel_CalibrationDone" xml:space="preserve">
+    <value>ジャイロの校正が完了しました。</value>
+  </data>
   <data name="GyroSettingsPanel_GyroSensitivity" xml:space="preserve">
     <value>ジャイロの感度:</value>
   </data>
