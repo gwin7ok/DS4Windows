@@ -35,7 +35,6 @@ namespace DS4WindowsTests
         {
             Assert.IsType<ButtonMouseMovementCalculator>(TestHost.GetService<IButtonMouseMovementCalculator>());
             Assert.IsType<MouseMotionQuantizer>(TestHost.GetService<IMouseMotionQuantizer>());
-            Assert.IsType<GyroMouseStickBlender>(TestHost.GetService<IGyroMouseStickBlender>());
             Assert.IsType<ControlActivityReader>(TestHost.GetService<IControlActivityReader>());
 
             Assert.Same(TestHost.GetService<IButtonMouseMovementCalculator>(), TestHost.GetService<IButtonMouseMovementCalculator>());

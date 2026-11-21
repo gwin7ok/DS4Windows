@@ -150,8 +150,6 @@ namespace DS4WindowsTests
             {
                 ["LoadBlank"] = "LoadBlankDevProfile",
                 ["LoadBlankDS4"] = "LoadBlankDS4Profile",
-                ["LoadDefaultGamepadGyro"] = "LoadDefaultGamepadGyroProfile",
-                ["LoadDefaultDS4GamepadGyro"] = "LoadDefaultDS4GamepadGyroProfile",
                 ["LoadDefaultMixedControls"] = "LoadDefaultMixedControlsProfile",
                 ["LoadDefaultDS4MixedControls"] = "LoadDefaultDS4MixedControlsProfile",
                 ["LoadDefaultMixedGyroMouse"] = "LoadDefaultMixedGyroMouseProfile",

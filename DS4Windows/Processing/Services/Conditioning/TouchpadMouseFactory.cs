@@ -37,7 +37,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             var tap = new TapClickDetector(deviceIndex, _timeProvider);
             var cursor = new MouseCursor(deviceIndex, device.GyroMouseSensSettings, _profileSettings, _virtualKBM);
             var wheel = new MouseWheel(deviceIndex, _profileSettings, _virtualKBM);
-            var gyro = new GyroOutputProcessor(deviceIndex, device, cursor, _profileSettings, _stickMotion);
+            var gyro = new GyroOutputProcessor(deviceIndex, device, cursor, _profileSettings);
             return new TouchpadMouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput,
                 tap, cursor, wheel, gyro);
         }

@@ -22,6 +22,8 @@ using Sensorit.Base;
 namespace DS4Windows.Core.Settings
 {
 
+    // TODO（技術的負債）: 出力モード「マウススティック」は、利用者の指示で廃止した（2026-11-21）。この型の値は、プロファイルの
+    // XML の形を保つためだけに、保存・読み込みが残っている（画面と出力の処理はない）。保存の形を変えてよいときに、型ごと撤去する。
     public class TouchMouseStickInfo : ProfileSubSettingBase
     {
         public enum SmoothingMethod : byte

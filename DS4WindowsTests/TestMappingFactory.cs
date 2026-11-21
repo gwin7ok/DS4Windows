@@ -61,7 +61,7 @@ namespace DS4WindowsTests
                 triggerEngine,
                 // 加速の状態・端数を持つ部品は、独立の instance にする（他のテストと状態を共有しない）
                 new MouseConversionStage(new ButtonMouseMovementCalculator(), TestHost.GetService<IFlickStickProcessor>(),
-                    new MouseMotionQuantizer(), TestHost.GetService<IGyroMouseStickBlender>()),
+                    new MouseMotionQuantizer()),
                 new CurveAndDeadzoneStage(TestHost.GetService<IStickDeadZoneProcessor>(), TestHost.GetService<IOutputCurveProcessor>(),
                     TestHost.GetService<ITriggerDeadZoneProcessor>(), TestHost.GetService<IGyroControlsProcessor>(),
                     TestHost.GetService<IStickInputConditioner>(), stickMotionState),   // 状態は stickMotion を共有する

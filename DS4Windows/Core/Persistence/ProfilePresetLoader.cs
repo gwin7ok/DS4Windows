@@ -50,18 +50,6 @@ namespace DS4Windows.Core.Persistence
             CompleteLoad(deviceIndex);
         }
 
-        public void LoadDefaultGamepadGyro(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true)
-        {
-            _presets.LoadDefaultGamepadGyroProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
-            CompleteLoad(deviceIndex);
-        }
-
-        public void LoadDefaultDS4GamepadGyro(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true)
-        {
-            _presets.LoadDefaultDS4GamepadGyroProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);
-            CompleteLoad(deviceIndex);
-        }
-
         public void LoadDefaultMixedControls(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true)
         {
             _presets.LoadDefaultMixedControlsProfile(deviceIndex, launchProgram, control, "", xinputChange, postLoad);

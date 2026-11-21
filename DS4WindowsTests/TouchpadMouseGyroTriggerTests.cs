@@ -79,14 +79,12 @@ namespace DS4WindowsTests
             {
                 case GyroOutMode.Controls: gyro.Controls.triggers = triggers; gyro.Controls.triggerCond = andCond; break;
                 case GyroOutMode.Mouse: gyro.MouseTriggers = triggers; gyro.MouseTriggerCondAnd = andCond; break;
-                case GyroOutMode.MouseJoystick: gyro.MouseStickTriggers = triggers; gyro.MouseStickTriggerCondAnd = andCond; break;
             }
         }
 
         [Theory]
         [InlineData(GyroOutMode.Controls)]
         [InlineData(GyroOutMode.Mouse)]
-        [InlineData(GyroOutMode.MouseJoystick)]
         public void TheDecision_MatchesTheOldImplementation_ForEveryTriggerPattern(GyroOutMode mode)
         {
             var (mouse, settings) = Create();

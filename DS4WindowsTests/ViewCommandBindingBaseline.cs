@@ -17,7 +17,7 @@ namespace DS4WindowsTests
             ["ChangelogWindow.xaml"] = 1,
             ["ControllerRegisterOptionsWindow.xaml"] = 1,
             ["FirstLaunchUtilWindow.xaml"] = 2,
-            ["GyroSettingsPanel.xaml"] = 3,
+            ["GyroSettingsPanel.xaml"] = 2,
             ["LanguagePackControl.xaml"] = 1,
             ["LanguageSelectDialog.xaml"] = 3,
             ["LightbarSettingsPanel.xaml"] = 5,
@@ -35,6 +35,6 @@ namespace DS4WindowsTests
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 255;
+        public const int CommandBindingFloor = 254;
     }
 }

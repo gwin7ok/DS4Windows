@@ -149,10 +149,6 @@ namespace DS4Windows.Processing.Touchpad
 
         public bool IsGyroTriggerActive(GyroOutMode mode, ControllerState state) => _gyro.IsTriggerActive(mode, state);
 
-        public void ReplaceOneEuroFilterPair() => _gyro.ReplaceOneEuroFilterPair();
-
-        public void SetupLateOneEuroFilters() => _gyro.SetupLateOneEuroFilters();
-
         public void PostSetup()
         {
             _gyro.PostSetup();

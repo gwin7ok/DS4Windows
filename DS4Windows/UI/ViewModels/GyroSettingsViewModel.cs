@@ -48,7 +48,6 @@ namespace DS4Windows.UI.ViewModels
         public void RefreshSmoothMethodIndexes()
         {
             gyroMouseSmoothMethodIndex = FindGyroMouseSmoothMethodIndex();
-            gyroMouseStickSmoothMethodIndex = FindGyroMouseStickSmoothMethodIndex();
         }
 
         public bool UsingMinViGEm173333 => environmentService.IsUsingMinViGEm117333();
@@ -60,8 +59,7 @@ namespace DS4Windows.UI.ViewModels
                 switch (gyro.OutputMode)
                 {
                     case GyroOutMode.Mouse: return 1;
-                    case GyroOutMode.MouseJoystick: return 2;
-                    case GyroOutMode.Passthru: return 3;
+                    case GyroOutMode.Passthru: return 2;
                     default: return 0;
                 }
             }
@@ -71,8 +69,7 @@ namespace DS4Windows.UI.ViewModels
                 switch (value)
                 {
                     case 1: temp = GyroOutMode.Mouse; break;
-                    case 2: temp = GyroOutMode.MouseJoystick; break;
-                    case 3: temp = GyroOutMode.Passthru; break;
+                    case 2: temp = GyroOutMode.Passthru; break;
                     default: break;
                 }
 
@@ -208,61 +205,6 @@ namespace DS4Windows.UI.ViewModels
             set => gyro.Mouse.Beta = value;
         }
 
-        private int gyroMouseStickSmoothMethodIndex;
-        public int GyroMouseStickSmoothMethodIndex
-        {
-            get => gyroMouseStickSmoothMethodIndex;
-            set
-            {
-                if (gyroMouseStickSmoothMethodIndex == value) return;
-
-                GyroMouseStickInfo info = gyro.MouseStick;
-                switch (value)
-                {
-                    case 0:
-                        info.ResetSmoothingMethods();
-                        info.smoothingMethod = GyroSmoothingMethod.OneEuro;
-                        break;
-                    case 1:
-                        info.ResetSmoothingMethods();
-                        info.smoothingMethod = GyroSmoothingMethod.WeightedAverage;
-                        break;
-                    default:
-                        break;
-                }
-
-                gyroMouseStickSmoothMethodIndex = value;
-                OnPropertyChanged(nameof(GyroMouseStickSmoothMethodIndex));
-                OnPropertyChanged(nameof(GyroMouseStickWeightAvgPanelShown));
-                OnPropertyChanged(nameof(GyroMouseStickOneEuroPanelShown));
-            }
-        }
-
-        public bool GyroMouseStickWeightAvgPanelShown =>
-            gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.WeightedAverage;
-
-        public bool GyroMouseStickOneEuroPanelShown =>
-            gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.OneEuro
-            || gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.None;
-
-        public double GyroMouseStickSmoothWeight
-        {
-            get => gyro.MouseStick.smoothWeight;
-            set => gyro.MouseStick.smoothWeight = value;
-        }
-
-        public double GyroMouseStickOneEuroMinCutoff
-        {
-            get => gyro.MouseStick.MinCutoff;
-            set => gyro.MouseStick.MinCutoff = value;
-        }
-
-        public double GyroMouseStickOneEuroBeta
-        {
-            get => gyro.MouseStick.Beta;
-            set => gyro.MouseStick.Beta = value;
-        }
-
         public int GyroMouseDeadZone
         {
             get => gyro.MouseDeadZone;
@@ -279,125 +221,6 @@ namespace DS4Windows.UI.ViewModels
         {
             get => gyro.Mouse.jitterCompensation;
             set => gyro.Mouse.jitterCompensation = value;
-        }
-
-        public bool GyroMouseStickTurns
-        {
-            get => gyro.MouseStickTriggerTurns;
-            set => gyro.MouseStickTriggerTurns = value;
-        }
-
-        public bool GyroMouseStickToggle
-        {
-            get => gyro.MouseStickToggle;
-            set => gyro.SetMouseStickToggle(value, loadTarget);
-        }
-
-        public int GyroMouseStickDeadZone
-        {
-            get => gyro.MouseStick.deadZone;
-            set => gyro.MouseStick.deadZone = value;
-        }
-
-        public int GyroMouseStickMaxZone
-        {
-            get => gyro.MouseStick.maxZone;
-            set => gyro.MouseStick.maxZone = value;
-        }
-
-        public int GyroMouseStickOutputStick
-        {
-            get => (int)gyro.MouseStick.outputStick;
-            set => gyro.MouseStick.outputStick = (GyroMouseStickInfo.OutputStick)value;
-        }
-
-        public int GyroMouseStickOutputAxes
-        {
-            get => (int)gyro.MouseStick.outputStickDir;
-            set => gyro.MouseStick.outputStickDir = (GyroMouseStickInfo.OutputStickAxes)value;
-        }
-
-        public double GyroMouseStickAntiDeadX
-        {
-            get => gyro.MouseStick.antiDeadX * 100.0;
-            set => gyro.MouseStick.antiDeadX = value * 0.01;
-        }
-
-        public double GyroMouseStickAntiDeadY
-        {
-            get => gyro.MouseStick.antiDeadY * 100.0;
-            set => gyro.MouseStick.antiDeadY = value * 0.01;
-        }
-
-        public int GyroMouseStickVertScale
-        {
-            get => gyro.MouseStick.vertScale;
-            set => gyro.MouseStick.vertScale = value;
-        }
-
-        public bool GyroMouseStickMaxOutputEnabled
-        {
-            get => gyro.MouseStick.maxOutputEnabled;
-            set
-            {
-                if (gyro.MouseStick.maxOutputEnabled == value) return;
-                gyro.MouseStick.maxOutputEnabled = value;
-                OnPropertyChanged(nameof(GyroMouseStickMaxOutputEnabled));
-                OnPropertyChanged(nameof(GyroMouseStickMaxOutput));
-            }
-        }
-
-        public double GyroMouseStickMaxOutput
-        {
-            get => gyro.MouseStick.maxOutput;
-            set => gyro.MouseStick.maxOutput = value;
-        }
-
-        public int GyroMouseStickEvalCondIndex
-        {
-            get => gyro.MouseStickTriggerCondAnd ? 0 : 1;
-            set => gyro.MouseStickTriggerCondAnd = value == 0;
-        }
-
-        public int GyroMouseStickXAxis
-        {
-            get => gyro.MouseStickHorizontalAxis;
-            set => gyro.MouseStickHorizontalAxis = value;
-        }
-
-        public bool GyroMouseStickInvertX
-        {
-            get => (gyro.MouseStick.inverted & 1) == 1;
-            set => gyro.MouseStick.inverted = value ? gyro.MouseStick.inverted | 1 : (uint)(gyro.MouseStick.inverted & ~1);
-        }
-
-        public bool GyroMouseStickInvertY
-        {
-            get => (gyro.MouseStick.inverted & 2) == 2;
-            set => gyro.MouseStick.inverted = value ? gyro.MouseStick.inverted | 2 : (uint)(gyro.MouseStick.inverted & ~2);
-        }
-
-        public bool GyroMouseStickJitterCompensation
-        {
-            get => gyro.MouseStick.jitterCompensation;
-            set => gyro.MouseStick.jitterCompensation = value;
-        }
-
-        public bool GyroMouseStickSmooth
-        {
-            get => gyro.MouseStick.useSmoothing;
-            set
-            {
-                if (gyro.MouseStick.useSmoothing == value) return;
-                gyro.MouseStick.useSmoothing = value;
-                OnPropertyChanged(nameof(GyroMouseStickSmooth));
-            }
-        }
-
-        public double GyroMousetickSmoothWeight
-        {
-            get => gyro.MouseStick.smoothWeight;
-            set => gyro.MouseStick.smoothWeight = value;
         }
 
         public bool GyroControlsTurns
@@ -434,17 +257,6 @@ namespace DS4Windows.UI.ViewModels
             GyroMouseTrigDisplay = ApplyToMenu(entries, gyro.MouseTriggers);
         }
 
-        public void UpdateGyroMouseStickTrig(IReadOnlyList<TriggerMenuEntry> entries, bool alwaysOnChecked)
-        {
-            gyro.MouseStickTriggers = ReadMenu(entries, alwaysOnChecked, out string display);
-            GyroMouseStickTrigDisplay = display;
-        }
-
-        public void PopulateGyroMouseStickTrig(IReadOnlyList<TriggerMenuEntry> entries)
-        {
-            GyroMouseStickTrigDisplay = ApplyToMenu(entries, gyro.MouseStickTriggers);
-        }
-
         public void UpdateGyroControlsTrig(IReadOnlyList<TriggerMenuEntry> entries, bool alwaysOnChecked)
         {
             gyro.Controls.triggers = ReadMenu(entries, alwaysOnChecked, out string display);
@@ -454,11 +266,6 @@ namespace DS4Windows.UI.ViewModels
         public void PopulateGyroControlsTrig(IReadOnlyList<TriggerMenuEntry> entries)
         {
             GyroControlsTrigDisplay = ApplyToMenu(entries, gyro.Controls.triggers);
-        }
-
-        private int FindGyroMouseStickSmoothMethodIndex()
-        {
-            return gyro.MouseStick.smoothingMethod == GyroSmoothingMethod.WeightedAverage ? 1 : 0;
         }
     }
 }

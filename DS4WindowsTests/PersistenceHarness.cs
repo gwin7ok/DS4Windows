@@ -192,8 +192,7 @@ namespace DS4WindowsTests
 
         public static readonly string[] PresetNames =
         {
-            "LoadBlankDS4Profile", "LoadBlankProfile", "LoadDefaultGamepadGyroProfile", "LoadDefaultDS4GamepadGyroProfile",
-            "LoadDefaultMixedGyroMouseProfile", "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultDS4MixedControlsProfile",
+            "LoadBlankDS4Profile", "LoadBlankProfile", "LoadDefaultMixedGyroMouseProfile", "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultDS4MixedControlsProfile",
             "LoadDefaultMixedControlsProfile", "LoadDefaultKBMProfile", "LoadDefaultKBMGyroMouseProfile",
         };
 
@@ -206,8 +205,6 @@ namespace DS4WindowsTests
             {
                 case "LoadBlankDS4Profile": s.LoadBlankDS4Profile(Slot, false, c, "", false, false); break;
                 case "LoadBlankProfile": s.LoadBlankProfile(Slot, false, c, "", false, false); break;
-                case "LoadDefaultGamepadGyroProfile": s.LoadDefaultGamepadGyroProfile(Slot, false, c, "", false, false); break;
-                case "LoadDefaultDS4GamepadGyroProfile": s.LoadDefaultDS4GamepadGyroProfile(Slot, false, c, "", false, false); break;
                 case "LoadDefaultMixedGyroMouseProfile": s.LoadDefaultMixedGyroMouseProfile(Slot, false, c, "", false, false); break;
                 case "LoadDefaultDS4MixedGyroMouseProfile": s.LoadDefaultDS4MixedGyroMouseProfile(Slot, false, c, "", false, false); break;
                 case "LoadDefaultDS4MixedControlsProfile": s.LoadDefaultDS4MixedControlsProfile(Slot, false, c, "", false, false); break;

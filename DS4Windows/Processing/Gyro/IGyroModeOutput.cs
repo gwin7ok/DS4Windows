@@ -6,7 +6,7 @@ using DS4Windows.Input;
 namespace DS4Windows.Processing.Gyro
 {
     /// <summary>
-    /// ジャイロの出力の種類（Controls／Mouse／MouseJoystick）ごとの出力。
+    /// ジャイロの出力の種類（Controls／Mouse）ごとの出力。
     /// <see cref="GyroOutputProcessor"/> が、プロファイルの出力モードに合う 1 つを選び、トリガーの判定の結果を渡して呼ぶ。
     /// </summary>
     internal interface IGyroModeOutput

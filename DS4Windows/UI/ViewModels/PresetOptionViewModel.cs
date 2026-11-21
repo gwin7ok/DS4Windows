@@ -78,7 +78,6 @@ namespace DS4Windows.UI.ViewModels
             if (loadTarget == null) throw new ArgumentNullException(nameof(loadTarget));
             presetList = new List<PresetOption>();
             presetList.Add(new GamepadPreset(presetLoader, loadTarget));
-            presetList.Add(new GamepadGyroCamera(presetLoader, loadTarget));
             presetList.Add(new MixedPreset(presetLoader, loadTarget));
             presetList.Add(new MixedGyroMousePreset(presetLoader, loadTarget));
             presetList.Add(new KBMPreset(presetLoader, loadTarget));

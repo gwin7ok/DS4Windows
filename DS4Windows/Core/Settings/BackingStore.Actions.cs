@@ -14,8 +14,7 @@ namespace DS4Windows.Core.Settings
             containsCustomExtras[device] = HasCustomExtras(device);
 
             {
-                customAct = gyroSlots[device].OutputMode == GyroOutMode.MouseJoystick;
-                customAct = customAct || stickSlots[device].LSOutput.mode != StickMode.Controls;
+                customAct = stickSlots[device].LSOutput.mode != StickMode.Controls;
                 customAct = customAct || stickSlots[device].RSOutput.mode != StickMode.Controls;
                 containsCustomAction[device] = customAct;
             }

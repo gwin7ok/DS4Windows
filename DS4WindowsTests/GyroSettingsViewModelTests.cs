@@ -93,12 +93,13 @@ namespace DS4WindowsTests
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
-                vm.GyroOutModeIndex = 2;
-                Assert.Equal(GyroOutMode.MouseJoystick, service.ForSlot(0).Gyro.OutputMode);
-                Assert.Equal(2, vm.GyroOutModeIndex);
+                vm.GyroOutModeIndex = 1;
+                Assert.Equal(GyroOutMode.Mouse, service.ForSlot(0).Gyro.OutputMode);
+                Assert.Equal(1, vm.GyroOutModeIndex);
                 Assert.Contains(nameof(GyroSettingsViewModel.GyroOutModeIndex), names);
 
-                vm.GyroOutModeIndex = 3;
+                // 廃止した「マウススティック」の分、パススルーは 2 番
+                vm.GyroOutModeIndex = 2;
                 Assert.Equal(GyroOutMode.Passthru, service.ForSlot(0).Gyro.OutputMode);
             }
             finally
@@ -115,12 +116,10 @@ namespace DS4WindowsTests
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
 
             vm.GyroMouseSmoothMethodIndex = vm.GyroMouseSmoothMethodIndex == 0 ? 1 : 0;
-            vm.GyroMouseStickSmoothMethodIndex = vm.GyroMouseStickSmoothMethodIndex == 0 ? 1 : 0;
 
             foreach (string expected in new[]
             {
                 nameof(GyroSettingsViewModel.GyroMouseWeightAvgPanelShown), nameof(GyroSettingsViewModel.GyroMouseOneEuroPanelShown),
-                nameof(GyroSettingsViewModel.GyroMouseStickWeightAvgPanelShown), nameof(GyroSettingsViewModel.GyroMouseStickOneEuroPanelShown),
             })
             {
                 Assert.Contains(expected, names);

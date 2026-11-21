@@ -29,17 +29,6 @@ namespace DS4Windows.UI.ViewModels
             }
         }
 
-        private string gyroMouseStickTrigDisplay = AlwaysOn;
-        public string GyroMouseStickTrigDisplay
-        {
-            get => gyroMouseStickTrigDisplay;
-            set
-            {
-                gyroMouseStickTrigDisplay = value;
-                OnPropertyChanged(nameof(GyroMouseStickTrigDisplay));
-            }
-        }
-
         /// <summary>
         /// メニューのチェックを読み、保存する文字列（カンマ区切りの番号。何も選ばなければ -1＝常にオン）と表示の文字列を返す。
         /// 「Always On」を選んだら、ほかのチェックは外す（<paramref name="entries"/> のチェックを書き換える）。

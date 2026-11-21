@@ -186,9 +186,6 @@ namespace DS4Windows.Processing.Services.Connection
                 {
                     if (!_profileSettings.GetDInputOnly(ind))
                     {
-                        host.TouchPads[ind].ReplaceOneEuroFilterPair();
-                        //host.TouchPads[ind].ReplaceOneEuroFilterPair();
-
                         host.TouchPads[ind].Cursor.ReplaceOneEuroFilterPair();
                         host.TouchPads[ind].Cursor.SetupLateOneEuroFilters();
                         _virtualPad.PluginOutDev(ind, device);

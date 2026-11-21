@@ -39,7 +39,6 @@ namespace DS4WindowsTests
             public void RestoreProfileUntrigger(int device, ProfileUntriggerSnapshot snapshot) { }
             public ControllerState SetCurveAndDeadzone(int device, ControllerState cState, ControllerState dState, DS4Windows.Core.Abstractions.IProfileSettingsService settings) { throw new NotSupportedException(); }
             public void MapCustom(int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState, TouchpadMouse tp) { throw new NotSupportedException(); }
-            public void TempMouseJoystick(int device, ControllerState MappedState) { throw new NotSupportedException(); }
             public void Commit(int device, DS4Windows.Core.Abstractions.IProfileSettingsService settings) { throw new NotSupportedException(); }
             public bool GetBoolMappingExternal(int device, DS4Controls control, ControllerState cState, ControllerStateExposed eState, TouchpadMouse tp) { throw new NotSupportedException(); }
             public void PlayMacroDirect(int device, SpecialAction action) { throw new NotSupportedException(); }

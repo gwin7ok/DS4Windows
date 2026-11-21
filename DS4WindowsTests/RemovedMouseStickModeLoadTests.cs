@@ -31,6 +31,24 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void AGyroProfileSavedInTheRemovedMouseStickMode_LoadsAsControlsWithDefaults()
+        {
+            using var ctx = new PersistenceGoldenContext();
+            BackingStore store = PersistenceHarness.NewStore();
+            store.gyroSlots[Slot].OutputMode = GyroOutMode.MouseJoystick;
+            store.gyroSlots[Slot].Sensitivity = 321;
+            store.gyroSlots[Slot].MouseStick.deadZone = 55;
+            string xml = PersistenceHarness.SaveProfile(ctx, store, "RemovedGyroStick");
+            Assert.Matches(@"<GyroOutputMode>\s*MouseJoystick\s*</GyroOutputMode>", xml);
+
+            BackingStore loaded = PersistenceHarness.LoadProfile(ctx, xml, "RemovedGyroStickLoad");
+
+            Assert.Equal(GyroOutMode.Controls, loaded.gyroSlots[Slot].OutputMode);
+            Assert.Equal(BackingStore.DEFAULT_GYRO_SENS, loaded.gyroSlots[Slot].Sensitivity);
+            Assert.NotEqual(55, loaded.gyroSlots[Slot].MouseStick.deadZone);
+        }
+
+        [Fact]
         public void ATouchpadProfileInAnotherMode_KeepsItsSettings()
         {
             using var ctx = new PersistenceGoldenContext();

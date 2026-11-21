@@ -19,12 +19,6 @@ namespace DS4Windows.Core.Abstractions
         /// <summary>旧 <c>Global.LoadBlankDS4Profile</c>（空のプロファイル。DualShock 4 出力）。</summary>
         void LoadBlankDS4(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 
-        /// <summary>旧 <c>Global.LoadDefaultGamepadGyroProfile</c>。</summary>
-        void LoadDefaultGamepadGyro(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
-
-        /// <summary>旧 <c>Global.LoadDefaultDS4GamepadGyroProfile</c>。</summary>
-        void LoadDefaultDS4GamepadGyro(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
-
         /// <summary>旧 <c>Global.LoadDefaultMixedControlsProfile</c>。</summary>
         void LoadDefaultMixedControls(int deviceIndex, bool launchProgram, IProfileLoadTarget control, bool xinputChange = true, bool postLoad = true);
 

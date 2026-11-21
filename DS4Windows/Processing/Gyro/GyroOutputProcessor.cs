@@ -38,10 +38,9 @@ namespace DS4Windows.Processing.Gyro
         private readonly GyroTriggerEvaluator _triggers;
         private readonly GyroControlsOutput _controls = new GyroControlsOutput();
         private readonly GyroMouseOutput _mouse;
-        private readonly GyroMouseStickOutput _mouseStick;
 
         public GyroOutputProcessor(int deviceNum, InputDeviceCore device, MouseCursor cursor,
-            IProfileSettingsService profileSettings, StickMotionState stickMotion)
+            IProfileSettingsService profileSettings)
         {
             this.deviceNum = deviceNum;
             _device = device;
@@ -49,7 +48,6 @@ namespace DS4Windows.Processing.Gyro
             _profileSettings = profileSettings;
             _triggers = new GyroTriggerEvaluator(deviceNum, profileSettings);
             _mouse = new GyroMouseOutput(deviceNum, cursor, profileSettings);
-            _mouseStick = new GyroMouseStickOutput(deviceNum, profileSettings, stickMotion);
         }
 
         /// <summary>プロファイルの切り替え・接続の入れ替えのときに、トグルの状態を初期化する。</summary>
@@ -58,19 +56,15 @@ namespace DS4Windows.Processing.Gyro
             _triggers.Reset();
         }
 
-        /// <summary>プロファイルの適用後の準備（マウススティックのフィルターの設定の結び）。</summary>
+        /// <summary>プロファイルの適用後の準備（ジャイロの出力は、準備する状態を持たない）。</summary>
         public void PostSetup()
         {
-            if (_profileSettings.ForSlot(deviceNum).Gyro.OutputMode == GyroOutMode.MouseJoystick)
-                _mouseStick.PostSetup();
         }
 
-        /// <summary>切断・プロファイルの切り替えのときの後始末（トグルの初期化と、マウススティックのフィルターの切り離し）。</summary>
+        /// <summary>切断・プロファイルの切り替えのときの後始末（トグルの初期化）。</summary>
         public void Reset()
         {
             ResetToggleGyroModes();
-            if (_profileSettings.ForSlot(deviceNum).Gyro.OutputMode == GyroOutMode.MouseJoystick)
-                _mouseStick.Detach();
         }
 
         private bool toggleGyroControls = true;
@@ -113,7 +107,6 @@ namespace DS4Windows.Processing.Gyro
         {
             GyroOutMode.Controls => _controls,
             GyroOutMode.Mouse => _mouse,
-            GyroOutMode.MouseJoystick => _mouseStick,
             _ => null,
         };
 
@@ -126,9 +119,5 @@ namespace DS4Windows.Processing.Gyro
             ControllerState state = _device.GetCurrentStateRef();
             output.Process(arg, state, _triggers.Evaluate(outMode, state, toggleGyroControls).ShouldOutput);
         }
-
-        public void ReplaceOneEuroFilterPair() => _mouseStick.ReplaceOneEuroFilterPair();
-
-        public void SetupLateOneEuroFilters() => _mouseStick.SetupLateOneEuroFilters();
     }
 }

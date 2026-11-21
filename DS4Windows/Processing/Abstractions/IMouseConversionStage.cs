@@ -23,7 +23,5 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>マウスの移動量の整数化と端数の持ち越し（<see cref="IMouseMotionQuantizer.Quantize"/>）。</summary>
         void QuantizeMouseMotion(int device, ref double rawMouseX, ref double rawMouseY, out int mouseX, out int mouseY);
 
-        /// <summary>ジャイロのマウススティック出力の合成（<see cref="IGyroMouseStickBlender.Blend"/>）。</summary>
-        void BlendGyroMouseStick(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, ControllerState MappedState, PostMapStickData mapStickData);
     }
 }

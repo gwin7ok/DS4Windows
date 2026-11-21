@@ -158,6 +158,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 missingSetting = true;
             }
 
+            // 廃止したジャイロの出力モード「マウススティック」（MouseJoystick）で保存された古いプロファイルは、
+            // 「操作」モードの既定値として読み込む（ジャイロの設定は、すべて既定値へ戻す）
+            if (store.gyroSlots[device].OutputMode == GyroOutMode.MouseJoystick)
+            {
+                store.gyroSlots[device].ResetForProfileLoad();
+                store.gyroSlots[device].OutputMode = GyroOutMode.Controls;
+            }
+
             context.MissingSetting = missingSetting;
         }
     }

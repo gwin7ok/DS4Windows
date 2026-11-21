@@ -117,7 +117,6 @@ namespace DS4Windows.Composition
             services.AddSingleton<IFlickStickProcessor, FlickStickProcessor>();   // フリックスティック（状態なし）
             services.AddSingleton<IButtonMouseMovementCalculator, ButtonMouseMovementCalculator>();   // ボタン等 → マウスの生の移動量（マウス加速の状態をデバイスごとに持つ）
             services.AddSingleton<IMouseMotionQuantizer, MouseMotionQuantizer>();   // マウスの移動量の整数化（端数をデバイスごとに持つ）
-            services.AddSingleton<IGyroMouseStickBlender, GyroMouseStickBlender>();   // ジャイロのマウススティック出力の合成（状態なし）
             // OSC、HidHide、仮想パッド、UDP の登録は ServiceRegistration.Output.cs
             services.AddSingleton<ILatencyMonitor, LatencyMonitor>();   // 入力レポートのエラーのログと遅延の監視
             services.AddSingleton<ITouchpadToggleService, TouchpadToggleService>();   // タッチパッドの切り替え・スライドの判定
