@@ -23,6 +23,9 @@ namespace DS4WindowsTests
         /// <summary>電池の残量（%）を直接設定する（読み取りのループを持たないため）。</summary>
         public void SetBattery(int percent) => battery = percent;
 
+        /// <summary>MAC アドレス（シリアル）を直接設定する（接続の手順を持たないため）。</summary>
+        public void SetMac(string mac) => Mac = mac;
+
         public override event ReportHandler<System.EventArgs> Report { add { } remove { } }
 
         public override void RemoveReportHandlers()
