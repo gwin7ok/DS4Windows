@@ -90,3 +90,8 @@ NG のときの「疑い先」は、変更した RV。原因の調査は `git lo
 
 ### 確認 27 の対応（機能追加の依頼）
 - ジャイロの校正（「ジャイロの校正をリセット」）は、画面を開かず、約 5 秒の計測のあとにオフセットを更新する。完了が分かるよう、利用者の依頼で、完了の窓「ジャイロの校正が完了しました。」を追加した（`DS4SixAxis.ContinuousCalibrationCompleted` → `ControllerSlotCommands.ResetGyroCalibration(slot, completed)` → `ProfileEditorBackend`）。校正完了の窓は、実機で表示を確認した（OK）。
+
+## 確認31 A: 自動プロファイル「プログラムを追加」のメニュー（NG → 修正）
+- 症状: 4 つのメニュー項目（Steam・スタートメニュー・フォルダー・exe）を選んでも何も起きない。
+- 原因: ボタンの Click からコードで `ContextMenu.IsOpen = true` にしており、右クリックと違って PlacementTarget が入らず、メニューが DataContext を継承しない。`Command="{Binding …}"` が解決されなかった（RV3-5 の Click→Command 化で顕在化）。
+- 修正: `AutoProfiles.xaml.cs` で、開く前に PlacementTarget と DataContext を明示。`AutoProfilesAddMenuTests` を追加（修正前は 0 件、修正後は 4 件が結ばれる）。

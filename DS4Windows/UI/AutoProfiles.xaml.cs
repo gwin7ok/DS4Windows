@@ -187,7 +187,11 @@ namespace DS4Windows.UI
 
         private void AddProgramsBtn_Click(object sender, RoutedEventArgs e)
         {
-            addProgramsBtn.ContextMenu.IsOpen = true;
+            // コードから開くと PlacementTarget が入らず、メニューが DataContext を継承しない（右クリックと違う）ため、明示的に渡す
+            ContextMenu menu = addProgramsBtn.ContextMenu;
+            menu.PlacementTarget = addProgramsBtn;
+            menu.DataContext = DataContext;
+            menu.IsOpen = true;
             e.Handled = true;
         }
 
