@@ -53,12 +53,6 @@ namespace DS4Windows.Input.Devices
             public ushort min;
         };
 
-        private static byte[] commandBuffHeader =
-            { 0x0, 0x1, 0x40, 0x40, 0x0, 0x1, 0x40, 0x40 };
-
-        private const int SUBCOMMAND_HEADER_LEN = 8;
-        private const int SUBCOMMAND_BUFFER_LEN = 64;
-        private const int SUBCOMMAND_RESPONSE_TIMEOUT = 500;
         public const int IMU_XAXIS_IDX = 0, IMU_YAW_IDX = 0;
         public const int IMU_YAXIS_IDX = 1, IMU_PITCH_IDX = 1;
         public const int IMU_ZAXIS_IDX = 2, IMU_ROLL_IDX = 2;
@@ -72,19 +66,17 @@ namespace DS4Windows.Input.Devices
         private const ushort SAMPLE_STICK_MIN = 500;
         private const ushort SAMPLE_STICK_MID = SAMPLE_STICK_MAX - SAMPLE_STICK_MIN;
 
-        private StickAxisData leftStickXData;
-        private StickAxisData leftStickYData;
-        private StickAxisData rightStickXData;
-        private StickAxisData rightStickYData;
+        private readonly SwitchProCommandChannel _channel;
+        private readonly SwitchProCalibration _calibration = new SwitchProCalibration();
+        private readonly SwitchProSession _session;
 
         private const string BLUETOOTH_HID_GUID = "{00001124-0000-1000-8000-00805F9B34FB}";
 
-        private byte frameCount = 0;
-        public byte FrameCount { get => frameCount; set => frameCount = value; }
+        public byte FrameCount { get => _channel.FrameCount; set => _channel.FrameCount = value; }
 
-        private const int INPUT_REPORT_LEN = 362;
+        private const int INPUT_REPORT_LEN = SwitchProCommandChannel.InputReportLength;
         private const int OUTPUT_REPORT_LEN = 49;
-        private const int RUMBLE_REPORT_LEN = 64;
+        private const int RUMBLE_REPORT_LEN = SwitchProCommandChannel.RumbleReportLength;
         // Converts raw gyro input value to dps. Equal to (4588/65535)
         private const float GYRO_IN_DEG_SEC_FACTOR = 0.070f;
         private new const int WARN_INTERVAL_BT = 40;
@@ -98,28 +90,6 @@ namespace DS4Windows.Input.Devices
         public int InputReportLen { get => INPUT_REPORT_LEN; }
         public int OutputReportLen { get => OUTPUT_REPORT_LEN; }
         public int RumbleReportLen { get => RUMBLE_REPORT_LEN; }
-
-        private ushort[] leftStickCalib = new ushort[6];
-        private ushort leftStickOffsetX = 0;
-        private ushort leftStickOffsetY = 0;
-
-        private ushort[] rightStickCalib = new ushort[6];
-        private ushort rightStickOffsetX = 0;
-        private ushort rightStickOffsetY = 0;
-
-        //public ushort[] LeftStickCalib { get => leftStickCalib; }
-        //public ushort[] RightStickCalib { get => rightStickCalib; }
-
-        private short[] accelNeutral = new short[3];
-        private short[] accelSens = new short[3];
-        private double[] accelSensMulti = new double[3];
-        private double[] accelCoeff = new double[3];
-
-        private short[] gyroBias = new short[3];
-        private short[] gyroSens = new short[3];
-        private short[] gyroCalibOffsets = new short[3];
-        private double[] gyroSensMulti = new double[3];
-        private double[] gyroCoeff = new double[3];
 
         private double combLatency;
         public double CombLatency { get => combLatency; set => combLatency = value; }
@@ -145,20 +115,22 @@ namespace DS4Windows.Input.Devices
             string disName, VidPidFeatureSet featureSet = VidPidFeatureSet.DefaultDS4) :
             base(hidDevice, disName, featureSet)
         {
+            _channel = new SwitchProCommandChannel(hidDevice);
+            _session = new SwitchProSession(_channel, _calibration, hidDevice);
             runCalib = false;
             synced = true;
 
-            leftStickXData.max = SAMPLE_STICK_MAX; leftStickXData.min = SAMPLE_STICK_MIN;
-            leftStickXData.mid = SAMPLE_STICK_MID;
+            _calibration.LeftStickX.max = SAMPLE_STICK_MAX; _calibration.LeftStickX.min = SAMPLE_STICK_MIN;
+            _calibration.LeftStickX.mid = SAMPLE_STICK_MID;
 
-            leftStickYData.max = SAMPLE_STICK_MAX; leftStickYData.min = SAMPLE_STICK_MIN;
-            leftStickYData.mid = SAMPLE_STICK_MID;
+            _calibration.LeftStickY.max = SAMPLE_STICK_MAX; _calibration.LeftStickY.min = SAMPLE_STICK_MIN;
+            _calibration.LeftStickY.mid = SAMPLE_STICK_MID;
 
-            rightStickXData.max = SAMPLE_STICK_MAX; rightStickXData.min = SAMPLE_STICK_MIN;
-            rightStickXData.mid = SAMPLE_STICK_MID;
+            _calibration.RightStickX.max = SAMPLE_STICK_MAX; _calibration.RightStickX.min = SAMPLE_STICK_MIN;
+            _calibration.RightStickX.mid = SAMPLE_STICK_MID;
 
-            rightStickYData.max = SAMPLE_STICK_MAX; rightStickYData.min = SAMPLE_STICK_MIN;
-            rightStickYData.mid = SAMPLE_STICK_MID;
+            _calibration.RightStickY.max = SAMPLE_STICK_MAX; _calibration.RightStickY.min = SAMPLE_STICK_MIN;
+            _calibration.RightStickY.mid = SAMPLE_STICK_MID;
 
             warnInterval = WARN_INTERVAL_BT;
 
@@ -347,30 +319,17 @@ namespace DS4Windows.Input.Devices
 
                 reportParser.Parse(inputReportBuffer, cState);
 
-                int tempAxis;
                 stick_raw[0] = inputReportBuffer[6];
                 stick_raw[1] = inputReportBuffer[7];
                 stick_raw[2] = inputReportBuffer[8];
-
-                tempAxis = (stick_raw[0] | ((stick_raw[1] & 0x0F) << 8)) - leftStickOffsetX;
-                tempAxis = tempAxis > leftStickXData.max ? leftStickXData.max : (tempAxis < leftStickXData.min ? leftStickXData.min : tempAxis);
-                cState.LX = (byte)((tempAxis - leftStickXData.min) / (double)(leftStickXData.max - leftStickXData.min) * 255);
-
-                tempAxis = ((stick_raw[1] >> 4) | (stick_raw[2] << 4)) - leftStickOffsetY;
-                tempAxis = tempAxis > leftStickYData.max ? leftStickYData.max : (tempAxis < leftStickYData.min ? leftStickYData.min : tempAxis);
-                cState.LY = (byte)((((tempAxis - leftStickYData.min) / (double)(leftStickYData.max - leftStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
+                cState.LX = _calibration.ScaleLeftX(stick_raw[0] | ((stick_raw[1] & 0x0F) << 8));
+                cState.LY = _calibration.ScaleLeftY((stick_raw[1] >> 4) | (stick_raw[2] << 4));
 
                 stick_raw2[0] = inputReportBuffer[9];
                 stick_raw2[1] = inputReportBuffer[10];
                 stick_raw2[2] = inputReportBuffer[11];
-
-                tempAxis = (stick_raw2[0] | ((stick_raw2[1] & 0x0F) << 8)) - rightStickOffsetX;
-                tempAxis = tempAxis > rightStickXData.max ? rightStickXData.max : (tempAxis < rightStickXData.min ? rightStickXData.min : tempAxis);
-                cState.RX = (byte)((tempAxis - rightStickXData.min) / (double)(rightStickXData.max - rightStickXData.min) * 255);
-
-                tempAxis = ((stick_raw2[1] >> 4) | (stick_raw2[2] << 4)) - rightStickOffsetY;
-                tempAxis = tempAxis > rightStickYData.max ? rightStickYData.max : (tempAxis < rightStickYData.min ? rightStickYData.min : tempAxis);
-                cState.RY = (byte)((((tempAxis - rightStickYData.min) / (double)(rightStickYData.max - rightStickYData.min) - 0.5) * -1.0 + 0.5) * 255);
+                cState.RX = _calibration.ScaleRightX(stick_raw2[0] | ((stick_raw2[1] & 0x0F) << 8));
+                cState.RY = _calibration.ScaleRightY((stick_raw2[1] >> 4) | (stick_raw2[2] << 4));
 
                 short tempShort;
                 for (int i = 0; i < 3; i++)
@@ -397,9 +356,9 @@ namespace DS4Windows.Input.Devices
                 int accelZ = accel_raw[IMU_ZAXIS_IDX];
 
                 // Just use most recent sample for now
-                int gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - gyroBias[IMU_YAW_IDX] + gyroCalibOffsets[IMU_YAW_IDX]));
-                int gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - gyroBias[IMU_PITCH_IDX] - gyroCalibOffsets[IMU_PITCH_IDX]);
-                int gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - gyroBias[IMU_ROLL_IDX] - gyroCalibOffsets[IMU_ROLL_IDX]);
+                int gyroYaw = (short)(-1 * (gyro_out[6 + IMU_YAW_IDX] - _calibration.GyroBias[IMU_YAW_IDX] + _calibration.GyroCalibOffsets[IMU_YAW_IDX]));
+                int gyroPitch = (short)(gyro_out[6 + IMU_PITCH_IDX] - _calibration.GyroBias[IMU_PITCH_IDX] - _calibration.GyroCalibOffsets[IMU_PITCH_IDX]);
+                int gyroRoll = (short)(gyro_out[6 + IMU_ROLL_IDX] - _calibration.GyroBias[IMU_ROLL_IDX] - _calibration.GyroCalibOffsets[IMU_ROLL_IDX]);
 
                 // Need to populate the SixAxis object manually to work around conversions
                 SixAxis tempMotion = cState.Motion;
@@ -445,18 +404,22 @@ namespace DS4Windows.Input.Devices
             pState.Motion.Copy(cState.Motion);
         }
 
-        // Deprecated method. Leave a stub for now
-        private void RunBluetoothSetup()
+        /// <summary>通常の動作へ移す手順を実行し、完了したら接続済みにする（失敗の例外は呼び出し側が扱う）。</summary>
+        public void SetOperational()
         {
+            _session.SetOperational(conType, enableHomeLED, deviceSlotMask);
+            connectionOpened = true;
         }
 
-        private void EnableFastPollRate()
-        {
-            // Enable fatest poll rate
-            byte[] tempArray = new byte[] { 0x30 };
-            Subcommand(0x03, tempArray, 1, checkResponse: true);
-            //Thread.Sleep(1000);
-        }
+        public byte[]? Subcommand(byte subcommand, byte[] tmpBuffer, uint bufLen, bool checkResponse = false) =>
+            _channel.Subcommand(subcommand, tmpBuffer, bufLen, checkResponse);
+
+        public void SetInitRumble() => _channel.SetInitRumble();
+
+        public void PrepareRumbleData(byte[] buffer) =>
+            _channel.PrepareRumbleData(buffer, currentLeftAmpRatio, currentRightAmpRatio);
+
+        public void CalibrationData() => _session.ReadCalibration();
 
         public double currentLeftAmpRatio;
         public double currentRightAmpRatio;
