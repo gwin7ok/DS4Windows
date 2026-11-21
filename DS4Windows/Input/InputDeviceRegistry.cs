@@ -21,11 +21,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
-using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Input.Abstractions;
-using DS4Windows.Input.Hid;
 using DS4Windows.Core.Platform;
 
 namespace DS4Windows.Input

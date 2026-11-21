@@ -1,0 +1,632 @@
+{
+ "rubric": "v1",
+ "label": "RV18 完了",
+ "date": "2026-11-21",
+ "metrics": {
+  "files_total": 1015,
+  "lines_total": 102379,
+  "big_files": 29,
+  "xaml_command": 260,
+  "xaml_click": 29,
+  "xaml_other_events": 40,
+  "xaml_binding": 1065,
+  "xaml_xname": 686,
+  "codebehind_lines": 10310,
+  "viewmodel_lines": 15182,
+  "direct_assign": 237,
+  "handwire": 72,
+  "inpc_direct": 0,
+  "observable_object": 23,
+  "catch_total": 714,
+  "catch_empty": 225,
+  "catch_bare": 0,
+  "log_wrap": 0,
+  "async_void": 1,
+  "async_void_nonhandler": 0,
+  "result_wait": 21,
+  "thread_sleep": 13,
+  "arg_null_throw": 19,
+  "phase_lines": 218,
+  "phase_files": 109,
+  "todo": 44,
+  "iface_total": 192,
+  "iface_lonely": 75,
+  "unref_plain": 18,
+  "clone_struct_pct": 11.2,
+  "clone_exact_pct": 1.4,
+  "pub_fields_total": 623,
+  "backingstore_fields": 35,
+  "lower_camel": 0,
+  "timer_kind_count": 2,
+  "timer_alias_lines": 0,
+  "test_files": 655,
+  "test_facts": 2598,
+  "test_theories": 247,
+  "test_to_src_pct": 75,
+  "srctext_tests": 115,
+  "guard_named_tests": 119,
+  "arch_tests": 2,
+  "service_locator": 0,
+  "app_lines": 953,
+  "app_resolve": 9,
+  "static_mutable": 84,
+  "nonui_windows_using": 6,
+  "baseline_layer": 0,
+  "baseline_arity": 1,
+  "baseline_vm_wpf": 0,
+  "baseline_view_service": 0,
+  "baseline_type_rules": 0,
+  "core_upper_using": 1,
+  "docs_all": 519,
+  "docs_active": 109,
+  "cfg_nullable_enabled": true,
+  "cfg_gates_met": 3,
+  "test_framework_kinds": 1,
+  "bindingwindow_clone_pct": 11,
+  "appsettings_clone_pct": 45,
+  "commands_rate": 0.790273556231003,
+  "binding_rate": 0.6082238720731011,
+  "viewmodel_share": 0.5955593911815471,
+  "blocking_calls": 34
+ },
+ "viewpoints": [
+  {
+   "name": "Pure DI 化",
+   "score": 0.9045,
+   "grade": "A",
+   "indicators": [
+    {
+     "id": "di_sl",
+     "label": "Composition・App 以外の Service Locator 呼び出し",
+     "value": 0,
+     "score": 1.0,
+     "weight": 4,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "di_static",
+     "label": "static の可変フィールド・自動プロパティ",
+     "value": 84,
+     "score": 0.7733,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "di_app_resolve",
+     "label": "App.xaml.cs の ResolvePostHostService",
+     "value": 9,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "di_iface_lonely",
+     "label": "実装 1・偽物なしのインターフェース",
+     "value": 75,
+     "score": 0.5625,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "di_arity",
+     "label": "コンストラクターの引数が 12 を超える型",
+     "value": 1,
+     "score": 0.9,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "各層の役割分担",
+   "score": 0.9857,
+   "grade": "A",
+   "indicators": [
+    {
+     "id": "ly_arch",
+     "label": "層の依存の違反（LayerDependencyBaseline）",
+     "value": 0,
+     "score": 1.0,
+     "weight": 3,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "ly_type_rules",
+     "label": "V1・V2 の違反（2 つの基準ファイルの合計）",
+     "value": 0,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "ly_core_upper_using",
+     "label": "Core にある上位層の using のファイル",
+     "value": 1,
+     "score": 0.975,
+     "weight": 1,
+     "unit": "ファイル",
+     "kind": "metric"
+    },
+    {
+     "id": "ly_nonui_windows_using",
+     "label": "UI 以外の System.Windows* の using のファイル",
+     "value": 6,
+     "score": 0.925,
+     "weight": 1,
+     "unit": "ファイル",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "MVVM 原則遵守の割合",
+   "score": 0.8631,
+   "grade": "A−",
+   "indicators": [
+    {
+     "id": "mv_type_rules",
+     "label": "型の規則 V1・V2 の違反",
+     "value": 0,
+     "score": 1.0,
+     "weight": 4,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "mv_command_rate",
+     "label": "コマンド率（Command ÷ Command＋Click＋その他のイベント）",
+     "value": 0.790273556231003,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "",
+     "kind": "metric"
+    },
+    {
+     "id": "mv_binding_rate",
+     "label": "結びつけ率（{Binding} ÷ {Binding}＋x:Name）",
+     "value": 0.6082238720731011,
+     "score": 0.6164,
+     "weight": 1,
+     "unit": "",
+     "kind": "metric"
+    },
+    {
+     "id": "mv_viewmodel_share",
+     "label": "ViewModel の行の割合",
+     "value": 0.5955593911815471,
+     "score": 0.5587,
+     "weight": 1,
+     "unit": "",
+     "kind": "metric"
+    },
+    {
+     "id": "mv_handwire",
+     "label": "イベントの手結び（+= メソッド名;）",
+     "value": 72,
+     "score": 0.912,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "mv_direct_assign",
+     "label": "code-behind の部品への直接代入",
+     "value": 237,
+     "score": 0.5433,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "オブジェクト指向",
+   "score": 0.8795,
+   "grade": "A−",
+   "indicators": [
+    {
+     "id": "oo_skeleton",
+     "label": "入力機種が共通の骨組み（InputLoopDevice）の差し込み口だけで書かれている",
+     "value": true,
+     "score": 1.0,
+     "weight": 3,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "oo_backingstore",
+     "label": "BackingStore の公開フィールド",
+     "value": 35,
+     "score": 0.8846,
+     "weight": 2,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "oo_pub_fields",
+     "label": "公開の可変フィールドの合計",
+     "value": 623,
+     "score": 0.5386,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "oo_big_files",
+     "label": "500 行以上のファイル",
+     "value": 29,
+     "score": 0.7286,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "oo_lower_camel",
+     "label": "小文字始まりの公開メソッド",
+     "value": 0,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "共有部品化",
+   "score": 0.9613,
+   "grade": "A",
+   "indicators": [
+    {
+     "id": "sh_input_path",
+     "label": "入力機種を 1 行（AddInputDevice）で足せる",
+     "value": true,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "sh_output_path",
+     "label": "出力の種類をカートリッジで足せる",
+     "value": true,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "sh_settings_ui",
+     "label": "機種ごとの設定画面が ControllerSetting の定義から作られる",
+     "value": true,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "sh_install_flow",
+     "label": "外部コンポーネントの取得・導入の流れが 1 つの部品に集約されている",
+     "value": true,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "sh_clone_struct",
+     "label": "構造の重複（正規化した 14 行の窓）",
+     "value": 11.2,
+     "score": 0.752,
+     "weight": 1,
+     "unit": "%",
+     "kind": "metric"
+    },
+    {
+     "id": "sh_clone_exact",
+     "label": "同一の重複（10 行の窓）",
+     "value": 1.4,
+     "score": 0.9,
+     "weight": 1,
+     "unit": "%",
+     "kind": "metric"
+    },
+    {
+     "id": "sh_bindingwindow_clone",
+     "label": "BindingWindow.xaml.cs の構造の重複",
+     "value": 11,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "%",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "冗長処理",
+   "score": 0.8892,
+   "grade": "A−",
+   "indicators": [
+    {
+     "id": "rd_bare_catch",
+     "label": "理由のコメントがない空の catch",
+     "value": 0,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "rd_log_wrap",
+     "label": "ログ呼び出しを包む try/catch",
+     "value": 0,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "rd_arg_null",
+     "label": "?? throw new ArgumentNullException",
+     "value": 19,
+     "score": 0.981,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "rd_phase_lines",
+     "label": "Phase<数字> を含む行（経緯のコメント）",
+     "value": 218,
+     "score": 0.9593,
+     "weight": 1,
+     "unit": "行",
+     "kind": "metric"
+    },
+    {
+     "id": "rd_srctext_tests",
+     "label": "ソースの文字列を読むテスト",
+     "value": 115,
+     "score": 0.5,
+     "weight": 1,
+     "unit": "ファイル",
+     "kind": "metric"
+    },
+    {
+     "id": "rd_clone_exact",
+     "label": "同一の重複（10 行の窓）",
+     "value": 1.4,
+     "score": 0.9,
+     "weight": 3,
+     "unit": "%",
+     "kind": "metric"
+    },
+    {
+     "id": "rd_clone_struct",
+     "label": "構造の重複（正規化した 14 行の窓）",
+     "value": 11.2,
+     "score": 0.752,
+     "weight": 1,
+     "unit": "%",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "採用手段の統一",
+   "score": 0.9219,
+   "grade": "A",
+   "indicators": [
+    {
+     "id": "un_inpc",
+     "label": "INotifyPropertyChanged を直接実装する型",
+     "value": 0,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "un_timer_kinds",
+     "label": "タイマーの生成の種類",
+     "value": 2,
+     "score": 0.8,
+     "weight": 1,
+     "unit": "種類",
+     "kind": "metric"
+    },
+    {
+     "id": "un_timer_alias",
+     "label": "別名 using NonFormTimer の行",
+     "value": 0,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "行",
+     "kind": "metric"
+    },
+    {
+     "id": "un_lower_camel",
+     "label": "小文字始まりの公開メソッド",
+     "value": 0,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "un_async_void",
+     "label": "async void（イベントハンドラーの形以外）",
+     "value": 0,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "un_blocking",
+     "label": ".Result・.Wait()・Thread.Sleep",
+     "value": 34,
+     "score": 0.575,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "un_test_frameworks",
+     "label": "テストの枠の数",
+     "value": 1,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "種類",
+     "kind": "metric"
+    },
+    {
+     "id": "un_policy",
+     "label": "採用手段の方針が文書にある（規約・Log-Policy）",
+     "value": true,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "",
+     "kind": "check"
+    }
+   ]
+  },
+  {
+   "name": "メンテナンス性",
+   "score": 0.967,
+   "grade": "A",
+   "indicators": [
+    {
+     "id": "mt_test_ratio",
+     "label": "テストの行数 ÷ 本体の行数",
+     "value": 75,
+     "score": 1.0,
+     "weight": 3,
+     "unit": "%",
+     "kind": "metric"
+    },
+    {
+     "id": "mt_safety_net",
+     "label": "ArchUnitNET・黄金テスト・ラチェットが Debug ALL で通る",
+     "value": true,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "mt_big_files",
+     "label": "500 行以上のファイル",
+     "value": 29,
+     "score": 0.7286,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    },
+    {
+     "id": "mt_docs",
+     "label": "Archive の外の文書（docs-forDIMG の Markdown）",
+     "value": 109,
+     "score": 0.982,
+     "weight": 1,
+     "unit": "ファイル",
+     "kind": "metric"
+    },
+    {
+     "id": "mt_phase_lines",
+     "label": "Phase<数字> を含む行（経緯のコメント）",
+     "value": 218,
+     "score": 0.9593,
+     "weight": 1,
+     "unit": "行",
+     "kind": "metric"
+    },
+    {
+     "id": "mt_nullable",
+     "label": "Nullable を有効にした層の数（全 6 層。プロジェクト全体で有効なら 6）",
+     "value": 6,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "層",
+     "kind": "manual"
+    },
+    {
+     "id": "mt_gates",
+     "label": "品質の門（警告をエラー化・アナライザー有効・スタイル診断を無効化していない）の達成数",
+     "value": 3,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "/3",
+     "kind": "metric"
+    }
+   ]
+  },
+  {
+   "name": "機能追加の容易化",
+   "score": 0.9527,
+   "grade": "A",
+   "indicators": [
+    {
+     "id": "ad_input_path",
+     "label": "入力機種を 1 行（AddInputDevice）で足せる",
+     "value": true,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "ad_output_path",
+     "label": "出力の種類をカートリッジで足せる",
+     "value": true,
+     "score": 1.0,
+     "weight": 2,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "ad_settings_ui",
+     "label": "機種ごとの設定画面が ControllerSetting の定義から作られる",
+     "value": true,
+     "score": 1.0,
+     "weight": 1,
+     "unit": "",
+     "kind": "check"
+    },
+    {
+     "id": "ad_profile_files",
+     "label": "プロファイルの設定の項目を 1 つ足すときに触るファイル数",
+     "value": 2,
+     "score": 1.0,
+     "weight": 3,
+     "unit": "ファイル",
+     "kind": "manual"
+    },
+    {
+     "id": "ad_appsettings_dup",
+     "label": "AppSettingsService.cs の構造の重複",
+     "value": 45,
+     "score": 0.6429,
+     "weight": 1,
+     "unit": "%",
+     "kind": "metric"
+    },
+    {
+     "id": "ad_backingstore",
+     "label": "BackingStore の公開フィールド",
+     "value": 35,
+     "score": 0.8846,
+     "weight": 1,
+     "unit": "件",
+     "kind": "metric"
+    }
+   ]
+  }
+ ]
+}

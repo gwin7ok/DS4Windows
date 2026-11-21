@@ -1,7 +1,6 @@
 using DS4Windows.Processing.Macro;
 using Xunit;
 using DS4Windows.Core.Platform;
-using DS4Windows.Processing;
 
 namespace DS4WindowsTests
 {

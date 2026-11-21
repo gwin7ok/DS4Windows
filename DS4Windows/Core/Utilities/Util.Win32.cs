@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Threading.Tasks;
-using System.IO;
-using System.Collections.Generic;
 using DS4Windows.Core.Logging;
 
 namespace DS4Windows.Core.Utilities

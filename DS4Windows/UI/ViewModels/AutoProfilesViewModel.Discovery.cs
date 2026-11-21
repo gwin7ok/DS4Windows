@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
-using DS4Windows.Core.Profiles;
-using DS4Windows.Core.Settings;
-using DS4Windows.Processing.Abstractions;
-using CommunityToolkit.Mvvm.Input;
-using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {

@@ -1,21 +1,12 @@
-﻿using NLog;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media;
 using WPFLocalizeExtension.Engine;
-using DS4Windows.Composition;
 using DS4Windows.Composition.Startup;
-using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
-using DS4Windows.Core.Utilities;
-using DS4Windows.Processing.Abstractions;
-using DS4Windows.UI.Abstractions;
 using DS4Windows.UI;
 
 namespace DS4Windows

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DS4Windows.Core.Settings;
-using DS4Windows.Core.Utilities;
 using DS4Windows.UI.ViewModels;
 using Xunit;
 

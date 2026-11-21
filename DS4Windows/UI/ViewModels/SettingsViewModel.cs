@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;

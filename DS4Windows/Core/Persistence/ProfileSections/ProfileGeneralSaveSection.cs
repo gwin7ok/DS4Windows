@@ -1,7 +1,4 @@
-﻿using System.Xml;
-using DS4Windows.Core.Settings;
-
-namespace DS4Windows.Core.Persistence.ProfileSections
+﻿namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// 全般・ライトバー・振動・バッテリー・タッチパッドのジッター補正（touchToggle〜touchpadJitterCompensation）の保存。

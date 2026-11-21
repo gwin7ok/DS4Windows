@@ -1,9 +1,8 @@
 ﻿using Xunit;
-using System;
 
 namespace DS4WindowsTests
 {
-        public class ActionManagerSmokeTests
+    public class ActionManagerSmokeTests
     {
         [Fact]
         public void ActionDoneFlagRoundtrip()

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;

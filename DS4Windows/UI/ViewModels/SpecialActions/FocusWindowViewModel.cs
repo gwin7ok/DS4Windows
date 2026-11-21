@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.ViewModels.Util;

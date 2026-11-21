@@ -6,10 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Input;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services.Conditioning;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

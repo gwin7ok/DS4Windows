@@ -1,4 +1,3 @@
-using DS4Windows.Output.Udp;
 using DS4Windows.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using System.Reflection;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
-using DS4Windows.Input;
 using DS4Windows.Output.Services;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services.Devices;

@@ -2,7 +2,6 @@ using System;
 using DS4WindowsTests;
 using Xunit;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4Windows.Actions.Tests
 {

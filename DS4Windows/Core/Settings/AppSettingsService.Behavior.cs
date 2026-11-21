@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Logging;
-using DS4Windows.Core.Platform;
-using DS4Windows.Core.Utilities;
-
-namespace DS4Windows.Core.Settings
+﻿namespace DS4Windows.Core.Settings
 {
     /// <summary>通知・起動・動作の設定の窓口。</summary>
     public partial class AppSettingsService

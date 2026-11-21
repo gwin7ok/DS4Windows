@@ -15,7 +15,6 @@ using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
 using DS4Windows.UI.Services;
 using DS4Windows.Processing.Services.Conditioning;
-using DS4Windows.Processing.Services.Connection;
 using DS4Windows.Processing.Services.Devices;
 using DS4Windows.Processing.Services.Slots;
 

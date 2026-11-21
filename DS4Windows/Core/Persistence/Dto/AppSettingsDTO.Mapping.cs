@@ -1,7 +1,4 @@
-﻿using System;
-using System.Xml.Serialization;
-using System.Globalization;
-using DS4Windows.Core.Settings;
+﻿using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Core.Persistence.Dto;
 

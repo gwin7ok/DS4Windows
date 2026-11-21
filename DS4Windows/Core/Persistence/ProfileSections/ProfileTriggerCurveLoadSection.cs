@@ -1,5 +1,4 @@
-﻿using System;
-using System.Xml;
+﻿using System.Xml;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Model;
 

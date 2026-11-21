@@ -1,5 +1,4 @@
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Xbox;
 using System.Linq;

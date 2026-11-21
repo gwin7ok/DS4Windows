@@ -1,8 +1,6 @@
-using System;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
-using DS4Windows.Input;
 
 namespace DS4WindowsTests
 {

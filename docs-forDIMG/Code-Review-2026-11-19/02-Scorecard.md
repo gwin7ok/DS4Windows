@@ -228,3 +228,9 @@
 要点: `ExternalComponentInstaller`（導入の流れの集約。手入力の確認項目 `install_flow_unified` が いいえ→はい）、`PostHostServices`（`ResolvePostHostService` 23→9）。500 行以上のファイル 30→29（`WelcomeDialog`）。
 注意: 共有部品化の +11.2 点は、この観点の項目数が少なく、重み 1 の確認項目 1 つの変化が大きく出たため。部品としての質は、`ExternalComponentInstallerTests`（偽の HTTP・起動・時計。6 件）で固定している。
 挙動の差（意図したもの）: (1) FakerInput の導入の前に、FakerInput の古い一時ファイルも消す（従来は ViGEm のファイル名を消していた）、(2) 導入プログラムを起動できなかったとき（`Process.Start` が null）は、失敗を表示する（従来は終了を永久に待った）、(3) 画面を閉じたら、ダウンロードの途中でも取り消す（従来はダウンロードが続いた）。
+
+## RV18 完了時点（2026-11-21）
+
+等級の変化なし（全観点が ±0.1 点）。実施: 未使用の `using` を全層（本体・テスト 466 ファイル）から整理、`Mapping` の使われていないフィールド `_twoStageTrigger` を削除。
+`Mapping` の引数 15 は、見送り。理由: 引数のうち `curveStage`・`syntheticCommitter`・`controlActivityReader` は、`IMapping` の窓口（`SetCurveAndDeadzone`・`Commit`・`GetBoolMappingExternal`）が段へ転送するためのもの。減らすには、呼び出し元 5 か所を段へ直接つなぎ、`IMapping` から 3 メンバーを外す必要があり、`Mapping` を直接使うテスト約 30 ファイルと `IMapping` の偽物 3 つが変わる（RV12 の教訓: 呼び出しの広さ）。束ねる案（加工の流れの箱）は、各段が別々の場所から呼ばれるため成り立たない。
+未使用の `using` の整理の手順: `.editorconfig` に一時的に `[*.cs]` で `dotnet_diagnostic.IDE0005.severity = warning` を足し、`dotnet format style <csproj> --diagnostics IDE0005 --severity warn --no-restore` を本体とテストへ実行し、`.editorconfig` を元に戻す。

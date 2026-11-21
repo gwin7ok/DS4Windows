@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Text;
 using DS4Windows.Input.Devices;
 using Xunit;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Xunit;
@@ -8,10 +7,8 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Persistence.Dto;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.Output;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

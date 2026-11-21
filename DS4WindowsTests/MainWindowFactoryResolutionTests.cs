@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using DS4Windows.Composition;
 using DS4Windows.Core.Utilities;

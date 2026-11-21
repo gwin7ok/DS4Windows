@@ -1,9 +1,5 @@
 ﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.IO;
-using System.Runtime.InteropServices;
-using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Logging;
 
 namespace DS4Windows.UI.ViewModels
 {

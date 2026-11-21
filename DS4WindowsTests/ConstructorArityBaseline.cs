@@ -1,6 +1,4 @@
-﻿using DS4Windows.Processing.Services.Connection;
-
-namespace DS4WindowsTests
+﻿namespace DS4WindowsTests
 {
     /// <summary>
     /// コンストラクターの引数が 12 を超える型の許可リスト（"型の完全名|引数の数"。序数順）。

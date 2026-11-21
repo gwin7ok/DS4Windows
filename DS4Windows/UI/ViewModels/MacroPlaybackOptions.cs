@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
 using DS4Windows.Core.Settings;
 
 namespace DS4Windows.UI.ViewModels

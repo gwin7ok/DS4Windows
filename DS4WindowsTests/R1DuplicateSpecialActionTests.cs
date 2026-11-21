@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Xml;
 using Xunit;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Persistence;

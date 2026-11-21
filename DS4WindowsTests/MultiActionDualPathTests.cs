@@ -1,11 +1,9 @@
-using DS4Windows.Processing.Synthetic;
 using DS4Windows.Core.Model;
 using System;
 using System.Diagnostics;
 using System.Threading;
 using Xunit;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.Processing.Actions;
 
 namespace DS4WindowsTests

@@ -1,7 +1,6 @@
 using DS4Windows.Processing.Touchpad;
 using System;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using Xunit;
 
 namespace DS4WindowsTests

@@ -1,13 +1,9 @@
-using DS4Windows.Processing.Macro;
-using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DS4Windows.Composition;
 using Xunit;
-using DS4Windows.Processing.Services.Connection;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

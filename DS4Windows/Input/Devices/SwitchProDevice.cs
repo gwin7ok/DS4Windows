@@ -18,17 +18,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Hid;
-using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Parsers;
-using DS4Windows.Input.Reports;
 
 namespace DS4Windows.Input.Devices
 {

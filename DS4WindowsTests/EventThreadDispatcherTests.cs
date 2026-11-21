@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using Xunit;
 using DS4Windows.Processing.Services.Connection;

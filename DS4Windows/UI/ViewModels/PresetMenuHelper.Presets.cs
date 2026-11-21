@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using DS4Windows.Core.Abstractions;
+﻿using System.Collections.Generic;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using Xceed.Wpf.Toolkit;
-using DS4Windows.Core.Model;
-using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4Windows.UI

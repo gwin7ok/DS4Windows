@@ -2,11 +2,9 @@ using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Logging;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services.Conditioning;
 

@@ -7,7 +7,6 @@ using DS4Windows.Core.Platform;
 using DS4Windows.Core.Utilities;
 using DS4Windows.Output.Kbm;
 using DS4Windows.Output.Services;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests

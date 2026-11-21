@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
 
 namespace DS4Windows.Core.Platform
 {

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Xunit;
 using DS4Windows.Processing.Services.Devices;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

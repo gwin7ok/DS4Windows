@@ -1,13 +1,8 @@
-using DS4Windows.Processing.Synthetic;
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using Xunit;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
-using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {

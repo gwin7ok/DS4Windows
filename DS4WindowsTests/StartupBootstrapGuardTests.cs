@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -6,7 +5,6 @@ using Xunit.Abstractions;
 using DS4Windows.Composition;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {
