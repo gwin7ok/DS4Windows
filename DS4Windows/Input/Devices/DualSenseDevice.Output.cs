@@ -117,26 +117,7 @@ namespace DS4Windows.Input.Devices
                 }
                 */
 
-                if (change)
-                {
-                    //Console.WriteLine("DIRTY");
-                    outputDirty = true;
-                    if (rumbleSet)
-                    {
-                        standbySw.Restart();
-                    }
-                    else
-                    {
-                        standbySw.Reset();
-                    }
-
-                    //outReportBuffer.CopyTo(outputReport, 0);
-                }
-                else if (rumbleSet && standbySw.ElapsedMilliseconds >= 4000L)
-                {
-                    outputDirty = true;
-                    standbySw.Restart();
-                }
+                outputDirty |= HapticStandby.ShouldSend(standbySw, change, rumbleSet);
                 //bool res = hDevice.WriteOutputReportViaInterrupt(outputReport, READ_STREAM_TIMEOUT);
                 //Console.WriteLine("STAUTS: {0}", res);
             }
@@ -147,43 +128,10 @@ namespace DS4Windows.Input.Devices
 
                 change = Haptics.Current.dirty || !previousHapticState.Equals(Haptics.Current);
 
-                // Need to calculate and populate CRC32 data so controller will accept the report
-                uint calcCrc32 = 0;
-                if (change)
-                //if (outputPendCount >= 1 || change)
-                //if (!previousHapticState.Equals(Haptics.Current))
-                {
-                    //change = true;
-                    outputDirty = true;
+                outputDirty |= HapticStandby.ShouldSend(standbySw, change, rumbleSet);
 
-                    if (rumbleSet)
-                    {
-                        standbySw.Restart();
-                    }
-                    else
-                    {
-                        standbySw.Reset();
-                    }
-                }
-                else if (rumbleSet && standbySw.ElapsedMilliseconds >= 4000L)
-                {
-                    outputDirty = true;
-                    standbySw.Restart();
-                }
-
-                if (outputDirty)
-                {
-                    int crcOffset = 0;
-                    int crcpos = BT_OUTPUT_REPORT_LENGTH - 4;
-                    calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
-                    //calcCrc32 = ~Crc32Algorithm.CalculateBasicHash(ref calcCrc32, ref outputReport, 0, BT_OUTPUT_REPORT_LENGTH-4);
-                    calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref calcCrc32, ref outputReport, ref crcOffset, ref crcpos);
-                }
-
-                outputReport[74] = (byte)calcCrc32;
-                outputReport[75] = (byte)(calcCrc32 >> 8);
-                outputReport[76] = (byte)(calcCrc32 >> 16);
-                outputReport[77] = (byte)(calcCrc32 >> 24);
+                // コントローラーが受け付けるように、CRC32 を付ける（出力しないフレームは 0 のまま）
+                DualSenseOutputReportBuilder.ApplyBluetoothCrc(outputReport, outputBTCrc32Head, outputDirty);
 
                 /*fixed (byte* bytePrevBuff = outputReport, byteTmpBuff = outReportBuffer)
                 {
@@ -232,59 +180,13 @@ namespace DS4Windows.Input.Devices
             return result;
         }
 
-        private void CalculateDeviceSlotMask()
-        {
-            // Map 1-8 to a symmetrical LED array from a set of
-            // 5 LED lights
-            switch (deviceSlotNumber)
-            {
-                case 0:
-                    deviceSlotMask = 0x04;
-                    break;
-                case 1:
-                    deviceSlotMask = 0x02 | 0x08;
-                    break;
-                case 2:
-                    deviceSlotMask = 0x01 | 0x04 | 0x10;
-                    break;
-                case 3:
-                    deviceSlotMask = 0x01 | 0x02 | 0x08 | 0x10;
-                    break;
-                case 4:
-                    deviceSlotMask = 0x01 | 0x10;
-                    break;
-                case 5:
-                    deviceSlotMask = 0x02 | 0x04 | 0x08;
-                    break;
-                case 6:
-                    deviceSlotMask = 0x01 | 0x02 | 0x04 | 0x08 | 0x10;
-                    break;
-                case 7:
-                default:
-                    deviceSlotMask = 0x00;
-                    break;
-            }
-        }
+        private void CalculateDeviceSlotMask() => deviceSlotMask = DualSenseLedMasks.FromSlot(deviceSlotNumber);
 
         private void PrepareMuteLEDByte()
         {
             if (nativeOptionsStore != null)
             {
-                switch (nativeOptionsStore.MuteLedMode)
-                {
-                    case DualSenseControllerOptions.MuteLEDMode.Off:
-                        muteLEDByte = 0x00;
-                        break;
-                    case DualSenseControllerOptions.MuteLEDMode.On:
-                        muteLEDByte = 0x01;
-                        break;
-                    case DualSenseControllerOptions.MuteLEDMode.Pulse:
-                        muteLEDByte = 0x02;
-                        break;
-                    default:
-                        muteLEDByte = 0x00;
-                        break;
-                }
+                muteLEDByte = DualSenseLedMasks.MuteLed(nativeOptionsStore.MuteLedMode);
             }
         }
 
@@ -302,7 +204,7 @@ namespace DS4Windows.Input.Devices
                 }
                 else if (nativeOptionsStore.LedMode == DualSenseControllerOptions.LEDBarMode.BatteryPercentage)
                 {
-                    activePlayerLEDMask = DeviceBatteryLinearMask(battery);
+                    activePlayerLEDMask = DualSenseLedMasks.BatteryBar(battery);
                 }
             }
         }
@@ -328,25 +230,6 @@ namespace DS4Windows.Input.Devices
                 Haptics.Current.dirty = true;
                 PrepareOutReport();
             });
-        }
-
-        private byte DeviceBatteryLinearMask(int deviceBattery)
-        {
-            byte batteryMask;
-            if (deviceBattery >= 95)
-                batteryMask = 0x01 | 0x02 | 0x08 | 0x10;
-            else if (deviceBattery >= 70)
-                batteryMask = 0x01 | 0x02 | 0x08;
-            else if (deviceBattery >= 50)
-                batteryMask = 0x01 | 0x02;
-            else if (deviceBattery >= 20)
-                batteryMask = 0x01;
-            else if (deviceBattery >= 5)
-                batteryMask = 0x01 | 0x02 | 0x04;
-            else
-                batteryMask = 0x00;
-
-            return batteryMask;
         }
     }
 }
