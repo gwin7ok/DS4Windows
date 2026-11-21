@@ -278,3 +278,11 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 ## RV24 完了時点（2026-11-22）
 
 等級の変化なし（冗長処理 +0.1 点）。タッチパッドの時刻を `TimeProvider` 化し、Release 保持・タップ保持のテストを挙動へ。実機確認は `Device-Check-Checklist.md` の RV24。
+
+
+## RV25 完了時点（2026-11-22）
+
+等級の変化なし（冗長処理 +0.3 点、91.5%→91.8%。共有部品化 +0.1 点）。ソースの文字列を読むテストは 112→108 ファイル、`Phase<数字>` を含む行は 218→215。
+- 実施: 起動の順序を `AppStartupSequence`（`IAppStartupSteps`）・`ProfileStartupLoader` へ分け、切断の後始末（実機の型）とホバーの遅延（`HoverSelectDelay<T>`、時計の差し替え）を挙動のテストへ。負の確認（ホバーは取り消し処理を壊して 2 件失敗）済み。
+- 残る文字列走査: `StartupOrderGuardTests` の 1 件、`SlotLifecycleTests` の一部、`MouseTapClickHoldTests` の 3 件目、`DisconnectGuardTests` の購読順の 1 件、行数・URL の字句検査。
+- 実機確認は `Device-Check-Checklist.md` の RV25（後回し）。保存: `scorecard/RV25.json`。
