@@ -48,6 +48,7 @@
     <DockPanel x:Name="fullPanel"
                Margin="4">
         <StackPanel x:Name="extrasSidePanel"
+                    Visibility="{Binding DataContext.ShowMainPanels, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"
                     Width="160"
                     Orientation="Vertical"
                     DockPanel.Dock="Right">
@@ -155,6 +156,7 @@
             </GroupBox>
         </StackPanel>
         <DockPanel x:Name="mapBindingPanel"
+                   Visibility="{Binding DataContext.ShowMainPanels, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"
                    DockPanel.Dock="Top">
             <!-- ホバーの名前の表示が上の端のボタン（L2・R2）で図の外へはみ出すため、あとから描かれる下のタブより前に置く -->
             <DockPanel x:Name="bottomPanel"
@@ -162,6 +164,7 @@
                        DockPanel.Dock="Bottom"
                        Margin="0,4,0,0">
                 <StackPanel x:Name="modePanel"
+                            Visibility="{Binding DataContext.Layout.ShowModePanel, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"
                             Width="160"
                             DockPanel.Dock="Left"
                             Margin="8,0,0,0">
@@ -261,7 +264,7 @@
                                         HorizontalAlignment="Left">
                                 <Label x:Name="macroOnLb"
                                        Content="{lex:Loc BindingWin.MacroOn}"
-                                       Visibility="{Binding MacroLbShown, Converter={x:Static localConverters:BoolToVisibleHiddenConverter.Instance}}"/>
+                                       Visibility="{Binding DataContext.Layout.ShowMacroOnLabel, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1"
                                         HorizontalAlignment="Center">
@@ -271,6 +274,7 @@
                                            TextAlignment="Center"/>
                             </StackPanel>
                             <StackPanel x:Name="topOptsPanel"
+                                        Visibility="{Binding DataContext.Layout.ShowTopOptions, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"
                                         Orientation="Horizontal"
                                         Grid.Column="2"
                                         HorizontalAlignment="Right"
@@ -285,6 +289,7 @@
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
                                 <Button x:Name="recordMacroBtn"
+                                        Visibility="{Binding DataContext.Layout.ShowRecordMacro, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}"
                                         Content="{lex:Loc BindingWin.RecordAMacro}"
                                         Command="{Binding RecordMacroBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                             </StackPanel>

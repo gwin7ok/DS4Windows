@@ -19,25 +19,6 @@ namespace DS4WindowsTests
             _output = output;
         }
 
-        /// <summary>if (expose == ExposeMode.XXX) の { } の本文（波括弧の対応で切り出す）</summary>
-        private static string BranchBody(string source, string mode)
-        {
-            Match m = Regex.Match(source, @"if \(expose == ExposeMode\." + mode + @"\)\s*\{");
-            Assert.True(m.Success, mode + " の分岐が見つからない");
-
-            int depth = 1;
-            int i = m.Index + m.Length;
-            int start = i;
-            while (i < source.Length && depth > 0)
-            {
-                if (source[i] == '{') depth++;
-                else if (source[i] == '}') depth--;
-                i++;
-            }
-
-            return source.Substring(start, i - start - 1);
-        }
-
         [Fact]
         public void TheModes_AreSpecialAction_AndControl_Only()
         {
@@ -60,35 +41,28 @@ namespace DS4WindowsTests
         [Fact]
         public void TheControlMode_HidesRecordToggleAndScanCode_ButKeepsDefaultUnboundAndExtras()
         {
-            string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
-            if (source == null)
-            {
-                return;
-            }
-
-            string body = BranchBody(source, "Control");
-            Assert.Contains("recordMacroBtn.Visibility = Visibility.Collapsed", body);
-            Assert.Contains("topOptsPanel.Visibility = Visibility.Collapsed", body);
-            Assert.DoesNotContain("modePanel.Visibility = Visibility.Collapsed", body);
-            Assert.DoesNotContain("extrasSidePanel.Visibility = Visibility.Collapsed", body);
+            // 見える／隠れるの実測は BindingWindowPanelVisibilityTests。ここでは、モードごとの出し分けの定義を固定する
+            var layout = DS4Windows.UI.ViewModels.BindingWindowLayout.For(true);
+            Assert.True(layout.ShowModePanel);
+            Assert.False(layout.ShowRecordMacro);
+            Assert.False(layout.ShowTopOptions);
         }
 
         // SA のモードも Extras を出す（SA に保存先ができたため）。Default／Unbound・Record A Macro・Toggle／Scan Code は、引き続き隠す。
-        // 以前は「Extras も隠す」検査だった（TheSpecialActionMode_StillHidesDefaultUnboundExtrasAndRecord）
         [Fact]
         public void TheSpecialActionMode_ShowsExtras_AndStillHidesDefaultUnboundAndRecord()
         {
+            var layout = DS4Windows.UI.ViewModels.BindingWindowLayout.For(false);
+            Assert.False(layout.ShowModePanel);
+            Assert.False(layout.ShowRecordMacro);
+            Assert.False(layout.ShowTopOptions);
+
             string source = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
             if (source == null)
             {
                 return;
             }
 
-            string rest = BranchBody(source, "SpecialAction");
-            Assert.Contains("modePanel.Visibility = Visibility.Collapsed", rest);
-            Assert.Contains("recordMacroBtn.Visibility = Visibility.Collapsed", rest);
-            Assert.DoesNotContain("extrasSidePanel.Visibility = Visibility.Collapsed", rest);
-            Assert.Contains("topOptsPanel.Visibility = Visibility.Collapsed", rest);
             Assert.Matches(@"else if \(expose == ExposeMode\.SpecialAction\)\s*\{[^}]*extrasGB\.DataContext = bind;", source);
         }
 
