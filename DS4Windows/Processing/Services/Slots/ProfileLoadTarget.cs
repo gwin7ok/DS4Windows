@@ -73,11 +73,11 @@ namespace DS4Windows.Processing.Services.Slots
             }
 
             // Reset current flick stick progress from previous profile
-            _stickMotion.FlickMappingData[ind].Reset();
+            _stickMotion.Devices[ind].FlickMappingData.Reset();
 
             // Reset delta accel processors for sticks
-            _stickMotion.DeltaAccelProcessors[ind].LSProcessor.Reset();
-            _stickMotion.DeltaAccelProcessors[ind].RSProcessor.Reset();
+            _stickMotion.Devices[ind].DeltaAccelProcessors.LSProcessor.Reset();
+            _stickMotion.Devices[ind].DeltaAccelProcessors.RSProcessor.Reset();
 
             // Reset some elements of current Mouse instance
             _slots.TouchPads[ind]?.Reset();

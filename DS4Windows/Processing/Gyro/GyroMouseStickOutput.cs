@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
@@ -8,9 +10,75 @@ using DS4Windows.Processing.Touchpad;
 
 namespace DS4Windows.Processing.Gyro
 {
-    /// <summary>ジャイロのマウス・スティック出力。</summary>
-    public partial class GyroOutputProcessor
+    /// <summary>
+    /// ジャイロの出力モード MouseJoystick: ジャイロの動きを、スティックの値（<see cref="StickMotionState"/>）へ変える。
+    /// 平滑化のバッファーと、1 ユーロフィルターの対を持つ（このモードだけが使う状態）。
+    /// </summary>
+    internal sealed class GyroMouseStickOutput : IGyroModeOutput
     {
+        private const int SMOOTH_BUFFER_LEN = 3;
+        private readonly int deviceNum;
+        private readonly IProfileSettingsService _profileSettings;
+        private readonly StickMotionState _stickMotion;
+        private readonly OneEuroFilterPair filterPair = new OneEuroFilterPair();
+        private int[] xSmoothBuffer = new int[SMOOTH_BUFFER_LEN];
+        private int[] ySmoothBuffer = new int[SMOOTH_BUFFER_LEN];
+        private int smoothBufferTail = 0;
+
+        public GyroMouseStickOutput(int deviceNum, IProfileSettingsService profileSettings, StickMotionState stickMotion)
+        {
+            ArgumentNullException.ThrowIfNull(profileSettings);
+            ArgumentNullException.ThrowIfNull(stickMotion);
+            this.deviceNum = deviceNum;
+            _profileSettings = profileSettings;
+            _stickMotion = stickMotion;
+            filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = GyroMouseStickInfo.DEFAULT_MINCUTOFF;
+            filterPair.axis1Filter.Beta = filterPair.axis2Filter.Beta = GyroMouseStickInfo.DEFAULT_BETA;
+        }
+
+        public bool IsEnabled => true;
+
+        public void Process(SixAxisEventArgs arg, ControllerState state, bool shouldOutput)
+        {
+            // 入口で、X と Y の両方を中立へ戻す（動かさない枝や、軸が出力されない設定でも、前の値を残さない）
+            _stickMotion.Devices[deviceNum].GyroStickX = _stickMotion.Devices[deviceNum].GyroStickY = 128;
+            if (shouldOutput)
+                SixMouseStick(arg);
+            else
+                SixMouseReset(arg);
+        }
+
+        /// <summary>プロファイルの適用後の準備（マウススティックの設定の更新のイベントを、フィルターへ結ぶ）。</summary>
+        public void PostSetup()
+        {
+            GyroMouseStickInfo msinfo = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick;
+            msinfo.RemoveRefreshEvents();
+            msinfo.SetRefreshEvents(filterPair.axis1Filter);
+            msinfo.SetRefreshEvents(filterPair.axis2Filter);
+        }
+
+        /// <summary>切断・プロファイルの切り替えのときの後始末（フィルターの切り離し）。</summary>
+        public void Detach()
+        {
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.RemoveRefreshEvents();
+        }
+
+        public void ReplaceOneEuroFilterPair()
+        {
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.RemoveRefreshEvents();
+            // 新しい実体は作らず、フィルターの状態だけを初期化する
+            filterPair.axis1Filter.Reset();
+            filterPair.axis2Filter.Reset();
+        }
+
+        public void SetupLateOneEuroFilters()
+        {
+            filterPair.axis1Filter.MinCutoff = filterPair.axis2Filter.MinCutoff = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.MinCutoff;
+            filterPair.axis1Filter.Beta = filterPair.axis2Filter.Beta = _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.Beta;
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis1Filter);
+            _profileSettings.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis2Filter);
+        }
+
         private void SixMouseReset(SixAxisEventArgs args)
         {
             int iIndex = smoothBufferTail % SMOOTH_BUFFER_LEN;
@@ -197,7 +265,7 @@ namespace DS4Windows.Processing.Gyro
             bool outputX = msinfo.OutputHorizontal();
             bool outputY = msinfo.OutputVertical();
 
-            PostMapStickData tempMapStickData = _stickMotion.MapStickActionData[deviceNum];
+            PostMapStickData tempMapStickData = _stickMotion.Devices[deviceNum].MapStickActionData;
             if (outputX)
             {
                 if (msinfo.outputStick == GyroMouseStickInfo.OutputStick.LeftStick &&
@@ -213,7 +281,7 @@ namespace DS4Windows.Processing.Gyro
                     tempMapStickData.dirty = true;
                 }
 
-                _stickMotion.GyroStickX[deviceNum] = axisXOut;
+                _stickMotion.Devices[deviceNum].GyroStickX = axisXOut;
             }
 
             if (outputY)
@@ -231,7 +299,7 @@ namespace DS4Windows.Processing.Gyro
                     tempMapStickData.dirty = true;
                 }
 
-                _stickMotion.GyroStickY[deviceNum] = axisYOut;
+                _stickMotion.Devices[deviceNum].GyroStickY = axisYOut;
             }
         }
     }

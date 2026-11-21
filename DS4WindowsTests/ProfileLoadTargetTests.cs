@@ -74,11 +74,11 @@ namespace DS4WindowsTests
             var stick = TestHost.GetService<StickMotionState>();
             const int ind = 0;
 
-            stick.FlickMappingData[ind].flickProgress = 5.0;
-            stick.FlickMappingData[ind].flickSize = 7.0;
+            stick.Devices[ind].FlickMappingData.flickProgress = 5.0;
+            stick.Devices[ind].FlickMappingData.flickSize = 7.0;
             target.PreLoadReset(ind);
-            Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_PROGRESS, stick.FlickMappingData[ind].flickProgress);
-            Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_SIZE, stick.FlickMappingData[ind].flickSize);
+            Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_PROGRESS, stick.Devices[ind].FlickMappingData.flickProgress);
+            Assert.Equal(FlickStickMappingData.DEFAULT_FLICK_SIZE, stick.Devices[ind].FlickMappingData.flickSize);
 
         }
 
@@ -88,17 +88,17 @@ namespace DS4WindowsTests
             var target = TestHost.GetService<IProfileLoadTarget>();
             var stick = TestHost.GetService<StickMotionState>();
             int ind = ControllerLimits.TestProfileIndex;
-            if (ind >= stick.FlickMappingData.Length) { target.PreLoadReset(ind); return; }   // 配列の外なら、例外にならないこと自体が検査
+            if (ind >= stick.Devices.Length) { target.PreLoadReset(ind); return; }   // 配列の外なら、例外にならないこと自体が検査
 
-            stick.FlickMappingData[ind].flickProgress = 5.0;
+            stick.Devices[ind].FlickMappingData.flickProgress = 5.0;
             try
             {
                 target.PreLoadReset(ind);
-                Assert.Equal(5.0, stick.FlickMappingData[ind].flickProgress);
+                Assert.Equal(5.0, stick.Devices[ind].FlickMappingData.flickProgress);
             }
             finally
             {
-                stick.FlickMappingData[ind].Reset();
+                stick.Devices[ind].FlickMappingData.Reset();
             }
         }
 

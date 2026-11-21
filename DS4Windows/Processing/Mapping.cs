@@ -57,13 +57,7 @@ namespace DS4Windows.Processing
         private readonly SyntheticState[] deviceState;
         // 旧 macroControl／macroTaskQueue（MacroRuntimeState の配列の複製）は、マクロの再生の部品（MacroStepExecutor／MacroPlayback）と
         // MacroRuntimeState.ApplyHeldControls へ移したため、Mapping は持たない（_macroRuntime を直接使う）。
-        private readonly byte[] gyroStickX;
-        private readonly byte[] gyroStickY;
-        private readonly PostMapStickData[] mapStickActionData;
-        private readonly FlickStickMappingData[] flickMappingData;
-        private readonly TwoStageTriggerMappingData[] l2TwoStageMappingData;
-        private readonly TwoStageTriggerMappingData[] r2TwoStageMappingData;
-        private readonly DeltaSettingsProcessorGroup[] deltaAccelProcessors;
+        private readonly DeviceStickMotion[] _motions;   // デバイスごとのスティック・ジャイロ・トリガーの処理状態（StickMotionState の要素。差し替わらない）
 
         // SpecialAction名ごとのエラーログ抑制用（1プロファイル切り替えごとに1回だけ）
         // private static HashSet<string> loggedInvalidActions = new HashSet<string>();
@@ -136,7 +130,7 @@ namespace DS4Windows.Processing
             ArgumentNullException.ThrowIfNull(twoStageTrigger);
             _twoStageTrigger = twoStageTrigger;
 
-            _mouseSampler = new ButtonMouseSampler(profileSettings, slots, mouseConversion, stickMotion.DeltaAccelProcessors);
+            _mouseSampler = new ButtonMouseSampler(profileSettings, slots, mouseConversion, stickMotion.Devices);
             _triggerInputs = new DS4Windows.Processing.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
             _frameOutputs = new DS4Windows.Processing.Actions.FrameOutput[ControllerLimits.MaxControllerCount];
             for (int device = 0; device < _triggerInputs.Length; device++)
@@ -152,16 +146,9 @@ namespace DS4Windows.Processing
 
             syncStateLock = syntheticInput.SyncStateLock;
             deviceState = syntheticInput.DeviceState;
-            gyroStickX = stickMotion.GyroStickX;
-            gyroStickY = stickMotion.GyroStickY;
-            mapStickActionData = stickMotion.MapStickActionData;
-            flickMappingData = stickMotion.FlickMappingData;
-            l2TwoStageMappingData = stickMotion.L2TwoStageMappingData;
-            r2TwoStageMappingData = stickMotion.R2TwoStageMappingData;
-            deltaAccelProcessors = stickMotion.DeltaAccelProcessors;
+            _motions = stickMotion.Devices;
             for (int i = 0; i < _mapFrames.Length; i++) _mapFrames[i] = new MapFrame();
-            _controlFrame = new ControlFrameProcessor(slots, triggerEngine, mouseConversion, twoStageTrigger, stickMotion.DeltaAccelProcessors,
-                stickMotion.FlickMappingData, _triggerInputs, _frameOutputs);
+            _controlFrame = new ControlFrameProcessor(slots, triggerEngine, mouseConversion, twoStageTrigger, stickMotion.Devices, _triggerInputs, _frameOutputs);
             _specialActions = new SpecialActionFrameRunner(profileActionProvider, triggerEngine, _triggerInputs, _frameOutputs);
         }
 

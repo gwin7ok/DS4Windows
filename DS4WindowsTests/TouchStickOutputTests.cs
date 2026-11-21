@@ -28,8 +28,8 @@ namespace DS4WindowsTests
         {
             var (output, sticks, _) = Create();
             output.Apply(0, 0, 0.004);
-            Assert.False(sticks.MapStickActionData[Slot].dirty);
-            Assert.Equal(128, sticks.MapStickActionData[Slot].LX);
+            Assert.False(sticks.Devices[Slot].MapStickActionData.dirty);
+            Assert.Equal(128, sticks.Devices[Slot].MapStickActionData.LX);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace DS4WindowsTests
         {
             var (output, sticks, info) = Create();
             output.Apply(info.maxZone, 0, 0.004);
-            PostMapStickData d = sticks.MapStickActionData[Slot];
+            PostMapStickData d = sticks.Devices[Slot].MapStickActionData;
             Assert.True(d.dirty);
             Assert.True(d.LX > 128, $"LX = {d.LX}");
             Assert.Equal(128, d.RX);
@@ -48,7 +48,7 @@ namespace DS4WindowsTests
         {
             var (output, sticks, info) = Create();
             output.Apply(-info.maxZone, 0, 0.004);
-            Assert.True(sticks.MapStickActionData[Slot].LX < 128);
+            Assert.True(sticks.Devices[Slot].MapStickActionData.LX < 128);
         }
 
         [Fact]
@@ -56,9 +56,9 @@ namespace DS4WindowsTests
         {
             var (output, sticks, info) = Create();
             output.Apply(info.maxZone, 0, 0.004);
-            byte strong = sticks.MapStickActionData[Slot].LX;
+            byte strong = sticks.Devices[Slot].MapStickActionData.LX;
             output.Apply(info.maxZone / 4, 0, 0.004);
-            Assert.Equal(strong, sticks.MapStickActionData[Slot].LX);
+            Assert.Equal(strong, sticks.Devices[Slot].MapStickActionData.LX);
         }
     }
 }

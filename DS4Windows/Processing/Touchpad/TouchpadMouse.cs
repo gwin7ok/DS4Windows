@@ -32,10 +32,9 @@ namespace DS4Windows.Processing.Touchpad
 {
     public partial class TouchpadMouse : ITouchPadGyroToggles
     {
-        protected Touch firstTouch;
-        protected Touch? secondTouch;
+        private Touch firstTouch;
         private ControllerState s = new ControllerState();
-        protected int deviceNum;
+        private int deviceNum;
         private InputDeviceCore? dev = null;
         private readonly MouseCursor cursor;
         private readonly MouseWheel wheel;
@@ -47,22 +46,15 @@ namespace DS4Windows.Processing.Touchpad
         private readonly StickMotionState _stickMotion;
         private readonly SyntheticInputState _syntheticInput;
         private readonly TapClickDetector _tap;
-        public bool swipeLeft, swipeRight, swipeUp, swipeDown;
-        public bool priorSwipeLeft, priorSwipeRight, priorSwipeUp, priorSwipeDown;
-        public byte swipeLeftB, swipeRightB, swipeUpB, swipeDownB, swipedB;
-        public byte priorSwipeLeftB, priorSwipeRightB, priorSwipeUpB, priorSwipeDownB, priorSwipedB;
-        public bool slideleft, slideright;
-        public bool priorSlideLeft, priorSlideright;
+        /// <summary>スワイプ・スライドと、前回のタッチ領域の状態（読み取りは外へ公開。書き込みはこの型だけ）。</summary>
+        public TouchpadGestureState Gestures { get; } = new TouchpadGestureState();
         // touch area stuff
         public bool leftDown => _buttons.LeftDown;
         public bool rightDown => _buttons.RightDown;
         public bool upperDown => _buttons.UpperDown;
         public bool multiDown => _buttons.MultiDown;
-        public bool priorLeftDown, priorRightDown, priorUpperDown, priorMultiDown;
         private bool touchStarted = false;
         private bool touchEnded = false;
-        protected DS4Controls pushed = DS4Controls.None;
-        protected Click clicked = Click.None;
         public int CursorGyroDead { get => cursor.GyroCursorDeadZone; set => cursor.GyroCursorDeadZone = value; }
 
         private readonly TouchMouseTrackball _trackball = new TouchMouseTrackball();
@@ -160,12 +152,12 @@ namespace DS4Windows.Processing.Touchpad
         int previousTouchDX = 0;
         int previousTouchDY = 0;
 
-        public virtual void SixaxisMoved(DS4SixAxis sender, SixAxisEventArgs arg)
+        public void SixaxisMoved(DS4SixAxis sender, SixAxisEventArgs arg)
         {
             _gyro.SixaxisMoved(arg);
         }
 
-        public bool IsGyroTriggerActive(GyroOutMode mode) => _gyro.IsTriggerActive(mode);
+        public bool IsGyroTriggerActive(GyroOutMode mode, ControllerState state) => _gyro.IsTriggerActive(mode, state);
 
         public void ReplaceOneEuroFilterPair() => _gyro.ReplaceOneEuroFilterPair();
 
@@ -253,7 +245,7 @@ namespace DS4Windows.Processing.Touchpad
                 }
         }
 
-        public virtual void TouchUnchanged(DS4Touchpad sender, EventArgs unused)
+        public void TouchUnchanged(DS4Touchpad sender, EventArgs unused)
         {
             //Trace.WriteLine("TOUCHES UNCHANGED");
 
@@ -397,10 +389,9 @@ namespace DS4Windows.Processing.Touchpad
             }
         }
 
-        public virtual void TouchButtonUp(DS4Touchpad sender, TouchpadEventArgs arg)
+        public void TouchButtonUp(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
-            pushed = DS4Controls.None;
             _buttons.ClearDownFlagsKeepCandidate();
             _buttons.WasTouchButtonClicked = true;
 
@@ -418,7 +409,7 @@ namespace DS4Windows.Processing.Touchpad
             if (AppLogger.IsTraceEnabled) AppLogger.LogTrace($"[TOUCHBTN] device={deviceNum} up mode={touchButtonMode} touches={arg.Touches?.Length} active={arg.TouchActive} pressed={arg.TouchButtonPressed} checked={checkedOnUp} L={leftDown} R={rightDown} U={upperDown} M={multiDown}");
         }
 
-        public virtual void TouchButtonDown(DS4Touchpad sender, TouchpadEventArgs arg)
+        public void TouchButtonDown(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             if (arg.Touches != null &&
@@ -442,15 +433,7 @@ namespace DS4Windows.Processing.Touchpad
 
         public void PopulatePriorButtonStates()
         {
-            priorUpperDown = upperDown;
-            priorLeftDown = leftDown;
-            priorRightDown = rightDown;
-            priorMultiDown = multiDown;
-
-            priorSwipeLeft = swipeLeft; priorSwipeRight = swipeRight;
-            priorSwipeUp = swipeUp; priorSwipeDown = swipeDown;
-            priorSwipeLeftB = swipeLeftB; priorSwipeRightB = swipeRightB; priorSwipeUpB = swipeUpB;
-            priorSwipeDownB = swipeDownB; priorSwipedB = swipedB;
+            Gestures.SavePrior(upperDown, leftDown, rightDown, multiDown);
         }
 
         public ControllerState GetDS4State()

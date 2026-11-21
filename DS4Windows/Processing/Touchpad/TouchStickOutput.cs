@@ -304,7 +304,7 @@ namespace DS4Windows.Processing.Touchpad
 
             //Mapping.touchStickX[deviceNum] = axisXOut;
             //Mapping.touchStickY[deviceNum] = axisYOut;
-            PostMapStickData tempMapStickData = _stickMotion.MapStickActionData[deviceNum];
+            PostMapStickData tempMapStickData = _stickMotion.Devices[deviceNum].MapStickActionData;
             if (outputX)
             {
                 if (msinfo.outputStick == TouchMouseStickInfo.OutputStick.LeftStick &&

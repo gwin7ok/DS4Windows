@@ -81,10 +81,10 @@ namespace DS4Windows.Processing.Services.Slots
             {
                 switch (control)
                 {
-                    case DS4Controls.SwipeUp: result = (tp != null && tp.swipeUp); break;
-                    case DS4Controls.SwipeDown: result = (tp != null && tp.swipeDown); break;
-                    case DS4Controls.SwipeLeft: result = (tp != null && tp.swipeLeft); break;
-                    case DS4Controls.SwipeRight: result = (tp != null && tp.swipeRight); break;
+                    case DS4Controls.SwipeUp: result = (tp != null && tp.Gestures.SwipeUp); break;
+                    case DS4Controls.SwipeDown: result = (tp != null && tp.Gestures.SwipeDown); break;
+                    case DS4Controls.SwipeLeft: result = (tp != null && tp.Gestures.SwipeLeft); break;
+                    case DS4Controls.SwipeRight: result = (tp != null && tp.Gestures.SwipeRight); break;
                     default: break;
                 }
             }

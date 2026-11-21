@@ -36,7 +36,7 @@ namespace DS4WindowsTests
             public Rig()
             {
                 var motion = new StickMotionState();
-                Data = motion.FlickMappingData[Device];
+                Data = motion.Devices[Device].FlickMappingData;
             }
 
             public FlickStickMappingData Data { get; }

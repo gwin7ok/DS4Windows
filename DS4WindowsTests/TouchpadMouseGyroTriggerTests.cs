@@ -55,9 +55,8 @@ namespace DS4WindowsTests
             return result;
         }
 
-        // 判定が読むボタンの状態は、ジャイロの出力の部品（TouchpadMouse の private フィールド）が持つ
-        private static GyroOutputProcessor GyroState(TouchpadMouse mouse) =>
-            (GyroOutputProcessor)typeof(TouchpadMouse).GetField("_gyro", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(mouse);
+        // 判定へ渡すボタンの状態（Create が作る。xUnit の並列実行は無効）
+        private static ControllerState _state = new ControllerState();
 
         private static (TouchpadMouse mouse, IProfileSettingsService settings) Create()
         {
@@ -71,7 +70,7 @@ namespace DS4WindowsTests
             mouse.ToggleGyroControls = false;
 
             var state = new ControllerState { Cross = true, L1 = true, DpadUp = true };
-            GyroState(mouse).State = state;
+            _state = state;
             return (mouse, settings);
         }
 
@@ -99,7 +98,7 @@ namespace DS4WindowsTests
                 foreach (bool andCond in new[] { false, true })
                 {
                     SetTriggers(settings, mode, pattern, andCond);
-                    Assert.True(OldDecision(pattern, andCond) == mouse.IsGyroTriggerActive(mode),
+                    Assert.True(OldDecision(pattern, andCond) == mouse.IsGyroTriggerActive(mode, _state),
                         $"mode={mode} triggers=\"{pattern}\" and={andCond}");
                 }
             }
@@ -111,9 +110,9 @@ namespace DS4WindowsTests
             var (mouse, settings) = Create();
 
             SetTriggers(settings, GyroOutMode.Mouse, "5", false);
-            Assert.False(mouse.IsGyroTriggerActive(GyroOutMode.Mouse));
+            Assert.False(mouse.IsGyroTriggerActive(GyroOutMode.Mouse, _state));
             SetTriggers(settings, GyroOutMode.Mouse, "4", false);
-            Assert.True(mouse.IsGyroTriggerActive(GyroOutMode.Mouse));
+            Assert.True(mouse.IsGyroTriggerActive(GyroOutMode.Mouse, _state));
         }
 
         [Fact]
@@ -122,9 +121,9 @@ namespace DS4WindowsTests
             var (mouse, settings) = Create();
             SetTriggers(settings, GyroOutMode.Mouse, "5,4,0", false);
 
-            for (int i = 0; i < 100; i++) mouse.IsGyroTriggerActive(GyroOutMode.Mouse);
+            for (int i = 0; i < 100; i++) mouse.IsGyroTriggerActive(GyroOutMode.Mouse, _state);
             long before = GC.GetAllocatedBytesForCurrentThread();
-            for (int i = 0; i < 5000; i++) mouse.IsGyroTriggerActive(GyroOutMode.Mouse);
+            for (int i = 0; i < 5000; i++) mouse.IsGyroTriggerActive(GyroOutMode.Mouse, _state);
             long perCall = (GC.GetAllocatedBytesForCurrentThread() - before) / 5000;
 
             Assert.True(perCall == 0, $"1 回あたり {perCall} バイト");

@@ -53,10 +53,10 @@ namespace DS4Windows.Processing
             // Process L2／R2。L2 → R2 の順は変えない
             _controlFrame.ProcessTrigger(frame,
                 controlSetGroup.L2, controlSetGroup.L2FullPull, DS4Controls.L2, DS4Controls.L2FullPull,
-                cState.L2, cState.L2Raw, profileSettings.ForSlot(device).Triggers.L2Output, l2TwoStageMappingData[device]);
+                cState.L2, cState.L2Raw, profileSettings.ForSlot(device).Triggers.L2Output, _motions[device].L2TwoStageMappingData);
             _controlFrame.ProcessTrigger(frame,
                 controlSetGroup.R2, controlSetGroup.R2FullPull, DS4Controls.R2, DS4Controls.R2FullPull,
-                cState.R2, cState.R2Raw, profileSettings.ForSlot(device).Triggers.R2Output, r2TwoStageMappingData[device]);
+                cState.R2, cState.R2Raw, profileSettings.ForSlot(device).Triggers.R2Output, _motions[device].R2TwoStageMappingData);
 
             // Process Standard buttons
             for (var settingEnum = controlSetGroup.ControlButtons.GetEnumerator(); settingEnum.MoveNext();)
@@ -77,7 +77,7 @@ namespace DS4Windows.Processing
             // マクロが押しているゲームパッドのボタン等を出力へ重ねる処理は、MacroRuntimeState.ApplyHeldControls へ移した（デバイスごと。ユーザー判断 Q2）
             _macroRuntime.ApplyHeldControls(device, MappedState);
 
-            PostMapStickData mapStickData = mapStickActionData[device];
+            PostMapStickData mapStickData = _motions[device].MapStickActionData;
             if (mapStickData.dirty)
             {
                 if (mapStickData.LX != 128 &&
@@ -130,8 +130,8 @@ namespace DS4Windows.Processing
                 if (msinfo.outputStick != GyroMouseStickInfo.OutputStick.None)
                 {
                     // X／Y の合成（約 55 行）は GyroMouseStickBlender へ移した
-                    _mouseConversion.BlendGyroMouseStick(msinfo, gyroStickX[device], gyroStickY[device],
-                        MappedState, mapStickActionData[device]);
+                    _mouseConversion.BlendGyroMouseStick(msinfo, _motions[device].GyroStickX, _motions[device].GyroStickY,
+                        MappedState, _motions[device].MapStickActionData);
                 }
             }
         }
