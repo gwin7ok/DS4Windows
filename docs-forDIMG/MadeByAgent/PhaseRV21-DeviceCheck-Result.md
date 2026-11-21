@@ -95,3 +95,4 @@ NG のときの「疑い先」は、変更した RV。原因の調査は `git lo
 - 症状: 4 つのメニュー項目（Steam・スタートメニュー・フォルダー・exe）を選んでも何も起きない。
 - 原因: ボタンの Click からコードで `ContextMenu.IsOpen = true` にしており、右クリックと違って PlacementTarget が入らず、メニューが DataContext を継承しない。`Command="{Binding …}"` が解決されなかった（RV3-5 の Click→Command 化で顕在化）。
 - 修正: `AutoProfiles.xaml.cs` で、開く前に PlacementTarget と DataContext を明示。`AutoProfilesAddMenuTests` を追加（修正前は 0 件、修正後は 4 件が結ばれる）。
+- 再確認（修正後）: A OK（4 項目とも動いた）。
