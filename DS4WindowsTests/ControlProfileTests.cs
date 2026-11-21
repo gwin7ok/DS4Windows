@@ -437,7 +437,7 @@ namespace DS4WindowsTests
             Assert.True(sa >= 0 && controls > sa, "Controls の切り替え先の更新は、SA の更新のあとであること");
             Assert.Equal(1, names.Count(n => n == "RefreshProfileSwitchTargets"));
             Assert.Equal(1, names.Count(n => n == "ReplaceControlProfileSwitchTarget"));
-            Assert.Equal(new object?[] { "Old", "New" }, recorder.ArgsOf("ReplaceControlProfileSwitchTarget").Single());
+            Assert.Equal(new object[] { "Old", "New" }, recorder.ArgsOf("ReplaceControlProfileSwitchTarget").Single());
         }
 
         [Fact]
