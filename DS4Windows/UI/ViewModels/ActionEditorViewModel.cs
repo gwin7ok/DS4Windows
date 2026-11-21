@@ -40,7 +40,18 @@ namespace DS4Windows.UI.ViewModels
 
         public int DeviceNum { get => deviceNum; }
         /// <summary>種別の一覧の選択位置。一覧と、その下の設定の部品（タブ）が、同じ値に結ぶため、変更を通知する。</summary>
-        public int ActionTypeIndex { get => actionTypeIndex; set => SetProperty(ref actionTypeIndex, value); }
+        public int ActionTypeIndex
+        {
+            get => actionTypeIndex;
+            set
+            {
+                if (SetProperty(ref actionTypeIndex, value))
+                    OnPropertyChanged(nameof(CanSave));
+            }
+        }
+
+        /// <summary>種別を選んでいるときだけ保存できる（0 以下は未選択）。</summary>
+        public bool CanSave => ActionTypeIndex > 0;
 
         /// <summary>名前。編集できない対象（Controls のモード）では、書き込みを無視する。</summary>
         public string? ActionName

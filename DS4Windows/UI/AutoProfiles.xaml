@@ -23,7 +23,18 @@
                         <CollectionViewSource x:Key="profileCollection" Source="{Binding ProfileList.ProfileListCol,Mode=OneWay}" />
                     </StackPanel.Resources>
 
-                    <StackPanel x:Name="editControlsPanel" IsEnabled="False">
+                    <StackPanel x:Name="editControlsPanel">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="IsEnabled" Value="True" />
+                                <Style.Triggers>
+                                    <!-- 選択中の項目（ProgramItem）がない間は操作できない。項目でない DataContext でも、Filename が引けず null になる -->
+                                    <DataTrigger Binding="{Binding Filename, FallbackValue={x:Null}}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="30">
                             <Button x:Name="removeAutoBtn" Content="{lex:Loc Remove}" Height="20" Padding="1" Width="80"
                         IsEnabled="{Binding Exists}" Command="{Binding DataContext.RemoveAutoCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />

@@ -126,15 +126,6 @@ namespace DS4Windows.UI
 
         private void ActionTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (specialActVM.ActionTypeIndex <= 0)
-            {
-                saveBtn.IsEnabled = false;
-            }
-            else
-            {
-                saveBtn.IsEnabled = true;
-            }
-
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)

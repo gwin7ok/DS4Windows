@@ -61,7 +61,6 @@ namespace DS4Windows.UI
             InitializeComponent();
             ArgumentNullException.ThrowIfNull(viewModel);
             recordBoxVM = viewModel;
-            extraConPanel.Visibility = Visibility.Hidden;
             // Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）
             playbackPanel.ShowScanCode = showscan;
             // SA から開くときは、Execute Mode／Scan Code を出さない（SA の Macro タブで設定する。記録専用の画面にする）

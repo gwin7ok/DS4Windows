@@ -171,12 +171,10 @@ namespace DS4Windows.UI
                 sender.LoadSelectedIndexes(item);
 
                 editControlsPanel.DataContext = item;
-                editControlsPanel.IsEnabled = true;
             }
             else
             {
                 editControlsPanel.DataContext = null;
-                editControlsPanel.IsEnabled = false;
 
                 foreach (ComboBox profileCombo in new[] { cont1AutoProf, cont2AutoProf, cont3AutoProf, cont4AutoProf, cont5AutoProf, cont6AutoProf, cont7AutoProf, cont8AutoProf })
                 {
