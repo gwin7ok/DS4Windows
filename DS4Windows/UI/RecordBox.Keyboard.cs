@@ -28,11 +28,10 @@ namespace DS4Windows.UI
                     recordBoxVM.AppendIndex = recordBoxVM.MacroStepIndex;
                 }
 
-                // 記録中は、4th/5th Mouse Button と Add Rumble/Change Lightbar Color の 4 つを同じ条件で表示する。
+                // 記録中は、Add Rumble/Change Lightbar Color の 2 つを表示する（マウスのボタンは、実際の押下がそのまま記録される）。
                 // 2026-09-26（ユーザー決定）: 以前は Add Rumble/Change Lightbar Color だけ Record Delays にチェックがある
                 // ときに限って表示していたが、その制限を撤廃した。Record Delays がオフの場合、開始と終了のステップの間に
                 // Wait が入らないため、必要に応じて記録後に Insert Wait やダブルクリックで待ち時間を調整する
-                mouseButtonsPanel.Visibility = Visibility.Visible;
                 extraConPanel.Visibility = Visibility.Visible;
 
                 ds4.Start();
@@ -48,18 +47,9 @@ namespace DS4Windows.UI
                 StopMouseRecording();
                 ds4.Stop();
                 recordBtn.Content = "Record";
-                mouseButtonsPanel.Visibility = Visibility.Hidden;
                 extraConPanel.Visibility = Visibility.Hidden;
                 recordBoxVM.Sw.Stop();
 
-                if (recordBoxVM.Toggle4thMouse)
-                {
-                    FourMouseBtnAction();
-                }
-                if (recordBoxVM.Toggle5thMouse)
-                {
-                    FiveMouseBtnAction();
-                }
                 if (recordBoxVM.ToggleLightbar)
                 {
                     ChangeLightbarAction();

@@ -25,9 +25,7 @@ namespace DS4Windows.UI
 
         public ICommand SavePresetCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
-        public ICommand FourMouseCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
-        public ICommand FiveMouseCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
         public ICommand AddMouseMoveCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
@@ -43,8 +41,6 @@ namespace DS4Windows.UI
             AddRumbleCommand = CommandGuard.CreateSync(AddRumbleStep, name: nameof(AddRumbleCommand));
             LoadPresetCommand = CommandGuard.CreateSync(LoadPreset, name: nameof(LoadPresetCommand));
             SavePresetCommand = CommandGuard.CreateSync(SavePreset, name: nameof(SavePresetCommand));
-            FourMouseCommand = CommandGuard.CreateSync(AddFourthMouseButton, name: nameof(FourMouseCommand));
-            FiveMouseCommand = CommandGuard.CreateSync(AddFifthMouseButton, name: nameof(FiveMouseCommand));
             AddMouseMoveCommand = CommandGuard.CreateSync(AddMouseMoveStep, name: nameof(AddMouseMoveCommand));
             AddWaitTimeCommand = CommandGuard.CreateSync(AddWaitStep, name: nameof(AddWaitTimeCommand));
         }

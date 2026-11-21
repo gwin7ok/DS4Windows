@@ -28,7 +28,7 @@ NG のときの「疑い先」は、変更した RV。原因の調査は `git lo
 | 19 | 出力ピッカー（スペシャルアクションの Press Key）: Default／Unbound が出ない。Extras は出る | RV19 | | |
 | 20 | 割り当て編集（Controls）: 種別の一覧の先頭の「種別を選んでください」が出ず Default／Unbound が出る。保存できない種別が灰色 | RV19 | | |
 | 21 | 割り当て編集（スペシャルアクション）: 全種別を作って保存し、再起動後も残る | RV3・RV19 | | |
-| 22 | マクロ記録: 記録／停止、記録中は一覧・保存・プリセットが押せず、停止後に戻る | RV19 | | |
+| 22 | マクロ記録: 記録／停止、記録中は一覧・保存・プリセットが押せず、停止後に戻る | RV19 | | OK | 「マウス 4・5 ボタン」を押すボタンを削除（実際の押下が記録されるため）。押下の重複で `Dictionary.Add` が例外（1 回だけ再現）→ 索引子で代入 |
 | 23 | 出力ピッカーからマクロ記録を開くと割り当てのパネルが隠れ、閉じると戻る | RV19 | | |
 | 24 | マクロ記録: 保存・取り消し・クリア・プリセット・待ち時間・マウス移動・振動・ライトバーの追加 | RV4 | | |
 | 25 | ライトバー設定: 「バッテリー残量で色を変える」で「空の色」の枠が出入り。プロファイル切替でも合う。虹色で色の枠が無効 | RV20 | | |
@@ -76,3 +76,7 @@ NG のときの「疑い先」は、変更した RV。原因の調査は `git lo
 - **原因**: `ObservableObject`（INPC）に付け替えた ViewModel は、WPF が旧来の `XxxChanged` イベントの通知を見なくなる（RV7）。`CompositeDeviceModel`・`LaunchProgramViewModel`・`MultiActButtonViewModel`・`PressKeyViewModel`・`CheckBatteryViewModel`・`LoadProfileViewModel`・`RecordBoxViewModel`・`SpecialActionsListViewModel`・`LanguagePackViewModel`・`MainWindowsViewModel` の `XxxChanged` を呼ぶ 22 か所が、`PropertyChanged` を出していなかった。
 - **修正**: (1) 該当の 22 か所に `OnPropertyChanged(nameof(Xxx))` を足した（`ProgramIconPath` も）。(2) 通知のない単純なプロパティ（`{ get => x; set => x = value; }`）を `SetProperty` にした。(3) スペシャルアクションの各 ViewModel の `LoadAction`／`LoadControlItem` の終わりで、全プロパティを通知する。テスト `ViewModelChangeNotificationTests`。
 - 同種の調査: `public event EventHandler XxxChanged` を持つ全クラスを走査し、INPC を実装しているのは上の ViewModel だけだった（INPC でないクラスは、旧来の通知が今も使われる）。
+
+### 確認 22 の対応
+- マクロ記録中の「4th／5th Mouse Button」ボタンを削除（XAML・コマンド・ViewModel・処理）。`UserControl_MouseDown` の `KeysdownMap.Add` を索引子の代入へ（重複キーの例外を防ぐ）。テスト `RecordBoxExtraButtonsVisibilityGuardTests`。
+- 確認 12 の「同名プロファイルの取り込みが確認なしで上書き」は、改善方法を後で検討（KI として管理）。

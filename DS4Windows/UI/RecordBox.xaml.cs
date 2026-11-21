@@ -61,7 +61,6 @@ namespace DS4Windows.UI
             InitializeComponent();
             ArgumentNullException.ThrowIfNull(viewModel);
             recordBoxVM = viewModel;
-            mouseButtonsPanel.Visibility = Visibility.Hidden;
             extraConPanel.Visibility = Visibility.Hidden;
             // Execute Mode と Scan Code は、共通部品 MacroPlaybackOptionsPanel（repeatable は PlaybackOptions.Repeatable に入る）
             playbackPanel.ShowScanCode = showscan;
@@ -226,16 +225,6 @@ namespace DS4Windows.UI
                 UpdateDataRevertTemplate();
                 e.Handled = true;
             }
-        }
-
-        private void AddFourthMouseButton()
-        {
-            FourMouseBtnAction();
-        }
-
-        private void AddFifthMouseButton()
-        {
-            FiveMouseBtnAction();
         }
 
         private void StopMouseRecording()

@@ -20,6 +20,15 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void MouseDown_DoesNotThrowOnDuplicateKey()
+        {
+            string path = SourceFileLocator.Find("DS4Windows/UI/RecordBox.Mouse.cs");
+            if (path == null) return;
+            // 押下の重複（離しの取りこぼしなど）で Dictionary.Add が ArgumentException を投げない
+            Assert.DoesNotContain("KeysdownMap.Add(", SourceText.ReadFileWithPartials(path));
+        }
+
+        [Fact]
         public void RecordBtn_ShowsAllFourButtonsWhileRecording_RegardlessOfRecordDelays()
         {
             string path = SourceFileLocator.Find("DS4Windows/UI/RecordBox.xaml.cs");
@@ -35,7 +44,7 @@ namespace DS4WindowsTests
 
             string body = SourceText.Method(text, "private void ToggleRecording(");
 
-            Assert.Contains("mouseButtonsPanel.Visibility = Visibility.Visible;", body);
+            Assert.DoesNotContain("mouseButtonsPanel", body);   // マウスのボタンを押すボタンは廃止（実際の押下が記録される）
             Assert.Contains("extraConPanel.Visibility = Visibility.Visible;", body);
             // 表示の判定に Record Delays を使わない
             Assert.DoesNotContain("RecordDelays", body);

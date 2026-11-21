@@ -70,8 +70,6 @@ namespace DS4Windows.UI.ViewModels
         private bool toggleRummble;
         public bool ToggleRumble { get => toggleRummble; set => SetProperty(ref toggleRummble, value); }
 
-        private bool toggle4thMouse;
-        private bool toggle5thMouse;
         private int appendIndex = -1;
 
         private object _colLockobj = new object();
@@ -93,8 +91,6 @@ namespace DS4Windows.UI.ViewModels
         }
         public event EventHandler? MacroStepIndexChanged;
         public Stopwatch Sw { get => sw; }
-        public bool Toggle4thMouse { get => toggle4thMouse; set => SetProperty(ref toggle4thMouse, value); }
-        public bool Toggle5thMouse { get => toggle5thMouse; set => SetProperty(ref toggle5thMouse, value); }
         public int AppendIndex { get => appendIndex; set => SetProperty(ref appendIndex, value); }
         public int EditMacroIndex { get => editMacroIndex; set => SetProperty(ref editMacroIndex, value); }
         public Dictionary<int, bool> KeysdownMap { get => keysdownMap; }

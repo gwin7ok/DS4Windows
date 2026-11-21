@@ -6,45 +6,6 @@ namespace DS4Windows.UI
     /// <summary>マウスの記録（ボタン・移動・待ち時間）。</summary>
     public partial class RecordBox
     {
-        private void FourMouseBtnAction()
-        {
-            int value = 259;
-            recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
-            if (!isdown)
-            {
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(value, DS4Windows.Processing.Macro.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActDown, DS4Windows.Processing.Macro.MacroStep.StepOutput.Button);
-                recordBoxVM.AddMacroStep(step);
-                recordBoxVM.KeysdownMap.Add(value, true);
-            }
-            else
-            {
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(value, DS4Windows.Processing.Macro.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActUp, DS4Windows.Processing.Macro.MacroStep.StepOutput.Button);
-                recordBoxVM.AddMacroStep(step);
-                recordBoxVM.KeysdownMap.Remove(value);
-            }
-        }
-
-        private void FiveMouseBtnAction()
-        {
-            int value = 260;
-            recordBoxVM.KeysdownMap.TryGetValue(value, out bool isdown);
-            if (!isdown)
-            {
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(value, DS4Windows.Processing.Macro.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActDown, DS4Windows.Processing.Macro.MacroStep.StepOutput.Button);
-                recordBoxVM.AddMacroStep(step);
-                recordBoxVM.KeysdownMap.Add(value, true);
-            }
-            else
-            {
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(value, DS4Windows.Processing.Macro.MacroParser.InputName(value, recordBoxVM.MacroOutType),
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActUp, DS4Windows.Processing.Macro.MacroStep.StepOutput.Button);
-                recordBoxVM.AddMacroStep(step);
-                recordBoxVM.KeysdownMap.Remove(value);
-            }
-        }
 
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -64,7 +25,7 @@ namespace DS4Windows.UI
                 DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(value, DS4Windows.Processing.Macro.MacroParser.InputName(value, recordBoxVM.MacroOutType),
                             DS4Windows.Processing.Macro.MacroStep.StepType.ActDown, DS4Windows.Processing.Macro.MacroStep.StepOutput.Button);
                 recordBoxVM.AddMacroStep(step);
-                recordBoxVM.KeysdownMap.Add(value, true);
+                recordBoxVM.KeysdownMap[value] = true;   // 押下の重複で例外にしない
                 e.Handled = true;
             }
         }
