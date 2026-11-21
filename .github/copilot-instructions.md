@@ -1,7 +1,7 @@
 # エージェント向け作業ルール (copilot-instructions)
 
 作成日: 2026-03-01
-最終更新日: 2026-11-21（変更履歴は `docs-forDIMG/MadeByAgent/Copilot-Instructions-Changelog.md`。Phase 名の参照を外し、見出しを短くした）
+最終更新日: 2026-11-22（変更履歴は `docs-forDIMG/MadeByAgent/Copilot-Instructions-Changelog.md`。Phase 名の参照を外し、見出しを短くした）
 対象ブランチ: `For-DI-migration-work`
 全体計画書: `docs-forDIMG/DI-App-Wide-Migration-Plan.md`
 モデル図（2026-11-10 Phase17-0 で整理）：`docs-forDIMG\Model-Diagram\01-Structure.md`（現状の構造。実在する型の表は `ModelDiagramGuardTests` が検査）,`docs-forDIMG\Model-Diagram\02-Extension-Guide.md`（機種・出力の種類を足す手順）,`docs-forDIMG\Model-Diagram\03-Lifecycle-and-DI.md`（登録と寿命）,`docs-forDIMG\Model-Diagram\Ideas.md`（未実装の構想）← 全体の構造に関わる部分の意思決定を行う場合は必ず参照し、実装作業の中で変更があった場合はその内容を反映すること。旧 4 文書は `docs-forDIMG\Model-Diagram\Archive` に保管（読むだけ）
@@ -87,6 +87,7 @@
 - **HID を持たない機種（Xbox）**（2026-11-11 追記。Phase22）: Xbox は XInput で読む。通信路 `XInputTransport`（合成レポート）と供給元 `XInputTransportSource` が `IHidTransport` に載せ、共通の `ProtocolDevice` ＋ `XboxProtocol` で動かす。接続の判定（USB／Bluetooth）は `XusbConnectionClassifier` の 1 か所を通し、Bluetooth の電池は GATT（`IBluetoothBatteryReader`）、電池の段階→% は共通の `BatteryScale`。機器が切れたかは、XInput の番号の読み取りだけでなく、自分の XUSB のインターフェースが残るかでも判定する（別の XInput 機器が同じ番号に入るため）。Bluetooth の切断が効かない機器は `IDeviceProtocol.SupportsBluetoothDisconnect` で false を返す。
 - **入力機種の追加と設定の定義**（2026-11-10 追記。Phase17）: 入力機種の追加は、機種の種類（`InputDeviceType`）に `[InputDeviceFamily]` を付け、カートリッジ＋モジュールを `AddInputDevice<TCartridge, TModule>()` の 1 行で登録する。単純な機種は `IDeviceProtocol` ＋ `ProtocolDevice` で足せる。機種ごとの設定は `ControllerSetting`（`Bool`／`Enum`。`WithUi` で画面の見せ方）の並びで宣言し、保存・読み込み・設定画面・はじめの起動画面はその定義から作る（機種ごとの DTO・Wrapper・画面の `switch` を増やさない）。手順は `docs-forDIMG/Model-Diagram/02-Extension-Guide.md`。
 - **コンストラクターの引数の努力目標**（2026-11-10 追記。Phase16-Step0。同日 Phase20 で引き下げ）: 新規・変更するクラスのコンストラクターの引数は **12 以下**（新しく作る型は 6 以下をめざす）を努力目標とする。依存が増えるときは、まず責務の分割、工場の廃止（コンテナでの直接生成）、同じ契約の依存の列での受け取りを考える。超えるときは、理由をクラスのコメントに書く（12 を超える型は `ConstructorArityBaseline` に凍結済み。増やさず、減らす）。値の入れ物・工場・View（Window）も数は同じ基準で測るが、責務の分割ではなく、生成物側の整理に追随して減らす。3 つ以上の bool を引数に持つ型は、呼び出し側で名前付き引数を使う。`ConstructorArityRuleTests` が、12 を超える型を `ConstructorArityBaseline` に凍結し、実数との一致を検査する（環境変数 `DS4W_ARITY_BASELINE_OUT` に書き出し先のパスを入れてテストを実行すると、実測から作り直せる）。減らしたら同じコミットで基準も更新する。引数の数だけを指標にせず、束ねるだけで依存が見えなくなる変更（何でも箱）はしない。
+- **タイマーの種類**（2026-11-22 追記。PhaseRV23）: タイマーは 2 種類だけ。UI を触る周期は `System.Timers.Timer`（UI への戻しは `IUiDispatcher` と `GuardedTimerTick`）、UI を触らない周期・遅延は `TimeProvider.CreateTimer`（`TimeProvider` をコンストラクターで受け、テストでは `ManualTimeProvider` を渡す）。`System.Threading.Timer` と別名（`NonFormTimer`）は使わない。`UnifiedCodingPracticeRuleTests` が検査する。
 - **アナライザーの運用**（2026-11-19 追記。PhaseRV1-2）: 追加のアナライザー（AsyncFixer、Microsoft.VisualStudio.Threading.Analyzers、SonarAnalyzer.CSharp）の規則は、リポジトリ直下の `Analyzers.globalconfig` に書く（`.editorconfig` の設定のほうが優先される）。件数が 0 の規則は既定の重大度（警告）のまま使い、新しい違反は是正する（`none` を足さない）。今ある違反がある規則は `none` か、段階導入の `suggestion` で凍結し、0 にした Phase で `warning` へ上げて、`PhaseRV1-Analyzer-Survey.md` の表に記録する。パッケージを上げて新しい警告が出たときも、同じ手順で扱う。未使用の `using` は、Phase の終わりに `dotnet format` を走らせ、`CodeHealthRatchetTests` が見張る。
 
 ### 3.2 巨大ファイルの編集方針

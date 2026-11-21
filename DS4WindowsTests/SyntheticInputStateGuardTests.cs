@@ -72,17 +72,41 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ResetHandler_KeepsTheOrderAndTheLogMessage()
+        public void ResetHandler_ResetsTheSyntheticState_BeforeClearingTheToggles()
         {
-            string reset = SourceText.ReadCode("DS4Windows/Processing/Services/Slots/ActionsLoadedRuntimeReset.cs");
-            if (reset == null) return;
+            var synthetic = new DS4Windows.Processing.Synthetic.SyntheticInputState();
+            synthetic.GlobalState.currentClicks.leftCount = 3;
+            synthetic.DeviceState[0].currentClicks.rightCount = 2;
+            var dirtyDevice = synthetic.DeviceState[0];
 
-            int state = reset.IndexOf("_syntheticInput.ResetAll();");
-            int toggled = reset.IndexOf("_actionManager.ClearAllToggledOn();");
-            int log = reset.IndexOf("Log_Actions_RuntimeReset");
-            // 旧 macrodone の解除（_macroRuntime.ClearMacroDone）は削除した
-            Assert.True(state >= 0 && state < toggled && toggled < log);
-            Assert.DoesNotContain("ClearMacroDone", reset);
+            var manager = RecordingProxy.Create<DS4Windows.Processing.Actions.IManagedActionManager>();
+            int leftWhenToggledCleared = -1;
+            var recorder = RecordingProxy.Of(manager);
+            recorder.OnCall = name =>
+            {
+                if (name == "ClearAllToggledOn") leftWhenToggledCleared = synthetic.GlobalState.currentClicks.leftCount;
+            };
+
+            new DS4Windows.Processing.Services.Slots.ActionsLoadedRuntimeReset(synthetic, manager).Reset();
+
+            Assert.Equal(0, synthetic.GlobalState.currentClicks.leftCount);
+            Assert.Equal(0, synthetic.DeviceState[0].currentClicks.rightCount);
+            Assert.NotSame(dirtyDevice, synthetic.DeviceState[0]);   // 新品へ差し替える
+            Assert.Equal(0, leftWhenToggledCleared);   // トグル状態の解除の時点では、合成状態はもうリセット済み
+            Assert.Single(recorder.Calls, c => c.Name == "ClearAllToggledOn");
+        }
+
+        [Fact]
+        public void ResetHandler_StillResetsTheSyntheticState_WhenClearingTheTogglesFails()
+        {
+            var synthetic = new DS4Windows.Processing.Synthetic.SyntheticInputState();
+            synthetic.GlobalState.currentClicks.leftCount = 3;
+            var manager = RecordingProxy.Create<DS4Windows.Processing.Actions.IManagedActionManager>();
+            RecordingProxy.Of(manager).OnCall = name => { if (name == "ClearAllToggledOn") throw new InvalidOperationException("test"); };
+
+            new DS4Windows.Processing.Services.Slots.ActionsLoadedRuntimeReset(synthetic, manager).Reset();   // 例外は外へ出さない
+
+            Assert.Equal(0, synthetic.GlobalState.currentClicks.leftCount);
         }
     }
 }

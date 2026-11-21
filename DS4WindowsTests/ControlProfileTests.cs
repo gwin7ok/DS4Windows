@@ -9,6 +9,7 @@ using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Persistence;
+using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 using DS4Windows.Output.Kbm;
@@ -411,15 +412,53 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheRename_IsCalledFromTheMainWindowRename_NextToTheSaTargetUpdate()
+        public void TheMainWindowRename_UpdatesTheSaTargets_ThenTheControlsTargets_OnceEach()
         {
-            string path = SourceFileLocator.Find("DS4Windows/UI/Services/ProfileSelectionCoordinator.cs");
-            if (path == null) return;
+            // 名前変更の同期（SyncProfileListAndControllers）が、SA の切り替え先の更新のあとに、Controls の切り替え先を更新する
+            var repo = RecordingProxy.Create<IProfileRepository>();
+            var recorder = RecordingProxy.Of(repo);
+            recorder.Returns["get_ProfilePath"] = new ProfileSlotNames(ControllerLimits.MaxControllerCount);
+            var coordinator = new DS4Windows.UI.Services.ProfileSelectionCoordinator(
+                TestHost.GetService<DS4Windows.UI.Abstractions.IEditorWindowFactory>(),
+                repo,
+                TestHost.GetService<IProfileSlotApplier>(),
+                TestHost.GetService<IAppSettingsService>(),
+                TestHost.GetService<IEnvironmentService>(),
+                TestHost.GetService<IControllerSlotQuery>(),
+                new TempPathService(_dir),
+                new FakeDialogService());
+            var list = new ProfileList(new TempPathService(_dir));
 
-            string source = File.ReadAllText(path);
-            int sa = source.IndexOf("_profileRepo.RefreshProfileSwitchTargets(oldProfile!, newProfile!);");
-            int controls = source.IndexOf("_profileRepo.ReplaceControlProfileSwitchTarget(oldProfile!, newProfile!);");
-            Assert.True(sa >= 0 && controls > sa, "名前変更の処理に、Controls の切り替え先の更新が、SA の更新の後にあること");
+            coordinator.SyncProfileListAndControllers(list, () => { }, "Old", "New");
+
+            var names = recorder.Calls.Select(c => c.Name).ToList();
+            int sa = names.IndexOf("RefreshProfileSwitchTargets");
+            int controls = names.IndexOf("ReplaceControlProfileSwitchTarget");
+            Assert.True(sa >= 0 && controls > sa, "Controls の切り替え先の更新は、SA の更新のあとであること");
+            Assert.Equal(1, names.Count(n => n == "RefreshProfileSwitchTargets"));
+            Assert.Equal(1, names.Count(n => n == "ReplaceControlProfileSwitchTarget"));
+            Assert.Equal(new object[] { "Old", "New" }, recorder.ArgsOf("ReplaceControlProfileSwitchTarget").Single());
+        }
+
+        [Fact]
+        public void ASaveWithoutARename_DoesNotUpdateAnySwitchTarget()
+        {
+            var repo = RecordingProxy.Create<IProfileRepository>();
+            var recorder = RecordingProxy.Of(repo);
+            recorder.Returns["get_ProfilePath"] = new ProfileSlotNames(ControllerLimits.MaxControllerCount);
+            var coordinator = new DS4Windows.UI.Services.ProfileSelectionCoordinator(
+                TestHost.GetService<DS4Windows.UI.Abstractions.IEditorWindowFactory>(),
+                repo,
+                TestHost.GetService<IProfileSlotApplier>(),
+                TestHost.GetService<IAppSettingsService>(),
+                TestHost.GetService<IEnvironmentService>(),
+                TestHost.GetService<IControllerSlotQuery>(),
+                new TempPathService(_dir),
+                new FakeDialogService());
+
+            coordinator.SyncProfileListAndControllers(new ProfileList(new TempPathService(_dir)), () => { });
+
+            Assert.DoesNotContain(recorder.Calls, c => c.Name == "RefreshProfileSwitchTargets" || c.Name == "ReplaceControlProfileSwitchTarget");
         }
     }
 }

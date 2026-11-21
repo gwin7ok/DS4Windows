@@ -16,6 +16,9 @@ namespace DS4WindowsTests
 
         public IReadOnlyList<(string Name, object?[] Args)> Calls => _calls;
 
+        /// <summary>呼び出しを記録した直後に、メソッド名を渡して呼ぶ。呼び出された時点の状態の検査や、例外の注入に使う。</summary>
+        public Action<string>? OnCall { get; set; }
+
         /// <summary>プロパティの値を指定する（<c>get_Xxx</c> が返す）。</summary>
         public Dictionary<string, object?> Returns { get; } = new Dictionary<string, object?>();
 
@@ -30,6 +33,7 @@ namespace DS4WindowsTests
         {
             string name = targetMethod!.Name;   // DispatchProxy は常に対象のメソッドを渡す
             _calls.Add((name, args ?? Array.Empty<object?>()));
+            OnCall?.Invoke(name);
             if (Returns.TryGetValue(name, out object? value)) return value;
             Type returnType = targetMethod.ReturnType;
             if (returnType == typeof(void)) return null;

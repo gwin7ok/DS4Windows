@@ -168,18 +168,28 @@ namespace DS4WindowsTests
             Assert.Equal(2, h.Wheels.Count);
         }
 
-        // ---- ソースのガード ----
+        // ---- マッピング全体を通した動き ----
 
         [Fact]
-        public void TheSources_CarryTheAnalogMouseWiring()
+        public void AButtonBoundToMouseLeftMovement_MovesTheCursorLeft_OnlyWhilePressed()
         {
-            string registration = SourceFileLocator.Find("DS4Windows/Composition/ServiceRegistration.cs");
-            string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
-            if (registration == null || mapping == null) return;
+            using var h = new AnalogMouseTestHarness();
+            h.T.MapButton(DS4Controls.Cross, X360Controls.MouseLeft);
+            h.T.Publish();
 
-            string text = SourceText.ReadFileWithPartials(mapping);
-            Assert.Contains("MouseSampler", text);
-            Assert.Contains("frameOutput.MouseDeltaX", text);
+            for (int i = 0; i < 3; i++) h.Step(ControlsKeyTestScope.Neutral());
+            Assert.DoesNotContain(h.Moves, m => m.X != 0 || m.Y != 0);   // 押していない間は動かない
+
+            ControllerState pressed = ControlsKeyTestScope.Neutral();
+            pressed.Cross = true;
+            for (int i = 0; i < 5; i++) h.Step(pressed);
+            _output.WriteLine($"mouse moves while pressed: {string.Join(" ", h.Moves)}");
+            Assert.NotEmpty(h.Moves);
+            Assert.All(h.Moves, m => { Assert.True(m.X < 0); Assert.Equal(0, m.Y); });   // 左だけへ動く
+
+            int movesWhilePressed = h.Moves.Count;
+            for (int i = 0; i < 3; i++) h.Step(ControlsKeyTestScope.Neutral());
+            Assert.Equal(movesWhilePressed, h.Moves.Count);   // 離したら止まる
         }
     }
 }
