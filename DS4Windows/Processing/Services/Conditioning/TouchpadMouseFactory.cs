@@ -1,3 +1,4 @@
+using DS4Windows.Processing.Gyro;
 using DS4Windows.Processing.Touchpad;
 using DS4Windows.Processing.Synthetic;
 using System;
@@ -33,7 +34,13 @@ namespace DS4Windows.Processing.Services.Conditioning
 
         public TouchpadMouse Create(int deviceIndex, InputDeviceCore device)
         {
-            return new TouchpadMouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput, _timeProvider);
+            var tap = new TapClickDetector(deviceIndex, _timeProvider);
+            var cursor = new MouseCursor(deviceIndex, device.GyroMouseSensSettings, _profileSettings, _virtualKBM);
+            var wheel = new MouseWheel(deviceIndex, _profileSettings, _virtualKBM);
+            var gyro = new GyroOutputProcessor(deviceIndex, device, cursor, _profileSettings, _stickMotion);
+            var touchStick = new TouchStickOutput(deviceIndex, _profileSettings, _stickMotion);
+            return new TouchpadMouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput,
+                tap, cursor, wheel, gyro, touchStick);
         }
     }
 }

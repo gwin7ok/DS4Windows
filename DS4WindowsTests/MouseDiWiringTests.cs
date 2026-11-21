@@ -3,6 +3,7 @@ using DS4Windows.Processing.Synthetic;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using DS4Windows.Processing.Services.Conditioning;
 using Xunit;
 using DS4Windows.Input;
 using DS4Windows.Processing;
@@ -36,7 +37,7 @@ namespace DS4WindowsTests
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() =>
-                new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), null));
+                new TouchpadMouseFactory(settings, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), null).Create(Slot, CreateUninitializedDevice()));
         }
 
         // タップのクリックを押したままにする時間（50 ms）は、渡された TimeProvider の時刻で数える（実時間を待たない）
@@ -45,7 +46,7 @@ namespace DS4WindowsTests
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var time = new ManualTimeProvider();
-            var mouse = new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), time);
+            var mouse = new TouchpadMouseFactory(settings, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), time).Create(Slot, CreateUninitializedDevice());
 
             object tap = GetField(mouse, "_tap");
             typeof(TapClickDetector).GetMethod("StartTapClickHold", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(tap, null);
@@ -62,7 +63,7 @@ namespace DS4WindowsTests
         public void Constructor_NullProfileSettings_Throws()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new TouchpadMouse(Slot, CreateUninitializedDevice(), null, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System));
+                new TouchpadMouseFactory(null, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System).Create(Slot, CreateUninitializedDevice()));
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace DS4WindowsTests
         {
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             Assert.Throws<ArgumentNullException>(() =>
-                new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, null, new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System));
+                new TouchpadMouseFactory(settings, null, new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System).Create(Slot, CreateUninitializedDevice()));
         }
 
         // 保持クラスはコンストラクターで受ける
@@ -80,9 +81,9 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var kbm = new RecordingVirtualKbm();
             Assert.Throws<ArgumentNullException>(() =>
-                new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, kbm, null, new SyntheticInputState(), System.TimeProvider.System));
+                new TouchpadMouseFactory(settings, kbm, null, new SyntheticInputState(), System.TimeProvider.System).Create(Slot, CreateUninitializedDevice()));
             Assert.Throws<ArgumentNullException>(() =>
-                new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, kbm, new StickMotionState(), null, System.TimeProvider.System));
+                new TouchpadMouseFactory(settings, kbm, new StickMotionState(), null, System.TimeProvider.System).Create(Slot, CreateUninitializedDevice()));
         }
 
         [Fact]
@@ -91,7 +92,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService(new DS4Windows.Core.Settings.BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             var kbm = new RecordingVirtualKbm();
 
-            var mouse = new TouchpadMouse(Slot, CreateUninitializedDevice(), settings, kbm, new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System);
+            var mouse = new TouchpadMouseFactory(settings, kbm, new StickMotionState(), new SyntheticInputState(), System.TimeProvider.System).Create(Slot, CreateUninitializedDevice());
 
             Assert.Same(settings, GetField(mouse, "_profileSettings"));
             Assert.Same(kbm, GetField(mouse, "_virtualKBM"));

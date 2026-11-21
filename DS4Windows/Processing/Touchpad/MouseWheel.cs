@@ -23,7 +23,7 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.Processing.Touchpad
 {
-    class MouseWheel
+    public class MouseWheel
     {
         private readonly int deviceNumber;
         // Global 直参照を廃し、コンストラクタ注入（Pure DI、フォールバックなし）で受け取る
