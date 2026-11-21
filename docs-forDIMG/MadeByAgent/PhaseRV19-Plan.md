@@ -1,7 +1,7 @@
 # PhaseRV19 計画書: 画面の「見せる・隠す・使える」の判断を ViewModel へ
 
 作成日: 2026-11-21
-状態: **計画。決定事項 D1〜D4 の選択待ち（コードは未着手）**
+状態: **計画（決定済み: D1＝(B) 3 画面＋図・読み出し、D2＝(A) 表のテストで固めてから置き換え、D3＝(C) RV19 の後にまとめて 1 回、D4＝(A)）。コードは未着手**
 出典: `Measure-CodeReview.py --only mvvm`（RV18 完了時点）、`BindingWindow.xaml.cs` ほかの読み取り。
 動き: **挙動・ログ・保存の形は変えない**（見た目も変えない）。
 
@@ -47,6 +47,12 @@ MVVM の指標のうち、**判断が画面（code-behind）にあるもの**を
 - **(A) 画面の部品への直接代入と、イベント属性（`ViewCommandBindingBaseline`）の基準を、減った分だけ同じコミットで更新する（推奨）**。新しい直接代入は足さない。
 - (B) 基準の更新は、Phase の最後にまとめて。
 
+## 決定の記録（2026-11-21）
+- D1＝(B)。描画に近い `ProfileEditor.Visualizer`（`Content` 34）・`ControllerReadingsControl.Readings`（`Content` 21）も対象にする。推奨は (A) だったが、利用者の選択。**性能と見た目のリスクを、次の追加 Step で抑える**:
+  - RV19-5（`Visualizer`）: ボタンごとの割り当て表示を、ViewModel の文字列の一覧（`ObservableCollection` ではなく、変更のあった項目だけ通知する）へ。置き換え前の表示（ボタン → 文字）を、全ボタンについて単体テストで固定してから。
+  - RV19-6（`Readings`）: 毎フレームに近い更新。**更新の頻度と割り当て（`MappingHotPathAllocationTests` と同じ方式の割り当てのテスト）を測り、バインディングへ移すと遅い・割り当てが増える場合は、その部分を見送る**（`x:Name` ＋直接代入のまま残し、理由を記録）。
+- D3＝(C)。実機確認は RV19 の後にまとめて 1 回。表のテストが、見た目の変化の単体での検出を担う。
+
 ## Step（D1＝A、D2＝A の場合）
 | Step | 内容 | 検査 |
 |---|---|---|
@@ -54,7 +60,9 @@ MVVM の指標のうち、**判断が画面（code-behind）にあるもの**を
 | RV19-1 | `BindingWindow`: 表のテスト → ViewModel の状態（モード → 見える欄）→ `{Binding}`。`BindingWindowViewModel` を拡張 | Debug ALL、表のテスト、`ViewCommandBindingRatchetTests` |
 | RV19-2 | `AssignmentEditor`: 同様（種類 → 見える欄。`ActionEditorViewModel` の `TypeCatalog` を使う） | 同上 |
 | RV19-3 | `RecordBox.Keyboard`: 記録中・種類 → 使えるボタン | 同上 |
-| RV19-4 | 再採点（`RV19.json`）、`02-Scorecard.md`、計画書の完了記録、`Device-Check-Checklist.md`（3 画面の出し分けの確認項目） | `ModelDiagramGuardTests` |
+| RV19-5 | `ProfileEditor.Visualizer`（上の決定の記録のとおり） | 同上、全ボタンの表示のテスト |
+| RV19-6 | `ControllerReadingsControl.Readings`（割り当て・性能を測り、悪化するなら見送り） | 同上、割り当てのテスト |
+| RV19-7 | 再採点（`RV19.json`）、`02-Scorecard.md`、計画書の完了記録、`Device-Check-Checklist.md`（3 画面の出し分けの確認項目） | `ModelDiagramGuardTests` |
 
 ブランチは `PhaseRV19`。コミットは Step ごと、完了で `--no-ff` マージ（push なし）。
 
