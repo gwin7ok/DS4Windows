@@ -127,7 +127,7 @@ namespace DS4Windows.Core.Settings
         };
 
         /// <summary>基本的な設定（タッチパッドの切り替え、無操作での切断、出力データ、BT のポーリング、起動プログラム、DInput のみ）の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly BasicSlotSettings[] basicSlots = new BasicSlotSettings[ControllerLimits.TestProfileItemCount];
+        public BasicSlotSettings[] basicSlots { get; } = new BasicSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public ProfileSlotNames profilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
         public ProfileSlotNames olderProfilePath = new ProfileSlotNames(ControllerLimits.TestProfileItemCount);
@@ -150,14 +150,14 @@ namespace DS4Windows.Core.Settings
         // Cache properties instead of performing a string comparison every frame
         public bool[] distanceProfiles = new bool[ControllerLimits.TestProfileItemCount] { false, false, false, false, false, false, false, false, false };
         /// <summary>振動の設定（強さ、自動停止、モーターの入れ替え）の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly RumbleSlotSettings[] rumbleSlots = new RumbleSlotSettings[ControllerLimits.TestProfileItemCount];
+        public RumbleSlotSettings[] rumbleSlots { get; } = new RumbleSlotSettings[ControllerLimits.TestProfileItemCount];
 
         // Rotation angle expressed in radians
 
         // Rotation angle expressed in radians
 
         /// <summary>DualSense 固有の設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly DualSenseSlotSettings[] dualSenseSlots = new DualSenseSlotSettings[ControllerLimits.TestProfileItemCount];
+        public DualSenseSlotSettings[] dualSenseSlots { get; } = new DualSenseSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public const int DEFAULT_FORM_WIDTH = WindowLayoutDefaults.MAIN_WINDOW_WIDTH;
 
@@ -179,7 +179,7 @@ namespace DS4Windows.Core.Settings
         /// 廃止された「シフト」機能の設定（プロファイルの &lt;ShiftControl&gt;）を、解釈せずに保持する。スロットごと。
         /// 読込のたびに取り込み直し（<see cref="RemovedShiftSettings.Capture"/>）、保存で、そのまま書き出す（<see cref="RemovedShiftSettings.AppendTo"/>）。
         /// </summary>
-        public readonly RemovedShiftSettings[] removedShiftSettings = new RemovedShiftSettings[ControllerLimits.TestProfileItemCount];
+        public RemovedShiftSettings[] removedShiftSettings { get; } = new RemovedShiftSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>
         /// 廃止された「ジャイロスワイプ」機能の設定（<c>&lt;GyroSwipeSettings&gt;</c>、<c>&lt;Control&gt;</c> 内の <c>GyroSwipe*</c> の割り当て、
@@ -187,22 +187,22 @@ namespace DS4Windows.Core.Settings
         /// </summary>
 
         /// <summary>ジャイロの設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly GyroSlotSettings[] gyroSlots = new GyroSlotSettings[ControllerLimits.TestProfileItemCount];
+        public GyroSlotSettings[] gyroSlots { get; } = new GyroSlotSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>Touchpadの設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly TouchpadSlotSettings[] touchpadSlots = new TouchpadSlotSettings[ControllerLimits.TestProfileItemCount];
+        public TouchpadSlotSettings[] touchpadSlots { get; } = new TouchpadSlotSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>Triggersの設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly TriggerSlotSettings[] triggerSlots = new TriggerSlotSettings[ControllerLimits.TestProfileItemCount];
+        public TriggerSlotSettings[] triggerSlots { get; } = new TriggerSlotSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>Sticksの設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly StickSlotSettings[] stickSlots = new StickSlotSettings[ControllerLimits.TestProfileItemCount];
+        public StickSlotSettings[] stickSlots { get; } = new StickSlotSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>Lightbarの設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly LightbarSlotSettings[] lightbarSlots = new LightbarSlotSettings[ControllerLimits.TestProfileItemCount];
+        public LightbarSlotSettings[] lightbarSlots { get; } = new LightbarSlotSettings[ControllerLimits.TestProfileItemCount];
 
         /// <summary>SixAxisの設定の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly SixAxisSlotSettings[] sixAxisSlots = new SixAxisSlotSettings[ControllerLimits.TestProfileItemCount];
+        public SixAxisSlotSettings[] sixAxisSlots { get; } = new SixAxisSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public List<DS4ControlSettings>[] ds4settings = new List<DS4ControlSettings>[ControllerLimits.TestProfileItemCount]
             { new List<DS4ControlSettings>(), new List<DS4ControlSettings>(), new List<DS4ControlSettings>(),
@@ -249,7 +249,7 @@ namespace DS4Windows.Core.Settings
         //public double[] touchStickTrackballFriction = new double[Global.TEST_PROFILE_ITEM_COUNT] { 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0 };
 
         /// <summary>出力の種類（保存される仮想コントローラーの種類、仮想のトリガーボタン、DS4 のトリガーの出力方式）の持ち主（スロットごとに 1 つ）。</summary>
-        public readonly OutputTypeSlotSettings[] outputTypeSlots = new OutputTypeSlotSettings[ControllerLimits.TestProfileItemCount];
+        public OutputTypeSlotSettings[] outputTypeSlots { get; } = new OutputTypeSlotSettings[ControllerLimits.TestProfileItemCount];
 
         public const bool DEFAULT_OUTPUT_VIRTUAL_TRIG_BUTTONS = true;
 
