@@ -176,6 +176,15 @@
 - 挙動の変更 1 件: MouseJoystick の Y の初期化（誤記の修正。ユーザー承認済み）。実機確認は §9k。
 - RV13-7（`TouchpadMouse` の持ち物の生成を `TouchpadMouseFactory` へ）は PhaseRV13b で実施済み。
 
+### RV14（2026-11-21。入力機器の部品化）
+- 保存: `scorecard/RV14.json`。直前の保存: `scorecard/RV13.json`。
+- 等級の変化はない（Pure DI 化 85.9%→86.0%、共有部品化 84.2%→84.5%、冗長処理 85.7%→86.5%。いずれも重複行の減少と static の可変フィールドの減少）。500 行以上の型は、4 型（`InputDeviceCore` 1,187→1,055、`DualSenseDevice` 1,133→1,016、`DualShock4Device` 835→808、`SwitchProDevice` 1,035→543）のうち、どれも 500 未満には届かなかった。件数は変わらない。
+- 切り出し（すべて単体で試験できる部品）: `DeviceEventQueue`・`IdleInputDetector`・`BluetoothRadioDisconnect`（基底）、`SwitchProCommandChannel`・`SwitchProCalibration`・`SwitchProSession`・`SwitchProSlotMask`、`HapticOutputState`（触覚。`ref` で返す）、`DualSenseLedMasks`・`HapticStandby`・`DualSenseOutputReportBuilder.ApplyBluetoothCrc`、`DualShock4OutputReportBuilder`。テスト 39 件を追加（3,668→3,707）。
+- 予想とのずれ: 予想は 500 行以上 30→26。実際は 30 のまま。機種の入力の読み取り（`ProcessFrame`）、設定、入れ子の型が型の大きさの大半で、出力・初期化を切り出しても 500 未満にならなかった。D6 により、成果は件数ではなく「単体で試験できる部品へ分けた」こと。
+- 見送り: `DeviceBatteryState`（電池と充電）。機種ごとに `battery = 99` のように通知なしで直接書く箇所があり、通知の有無の差を保つ設計が要るため。
+- 見つかった事実: 待ち行列は、実行中に積まれた処理を、次に積まれるまで実行しない（挙動は維持）。ソリューションのビルドにテストが含まれず、RV13-7 のテスト結果は古い DLL のものだった（テストの using 漏れ 1 件を修正）。
+- 実機確認が必要: `Device-Check-Checklist.md` §9l（未実施）。
+
 ### RVn（完了日）
 - 保存: scorecard/RVn.json。基準の版: v1。直前の保存: …
 - 等級が変わった観点: 観点名 X→Y（点数 a%→b%）。…

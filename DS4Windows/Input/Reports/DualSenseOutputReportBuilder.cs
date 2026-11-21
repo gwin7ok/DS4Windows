@@ -10,6 +10,7 @@ namespace DS4Windows.Input.Reports
     /// </summary>
     public static class DualSenseOutputReportBuilder
     {
+        private const int BluetoothReportLength = 78;
         private const byte ReportIdUsb = 0x02;
         private const byte ReportIdBluetooth = 0x31;
         private const byte ReportIdData = 0x02;
@@ -75,6 +76,27 @@ namespace DS4Windows.Input.Reports
             report[pos + 5] = effect.triggerNearMiddleStrength;
             report[pos + 6] = effect.triggerPressedStrength;
             report[pos + 9] = effect.triggerActuationFrequency;
+        }
+
+        /// <summary>
+        /// Bluetooth のレポートの末尾 4 バイト（74〜77）へ CRC32 を書く。<paramref name="compute"/> が false なら 0 を書く
+        /// （出力しないフレームで、前回の値を残さないため）。
+        /// </summary>
+        public static void ApplyBluetoothCrc(byte[] report, byte[] head, bool compute)
+        {
+            uint calcCrc32 = 0;
+            if (compute)
+            {
+                int crcOffset = 0;
+                int crcpos = BluetoothReportLength - 4;
+                calcCrc32 = ~Crc32Algorithm.Compute(head);
+                calcCrc32 = ~Crc32Algorithm.CalculateFasterBT78Hash(ref calcCrc32, ref report, ref crcOffset, ref crcpos);
+            }
+
+            report[74] = (byte)calcCrc32;
+            report[75] = (byte)(calcCrc32 >> 8);
+            report[76] = (byte)(calcCrc32 >> 16);
+            report[77] = (byte)(calcCrc32 >> 24);
         }
     }
 }

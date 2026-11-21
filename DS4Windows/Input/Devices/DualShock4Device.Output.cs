@@ -6,6 +6,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Abstractions;
+using DS4Windows.Input.Reports;
 using DS4Windows.Input.Hid;
 using DS4Windows.Input.Parsers;
 
@@ -64,7 +65,7 @@ namespace DS4Windows.Input.Devices
 
             try
             {
-                currentHap.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
+                Haptics.Current.lightbarState.LightBarColor = new DS4Color(0, 0, 0);
                 SetRumble(0, 0);
                 SendOutputReport(true, true, false);
                 AppLogger.LogDebug("[DI] WriteOutputOffOnce: wrote lightbar off / rumble zero once before disabling output data");
@@ -81,24 +82,7 @@ namespace DS4Windows.Input.Devices
 
             if (usingBT && (this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
             {
-                outReportBuffer[0] = knownGoodBTOutputReportType;
-                //outReportBuffer[0] = 0x15;
-                //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
-                outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
-                //outReportBuffer[2] = 0xA0;
-
-                // Headphone volume L (0x10), Headphone volume R (0x20), Mic volume (0x40), Speaker volume (0x80)
-                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0x07
-                outReportBuffer[3] = outputFeaturesByte;
-                outReportBuffer[4] = 0x04;
-
-                outReportBuffer[6] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
-                outReportBuffer[7] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow motor
-                outReportBuffer[8] = currentHap.lightbarState.LightBarColor.red; // red
-                outReportBuffer[9] = currentHap.lightbarState.LightBarColor.green; // green
-                outReportBuffer[10] = currentHap.lightbarState.LightBarColor.blue; // blue
-                outReportBuffer[11] = currentHap.lightbarState.LightBarFlashDurationOn; // flash on duration
-                outReportBuffer[12] = currentHap.lightbarState.LightBarFlashDurationOff; // flash off duration
+                DualShock4OutputReportBuilder.FillBluetooth(outReportBuffer, knownGoodBTOutputReportType, btPollRate, outputFeaturesByte, in Haptics.Current);
 
                 fixed (byte* byteR = outputReport, byteB = outReportBuffer)
                 {
@@ -106,10 +90,10 @@ namespace DS4Windows.Input.Devices
                         change = byteR[i] != byteB[i];
                 }
 
-                change = change || currentHap.dirty;
+                change = change || Haptics.Current.dirty;
                 /*if (change)
                 {
-                    Console.WriteLine("CHANGE: {0} {1} {2} {3} {4} {5}", currentHap.LightBarColor.red, currentHap.LightBarColor.green, currentHap.LightBarColor.blue, currentHap.RumbleMotorStrengthRightLightFast, currentHap.RumbleMotorStrengthLeftHeavySlow, DateTime.Now.ToString());
+                    Console.WriteLine("CHANGE: {0} {1} {2} {3} {4} {5}", Haptics.Current.LightBarColor.red, Haptics.Current.LightBarColor.green, Haptics.Current.LightBarColor.blue, Haptics.Current.RumbleMotorStrengthRightLightFast, Haptics.Current.RumbleMotorStrengthLeftHeavySlow, DateTime.Now.ToString());
                 }
                 */
 
@@ -117,18 +101,7 @@ namespace DS4Windows.Input.Devices
             }
             else
             {
-                outReportBuffer[0] = 0x05;
-                // Headphone volume L (0x10), Headphone volume R (0x20), Mic volume (0x40), Speaker volume (0x80)
-                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0x07
-                outReportBuffer[1] = outputFeaturesByte;
-                outReportBuffer[2] = 0x04;
-                outReportBuffer[4] = currentHap.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
-                outReportBuffer[5] = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow  motor
-                outReportBuffer[6] = currentHap.lightbarState.LightBarColor.red; // red
-                outReportBuffer[7] = currentHap.lightbarState.LightBarColor.green; // green
-                outReportBuffer[8] = currentHap.lightbarState.LightBarColor.blue; // blue
-                outReportBuffer[9] = currentHap.lightbarState.LightBarFlashDurationOn; // flash on duration
-                outReportBuffer[10] = currentHap.lightbarState.LightBarFlashDurationOff; // flash off duration
+                DualShock4OutputReportBuilder.FillUsb(outReportBuffer, outputFeaturesByte, in Haptics.Current);
 
                 fixed (byte* byteR = outputReport, byteB = outReportBuffer)
                 {
@@ -136,7 +109,7 @@ namespace DS4Windows.Input.Devices
                         change = byteR[i] != byteB[i];
                 }
 
-                change = change || currentHap.dirty;
+                change = change || Haptics.Current.dirty;
                 haptime = haptime || change;
             }
         }
@@ -178,10 +151,10 @@ namespace DS4Windows.Input.Devices
 
             PrepareOutputReportInner(ref change, ref haptime);
 
-            if (rumbleAutostopTimer.IsRunning)
+            if (Haptics.AutostopTimer.IsRunning)
             {
                 // Workaround to a bug in ViGem driver. Force stop potentially stuck rumble motor on the next output report if there haven't been new rumble events within X seconds
-                if (rumbleAutostopTimer.ElapsedMilliseconds >= rumbleAutostopTime)
+                if (Haptics.AutostopTimer.ElapsedMilliseconds >= Haptics.AutostopTime)
                     SetRumble(0, 0);
             }
 
@@ -266,7 +239,7 @@ namespace DS4Windows.Input.Devices
                 exitOutputThread = true;
             }
 
-            currentHap.dirty = false;
+            Haptics.Current.dirty = false;
         }
 
         // Perform outReportBuffer copy on a separate thread to save

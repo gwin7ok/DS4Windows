@@ -26,7 +26,7 @@ namespace DS4WindowsTests
 
         private static string Encode(double left, double right, int frames)
         {
-            var device = (SwitchProDevice)RuntimeHelpers.GetUninitializedObject(typeof(SwitchProDevice));
+            var device = new SwitchProDevice(new FakeHidTransport(), "Switch Pro");
             device.currentLeftAmpRatio = left;
             device.currentRightAmpRatio = right;
             var sb = new StringBuilder();
@@ -58,7 +58,7 @@ namespace DS4WindowsTests
         [Fact]
         public void TheFrameCounter_WrapsAround_AtSixteen()
         {
-            var device = (SwitchProDevice)RuntimeHelpers.GetUninitializedObject(typeof(SwitchProDevice));
+            var device = new SwitchProDevice(new FakeHidTransport(), "Switch Pro");
             var buffer = new byte[10];
             for (int i = 0; i < 17; i++) device.PrepareRumbleData(buffer);
             Assert.Equal(0x00, buffer[1]);   // 17 回目は、0 へ戻った番号（16 ≡ 0）

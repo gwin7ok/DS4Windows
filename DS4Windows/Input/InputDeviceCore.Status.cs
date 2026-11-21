@@ -67,49 +67,38 @@ namespace DS4Windows.Input
 
         public byte RightLightFastRumble
         {
-            get { return currentHap.rumbleState.RumbleMotorStrengthRightLightFast; }
+            get { return Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast; }
             set
             {
-                if (currentHap.rumbleState.RumbleMotorStrengthRightLightFast != value)
-                    currentHap.rumbleState.RumbleMotorStrengthRightLightFast = value;
+                if (Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast != value)
+                    Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast = value;
             }
         }
 
         public byte LeftHeavySlowRumble
         {
-            get { return currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow; }
+            get { return Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow; }
             set
             {
-                if (currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow != value)
-                    currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow = value;
+                if (Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow != value)
+                    Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow = value;
             }
         }
 
-        protected int rumbleAutostopTime = 0;
         public int RumbleAutostopTime
         {
-            get { return rumbleAutostopTime; }
-            set
-            {
-                // Value in milliseconds
-                rumbleAutostopTime = value;
-
-                // If autostop timer is disabled (value 0) then stop existing autostop timer otherwise restart it
-                if (value <= 0)
-                    rumbleAutostopTimer.Reset();
-                else
-                    rumbleAutostopTimer.Restart();
-            }
+            get { return Haptics.AutostopTime; }
+            set { Haptics.SetAutostopTime(value); }
         }
 
         public DS4Color LightBarColor
         {
-            get { return currentHap.lightbarState.LightBarColor; }
+            get { return Haptics.Current.lightbarState.LightBarColor; }
             set
             {
-                if (currentHap.lightbarState.LightBarColor.red != value.red || currentHap.lightbarState.LightBarColor.green != value.green || currentHap.lightbarState.LightBarColor.blue != value.blue)
+                if (Haptics.Current.lightbarState.LightBarColor.red != value.red || Haptics.Current.lightbarState.LightBarColor.green != value.green || Haptics.Current.lightbarState.LightBarColor.blue != value.blue)
                 {
-                    currentHap.lightbarState.LightBarColor = value;
+                    Haptics.Current.lightbarState.LightBarColor = value;
                 }
             }
         }

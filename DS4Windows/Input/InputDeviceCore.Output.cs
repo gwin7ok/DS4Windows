@@ -78,47 +78,10 @@ namespace DS4Windows.Input
             }
         }
 
-        public void SetRumble(byte rightLightFastMotor, byte leftHeavySlowMotor)
-        {
-            testRumble.rumbleState.RumbleMotorStrengthRightLightFast = rightLightFastMotor;
-            testRumble.rumbleState.RumbleMotorStrengthLeftHeavySlow = leftHeavySlowMotor;
-            testRumble.rumbleState.RumbleMotorsExplicitlyOff = rightLightFastMotor == 0 && leftHeavySlowMotor == 0;
-            testRumble.dirty = true;
+        public void SetRumble(byte rightLightFastMotor, byte leftHeavySlowMotor) => Haptics.SetRumble(rightLightFastMotor, leftHeavySlowMotor);
 
-            // If rumble autostop timer (msecs) is enabled for this device then restart autostop timer everytime rumble is modified (or stop the timer if rumble is set to zero)
-            if (rumbleAutostopTime > 0)
-            {
-                if (testRumble.rumbleState.RumbleMotorsExplicitlyOff)
-                    rumbleAutostopTimer.Reset();   // Stop an autostop timer because ViGem driver sent properly a zero rumble notification
-                else if (currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow != leftHeavySlowMotor || currentHap.rumbleState.RumbleMotorStrengthRightLightFast != rightLightFastMotor)
-                    rumbleAutostopTimer.Restart(); // Start an autostop timer to stop potentially stuck rumble motor because of lost rumble notification events from ViGem driver
-            }
-        }
+        protected void MergeStates() => Haptics.Merge();
 
-        protected void MergeStates()
-        {
-            if (testRumble.IsRumbleSet())
-            {
-                if (testRumble.rumbleState.RumbleMotorsExplicitlyOff)
-                    testRumble.rumbleState.RumbleMotorsExplicitlyOff = false;
-
-                //currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow = testRumble.rumbleState.RumbleMotorStrengthLeftHeavySlow;
-                //currentHap.rumbleState.RumbleMotorStrengthRightLightFast = testRumble.rumbleState.RumbleMotorStrengthRightLightFast;
-                currentHap.rumbleState = testRumble.rumbleState;
-            }
-
-            currentHap.dirty = testRumble.dirty;
-            testRumble.dirty = false;
-        }
-
-        public void SetLightbarState(ref DS4LightbarState lightState)
-        {
-            if (!currentHap.lightbarState.Equals(lightState))
-            {
-                currentHap.dirty = true;
-            }
-
-            currentHap.lightbarState = lightState;
-        }
+        public void SetLightbarState(ref DS4LightbarState lightState) => Haptics.SetLightbar(ref lightState);
     }
 }

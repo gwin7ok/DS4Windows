@@ -91,7 +91,9 @@ namespace DS4WindowsTests
             hap.rumbleState.RumbleMotorStrengthRightLightFast = s.Right;
             hap.rumbleState.RumbleMotorStrengthLeftHeavySlow = s.Left;
             hap.lightbarState.LightBarColor = s.Color;
-            Field(type, "currentHap").SetValue(device, hap);
+            var haptics = new DS4Windows.Input.HapticOutputState();
+            haptics.Current = hap;
+            Field(type, "_haptics").SetValue(device, haptics);
 
             // 出力の組み立てのあとのバイト列を、そのまま取り出す
             type.GetMethod("PrepareOutReport", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(device, null);

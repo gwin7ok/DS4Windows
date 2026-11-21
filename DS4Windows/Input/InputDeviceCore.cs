@@ -158,12 +158,12 @@ namespace DS4Windows.Input
 
         public byte GetLeftHeavySlowRumble()
         {
-            return currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow;
+            return Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow;
         }
 
         public byte GetLightBarOnDuration()
         {
-            return currentHap.lightbarState.LightBarFlashDurationOn;
+            return Haptics.Current.lightbarState.LightBarFlashDurationOn;
         }
 
         public int GetBTPollRate()
@@ -183,8 +183,7 @@ namespace DS4Windows.Input
             set { layerSettings = value; }
         }
 
-        protected Queue<Action> eventQueue = new Queue<Action>();
-        protected object eventQueueLock = new object();
+        private readonly DeviceEventQueue _events = new DeviceEventQueue();
 
         protected ManualResetEventSlim readWaitEv = new ManualResetEventSlim();
         public ManualResetEventSlim ReadWaitEv { get => readWaitEv; }
@@ -247,7 +246,10 @@ namespace DS4Windows.Input
         {
         }
 
-        protected readonly Stopwatch rumbleAutostopTimer = new Stopwatch(); // Autostop timer to stop rumble motors if those are stuck in a rumble state
+        /// <summary>触覚（振動・ライトバー）の出力の状態。機種の出力の組み立てが読む。</summary>
+        private HapticOutputState? _haptics;
+        // 初期化を通らずに作られた機器（テストの GetUninitializedObject）でも使えるよう、初回の参照で作る
+        protected HapticOutputState Haptics => _haptics ??= new HapticOutputState();
 
 #pragma warning disable CS0414 // outputPendCount is assigned in some flows but read paths may be conditional
         private byte outputPendCount = 0;
@@ -319,8 +321,6 @@ namespace DS4Windows.Input
         {
         }
 
-        protected DS4HapticState testRumble = new DS4HapticState();
-
         public ControllerState GetRawCurrentState()
         {
             return cState.Clone();
@@ -361,22 +361,11 @@ namespace DS4Windows.Input
             return pState;
         }
 
-        protected DS4HapticState currentHap = new DS4HapticState();
-        public void SetHapticState(ref DS4HapticState hs)
-        {
-            currentHap = hs;
-            currentHap.dirty = true;
-        }
+        public void SetHapticState(ref DS4HapticState hs) => Haptics.SetHaptic(ref hs);
 
-        public ref DS4LightbarState GetLightbarStateRef()
-        {
-            return ref currentHap.lightbarState;
-        }
+        public ref DS4LightbarState GetLightbarStateRef() => ref Haptics.Current.lightbarState;
 
-        public void SetRumbleState(ref DS4ForceFeedbackState rumbleState)
-        {
-            currentHap.rumbleState = rumbleState;
-        }
+        public void SetRumbleState(ref DS4ForceFeedbackState rumbleState) => Haptics.Current.rumbleState = rumbleState;
 
         public override string ToString()
         {
