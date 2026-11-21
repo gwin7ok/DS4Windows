@@ -165,7 +165,7 @@ namespace DS4Windows.Core.Platform
         /// <param name="exeLocation">実行ファイルのフルパス（IPathService.ExecutablePath）</param>
         public bool CheckStartupExeLocation(string exeLocation)
         {
-            string? lnkprogpath = ResolveShortcut(lnkpath);
+            string? lnkprogpath = ShortcutResolver.ResolveLnkTarget(lnkpath);
             return lnkprogpath != exeLocation;
         }
 
@@ -177,31 +177,6 @@ namespace DS4Windows.Core.Platform
             {
                 tasker.Run("");
             }
-        }
-
-        private static string? ResolveShortcut(string filePath)
-        {
-            Type? t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); // Windows Script Host Shell Object
-            dynamic shell = Activator.CreateInstance(t!)!; // 登録済みの COM クラス（null なら従来どおり NullReferenceException）
-            string? result;
-
-            try
-            {
-                var shortcut = shell.CreateShortcut(filePath);
-                result = shortcut.TargetPath;
-                Marshal.FinalReleaseComObject(shortcut);
-            }
-            catch (COMException)
-            {
-                // A COMException is thrown if the file is not a valid shortcut (.lnk) file 
-                result = null;
-            }
-            finally
-            {
-                Marshal.FinalReleaseComObject(shell);
-            }
-
-            return result;
         }
 
         private static void RefreshTaskBat(string programDirectory, string exeFileName)

@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace DS4Windows.UI.ViewModels
+namespace DS4Windows.Core.Platform
 {
 
     [SuppressUnmanagedCodeSecurity]
