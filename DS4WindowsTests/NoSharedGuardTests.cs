@@ -1,15 +1,12 @@
 using DS4Windows.Processing.Macro;
 using DS4Windows.Processing.Synthetic;
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
-using DS4Windows.Processing.Services.Connection;
 
 namespace DS4WindowsTests
 {

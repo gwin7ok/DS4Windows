@@ -1,12 +1,8 @@
 using DS4Windows.Core.Model;
 using System;
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 using DS4Windows.Core.Abstractions;
-using DS4Windows.Input;
 using DS4Windows.Output.Services;
-using DS4Windows.Processing.Abstractions;
 
 namespace DS4WindowsTests
 {

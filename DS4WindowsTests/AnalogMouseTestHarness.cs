@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using DS4Windows.Input;
 using DS4Windows.Processing;
-using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {

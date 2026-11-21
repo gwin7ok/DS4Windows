@@ -1,5 +1,4 @@
 using DS4Windows.Processing.Macro;
-using DS4Windows.Processing.Synthetic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +9,8 @@ using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Output.Kbm;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services.Conditioning;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

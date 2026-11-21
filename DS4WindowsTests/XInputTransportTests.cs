@@ -2,7 +2,6 @@ using System;
 using System.Buffers.Binary;
 using System.Linq;
 using DS4Windows.Core.Model;
-using DS4Windows.Input;
 using DS4Windows.Input.Abstractions;
 using DS4Windows.Input.Hid;
 using DS4Windows.Input.Xbox;

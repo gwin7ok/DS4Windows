@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using DS4Windows.Core.Model;
-
-namespace DS4Windows.Core.Settings
+﻿namespace DS4Windows.Core.Settings
 {
     /// <summary>
     /// 画面の配置（ウィンドウの位置・大きさ、エディターの幅、一覧の列の幅）。<see cref="BackingStore"/> が 1 つ持つ（設定ファイルへ保存される値）。値の読み書きは、<c>AppSettingsService</c> が公開する。

@@ -4,14 +4,13 @@ using System.Linq;
 using System.Reflection;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Actions;
 using DS4Windows.Processing.Touchpad;
 
 namespace DS4WindowsTests
 {
-        public class MappingControllerDisposeBehaviorTests
+    public class MappingControllerDisposeBehaviorTests
     {
         // 登録簿は Mapping から KeyButtonControllerRegistry へ移った。
         // 静的 ActionManager.ClearDeviceState は廃止した。管理役（DefaultActionManager）が、遅延で受けた IMapping の HandleDeviceDisconnect を呼ぶ。

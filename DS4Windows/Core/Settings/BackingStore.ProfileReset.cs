@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Reflection;
-using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Logging;
+﻿using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
-using DS4Windows.Core.Platform;
-using DS4Windows.Core.Utilities;
 
 namespace DS4Windows.Core.Settings
 {

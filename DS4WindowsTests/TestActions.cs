@@ -1,7 +1,6 @@
 
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

@@ -1,5 +1,3 @@
-using DS4Windows.Core.Model;
-using System.IO;
 using System.Text.RegularExpressions;
 using DS4Windows.Processing.Abstractions;
 using Xunit;

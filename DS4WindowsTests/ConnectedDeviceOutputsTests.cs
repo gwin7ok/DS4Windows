@@ -1,5 +1,4 @@
-﻿using DS4Windows.Processing.Synthetic;
-using System;
+﻿using System;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
 using Xunit;

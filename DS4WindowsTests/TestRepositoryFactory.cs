@@ -8,7 +8,6 @@ using DS4Windows.Core.Profiles;
 using DS4Windows.Core.Settings;
 using DS4Windows.Output;
 using DS4Windows.Output.Services;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.UI.Services;
 using DS4Windows.Processing.Services.Devices;

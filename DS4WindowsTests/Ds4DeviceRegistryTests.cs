@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;

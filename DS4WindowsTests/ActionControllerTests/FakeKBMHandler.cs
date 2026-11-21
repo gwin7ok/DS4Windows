@@ -1,5 +1,3 @@
-using System;
-using Xunit;
 using DS4Windows.Output.Kbm;
 
 namespace DS4Windows.Actions.Tests

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Settings
 {

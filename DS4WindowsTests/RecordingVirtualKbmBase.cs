@@ -1,4 +1,3 @@
-using DS4Windows.Processing.Synthetic;
 using System.Collections.Generic;
 using DS4Windows.Output.Kbm;
 

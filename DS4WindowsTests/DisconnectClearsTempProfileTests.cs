@@ -1,10 +1,6 @@
 using System;
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows.Processing.Services.Connection;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

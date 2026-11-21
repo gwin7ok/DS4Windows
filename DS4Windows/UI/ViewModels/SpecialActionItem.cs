@@ -18,8 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 

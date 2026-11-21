@@ -21,8 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Logging;

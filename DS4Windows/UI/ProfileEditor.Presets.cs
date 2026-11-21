@@ -1,25 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.ComponentModel;
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Profiles;
-using DS4Windows.Core.Settings;
-using DS4Windows.UI.Abstractions;
-using DS4Windows.UI.Services;
 using DS4Windows.UI.ViewModels;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
 using MessageBox = System.Windows.MessageBox;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace DS4Windows.UI

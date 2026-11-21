@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Xunit;
+﻿using Xunit;
 using DS4Windows.Core.Model;
 
 namespace DS4WindowsTests

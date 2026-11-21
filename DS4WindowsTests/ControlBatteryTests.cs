@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Media;
 using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;

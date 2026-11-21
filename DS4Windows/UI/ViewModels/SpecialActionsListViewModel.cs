@@ -22,11 +22,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Logging;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.Abstractions;
 

@@ -1,20 +1,13 @@
 ﻿#nullable enable
 
-using System;
-using DS4Windows.Core.Abstractions;
-using DS4Windows.Core.Model;
-using DS4Windows.Core.Settings;
-using DS4Windows.Core.Utilities;
-using DS4Windows.Processing.Touchpad;
-
 namespace DS4Windows.Processing.Gyro
 {
-        /// <summary>
-        /// トリガーの設定の文字列（「4,5」のような、コンマ区切りのボタンの番号）を、数の配列へ直したもの。
-        /// 判定は毎フレーム行われるため、同じ文字列のあいだは直した結果を使い回し、Split と TryParse の割り当てを避ける。
-        /// 数でない要素は、判定では「押されていない」として扱う（Valid が偽）。
-        /// </summary>
-        internal sealed class ParsedTriggerList
+    /// <summary>
+    /// トリガーの設定の文字列（「4,5」のような、コンマ区切りのボタンの番号）を、数の配列へ直したもの。
+    /// 判定は毎フレーム行われるため、同じ文字列のあいだは直した結果を使い回し、Split と TryParse の割り当てを避ける。
+    /// 数でない要素は、判定では「押されていない」として扱う（Valid が偽）。
+    /// </summary>
+    internal sealed class ParsedTriggerList
         {
             public readonly string Source;
             public readonly bool IsEmpty;

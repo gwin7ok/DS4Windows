@@ -1,7 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Resources;
 using Xunit;
 using DS4Windows.Core.Abstractions;

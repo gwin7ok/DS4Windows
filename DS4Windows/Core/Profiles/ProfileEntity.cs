@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
 using System.IO;
 
 namespace DS4Windows.Core.Profiles

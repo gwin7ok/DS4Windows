@@ -1,6 +1,4 @@
-﻿using DS4Windows.Processing.Touchpad;
-using DS4Windows.Processing.Gyro;
-using DS4Windows.Processing.Macro;
+﻿using DS4Windows.Processing.Macro;
 using DS4Windows.Processing.Synthetic;
 using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
 /*
@@ -22,18 +20,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 // 見送り。GetTransitionedColor（純粋計算、Step3対象外の除外51件の1つ、
 // docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §1）が非修飾で呼ばれており本ディレクティブに依存するため、現時点では削除できない。
 // これ以外の Global 実利用箇所はすべて Global. 明示修飾（温存3件: ProfileSettingsServiceInstance／outputKBMHandler／ApplyProfile。
 // いずれも上記のTODO参照）または各DIサービス経由への置換で解消済み（docs-forDIMG/MadeByAgent/Archive/Phase6-Step3-Plan.md §6 完了判定チェックリスト）。
 // 【Phase7c W3 追記】上記は Phase6 時点の記録。Phase7-Step10d で Global 型は削除済み（Global への参照は存在しない）。
-using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 
 namespace DS4Windows.Processing
 {
@@ -128,7 +122,6 @@ namespace DS4Windows.Processing
             ArgumentNullException.ThrowIfNull(syntheticCommitter);
             _syntheticCommitter = syntheticCommitter;
             ArgumentNullException.ThrowIfNull(twoStageTrigger);
-            _twoStageTrigger = twoStageTrigger;
 
             _mouseSampler = new ButtonMouseSampler(profileSettings, slots, mouseConversion, stickMotion.Devices);
             _triggerInputs = new DS4Windows.Processing.Actions.TriggerInput[ControllerLimits.MaxControllerCount];
@@ -222,7 +215,6 @@ namespace DS4Windows.Processing
         private readonly DS4Windows.Processing.Abstractions.IDeviceInputCleanup _inputCleanup;   // 切断時の合成キーの解放・マクロのキュー・ボタンのコントローラーの後始末
         private readonly DS4Windows.Processing.Abstractions.IMouseConversionStage _mouseConversion;   // 入力をマウスの動きへ変える段（移動量の計算、フリックスティック、整数化、ジャイロのマウススティック）
         private readonly DS4Windows.Processing.Abstractions.ICurveAndDeadzoneStage _curveStage;   // 入力の補正の段（回転・ドリフト・デッドゾーン・出力カーブ・ジャイロ）
-        private readonly DS4Windows.Processing.Abstractions.ITwoStageTriggerProcessor _twoStageTrigger;   // 2 段階トリガーの状態機械
         private readonly DS4Windows.Processing.Abstractions.ISyntheticInputCommitter _syntheticCommitter;   // 合成入力の確定
         private readonly DS4Windows.Processing.Abstractions.IControlActivityReader _controlActivityReader;   // コントロールが押されているかの判定
 

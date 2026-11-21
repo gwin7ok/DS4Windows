@@ -1,6 +1,5 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
 using System.Linq;
 
 namespace DS4Windows.UI.ViewModels

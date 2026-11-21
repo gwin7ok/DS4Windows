@@ -19,10 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows;
-using HttpProgress;
 
 namespace DS4Windows.UI
 {

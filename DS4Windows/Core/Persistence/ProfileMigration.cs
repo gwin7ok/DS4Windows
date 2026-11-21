@@ -19,8 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System.IO;
 using System.Text;
 using System.Xml;
-using DS4Windows.Core.Platform;
-using DS4Windows.Core.Settings;
 
 namespace DS4Windows.Core.Persistence
 {

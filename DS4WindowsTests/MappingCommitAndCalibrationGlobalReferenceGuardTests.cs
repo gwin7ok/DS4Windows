@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using Xunit;
 using Xunit.Abstractions;
-using DS4Windows.Processing.Services.Conditioning;
 
 namespace DS4WindowsTests
 {

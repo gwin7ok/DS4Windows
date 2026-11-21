@@ -1,5 +1,4 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests

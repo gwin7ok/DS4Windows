@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Xml;
 using Xunit;
 using DS4Windows.Core.Abstractions;

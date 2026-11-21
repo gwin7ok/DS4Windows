@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Xunit;
 using DS4Windows.Core.Model;
 

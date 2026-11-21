@@ -1,10 +1,9 @@
 ﻿using Xunit;
-using System;
 using DS4Windows.Core.Utilities;
 
 namespace DS4WindowsTests
 {
-        public class SpecialActionNameNormalizationTests
+    public class SpecialActionNameNormalizationTests
     {
         [Fact]
         public void NormalizeActionName_TrimsWhitespace()

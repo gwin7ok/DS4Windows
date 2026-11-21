@@ -1,7 +1,6 @@
 ﻿using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services.Devices;
 

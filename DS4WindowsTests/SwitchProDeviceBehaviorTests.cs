@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using System.Threading;
 using DS4Windows.Core.Model;

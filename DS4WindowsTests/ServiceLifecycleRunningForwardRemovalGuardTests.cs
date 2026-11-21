@@ -1,9 +1,5 @@
-using System.Linq;
 using System.Reflection;
 using Xunit;
-using DS4Windows.Processing;
-using DS4Windows.Processing.Services.Connection;
-using DS4Windows.Processing.Services.Slots;
 
 namespace DS4WindowsTests
 {

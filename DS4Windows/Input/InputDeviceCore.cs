@@ -17,18 +17,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
-
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Core.Platform;
 using DS4Windows.Input.Abstractions;
-using DS4Windows.Input.Parsers;
 
 namespace DS4Windows.Input
 {

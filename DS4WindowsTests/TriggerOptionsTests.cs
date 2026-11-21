@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using DS4Windows.UI.ViewModels;
 
 namespace DS4WindowsTests

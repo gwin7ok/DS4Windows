@@ -1,7 +1,6 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using DS4Windows.Core.Settings;
 using DS4Windows.UI.Services;

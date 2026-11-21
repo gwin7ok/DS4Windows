@@ -1,11 +1,8 @@
 using DS4Windows.Processing.Synthetic;
-using System.IO;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;

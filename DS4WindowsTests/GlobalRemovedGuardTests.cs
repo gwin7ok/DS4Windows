@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -10,8 +8,6 @@ using DS4Windows.Composition;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
-using DS4Windows.Input;
-using DS4Windows.Processing.Services.Devices;
 
 namespace DS4WindowsTests
 {

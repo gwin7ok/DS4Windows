@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 using DS4Windows.Core.Settings;
-using DS4Windows.Processing;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Services.Conditioning;
 

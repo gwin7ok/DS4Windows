@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Threading;
 using DS4Windows.Core.Model;
 using DS4Windows.Input;

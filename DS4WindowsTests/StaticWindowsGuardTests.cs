@@ -1,11 +1,8 @@
 using System;
-using System.Linq;
-using System.Reflection;
 using Xunit;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
 using DS4Windows.Core.Utilities;
-using DS4Windows.Input;
 
 namespace DS4WindowsTests
 {

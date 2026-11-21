@@ -1,16 +1,4 @@
-﻿using DS4Windows.Processing.Touchpad;
-using DS4Windows.Processing.Gyro;
-using DS4Windows.Processing.Macro;
-using DS4Windows.Processing.Synthetic;
-using IVirtualKBM = DS4Windows.Processing.Abstractions.IVirtualKBM;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using DS4Windows.Core.Logging;
-using DS4Windows.Core.Model;
-using DS4Windows.Core.Settings;
-using DS4Windows.Input;
+﻿using DS4Windows.Core.Model;
 
 namespace DS4Windows.Processing
 {

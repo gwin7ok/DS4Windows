@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Serialization;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Persistence.Dto;

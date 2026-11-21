@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
-using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
-using DS4Windows.Core.Settings;
-using DS4Windows.Input.Hid;
-using DS4Windows.Input.Reports;
-using DS4Windows.Input.Abstractions;
-using DS4Windows.Input.Parsers;
 
 namespace DS4Windows.Input.Devices
 {

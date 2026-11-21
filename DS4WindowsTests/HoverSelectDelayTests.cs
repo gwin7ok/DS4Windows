@@ -1,5 +1,3 @@
-using System.IO;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace DS4WindowsTests

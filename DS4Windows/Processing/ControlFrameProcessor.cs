@@ -8,7 +8,6 @@ using DS4Windows.Core.Settings;
 using DS4Windows.Input;
 using DS4Windows.Processing.Abstractions;
 using DS4Windows.Processing.Actions;
-using DS4Windows.Processing.Gyro;
 
 namespace DS4Windows.Processing
 {
