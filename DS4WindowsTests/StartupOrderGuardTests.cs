@@ -5,8 +5,8 @@ using Xunit;
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// <c>App.Application_Startup</c> を手順ごとのメソッドに分けた後も、呼び出しの順序と、
-    /// 手順の中の安全弁の順序（ログの設定の前に設定を読む、保存の許可は接続フラグのリセットの後、など）が変わらないことを、ソースの照合で守る。
+    /// 手順の呼び出しの順序は <c>AppStartupSequence</c>（<c>AppStartupSequenceTests</c> が挙動で守る）。
+    /// ここは、1 つの手順の中の安全弁の順序（ログの設定の前に設定を読む、保存の許可は接続フラグのリセットの後、など）を、ソースの照合で守る。
     /// </summary>
     public class StartupOrderGuardTests
     {
@@ -19,71 +19,6 @@ namespace DS4WindowsTests
                 Assert.True(next > at, token + " が、期待の順序にない");
                 at = next;
             }
-        }
-
-        [Fact]
-        public void TheStartup_CallsTheStepsInTheOriginalOrder()
-        {
-            string text = SourceText.Read("DS4Windows/App.xaml.cs");
-            if (text == null) return;
-
-            string body = SourceText.Body(text, "private void Application_Startup(");
-            AssertOrder(body,
-                "AppNotificationRegistration.Initialize()",
-                "runShutdown = true;",
-                "skipSave = true;",
-                "RunPreHostBootstrap(e);",
-                "new ArgumentParser()",
-                "TryHandleCompleteInstall(e)",
-                "parser.Parse(e.Args);",
-                "CheckOptions(parser);",
-                "if (exitApp)",
-                "SetProcessPriorities();",
-                "EnsureSingleInstance()",
-                "RotateLogsAndLogStartupDiagnostics(e);",
-                "InitializeProcessWideSettings();",
-                "BuildHostAndServices(parser);",
-                "bool firstRun = _appSettingsService.FirstRun;",
-                "RunFirstRunLanguageSelection(",
-                "RunFirstRunSaveLocationAndSkeleton(",
-                "EnsureMacrosFolder();",
-                "LoadAppSettings(",
-                "ConfigureLoggingAndDiagnostics(",
-                "RunFirstLaunchSetup(",
-                "PrepareProfilesCultureAndTheme();",
-                "ShowMainWindowAndFinish(parser);");
-        }
-
-        [Fact]
-        public void TheEarlyExits_StillStopTheStartup()
-        {
-            string text = SourceText.Read("DS4Windows/App.xaml.cs");
-            if (text == null) return;
-
-            string body = SourceText.Body(text, "private void Application_Startup(");
-            // 早期の終了（完了モード、CheckOptions の終了要求、別のインスタンス、初回起動の中止）は、Application_Startup から return する
-            Assert.Matches(@"if \(TryHandleCompleteInstall\(e\)\)\s*\{\s*return;", body);
-            Assert.Matches(@"if \(exitApp\)\s*\{\s*return;", body);
-            Assert.Matches(@"if \(!EnsureSingleInstance\(\)\)\s*\{\s*return;", body);
-            Assert.Matches(@"if \(!RunFirstRunLanguageSelection\(firstRun, ref selectedLanguage\)\)\s*\{\s*return;", body);
-            Assert.Matches(@"if \(!RunFirstRunSaveLocationAndSkeleton\(firstRun\)\)\s*\{\s*return;", body);
-        }
-
-        [Fact]
-        public void TheLogRotation_HappensOnlyAfterTheSingleInstanceCheck()
-        {
-            string text = SourceText.Read("DS4Windows/App.xaml.cs");
-            if (text == null) return;
-
-            // 2 つ目のインスタンスが、動いている 1 つ目のインスタンスのログをアーカイブへ回さないこと。ローテーションは、確認の後の 1 か所だけ
-            Assert.Single(Regex.Matches(text, @"PerformStartupRotation\("));
-            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private void RunPreHostBootstrap("));
-            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private bool EnsureSingleInstance("));
-            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private void CheckOptions("));
-            Assert.DoesNotContain("StartupDiagnostics.", SourceText.Body(text, "private void RunPreHostBootstrap("));
-
-            string body = SourceText.Body(text, "private void Application_Startup(");
-            Assert.True(body.IndexOf("RotateLogsAndLogStartupDiagnostics(e);", StringComparison.Ordinal) > body.IndexOf("EnsureSingleInstance()", StringComparison.Ordinal));
         }
 
         [Fact]
@@ -104,9 +39,9 @@ namespace DS4WindowsTests
             AssertOrder(SourceText.Body(text, "private void InitializeProcessWideSettings("),
                 "TimeBeginPeriod(1)", "LoadFromRegistry()", "RefreshViGEmBusInfo()", "_singleInstance.StartListening(");
 
-            // ホストの構築 → ControlService → Post-Host のサービス
-            AssertOrder(SourceText.Body(text, "private void BuildHostAndServices("),
-                "AppHost.CreateHost(", "CreateControlService(parser);", "InitializePostHostServices();");
+            // ホストの構築（ControlService の作成と Post-Host のサービスの解決は、起動の順序 AppStartupSequence の手順。AppStartupSequenceTests が守る）
+            AssertOrder(SourceText.Body(text, "private void CreateHostExplicitly("),
+                "AppHost.CreateHost(");
 
             // 設定の読み込みは、LoggerHolder の作成より前
             AssertOrder(SourceText.Body(text, "private bool LoadAppSettings("), "_appSettingsService.Load()", "_appSettingsService.Save()");
@@ -116,9 +51,15 @@ namespace DS4WindowsTests
             // 保存の許可（skipSave = false）は、接続フラグのリセットの後
             AssertOrder(SourceText.Body(text, "private void RunFirstLaunchSetup("), "ResetConnectionFlags();", "skipSave = false;");
 
-            // プロファイルの固定 ID → SA の読み込み → 言語 → テーマ → リンクされたプロファイル（メイン画面の生成の前）
+            // プロファイルの固定 ID → SA の読み込み（ProfileStartupLoader。ProfileStartupLoaderTests が守る）→ 言語 → テーマ → リンクされたプロファイル（メイン画面の生成の前）
             AssertOrder(SourceText.Body(text, "private void PrepareProfilesCultureAndTheme("),
-                "EnsureAllPersisted();", "LoadActions()", "SetUICulture(", "ApplyLanguageSetting(", "ChangeTheme(", "LoadLinkedProfiles();");
+                "ProfileStartupLoader(", "SetUICulture(", "ApplyLanguageSetting(", "ChangeTheme(", "LoadLinkedProfiles();");
+
+            // ログのローテーションは、確認の後の 1 か所だけ（順序は AppStartupSequenceTests）。ほかの手順の中へ置かない
+            Assert.Single(Regex.Matches(text, @"PerformStartupRotation\("));
+            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private void RunPreHostBootstrap("));
+            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private bool EnsureSingleInstance("));
+            Assert.DoesNotContain("PerformStartupRotation(", SourceText.Body(text, "private void CheckOptions("));
 
             // メイン画面 → IPC → 出力スロット → LateChecks
             AssertOrder(SourceText.Body(text, "private void ShowMainWindowAndFinish("),

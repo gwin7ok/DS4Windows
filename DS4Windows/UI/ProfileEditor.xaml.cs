@@ -349,14 +349,14 @@ namespace DS4Windows.UI
         // S9 の追加要望: コントローラー図のマウスオーバーでボタン一覧の選択を切り替える処理に、500ms の遅延を入れる
         // （通過しただけの意図しないマウスオーバーで、選択が切り替わらないようにする）。ホバー画像の表示は即時のまま
         private const int HoverSelectDelayMs = 500;
-        private System.Timers.Timer? hoverSelectTimer;   // UI のタイマーは System.Timers.Timer に統一。Elapsed は別スレッドで来るため、UI へ戻して処理する
-        private Button? hoverSelectPending;
+        // 遅延の判断は HoverSelectDelay（時計を差し替えてテストできる）。選ぶ処理は UI のスレッドへ戻して行う
+        private DS4Windows.UI.Services.HoverSelectDelay<Button>? hoverSelectDelay;
 
-        private void CancelHoverSelect()
-        {
-            hoverSelectTimer?.Stop();
-            hoverSelectPending = null;
-        }
+        private DS4Windows.UI.Services.HoverSelectDelay<Button> HoverSelect =>
+            hoverSelectDelay ??= new DS4Windows.UI.Services.HoverSelectDelay<Button>(
+                TimeProvider.System, HoverSelectDelayMs, SelectHoveredControl, action => Dispatcher.BeginInvoke(action));
+
+        private void CancelHoverSelect() => hoverSelectDelay?.Cancel();
 
         private void InputControlHighlight(Button control, bool selectNow = true)
         {
@@ -375,7 +375,7 @@ namespace DS4Windows.UI
         {
             if (sender is not Button control) return;
             InputControlHighlight(control, selectNow: false);
-            StartHoverSelect(control);
+            HoverSelect.Start(control);
         }
 
         // GyroOutModeCombo_SelectionChanged（ジャイロ出力モードの変更時に、実機の

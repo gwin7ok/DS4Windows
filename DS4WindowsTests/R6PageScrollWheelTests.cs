@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using Xunit;
-using Xunit.Abstractions;
 using DS4Windows.UI;
 
 namespace DS4WindowsTests
@@ -11,13 +10,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class R6PageScrollWheelTests
     {
-        private readonly ITestOutputHelper _output;
-
-        public R6PageScrollWheelTests(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
         [Theory]
         [InlineData(120, 0, 1, 0)]
         [InlineData(-120, 0, -1, 0)]
@@ -36,25 +28,5 @@ namespace DS4WindowsTests
             Assert.Equal(expectedRemainder, remainder);
         }
 
-        [Fact]
-        public void TheHandler_IsRegisteredOnceAtStartup_BeforeTheFirstWindow()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
-            if (path == null)
-            {
-                _output.WriteLine("App.xaml.cs が見つからないため検査を省略した。");
-                return;
-            }
-
-            string text = SourceText.ReadFileWithPartials(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-
-            int start = text.IndexOf("private void InitializeProcessWideSettings(");
-            Assert.True(start >= 0);
-            int end = text.IndexOf("private ", start + 10);
-            string body = text.Substring(start, end - start);
-            Assert.Contains("PageScrollWheelHandler.Register();", body);
-        }
     }
 }

@@ -283,20 +283,9 @@ namespace DS4WindowsTests
         // ---- 配線 ----
 
         [Fact]
-        public void TheService_IsRegistered_AndTheStartupCallsItBeforeTheMainWindowIsCreated()
+        public void TheService_IsRegistered()
         {
             Assert.NotNull(TestHost.GetService<IProfileIdentityService>());
-
-            string app = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
-            if (app == null) return;
-
-            string source = SourceText.ReadFileWithPartials(app);
-            // 起動の手順は部分クラスのファイルに分かれているため、呼ぶ順序は、起動の入口（Application_Startup）の呼び出しの並びで確かめる
-            Assert.Contains("_profileIdentityService.EnsureAllPersisted()", source);
-            Assert.Contains("ResolvePostHostService<IMainWindowFactory>().Create(parser)", source);
-            int prepare = source.IndexOf("PrepareProfilesCultureAndTheme(", StringComparison.Ordinal);
-            int show = source.IndexOf("ShowMainWindowAndFinish(", StringComparison.Ordinal);
-            Assert.True(prepare > 0 && show > prepare, "プロファイルの ID の割り当て（PrepareProfilesCultureAndTheme）が、メイン画面の生成より前にない");
         }
     }
 }

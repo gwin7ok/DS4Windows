@@ -174,9 +174,6 @@ namespace DS4Windows
             }
             catch (Exception caught) when (caught is System.Security.SecurityException or System.IO.IOException or System.UnauthorizedAccessException or System.NotSupportedException or System.ArgumentException) { /* ファイル・プロセス・レジストリの失敗は無視して続ける */ }
 
-            // R-6: マウスホイールを、Windows の設定（1 画面ずつ／行数）に合わせる。最初の画面ができる前に、1 回だけ登録する
-            DS4Windows.UI.PageScrollWheelHandler.Register();
-
             // Retrieve info about installed ViGEmBus device if found
             // Phase7-Step4 W1／W4: 調べ物と状態は EnvironmentService（状態は static）が持つ。ブートストラップのインスタンスを使う。
             _bootstrapEnvironmentService.RefreshViGEmBusInfo();
@@ -193,7 +190,7 @@ namespace DS4Windows
         /// <summary>
         /// Phase9 9-F F-1b: ホストの構築、ControlService の作成、Post-Host のサービスの解決（Pre-Host 領域の終わり）。
         /// </summary>
-        private void BuildHostAndServices(ArgumentParser parser)
+        private void CreateHostExplicitly(ArgumentParser parser)
         {
             // Phase6-Step7: ここまでが Pre-Host 領域（明示的なホスト構築より前に実行される起動処理）。
             // この領域と CheckOptions（-driverinstall 分岐を含む）の Global 参照（起動時ログローテーション・
@@ -214,9 +211,6 @@ namespace DS4Windows
                 AppLogger.LogTrace($"AppHost verification call failed (expected if no full config): {ex.Message}");
             }
 
-            CreateControlService(parser);
-            InitializePostHostServices();
-            RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
         }
 
         /// <summary>

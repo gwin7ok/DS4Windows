@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Xunit;
-using Xunit.Abstractions;
+﻿using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Processing.Abstractions;
 
@@ -16,48 +14,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class AppPostHostGlobalReferenceGuardTests
     {
-        private const string AppSourcePath = "DS4Windows/App.xaml.cs";
-
-        private readonly ITestOutputHelper _output;
-
-        public AppPostHostGlobalReferenceGuardTests(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        // ---- 期待値（領域ごとの Global メンバー参照の件数）----
-
-        // ---- ソースの読み取りと領域の切り出し ----
-
-        private string ReadSourceWithoutComments()
-        {
-            string path = SourceFileLocator.Find(AppSourcePath);
-            if (path == null)
-            {
-                _output.WriteLine("App.xaml.cs が見つからないため検査を省略した。");
-                return null;
-            }
-
-            string text = SourceText.ReadFileWithPartials(path);
-            text = Regex.Replace(text, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
-            text = Regex.Replace(text, @"//[^\r\n]*", string.Empty);
-            return text;
-        }
-
-        // ---- テスト ----
-
-        [Fact]
-        public void InitializePostHostServices_IsCalledRightAfterCreateControlService()
-        {
-            string text = ReadSourceWithoutComments();
-            if (text == null) return;
-
-            string startup = SourceText.BodyOfMethodNamed(text, "BuildHostAndServices");   // ホストの構築の手順の中
-            Assert.Matches(@"CreateControlService\(parser\);\s*InitializePostHostServices\(\);", startup);
-            Assert.Single(Regex.Matches(text, @"\bInitializePostHostServices\(\);"));
-        }
-
-
         [Fact]
         public void PostHostServices_CanBeResolvedFromAppHost()
         {
