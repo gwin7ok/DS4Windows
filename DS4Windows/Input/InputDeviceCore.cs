@@ -183,8 +183,7 @@ namespace DS4Windows.Input
             set { layerSettings = value; }
         }
 
-        protected Queue<Action> eventQueue = new Queue<Action>();
-        protected object eventQueueLock = new object();
+        private readonly DeviceEventQueue _events = new DeviceEventQueue();
 
         protected ManualResetEventSlim readWaitEv = new ManualResetEventSlim();
         public ManualResetEventSlim ReadWaitEv { get => readWaitEv; }

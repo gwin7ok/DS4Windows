@@ -136,7 +136,6 @@ namespace DS4Windows.Input
         protected bool timeoutExecuted = false;
         protected bool timeoutEvent = false;
         protected bool runCalib;
-        protected bool hasInputEvts = false;
         protected string displayName;
         public string DisplayName => displayName;
         public bool ShouldRunCalib()
