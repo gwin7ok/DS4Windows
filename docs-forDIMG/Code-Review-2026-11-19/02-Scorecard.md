@@ -215,3 +215,16 @@
 共有部品化 A−（84.9%、+0.3 点）、冗長処理 A−（88.8%、+0.8 点）。等級の変化はなし。500 行以上の型は 30 のまま。
 部品: `ShortcutResolver`（`StartupEntryService` の重複を解消）、`SpecialActionListSorter`、`AutoProfileSelectionMapper`（8 回の繰り返しを解消）。単体テスト 14 件を追加（3,707→3,717）。
 見送りの内訳は `PhaseRV16-Survey.md`。
+
+## RV17 完了時点（2026-11-21）
+
+| 観点 | RV16 | RV17 |
+|---|---|---|
+| Pure DI 化 | A−（87.2%） | **A（90.5%）** |
+| 共有部品化 | A−（84.9%） | **A（96.1%）** |
+| MVVM 原則遵守の割合 | A−（85.5%） | A−（86.2%） |
+| そのほか | 変化は ±0.2 点 | |
+
+要点: `ExternalComponentInstaller`（導入の流れの集約。手入力の確認項目 `install_flow_unified` が いいえ→はい）、`PostHostServices`（`ResolvePostHostService` 23→9）。500 行以上のファイル 30→29（`WelcomeDialog`）。
+注意: 共有部品化の +11.2 点は、この観点の項目数が少なく、重み 1 の確認項目 1 つの変化が大きく出たため。部品としての質は、`ExternalComponentInstallerTests`（偽の HTTP・起動・時計。6 件）で固定している。
+挙動の差（意図したもの）: (1) FakerInput の導入の前に、FakerInput の古い一時ファイルも消す（従来は ViGEm のファイル名を消していた）、(2) 導入プログラムを起動できなかったとき（`Process.Start` が null）は、失敗を表示する（従来は終了を永久に待った）、(3) 画面を閉じたら、ダウンロードの途中でも取り消す（従来はダウンロードが続いた）。

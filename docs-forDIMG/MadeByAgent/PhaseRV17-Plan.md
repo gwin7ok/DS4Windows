@@ -1,7 +1,7 @@
 # PhaseRV17 計画書: 初回画面の導入の流れと、起動の組み立ての整理
 
 作成日: 2026-11-21
-状態: **計画。決定事項 D1〜D4 の選択待ち（コードは未着手）**
+状態: **完了（2026-11-21）。D1＝A、D2＝A、D3＝RV17 の後にまとめて 1 回、D4＝A。`ExternalComponentInstaller`・`PostHostServices` を作った。`ResolvePostHostService` 23→9。Pure DI 化 A−→A、共有部品化 A−→A。実機確認は Device-Check-Checklist の RV17（初回画面の導入 3 本、起動と終了）**
 出典: `Score-CodeReview.py` の現在の指標（RV16 完了時点）、`WelcomeDialog.Installers.cs`・`App*.cs` の読み取り。
 動き: **挙動・ログ・保存の形は変えない**。
 
