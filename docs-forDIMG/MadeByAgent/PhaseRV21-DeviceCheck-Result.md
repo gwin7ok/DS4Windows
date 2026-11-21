@@ -62,3 +62,7 @@ NG のときの「疑い先」は、変更した RV。原因の調査は `git lo
 1. **言語を切り替えて「適用」を押すとクラッシュ**: `FallbackValue={lex:Loc …}`（AssignmentEditor 5 か所・BindingWindow 1 か所）を、言語の切替で WPFLocalizeExtension が使用済みの Binding へ書き込もうとして `InvalidOperationException`。→ `FallbackValue` の `lex:Loc` を外した（結びつけ先は DataContext が生成時に設定される）。ガードテスト `XamlBindingPitfallGuardTests`。
 2. **日本語モードで、Press Key の「切り替えモード」の選択が表示されない**: `SelectedValuePath="Content"` が、翻訳された文字（押す／切り替え）と、VM の値（Press／Toggle）を比べていた。→ `Tag="Press"`／`Tag="Toggle"` ＋ `SelectedValuePath="Tag"`。
 3. **Controls タブの割り当て一覧の行をダブルクリックしても割り当て編集が開かない**（RV4-3a で `MouseDoubleClick` ハンドラーを `InputBindings` の `MouseBinding` へ移したときの不具合）: `InputBinding` は視覚木の外にあり、`RelativeSource AncestorType` が解決できない。→ code-behind でコマンドの実体を直接結ぶ。同じ形のログ一覧（`MainWindow`）のダブルクリックも直した。ガードテスト `XamlBindingPitfallGuardTests`。
+
+### 修正の再確認（利用者）
+- ①（言語の適用）・②（日本語の切り替えモード）: **OK**。
+- ③（ダブルクリック）: **NG のまま**（`InputBindings` の `MouseBinding` に替えた修正では直らなかった）。原因: 一覧の項目（`ListViewItem`）が `MouseDown` を処理済みにするため、一覧に付けた `MouseBinding` に届かない。→ `MouseDoubleClick` イベントで結び直した（割り当て一覧・ログ一覧・プロファイル一覧）。再確認待ち。

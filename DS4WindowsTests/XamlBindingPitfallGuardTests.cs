@@ -27,13 +27,13 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void NoXaml_UsesRelativeSourceInsideInputBindings()
+        public void NoXaml_UsesMouseBindings()
         {
-            // InputBinding は視覚木の外にあり、RelativeSource（祖先）は解決できない。コマンドは code-behind で結ぶ
+            // 一覧の項目のダブルクリックは、ListViewItem が MouseDown を処理済みにするため、MouseBinding には届かない（RelativeSource も解決できない）。MouseDoubleClick で結ぶ
             if (SourceText.Read("DS4Windows/UI/MainWindow.xaml") == null) return;
             string uiDir = Path.GetDirectoryName(SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml"))!;
             var offenders = Directory.EnumerateFiles(uiDir, "*.xaml", SearchOption.AllDirectories)
-                .Where(f => Regex.IsMatch(File.ReadAllText(f), @"<(MouseBinding|KeyBinding)[^>]*RelativeSource"))
+                .Where(f => Regex.IsMatch(File.ReadAllText(f), @"<(MouseBinding|KeyBinding)"))
                 .Select(Path.GetFileName)
                 .ToList();
 

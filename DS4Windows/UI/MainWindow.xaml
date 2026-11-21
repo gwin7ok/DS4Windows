@@ -245,9 +245,6 @@
                     </ToolBar>
 
                     <ListBox x:Name="profilesListBox" DockPanel.Dock="Bottom" SelectedIndex="{Binding SelectedProfileIndex, Mode=TwoWay}">
-                        <ListBox.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditProfileCommand}" />
-                        </ListBox.InputBindings>
                         <ListBox.Resources>
                             <localConverters:EscapeAccessKeysConverter x:Key="escapeAccessConvert" />
                         </ListBox.Resources>
