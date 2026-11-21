@@ -59,23 +59,18 @@ namespace DS4Windows.Processing.Touchpad
 
         private readonly TouchMouseTrackball _trackball = new TouchMouseTrackball();
 
-        private bool trackballTouchStickActive = false;
-
         // 旧ネスト型 Mouse.TouchButtonActivationMode は、プロファイルの設定値の型として
         // Core/Settings/TouchButtonActivationMode.cs（トップレベル）へ移した（値と基底型は同じ）
 
         private readonly TouchButtonDetector _buttons = new TouchButtonDetector();
 
-        private readonly TouchStickOutput _touchStick;
-        private FakeTrackball touchStickTrackball;
-
         /// <summary>
-        /// 持ち物（タップ・カーソル・ホイール・ジャイロ・タッチスティック）は、<c>TouchpadMouseFactory</c> が組み立てて渡す
+        /// 持ち物（タップ・カーソル・ホイール・ジャイロ）は、<c>TouchpadMouseFactory</c> が組み立てて渡す
         /// （デバイスの設定の読み書きや時刻の供給元を、この型が知らなくてよいようにする）。
         /// </summary>
         public TouchpadMouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, TapClickDetector tap, MouseCursor mouseCursor,
-            MouseWheel mouseWheel, GyroOutputProcessor gyro, TouchStickOutput touchStick)
+            MouseWheel mouseWheel, GyroOutputProcessor gyro)
         {
             ArgumentNullException.ThrowIfNull(stickMotion);
             ArgumentNullException.ThrowIfNull(syntheticInput);
@@ -85,7 +80,6 @@ namespace DS4Windows.Processing.Touchpad
             ArgumentNullException.ThrowIfNull(mouseCursor);
             ArgumentNullException.ThrowIfNull(mouseWheel);
             ArgumentNullException.ThrowIfNull(gyro);
-            ArgumentNullException.ThrowIfNull(touchStick);
             _stickMotion = stickMotion;
             _syntheticInput = syntheticInput;
             _profileSettings = profileSettings;
@@ -94,21 +88,14 @@ namespace DS4Windows.Processing.Touchpad
             cursor = mouseCursor;
             wheel = mouseWheel;
             _gyro = gyro;
-            _touchStick = touchStick;
             deviceNum = deviceID;
             dev = d;
             firstTouch = new Touch(0, 0, 0, null);
-            touchStickTrackball = new FakeTrackball();
         }
 
         public void ResetTrackAccel(double friction)
         {
             _trackball.ResetAccel(friction);
-        }
-
-        public void ResetTouchStickAccel(double friction)
-        {
-            touchStickTrackball.ResetAccel(friction);
         }
 
         public void ResetToggleGyroModes() => _gyro.ResetToggleGyroModes();
@@ -154,9 +141,6 @@ namespace DS4Windows.Processing.Touchpad
             private set => touchEnded = value;
         }
 
-        bool previousUnchangedTouchJoyFrame = false;
-        int previousTouchDX = 0;
-        int previousTouchDY = 0;
 
         public void SixaxisMoved(DS4SixAxis sender, SixAxisEventArgs arg)
         {
@@ -171,20 +155,6 @@ namespace DS4Windows.Processing.Touchpad
 
         public void PostSetup()
         {
-            TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
-            TouchpadOutMode tempMode = touchpad.OutputMode;
-            if (tempMode == TouchpadOutMode.MouseJoystick)
-            {
-                TouchMouseStickInfo msinfo = touchpad.MouseStick;
-                msinfo.RemoveRefreshEvents();
-                msinfo.SetRefreshEvents(_touchStick.Filter.axis1Filter);
-                msinfo.SetRefreshEvents(_touchStick.Filter.axis2Filter);
-
-                touchStickTrackball.ResetBuffers();
-                touchStickTrackball.ResetAccel(msinfo.trackballFriction);
-                trackballTouchStickActive = false;
-            }
-
             _gyro.PostSetup();
         }
 
@@ -195,19 +165,8 @@ namespace DS4Windows.Processing.Touchpad
             {
                 _trackball.Reset();
             }
-            else if (tempMode == TouchpadOutMode.MouseJoystick)
-            {
-                touchStickTrackball.Reset();
-                trackballTouchStickActive = false;
-            }
 
             _gyro.Reset();
-        }
-
-        private void TouchpadMouseStick(int dx, int dy)
-        {
-            s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
-            _touchStick.Apply(dx, dy, s.elapsedTime);
         }
 
         private bool GetDS4ControlsByName(int key) => TriggerButtonReader.IsPressed(s, key);
@@ -277,26 +236,6 @@ namespace DS4Windows.Processing.Touchpad
                             cursor.TouchMoveCursor(dx, dy, tempBool);
                         }
                     }
-                }
-            }
-            else if (touchMode == TouchpadOutMode.MouseJoystick)
-            {
-                if (trackballTouchStickActive)
-                {
-                    touchStickTrackball.Process(s.elapsedTime, out int dx, out int dy);
-                    TouchpadMouseStick(dx, dy);
-                }
-                else if (s.Touch1 && !previousUnchangedTouchJoyFrame)
-                {
-                    previousUnchangedTouchJoyFrame = true;
-                    //Trace.WriteLine($"PREVIOUS {previousTouchDX} {previousTouchDY}");
-                    TouchpadMouseStick(previousTouchDX, previousTouchDY);
-                }
-                else if (!s.Touch1)
-                {
-                    double currentRate = 1.0 / s.elapsedTime;
-                    _touchStick.Filter.axis1Filter.Filter(0, currentRate);
-                    _touchStick.Filter.axis2Filter.Filter(0, currentRate);
                 }
             }
 

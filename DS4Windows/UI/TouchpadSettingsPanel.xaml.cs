@@ -68,11 +68,7 @@ namespace DS4Windows.UI
                     touchContentControl2.Content = touchButtonUC;
                     activeTouchButtonDisplayControl = touchContentControl2;
                     break;
-                case 2:
-                    touchContentControl4.Content = touchButtonUC;
-                    activeTouchButtonDisplayControl = touchContentControl4;
-                    break;
-                case 3:
+                case 2:   // パススルー（置き場所なし）
                     break;
 
                 case 0:

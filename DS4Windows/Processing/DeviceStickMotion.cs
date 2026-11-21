@@ -16,7 +16,7 @@ namespace DS4Windows.Processing
 
         public byte GyroStickY { get; set; } = 128;
 
-        /// <summary>プロファイルの割り当て後に重ねるスティックの出力（<c>TouchStickOutput</c>・ジャイロが書き、<c>MapCustom</c> が読む）。</summary>
+        /// <summary>プロファイルの割り当て後に重ねるスティックの出力（ジャイロが書き、<c>MapCustom</c> が読む）。</summary>
         public PostMapStickData MapStickActionData { get; } = new PostMapStickData();
 
         public FlickStickMappingData FlickMappingData { get; } = new FlickStickMappingData();

@@ -38,10 +38,8 @@ namespace DS4Windows.UI.ViewModels
                         index = 0; break;
                     case TouchpadOutMode.Controls:
                         index = 1; break;
-                    case TouchpadOutMode.MouseJoystick:
-                        index = 2; break;
                     case TouchpadOutMode.Passthru:
-                        index = 3; break;
+                        index = 2; break;
                     default: break;
                 }
                 return index;
@@ -55,8 +53,6 @@ namespace DS4Windows.UI.ViewModels
                     case 1:
                         temp = TouchpadOutMode.Controls; break;
                     case 2:
-                        temp = TouchpadOutMode.MouseJoystick; break;
-                    case 3:
                         temp = TouchpadOutMode.Passthru; break;
                     default: break;
                 }
@@ -225,178 +221,6 @@ namespace DS4Windows.UI.ViewModels
         {
             get => touchpad.TrackballFriction;
             set => touchpad.TrackballFriction = value;
-        }
-
-        public int TouchMouseStickDeadZone
-        {
-            get => touchpad.MouseStick.deadZone;
-            set => touchpad.MouseStick.deadZone = value;
-        }
-
-        public int TouchMouseStickMaxZone
-        {
-            get => touchpad.MouseStick.maxZone;
-            set => touchpad.MouseStick.maxZone = value;
-        }
-
-        public int TouchMouseStickOutputStick
-        {
-            get => (int)touchpad.MouseStick.outputStick;
-            set
-            {
-                touchpad.MouseStick.outputStick =
-                    (TouchMouseStickInfo.OutputStick)value;
-            }
-        }
-
-        public int TouchMouseStickOutputAxes
-        {
-            get => (int)touchpad.MouseStick.outputStickDir;
-            set
-            {
-                touchpad.MouseStick.outputStickDir =
-                    (TouchMouseStickInfo.OutputStickAxes)value;
-            }
-        }
-
-        public double TouchMouseStickAntiDeadX
-        {
-            get => touchpad.MouseStick.antiDeadX * 100.0;
-            set => touchpad.MouseStick.antiDeadX = value * 0.01;
-        }
-
-        public double TouchMouseStickAntiDeadY
-        {
-            get => touchpad.MouseStick.antiDeadY * 100.0;
-            set => touchpad.MouseStick.antiDeadY = value * 0.01;
-        }
-
-        public int TouchMouseStickVertScale
-        {
-            get => touchpad.MouseStick.vertScale;
-            set => touchpad.MouseStick.vertScale = value;
-        }
-
-        public bool TouchMouseStickMaxOutputEnabled
-        {
-            get => touchpad.MouseStick.maxOutputEnabled;
-            set
-            {
-                bool temp = touchpad.MouseStick.maxOutputEnabled;
-                if (temp == value) return;
-                touchpad.MouseStick.maxOutputEnabled = value;
-                OnPropertyChanged(nameof(TouchMouseStickMaxOutputEnabled));
-                OnPropertyChanged(nameof(TouchMouseStickMaxOutput));
-            }
-        }
-        public double TouchMouseStickMaxOutput
-        {
-            get => touchpad.MouseStick.maxOutput;
-            set => touchpad.MouseStick.maxOutput = value;
-        }
-
-        public bool TouchMouseStickInvertX
-        {
-            get => (touchpad.MouseStick.inverted & 1) == 1;
-            set
-            {
-                if (value)
-                {
-                    touchpad.MouseStick.inverted |= 1;
-                }
-                else
-                {
-                    uint temp = touchpad.MouseStick.inverted;
-                    touchpad.MouseStick.inverted = (uint)(temp & ~1);
-                }
-            }
-        }
-
-        public bool TouchMouseStickInvertY
-        {
-            get => (touchpad.MouseStick.inverted & 2) == 2;
-            set
-            {
-                if (value)
-                {
-                    touchpad.MouseStick.inverted |= 2;
-                }
-                else
-                {
-                    uint temp = touchpad.MouseStick.inverted;
-                    touchpad.MouseStick.inverted = (uint)(temp & ~2);
-                }
-            }
-        }
-
-        public bool TouchMouseStickSmooth
-        {
-            get => touchpad.MouseStick.UseSmoothing;
-            set
-            {
-                if (touchpad.MouseStick.UseSmoothing == value) return;
-                touchpad.MouseStick.UseSmoothing = value;
-                OnPropertyChanged(nameof(TouchMouseStickSmooth));
-            }
-        }
-
-        public double TouchMouseStickOneEuroMinCutoff
-        {
-            get => touchpad.MouseStick.MinCutoff;
-            set => touchpad.MouseStick.MinCutoff = value;
-        }
-
-        public double TouchMouseStickOneEuroBeta
-        {
-            get => touchpad.MouseStick.Beta;
-            set => touchpad.MouseStick.Beta = value;
-        }
-
-        private List<EnumChoiceSelection<StickOutCurve.Curve>> touchMStickOutputCurveOptions =
-            new List<EnumChoiceSelection<StickOutCurve.Curve>>
-            {
-                new EnumChoiceSelection<StickOutCurve.Curve>("Linear", StickOutCurve.Curve.Linear),
-                new EnumChoiceSelection<StickOutCurve.Curve>("Easeout Quad", StickOutCurve.Curve.EaseoutQuad),
-                new EnumChoiceSelection<StickOutCurve.Curve>("Easeout Cubic", StickOutCurve.Curve.EaseoutCubic),
-                new EnumChoiceSelection<StickOutCurve.Curve>("Enhanced Precision", StickOutCurve.Curve.EnhancedPrecision),
-                new EnumChoiceSelection<StickOutCurve.Curve>("Quadratic", StickOutCurve.Curve.Quadratic),
-                new EnumChoiceSelection<StickOutCurve.Curve>("Cubic", StickOutCurve.Curve.Cubic),
-            };
-
-        public List<EnumChoiceSelection<StickOutCurve.Curve>> TouchMouseStickOutputCurveOptions => touchMStickOutputCurveOptions;
-
-        public StickOutCurve.Curve TouchMouseStickOutputCurve
-        {
-            get => touchpad.MouseStick.outputCurve;
-            set => touchpad.MouseStick.outputCurve = value;
-        }
-
-        public bool TouchMouseStickTrackball
-        {
-            get => touchpad.MouseStick.trackballMode;
-            set
-            {
-                if (touchpad.MouseStick.trackballMode == value) return;
-                touchpad.MouseStick.trackballMode = value;
-                OnPropertyChanged(nameof(TouchMouseStickTrackball));
-            }
-        }
-
-        public double TouchMouseStickTrackballFriction
-        {
-            get => touchpad.MouseStick.trackballFriction;
-            set
-            {
-                double temp = touchpad.MouseStick.trackballFriction;
-                if (temp == value) return;
-                touchpad.MouseStick.trackballFriction = value;
-                OnPropertyChanged(nameof(TouchMouseStickTrackballFriction));
-            }
-        }
-        public double TouchMouseStickRotation
-        {
-            get => touchpad.MouseStick.rotationRad * 180.0 / Math.PI;
-            set => touchpad.MouseStick.rotationRad = value * Math.PI / 180.0;
         }
 
         private string touchDisInvertString = "None";
