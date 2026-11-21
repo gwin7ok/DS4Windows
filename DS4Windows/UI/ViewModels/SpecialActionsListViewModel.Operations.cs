@@ -19,43 +19,13 @@ namespace DS4Windows.UI.ViewModels
     {
         public void SortActions(string propertyName, ListSortDirection direction)
         {
-            List<SpecialActionItem> items = actionCol.ToList();
+            List<SpecialActionItem> items = _sorter.Sort(actionCol, propertyName, direction);
             actionCol.Clear();
-
-            Comparison<SpecialActionItem>? primary = GetColumnComparison(propertyName, direction);
-
-            // 直前にソートしていた列が今回と異なる場合、それを第2ソートキーとして使う
-            // （直前の方向をそのまま維持する）。例: 名前昇順の状態から Active 列をクリックすると、
-            // Active（クリックした方向）→ 名前昇順 の順で並ぶ。
-            Comparison<SpecialActionItem>? secondary =
-                (lastSortedPropertyName != propertyName)
-                    ? GetColumnComparison(lastSortedPropertyName, lastSortedDirection)
-                    : null;
-
-            items.Sort((x, y) =>
-            {
-                int cmp = primary?.Invoke(x, y) ?? 0;
-                if (cmp != 0) return cmp;
-
-                if (secondary != null)
-                {
-                    cmp = secondary(x, y);
-                    if (cmp != 0) return cmp;
-                }
-
-                // 最終タイブレーク: アクション名（プロファイル内で一意）で確定的な順序にする。
-                // List<T>.Sort は不安定ソートのため、これがないと主・第2キーとも同値の要素の
-                // 順序が実行のたびに変わり得る。
-                return string.Compare(x.ActionName, y.ActionName, StringComparison.CurrentCultureIgnoreCase);
-            });
-
             foreach (var item in items)
             {
                 actionCol.Add(item);
             }
 
-            lastSortedPropertyName = propertyName;
-            lastSortedDirection = direction;
             OnPropertyChanged(nameof(CurrentSortColumn));
             OnPropertyChanged(nameof(CurrentSortDirection));
             OnPropertyChanged(nameof(CurrentSortAscending));
