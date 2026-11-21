@@ -76,11 +76,11 @@ namespace DS4Windows.Input.Devices
             MergeStates();
 
             bool dirty;
-            double tempRatio = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow / 255.0;
+            double tempRatio = Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow / 255.0;
             dirty = tempRatio != 0 || tempRatio != currentLeftAmpRatio;
             currentLeftAmpRatio = tempRatio;
 
-            tempRatio = currentHap.rumbleState.RumbleMotorStrengthRightLightFast / 255.0;
+            tempRatio = Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast / 255.0;
             dirty = dirty || tempRatio != 0 || tempRatio != currentRightAmpRatio;
             currentRightAmpRatio = tempRatio;
 

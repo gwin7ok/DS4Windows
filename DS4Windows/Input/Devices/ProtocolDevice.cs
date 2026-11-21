@@ -152,24 +152,24 @@ namespace DS4Windows.Input.Devices
             // 「物理コントローラーへ出力データを送る」が OFF のときは、振動・ライトバーを何も書かない（DS4 と同じ）
             if ((featureSet & VidPidFeatureSet.NoOutputData) != 0)
             {
-                currentHap.dirty = false;
+                Haptics.Current.dirty = false;
                 return;
             }
 
-            bool changed = currentHap.dirty || !previousHapticState.Equals(currentHap);
+            bool changed = Haptics.Current.dirty || !previousHapticState.Equals(Haptics.Current);
             if (changed)
             {
                 outputDirty = true;
             }
 
-            if (outputDirty && protocol.TryBuildOutputReport(currentHap, battery, outputReport))
+            if (outputDirty && protocol.TryBuildOutputReport(Haptics.Current, battery, outputReport))
             {
                 hDevice.WriteOutputReportViaInterrupt(outputReport, READ_STREAM_TIMEOUT);
-                previousHapticState = currentHap;
+                previousHapticState = Haptics.Current;
             }
 
             outputDirty = false;
-            currentHap.dirty = false;
+            Haptics.Current.dirty = false;
         }
 
         // 出力を OFF にする直前に、1 度だけ、全ての出力を止める（OFF のあとは何も書かれず、パッドが最後の状態を保つため）

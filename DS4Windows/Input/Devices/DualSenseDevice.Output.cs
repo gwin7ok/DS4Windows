@@ -20,12 +20,12 @@ namespace DS4Windows.Input.Devices
             if (outputDirty)
             {
                 WriteReport();
-                currentHap.dirty = false;
-                previousHapticState = currentHap;
+                Haptics.Current.dirty = false;
+                previousHapticState = Haptics.Current;
             }
 
             outputDirty = false;
-            currentHap.dirty = false;
+            Haptics.Current.dirty = false;
         }
 
         private void SendEmptyOutputReport()
@@ -86,15 +86,15 @@ namespace DS4Windows.Input.Devices
             MergeStates();
 
             bool change = false;
-            bool rumbleSet = currentHap.IsRumbleSet();
+            bool rumbleSet = Haptics.Current.IsRumbleSet();
 
             var outputState = new DualSenseOutputState
             {
                 UseRumble = useRumble,
                 UseAccurateRumble = useAccurateRumble,
-                RumbleRightLightFast = currentHap.rumbleState.RumbleMotorStrengthRightLightFast,
-                RumbleLeftHeavySlow = currentHap.rumbleState.RumbleMotorStrengthLeftHeavySlow,
-                LightbarColor = currentHap.lightbarState.LightBarColor,
+                RumbleRightLightFast = Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast,
+                RumbleLeftHeavySlow = Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow,
+                LightbarColor = Haptics.Current.lightbarState.LightBarColor,
                 HapticPowerLevel = hapticPowerLevel,
                 MuteLedByte = muteLEDByte,
                 PlayerLedMask = activePlayerLEDMask,
@@ -106,7 +106,7 @@ namespace DS4Windows.Input.Devices
             {
                 DualSenseOutputReportBuilder.Fill(outputReport, false, in outputState);
 
-                if (currentHap.dirty || !previousHapticState.Equals(currentHap))
+                if (Haptics.Current.dirty || !previousHapticState.Equals(Haptics.Current))
                 {
                     change = true;
                 }
@@ -145,13 +145,13 @@ namespace DS4Windows.Input.Devices
                 //outReportBuffer[0] = OUTPUT_REPORT_ID_BT; // Report ID
                 DualSenseOutputReportBuilder.Fill(outputReport, true, in outputState);
 
-                change = currentHap.dirty || !previousHapticState.Equals(currentHap);
+                change = Haptics.Current.dirty || !previousHapticState.Equals(Haptics.Current);
 
                 // Need to calculate and populate CRC32 data so controller will accept the report
                 uint calcCrc32 = 0;
                 if (change)
                 //if (outputPendCount >= 1 || change)
-                //if (!previousHapticState.Equals(currentHap))
+                //if (!previousHapticState.Equals(Haptics.Current))
                 {
                     //change = true;
                     outputDirty = true;
@@ -325,7 +325,7 @@ namespace DS4Windows.Input.Devices
             QueueEvent(() =>
             {
                 outputDirty = true;
-                currentHap.dirty = true;
+                Haptics.Current.dirty = true;
                 PrepareOutReport();
             });
         }
