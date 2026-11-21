@@ -150,6 +150,11 @@ namespace DS4Windows.UI
 
             InitCommands();
             InitializeComponent();
+            // ダブルクリックは MouseDoubleClick で受ける（InputBindings の MouseBinding は、ListViewItem が MouseDown を処理済みにするため届かない）
+            mappingListBox.MouseDoubleClick += (s, e) =>
+            {
+                if (EditSelectedControlCommand.CanExecute(null)) EditSelectedControlCommand.Execute(null);
+            };
             InitVisualizerButtons();
 
             // 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）

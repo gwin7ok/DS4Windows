@@ -2250,6 +2250,9 @@ Copy Settings to appdata?</value>
   <data name="GyroSettingsPanel_ResetGyroCalibration" xml:space="preserve">
     <value>Reset Gyro Calibration</value>
   </data>
+  <data name="GyroSettingsPanel_CalibrationDone" xml:space="preserve">
+    <value>Gyro calibration is complete.</value>
+  </data>
   <data name="GyroSettingsPanel_GyroSensitivity" xml:space="preserve">
     <value>Gyro Sensitivity:</value>
   </data>

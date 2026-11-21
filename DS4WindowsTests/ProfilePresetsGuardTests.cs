@@ -19,8 +19,7 @@ namespace DS4WindowsTests
     {
         private static readonly string[] MovedMethods =
         {
-            "LoadBlankDS4Profile", "LoadBlankProfile", "LoadDefaultGamepadGyroProfile", "LoadDefaultDS4GamepadGyroProfile",
-            "LoadDefaultMixedGyroMouseProfile", "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultDS4MixedControlsProfile",
+            "LoadBlankDS4Profile", "LoadBlankProfile", "LoadDefaultMixedGyroMouseProfile", "LoadDefaultDS4MixedGyroMouseProfile", "LoadDefaultDS4MixedControlsProfile",
             "LoadDefaultMixedControlsProfile", "LoadDefaultKBMProfile", "LoadDefaultKBMGyroMouseProfile", "PrepareBlankingProfile",
         };
 

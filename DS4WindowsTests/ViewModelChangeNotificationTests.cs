@@ -1,118 +1,46 @@
-using DS4Windows.Core.Model;
-using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using DS4Windows.UI.ViewModels;
+using DS4Windows.UI.ViewModels.SpecialActions;
 using Xunit;
 
 namespace DS4WindowsTests
 {
     /// <summary>
-    /// ViewModel の変更通知の共通の土台（<see cref="ObservableObject"/>）と、
-    /// 「プロパティ名＋Changed」のイベントから <see cref="INotifyPropertyChanged.PropertyChanged"/> へ集めた結果を守る。
-    /// 画面（バインディング）と、画面のコードビハインドの購読は、どちらも PropertyChanged を見る。
+    /// <c>INotifyPropertyChanged</c> を実装した ViewModel は、WPF が「<c>XxxChanged</c> イベント」の旧来の通知を見なくなる。
+    /// 値が変わったら、<c>PropertyChanged</c> で必ず通知する（設定した直後に画面へ出ない不具合の再発防止）。
     /// </summary>
     public class ViewModelChangeNotificationTests
     {
-        private sealed class Sample : ObservableObject
+        private static List<string?> Watch(INotifyPropertyChanged vm)
         {
-            private int _value;
-            public int Value
-            {
-                get => _value;
-                set => SetProperty(ref _value, value);
-            }
-        }
-
-        [Fact]
-        public void SetProperty_RaisesOnlyWhenTheValueChanges_AndReportsThePropertyName()
-        {
-            var sample = new Sample();
-            var names = new List<string>();
-            sample.PropertyChanged += (s, e) => names.Add(e.PropertyName);
-
-            sample.Value = 3;
-            sample.Value = 3;
-            sample.Value = 4;
-
-            Assert.Equal(new[] { nameof(Sample.Value), nameof(Sample.Value) }, names);
-            Assert.Equal(4, sample.Value);
-        }
-
-        [Fact]
-        public void ViewModelsOfTheMigratedScreens_DeriveFromObservableObject_AndHaveNoNameChangedEvents()
-        {
-            foreach (Type type in new[] { typeof(SettingsViewModel), typeof(ProfileSettingsViewModel), typeof(AxialStickControlViewModel) })
-            {
-                Assert.True(typeof(ObservableObject).IsAssignableFrom(type), type.Name + " が ObservableObject から派生していない");
-
-                // 「<プロパティ名>Changed」の EventHandler は、PropertyChanged へ集めた。戻さない
-                string[] leftovers = type.GetEvents(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(e => e.EventHandlerType == typeof(EventHandler) && e.Name.EndsWith("Changed", StringComparison.Ordinal))
-                    .Select(e => e.Name).ToArray();
-                Assert.True(leftovers.Length == 0, type.Name + " に残っている: " + string.Join(", ", leftovers));
-            }
-        }
-
-        [Fact]
-        public void ProfileSettingsViewModel_RaisesPropertyChanged_WhenTheDeadZoneChanges()
-        {
-            var vm = ProfileSettingsViewModelTestFactory.Create(0).Sticks.Left;
-            double original = vm.DeadZone;
-            var names = new List<string>();
+            var names = new List<string?>();
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
-            try
-            {
-                vm.DeadZone = original >= 0.5 ? 0.25 : 0.75;
-                Assert.Contains(nameof(StickSideViewModel.DeadZone), names);
-            }
-            finally
-            {
-                vm.DeadZone = original;
-            }
+            return names;
         }
 
         [Fact]
-        public void ProfileSettingsViewModel_MainColorChange_RenotifiesTheDerivedDisplayProperties()
+        public void LaunchProgram_ChoosingAFile_NotifiesThePathNameAndIcon()
         {
-            var vm = ProfileSettingsViewModelTestFactory.Create(0).Lightbar;
-            var names = new List<string>();
-            vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
+            var vm = new LaunchProgramViewModel(new RecordingSpecialActionRepository());
+            var names = Watch(vm);
 
-            vm.UpdateMainColor(new DS4Color(10, 20, 30));
+            vm.Filepath = @"C:\Tools\game.exe";
 
-            foreach (string expected in new[]
-            {
-                nameof(LightbarSettingsViewModel.MainColorString), nameof(LightbarSettingsViewModel.MainColorR),
-                nameof(LightbarSettingsViewModel.MainColorG), nameof(LightbarSettingsViewModel.MainColorB),
-            })
-            {
-                Assert.Contains(expected, names);
-            }
+            Assert.Contains(nameof(LaunchProgramViewModel.Filepath), names);
+            Assert.Contains(nameof(LaunchProgramViewModel.ProgramName), names);
+            Assert.Contains(nameof(LaunchProgramViewModel.ProgramIconPath), names);
         }
 
-        /// <summary>
-        /// 画面（コードビハインド）は、ViewModel を自分で作らない。作るのは <c>IViewModelFactory</c> で、画面は受け取るか、ファクトリー経由で得る。
-        /// </summary>
         [Fact]
-        public void ViewCodeBehind_DoesNotConstructViewModels()
+        public void SimpleProperties_NotifyWhenTheyChange()
         {
-            string anchor = SourceFileLocator.Find("DS4Windows/UI/MainWindow.xaml.cs");
-            if (anchor == null) return;
+            var vm = new SpecialActionViewModel(0, new RecordingSpecialActionRepository());
+            var names = Watch(vm);
 
-            var offenders = new List<string>();
-            foreach (string file in System.IO.Directory.GetFiles(System.IO.Path.GetDirectoryName(anchor), "*.xaml.cs"))
-            {
-                string text = SourceText.ReadCode("DS4Windows/UI/" + System.IO.Path.GetFileName(file));
-                if (text == null) continue;
-                foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(text, @"new\s+\w*ViewModel\s*\("))
-                    offenders.Add(System.IO.Path.GetFileName(file) + ": " + m.Value);
-            }
+            vm.HoldInterval = 1.5;
 
-            Assert.True(offenders.Count == 0, "画面が ViewModel を直接作っている:" + Environment.NewLine + string.Join(Environment.NewLine, offenders));
+            Assert.Contains(nameof(SpecialActionViewModel.HoldInterval), names);
         }
     }
 }

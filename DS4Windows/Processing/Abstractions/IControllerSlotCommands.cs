@@ -1,3 +1,5 @@
+using System;
+
 namespace DS4Windows.Processing.Abstractions
 {
     /// <summary>
@@ -25,7 +27,10 @@ namespace DS4Windows.Processing.Abstractions
         /// </summary>
         bool ApplyDualSenseRumbleOptions(int slot, int rumbleEmulationMode, byte hapticPowerLevel);
 
-        /// <summary>ジャイロの連続較正をやり直す。2 台が合体している機器では相手側も同時にやり直す。</summary>
-        bool ResetGyroCalibration(int slot);
+        /// <summary>
+        /// ジャイロの連続較正をやり直す。<paramref name="completed"/> は、やり直した較正が終わったときに、入力のスレッドから 1 回だけ呼ばれる
+        /// （未接続で false を返したときは呼ばれない）。
+        /// </summary>
+        bool ResetGyroCalibration(int slot, Action? completed = null);
     }
 }

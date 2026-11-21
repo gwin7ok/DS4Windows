@@ -380,9 +380,6 @@
                               SelectedItem="{Binding SelectedMapping}"
                               Margin="6"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <ListView.InputBindings>
-                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditSelectedControlCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        </ListView.InputBindings>
                         <ListView.View>
                             <GridView>
                                 <GridView.ColumnHeaderContainerStyle>

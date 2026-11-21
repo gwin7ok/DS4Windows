@@ -66,6 +66,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             runTriggerRelease = action.pressRelease;
             syncRun = action.synchronized;
             keepKeyState = action.keepKeyState;
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         public DS4ControlSettings PrepareSettings()

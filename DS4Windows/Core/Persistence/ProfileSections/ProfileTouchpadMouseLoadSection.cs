@@ -142,6 +142,14 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { store.touchpadSlots[device].ButtonMode = TouchButtonActivationMode.Click; missingSetting = true; }
 
+            // 廃止したタッチパッドの出力モード「マウススティック」（MouseJoystick）で保存された古いプロファイルは、
+            // 「操作」モードの既定値として読み込む（タッチパッドの設定は、すべて既定値へ戻す）
+            if (store.touchpadSlots[device].OutputMode == TouchpadOutMode.MouseJoystick)
+            {
+                store.touchpadSlots[device].ResetForProfileLoad();
+                store.touchpadSlots[device].OutputMode = TouchpadOutMode.Controls;
+            }
+
             context.MissingSetting = missingSetting;
         }
     }

@@ -113,20 +113,5 @@ namespace DS4Windows.Processing
                 VirtualKBM.MoveRelativeMouse(mouseDeltaX, mouseDeltaY);
             }
         }
-
-        public void TempMouseJoystick(int device, ControllerState MappedState)
-        {
-            GyroOutMode imuOutMode = profileSettings.ForSlot(device).Gyro.OutputMode;
-            if (imuOutMode == GyroOutMode.MouseJoystick)
-            {
-                GyroMouseStickInfo msinfo = profileSettings.ForSlot(device).Gyro.MouseStick;
-                if (msinfo.outputStick != GyroMouseStickInfo.OutputStick.None)
-                {
-                    // X／Y の合成（約 55 行）は GyroMouseStickBlender へ移した
-                    _mouseConversion.BlendGyroMouseStick(msinfo, _motions[device].GyroStickX, _motions[device].GyroStickY,
-                        MappedState, _motions[device].MapStickActionData);
-                }
-            }
-        }
     }
 }

@@ -47,12 +47,12 @@ namespace DS4Windows.UI.ViewModels
         private readonly IProfileRepository profileRepo;
 
 
-        public IControllerSlotView Device { get => device; set => device = value; }
+        public IControllerSlotView Device { get => device; set => SetProperty(ref device, value); }
 
         /// <summary>機器の同期の変化（USB／Bluetooth の接続の切り替わり）を購読する。画面が機器の型を直接触らないための入口。</summary>
         public void SubscribeSyncChange(EventHandler handler) => device.SyncChange += handler;
-        public string SelectedProfile { get => selectedProfile; set => selectedProfile = value; }
-        public ProfileList ProfileEntities { get => profileListHolder; set => profileListHolder = value; }
+        public string SelectedProfile { get => selectedProfile; set => SetProperty(ref selectedProfile, value); }
+        public ProfileList ProfileEntities { get => profileListHolder; set => SetProperty(ref profileListHolder, value); }
         public ObservableCollection<ProfileEntity> ProfileListCol => profileListHolder.ProfileListCol;
 
         public string LightColor
@@ -189,6 +189,7 @@ namespace DS4Windows.UI.ViewModels
 
         public void RaiseLinkedProfileChanged()
         {
+            OnPropertyChanged(nameof(LinkedProfile));
             LinkedProfileChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -201,6 +202,7 @@ namespace DS4Windows.UI.ViewModels
                 profileRepo.SelectedProfile[devIndex] = value;
                 profileRepo.ProfilePath[devIndex] = value;
                 profileRepo.OlderProfilePath[devIndex] = value;
+                OnPropertyChanged(nameof(SelectedProfile));
                 SelectedProfileChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -232,6 +234,8 @@ namespace DS4Windows.UI.ViewModels
                         profileRepo.SaveLinkedProfiles();
                     }
                 }
+
+                OnPropertyChanged(nameof(LinkedProfileName));
 
                 LinkedProfileNameChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -272,6 +276,8 @@ namespace DS4Windows.UI.ViewModels
                         AppLogger.LogWarn($"LinkEnabled ON: Could not save - linkedValue='{linkedValue}', validSerial={device?.HasValidSerial}");
                     }
 
+                    OnPropertyChanged(nameof(LinkedProfileName));
+
                     LinkedProfileNameChanged?.Invoke(this, EventArgs.Empty);
                 }
                 else
@@ -286,6 +292,8 @@ namespace DS4Windows.UI.ViewModels
 
                     AppLogger.LogDebug($"LinkEnabled OFF: Keeping LinkedProfileUI value '{profileRepo.LinkedProfileUI[devIndex]}' for device {devIndex}");
                 }
+
+                OnPropertyChanged(nameof(LinkedProfile));
 
                 LinkedProfileChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -306,7 +314,7 @@ namespace DS4Windows.UI.ViewModels
         public event EventHandler? TooltipIDTextChanged;
 
         private bool useCustomColor;
-        public bool UseCustomColor { get => useCustomColor; set => useCustomColor = value; }
+        public bool UseCustomColor { get => useCustomColor; set => SetProperty(ref useCustomColor, value); }
 
 
         public string IdText
@@ -362,7 +370,11 @@ namespace DS4Windows.UI.ViewModels
             lastBatteryState = BatteryState;
             batteryRefreshTimer = TimeProvider.System.CreateTimer(_ => RefreshBatteryState(), null, TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs), TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs));
             device.Removal += (sender, e) => StopBatteryRefresh();
-            device.MacAddressChanged += (sender, e) => IdTextChanged?.Invoke(this, e);
+            device.MacAddressChanged += (sender, e) =>
+            {
+                OnPropertyChanged(nameof(IdText));
+                IdTextChanged?.Invoke(this, e);
+            };
             this.devIndex = devIndex;
             this.selectedProfile = profile;
             profileListHolder = collection;
@@ -405,6 +417,7 @@ namespace DS4Windows.UI.ViewModels
 
         public void RequestUpdatedTooltipID()
         {
+            OnPropertyChanged(nameof(TooltipIDText));
             TooltipIDTextChanged?.Invoke(this, EventArgs.Empty);
         }
 

@@ -90,6 +90,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (specialActionIndex == value) return;
                 specialActionIndex = value;
+                OnPropertyChanged(nameof(SpecialActionIndex));
                 SpecialActionIndexChanged?.Invoke(this, EventArgs.Empty);
                 SpecialActionsListViewModel_SpecialActionIndexChanged(this, EventArgs.Empty);
                 OnPropertyChanged();

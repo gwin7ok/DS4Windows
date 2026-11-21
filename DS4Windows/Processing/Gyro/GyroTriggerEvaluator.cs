@@ -15,8 +15,8 @@ namespace DS4Windows.Processing.Gyro
     {
         private readonly int _deviceNum;
         private readonly IProfileSettingsService _profileSettings;
-        // ジャイロの出力の種類（Controls／Mouse／MouseJoystick）ごとの、直した結果。入力のスレッドだけが読み書きする
-        private readonly ParsedTriggerList?[] _cache = new ParsedTriggerList?[3];
+        // ジャイロの出力の種類（Controls／Mouse）ごとの、直した結果。入力のスレッドだけが読み書きする
+        private readonly ParsedTriggerList?[] _cache = new ParsedTriggerList?[2];
         private bool _currentToggle;
         private bool _previousActivated;
 
@@ -61,12 +61,6 @@ namespace DS4Windows.Processing.Gyro
             {
                 triggers = GetParsed(1, _profileSettings.ForSlot(_deviceNum).Gyro.MouseTriggers!);   // プロファイルの読み込み前の既定値で必ず設定される
                 andCond = _profileSettings.ForSlot(_deviceNum).Gyro.MouseTriggerCondAnd;
-            }
-            else if (mode == GyroOutMode.MouseJoystick)
-            {
-                reverseRatchet = _profileSettings.ForSlot(_deviceNum).Gyro.MouseStickTriggerTurns;
-                triggers = GetParsed(2, _profileSettings.ForSlot(_deviceNum).Gyro.MouseStickTriggers!);   // 同上
-                andCond = _profileSettings.ForSlot(_deviceNum).Gyro.MouseStickTriggerCondAnd;
             }
 
             bool activated = andCond;

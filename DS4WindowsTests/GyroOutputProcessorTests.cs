@@ -74,27 +74,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void MouseStick_IsNeutralWithoutMotion_AndMovesWithALargeYaw()
-        {
-            Fixture f = Create();
-            var gyro = f.Settings.ForSlot(Slot).Gyro;
-            gyro.OutputMode = GyroOutMode.MouseJoystick;
-            gyro.MouseStickTriggers = string.Empty;       // トリガーなし＝反転なしなら常に出力する
-            gyro.MouseStickTriggerCondAnd = false;
-            gyro.MouseStickTriggerTurns = false;
-
-            f.Mouse.SixaxisMoved(null, Motion(0, 0));
-            Assert.Equal(128, f.Sticks.Devices[Slot].GyroStickX);
-            Assert.Equal(128, f.Sticks.Devices[Slot].GyroStickY);
-
-            f.Mouse.SixaxisMoved(null, Motion(20000, 0));
-            Assert.True(f.Sticks.Devices[Slot].GyroStickX > 128, $"X = {f.Sticks.Devices[Slot].GyroStickX}");
-
-            f.Mouse.SixaxisMoved(null, Motion(-20000, 0));
-            Assert.True(f.Sticks.Devices[Slot].GyroStickX < 128, $"X = {f.Sticks.Devices[Slot].GyroStickX}");
-        }
-
-        [Fact]
         public void ResetToggleGyroModes_ClearsTheToggledState()
         {
             Fixture f = Create();
@@ -169,41 +148,5 @@ namespace DS4WindowsTests
             Assert.True(f.Mouse.IsGyroTriggerActive(GyroOutMode.Controls, f.State));
         }
 
-        [Fact]
-        public void MouseStick_ReverseFlag_DecidesWhetherAnActiveTriggerMovesTheStick()
-        {
-            Fixture f = Create();
-            var gyro = f.Settings.ForSlot(Slot).Gyro;
-            gyro.OutputMode = GyroOutMode.MouseJoystick;
-            gyro.MouseStickTriggers = "4";               // L1 が押されている＝成立
-            gyro.MouseStickTriggerCondAnd = false;
-
-            gyro.MouseStickTriggerTurns = false;         // 反転なし: 成立している間は動かさない
-            f.Mouse.SixaxisMoved(null, Motion(20000, 0));
-            Assert.Equal(128, f.Sticks.Devices[Slot].GyroStickX);
-
-            gyro.MouseStickTriggerTurns = true;          // 反転: 成立している間だけ動かす
-            f.Mouse.SixaxisMoved(null, Motion(20000, 0));
-            Assert.True(f.Sticks.Devices[Slot].GyroStickX > 128, $"X = {f.Sticks.Devices[Slot].GyroStickX}");
-        }
-
-        [Fact]
-        public void MouseStick_OnEntry_ResetsBothAxes()
-        {
-            Fixture f = Create();
-            var gyro = f.Settings.ForSlot(Slot).Gyro;
-            gyro.OutputMode = GyroOutMode.MouseJoystick;
-            gyro.MouseStickTriggers = "4";               // 成立している
-            gyro.MouseStickTriggerCondAnd = false;
-            gyro.MouseStickTriggerTurns = false;         // 反転なし＋成立 → 動かさない枝（SixMouseReset）
-            f.Sticks.Devices[Slot].GyroStickX = 77;
-            f.Sticks.Devices[Slot].GyroStickY = 200;
-
-            f.Mouse.SixaxisMoved(null, Motion(0, 0));
-
-            Assert.Equal(128, f.Sticks.Devices[Slot].GyroStickX);
-            // 入口の初期化は、X と Y の両方を中立へ戻す（旧は X を 2 回代入しており、Y が前の値のまま残っていた誤記。RV13-1 で直した）
-            Assert.Equal(128, f.Sticks.Devices[Slot].GyroStickY);
-        }
     }
 }

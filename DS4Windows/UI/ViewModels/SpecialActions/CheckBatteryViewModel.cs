@@ -33,9 +33,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private DS4Color emptyColor = new DS4Color(255, 0, 0);
         private DS4Color fullColor = new DS4Color(0, 255, 0);
 
-        public double Delay { get => delay; set => delay = value; }
-        public bool Notification { get => notification; set => notification = value; }
-        public bool Lightbar { get => lightbar; set => lightbar = value; }
+        public double Delay { get => delay; set => SetProperty(ref delay, value); }
+        public bool Notification { get => notification; set => SetProperty(ref notification, value); }
+        public bool Lightbar { get => lightbar; set => SetProperty(ref lightbar, value); }
         public DS4Color EmptyColor
         {
             get => emptyColor;
@@ -43,6 +43,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 if (emptyColor.Equals(value)) return;
                 emptyColor = value;
+                OnPropertyChanged(nameof(EmptyColor));
                 EmptyColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -54,6 +55,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 if (fullColor.Equals(value)) return;
                 fullColor = value;
+                OnPropertyChanged(nameof(FullColor));
                 FullColorChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -97,6 +99,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             bool.TryParse(details[2], out lightbar);
             emptyColor = new DS4Color(byte.Parse(details[3]), byte.Parse(details[4]), byte.Parse(details[5]));
             fullColor = new DS4Color(byte.Parse(details[6]), byte.Parse(details[7]), byte.Parse(details[8]));
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         // Controls のモード。型のある項目との往復（SA と同じ入力・同じ検証。色は Color ⇄ DS4Color）
@@ -114,6 +117,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                 EmptyColor = item.EmptyColor;
                 FullColor = item.FullColor;
             }
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)

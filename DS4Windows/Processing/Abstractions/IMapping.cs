@@ -20,9 +20,6 @@ namespace DS4Windows.Processing.Abstractions
         /// <summary>プロファイルの割り当てを評価して <paramref name="MappedState"/> に書く（通常入力の評価の本体）。</summary>
         void MapCustom(int device, ControllerState cState, ControllerState MappedState, ControllerStateExposed eState, TouchpadMouse tp);
 
-        /// <summary>タッチパッドをジョイスティックとして扱うときの補助。</summary>
-        void TempMouseJoystick(int device, ControllerState MappedState);
-
         /// <summary>合成キー・マウスの入力を仮想キーボード・マウスへ確定して出力する。</summary>
         void Commit(int device, IProfileSettingsService settings);
 

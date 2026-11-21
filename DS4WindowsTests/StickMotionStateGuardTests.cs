@@ -29,8 +29,6 @@ namespace DS4WindowsTests
             Assert.Equal(count, state.Devices.Length);
             Assert.All(state.Devices, d =>
             {
-                Assert.Equal(128, d.GyroStickX);
-                Assert.Equal(128, d.GyroStickY);
                 Assert.NotNull(d.MapStickActionData);
                 Assert.NotNull(d.FlickMappingData);
                 Assert.NotNull(d.L2TwoStageMappingData);

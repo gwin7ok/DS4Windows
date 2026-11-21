@@ -60,7 +60,7 @@ namespace DS4WindowsTests
             string[] expected =
             {
                 "CaptureProfileUntrigger", "Commit", "EndMacroDirect", "GetBoolMappingExternal", "HandleDeviceDisconnect",
-                "MapCustom", "PlayMacroDirect", "RestoreProfileUntrigger", "SetCurveAndDeadzone", "TempMouseJoystick",
+                "MapCustom", "PlayMacroDirect", "RestoreProfileUntrigger", "SetCurveAndDeadzone",
             };
             Assert.Equal(expected, names);
         }

@@ -245,9 +245,6 @@
                     </ToolBar>
 
                     <ListBox x:Name="profilesListBox" DockPanel.Dock="Bottom" SelectedIndex="{Binding SelectedProfileIndex, Mode=TwoWay}">
-                        <ListBox.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditProfileCommand}" />
-                        </ListBox.InputBindings>
                         <ListBox.Resources>
                             <localConverters:EscapeAccessKeysConverter x:Key="escapeAccessConvert" />
                         </ListBox.Resources>
@@ -525,9 +522,7 @@
                         <Button x:Name="clearLogBtn" Content="{lex:Loc Clear}" DockPanel.Dock="Right" Padding="20,1" Margin="100,0,0,0" Command="{Binding DataContext.ClearLogCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                     </DockPanel>
                     <ListView x:Name="logListView" PreviewMouseUp="LogListView_PreviewMouseUp" DockPanel.Dock="Top" ItemsSource="{Binding LogItems}" Margin="0">
-                        <ListView.InputBindings>
-                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DataContext.ShowLogMessageCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
-                        </ListView.InputBindings>
+                        <!-- ダブルクリックのコマンドは、InputBindings の中では祖先を探せないため、code-behind で結ぶ（MainWindow のコンストラクター） -->
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
                                 <GridViewColumn Header="{lex:Loc MainWindow_Time}" Width="190">

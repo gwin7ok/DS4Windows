@@ -21,21 +21,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GyroMouseStickOutput_ReadsTheGyroMouseStickHorizontalAxis_OfItsOwnDevice()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Gyro/GyroMouseStickOutput.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string code = SourceText.StripComments(SourceText.ReadFileWithPartials(path));
-            Assert.Contains("ForSlot(deviceNum).Gyro.MouseStickHorizontalAxis", code);
-            Assert.DoesNotMatch(@"ForSlot\(\s*0\s*\)\.Gyro\.MouseStickHorizontalAxis", code);
-        }
-
-        [Fact]
         public void FakerInputRequestedButNotInstalled_UsesTheSendInputFallback()
         {
             bool original = EnvironmentService.FakerInputInstalledState;

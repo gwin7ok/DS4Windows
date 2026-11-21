@@ -12,11 +12,7 @@ namespace DS4Windows.Processing
     public sealed class DeviceStickMotion
     {
         /// <summary>ジャイロのマウススティック出力の軸の値（128＝中立）。</summary>
-        public byte GyroStickX { get; set; } = 128;
-
-        public byte GyroStickY { get; set; } = 128;
-
-        /// <summary>プロファイルの割り当て後に重ねるスティックの出力（<c>TouchStickOutput</c>・ジャイロが書き、<c>MapCustom</c> が読む）。</summary>
+        /// <summary>プロファイルの割り当て後に重ねるスティックの出力（ジャイロが書き、<c>MapCustom</c> が読む）。</summary>
         public PostMapStickData MapStickActionData { get; } = new PostMapStickData();
 
         public FlickStickMappingData FlickMappingData { get; } = new FlickStickMappingData();

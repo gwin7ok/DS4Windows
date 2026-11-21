@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
+using DS4Windows.Core.Logging;
 using DS4Windows.Processing.Abstractions;
+using DS4Windows.UI.Abstractions;
 
 namespace DS4Windows.UI.Services
 {
@@ -18,10 +20,17 @@ namespace DS4Windows.UI.Services
         private readonly IControllerSlotCommands slotCommands;
         private readonly IRuntimeFeatureSwitch runtimeFeatures;
         private readonly IEnvironmentService environmentService;
+        private readonly IDialogService dialogs;
+        private readonly IUiDispatcher dispatcher;
 
         public ProfileEditorBackend(IProfileRepository profileRepository, IControllerSlotCommands slotCommands,
-            IRuntimeFeatureSwitch runtimeFeatures, IEnvironmentService environmentService)
+            IRuntimeFeatureSwitch runtimeFeatures, IEnvironmentService environmentService,
+            IDialogService dialogs, IUiDispatcher dispatcher)
         {
+            ArgumentNullException.ThrowIfNull(dialogs);
+            this.dialogs = dialogs;
+            ArgumentNullException.ThrowIfNull(dispatcher);
+            this.dispatcher = dispatcher;
             ArgumentNullException.ThrowIfNull(profileRepository);
             this.profileRepository = profileRepository;
             ArgumentNullException.ThrowIfNull(slotCommands);
@@ -50,12 +59,14 @@ namespace DS4Windows.UI.Services
         /// <summary>いま入力されているボタン（コントローラーの入力で割り当て編集を開くために読む）。</summary>
         public DS4Controls GetActiveInputControl(int slot) => runtimeFeatures.GetActiveInputControl(slot);
 
-        /// <summary>ジャイロの較正をやり直す。未接続のスロットでは何もしない。</summary>
+        /// <summary>ジャイロの較正をやり直す。未接続のスロットでは何もしない。較正（約 5 秒）が終わったら、完了を知らせる窓を出す。</summary>
         public void ResetGyroCalibration(int slot)
         {
             if (slot < environmentService.ControllerSlotLimit)
             {
-                slotCommands.ResetGyroCalibration(slot);
+                // 完了は入力のスレッドから来るため、窓は画面のスレッドで出す
+                slotCommands.ResetGyroCalibration(slot, () => dispatcher.BeginInvoke(() =>
+                    dialogs.ShowMessage(AppLogger.UserText("GyroSettingsPanel_CalibrationDone"), null, DialogIcon.Information)));
             }
         }
 

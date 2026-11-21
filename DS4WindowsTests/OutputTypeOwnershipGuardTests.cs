@@ -33,11 +33,11 @@ namespace DS4WindowsTests
             if (store == null) return;
 
             // プロファイルの読込（1 件）は LegacyProfileXmlSerializer へ移した（store.ActiveOutDevType）。合計は変わらない
-            // プリセットの読込（7 件）も ProfilePresets へ移した。3 つのソースを合わせて 8 件
+            // プリセットの読込も ProfilePresets へ移した。3 つのソースを合わせて 7 件（廃止したジャイロカメラのプリセットの分を除く）
             string serializer = SourceText.ReadCode("DS4Windows/Core/Persistence/LegacyProfileXmlSerializer.cs");
             string presets = SourceText.ReadCodeWithPartials("DS4Windows/Core/Persistence/ProfilePresets.cs");
             if (serializer == null || presets == null) return;
-            Assert.Equal(8, Regex.Matches(store + serializer + presets, @"OutContType oldContType = (store\.)?ActiveOutDevType\[device\];").Count);
+            Assert.Equal(7, Regex.Matches(store + serializer + presets, @"OutContType oldContType = (store\.)?ActiveOutDevType\[device\];").Count);
         }
 
         [Fact]

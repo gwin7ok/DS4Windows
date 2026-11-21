@@ -148,6 +148,15 @@ namespace DS4Windows.UI
             logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
+            // ダブルクリックは MouseDoubleClick で受ける（InputBindings の MouseBinding は、ListViewItem が MouseDown を処理済みにするため届かない）
+            logListView.MouseDoubleClick += (s, e) =>
+            {
+                if (mainWinVM.ShowLogMessageCommand.CanExecute(null)) mainWinVM.ShowLogMessageCommand.Execute(null);
+            };
+            profilesListBox.MouseDoubleClick += (s, e) =>
+            {
+                if (mainWinVM.EditProfileCommand.CanExecute(null)) mainWinVM.EditProfileCommand.Execute(null);
+            };
             lastMsgLb.DataContext = lastLogMsg;
 
             profileListHolder.Refresh();

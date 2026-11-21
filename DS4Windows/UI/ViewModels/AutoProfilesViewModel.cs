@@ -47,7 +47,7 @@ namespace DS4Windows.UI.ViewModels
 
         public AutoProfileHolder AutoProfileHolder { get => autoProfileHolder; }
 
-        public int SelectedIndex { get => selectedIndex; set => selectedIndex = value; }
+        public int SelectedIndex { get => selectedIndex; set => SetProperty(ref selectedIndex, value); }
         public ProgramItem? SelectedItem
         {
             get => selectedItem;

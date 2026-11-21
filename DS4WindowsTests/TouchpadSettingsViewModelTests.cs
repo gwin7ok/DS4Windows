@@ -62,7 +62,6 @@ namespace DS4WindowsTests
             var vm = ProfileSettingsViewModelTestFactory.Create(0).Touchpad;
             byte touchSens = service.ForSlot(0).Touchpad.TouchSensitivity;
             int invert = service.ForSlot(0).Touchpad.Invert;
-            uint stickInverted = service.ForSlot(0).Touchpad.MouseStick.inverted;
             bool lowerRc = service.ForSlot(0).Touchpad.LowerRightAsRightClick;
             try
             {
@@ -81,14 +80,6 @@ namespace DS4WindowsTests
                 Assert.Equal(2, service.ForSlot(0).Touchpad.Invert);
                 Assert.Equal(1, vm.TouchInvertIndex);
 
-                // マウスジョイスティックの反転は 1 つの整数のビット（1＝横、2＝縦）
-                vm.TouchMouseStickInvertX = true;
-                vm.TouchMouseStickInvertY = true;
-                Assert.Equal(3u, service.ForSlot(0).Touchpad.MouseStick.inverted & 3u);
-                vm.TouchMouseStickInvertX = false;
-                Assert.Equal(2u, service.ForSlot(0).Touchpad.MouseStick.inverted & 3u);
-                Assert.True(vm.TouchMouseStickInvertY);
-
                 vm.LowerRightTouchRMB = !lowerRc;
                 Assert.Equal(!lowerRc, service.ForSlot(0).Touchpad.LowerRightAsRightClick);
             }
@@ -96,7 +87,6 @@ namespace DS4WindowsTests
             {
                 service.ForSlot(0).Touchpad.TouchSensitivity = touchSens;
                 service.ForSlot(0).Touchpad.Invert = invert;
-                service.ForSlot(0).Touchpad.MouseStick.inverted = stickInverted;
                 service.ForSlot(0).Touchpad.LowerRightAsRightClick = lowerRc;
             }
         }
@@ -111,12 +101,13 @@ namespace DS4WindowsTests
             vm.PropertyChanged += (s, e) => names.Add(e.PropertyName);
             try
             {
-                vm.TouchpadOutputIndex = 2;
-                Assert.Equal(TouchpadOutMode.MouseJoystick, service.ForSlot(0).Touchpad.OutputMode);
-                Assert.Equal(2, vm.TouchpadOutputIndex);
+                vm.TouchpadOutputIndex = 1;
+                Assert.Equal(TouchpadOutMode.Controls, service.ForSlot(0).Touchpad.OutputMode);
+                Assert.Equal(1, vm.TouchpadOutputIndex);
                 Assert.Contains(nameof(TouchpadSettingsViewModel.TouchpadOutputIndex), names);
 
-                vm.TouchpadOutputIndex = 3;
+                // 廃止した「マウススティック」の分、パススルーは 2 番
+                vm.TouchpadOutputIndex = 2;
                 Assert.Equal(TouchpadOutMode.Passthru, service.ForSlot(0).Touchpad.OutputMode);
             }
             finally
@@ -166,7 +157,7 @@ namespace DS4WindowsTests
 
                     panel.PopulateDisInvertMenu(vm);
                     // 出力モードごとの置き場所の切り替えで落ちないこと（部品が無くても置き場所の選択はできる）
-                    for (int mode = 0; mode <= 3; mode++) panel.PlaceTouchButtonControl(null, mode);
+                    for (int mode = 0; mode <= 2; mode++) panel.PlaceTouchButtonControl(null, mode);
                     panel.Measure(new System.Windows.Size(1000, double.PositiveInfinity));
                     panel.Arrange(new System.Windows.Rect(0, 0, 1000, panel.DesiredSize.Height));
                     panel.UpdateLayout();

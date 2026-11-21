@@ -33,7 +33,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         private int profileIndex;
         private bool normalTrigger = true;
 
-        public bool AutoUntrigger { get => autoUntrigger; set => autoUntrigger = value; }
+        public bool AutoUntrigger { get => autoUntrigger; set => SetProperty(ref autoUntrigger, value); }
         public int ProfileIndex
         {
             get => profileIndex;
@@ -41,6 +41,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 if (profileIndex == value) return;
                 profileIndex = value;
+                OnPropertyChanged(nameof(ProfileIndex));
                 ProfileIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -50,7 +51,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
         public event EventHandler? UnloadEnabledChanged;
 
         public ProfileList ProfileList { get => profileList; }
-        public bool NormalTrigger { get => normalTrigger; set => normalTrigger = value; }
+        public bool NormalTrigger { get => normalTrigger; set => SetProperty(ref normalTrigger, value); }
 
         public LoadProfileViewModel(ProfileList profileList, ISpecialActionRepository specialActionRepository)
         {
@@ -70,6 +71,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 profileIndex = profileList.ProfileListCol.IndexOf(item) + 1;
             }
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         // Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
@@ -80,6 +82,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             // 名前から一覧の位置を探す（0 は未選択）。名前を変えた・消したプロファイルは、見つからず、未選択になる
             ProfileIndex = IndexOfProfile(item.ProfileName);
             AutoUntrigger = item.AutomaticUntrigger;
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         // Load Profile。未選択のときは、空の名前（束縛は作られない。割り当て編集画面は、未選択の Save を許さない）
@@ -119,6 +122,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         private void LoadProfileViewModel_ProfileIndexChanged(object? sender, EventArgs e)
         {
+            OnPropertyChanged(nameof(UnloadEnabled));
             UnloadEnabledChanged?.Invoke(this, EventArgs.Empty);
         }
 

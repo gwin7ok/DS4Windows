@@ -93,7 +93,8 @@ namespace DS4WindowsTests
             var mouseHook = new DS4Windows.Core.Platform.LowLevelMouseHook();
             var rf = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
             var sc = TestHost.GetService<DS4Windows.Processing.Abstractions.IControllerSlotCommands>();
-            var backend = new DS4Windows.UI.Services.ProfileEditorBackend(profiles, sc, rf, env);
+            var backend = new DS4Windows.UI.Services.ProfileEditorBackend(profiles, sc, rf, env,
+                TestHost.GetService<DS4Windows.UI.Abstractions.IDialogService>(), TestHost.GetService<DS4Windows.UI.Abstractions.IUiDispatcher>());
 
             // 窓口は 3 つの工場を受け、それぞれの工場は必要な依存を受ける
             Assert.Throws<ArgumentNullException>(() => new DS4Windows.UI.Services.EditorWindowFactory(null, new DS4Windows.UI.Services.MacroRecordingWindowFactory(mr, path, vm, windowSystem, mouseHook), new DS4Windows.UI.Services.ProfileEditorFactory(app, rd, vm, vm, backend)));

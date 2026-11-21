@@ -67,7 +67,7 @@ namespace DS4Windows.UI.ViewModels
         public OutBinding CurrentOutBind { get => currentOutBind; }
         public OutBinding? ActionBinding { get; set; }
 
-        public bool RumbleActive { get => rumbleActive; set => rumbleActive = value; }
+        public bool RumbleActive { get => rumbleActive; set => SetProperty(ref rumbleActive, value); }
         public DS4ControlSettings Settings { get => settings; }
 
         // 設定の読み書き先（DeviceNum＝編集スロット）とは別に、ランブルテスト・ライトバーの

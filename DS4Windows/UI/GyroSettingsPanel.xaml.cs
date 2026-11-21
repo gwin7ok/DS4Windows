@@ -46,7 +46,6 @@ namespace DS4Windows.UI
             viewModel = gyro;
             TriggerMenuAdapter.AddItems(gyroControlsTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroControlsMenuItem_Click);
             TriggerMenuAdapter.AddItems(gyroMouseTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroMouseTrigMenuItem_Click);
-            TriggerMenuAdapter.AddItems(gyroMouseStickTrigBtn.ContextMenu, gyro.TriggerItemNames, GyroMouseStickTrigMenuItem_Click);
         }
 
         /// <summary>保存されているトリガーを、メニューのチェックと表示へ反映する（プロファイルの読み込み・プリセットの適用のあと）。</summary>
@@ -55,7 +54,6 @@ namespace DS4Windows.UI
             ArgumentNullException.ThrowIfNull(gyro);
             viewModel = gyro;
             Populate(gyroMouseTrigBtn.ContextMenu, gyro.PopulateGyroMouseTrig);
-            Populate(gyroMouseStickTrigBtn.ContextMenu, gyro.PopulateGyroMouseStickTrig);
             Populate(gyroControlsTrigBtn.ContextMenu, gyro.PopulateGyroControlsTrig);
         }
 
@@ -88,11 +86,6 @@ namespace DS4Windows.UI
             gyroMouseTrigBtn.ContextMenu.IsOpen = true;
         }
 
-        private void GyroMouseStickTrigBtn_Click(object sender, RoutedEventArgs e)
-        {
-            gyroMouseStickTrigBtn.ContextMenu.IsOpen = true;
-        }
-
         private void GyroControlsTrigBtn_Click(object sender, RoutedEventArgs e)
         {
             gyroControlsTrigBtn.ContextMenu.IsOpen = true;
@@ -103,13 +96,6 @@ namespace DS4Windows.UI
             ContextMenu menu = gyroMouseTrigBtn.ContextMenu;
             MenuItem? alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
             Update(menu, alwaysOnItem, e, viewModel!.UpdateGyroMouseTrig);   // CreateTriggerMenus で渡された後にだけ、メニューが開く
-        }
-
-        private void GyroMouseStickTrigMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ContextMenu menu = gyroMouseStickTrigBtn.ContextMenu;
-            MenuItem? alwaysOnItem = menu.Items[menu.Items.Count - 1] as MenuItem;
-            Update(menu, alwaysOnItem, e, viewModel!.UpdateGyroMouseStickTrig);   // 同上
         }
 
         private void GyroControlsMenuItem_Click(object sender, RoutedEventArgs e)

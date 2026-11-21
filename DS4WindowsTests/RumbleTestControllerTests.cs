@@ -28,7 +28,7 @@ namespace DS4WindowsTests
             public bool SetHeavyRumble(int slot, byte strength) { Calls.Add("H" + strength); return true; }
             public bool SetLightRumble(int slot, byte strength) { Calls.Add("L" + strength); return true; }
             public bool ApplyDualSenseRumbleOptions(int slot, int rumbleEmulationMode, byte hapticPowerLevel) => DualSense;
-            public bool ResetGyroCalibration(int slot) => true;
+            public bool ResetGyroCalibration(int slot, System.Action? completed = null) => true;
         }
 
         private (RumbleTestController ctl, FakeCommands cmd, DS4Windows.UI.ViewModels.OutputSettingsViewModel output) Create(bool inverse = false, int boost = 100)

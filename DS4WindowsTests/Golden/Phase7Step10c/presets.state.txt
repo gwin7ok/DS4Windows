@@ -20,48 +20,6 @@
 + $.stickSlots[8].RSMod.antiDeadZone = 20
 + $.stickSlots[8].RSMod.deadZone = 10
 
-## LoadDefaultGamepadGyroProfile
-- $.gyroSlots[8].MouseStick.smoothingMethod = GyroSmoothingMethod.None
-- $.gyroSlots[8].MouseStick.useSmoothing = false
-- $.gyroSlots[8].MouseStickTriggerTurns = true
-- $.gyroSlots[8].MouseStickTriggers = "-1"
-- $.gyroSlots[8].OutputMode = GyroOutMode.Controls
-- $.sixAxisSlots[8].SXMaxZone = 1
-- $.sixAxisSlots[8].SZMaxZone = 1
-- $.stickSlots[8].LSMod.antiDeadZone = 0
-- $.stickSlots[8].LSMod.deadZone = 0
-- $.stickSlots[8].RSMod.antiDeadZone = 0
-- $.stickSlots[8].RSMod.deadZone = 0
-+ $.gyroSlots[8].MouseStick.smoothingMethod = GyroSmoothingMethod.OneEuro
-+ $.gyroSlots[8].MouseStick.useSmoothing = true
-+ $.gyroSlots[8].MouseStickTriggerTurns = false
-+ $.gyroSlots[8].MouseStickTriggers = "4"
-+ $.gyroSlots[8].OutputMode = GyroOutMode.MouseJoystick
-+ $.sixAxisSlots[8].SXMaxZone = 100
-+ $.sixAxisSlots[8].SZMaxZone = 100
-+ $.stickSlots[8].LSMod.antiDeadZone = 20
-+ $.stickSlots[8].LSMod.deadZone = 10
-+ $.stickSlots[8].RSMod.antiDeadZone = 20
-+ $.stickSlots[8].RSMod.deadZone = 10
-
-## LoadDefaultDS4GamepadGyroProfile
-- $.gyroSlots[8].MouseStick.smoothingMethod = GyroSmoothingMethod.None
-- $.gyroSlots[8].MouseStick.useSmoothing = false
-- $.gyroSlots[8].MouseStickTriggerTurns = true
-- $.gyroSlots[8].MouseStickTriggers = "-1"
-- $.gyroSlots[8].OutputMode = GyroOutMode.Controls
-- $.outputTypeSlots[8].ContType = OutContType.X360
-- $.sixAxisSlots[8].SXMaxZone = 1
-- $.sixAxisSlots[8].SZMaxZone = 1
-+ $.gyroSlots[8].MouseStick.smoothingMethod = GyroSmoothingMethod.OneEuro
-+ $.gyroSlots[8].MouseStick.useSmoothing = true
-+ $.gyroSlots[8].MouseStickTriggerTurns = false
-+ $.gyroSlots[8].MouseStickTriggers = "4"
-+ $.gyroSlots[8].OutputMode = GyroOutMode.MouseJoystick
-+ $.outputTypeSlots[8].ContType = OutContType.DS4
-+ $.sixAxisSlots[8].SXMaxZone = 100
-+ $.sixAxisSlots[8].SZMaxZone = 100
-
 ## LoadDefaultMixedGyroMouseProfile
 - $.gyroSlots[8].Mouse.enableSmoothing = false
 - $.gyroSlots[8].Mouse.smoothingMethod = GyroSmoothingMethod.None

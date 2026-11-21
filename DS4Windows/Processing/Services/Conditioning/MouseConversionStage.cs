@@ -7,7 +7,7 @@ using DS4Windows.Processing.Abstractions;
 namespace DS4Windows.Processing.Services.Conditioning
 {
     /// <summary>
-    /// <see cref="IMouseConversionStage"/> の実装。4 つの計算の部品への委譲だけを持つ（計算と状態は各部品のまま。値は各部品の特性化テストが守る）。
+    /// <see cref="IMouseConversionStage"/> の実装。3 つの計算の部品への委譲だけを持つ（計算と状態は各部品のまま。値は各部品の特性化テストが守る）。
     /// 毎フレームの経路のため、割り当てを増やさない。
     /// </summary>
     public sealed class MouseConversionStage : IMouseConversionStage
@@ -15,10 +15,9 @@ namespace DS4Windows.Processing.Services.Conditioning
         private readonly IButtonMouseMovementCalculator _buttonMouseMovement;
         private readonly IFlickStickProcessor _flickStick;
         private readonly IMouseMotionQuantizer _mouseMotionQuantizer;
-        private readonly IGyroMouseStickBlender _gyroMouseStickBlender;
 
         public MouseConversionStage(IButtonMouseMovementCalculator buttonMouseMovement, IFlickStickProcessor flickStick,
-            IMouseMotionQuantizer mouseMotionQuantizer, IGyroMouseStickBlender gyroMouseStickBlender)
+            IMouseMotionQuantizer mouseMotionQuantizer)
         {
             ArgumentNullException.ThrowIfNull(buttonMouseMovement);
             _buttonMouseMovement = buttonMouseMovement;
@@ -26,8 +25,6 @@ namespace DS4Windows.Processing.Services.Conditioning
             _flickStick = flickStick;
             ArgumentNullException.ThrowIfNull(mouseMotionQuantizer);
             _mouseMotionQuantizer = mouseMotionQuantizer;
-            ArgumentNullException.ThrowIfNull(gyroMouseStickBlender);
-            _gyroMouseStickBlender = gyroMouseStickBlender;
         }
 
         public double CalculateButtonMouseMovement(int device, DS4Controls control, int mnum, ControllerState cState,
@@ -49,9 +46,5 @@ namespace DS4Windows.Processing.Services.Conditioning
             _mouseMotionQuantizer.Quantize(device, ref rawMouseX, ref rawMouseY, out mouseX, out mouseY);
         }
 
-        public void BlendGyroMouseStick(GyroMouseStickInfo msinfo, byte gyroX, byte gyroY, ControllerState MappedState, PostMapStickData mapStickData)
-        {
-            _gyroMouseStickBlender.Blend(msinfo, gyroX, gyroY, MappedState, mapStickData);
-        }
     }
 }
