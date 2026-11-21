@@ -49,34 +49,35 @@ namespace DS4Windows
         private bool skipSave;
         private bool runShutdown;
         private bool exitApp;
-        private DS4Windows.Core.Platform.IpcMemoryMap _ipc = null!;   // CLI との通信の窓口（ホストの構築後に解決する）
         private readonly SingleInstanceGuard _singleInstance = new SingleInstanceGuard();
         // 起動前（-driverinstall の分岐を含む）は、ブートストラップの BackingStore で作ったもの。ホストの構築後は、コンテナの Singleton に置き換える
         private DS4Windows.UI.Services.AppThemeAndCultureService _themeCulture = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
         private ITimer collectTimer = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
         public static LoggerHolder logHolder = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
 
-        // Phase6-Step7（決定1＝A）: Post-Host（明示的なホスト構築と CreateControlService の後）で使う DI サービス。
-        // App は WPF の Application でコンストラクタ注入できないため、Composition Root として
-        // InitializePostHostServices() で一度だけ解決して保持する。Pre-Host 領域（ホスト構築より前）では null。
-        private IAppSettingsService _appSettingsService = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IPathService _pathService = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IEnvironmentService _environmentService = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IProfileRepository _profileRepository = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IProfileIdentityService _profileIdentityService = null!;   // Phase10-Step4d W1
-        private ISpecialActionRepository _specialActionRepository = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IAppearanceSettingsService _appearanceSettingsService = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IDeviceStateService _deviceStateService = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        private IOutputSlotService _outputSlotService = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
-        // Phase7-Step5 W4: 旧 AppHost.GetService／ServiceProviderHolder の直接呼び出しの置き換え先（InitializePostHostServices で解決）
-        private DS4Windows.Core.Logging.LogSettingsApplierProxy _logSettingsApplierProxy = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
+        // ホストの構築後に使うサービス。App は Application のため注入できず、組み立ての層（PostHostServices）が一度だけ解決して渡す。
+        // ホストの構築より前（Pre-Host）は null。
+        private PostHostServices? _post;
+        private PostHostServices Post => _post ?? throw new InvalidOperationException("PostHostServices は、ホストの構築後に設定される。");
+
+        private IAppSettingsService _appSettingsService => Post.AppSettings;
+        private IPathService _pathService => Post.Path;
+        private IEnvironmentService _environmentService => Post.Environment;
+        private IProfileRepository _profileRepository => Post.ProfileRepository;
+        private IProfileIdentityService _profileIdentityService => Post.ProfileIdentity;
+        private ISpecialActionRepository _specialActionRepository => Post.SpecialActions;
+        private IAppearanceSettingsService _appearanceSettingsService => Post.Appearance;
+        private IDeviceStateService _deviceStateService => Post.DeviceState;
+        private IOutputSlotService _outputSlotService => Post.OutputSlots;
+        private DS4Windows.Core.Logging.LogSettingsApplierProxy _logSettingsApplierProxy => Post.LogSettingsApplier;
+        private DS4Windows.Core.Platform.IpcMemoryMap _ipc => Post.Ipc;   // CLI との通信の窓口
 
         // Phase7-Step5 W2（Q1＝A）: 旧 Program.rootHub。ControlService は CreateControlService の別スレッドで解決して代入し、
         // 呼び出し元がスレッドの終了を待ってから読む（以降は LoggerHolder の生成、起動後の処理、未処理例外の処理、終了処理が使う）。
         // 別スレッド（未処理例外、セッション終了）からも読まれるため volatile にする。
         private volatile DS4Windows.Processing.Abstractions.IRuntimeBootstrapper _runtimeBootstrapper = null!; // 起動の流れ（OnStartup）で設定する。それまでは使われない
         private volatile DS4Windows.Processing.Abstractions.IServiceLifecycle _lifecycle = null!;   // Phase13-Step9: 旧 ControlService.running の転送
-        private DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch _runtimeFeatures = null!;   // Phase13-Step10 10-c: 旧 ControlService.CheckHidHidePresence の転送
+        private DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch _runtimeFeatures => Post.RuntimeFeatures;
 
         // Phase7-Step4 W4（D3＝S1）: コンテナの構築より前に作るブートストラップのサービス。Pre-Host の起動処理（保存場所の決定、
         // ViGEmBus 情報の取得）で使い、CreateHost に渡して、コンテナへ同じインスタンスを登録する。
@@ -352,8 +353,9 @@ namespace DS4Windows
 
             new AppShutdownSequence(
                 _runtimeBootstrapper, _lifecycle,
-                skipSave ? (Action?)null : () => _appSettingsService?.Save(),
-                _ipc, TryResolvePostHostService<DS4Windows.Processing.Actions.IControllerRegistry>(), ControllerLimits.MaxControllerCount,
+                skipSave ? (Action?)null : () => _post?.AppSettings.Save(),
+                // ホスト構築前の早期終了では未解決のまま渡す（手順は null を許す: _ipc?.Dispose()）
+                _post?.Ipc!, TryResolvePostHostService<DS4Windows.Processing.Actions.IControllerRegistry>(), ControllerLimits.MaxControllerCount,
                 resetTimerResolution: () => DS4Windows.Core.Utilities.Util.TimeEndPeriod(1),
                 stopSingleInstance: _singleInstance.Stop,
                 disposeHost: AppHost.Dispose,

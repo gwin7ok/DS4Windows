@@ -45,7 +45,6 @@ namespace DS4Windows.UI
         private const string InstFileName1_16 = "ViGEmBus_Setup_1.16.116.exe";
         private string InstFileNameX64 = Path.GetFileName(InstallerDLX64);
         private string InstFileNameX86 = Path.GetFileName(InstallerDLX86);
-        private string tempInstFileName;
 
         private string InstHidHideFileNameX64 = Path.GetFileName(InstallerHidHideX64);
 
@@ -56,22 +55,18 @@ namespace DS4Windows.UI
         private string installDL = InstallerDLX64;
         private string installFileName;
 
-        Process? monitorProc;
-        System.Timers.Timer? monitorTimer;
+        // 導入の流れ。画面が閉じられたら、終了の監視を取り消す
+        private readonly DS4Windows.Core.Platform.ExternalComponentInstaller _installer;
+        private readonly System.Threading.CancellationTokenSource _closing = new System.Threading.CancellationTokenSource();
 
         // Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
         private readonly DS4Windows.UI.Abstractions.IDriverEnvironment _environmentService;
 
-        // 旧 loadConfig 引数（唯一の呼び出し元 App.xaml.cs の -driverinstall 分岐が true を渡していた）と、
-        // 中の Global.FindConfigLocation／Global.Load を削除した。呼び出し元が、直前に同じ処理（FindConfigLocation と設定の読込）を
-        // すでに実行しているため、重複していた再実行をやめただけで、動作は変わらない。
-        // ドライバーのダウンロードに使う HttpClient
-        private readonly System.Net.Http.HttpClient _httpClient;
-
         public WelcomeDialog(DS4Windows.UI.Abstractions.IDriverEnvironment environmentService, System.Net.Http.HttpClient httpClient)
         {
             ArgumentNullException.ThrowIfNull(httpClient);
-            _httpClient = httpClient;
+            _installer = new DS4Windows.Core.Platform.ExternalComponentInstaller(
+                httpClient, new DS4Windows.Core.Platform.ShellInstallerProcessLauncher(), TimeProvider.System, Path.GetTempPath());
             ArgumentNullException.ThrowIfNull(environmentService);
             _environmentService = environmentService;
 
@@ -115,8 +110,6 @@ namespace DS4Windows.UI
                 step5FakerInputPanel.IsEnabled = false;
             }
 
-            tempInstFileName = Path.Combine(Path.GetTempPath(), $"{installFileName}.tmp");
-
             // HidHide requires Windows 10 (or later) x64
             if (!IsHidHideControlCompatible())
             {
@@ -140,20 +133,7 @@ namespace DS4Windows.UI
 
         private void FinishDialog()
         {
-            try
-            {
-                if (monitorTimer != null)
-                {
-                    monitorTimer.Stop();
-                    monitorTimer.Dispose();
-                    monitorTimer = null;
-                }
-            }
-            catch (Exception ex)
-            {
-                // Defensive: log and continue to close the dialog
-                DS4Windows.Core.Logging.AppLogger.LogDebug($"WelcomeDialog.FinishDialog: failed to stop monitorTimer: {ex.Message}");
-            }
+            _closing.Cancel();   // 導入の終了の監視を止める
 
             this.Close();
         }

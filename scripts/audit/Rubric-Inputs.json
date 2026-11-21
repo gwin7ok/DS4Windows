@@ -34,8 +34,8 @@
     },
     "install_flow_unified": {
       "text": "WelcomeDialog の外部コンポーネントの取得・導入の流れ（同型の 3 本）が、1 つの部品（ExternalComponentInstaller と ViewModel）に集約されている",
-      "answer": false,
-      "evidence": "2026-11-19: 報告書 §3（共有部品化）。同型の流れが WelcomeDialog.xaml.cs に 3 本。PhaseRV4-2 で集約する"
+      "answer": true,
+      "evidence": "2026-11-21: ExternalComponentInstaller（Core/Platform）が 3 本の流れを持ち、WelcomeDialog は定義と画面への写しだけ（RV17-1,2。ExternalComponentInstallerTests で固定）"
     },
     "policy_documented": {
       "text": "採用手段（変更通知・タイマー・ログ・例外・命名）の方針が文書にある",
