@@ -18,38 +18,6 @@ namespace DS4WindowsTests
     /// </summary>
     public class MacroPlaybackEmptyRepeatTests
     {
-        private sealed class ManualTimer : ITimer
-        {
-            private readonly TimerCallback _callback;
-            private readonly object? _state;
-            public ManualTimer(TimerCallback callback, object? state) { _callback = callback; _state = state; }
-            public bool Change(TimeSpan dueTime, TimeSpan period) => true;
-            public void Dispose() { }
-            public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-            public void Fire() => _callback(_state);
-        }
-
-        /// <summary>タイマーを作るたびに記録し、<see cref="Fire"/> で待ちを終わらせる時計。</summary>
-        private sealed class ManualTimeProvider : TimeProvider
-        {
-            private readonly List<ManualTimer> _timers = new List<ManualTimer>();
-            public int Created { get { lock (_timers) { return _timers.Count; } } }
-
-            public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
-            {
-                var timer = new ManualTimer(callback, state);
-                lock (_timers) { _timers.Add(timer); }
-                return timer;
-            }
-
-            public void FireLatest()
-            {
-                ManualTimer timer;
-                lock (_timers) { timer = _timers[_timers.Count - 1]; }
-                timer.Fire();
-            }
-        }
-
         private sealed class FakeManager : IManagedActionManager
         {
             private readonly ActionInstanceState _state = new ActionInstanceState();
@@ -83,24 +51,26 @@ namespace DS4WindowsTests
             var playback = new MacroPlayback(TestLightbar.State, new NoopExecutor(), new MacroRuntimeState(), manager, time);
             var action = new SpecialAction("N", "Cross", "Macro", "");
 
+            try
+            {
             playback.Play(0, string.Empty, new List<int>(), null, DS4KeyType.Macro | DS4KeyType.RepeatMacro, action);
 
             // 1 回目の再生のあと、押している間は、待ちの時計を 1 つ作って待つ（待ちなしで空回りしない）
-            WaitFor(() => time.Created >= 1);
-            Assert.Equal(1, time.Created);
-            Thread.Sleep(100);
-            Assert.Equal(1, time.Created);   // 待ちが終わらない間は、次の繰り返しへ進まない
+            WaitFor(() => time.ActiveTimerCount == 1);
+            Assert.Equal(1, time.ActiveTimerCount);
 
             // 待ちが終わり、まだ押していれば、止めずに次の繰り返しへ進み、また待つ
-            time.FireLatest();
-            WaitFor(() => time.Created >= 2);
-            Assert.Equal(2, time.Created);
+            time.Advance(TimeSpan.FromMilliseconds(50));
+            WaitFor(() => time.ActiveTimerCount == 1);
+            Assert.Equal(1, time.ActiveTimerCount);
 
             // 離したら、待ちが終わったあとの確認で繰り返しを終える（それ以上、待ちの時計を作らない）
             manager.Triggered = false;
-            time.FireLatest();
+            time.Advance(TimeSpan.FromMilliseconds(50));
             Thread.Sleep(100);
-            Assert.Equal(2, time.Created);
+            Assert.Equal(0, time.ActiveTimerCount);
+            }
+            finally { manager.Triggered = false; }   // 失敗しても、繰り返しのスレッドを残さない
         }
     }
 }

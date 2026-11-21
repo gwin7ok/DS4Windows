@@ -354,7 +354,8 @@ namespace DS4Windows.UI.ViewModels
 
         public CompositeDeviceModel(IControllerSlotView device, int devIndex, string profile,
             ProfileList collection, IProfileSettingsService profileSettingsService,
-            IProfileRepository profileRepo, DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources = null)
+            IProfileRepository profileRepo, DS4Windows.UI.Abstractions.IImageResourceLookup? imageResources = null,
+            TimeProvider? timeProvider = null)
         {
             this.imageResources = imageResources;
             // 必須引数（null は拒否する）
@@ -368,7 +369,7 @@ namespace DS4Windows.UI.ViewModels
             // S9-5 の確認で判明: 変化通知だけでは、表示が古い値のまま止まることがあった（実機: 表示 50%、実際 37%）。
             // 通知に頼らず、一定間隔で読み直す（文字列が変わったときだけ画面へ通知する）。コントローラーが外れたら止める
             lastBatteryState = BatteryState;
-            batteryRefreshTimer = TimeProvider.System.CreateTimer(_ => RefreshBatteryState(), null, TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs), TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs));
+            batteryRefreshTimer = (timeProvider ?? TimeProvider.System).CreateTimer(_ => RefreshBatteryState(), null, TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs), TimeSpan.FromMilliseconds(BatteryRefreshIntervalMs));
             device.Removal += (sender, e) => StopBatteryRefresh();
             device.MacAddressChanged += (sender, e) =>
             {
