@@ -70,17 +70,17 @@ namespace DS4Windows.Processing.Services.Conditioning
             if (connected && cState.Touch2 &&
                !(touchPad.dragging || touchPad.dragging2))
             {
-                if (touchPad.slideright && !_touchslid[ind])
+                if (touchPad.Gestures.SlideRight && !_touchslid[ind])
                 {
                     slidedir = "right";
                     _touchslid[ind] = true;
                 }
-                else if (touchPad.slideleft && !_touchslid[ind])
+                else if (touchPad.Gestures.SlideLeft && !_touchslid[ind])
                 {
                     slidedir = "left";
                     _touchslid[ind] = true;
                 }
-                else if (!touchPad.slideleft && !touchPad.slideright)
+                else if (!touchPad.Gestures.SlideLeft && !touchPad.Gestures.SlideRight)
                 {
                     slidedir = "";
                     _touchslid[ind] = false;

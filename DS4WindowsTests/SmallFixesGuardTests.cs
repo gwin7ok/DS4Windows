@@ -23,9 +23,9 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void GyroOutputProcessor_ReadsTheGyroMouseStickHorizontalAxis_OfItsOwnDevice()
+        public void GyroMouseStickOutput_ReadsTheGyroMouseStickHorizontalAxis_OfItsOwnDevice()
         {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Gyro/GyroOutputProcessor.cs");
+            string path = SourceFileLocator.Find("DS4Windows/Processing/Gyro/GyroMouseStickOutput.cs");
             if (path == null)
             {
                 _output.WriteLine("ソースが見つからないため検査を省略した。");

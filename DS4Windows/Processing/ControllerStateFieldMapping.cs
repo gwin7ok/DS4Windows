@@ -147,10 +147,10 @@ namespace DS4Windows.Processing
                 buttons[(int)DS4Controls.DpadDown] = cState.DpadDown;
                 buttons[(int)DS4Controls.DpadLeft] = cState.DpadLeft;
 
-                buttons[(int)DS4Controls.TouchLeft] = tp != null ? (!priorMouse ? tp.leftDown : tp.priorLeftDown) : false;
-                buttons[(int)DS4Controls.TouchRight] = tp != null ? (!priorMouse ? tp.rightDown : tp.priorRightDown) : false;
-                buttons[(int)DS4Controls.TouchUpper] = tp != null ? (!priorMouse ? tp.upperDown : tp.priorUpperDown) : false;
-                buttons[(int)DS4Controls.TouchMulti] = tp != null ? (!priorMouse ? tp.multiDown : tp.priorMultiDown) : false;
+                buttons[(int)DS4Controls.TouchLeft] = tp != null ? (!priorMouse ? tp.leftDown : tp.Gestures.PriorLeftDown) : false;
+                buttons[(int)DS4Controls.TouchRight] = tp != null ? (!priorMouse ? tp.rightDown : tp.Gestures.PriorRightDown) : false;
+                buttons[(int)DS4Controls.TouchUpper] = tp != null ? (!priorMouse ? tp.upperDown : tp.Gestures.PriorUpperDown) : false;
+                buttons[(int)DS4Controls.TouchMulti] = tp != null ? (!priorMouse ? tp.multiDown : tp.Gestures.PriorMultiDown) : false;
 
                 int sixAxisX = -exposeState.GetOutputAccelX();
                 gryodirs[(int)DS4Controls.GyroXPos] = sixAxisX > 0 ? sixAxisX : 0;
@@ -160,15 +160,15 @@ namespace DS4Windows.Processing
                 gryodirs[(int)DS4Controls.GyroZPos] = sixAxisZ > 0 ? sixAxisZ : 0;
                 gryodirs[(int)DS4Controls.GyroZNeg] = sixAxisZ < 0 ? sixAxisZ : 0;
 
-                swipedirs[(int)DS4Controls.SwipeLeft] = tp != null ? (!priorMouse ? tp.swipeLeftB : tp.priorSwipeLeftB) : (byte)0;
-                swipedirs[(int)DS4Controls.SwipeRight] = tp != null ? (!priorMouse ? tp.swipeRightB : tp.priorSwipeRightB) : (byte)0;
-                swipedirs[(int)DS4Controls.SwipeUp] = tp != null ? (!priorMouse ? tp.swipeUpB : tp.priorSwipeUpB) : (byte)0;
-                swipedirs[(int)DS4Controls.SwipeDown] = tp != null ? (!priorMouse ? tp.swipeDownB : tp.priorSwipeDownB) : (byte)0;
+                swipedirs[(int)DS4Controls.SwipeLeft] = tp != null ? (!priorMouse ? tp.Gestures.SwipeLeftB : tp.Gestures.PriorSwipeLeftB) : (byte)0;
+                swipedirs[(int)DS4Controls.SwipeRight] = tp != null ? (!priorMouse ? tp.Gestures.SwipeRightB : tp.Gestures.PriorSwipeRightB) : (byte)0;
+                swipedirs[(int)DS4Controls.SwipeUp] = tp != null ? (!priorMouse ? tp.Gestures.SwipeUpB : tp.Gestures.PriorSwipeUpB) : (byte)0;
+                swipedirs[(int)DS4Controls.SwipeDown] = tp != null ? (!priorMouse ? tp.Gestures.SwipeDownB : tp.Gestures.PriorSwipeDownB) : (byte)0;
 
-                swipedirbools[(int)DS4Controls.SwipeLeft] = tp != null ? (!priorMouse ? tp.swipeLeft : tp.priorSwipeLeft) : false;
-                swipedirbools[(int)DS4Controls.SwipeRight] = tp != null ? (!priorMouse ? tp.swipeRight : tp.priorSwipeRight) : false;
-                swipedirbools[(int)DS4Controls.SwipeUp] = tp != null ? (!priorMouse ? tp.swipeUp : tp.priorSwipeUp) : false;
-                swipedirbools[(int)DS4Controls.SwipeDown] = tp != null ? (!priorMouse ? tp.swipeDown : tp.priorSwipeDown) : false;
+                swipedirbools[(int)DS4Controls.SwipeLeft] = tp != null ? (!priorMouse ? tp.Gestures.SwipeLeft : tp.Gestures.PriorSwipeLeft) : false;
+                swipedirbools[(int)DS4Controls.SwipeRight] = tp != null ? (!priorMouse ? tp.Gestures.SwipeRight : tp.Gestures.PriorSwipeRight) : false;
+                swipedirbools[(int)DS4Controls.SwipeUp] = tp != null ? (!priorMouse ? tp.Gestures.SwipeUp : tp.Gestures.PriorSwipeUp) : false;
+                swipedirbools[(int)DS4Controls.SwipeDown] = tp != null ? (!priorMouse ? tp.Gestures.SwipeDown : tp.Gestures.PriorSwipeDown) : false;
 
                 buttons[(int)DS4Controls.TouchStarted] = tp != null ? tp.TouchStarted : false;
                 buttons[(int)DS4Controls.TouchEnded] = tp != null ? tp.TouchEnded : false;

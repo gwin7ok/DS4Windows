@@ -1,7 +1,7 @@
 # PhaseRV13 計画書: ジャイロ・タッチパッドの状態の絡みを解く
 
 作成日: 2026-11-21
-状態: **D1＝(C) タッチパッドと StickMotionState まで、D2＝(B) Y の誤記として直す、D3＝(B) 共通インターフェースも足す、D4＝(B) まとめて 1 コミット、D5＝(A) 実機確認は最後に、で決定（2026-11-21）。着手前**
+状態: **D1＝(C) タッチパッドと StickMotionState まで、D2＝(B) Y の誤記として直す、D3＝(B) 共通インターフェースも足す、D4＝(B) まとめて 1 コミット、D5＝(A) 実機確認は最後に、で決定（2026-11-21）。実施済み（RV13-7 を除く）**
 出典: `PhaseRV13-Analysis-StateEntanglement.md`（読んで分かった絡みの実態と、目指す構造の案）、`PhaseRV12-Plan.md`（見送った `TouchpadMouse`・`GyroOutputProcessor`）。
 動き: **保存の形・ログは変えない**。判定の出力の渡し方、入力の渡し方、モードごとの状態の持ち主を直す。**例外（D2＝(B)）: `GyroStickX` の二重代入を、Y の初期化へ直す（MouseJoystick の枝で Y が 128 に戻る。挙動の変更。RV13-0 で現状を固定し、RV13-1 で直して、差を特性化テストに明記する）。**
 
@@ -76,3 +76,4 @@ D1＝(B)・(C) を選んだ場合は、上の Step の後に、`PhaseRV13-Analys
 
 ## 変更履歴への追記
 - 2026-11-21: D1＝(C)、D2＝(B)、D3＝(B)、D4＝(B)、D5＝(A) を、ユーザーが選択。D1・D2・D3・D4 はいずれも推奨と異なる。D1＝(C) は変更が最も大きく、`StickMotionState` の読み手が `Mapping`・出力側にも及ぶ。D4＝(B) は、途中で壊れたときに戻しにくいため、Step ごとの Debug ALL を必須とする。
+- 2026-11-21: 実施（`PhaseRV13` ブランチ）。RV13-0（特性化テスト 5 件）、RV13-1（`GyroTriggerEvaluator`・`GyroTriggerResult`。`GyroStickX` の二重代入を `GyroStickY` へ直した＝D2 の挙動の変更）、RV13-2（`s` と公開の `State` を廃止。判定は状態を引数で受ける）、RV13-3（`IGyroModeOutput` と 3 モードの型。`GyroOutputProcessor` は 135 行）、RV13-4（`virtual`・`protected` と、死んだフィールド `pushed`・`clicked`・`secondTouch` を削除）、RV13-6（`TouchpadGestureState`。公開フィールド約 30 個を窓口へ）、RV13-8（`DeviceStickMotion`。`StickMotionState` の 7 本の並列配列を、デバイスごとの型の配列へ）。全 3,668 テスト合格・警告 0。**未実施: RV13-7**（`TouchpadMouse` の持ち物の生成を外へ。反射で private フィールドを検査するテスト約 10 箇所の書き換えが大きく、挙動の改善がないため）。D4＝(B)（まとめて 1 コミット）で、途中は Step ごとに Debug ALL。実機確認は `Device-Check-Checklist.md` §9k（先頭が Y の初期化の挙動の変更）。

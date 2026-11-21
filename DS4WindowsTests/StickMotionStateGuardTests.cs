@@ -30,24 +30,21 @@ namespace DS4WindowsTests
             var state = new StickMotionState();
             int count = DS4Windows.Core.Settings.ControllerLimits.MaxControllerCount;
 
-            Assert.Equal(count, state.GyroStickX.Length);
-            Assert.Equal(count, state.GyroStickY.Length);
-            Assert.All(state.GyroStickX, v => Assert.Equal(128, v));
-            Assert.All(state.GyroStickY, v => Assert.Equal(128, v));
-
-            Assert.Equal(count, state.MapStickActionData.Length);
-            Assert.All(state.MapStickActionData, d => Assert.NotNull(d));
-            Assert.Equal(count, state.FlickMappingData.Length);
-            Assert.All(state.FlickMappingData, d => Assert.NotNull(d));
-            Assert.Equal(count, state.L2TwoStageMappingData.Length);
-            Assert.Equal(count, state.R2TwoStageMappingData.Length);
-            Assert.All(state.L2TwoStageMappingData, d => Assert.NotNull(d));
-            Assert.All(state.R2TwoStageMappingData, d => Assert.NotNull(d));
-            Assert.Equal(count, state.DeltaAccelProcessors.Length);
-            Assert.All(state.DeltaAccelProcessors, g => { Assert.NotNull(g.LSProcessor); Assert.NotNull(g.RSProcessor); });
+            Assert.Equal(count, state.Devices.Length);
+            Assert.All(state.Devices, d =>
+            {
+                Assert.Equal(128, d.GyroStickX);
+                Assert.Equal(128, d.GyroStickY);
+                Assert.NotNull(d.MapStickActionData);
+                Assert.NotNull(d.FlickMappingData);
+                Assert.NotNull(d.L2TwoStageMappingData);
+                Assert.NotNull(d.R2TwoStageMappingData);
+                Assert.NotNull(d.DeltaAccelProcessors.LSProcessor);
+                Assert.NotNull(d.DeltaAccelProcessors.RSProcessor);
+            });
 
             // L2 と R2 は別の instance
-            Assert.NotSame(state.L2TwoStageMappingData[0], state.R2TwoStageMappingData[0]);
+            Assert.NotSame(state.Devices[0].L2TwoStageMappingData, state.Devices[0].R2TwoStageMappingData);
         }
 
         // 転送プロパティは削除した。Mapping のコンストラクターが、受け取った保持クラスの配列を、同じ参照のまま readonly で持つこと
@@ -64,13 +61,7 @@ namespace DS4WindowsTests
                 return field.GetValue(mapper);
             }
 
-            Assert.Same(state.GyroStickX, Field("gyroStickX"));
-            Assert.Same(state.GyroStickY, Field("gyroStickY"));
-            Assert.Same(state.MapStickActionData, Field("mapStickActionData"));
-            Assert.Same(state.FlickMappingData, Field("flickMappingData"));
-            Assert.Same(state.L2TwoStageMappingData, Field("l2TwoStageMappingData"));
-            Assert.Same(state.R2TwoStageMappingData, Field("r2TwoStageMappingData"));
-            Assert.Same(state.DeltaAccelProcessors, Field("deltaAccelProcessors"));
+            Assert.Same(state.Devices, Field("_motions"));
         }
 
         [Fact]
@@ -80,10 +71,7 @@ namespace DS4WindowsTests
             Type mapping = typeof(DS4Windows.Processing.Mapping);
             foreach ((string field, Type type) in new[]
             {
-                ("gyroStickX", typeof(byte[])),
-                ("mapStickActionData", typeof(DS4Windows.Processing.PostMapStickData[])),
-                ("flickMappingData", typeof(DS4Windows.Core.Settings.FlickStickMappingData[])),
-                ("deltaAccelProcessors", typeof(DS4Windows.Processing.Gyro.DeltaSettingsProcessorGroup[])),
+                ("_motions", typeof(DS4Windows.Processing.DeviceStickMotion[])),
             })
             {
                 System.Reflection.FieldInfo f = mapping.GetField(field, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);

@@ -15,18 +15,18 @@ namespace DS4Windows.Processing.Touchpad
     {
         private void ControlsModeMoved(TouchpadEventArgs arg)
         {
-                if (!(swipeUp || swipeDown || swipeLeft || swipeRight) && arg.Touches!.Length == 1) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
+                if (!(Gestures.SwipeUp || Gestures.SwipeDown || Gestures.SwipeLeft || Gestures.SwipeRight) && arg.Touches!.Length == 1) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
                 {
-                    if (arg.Touches[0].HwX - firstTouch.HwX > 300) swipeRight = true;
-                    if (arg.Touches[0].HwX - firstTouch.HwX < -300) swipeLeft = true;
-                    if (arg.Touches[0].HwY - firstTouch.HwY > 300) swipeDown = true;
-                    if (arg.Touches[0].HwY - firstTouch.HwY < -300) swipeUp = true;
+                    if (arg.Touches[0].HwX - firstTouch.HwX > 300) Gestures.SwipeRight = true;
+                    if (arg.Touches[0].HwX - firstTouch.HwX < -300) Gestures.SwipeLeft = true;
+                    if (arg.Touches[0].HwY - firstTouch.HwY > 300) Gestures.SwipeDown = true;
+                    if (arg.Touches[0].HwY - firstTouch.HwY < -300) Gestures.SwipeUp = true;
                 }
 
-                swipeUpB = (byte)Math.Min(255, Math.Max(0, (firstTouch.HwY - arg.Touches![0].HwY) * 1.5f)); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
-                swipeDownB = (byte)Math.Min(255, Math.Max(0, (arg.Touches[0].HwY - firstTouch.HwY) * 1.5f));
-                swipeLeftB = (byte)Math.Min(255, Math.Max(0, firstTouch.HwX - arg.Touches[0].HwX));
-                swipeRightB = (byte)Math.Min(255, Math.Max(0, arg.Touches[0].HwX - firstTouch.HwX));
+                Gestures.SwipeUpB = (byte)Math.Min(255, Math.Max(0, (firstTouch.HwY - arg.Touches![0].HwY) * 1.5f)); // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
+                Gestures.SwipeDownB = (byte)Math.Min(255, Math.Max(0, (arg.Touches[0].HwY - firstTouch.HwY) * 1.5f));
+                Gestures.SwipeLeftB = (byte)Math.Min(255, Math.Max(0, firstTouch.HwX - arg.Touches[0].HwX));
+                Gestures.SwipeRightB = (byte)Math.Min(255, Math.Max(0, arg.Touches[0].HwX - firstTouch.HwX));
         }
 
         private void StickModeMoved(TouchpadEventArgs arg)
@@ -67,7 +67,7 @@ namespace DS4Windows.Processing.Touchpad
             
         }
 
-        public virtual void TouchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
+        public void TouchesMoved(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
@@ -84,17 +84,17 @@ namespace DS4Windows.Processing.Touchpad
             // Slide flags needed for possible profile switching from Touchpad swipes
             if (Math.Abs(firstTouch.HwY - arg.Touches![0].HwY) < 50 && arg.Touches.Length == 2) // タッチパッドのイベントは、接触の配列を持って来る（null なら従来どおり NullReferenceException）
             {
-                if (arg.Touches[0].HwX - firstTouch.HwX > 200 && !slideleft)
-                    slideright = true;
-                else if (firstTouch.HwX - arg.Touches[0].HwX > 200 && !slideright)
-                    slideleft = true;
+                if (arg.Touches[0].HwX - firstTouch.HwX > 200 && !Gestures.SlideLeft)
+                    Gestures.SlideRight = true;
+                else if (firstTouch.HwX - arg.Touches[0].HwX > 200 && !Gestures.SlideRight)
+                    Gestures.SlideLeft = true;
             }
 
             _buttons.Check(arg, touchpad.ButtonMode);
             synthesizeMouseButtons();
         }
 
-        public virtual void TouchesBegan(DS4Touchpad sender, TouchpadEventArgs arg)
+        public void TouchesBegan(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             TouchpadOutMode tempMode = touchpad.OutputMode;
@@ -130,16 +130,16 @@ namespace DS4Windows.Processing.Touchpad
             synthesizeMouseButtons();
         }
 
-        public virtual void TouchesEnded(DS4Touchpad sender, TouchpadEventArgs arg)
+        public void TouchesEnded(DS4Touchpad sender, TouchpadEventArgs arg)
         {
             TouchpadSlotSettings touchpad = _profileSettings.ForSlot(deviceNum).Touchpad;
             //Trace.WriteLine("TOUCHES ENDED");
 
             s = dev!.GetCurrentStateRef(); // 接続中の機器から呼ばれる（null なら従来どおり NullReferenceException）
             _buttons.WasTouched = true;
-            slideright = slideleft = false;
-            swipeUp = swipeDown = swipeLeft = swipeRight = false;
-            swipeUpB = swipeDownB = swipeLeftB = swipeRightB = 0;
+            Gestures.SlideRight = Gestures.SlideLeft = false;
+            Gestures.SwipeUp = Gestures.SwipeDown = Gestures.SwipeLeft = Gestures.SwipeRight = false;
+            Gestures.SwipeUpB = Gestures.SwipeDownB = Gestures.SwipeLeftB = Gestures.SwipeRightB = 0;
             previousTouchDX = previousTouchDY = 0;
             previousUnchangedTouchJoyFrame = false;
             byte tapSensitivity = touchpad.TapSensitivity;

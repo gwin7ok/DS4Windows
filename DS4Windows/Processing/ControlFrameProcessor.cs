@@ -22,29 +22,26 @@ namespace DS4Windows.Processing
         private readonly ITriggerDispatchEngine _engine;
         private readonly IMouseConversionStage _mouseConversion;
         private readonly ITwoStageTriggerProcessor _twoStageTrigger;
-        private readonly DeltaSettingsProcessorGroup[] _deltaAccel;
-        private readonly FlickStickMappingData[] _flickMappingData;
+        private readonly DeviceStickMotion[] _motions;
         private readonly TriggerInput[] _triggerInputs;
         private readonly FrameOutput[] _frameOutputs;
 
         public ControlFrameProcessor(IDeviceSlotState slots, ITriggerDispatchEngine engine, IMouseConversionStage mouseConversion,
-            ITwoStageTriggerProcessor twoStageTrigger, DeltaSettingsProcessorGroup[] deltaAccel, FlickStickMappingData[] flickMappingData,
+            ITwoStageTriggerProcessor twoStageTrigger, DeviceStickMotion[] motions,
             TriggerInput[] triggerInputs, FrameOutput[] frameOutputs)
         {
             ArgumentNullException.ThrowIfNull(slots);
             ArgumentNullException.ThrowIfNull(engine);
             ArgumentNullException.ThrowIfNull(mouseConversion);
             ArgumentNullException.ThrowIfNull(twoStageTrigger);
-            ArgumentNullException.ThrowIfNull(deltaAccel);
-            ArgumentNullException.ThrowIfNull(flickMappingData);
+            ArgumentNullException.ThrowIfNull(motions);
             ArgumentNullException.ThrowIfNull(triggerInputs);
             ArgumentNullException.ThrowIfNull(frameOutputs);
             _slots = slots;
             _engine = engine;
             _mouseConversion = mouseConversion;
             _twoStageTrigger = twoStageTrigger;
-            _deltaAccel = deltaAccel;
-            _flickMappingData = flickMappingData;
+            _motions = motions;
             _triggerInputs = triggerInputs;
             _frameOutputs = frameOutputs;
         }
@@ -70,7 +67,7 @@ namespace DS4Windows.Processing
                     double axisRawDirX = cRawState.RX - 128.0;
                     double axisRawDirY = cRawState.RY - 128.0;
 
-                    _deltaAccel[f.Device].RSProcessor.Process(f.Device, axisDirX, axisDirY,
+                    _motions[f.Device].DeltaAccelProcessors.RSProcessor.Process(f.Device, axisDirX, axisDirY,
                         axisRawDirX, axisRawDirY,
                         maxXDir, maxYDir,
                         stickSettings.outputSettings.controlSettings.deltaAccelSettings);
@@ -100,12 +97,12 @@ namespace DS4Windows.Processing
 
                         if (isRightStick)
                         {
-                            _mouseConversion.ProcessFlickStick(_flickMappingData[f.Device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                            _mouseConversion.ProcessFlickStick(_motions[f.Device].FlickMappingData, stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
                                 cRawState.RX, cRawState.RY, pState.RX, pState.RY, ref f.MouseDeltaX);
                         }
                         else
                         {
-                            _mouseConversion.ProcessFlickStick(_flickMappingData[f.Device], stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
+                            _mouseConversion.ProcessFlickStick(_motions[f.Device].FlickMappingData, stickSettings.outputSettings.flickSettings, cRawState.elapsedTime,
                                 cRawState.LX, cRawState.LY, pState.LX, pState.LY, ref f.MouseDeltaX);
                         }
 

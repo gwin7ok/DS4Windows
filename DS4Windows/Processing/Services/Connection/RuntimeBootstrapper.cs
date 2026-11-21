@@ -73,12 +73,12 @@ namespace DS4Windows.Processing.Services.Connection
                 int slot = i;
                 _profileSettings.ForSlot(slot).Triggers.L2Output.TwoStageModeChanged += (sender, e) =>
                 {
-                    _stickMotion.L2TwoStageMappingData[slot].Reset();
+                    _stickMotion.Devices[slot].L2TwoStageMappingData.Reset();
                 };
 
                 _profileSettings.ForSlot(slot).Triggers.R2Output.TwoStageModeChanged += (sender, e) =>
                 {
-                    _stickMotion.R2TwoStageMappingData[slot].Reset();
+                    _stickMotion.Devices[slot].R2TwoStageMappingData.Reset();
                 };
             }
 

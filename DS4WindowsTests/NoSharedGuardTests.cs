@@ -65,7 +65,7 @@ namespace DS4WindowsTests
             Assert.Same(synthetic, Field(typeof(Mapping), mapping, "_syntheticInput"));
             Assert.Same(macro, Field(typeof(Mapping), mapping, "_macroRuntime"));
             // Mapping は StickMotionState の配列の参照だけを持つ（インスタンスは保持しない）。同じ参照であることを確かめる
-            Assert.Same(stick.GyroStickX, Field(typeof(Mapping), mapping, "gyroStickX"));
+            Assert.Same(stick.Devices, Field(typeof(Mapping), mapping, "_motions"));
             Assert.Same(synthetic.DeviceState, Field(typeof(Mapping), mapping, "deviceState"));
 
             var bootstrapper = TestHost.GetService<DS4Windows.Processing.Abstractions.IRuntimeBootstrapper>();

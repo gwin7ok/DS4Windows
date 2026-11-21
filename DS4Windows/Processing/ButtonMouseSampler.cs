@@ -18,12 +18,12 @@ namespace DS4Windows.Processing
         private readonly IProfileSettingsService _profileSettings;
         private readonly IDeviceSlotState _slots;
         private readonly IMouseConversionStage _mouseConversion;
-        private readonly DeltaSettingsProcessorGroup[] _deltaAccel;
+        private readonly DeviceStickMotion[] _motions;
         private readonly ControllerState?[] _state = new ControllerState?[ControllerLimits.MaxControllerCount];
         private readonly ControllerStateFieldMapping?[] _fields = new ControllerStateFieldMapping?[ControllerLimits.MaxControllerCount];
 
         public ButtonMouseSampler(IProfileSettingsService profileSettings, IDeviceSlotState slots,
-            IMouseConversionStage mouseConversion, DeltaSettingsProcessorGroup[] deltaAccel)
+            IMouseConversionStage mouseConversion, DeviceStickMotion[] motions)
         {
             ArgumentNullException.ThrowIfNull(profileSettings);
             _profileSettings = profileSettings;
@@ -31,8 +31,8 @@ namespace DS4Windows.Processing
             _slots = slots;
             ArgumentNullException.ThrowIfNull(mouseConversion);
             _mouseConversion = mouseConversion;
-            ArgumentNullException.ThrowIfNull(deltaAccel);
-            _deltaAccel = deltaAccel;
+            ArgumentNullException.ThrowIfNull(motions);
+            _motions = motions;
         }
 
         public void SetFrame(int device, ControllerState state, ControllerStateFieldMapping fields)
@@ -53,7 +53,7 @@ namespace DS4Windows.Processing
                 _profileSettings.ButtonMouseInfos[device],
                 _profileSettings.ForSlot(device).Sticks.LSMod.deadZone,
                 _profileSettings.ForSlot(device).Sticks.RSMod.deadZone,
-                _deltaAccel[device],
+                _motions[device].DeltaAccelProcessors,
                 _slots.Controllers[device].lastTimeElapsedDouble);
         }
 

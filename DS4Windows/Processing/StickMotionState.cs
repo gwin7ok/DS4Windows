@@ -13,21 +13,8 @@ namespace DS4Windows.Processing
     /// </summary>
     public class StickMotionState
     {
-        /// <summary>ジャイロのマウススティック出力の、デバイスごとの軸の値（128＝中立）。</summary>
-        public byte[] GyroStickX { get; }
-
-        public byte[] GyroStickY { get; }
-
-        /// <summary>プロファイルの割り当て後に重ねるスティックの出力（<c>Mouse</c> が書き、<c>MapCustom</c> が読む）。</summary>
-        public PostMapStickData[] MapStickActionData { get; }
-
-        public FlickStickMappingData[] FlickMappingData { get; }
-
-        public TwoStageTriggerMappingData[] L2TwoStageMappingData { get; }
-
-        public TwoStageTriggerMappingData[] R2TwoStageMappingData { get; }
-
-        public DeltaSettingsProcessorGroup[] DeltaAccelProcessors { get; }
+        /// <summary>デバイスごとの処理状態（添字はデバイスの番号。配列の参照は再代入しない）。</summary>
+        public DeviceStickMotion[] Devices { get; }
 
         /// <summary>アンチスナップバックの履歴（[デバイス][0＝左, 1＝右]）。旧 <c>Mapping.stickValueHistory</c>。添字は <c>ControllerLimits.TestProfileItemCount</c>（テスト用プロファイルの枠を含む）。</summary>
         public Queue<DS4TimedStickAxisValue>[][] StickValueHistory { get; }
@@ -39,13 +26,8 @@ namespace DS4Windows.Processing
         public StickMotionState()
         {
             int count = ControllerLimits.MaxControllerCount;
-            GyroStickX = new byte[count];
-            GyroStickY = new byte[count];
-            MapStickActionData = new PostMapStickData[count];
-            FlickMappingData = new FlickStickMappingData[count];
-            L2TwoStageMappingData = new TwoStageTriggerMappingData[count];
-            R2TwoStageMappingData = new TwoStageTriggerMappingData[count];
-            DeltaAccelProcessors = new DeltaSettingsProcessorGroup[count];
+            Devices = new DeviceStickMotion[count];
+            for (int i = 0; i < count; i++) Devices[i] = new DeviceStickMotion();
 
             int profileCount = ControllerLimits.TestProfileItemCount;
             StickValueHistory = new Queue<DS4TimedStickAxisValue>[profileCount][];
@@ -54,17 +36,6 @@ namespace DS4Windows.Processing
             {
                 StickValueHistory[i] = new Queue<DS4TimedStickAxisValue>[2] { new Queue<DS4TimedStickAxisValue>(), new Queue<DS4TimedStickAxisValue>() };
                 LastStickAxisValues[i] = new byte[4] { 128, 128, 128, 128 };
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                GyroStickX[i] = 128;
-                GyroStickY[i] = 128;
-                MapStickActionData[i] = new PostMapStickData();
-                FlickMappingData[i] = new FlickStickMappingData();
-                L2TwoStageMappingData[i] = new TwoStageTriggerMappingData();
-                R2TwoStageMappingData[i] = new TwoStageTriggerMappingData();
-                DeltaAccelProcessors[i] = new DeltaSettingsProcessorGroup();
             }
         }
     }

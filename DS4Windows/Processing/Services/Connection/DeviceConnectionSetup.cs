@@ -84,11 +84,11 @@ namespace DS4Windows.Processing.Services.Connection
 
             FlickStickSettings flickStickSettings = _profileSettings.ForSlot(ind).Sticks.LSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
-            flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
+            flickStickSettings.SetRefreshEvents(_stickMotion.Devices[ind].FlickMappingData.flickFilter);
 
             flickStickSettings = _profileSettings.ForSlot(ind).Sticks.RSOutput.outputSettings.flickSettings;
             flickStickSettings.RemoveRefreshEvents();
-            flickStickSettings.SetRefreshEvents(_stickMotion.FlickMappingData[ind].flickFilter);
+            flickStickSettings.SetRefreshEvents(_stickMotion.Devices[ind].FlickMappingData.flickFilter);
 
             int tempIdx = ind;
             _profileSettings.ForSlot(ind).Triggers.L2Output.ResetEvents();
