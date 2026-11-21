@@ -62,7 +62,7 @@ namespace DS4Windows.Processing.Touchpad
         // 旧ネスト型 Mouse.TouchButtonActivationMode は、プロファイルの設定値の型として
         // Core/Settings/TouchButtonActivationMode.cs（トップレベル）へ移した（値と基底型は同じ）
 
-        private readonly TouchButtonDetector _buttons = new TouchButtonDetector();
+        private readonly TouchButtonDetector _buttons;
 
         /// <summary>
         /// 持ち物（タップ・カーソル・ホイール・ジャイロ）は、<c>TouchpadMouseFactory</c> が組み立てて渡す
@@ -70,8 +70,10 @@ namespace DS4Windows.Processing.Touchpad
         /// </summary>
         public TouchpadMouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
             StickMotionState stickMotion, SyntheticInputState syntheticInput, TapClickDetector tap, MouseCursor mouseCursor,
-            MouseWheel mouseWheel, GyroOutputProcessor gyro)
+            MouseWheel mouseWheel, GyroOutputProcessor gyro, TouchButtonDetector buttons)
         {
+            ArgumentNullException.ThrowIfNull(buttons);
+            _buttons = buttons;
             ArgumentNullException.ThrowIfNull(stickMotion);
             ArgumentNullException.ThrowIfNull(syntheticInput);
             ArgumentNullException.ThrowIfNull(profileSettings);
@@ -235,20 +237,8 @@ namespace DS4Windows.Processing.Touchpad
                 }
             }
 
-            bool releaseButtonChanged = false;
-            if (_buttons.ReleaseButtonActive)
-            {
-                DateTime current = DateTime.UtcNow;
-                // Set keydown time to 100 ms for now
-                // 上流の比較が逆（'<'）で、離した直後のフレームでフラグが下りて Mapping に届かなかった。
-                // 100ms 経過後にフラグを下ろす（'>='）。
-                if (current >= (_buttons.OnReleaseTime + TimeSpan.FromMilliseconds(100.0)))
-                {
-                    _buttons.ReleaseButtonActive = false;
-                    releaseButtonChanged = true;
-                    _buttons.ClearDownFlags();
-                }
-            }
+            // Release 方式の押下は、一定時間（TouchButtonDetector.ReleaseHoldMs）保持してから下ろす
+            bool releaseButtonChanged = _buttons.TryExpireRelease();
 
             // Double Tap の保留クリックと、タップクリックの保持中は、
             // 指を離した後も処理が必要

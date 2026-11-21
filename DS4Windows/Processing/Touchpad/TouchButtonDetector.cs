@@ -40,6 +40,31 @@ namespace DS4Windows.Processing.Touchpad
 
         private Candidate candidate;
 
+        // Release 方式の保持時間の基準になる時計。テストが手動の時計を渡して、実時間を待たずに確かめる
+        private readonly TimeProvider _time;
+
+        public TouchButtonDetector(TimeProvider? timeProvider = null)
+        {
+            _time = timeProvider ?? TimeProvider.System;
+        }
+
+        /// <summary>Release 方式の押下を保持する時間（ミリ秒）。</summary>
+        public const double ReleaseHoldMs = 100.0;
+
+        /// <summary>
+        /// Release 方式の押下が成立してから <see cref="ReleaseHoldMs"/> 経ったら、押下の状態を下ろして真を返す（呼び出し側が、その 1 フレームの出力を続ける）。
+        /// 離した直後のフレームで下ろすと、割り当てへ届かない（上流は比較が逆だった）。経過するまでは何もしない。
+        /// </summary>
+        public bool TryExpireRelease()
+        {
+            if (!ReleaseButtonActive) return false;
+            if (_time.GetUtcNow().UtcDateTime < OnReleaseTime + TimeSpan.FromMilliseconds(ReleaseHoldMs)) return false;
+
+            ReleaseButtonActive = false;
+            ClearDownFlags();
+            return true;
+        }
+
         /// <summary>指を離した直後かどうか（Release 方式が、離したときに押下を成立させるために使う）。</summary>
         public bool WasTouched { get; set; }
 
@@ -193,7 +218,7 @@ namespace DS4Windows.Processing.Touchpad
                         {
                             activateTouchButton = true;
                             ReleaseButtonActive = true;
-                            OnReleaseTime = DateTime.UtcNow;
+                            OnReleaseTime = _time.GetUtcNow().UtcDateTime;
                         }
                     }
                     else if ((WasTouched && !arg.TouchActive) ||
@@ -201,7 +226,7 @@ namespace DS4Windows.Processing.Touchpad
                     {
                         activateTouchButton = true;
                         ReleaseButtonActive = true;
-                        OnReleaseTime = DateTime.UtcNow;
+                        OnReleaseTime = _time.GetUtcNow().UtcDateTime;
                     }
                 }
             }

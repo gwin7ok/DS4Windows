@@ -39,7 +39,7 @@ namespace DS4Windows.Processing.Services.Conditioning
             var wheel = new MouseWheel(deviceIndex, _profileSettings, _virtualKBM);
             var gyro = new GyroOutputProcessor(deviceIndex, device, cursor, _profileSettings);
             return new TouchpadMouse(deviceIndex, device, _profileSettings, _virtualKBM, _stickMotion, _syntheticInput,
-                tap, cursor, wheel, gyro);
+                tap, cursor, wheel, gyro, new TouchButtonDetector(_timeProvider));
         }
     }
 }

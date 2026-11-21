@@ -60,9 +60,12 @@ namespace DS4WindowsTests
             Assert.True(detector.TappedOnce);
             Assert.True(detector.IsPendingOrHolding);
 
-            // 確定の時刻は実時計（DateTime.Now）で測るため、確定するまで回す（15ms 待つ）
-            var wait = System.Diagnostics.Stopwatch.StartNew();
-            while (detector.TappedOnce && wait.ElapsedMilliseconds < 2000) LeftClicks(detector, state);
+            // 確定の時刻は、渡した時計で測る（待ち時間 = 感度 10 × 1.5 = 15ms が過ぎるまでは、確定しない）
+            time.Advance(TimeSpan.FromMilliseconds(14));
+            LeftClicks(detector, state);
+            Assert.True(detector.TappedOnce);
+            time.Advance(TimeSpan.FromMilliseconds(2));
+            LeftClicks(detector, state);
 
             Assert.False(detector.TappedOnce);
             Assert.Equal(1, LeftClicks(detector, state));
