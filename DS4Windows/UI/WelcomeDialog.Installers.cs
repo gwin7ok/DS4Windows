@@ -23,7 +23,7 @@ namespace DS4Windows.UI
 
         private async Task RunInstall(ContentControl button, ExternalComponentSpec spec)
         {
-            EnableControls(false);
+            _viewModel.InstallRunning = true;
 
             // Progress は、作った画面のスレッドへ通知を戻す
             Progress<InstallProgress> progress = new Progress<InstallProgress>(p =>
@@ -38,11 +38,11 @@ namespace DS4Windows.UI
                         break;
                     case InstallStage.Completed:
                         button.Content = Properties.Resources.InstallComplete;
-                        EnableControls(true);
+                        _viewModel.InstallRunning = false;
                         break;
                     case InstallStage.Failed:
                         button.Content = Properties.Resources.InstallFailed;
-                        EnableControls(true);
+                        _viewModel.InstallRunning = false;
                         break;
                 }
             });

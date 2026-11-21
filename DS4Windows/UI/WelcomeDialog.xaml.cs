@@ -54,6 +54,7 @@ namespace DS4Windows.UI
 
         // 導入の流れ。画面が閉じられたら、終了の監視を取り消す
         private readonly DS4Windows.Core.Platform.ExternalComponentInstaller _installer;
+        private readonly DS4Windows.UI.ViewModels.WelcomeDialogViewModel _viewModel;
         private readonly System.Threading.CancellationTokenSource _closing = new System.Threading.CancellationTokenSource();
 
         // Global 直接参照の置換先。呼び出し側（App の -driverinstall 分岐）が渡す（Pure DI）。
@@ -69,6 +70,8 @@ namespace DS4Windows.UI
 
             InitCommands();
             InitializeComponent();
+            _viewModel = new DS4Windows.UI.ViewModels.WelcomeDialogViewModel(IsHidHideControlCompatible(), IsFakerInputControlCompatible());
+            DataContext = _viewModel;
 
             // Establish default before system checks
             installFileName = InstFileNameX64;
@@ -102,16 +105,6 @@ namespace DS4Windows.UI
                     instFakerInputFileName = new FileInfo(InstallerFakerInputX86).Name;
                 }
             }
-            else
-            {
-                step5FakerInputPanel.IsEnabled = false;
-            }
-
-            // HidHide requires Windows 10 (or later) x64
-            if (!IsHidHideControlCompatible())
-            {
-                step4HidHidePanel.IsEnabled = false;
-            }
         }
 
         private bool IsHidHideControlCompatible()
@@ -143,30 +136,6 @@ namespace DS4Windows.UI
         private void OpenBluetoothSettings()
         {
             Process.Start("control", "bthprops.cpl");
-        }
-
-        private void EnableControls(bool on)
-        {
-            vigemInstallBtn.IsEnabled = on;
-            step4HidHidePanel.IsEnabled = on;
-            step5FakerInputPanel.IsEnabled = on;
-
-            // Perform compatibility checks for controls that might need
-            // to be disabled when on is set to true
-            if (on)
-            {
-                LateControlsCheck();
-            }
-        }
-
-        /// <summary>
-        /// Possibly disable some controls for components that are not compatible
-        /// with the installed version of Windows or system configuration
-        /// </summary>
-        private void LateControlsCheck()
-        {
-            step4HidHidePanel.IsEnabled = IsHidHideControlCompatible();
-            step5FakerInputPanel.IsEnabled = IsFakerInputControlCompatible();
         }
     }
 }
