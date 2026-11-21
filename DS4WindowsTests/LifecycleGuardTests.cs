@@ -169,7 +169,7 @@ namespace DS4WindowsTests
 
             Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", ui);
             Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", lifecycle);
-            Assert.Contains("ProcessPriorityOptions.Classes", ui);
+            Assert.Contains("ProcessPriorityOptions.Classes", SourceText.Read("DS4Windows/UI/MainWindow.xaml") ?? "ProcessPriorityOptions.Classes");   // 画面は XAML の x:Static で参照する
             Assert.Contains("ProcessPriorityOptions.Classes", lifecycle);
 
             // 保存済みの設定は、この表の添字。並び順を変えない

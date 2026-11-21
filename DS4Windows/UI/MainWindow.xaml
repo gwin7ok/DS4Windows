@@ -11,6 +11,7 @@
         lex:ResxLocalizationProvider.DefaultDictionary="Strings"
         xmlns:local="clr-namespace:DS4Windows.UI"
         xmlns:localConverters="clr-namespace:DS4Windows.UI.Converters"
+        xmlns:platform="clr-namespace:DS4Windows.Core.Platform"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xml:lang="en-US"
         mc:Ignorable="d"
@@ -446,7 +447,7 @@
 
                         <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                             <Label Content="{lex:Loc ProcessPriority}" ContentStringFormat="{}{0}:"/>
-                            <ComboBox x:Name="ProcessPriorityComboBox" Margin="10,0,0,0" SelectedIndex="{Binding ProcessPriorityIndex}" />
+                            <ComboBox x:Name="ProcessPriorityComboBox" Margin="10,0,0,0" ItemsSource="{x:Static platform:ProcessPriorityOptions.Classes}" SelectedIndex="{Binding ProcessPriorityIndex}" />
                         </StackPanel>
 
                         <GroupBox Header="{lex:Loc Utils}" BorderThickness="2" Margin="{StaticResource spaceMargin}"
@@ -500,7 +501,14 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="{lex:Loc MinLogLevel}" Width="180" VerticalAlignment="Center" />
                                     <ComboBox x:Name="logMinLevelComboBox" Width="100"
-                                             SelectedValue="{Binding LogMinLevel}" />
+                                             SelectedValue="{Binding LogMinLevel}">
+                                        <system:String>Trace</system:String>
+                                        <system:String>Debug</system:String>
+                                        <system:String>Info</system:String>
+                                        <system:String>Warn</system:String>
+                                        <system:String>Error</system:String>
+                                        <system:String>Fatal</system:String>
+                                    </ComboBox>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
