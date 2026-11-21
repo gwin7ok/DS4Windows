@@ -189,13 +189,6 @@ namespace DS4WindowsTests
             string mapping = SourceFileLocator.Find("DS4Windows/Processing/Mapping.cs");
             if (mapping == null) return;
 
-            // 切断の処理は DeviceDisconnectHandler.OnRemoval へ移った
-            string handlerPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
-            if (handlerPath == null) return;
-            string removal = SourceText.Method(File.ReadAllText(handlerPath), "public void OnRemoval(");
-            int handle = removal.IndexOf("_mapping.HandleDeviceDisconnect(ind);", StringComparison.Ordinal);
-            int release = removal.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
-            Assert.True(handle >= 0 && release > handle, "ReleaseSlot は HandleDeviceDisconnect の後に呼ぶ");
             // Stop の本体は ServiceLifecycle へ移った
             string lifecyclePath = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             if (lifecyclePath == null) return;

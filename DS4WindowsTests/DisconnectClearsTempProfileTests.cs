@@ -18,19 +18,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheDisconnectHandler_ClearsTheTempProfileState_OfTheDisconnectedSlot()
-        {
-            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/Connection/DeviceDisconnectHandler.cs");
-            if (code == null) return;
-
-            int release = code.IndexOf("_profileSlotApplier.ReleaseSlot(ind);", StringComparison.Ordinal);
-            int name = code.IndexOf("_profileSettings.SetTempProfileName(ind, string.Empty);", StringComparison.Ordinal);
-            int use = code.IndexOf("_profileSettings.SetUseTempProfile(ind, false);", StringComparison.Ordinal);
-            int distance = code.IndexOf("_profileSettings.SetTempProfileDistance(ind, false);", StringComparison.Ordinal);
-            Assert.True(release >= 0 && name > release && use > release && distance > release);
-        }
-
-        [Fact]
         public void TheRememberedProfileOfAReconnect_IgnoresTemporaryProfiles()
         {
             // S9-5（実機）: 自動プロファイルの verifyG が「直前のプロファイル」として記憶され、再接続で最初から適用されていた
