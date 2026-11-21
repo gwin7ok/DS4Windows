@@ -69,6 +69,23 @@ namespace DS4Windows.UI.ViewModels
             return index == 0 || typeCatalog.At(index).IsSavableIn(mode);
         }
 
+        /// <summary>種別の一覧の各項目（Default・Unbound を含む全種別）を選べるか。XAML の <c>IsEnabled</c> に、添字で結ぶ。</summary>
+        public IReadOnlyList<bool> TypeItemEnabled
+        {
+            get
+            {
+                var list = new List<bool>(typeCatalog.All.Count);
+                for (int i = 0; i < typeCatalog.All.Count; i++) list.Add(IsTypeEnabled(i));
+                return list;
+            }
+        }
+
+        /// <summary>「種別を選んでください」の項目を出すか（SA のモードだけ。Controls のモードでは隠す）。</summary>
+        public bool ShowSelectActionItem => mode != ActionEditorModes.Control;
+
+        /// <summary>Default／Unbound の項目を出すか（Controls のモードだけ）。</summary>
+        public bool ShowControlOnlyTypeItems => mode == ActionEditorModes.Control;
+
         public IActionTriggerSource TriggerSource => triggerSource;
         public IActionEditTarget EditTarget => editTarget;
         public ActionTypeCatalog TypeCatalog => typeCatalog;

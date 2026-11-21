@@ -83,42 +83,6 @@ namespace DS4Windows.UI
             calibrateGyroVM = session.CalibrateGyroVM;
             focusWindowVM = session.FocusWindowVM;
 
-            // Hide tab headers. Tab content will still be visible
-            blankActTab.Visibility = Visibility.Collapsed;
-            macroActTab.Visibility = Visibility.Collapsed;
-            launchProgActTab.Visibility = Visibility.Collapsed;
-            loadProfileTab.Visibility = Visibility.Collapsed;
-            pressKetActTab.Visibility = Visibility.Collapsed;
-            disconnectBTTab.Visibility = Visibility.Collapsed;
-            checkBatteryTab.Visibility = Visibility.Collapsed;
-            multiActTab.Visibility = Visibility.Collapsed;
-            gyroCalibrateTab.Visibility = Visibility.Collapsed;
-            focusWindowTab.Visibility = Visibility.Collapsed;
-            defaultActTab.Visibility = Visibility.Collapsed;
-            unboundActTab.Visibility = Visibility.Collapsed;
-
-            // 入力の制限は、種別の一覧の項目の表示・非表示だけで行う（検証・保存ボタンは、モードを区別しない）。
-            // Controls のモード: 「種別を選んでください」（添字 0）を隠す（選べるのは、Default／Macro／Output Key/Mouse/Button／Unbound）。
-            // SA のモード: Controls のモードだけの「Default」「Unbound」を隠す
-            if (controlMode)
-            {
-                ((ComboBoxItem)actionTypeCombo.Items[0]).Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                defaultTypeItem.Visibility = Visibility.Collapsed;
-                unboundTypeItem.Visibility = Visibility.Collapsed;
-            }
-
-            // 種別の一覧には、全種別を出し、このモードで現在保存できない種別は、選べなくする（Controls は、Step3 まで Key・Button・Macro だけ）
-            for (int i = 0; i < actionTypeCombo.Items.Count; i++)
-            {
-                if (actionTypeCombo.Items[i] is ComboBoxItem typeItem && i < specialActVM.TypeCatalog.All.Count)
-                {
-                    typeItem.IsEnabled = specialActVM.IsTypeEnabled(i);
-                }
-            }
-
             actionTypeTabControl.DataContext = specialActVM;
             actionTypeCombo.DataContext = specialActVM;
             actionNameTxt.DataContext = specialActVM;
@@ -171,7 +135,6 @@ namespace DS4Windows.UI
                 saveBtn.IsEnabled = true;
             }
 
-            triggersListView.Visibility = Visibility.Visible;
         }
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)

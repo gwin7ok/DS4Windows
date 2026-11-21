@@ -119,6 +119,20 @@ namespace DS4WindowsTests
             Assert.Equal(12, vm.TypeAssoc.Length);
         }
 
+        [Fact]
+        public void TheTypeListState_MatchesIsTypeEnabled_AndTheModeDecidesWhichItemsShow()
+        {
+            var rig = new Rig();
+            var target = new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile);
+            var vm = new ControlActionEditorViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, target);
+
+            Assert.Equal(vm.TypeAssoc.Length, vm.TypeItemEnabled.Count);
+            for (int i = 0; i < vm.TypeItemEnabled.Count; i++)
+                Assert.Equal(vm.IsTypeEnabled(i), vm.TypeItemEnabled[i]);
+            Assert.False(vm.ShowSelectActionItem);
+            Assert.True(vm.ShowControlOnlyTypeItems);
+        }
+
         // ---- 割り当ての読み込み・書き出し ----
 
         [Fact]
@@ -219,9 +233,10 @@ namespace DS4WindowsTests
             Assert.Contains("x:Name=\"unboundActTab\"", xaml);
 
             // Controls のモード: 「種別を選んでください」（0）を隠す。SA のモード: 足した 2 項目を隠す
-            Assert.Contains("((ComboBoxItem)actionTypeCombo.Items[0]).Visibility = Visibility.Collapsed;", source);
-            Assert.Contains("defaultTypeItem.Visibility = Visibility.Collapsed;", source);
-            Assert.Contains("unboundTypeItem.Visibility = Visibility.Collapsed;", source);
+            // （コードビハインドの代入から、ViewModel の ShowSelectActionItem／ShowControlOnlyTypeItems への結びつけへ移した）
+            Assert.Contains("Visibility=\"{Binding ShowSelectActionItem,", xaml);
+            Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(xaml, @"Visibility=""\{Binding ShowControlOnlyTypeItems,").Count);
+            Assert.DoesNotContain("Visibility = Visibility.Collapsed", source);
 
             // 検証と保存ボタンは、モードを区別しない（制御が 2 か所に分散しない）
             Assert.Contains("if (ActionTypeIndex == 0)", editorVm);
