@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Xunit;
@@ -214,6 +215,42 @@ namespace DS4WindowsTests
             Assert.Equal(DS4ControlSettings.ActionType.Default, original.actionType);
         }
 
+        [Fact]
+        public void TheSaveButton_IsEnabledOnlyWhileATypeIsChosen_AndNotifiesTheChange()
+        {
+            var rig = new Rig();
+            var target = new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile);
+            var vm = new ControlActionEditorViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, target);
+            var changed = new System.Collections.Generic.List<string?>();
+            vm.PropertyChanged += (s, e) => changed.Add(e.PropertyName);
+
+            vm.ActionTypeIndex = 0;
+            Assert.False(vm.CanSave);
+
+            vm.ActionTypeIndex = KeyIndex;
+            Assert.True(vm.CanSave);
+            Assert.Contains(nameof(vm.CanSave), changed);   // ボタンの IsEnabled が、結びつけで追従する
+
+            vm.ActionTypeIndex = UnboundIndex;   // Default／Unbound も、種別として選べる
+            Assert.True(vm.CanSave);
+        }
+
+        [Fact]
+        public void TheValidation_RejectsTheUnchosenType_InTheEditorModes_Alike()
+        {
+            var rig = new Rig();
+            var target = new ControlSettingsEditTarget(Settings(DS4ControlSettings.ActionType.Default), rig.Profile);
+            var vm = new ControlActionEditorViewModel(DS4Windows.Core.Settings.ControllerLimits.TestProfileIndex, target);
+            vm.ActionTypeIndex = 0;
+
+            Assert.False(vm.IsValid(null!));   // 対象が編集できない Controls のモードでは、SA の引数は使われない
+            Assert.True(vm.HasErrors);
+            Assert.NotEmpty(vm.GetErrors(nameof(vm.ActionTypeIndex)).Cast<object>());
+
+            vm.ClearOldErrors();
+            Assert.False(vm.HasErrors);
+        }
+
         // ---- 画面（ソース走査）----
 
         [Fact]
@@ -221,8 +258,7 @@ namespace DS4WindowsTests
         {
             string xaml = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml");
             string source = SourceText.Read("DS4Windows/UI/AssignmentEditor.xaml.cs");
-            string editorVm = SourceText.Read("DS4Windows/UI/ViewModels/ActionEditorViewModel.cs");
-            if (xaml == null || source == null || editorVm == null)
+            if (xaml == null || source == null)
             {
                 return;
             }
@@ -238,10 +274,6 @@ namespace DS4WindowsTests
             Assert.Equal(2, System.Text.RegularExpressions.Regex.Matches(xaml, @"Visibility=""\{Binding ShowControlOnlyTypeItems,").Count);
             Assert.DoesNotContain("Visibility = Visibility.Collapsed", source);
 
-            // 検証と保存ボタンは、モードを区別しない（制御が 2 か所に分散しない）
-            Assert.Contains("if (ActionTypeIndex == 0)", editorVm);
-            // （保存ボタンの可否は、コードビハインドの代入から、ViewModel の CanSave への結びつけへ移した）
-            Assert.Contains("public bool CanSave => ActionTypeIndex > 0;", editorVm);
             Assert.Contains("IsEnabled=\"{Binding CanSave,", xaml);
 
             // 出力ピッカーで Default／Unbound を選んだら、一覧の項目も切り替える
