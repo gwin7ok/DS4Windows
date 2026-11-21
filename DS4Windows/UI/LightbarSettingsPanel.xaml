@@ -42,6 +42,7 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <GroupBox x:Name="colorGB"
+                                  IsEnabled="{Binding ColorSectionsEnabled}"
                                   Header="{lex:Loc Color}"
                                   Padding="4">
                             <StackPanel>
@@ -76,6 +77,8 @@
                         </GroupBox>
 
                         <GroupBox x:Name="emptyColorGB"
+                                  IsEnabled="{Binding ColorSectionsEnabled}"
+                                  Visibility="{Binding ShowEmptyColor, Converter={x:Static localConverters:BoolToVisibleHiddenConverter.Instance}}"
                                   Header="{lex:Loc LightbarEmpty}"
                                   Padding="4">
                             <StackPanel>

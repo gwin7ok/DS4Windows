@@ -277,7 +277,23 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 lightbar.Info.ds4winSettings.ledAsBattery = value;
+                OnPropertyChanged(nameof(ShowEmptyColor));
             }
+        }
+
+        /// <summary>「空の色」の枠を出すか（バッテリー残量で色を変えるときだけ）。</summary>
+        public bool ShowEmptyColor => ColorBatteryPercent;
+
+        /// <summary>プロファイルを読み込んだあとなど、設定が通知なしに変わったときに、枠の表示を読み直させる。</summary>
+        public void RefreshColorByBatteryState() => OnPropertyChanged(nameof(ShowEmptyColor));
+
+        private bool colorSectionsEnabled = true;
+
+        /// <summary>色の枠（通常・空）を操作できるか。虹色のとき（ボタンで切り替えたあと）は偽。</summary>
+        public bool ColorSectionsEnabled
+        {
+            get => colorSectionsEnabled;
+            set => SetProperty(ref colorSectionsEnabled, value);
         }
 
         public string ChargingColor
