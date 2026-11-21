@@ -340,21 +340,10 @@ namespace DS4Windows
         /// </summary>
         private void InitializePostHostServices()
         {
-            _themeCulture = ResolvePostHostService<DS4Windows.UI.Services.AppThemeAndCultureService>();
-            _ipc = ResolvePostHostService<DS4Windows.Core.Platform.IpcMemoryMap>();
-            _appSettingsService = ResolvePostHostService<IAppSettingsService>();
-            _pathService = ResolvePostHostService<IPathService>();
-            _environmentService = ResolvePostHostService<IEnvironmentService>();
-            _profileRepository = ResolvePostHostService<IProfileRepository>();
-            _profileIdentityService = ResolvePostHostService<IProfileIdentityService>();
-            _specialActionRepository = ResolvePostHostService<ISpecialActionRepository>();
-            _appearanceSettingsService = ResolvePostHostService<IAppearanceSettingsService>();
-            _deviceStateService = ResolvePostHostService<IDeviceStateService>();
-            _outputSlotService = ResolvePostHostService<IOutputSlotService>();
-            // Phase7-Step5 W3（Q7＝A）: 静的なロガー（AppLogger.LogToTray）が使う通知サービスを、DI のシングルトンに設定する
-            AppLogger.NotificationService = ResolvePostHostService<INotificationService>();
-            _logSettingsApplierProxy = ResolvePostHostService<DS4Windows.Core.Logging.LogSettingsApplierProxy>();
-            _runtimeFeatures = ResolvePostHostService<DS4Windows.Processing.Abstractions.IRuntimeFeatureSwitch>();
+            _post = PostHostServices.Resolve();
+            _themeCulture = _post.ThemeCulture;
+            // 静的なロガー（AppLogger.LogToTray）が使う通知サービスを、DI のシングルトンに設定する
+            AppLogger.NotificationService = _post.Notifications;
 
             if (AppLogger.IsTraceEnabled)
                 AppLogger.LogTrace("[DI] App.InitializePostHostServices: Post-Host services resolved");

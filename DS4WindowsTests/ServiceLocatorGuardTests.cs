@@ -74,7 +74,7 @@ namespace DS4WindowsTests
             // App が起動のときに差す
             string app = SourceText.ReadCode("DS4Windows/App.xaml.cs");
             if (app == null) return;
-            Assert.Matches(@"AppLogger\.NotificationService\s*=\s*ResolvePostHostService<INotificationService>\(\)", app);
+            Assert.Matches(@"AppLogger\.NotificationService\s*=\s*_post\.Notifications", app);
         }
 
         [Fact]
