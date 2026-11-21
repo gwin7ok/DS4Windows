@@ -84,30 +84,11 @@ namespace DS4Windows.UI
         private void HoverConBtn_Click(object sender, RoutedEventArgs e)
         {
             // 500ms の遅延の前にクリックされたときも、クリックしたボタンの割り当てを開く（選択を先に確定する）
-            CancelHoverSelect();
-            if (sender is Button clicked) SelectHoveredControl(clicked);
+            if (sender is Button clicked) HoverSelect.SelectNow(clicked);
+            else CancelHoverSelect();
 
             MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
             ShowControlAssignmentEditor(mpControl, updateHighlight: true);
-        }
-
-        private void StartHoverSelect(Button control)
-        {
-            if (hoverSelectTimer == null)
-            {
-                hoverSelectTimer = new System.Timers.Timer(HoverSelectDelayMs) { AutoReset = false };
-                hoverSelectTimer.Elapsed += (s, e) => Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    // Stop 済み（キャンセル）のあとに届いた Elapsed は、保留の選択がないので何もしない
-                    Button? pending = hoverSelectPending;
-                    hoverSelectPending = null;
-                    if (pending != null) SelectHoveredControl(pending);
-                }));
-            }
-
-            hoverSelectTimer.Stop();
-            hoverSelectPending = control;
-            hoverSelectTimer.Start();
         }
 
         private void HighlightHoverImage(Button control)
