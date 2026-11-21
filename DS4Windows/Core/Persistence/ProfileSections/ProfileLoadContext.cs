@@ -63,32 +63,32 @@ namespace DS4Windows.Core.Persistence.ProfileSections
         /// 整数の要素を読む。要素がない、または解析に失敗したとき（空の要素を含む）は何もしない（既定値のまま）。
         /// 解析に成功した値が範囲の外のときは、範囲へ丸めて代入する。
         /// </summary>
-        public void ReadInt(XmlNode source, string xpath, int min, int max, Action<int> assign)
+        public void ReadInt(XmlNode? source, string xpath, int min, int max, Action<int> assign)
         {
-            XmlNode? node = source.SelectSingleNode(xpath);
+            XmlNode? node = source?.SelectSingleNode(xpath);
             if (node == null) return;
             if (int.TryParse(node.InnerText, out int value)) assign(Math.Min(Math.Max(value, min), max));
         }
 
         /// <summary><see cref="ReadInt"/> の実数版。</summary>
-        public void ReadDouble(XmlNode source, string xpath, double min, double max, Action<double> assign)
+        public void ReadDouble(XmlNode? source, string xpath, double min, double max, Action<double> assign)
         {
-            XmlNode? node = source.SelectSingleNode(xpath);
+            XmlNode? node = source?.SelectSingleNode(xpath);
             if (node == null) return;
             if (double.TryParse(node.InnerText, out double value)) assign(Math.Min(Math.Max(value, min), max));
         }
 
         /// <summary>真偽値の要素を読む。要素がない、または解析に失敗したときは何もしない。</summary>
-        public void ReadBool(XmlNode source, string xpath, Action<bool> assign)
+        public void ReadBool(XmlNode? source, string xpath, Action<bool> assign)
         {
-            XmlNode? node = source.SelectSingleNode(xpath);
+            XmlNode? node = source?.SelectSingleNode(xpath);
             if (node != null && bool.TryParse(node.InnerText ?? string.Empty, out bool value)) assign(value);
         }
 
         /// <summary>列挙型の要素を読む。要素がない、または解析に失敗したときは何もしない。</summary>
-        public void ReadEnum<T>(XmlNode source, string xpath, Action<T> assign) where T : struct
+        public void ReadEnum<T>(XmlNode? source, string xpath, Action<T> assign) where T : struct
         {
-            XmlNode? node = source.SelectSingleNode(xpath);
+            XmlNode? node = source?.SelectSingleNode(xpath);
             if (node != null && Enum.TryParse(node.InnerText ?? string.Empty, out T value)) assign(value);
         }
 

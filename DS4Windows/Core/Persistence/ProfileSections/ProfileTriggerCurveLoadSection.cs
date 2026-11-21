@@ -80,71 +80,23 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveMode"); store.triggerSlots[device].ApplyL2CurveMode(axisOutputCurveId(Item.Required().InnerText)); }
             catch { store.triggerSlots[device].ApplyL2CurveMode(0); missingSetting = true; }
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2TwoStageMode");
-                if (Enum.TryParse(Item?.InnerText, out TwoStageTriggerMode tempMode))
-                {
-                    store.triggerSlots[device].L2Output.TwoStageMode = tempMode;
-                }
-            }
-            catch { }
+            context.ReadEnum<TwoStageTriggerMode>(m_Xdoc, "/" + rootname + "/L2TwoStageMode", v => store.triggerSlots[device].L2Output.TwoStageMode = v);
 
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2HipFireTime");
-                if (int.TryParse(Item?.InnerText, out int temp))
-                {
-                    store.triggerSlots[device].L2Output.hipFireMS = Math.Clamp(temp, 0, 5000);
-                }
-            }
-            catch { }
+            context.ReadInt(m_Xdoc, "/" + rootname + "/L2HipFireTime", 0, 5000, v => store.triggerSlots[device].L2Output.hipFireMS = v);
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2TriggerEffect");
-                if (Enum.TryParse(Item?.InnerText, out DS4Windows.Core.Model.TriggerEffects tempMode))
-                {
-                    store.triggerSlots[device].L2Output.TriggerEffect = tempMode;
-                }
-            }
-            catch { }
+            context.ReadEnum<DS4Windows.Core.Model.TriggerEffects>(m_Xdoc, "/" + rootname + "/L2TriggerEffect", v => store.triggerSlots[device].L2Output.TriggerEffect = v);
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveCustom"); store.triggerSlots[device].R2Bezier.CustomDefinition = Item.Required().InnerText; }
             catch { missingSetting = true; }
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveMode"); store.triggerSlots[device].ApplyR2CurveMode(axisOutputCurveId(Item.Required().InnerText)); }
             catch { store.triggerSlots[device].ApplyR2CurveMode(0); missingSetting = true; }
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2TwoStageMode");
-                if (Enum.TryParse(Item?.InnerText, out TwoStageTriggerMode tempMode))
-                {
-                    store.triggerSlots[device].R2Output.TwoStageMode = tempMode;
-                }
-            }
-            catch { }
+            context.ReadEnum<TwoStageTriggerMode>(m_Xdoc, "/" + rootname + "/R2TwoStageMode", v => store.triggerSlots[device].R2Output.TwoStageMode = v);
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2HipFireTime");
-                if (int.TryParse(Item?.InnerText, out int temp))
-                {
-                    store.triggerSlots[device].R2Output.hipFireMS = Math.Clamp(temp, 0, 5000);
-                }
-            }
-            catch { }
+            context.ReadInt(m_Xdoc, "/" + rootname + "/R2HipFireTime", 0, 5000, v => store.triggerSlots[device].R2Output.hipFireMS = v);
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2TriggerEffect");
-                if (Enum.TryParse(Item?.InnerText, out DS4Windows.Core.Model.TriggerEffects tempMode))
-                {
-                    store.triggerSlots[device].R2Output.TriggerEffect = tempMode;
-                }
-            }
-            catch { }
+            context.ReadEnum<DS4Windows.Core.Model.TriggerEffects>(m_Xdoc, "/" + rootname + "/R2TriggerEffect", v => store.triggerSlots[device].R2Output.TriggerEffect = v);
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveCustom"); store.sixAxisSlots[device].SXCurve.CustomDefinition = Item.Required().InnerText; }
             catch { missingSetting = true; }

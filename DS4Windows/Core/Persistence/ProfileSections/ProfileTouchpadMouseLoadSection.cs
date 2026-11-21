@@ -59,122 +59,53 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 //        gyroSlots[device].MouseStick.useSmoothing = tempSmoothing;
                 //    }
                 //}
-                //catch { }
+                // （旧: 要素がない・値が不正な古い保存ファイルは、既定値のまま続ける）
 
-                try
+                context.ReadInt(xmlTouchMStickSmoothingElement, "DeadZone", int.MinValue, int.MaxValue, v => store.touchpadSlots[device].MouseStick.deadZone = v);
+
+                context.ReadInt(xmlTouchMStickSmoothingElement, "MaxZone", 1, int.MaxValue, v => store.touchpadSlots[device].MouseStick.maxZone = v);
+
+                context.ReadEnum<TouchMouseStickInfo.OutputStick>(xmlTouchMStickSmoothingElement, "OutputStick", v => store.touchpadSlots[device].MouseStick.outputStick = v);
+
+                Item = xmlTouchMStickSmoothingElement?.SelectSingleNode("OutputStickAxes");
+                if (Item == null)
                 {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("DeadZone");
-                    if (int.TryParse(Item?.InnerText ?? "", out int temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.deadZone = temp;
-                    }
+                    // 互換。以前の保存（上流の 2022-10-20 以来の不具合）は、軸を 2 つ目の <OutputStick> として書いていた
+                    XmlNodeList? legacyOutputStickNodes = xmlTouchMStickSmoothingElement?.SelectNodes("OutputStick");
+                    if (legacyOutputStickNodes != null && legacyOutputStickNodes.Count > 1)
+                        Item = legacyOutputStickNodes[1];
                 }
-                catch { }
-
-                try
+                if (Enum.TryParse(Item?.InnerText ?? "",
+                    out TouchMouseStickInfo.OutputStickAxes tempAxes))
                 {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("MaxZone");
-                    if (int.TryParse(Item?.InnerText ?? "", out int temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.maxZone = Math.Max(temp, 1);
-                    }
+                    store.touchpadSlots[device].MouseStick.outputStickDir = tempAxes;
                 }
-                catch { }
 
-                try
+                context.ReadDouble(xmlTouchMStickSmoothingElement, "AntiDeadX", double.MinValue, double.MaxValue, v => store.touchpadSlots[device].MouseStick.antiDeadX = v);
+
+                context.ReadDouble(xmlTouchMStickSmoothingElement, "AntiDeadY", double.MinValue, double.MaxValue, v => store.touchpadSlots[device].MouseStick.antiDeadY = v);
+
+                Item = xmlTouchMStickSmoothingElement?.SelectSingleNode("Invert");
+                if (uint.TryParse(Item?.InnerText ?? "",
+                    out uint tempInvert))
                 {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("OutputStick");
-                    if (Enum.TryParse(Item?.InnerText ?? "",
-                        out TouchMouseStickInfo.OutputStick temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.outputStick = temp;
-                    }
+                    store.touchpadSlots[device].MouseStick.inverted = tempInvert;
                 }
-                catch { }
 
-                try
+                context.ReadDouble(xmlTouchMStickSmoothingElement, "MaxOutput", 0.0, 100.0, v => store.touchpadSlots[device].MouseStick.maxOutput = v);
+
+                context.ReadBool(xmlTouchMStickSmoothingElement, "MaxOutputEnabled", v => store.touchpadSlots[device].MouseStick.maxOutputEnabled = v);
+
+                context.ReadInt(xmlTouchMStickSmoothingElement, "VerticalScale", int.MinValue, int.MaxValue, v => store.touchpadSlots[device].MouseStick.vertScale = v);
+
+                context.ReadEnum<StickOutCurve.Curve>(xmlTouchMStickSmoothingElement, "OutputCurve", v => store.touchpadSlots[device].MouseStick.outputCurve = v);
+
+                Item = xmlTouchMStickSmoothingElement?.SelectSingleNode("Rotation");
+                if (int.TryParse(Item?.InnerText ?? "", out int tempRot))
                 {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("OutputStickAxes");
-                    if (Item == null)
-                    {
-                        // 互換。以前の保存（上流の 2022-10-20 以来の不具合）は、軸を 2 つ目の <OutputStick> として書いていた
-                        XmlNodeList? legacyOutputStickNodes = xmlTouchMStickSmoothingElement.Required().SelectNodes("OutputStick");
-                        if (legacyOutputStickNodes != null && legacyOutputStickNodes.Count > 1)
-                            Item = legacyOutputStickNodes[1];
-                    }
-                    if (Enum.TryParse(Item?.InnerText ?? "",
-                        out TouchMouseStickInfo.OutputStickAxes temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.outputStickDir = temp;
-                    }
+                    tempRot = Math.Clamp(tempRot, -180, 180);
+                    store.touchpadSlots[device].MouseStick.rotationRad = tempRot * Math.PI / 180.0;
                 }
-                catch { }
-
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("AntiDeadX");
-                    if (double.TryParse(Item?.InnerText ?? "", out double temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.antiDeadX = temp;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("AntiDeadY");
-                    if (double.TryParse(Item?.InnerText ?? "", out double temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.antiDeadY = temp;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("Invert");
-                    if (uint.TryParse(Item?.InnerText ?? "",
-                        out uint temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.inverted = temp;
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("MaxOutput");
-                    if (double.TryParse(Item?.InnerText ?? "", out double temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.maxOutput = Math.Clamp(temp, 0.0, 100.0);
-                    }
-                }
-                catch { }
-
-                context.ReadBool(xmlTouchMStickSmoothingElement.Required(), "MaxOutputEnabled", v => store.touchpadSlots[device].MouseStick.maxOutputEnabled = v);
-
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("VerticalScale");
-                    if (int.TryParse(Item?.InnerText ?? "", out int temp))
-                    {
-                        store.touchpadSlots[device].MouseStick.vertScale = temp;
-                    }
-                }
-                catch { }
-
-                context.ReadEnum<StickOutCurve.Curve>(xmlTouchMStickSmoothingElement.Required(), "OutputCurve", v => store.touchpadSlots[device].MouseStick.outputCurve = v);
-
-                try
-                {
-                    Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("Rotation");
-                    if (int.TryParse(Item?.InnerText ?? "", out int temp))
-                    {
-                        temp = Math.Clamp(temp, -180, 180);
-                        store.touchpadSlots[device].MouseStick.rotationRad = temp * Math.PI / 180.0;
-                    }
-                }
-                catch { }
 
 
                 bool stickSmoothingGroup = false;
@@ -192,36 +123,11 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                     //}
                     //catch { gyroSlots[device].MouseStick.useSmoothing = false; missingSetting = true; }
 
-                    try
-                    {
-                        Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingMethod");
-                        if (Enum.TryParse(Item?.InnerText ?? "",
-                            out TouchMouseStickInfo.SmoothingMethod temp))
-                        {
-                            store.touchpadSlots[device].MouseStick.smoothingMethod = temp;
-                        }
-                    }
-                    catch { }
+                    context.ReadEnum<TouchMouseStickInfo.SmoothingMethod>(xmlTouchMStickSmoothingElement, "SmoothingMethod", v => store.touchpadSlots[device].MouseStick.smoothingMethod = v);
 
-                    try
-                    {
-                        Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingMinCutoff");
-                        if (double.TryParse(Item?.InnerText ?? "", out double temp))
-                        {
-                            store.touchpadSlots[device].MouseStick.minCutoff = Math.Clamp(temp, 0.0, 100.0);
-                        }
-                    }
-                    catch { }
+                    context.ReadDouble(xmlTouchMStickSmoothingElement, "SmoothingMinCutoff", 0.0, 100.0, v => store.touchpadSlots[device].MouseStick.minCutoff = v);
 
-                    try
-                    {
-                        Item = xmlTouchMStickSmoothingElement.Required().SelectSingleNode("SmoothingBeta");
-                        if (double.TryParse(Item?.InnerText ?? "", out double temp))
-                        {
-                            store.touchpadSlots[device].MouseStick.beta = Math.Clamp(temp, 0.0, 1.0);
-                        }
-                    }
-                    catch { }
+                    context.ReadDouble(xmlTouchMStickSmoothingElement, "SmoothingBeta", 0.0, 1.0, v => store.touchpadSlots[device].MouseStick.beta = v);
                 }
             }
 

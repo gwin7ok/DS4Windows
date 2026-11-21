@@ -13,7 +13,6 @@ namespace DS4WindowsTests
         public static readonly string[] Entries =
         {
             "DS4Windows.Processing.Mapping|15",
-            "DS4Windows.Processing.Services.Connection.DeviceConnector|13",
         };
     }
 }

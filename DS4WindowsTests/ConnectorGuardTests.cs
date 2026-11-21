@@ -36,9 +36,7 @@ namespace DS4WindowsTests
                 "device.CheckControllerNumDeviceSettings(numControllers);",
                 "slots.SlotManager.AddController(device, index);",   // スロット状態は IDeviceSlotState（slots）から読む
                 "_outputs.NotifyPlugged(index);",
-                "device.Removal += _deviceDisconnect.OnRemoval;",
-                "device.SyncChange += _deviceDisconnect.OnSyncChange;",
-                "device.SerialChange += _deviceDisconnect.OnSerialChange;",
+                "_lifecycleHooks.Attach(device);",   // 購読の順序は DeviceLifecycleHooks（DisconnectGuardTests が検査）
                 "device.ChargingChanged += OnChargingChanged;",
                 "touchPads[index] = _mouseFactory.Create(index, device);",
                 "_connectionProfileSelector.ApplyOnConnect(",

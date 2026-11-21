@@ -1,7 +1,7 @@
 # PhaseRV4 計画書: ProfileEditor・BindingWindow・RecordBox・WelcomeDialog などの MVVM 化と表駆動化
 
 作成日: 2026-11-19
-状態: **未承認（コードは未着手）**。D1〜D4 は 2026-11-19 にユーザーが選択済み（「決定事項」を参照）
+状態: **一部完了（2026-11-20。RV4-0〜RV4-4・RV4b は完了。RV4-5 の `RecordBox` の分割、タイマー、実機確認は残り。内訳は `Code-Review-2026-11-19/02-Scorecard.md` の RV4）**
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の RV-13〜RV-16（§3.3、§3.5、§5。RV-15 の取得・導入の部品を含む）
 前提: PhaseRV3 の完了（CommunityToolkit.Mvvm の `AsyncRelayCommand` などの基盤、V3 の検査、コマンドの形）。PhaseX3 の XAML の作業の区切り。PhaseRV2 の規則。
 動き: **画面の見た目と操作は変えない**。
