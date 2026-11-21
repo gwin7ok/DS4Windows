@@ -54,6 +54,8 @@ namespace DS4Windows.UI
             downConBtn = conCanvas["downConBtn"];
             leftConBtn = conCanvas["leftConBtn"];
 
+            conButtons = new[] { crossConBtn, circleConBtn, squareConBtn, triangleConBtn, l1ConBtn, r1ConBtn, l2ConBtn, r2ConBtn, shareConBtn, optionsConBtn, guideConBtn, muteConBtn, leftTouchConBtn, multiTouchConBtn, rightTouchConBtn, topTouchConBtn, l3ConBtn, lsuConBtn, lsrConBtn, lsdConBtn, lslConBtn, r3ConBtn, rsuConBtn, rsrConBtn, rsdConBtn, rslConBtn, upConBtn, rightConBtn, downConBtn, leftConBtn, fnlConBtn, fnrConBtn, blpConBtn, brpConBtn };
+
             // 大きさ 0 で隠れているボタンには、処理を結び付けない
             foreach (Button button in new[] { crossConBtn, circleConBtn, squareConBtn, triangleConBtn, l1ConBtn, r1ConBtn, l2ConBtn, r2ConBtn, shareConBtn, optionsConBtn, guideConBtn, leftTouchConBtn, multiTouchConBtn, rightTouchConBtn, topTouchConBtn, l3ConBtn, lsuConBtn, lsrConBtn, lsdConBtn, lslConBtn, r3ConBtn, rsuConBtn, rsrConBtn, rsdConBtn, rslConBtn, upConBtn, rightConBtn, downConBtn, leftConBtn })
             {
@@ -69,46 +71,14 @@ namespace DS4Windows.UI
             }
         }
 
+        private Button[] conButtons = System.Array.Empty<Button>();
+
+        private Button[] ConButtons => conButtons;
+
         private void RemoveHoverBtnText()
         {
-            crossConBtn.Content = "";
-            circleConBtn.Content = "";
-            squareConBtn.Content = "";
-            triangleConBtn.Content = "";
-            l1ConBtn.Content = "";
-            r1ConBtn.Content = "";
-            l2ConBtn.Content = "";
-            r2ConBtn.Content = "";
-            shareConBtn.Content = "";
-            optionsConBtn.Content = "";
-            guideConBtn.Content = "";
-            muteConBtn.Content = "";
-            leftTouchConBtn.Content = "";
-            multiTouchConBtn.Content = "";
-            rightTouchConBtn.Content = "";
-            topTouchConBtn.Content = "";
-
-            l3ConBtn.Content = "";
-            lsuConBtn.Content = "";
-            lsrConBtn.Content = "";
-            lsdConBtn.Content = "";
-            lslConBtn.Content = "";
-
-            r3ConBtn.Content = "";
-            rsuConBtn.Content = "";
-            rsrConBtn.Content = "";
-            rsdConBtn.Content = "";
-            rslConBtn.Content = "";
-
-            upConBtn.Content = "";
-            rightConBtn.Content = "";
-            downConBtn.Content = "";
-            leftConBtn.Content = "";
-
-            fnlConBtn.Content = "";
-            fnrConBtn.Content = "";
-            blpConBtn.Content = "";
-            brpConBtn.Content = "";
+            // 図のボタンには文字を出さない（割り当ての表示は、図の下のラベルに出す）。全ボタンの内容を空にそろえる
+            foreach (Button button in ConButtons) button.Content = "";
         }
 
         private void HoverConBtn_Click(object sender, RoutedEventArgs e)

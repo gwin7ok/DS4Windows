@@ -26,8 +26,32 @@ using DS4Windows.UI.ViewModels.Util;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class BindingWindowViewModel
+    public partial class BindingWindowViewModel : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
+        private BindingWindowLayout _layout = BindingWindowLayout.ForControl;
+        private bool _isMacroRecorderOpen;
+
+        /// <summary>表示モードごとのパネルの出し分け。画面が開くときに、モードに合わせて設定する。</summary>
+        public BindingWindowLayout Layout
+        {
+            get => _layout;
+            set => SetProperty(ref _layout, value);
+        }
+
+        /// <summary>マクロの記録の画面を重ねて表示しているか。表示中は、割り当てのパネルと Extras を隠す。</summary>
+        public bool IsMacroRecorderOpen
+        {
+            get => _isMacroRecorderOpen;
+            set
+            {
+                if (SetProperty(ref _isMacroRecorderOpen, value))
+                    OnPropertyChanged(nameof(ShowMainPanels));
+            }
+        }
+
+        /// <summary>割り当てのパネルと Extras を出すか（マクロの記録の画面が重なっていないとき）。</summary>
+        public bool ShowMainPanels => !_isMacroRecorderOpen;
+
         private int deviceNum;
         private OutContType outputType;
         private DS4ControlSettings settings;

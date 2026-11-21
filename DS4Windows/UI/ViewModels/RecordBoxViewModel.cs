@@ -30,8 +30,17 @@ using DS4Windows.Processing.Abstractions;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public partial class RecordBoxViewModel
+    public partial class RecordBoxViewModel : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
+        private bool controlsEnabled = true;
+
+        /// <summary>記録中でない（編集の操作を受け付ける）か。記録中は、一覧・保存・プリセットなどの操作を止める。画面の <c>IsEnabled</c> に結ぶ。</summary>
+        public bool ControlsEnabled
+        {
+            get => controlsEnabled;
+            set => SetProperty(ref controlsEnabled, value);
+        }
+
         private Stopwatch sw = new Stopwatch();
         private int deviceNum;
         public int DeviceNum { get => deviceNum; }

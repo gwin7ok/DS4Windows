@@ -90,6 +90,7 @@ namespace DS4Windows.UI
             this.expose = expose;
             ArgumentNullException.ThrowIfNull(viewModel);
             bindingVM = viewModel;
+            bindingVM.Layout = BindingWindowLayout.For(expose == ExposeMode.Control);
             DataContext = bindingVM;
             bindingVM.CloseRequested += (s, e) => Close();
 
@@ -112,25 +113,6 @@ namespace DS4Windows.UI
             InitPickerFace(bindingVM.OutputType);
 
             bindingVM.ActionBinding = bindingVM.CurrentOutBind;
-            if (expose == ExposeMode.Control)
-            {
-                // Default／Unbound（modePanel）と Extras（extrasSidePanel）は出す。
-                // Record A Macro・Toggle・Scan Code（topOptsPanel）・マクロの表示は、どのモードでも、割り当てエディターで設定するため出さない
-                recordMacroBtn.Visibility = Visibility.Collapsed;
-                topOptsPanel.Visibility = Visibility.Collapsed;
-                macroOnLb.Visibility = Visibility.Collapsed;
-            }
-            else if (expose == ExposeMode.SpecialAction)
-            {
-                // For Press/Toggle selection: show keyboard, mouse and controller areas,
-                // but hide auxiliary UI panels (mode panel and record macro).
-                // Extras（extrasSidePanel）は、Controls のモードと同じく出す（SA に保存先ができたため。2 つのモードの違いは Default／Unbound［modePanel］の表示だけ）
-                modePanel.Visibility = Visibility.Collapsed;
-                recordMacroBtn.Visibility = Visibility.Collapsed;
-                // Toggle（Switch Mode）と Scan Code は、Press Key タブで設定する。ダイアログは、値を通過させるだけ
-                topOptsPanel.Visibility = Visibility.Collapsed;
-            }
-
             ChangeForCurrentAction();
         }
 
@@ -423,16 +405,14 @@ namespace DS4Windows.UI
             RecordBox box = editorWindowFactory.CreateRecordBox(bindingVM.DeviceNum, bindingVM.Settings,
                 bindingVM.TargetDevice);
             box.Visibility = Visibility.Visible;
-            mapBindingPanel.Visibility = Visibility.Collapsed;
-            extrasSidePanel.Visibility = Visibility.Collapsed;
+            bindingVM.IsMacroRecorderOpen = true;   // 割り当てのパネルと Extras は、バインディングで隠れる
             fullPanel.Children.Add(box);
             box.Cancel += (sender2, args) =>
             {
                 box.Visibility = Visibility.Collapsed;
                 fullPanel.Children.Remove(box);
                 box = null!;   // 閉じたあとは、参照を手放す
-                mapBindingPanel.Visibility = Visibility.Visible;
-                extrasSidePanel.Visibility = Visibility.Visible;
+                bindingVM.IsMacroRecorderOpen = false;
             };
 
             box.Save += (sender2, args) =>
@@ -440,7 +420,6 @@ namespace DS4Windows.UI
                 box.Visibility = Visibility.Collapsed;
                 fullPanel.Children.Remove(box);
                 box = null!;   // 閉じたあとは、参照を手放す
-                //mapBindingPanel.Visibility = Visibility.Visible;
                 bindingVM.PrepareSaveMacro(bindingVM.ActionBinding!);   // 同上
                 Close();
             };

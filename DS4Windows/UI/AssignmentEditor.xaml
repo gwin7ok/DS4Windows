@@ -54,26 +54,26 @@
                 </DockPanel.Resources>
                 <StackPanel>
                     <ComboBox x:Name="actionTypeCombo" SelectedIndex="{Binding ActionTypeIndex,FallbackValue=0}" Margin="0,0,0,8">
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.SelectAction}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.RecordMacro}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.LaunchProgram}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.LoadProfile}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.PressKey}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.DisconnectBT}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CheckBattery}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.MultiAction}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CalibrateGyro}" />
-                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindow}" />
-                        <!-- Controls のモードだけ（SA のモードでは、コードビハインドで隠す）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
-                        <ComboBoxItem x:Name="defaultTypeItem" Content="{lex:Loc Default}" />
-                        <ComboBoxItem x:Name="unboundTypeItem" Content="{lex:Loc Unbound}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.SelectAction}" Visibility="{Binding ShowSelectActionItem, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.RecordMacro}" IsEnabled="{Binding TypeItemEnabled[1]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.LaunchProgram}" IsEnabled="{Binding TypeItemEnabled[2]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.LoadProfile}" IsEnabled="{Binding TypeItemEnabled[3]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.PressKey}" IsEnabled="{Binding TypeItemEnabled[4]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.DisconnectBT}" IsEnabled="{Binding TypeItemEnabled[5]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CheckBattery}" IsEnabled="{Binding TypeItemEnabled[6]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.MultiAction}" IsEnabled="{Binding TypeItemEnabled[7]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.CalibrateGyro}" IsEnabled="{Binding TypeItemEnabled[8]}" />
+                        <ComboBoxItem Content="{lex:Loc SpecialActionEdit.FocusWindow}" IsEnabled="{Binding TypeItemEnabled[9]}" />
+                        <!-- Controls のモードだけ（SA のモードでは、ShowControlOnlyTypeItems が偽で隠れる）。出力ピッカーの Default／Unbound ボタンと同じ設定 -->
+                        <ComboBoxItem x:Name="defaultTypeItem" Content="{lex:Loc Default}" IsEnabled="{Binding TypeItemEnabled[10]}" Visibility="{Binding ShowControlOnlyTypeItems, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}" />
+                        <ComboBoxItem x:Name="unboundTypeItem" Content="{lex:Loc Unbound}" IsEnabled="{Binding TypeItemEnabled[11]}" Visibility="{Binding ShowControlOnlyTypeItems, Converter={x:Static localConverters:BoolToVisibleCollapsedConverter.Instance}}" />
                     </ComboBox>
 
                     <TabControl x:Name="actionTypeTabControl" SelectedIndex="{Binding ActionTypeIndex}" BorderBrush="{x:Null}">
-                        <TabItem x:Name="blankActTab" Header="">
+                        <TabItem x:Name="blankActTab" Visibility="Collapsed" Header="">
 
                         </TabItem>
-                        <TabItem x:Name="macroActTab" Header="{lex:Loc Macro}">
+                        <TabItem x:Name="macroActTab" Visibility="Collapsed" Header="{lex:Loc Macro}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <Button x:Name="recordMacroBtn" Content="{lex:Loc SpecialActionEdit.RecordMacro}"
                                         Tag="{Binding MacroElements,Mode=OneWay,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}"
@@ -87,7 +87,7 @@
                                 <TextBlock Text="{Binding Macrostring,FallbackValue={lex:Loc SpecialActionEdit.MacroRecorded}}" Margin="{StaticResource spaceMargin}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="launchProgActTab" Header="{lex:Loc AssignmentEditor_LaunchProgram}">
+                        <TabItem x:Name="launchProgActTab" Visibility="Collapsed" Header="{lex:Loc AssignmentEditor_LaunchProgram}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
@@ -116,7 +116,7 @@
                                 </StackPanel>
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="loadProfileTab" Header="{lex:Loc AssignmentEditor_LoadProfile}">
+                        <TabItem x:Name="loadProfileTab" Visibility="Collapsed" Header="{lex:Loc AssignmentEditor_LoadProfile}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <ComboBox SelectedIndex="{Binding ProfileIndex,FallbackValue=0,ValidatesOnNotifyDataErrors=True}"
                                           Margin="{StaticResource spaceMargin}">
@@ -141,7 +141,7 @@
                                 <CheckBox Content="{lex:Loc SpecialActionEdit.UnloadTriggerRelease}" Margin="{StaticResource spaceMargin}" IsChecked="{Binding AutoUntrigger}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="pressKetActTab" Header="{lex:Loc AssignmentEditor_PressKey}">
+                        <TabItem x:Name="pressKetActTab" Visibility="Collapsed" Header="{lex:Loc AssignmentEditor_PressKey}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6" VerticalAlignment="Center">
                                     <Label Content="{lex:Loc AssignmentEditor_SwitchMode}" VerticalAlignment="Center" />
@@ -166,14 +166,14 @@
                                 <!-- Unload trigger UI removed: Key-type SpecialActions now use single-trigger toggle by design -->
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="disconnectBTTab" Header="{lex:Loc AssignmentEditor_DisBT}">
+                        <TabItem x:Name="disconnectBTTab" Visibility="Collapsed" Header="{lex:Loc AssignmentEditor_DisBT}">
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
                                 <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
                                 <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="checkBatteryTab" Header="{lex:Loc AssignmentEditor_CheckBattery}">
+                        <TabItem x:Name="checkBatteryTab" Visibility="Collapsed" Header="{lex:Loc AssignmentEditor_CheckBattery}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
@@ -211,7 +211,7 @@
                                 </StackPanel>
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="multiActTab" Header="{lex:Loc AssignmentEditor_MultiAct}">
+                        <TabItem x:Name="multiActTab" Visibility="Collapsed" Header="{lex:Loc AssignmentEditor_MultiAct}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc SpecialActionEdit.TapTrigger}" Margin="{StaticResource spaceMargin}" />
                                 <Button x:Name="multiTapTrigBtn" Content="{Binding TapMacroText,FallbackValue={lex:Loc SpecialActionEdit.SelectMacro}}"
@@ -224,7 +224,7 @@
                                         Margin="{StaticResource spaceMargin}" Command="{Binding Session.RecordMultiDoubleTapCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                             </StackPanel>
                         </TabItem>
-                        <TabItem x:Name="gyroCalibrateTab" Header="{lex:Loc SpecialActionEdit.CalibrateGyro}">
+                        <TabItem x:Name="gyroCalibrateTab" Visibility="Collapsed" Header="{lex:Loc SpecialActionEdit.CalibrateGyro}">
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                 <Label Content="{lex:Loc HoldFor}" ContentStringFormat="{}{0} "></Label>
                                 <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5" />
@@ -232,7 +232,7 @@
                             </StackPanel>
                         </TabItem>
                         <!-- ウィンドウのフォーカス。対象はプログラムのパスとウィンドウタイトル（Auto-Profile と同じ書式）。両方が空は保存できない -->
-                        <TabItem x:Name="focusWindowTab" Header="{lex:Loc SpecialActionEdit.FocusWindow}">
+                        <TabItem x:Name="focusWindowTab" Visibility="Collapsed" Header="{lex:Loc SpecialActionEdit.FocusWindow}">
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
@@ -248,9 +248,9 @@
                             </StackPanel>
                         </TabItem>
                         <!-- 種別の「Default」「Unbound」（Controls のモードだけ）。入力欄はない -->
-                        <TabItem x:Name="defaultActTab" Header="">
+                        <TabItem x:Name="defaultActTab" Visibility="Collapsed" Header="">
                         </TabItem>
-                        <TabItem x:Name="unboundActTab" Header="">
+                        <TabItem x:Name="unboundActTab" Visibility="Collapsed" Header="">
                         </TabItem>
                     </TabControl>
 

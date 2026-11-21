@@ -1,7 +1,7 @@
 # PhaseRV19 計画書: 画面の「見せる・隠す・使える」の判断を ViewModel へ
 
 作成日: 2026-11-21
-状態: **計画（決定済み: D1＝(B) 3 画面＋図・読み出し、D2＝(A) 表のテストで固めてから置き換え、D3＝(C) RV19 の後にまとめて 1 回、D4＝(A)）。コードは未着手**
+状態: **完了（2026-11-21）。D1＝(B)、D2＝(A)、D3＝(C)、D4＝(A)。RV19-6（Readings）は見送り。実機確認は §9m**
 出典: `Measure-CodeReview.py --only mvvm`（RV18 完了時点）、`BindingWindow.xaml.cs` ほかの読み取り。
 動き: **挙動・ログ・保存の形は変えない**（見た目も変えない）。
 
@@ -81,3 +81,14 @@ MVVM の指標のうち、**判断が画面（code-behind）にあるもの**を
 
 ## 次の Phase（見込み）
 RV20: 実機確認（§9b〜§9l と RV15・RV17・RV19）の消化と、見つかった不具合の修正。その後、画面の型（`MainWindow`・`ProfileEditor`・`App`）の整理。
+
+## 完了記録（2026-11-21）
+| Step | 結果 |
+|---|---|
+| RV19-0 | 別の地図文書は作らず、`BindingWindowPanelVisibilityTests` が実測の表を兼ねる（`AssignmentEditor`・`RecordBox` は VM のプロパティと `TypeItemEnabled` の対応テスト） |
+| RV19-1 | `BindingWindowLayout`（モード → 出し分け）、`IsMacroRecorderOpen`。結びつけは窓が表示されてから効くため、表のテストは画面の外で窓を 1 回表示する |
+| RV19-2 | `ActionEditorViewModel` に `TypeItemEnabled`・`ShowSelectActionItem`・`ShowControlOnlyTypeItems`。タブの見出しの非表示は XAML へ |
+| RV19-3 | `RecordBoxViewModel.ControlsEnabled`（`Enable_Controls` を撤去） |
+| RV19-5 | `ProfileEditor.Visualizer`: 全ボタンの内容のクリアをループへ。ボタンは文字を出さない（ほかの場所で設定されない）ことを確認 |
+| RV19-6 | 見送り（理由は `02-Scorecard.md` の RV19） |
+| RV19-7 | 再採点 `RV19.json`、チェックリスト §9m |

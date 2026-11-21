@@ -10,22 +10,6 @@ namespace DS4WindowsTests
     public class SaExtrasEditorGuardTests
     {
         [Fact]
-        public void BindingWindow_SaMode_ShowsTheExtrasPanel_AndOnlyHidesTheDefaultAndUnboundPanel()
-        {
-            string text = SourceText.Read("DS4Windows/UI/BindingWindow.xaml.cs");
-            if (text == null) return;
-
-            int start = text.IndexOf("else if (expose == ExposeMode.SpecialAction)", System.StringComparison.Ordinal);
-            int end = text.IndexOf("ChangeForCurrentAction();", start, System.StringComparison.Ordinal);
-            Assert.True(start >= 0 && end > start);
-            string saBlock = text.Substring(start, end - start);
-
-            Assert.Contains("modePanel.Visibility = Visibility.Collapsed;", saBlock);
-            Assert.DoesNotContain("extrasSidePanel", saBlock.Replace("（extrasSidePanel）", string.Empty));   // コメントの語は除く
-            Assert.DoesNotContain("ColumnDefinitions[2]", saBlock);
-        }
-
-        [Fact]
         public void AssignmentEditor_PassesTheSaExtrasToThePicker_AndSavesThemAfterTheAction()
         {
             string text = SourceText.Read("DS4Windows/UI/Services/AssignmentEditorSession.cs");
