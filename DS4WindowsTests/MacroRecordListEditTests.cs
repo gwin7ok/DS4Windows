@@ -184,5 +184,20 @@ namespace DS4WindowsTests
             Assert.Null(vm.MoveSteps(new int[0], 1));
             Assert.Null(vm.MoveSteps(new[] { 99 }, 1));
         }
+
+        [Fact]
+        public void ControlsEnabled_StartsTrue_AndNotifiesWhenItChanges()
+        {
+            var vm = CreateViewModel(1);
+            var changed = new System.Collections.Generic.List<string>();
+            vm.PropertyChanged += (s, e) => changed.Add(e.PropertyName);
+
+            Assert.True(vm.ControlsEnabled);
+            vm.ControlsEnabled = false;
+            vm.ControlsEnabled = false;   // 同じ値では通知しない
+
+            Assert.False(vm.ControlsEnabled);
+            Assert.Equal(new[] { nameof(RecordBoxViewModel.ControlsEnabled) }, changed);
+        }
     }
 }

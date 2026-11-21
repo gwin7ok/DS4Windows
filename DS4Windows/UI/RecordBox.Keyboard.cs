@@ -36,7 +36,7 @@ namespace DS4Windows.UI
                 extraConPanel.Visibility = Visibility.Visible;
 
                 ds4.Start();
-                Enable_Controls(false);
+                recordBoxVM.ControlsEnabled = false;
                 recordBoxVM.Sw.Restart();
                 this.Focus();
                 StartMouseRecording();
@@ -69,7 +69,7 @@ namespace DS4Windows.UI
                     ChangeRumbleAction();
                 }
 
-                Enable_Controls(true);
+                recordBoxVM.ControlsEnabled = true;
             }
 
             recordBoxVM.EditMacroIndex = -1;
@@ -79,22 +79,6 @@ namespace DS4Windows.UI
             addRumbleBtn.Content = "Add Rumble";
             macroListBox.UnselectAll();
             recordBoxVM.MacroStepIndex = -1;
-        }
-
-        private void Enable_Controls(bool on)
-        {
-            macroListBox.IsEnabled = on;
-            recordDelaysCk.IsEnabled = on;
-            saveBtn.IsEnabled = on;
-            cancelBtn.IsEnabled = on;
-            loadPresetBtn.IsEnabled = on;
-            savePresetBtn.IsEnabled = on;
-            playbackPanel.AllowModeEdit = on;
-            clearStepsBtn.IsEnabled = on;
-            addWaitTimeBtn.IsEnabled = on;
-            addMouseMoveBtn.IsEnabled = on;
-            recordMouseMoveCk.IsEnabled = on;
-            pointerRecordModeCb.IsEnabled = on;
         }
 
         private void UserControl_KeyDown(object sender, KeyEventArgs e)
