@@ -234,3 +234,12 @@
 等級の変化なし（全観点が ±0.1 点）。実施: 未使用の `using` を全層（本体・テスト 466 ファイル）から整理、`Mapping` の使われていないフィールド `_twoStageTrigger` を削除。
 `Mapping` の引数 15 は、見送り。理由: 引数のうち `curveStage`・`syntheticCommitter`・`controlActivityReader` は、`IMapping` の窓口（`SetCurveAndDeadzone`・`Commit`・`GetBoolMappingExternal`）が段へ転送するためのもの。減らすには、呼び出し元 5 か所を段へ直接つなぎ、`IMapping` から 3 メンバーを外す必要があり、`Mapping` を直接使うテスト約 30 ファイルと `IMapping` の偽物 3 つが変わる（RV12 の教訓: 呼び出しの広さ）。束ねる案（加工の流れの箱）は、各段が別々の場所から呼ばれるため成り立たない。
 未使用の `using` の整理の手順: `.editorconfig` に一時的に `[*.cs]` で `dotnet_diagnostic.IDE0005.severity = warning` を足し、`dotnet format style <csproj> --diagnostics IDE0005 --severity warn --no-restore` を本体とテストへ実行し、`.editorconfig` を元に戻す。
+
+## RV19 完了時点（2026-11-21）
+
+MVVM 原則遵守の割合 A−（86.3%→88.9%、+2.6 点）。等級の変化はなし（A は 90%）。
+- 直接代入 237→166、結びつけ率 0.608→0.615、ViewModel の行の割合 0.596→0.599。
+- 実施: 出力ピッカー（`BindingWindowLayout`＋`IsMacroRecorderOpen`）、割り当て編集画面（種別の一覧の項目の出し分け・使える／使えない）、マクロ記録（`ControlsEnabled`）を ViewModel の状態と `{Binding}` へ。`ProfileEditor.Visualizer` は 34 行の内容のクリアを 1 つのループへ。
+- 表のテスト（`BindingWindowPanelVisibilityTests`）が、窓を画面の外で実際に開き、モード × 部品の見える／隠れるを読んで固定。暗黙の挙動（SA のモードでマクロ表示のラベルが見える）も保存した。
+- 見送り: `ControllerReadingsControl.Readings`（`Content` 21）。毎フレームの変更検出つきの更新で、バインディングへ移すには約 20 のプロパティと更新の書き換えが要る。割り当ての計測は行っていない。得点の効果に比べてリスクが大きいため、判断で見送り。
+- 実機確認は §9m（RV19 の後にまとめて 1 回の決定どおり）。
