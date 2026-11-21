@@ -123,7 +123,7 @@ namespace DS4Windows.Core.Utilities
         /// <summary>
         /// Controller タブの Exclusive列 初期幅
         /// </summary>
-        public const int CONTROLLER_EXCLUSIVE_COL_WIDTH = 48;
+        public const int CONTROLLER_EXCLUSIVE_COL_WIDTH = 34;
 
         /// <summary>
         /// Controller タブの Battery列 初期幅
@@ -133,22 +133,22 @@ namespace DS4Windows.Core.Utilities
         /// <summary>
         /// Controller タブの Select Profile列 初期幅
         /// </summary>
-        public const int CONTROLLER_SELECTPROFILE_COL_WIDTH = 220;
+        public const int CONTROLLER_SELECTPROFILE_COL_WIDTH = 204;
 
         /// <summary>
         /// Controller タブの Edit列 初期幅
         /// </summary>
-        public const int CONTROLLER_EDIT_COL_WIDTH = 95;
+        public const int CONTROLLER_EDIT_COL_WIDTH = 78;
 
         /// <summary>
         /// Controller タブの Linked Profile列 初期幅
         /// </summary>
-        public const int CONTROLLER_LINKED_PROFILE_COL_WIDTH = 220;
+        public const int CONTROLLER_LINKED_PROFILE_COL_WIDTH = 204;
 
         /// <summary>
         /// Controller タブの Link Prof ID列 初期幅
         /// </summary>
-        public const int CONTROLLER_LINK_PROF_ID_COL_WIDTH = 130;
+        public const int CONTROLLER_LINK_PROF_ID_COL_WIDTH = 171;
 
         /// <summary>
         /// Controller タブの Custom Color列 初期幅

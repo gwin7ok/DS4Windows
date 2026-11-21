@@ -89,7 +89,7 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                <GridViewColumn x:Name="batteryColumn" Header="{lex:Loc Battery}" Width="60">
+                                <GridViewColumn x:Name="batteryColumn" Header="{lex:Loc MainWindow_ColBattery}" Width="60">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Width="{Binding ElementName=batteryColumn, Path=Width}">

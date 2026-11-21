@@ -330,6 +330,33 @@ namespace DS4Windows.Translations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Battery (main window column header, English only).
+        /// </summary>
+        public static string MainWindow_ColBattery {
+            get {
+                return ResourceManager.GetString("MainWindow_ColBattery", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Name (main window column header, English only).
+        /// </summary>
+        public static string MainWindow_ColName {
+            get {
+                return ResourceManager.GetString("MainWindow_ColName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Window Title (main window column header, English only).
+        /// </summary>
+        public static string MainWindow_ColWindowTitle {
+            get {
+                return ResourceManager.GetString("MainWindow_ColWindowTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Battery.
         /// </summary>
         public static string Battery {

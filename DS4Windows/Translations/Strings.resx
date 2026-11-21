@@ -2355,6 +2355,15 @@ Copy Settings to appdata?</value>
   <data name="MainWindow_Data" xml:space="preserve">
     <value>Data</value>
   </data>
+  <data name="MainWindow_ColName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="MainWindow_ColBattery" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="MainWindow_ColWindowTitle" xml:space="preserve">
+    <value>Window Title</value>
+  </data>
   <data name="OutputSettingsPanel_Xbox360" xml:space="preserve">
     <value>Xbox 360</value>
   </data>

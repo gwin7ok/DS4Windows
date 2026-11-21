@@ -320,9 +320,6 @@
   <data name="None" xml:space="preserve">
     <value>なし</value>
   </data>
-  <data name="Path" xml:space="preserve">
-    <value>パス</value>
-  </data>
   <data name="Profile" xml:space="preserve">
     <value>プロファイル</value>
   </data>
@@ -373,9 +370,6 @@
   </data>
   <data name="StartText" xml:space="preserve">
     <value>開始</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>状態</value>
   </data>
   <data name="StopText" xml:space="preserve">
     <value>停止</value>
@@ -1063,24 +1057,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="LightbarSectionRainbow" xml:space="preserve">
     <value>虹色</value>
   </data>
-  <data name="ControllerLightbarColor" xml:space="preserve">
-    <value>ライトバーの色</value>
-  </data>
-  <data name="OutputSlotMan.SlotNum" xml:space="preserve">
-    <value>出力スロット #</value>
-  </data>
-  <data name="OutputSlotMan.InputNum" xml:space="preserve">
-    <value>入力スロット #</value>
-  </data>
-  <data name="OutputSlotMan.InputId" xml:space="preserve">
-    <value>入力コントローラー ID</value>
-  </data>
-  <data name="OutputSlotMan.CurrentType" xml:space="preserve">
-    <value>現在の種類</value>
-  </data>
-  <data name="OutputSlotMan.Reservation" xml:space="preserve">
-    <value>予約（Dynamic／固定の種類）</value>
-  </data>
   <data name="TestHeavy" xml:space="preserve">
     <value>強振動をテスト</value>
   </data>
@@ -1306,23 +1282,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="MainWindow_RightClickToDisconnectWireless" xml:space="preserve">
     <value>右クリックでワイヤレスを切断</value>
   </data>
-  <data name="MainWindow_Ex" xml:space="preserve">
-    <value>例</value>
-  </data>
-  <data name="MainWindow_LinkedProfile" xml:space="preserve">
-    <value>リンクしたプロファイル</value>
-  </data>
   <data name="MainWindow_UseProfileColor" xml:space="preserve">
     <value>プロファイルの色を使う</value>
   </data>
   <data name="MainWindow_UseCustomColor" xml:space="preserve">
     <value>カスタムの色を使う</value>
-  </data>
-  <data name="MainWindow_Time" xml:space="preserve">
-    <value>時刻</value>
-  </data>
-  <data name="MainWindow_Data" xml:space="preserve">
-    <value>データ</value>
   </data>
   <data name="PluginOutDevWindow_PluginOutDevWindow" xml:space="preserve">
     <value>仮想コントローラーを接続</value>
@@ -1990,9 +1954,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Lightbar" xml:space="preserve">
     <value>ライトバー</value>
   </data>
-  <data name="LinkProfileId" xml:space="preserve">
-    <value>プロファイル/ID をリンク</value>
-  </data>
   <data name="MainWin.EnableServer" xml:space="preserve">
     <value>サーバーを有効にする</value>
   </data>
@@ -2106,9 +2067,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="ScanCode" xml:space="preserve">
     <value>スキャンコード</value>
-  </data>
-  <data name="SelectedProfile" xml:space="preserve">
-    <value>選択中のプロファイル</value>
   </data>
   <data name="ShiftModifier" xml:space="preserve">
     <value>シフト修飾</value>

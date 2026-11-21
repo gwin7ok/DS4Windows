@@ -17,12 +17,12 @@
   <controllerIndexColWidth>107</controllerIndexColWidth>
   <controllerIdColWidth>225</controllerIdColWidth>
   <controllerStatusColWidth>66</controllerStatusColWidth>
-  <controllerExclusiveColWidth>49</controllerExclusiveColWidth>
+  <controllerExclusiveColWidth>35</controllerExclusiveColWidth>
   <controllerBatteryColWidth>101</controllerBatteryColWidth>
-  <controllerSelectProfileColWidth>221</controllerSelectProfileColWidth>
-  <controllerEditColWidth>96</controllerEditColWidth>
-  <controllerLinkedProfileColWidth>221</controllerLinkedProfileColWidth>
-  <controllerLinkProfIdColWidth>131</controllerLinkProfIdColWidth>
+  <controllerSelectProfileColWidth>205</controllerSelectProfileColWidth>
+  <controllerEditColWidth>79</controllerEditColWidth>
+  <controllerLinkedProfileColWidth>205</controllerLinkedProfileColWidth>
+  <controllerLinkProfIdColWidth>172</controllerLinkProfIdColWidth>
   <controllerCustomColorColWidth>161</controllerCustomColorColWidth>
   <outputSlotNumColWidth>101</outputSlotNumColWidth>
   <outputSlotInputNumColWidth>101</outputSlotInputNumColWidth>
