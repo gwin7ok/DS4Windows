@@ -137,17 +137,14 @@ namespace DS4Windows.UI
         {
             if (hoverSelectTimer == null)
             {
-                hoverSelectTimer = new System.Windows.Threading.DispatcherTimer
+                hoverSelectTimer = new System.Timers.Timer(HoverSelectDelayMs) { AutoReset = false };
+                hoverSelectTimer.Elapsed += (s, e) => Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    Interval = TimeSpan.FromMilliseconds(HoverSelectDelayMs),
-                };
-                hoverSelectTimer.Tick += (s, e) =>
-                {
-                    hoverSelectTimer.Stop();
+                    // Stop 済み（キャンセル）のあとに届いた Elapsed は、保留の選択がないので何もしない
                     Button? pending = hoverSelectPending;
                     hoverSelectPending = null;
                     if (pending != null) SelectHoveredControl(pending);
-                };
+                }));
             }
 
             hoverSelectTimer.Stop();

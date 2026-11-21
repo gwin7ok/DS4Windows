@@ -52,45 +52,21 @@ namespace DS4Windows.Core.Persistence.ProfileSections
                 m_Xdoc.SelectSingleNode("/" + rootname + "/GyroControlsSettings");
             if (xmlGyroControlsElement != null)
             {
-                try
+                Item = xmlGyroControlsElement?.SelectSingleNode("Triggers");
+                if (Item != null)
                 {
-                    Item = xmlGyroControlsElement.SelectSingleNode("Triggers");
-                    if (Item != null)
-                    {
-                        store.gyroSlots[device].Controls.triggers = Item.InnerText;
-                    }
+                    store.gyroSlots[device].Controls.triggers = Item.InnerText;
                 }
-                catch { }
 
-                try
+                Item = xmlGyroControlsElement?.SelectSingleNode("TriggerCond");
+                if (Item != null)
                 {
-                    Item = xmlGyroControlsElement.SelectSingleNode("TriggerCond");
-                    if (Item != null)
-                    {
-                        store.gyroSlots[device].Controls.triggerCond = BackingStore.SaTriggerCondValue(Item.InnerText);
-                    }
+                    store.gyroSlots[device].Controls.triggerCond = BackingStore.SaTriggerCondValue(Item.InnerText);
                 }
-                catch { }
 
-                try
-                {
-                    Item = xmlGyroControlsElement.SelectSingleNode("TriggerTurns");
-                    if (bool.TryParse(Item?.InnerText ?? "", out bool tempTurns))
-                    {
-                        store.gyroSlots[device].Controls.triggerTurns = tempTurns;
-                    }
-                }
-                catch { }
+                context.ReadBool(xmlGyroControlsElement, "TriggerTurns", v => store.gyroSlots[device].Controls.triggerTurns = v);
 
-                try
-                {
-                    Item = xmlGyroControlsElement.SelectSingleNode("Toggle");
-                    if (bool.TryParse(Item?.InnerText ?? "", out bool tempToggle))
-                    {
-                        store.SetGyroControlsToggle(device, tempToggle, control);
-                    }
-                }
-                catch { }
+                context.ReadBool(xmlGyroControlsElement, "Toggle", v => store.SetGyroControlsToggle(device, v, control));
             }
 
             try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickTriggers"); store.gyroSlots[device].MouseStickTriggers = Item.Required().InnerText; }
@@ -119,15 +95,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { store.gyroSlots[device].MouseStick.maxZone = 830; missingSetting = true; }
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/GyroMouseStickOutputStick");
-                if (Enum.TryParse(Item?.InnerText ?? "", out GyroMouseStickInfo.OutputStick temp))
-                {
-                    store.gyroSlots[device].MouseStick.outputStick = temp;
-                }
-            }
-            catch { }
+            context.ReadEnum<GyroMouseStickInfo.OutputStick>(m_Xdoc, "/" + rootname + "/GyroMouseStickOutputStick", v => store.gyroSlots[device].MouseStick.outputStick = v);
 
             context.ReadEnum<GyroMouseStickInfo.OutputStickAxes>(m_Xdoc, "/" + rootname + "/GyroMouseStickOutputStickAxes", v => store.gyroSlots[device].MouseStick.outputStickDir = v);
 

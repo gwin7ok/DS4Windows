@@ -269,15 +269,7 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             }
             catch { store.stickSlots[device].RSMod.verticalScale = StickDeadZoneInfo.DEFAULT_VERTICAL_SCALE; }
 
-            try
-            {
-                Item = m_Xdoc.SelectSingleNode("/" + rootname + "/LSDeadZoneType");
-                if (Enum.TryParse(Item?.InnerText ?? "", out StickDeadZoneInfo.DeadZoneType temp))
-                {
-                    store.stickSlots[device].LSMod.deadzoneType = temp;
-                }
-            }
-            catch { }
+            context.ReadEnum<StickDeadZoneInfo.DeadZoneType>(m_Xdoc, "/" + rootname + "/LSDeadZoneType", v => store.stickSlots[device].LSMod.deadzoneType = v);
 
             context.MissingSetting = missingSetting;
         }

@@ -352,7 +352,7 @@ namespace DS4Windows.UI
         // S9 の追加要望: コントローラー図のマウスオーバーでボタン一覧の選択を切り替える処理に、500ms の遅延を入れる
         // （通過しただけの意図しないマウスオーバーで、選択が切り替わらないようにする）。ホバー画像の表示は即時のまま
         private const int HoverSelectDelayMs = 500;
-        private System.Windows.Threading.DispatcherTimer? hoverSelectTimer;
+        private System.Timers.Timer? hoverSelectTimer;   // UI のタイマーは System.Timers.Timer に統一。Elapsed は別スレッドで来るため、UI へ戻して処理する
         private Button? hoverSelectPending;
 
         private void CancelHoverSelect()
