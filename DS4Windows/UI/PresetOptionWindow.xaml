@@ -17,7 +17,7 @@
     </Window.Resources>
     <DockPanel>
         <TabControl x:Name="screensTabControl" BorderBrush="{x:Null}">
-            <TabItem x:Name="IntroTab" Header="{lex:Loc Intro}">
+            <TabItem x:Name="IntroTab" Visibility="Collapsed" Header="{lex:Loc Intro}">
                 <DockPanel Margin="4,0,4,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
                         <Button x:Name="noPresetBtn" Content="{lex:Loc No}" MinWidth="60" Margin="0,0,20,0" TabIndex="0" Command="{Binding NoPresetBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
@@ -28,7 +28,7 @@
                     </StackPanel>
                 </DockPanel>
             </TabItem>
-            <TabItem x:Name="PresetListTab" Header="{lex:Loc PresetOptWin.PresetMenu}">
+            <TabItem x:Name="PresetListTab" Visibility="Collapsed" Header="{lex:Loc PresetOptWin.PresetMenu}">
                 <DockPanel Margin="4,0,4,8">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
                         <Label Content="{lex:Loc Presets}" />

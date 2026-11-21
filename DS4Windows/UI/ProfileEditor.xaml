@@ -331,6 +331,7 @@
                         </Button>
 
                         <Image x:Name="picBoxHover"
+                               Visibility="Hidden"
                                IsEnabled="False"
                                Source="{Binding Source={StaticResource resourcesPaths}, Path=DS4ConfigRSPNG}"
                                Height="48"
@@ -338,6 +339,7 @@
                                Canvas.Left="447"
                                Canvas.Top="5"/>
                         <Image x:Name="picBoxHover2"
+                               Visibility="Hidden"
                                IsEnabled="False"
                                Source="{Binding Source={StaticResource resourcesPaths}, Path=DS4ConfigRSPNG}"
                                Height="48"

@@ -255,7 +255,7 @@
                     </TabControl>
 
                     <UniformGrid Rows="1">
-                        <Button x:Name="saveBtn" Content="{lex:Loc Save}" Margin="0,0,5,0" Click="SaveBtn_Click" />
+                        <Button x:Name="saveBtn" Content="{lex:Loc Save}" Margin="0,0,5,0" Click="SaveBtn_Click" DataContext="{Binding DataContext, ElementName=actionTypeCombo}" IsEnabled="{Binding CanSave, FallbackValue=False}" />
                         <Button x:Name="cancelBtn" Content="{lex:Loc Cancel}" Margin="5,0,0,0" Click="CancelBtn_Click" />
                     </UniformGrid>
                 </StackPanel>

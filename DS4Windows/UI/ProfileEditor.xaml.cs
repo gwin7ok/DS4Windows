@@ -174,8 +174,6 @@ namespace DS4Windows.UI
             var vmFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
             _viewModelFactory = vmFactory;
             profileSettingsVM = vmFactory.CreateProfileSettingsViewModel(deviceNum, targetDevice);
-            picBoxHover.Visibility = Visibility.Hidden;
-            picBoxHover2.Visibility = Visibility.Hidden;
 
             mappingListVM = vmFactory.CreateMappingListViewModel(deviceNum, profileSettingsVM.Output.ContType);
             specialActionsVM = actionViewModelFactory.CreateSpecialActionsListViewModel(deviceNum);

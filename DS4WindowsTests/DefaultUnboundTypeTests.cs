@@ -240,7 +240,9 @@ namespace DS4WindowsTests
 
             // 検証と保存ボタンは、モードを区別しない（制御が 2 か所に分散しない）
             Assert.Contains("if (ActionTypeIndex == 0)", editorVm);
-            Assert.Contains("if (specialActVM.ActionTypeIndex <= 0)", source);
+            // （保存ボタンの可否は、コードビハインドの代入から、ViewModel の CanSave への結びつけへ移した）
+            Assert.Contains("public bool CanSave => ActionTypeIndex > 0;", editorVm);
+            Assert.Contains("IsEnabled=\"{Binding CanSave,", xaml);
 
             // 出力ピッカーで Default／Unbound を選んだら、一覧の項目も切り替える
             string session = SourceText.Read("DS4Windows/UI/Services/AssignmentEditorSession.cs");

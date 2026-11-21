@@ -24,10 +24,6 @@ namespace DS4Windows.UI
 
             ArgumentNullException.ThrowIfNull(viewModel);
             presetOptionVM = viewModel;
-
-            // Hide tab headers. Tab content will still be visible
-            IntroTab.Visibility = Visibility.Collapsed;
-            PresetListTab.Visibility = Visibility.Collapsed;
         }
 
         public void SetupData(int index)
