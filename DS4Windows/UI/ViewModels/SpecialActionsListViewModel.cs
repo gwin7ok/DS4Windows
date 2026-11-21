@@ -114,17 +114,16 @@ namespace DS4Windows.UI.ViewModels
         // Phase6系の他の是正と同様、直前にソートした列・方向を「唯一の実体」として本 ViewModel が保持する。
         // View（ProfileEditor.xaml.cs）側で同じ情報を別途保持すると二重状態になるため、
         // View はヘッダー表示や再ソート時に本プロパティを参照する（CurrentSortColumn/CurrentSortAscending）。
-        private string lastSortedPropertyName = "Name";
-        private ListSortDirection lastSortedDirection = ListSortDirection.Ascending;
+        private readonly SpecialActionListSorter _sorter = new SpecialActionListSorter();
 
         /// <summary>直近に <see cref="SortActions"/> で適用したソート列名。</summary>
-        public string CurrentSortColumn => lastSortedPropertyName;
+        public string CurrentSortColumn => _sorter.Column;
 
         /// <summary>直近に <see cref="SortActions"/> で適用したソート方向。</summary>
-        public ListSortDirection CurrentSortDirection => lastSortedDirection;
+        public ListSortDirection CurrentSortDirection => _sorter.Direction;
 
         /// <summary><see cref="CurrentSortDirection"/> が昇順かどうか（View 側の bool 引数用の簡便プロパティ）。</summary>
-        public bool CurrentSortAscending => lastSortedDirection == ListSortDirection.Ascending;
+        public bool CurrentSortAscending => _sorter.Ascending;
 
         /// <summary>有効列の見出し。ソート列のときだけ矢印を表示する（文字は持たない）。</summary>
         public string ActiveHeaderText => GetHeaderText("Active");
@@ -149,7 +148,7 @@ namespace DS4Windows.UI.ViewModels
                 "Action" => Translations.Strings.Action,
                 _ => column,
             };
-            if (column != lastSortedPropertyName)
+            if (column != _sorter.Column)
             {
                 return baseName;
             }
@@ -164,34 +163,6 @@ namespace DS4Windows.UI.ViewModels
             OnPropertyChanged(nameof(NameHeaderText));
             OnPropertyChanged(nameof(TriggerHeaderText));
             OnPropertyChanged(nameof(ActionHeaderText));
-        }
-
-        /// <summary>
-        /// 指定した列・方向に対応する比較関数を返す。未知の列名の場合は null（比較なし＝同値扱い）。
-        /// </summary>
-        private static Comparison<SpecialActionItem>? GetColumnComparison(string propertyName, ListSortDirection direction)
-        {
-            bool asc = direction == ListSortDirection.Ascending;
-            switch (propertyName)
-            {
-                case "Name":
-                    if (asc) return (x, y) => string.Compare(x.ActionName, y.ActionName, StringComparison.CurrentCultureIgnoreCase);
-                    return (x, y) => string.Compare(y.ActionName, x.ActionName, StringComparison.CurrentCultureIgnoreCase);
-                case "Active":
-                    // 昇順ではチェック有り(true)を上に、降順ではチェック無し(false)を上にする。
-                    if (asc) return (x, y) => y.Active.CompareTo(x.Active);
-                    return (x, y) => x.Active.CompareTo(y.Active);
-                case "Trigger":
-                    // XAML側のヘッダーボタン Tag="Trigger" に対応。実データは Controls プロパティ。
-                    if (asc) return (x, y) => string.Compare(x.Controls, y.Controls, StringComparison.CurrentCultureIgnoreCase);
-                    return (x, y) => string.Compare(y.Controls, x.Controls, StringComparison.CurrentCultureIgnoreCase);
-                case "Action":
-                    // XAML側のヘッダーボタン Tag="Action" に対応。実データは TypeName プロパティ。
-                    if (asc) return (x, y) => string.Compare(x.TypeName, y.TypeName, StringComparison.CurrentCultureIgnoreCase);
-                    return (x, y) => string.Compare(y.TypeName, x.TypeName, StringComparison.CurrentCultureIgnoreCase);
-                default:
-                    return null;
-            }
         }
 
         /// <summary>

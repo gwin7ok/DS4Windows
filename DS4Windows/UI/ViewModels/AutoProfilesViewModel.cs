@@ -39,6 +39,7 @@ namespace DS4Windows.UI.ViewModels
         private ObservableCollection<ProgramItem> programColl;
         private AutoProfileHolder autoProfileHolder;
         private ProfileList profileList;
+        private readonly AutoProfileSelectionMapper _selectionMapper;
         private int selectedIndex = -1;
         private ProgramItem? selectedItem;
         private HashSet<string> existingapps;
@@ -101,8 +102,6 @@ namespace DS4Windows.UI.ViewModels
             set => _autoProfileService.AutoProfileSwitchNotifyChoice = value;
         }
 
-        // 依存はすべて必須引数（Pure DI。決定1＝S9-A と同じ方針）。
-        // 置換前は任意引数（= null）と、AppHost/Program.rootHub/Global のフォールバックだった。
         /// <summary>
         /// 一致した自動プロファイルが持つプロファイル名を、各コントローラーの選択位置（0 は none、1 からがプロファイル一覧の位置）へ反映する。
         /// 名前が空・(none) なら 0。一覧に無い名前のときは、位置を変えない。拡張のコントローラー（5〜8）は、使うときだけ。
@@ -111,39 +110,10 @@ namespace DS4Windows.UI.ViewModels
         {
             if (item?.MatchedAutoProfile == null) return;
 
-            int count = UsingExpandedControllers ? 8 : 4;
-            for (int i = 0; i < count; i++)
-            {
-                string profileName = item.MatchedAutoProfile.ProfileNames[i];
-                if (!string.IsNullOrEmpty(profileName) && profileName != "(none)")
-                {
-                    ProfileEntity? found = profileList.ProfileListCol.SingleOrDefault(x => x.Name == profileName);
-                    if (found != null)
-                    {
-                        SetSelectedIndex(item, i, profileList.ProfileListCol.IndexOf(found) + 1);
-                    }
-                }
-                else
-                {
-                    SetSelectedIndex(item, i, 0);
-                }
-            }
+            _selectionMapper.ReadIndexes(item, item.MatchedAutoProfile, UsingExpandedControllers);
         }
 
-        private static void SetSelectedIndex(ProgramItem item, int controller, int index)
-        {
-            switch (controller)
-            {
-                case 0: item.SelectedIndexCon1 = index; break;
-                case 1: item.SelectedIndexCon2 = index; break;
-                case 2: item.SelectedIndexCon3 = index; break;
-                case 3: item.SelectedIndexCon4 = index; break;
-                case 4: item.SelectedIndexCon5 = index; break;
-                case 5: item.SelectedIndexCon6 = index; break;
-                case 6: item.SelectedIndexCon7 = index; break;
-                case 7: item.SelectedIndexCon8 = index; break;
-            }
-        }
+        // 依存はすべて必須引数（Pure DI）。
         public AutoProfilesViewModel(AutoProfileHolder autoProfileHolder, ProfileList profileList,
             IAppSettingsService appSettings,
             IAutoProfileService autoProfileService,
@@ -167,6 +137,7 @@ namespace DS4Windows.UI.ViewModels
             existingapps = new HashSet<string>();
             this.autoProfileHolder = autoProfileHolder;
             this.profileList = profileList;
+            _selectionMapper = new AutoProfileSelectionMapper(profileList);
             PopulateCurrentEntries();
 
             uiDispatcher.EnableCollectionSynchronization(programColl, _colLockobj);
@@ -369,40 +340,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 AutoProfileEntity tempEntry = new AutoProfileEntity(item.Path, item.Title ?? string.Empty);
                 tempEntry.Turnoff = item.Turnoff;
-                int tempindex = item.SelectedIndexCon1;
-                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon2;
-                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon3;
-                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon4;
-                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                if (UsingExpandedControllers)
-                {
-                    tempindex = item.SelectedIndexCon5;
-                    tempEntry.ProfileNames[4] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-
-                    tempindex = item.SelectedIndexCon6;
-                    tempEntry.ProfileNames[5] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-
-                    tempindex = item.SelectedIndexCon7;
-                    tempEntry.ProfileNames[6] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-
-                    tempindex = item.SelectedIndexCon8;
-                    tempEntry.ProfileNames[7] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-                }
+                _selectionMapper.WriteNames(item, tempEntry, UsingExpandedControllers);
 
                 item.MatchedAutoProfile = tempEntry;
                 autoProfileHolder.AutoProfileColl.Add(item.MatchedAutoProfile);
@@ -414,40 +352,7 @@ namespace DS4Windows.UI.ViewModels
             if (item.MatchedAutoProfile != null)
             {
                 AutoProfileEntity tempEntry = item.MatchedAutoProfile;
-                int tempindex = item.SelectedIndexCon1;
-                tempEntry.ProfileNames[0] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon2;
-                tempEntry.ProfileNames[1] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon3;
-                tempEntry.ProfileNames[2] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                tempindex = item.SelectedIndexCon4;
-                tempEntry.ProfileNames[3] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                    AutoProfileEntity.NONE_STRING;
-
-                if (UsingExpandedControllers)
-                {
-                    tempindex = item.SelectedIndexCon5;
-                    tempEntry.ProfileNames[4] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-
-                    tempindex = item.SelectedIndexCon6;
-                    tempEntry.ProfileNames[5] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-
-                    tempindex = item.SelectedIndexCon7;
-                    tempEntry.ProfileNames[6] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-
-                    tempindex = item.SelectedIndexCon8;
-                    tempEntry.ProfileNames[7] = tempindex > 0 ? profileList.ProfileListCol[tempindex - 1].Name ?? AutoProfileEntity.NONE_STRING :
-                        AutoProfileEntity.NONE_STRING;
-                }
+                _selectionMapper.WriteNames(item, tempEntry, UsingExpandedControllers);
             }
         }
 

@@ -209,3 +209,9 @@
 
 要点: 理由のコメントがない空の catch 36→0（`ProfileLoadContext.ReadX` へ）、タイマーの種類 3→2、引数が 12 を超える型 2→1（`DeviceLifecycleHooks`）、小文字始まりの公開メソッド 1→0。
 見送り: 文字列を読むテスト（残りは XAML・実装本体の検査で、型の検査へ置き換えられない）、Mapping の引数 15。構造の重複の調査は `PhaseRV15-Duplication-Survey.md`。
+
+## RV16 完了時点（2026-11-21）
+
+共有部品化 A−（84.9%、+0.3 点）、冗長処理 A−（88.8%、+0.8 点）。等級の変化はなし。500 行以上の型は 30 のまま。
+部品: `ShortcutResolver`（`StartupEntryService` の重複を解消）、`SpecialActionListSorter`、`AutoProfileSelectionMapper`（8 回の繰り返しを解消）。単体テスト 14 件を追加（3,707→3,717）。
+見送りの内訳は `PhaseRV16-Survey.md`。
