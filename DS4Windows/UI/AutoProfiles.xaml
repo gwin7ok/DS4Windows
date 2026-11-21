@@ -262,7 +262,7 @@
             <ListView x:Name="programListLV" PreviewMouseUp="ProgramListLV_PreviewMouseUp" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedItem}" Margin="8,0,0,8">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="{lex:Loc Name}" Width="200">
+                        <GridViewColumn Header="{lex:Loc MainWindow_ColName}" Width="200">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -274,7 +274,7 @@
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                         <GridViewColumn Header="{lex:Loc Path}" Width="600" DisplayMemberBinding="{Binding Path}"/>
-                        <GridViewColumn Header="{lex:Loc WindowTitle}" Width="Auto" DisplayMemberBinding="{Binding Title}"/>
+                        <GridViewColumn Header="{lex:Loc MainWindow_ColWindowTitle}" Width="Auto" DisplayMemberBinding="{Binding Title}"/>
                     </GridView>
                 </ListView.View>
                 <ListView.ContextMenu>
