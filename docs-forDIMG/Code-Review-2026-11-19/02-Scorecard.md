@@ -293,3 +293,10 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 等級の変化なし（冗長処理 +0.1 点、91.8%→91.9%）。ソースの文字列を読むテストは 108→106 ファイル。
 - 実施: 接続時のプロファイルの選び方（`ConnectionProfileSelector`）と適用のたびの記憶（`AppliedProfileRecorder`）を `ConnectionProfileChoiceTests` の 9 件へ（初回／再接続／別のコントローラー／Linked／一時プロファイルを記憶しない）。コンテナの配線（一時プロファイルの名前が登録簿へ結ばれる）を、本番の登録で作った入れ物の挙動へ。負の確認（Older↔Selected の入れ替え、一時プロファイルの判定の削除、配線の削除）で失敗することを確認。
 - 失ったもの: `ProfileApplicationService.ApplyFromAction` が解決した名前を使うことの検査（実行に機器と非同期の適用が要る。名前の解決自体は `ResolveTarget` のテストが守る）。
+
+
+## RV27 完了時点（2026-11-22）
+
+等級の変化なし（指標の変化なし。文字列走査のファイル数は 106 のまま。メンテナンス性 -0.0 点は文書 1 件の増加）。
+- 実施: 割り当て編集の「保存ボタンは種別を選んでいる間だけ有効」「未選択の種別は検証で弾く」を ViewModel の挙動のテスト 2 件へ（`DefaultUnboundTypeTests`）。同テストの、ViewModel のソースを読む 3 つの検査を撤去。負の確認（`CanSave` と検証の条件を壊す）で 2 件とも失敗することを確認。
+- 見送り（理由）: 出力ピッカーの呼び出し（`AssignmentEditorSession.PickOutput`）は、具象の `BindingWindow`（`ShowDialog` を持つ WPF の窓）を直接受けるため、窓を偽物にできず、挙動のテストにするには窓の抽象化（本体の大きな変更）が要る。XAML の `x:Name`・`Visibility` の結びつけの検査は、画面の字句検査として残す。
