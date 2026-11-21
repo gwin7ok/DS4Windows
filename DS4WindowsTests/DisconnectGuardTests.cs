@@ -63,9 +63,9 @@ namespace DS4WindowsTests
         public void TheOtherFiles_ThenConnectorSubscribesInTheOriginalOrder()
         {
 
-            // イベントの購読先の委譲は不要になった（接続の組み立て［DeviceConnector］が、ハンドラーを直接購読する）
+            // イベントの購読先の委譲は不要になった（接続の組み立て［DeviceConnector］が呼ぶ DeviceLifecycleHooks が、ハンドラーを直接購読する）
 
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
+            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceLifecycleHooks.cs");
             if (connector == null) return;
             // イベントの購読の登録順は変えない（Removal: 自分 → レジストリ、SyncChange: 自分 → レジストリ）
             string text = connector;

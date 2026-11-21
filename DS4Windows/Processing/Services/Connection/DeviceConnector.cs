@@ -17,8 +17,7 @@ namespace DS4Windows.Processing.Services.Connection
         private readonly IProfileSettingsService _profileSettings;
         private readonly IProfileXmlStore _profileXmlStore;
         private readonly IAppSettingsService _appSettings;
-        private readonly IInputDeviceRegistry _deviceRegistry;
-        private readonly IDeviceDisconnectHandler _deviceDisconnect;
+        private readonly DeviceLifecycleHooks _lifecycleHooks;
         private readonly IConnectionProfileSelector _connectionProfileSelector;
         private readonly IDeviceConnectionSetup _deviceConnectionSetup;
         private readonly IInputDeviceModuleRegistry _deviceModules;
@@ -29,7 +28,7 @@ namespace DS4Windows.Processing.Services.Connection
         private readonly IConnectedDeviceOutputs _outputs;
 
         public DeviceConnector(IProfileSettingsService profileSettings, IProfileXmlStore profileXmlStore, IAppSettingsService appSettings,
-            IInputDeviceRegistry deviceRegistry, IDeviceDisconnectHandler deviceDisconnect, IConnectionProfileSelector connectionProfileSelector,
+            DeviceLifecycleHooks lifecycleHooks, IConnectionProfileSelector connectionProfileSelector,
             IDeviceConnectionSetup deviceConnectionSetup, IInputDeviceModuleRegistry deviceModules, IHidHideService hidHideService,
             IDeviceSlotState slots, IInputReportProcessor inputReport, ITouchpadMouseFactory mouseFactory, IConnectedDeviceOutputs outputs)
         {
@@ -39,10 +38,8 @@ namespace DS4Windows.Processing.Services.Connection
             _profileXmlStore = profileXmlStore;
             ArgumentNullException.ThrowIfNull(appSettings);
             _appSettings = appSettings;
-            ArgumentNullException.ThrowIfNull(deviceRegistry);
-            _deviceRegistry = deviceRegistry;
-            ArgumentNullException.ThrowIfNull(deviceDisconnect);
-            _deviceDisconnect = deviceDisconnect;
+            ArgumentNullException.ThrowIfNull(lifecycleHooks);
+            _lifecycleHooks = lifecycleHooks;
             ArgumentNullException.ThrowIfNull(connectionProfileSelector);
             _connectionProfileSelector = connectionProfileSelector;
             ArgumentNullException.ThrowIfNull(deviceConnectionSetup);
@@ -87,11 +84,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             slots.SlotManager.AddController(device, index);
             _outputs.NotifyPlugged(index);
-            device.Removal += _deviceDisconnect.OnRemoval;
-            device.Removal += _deviceRegistry.OnRemoval;
-            device.SyncChange += _deviceDisconnect.OnSyncChange;
-            device.SyncChange += _deviceRegistry.UpdateSerial;
-            device.SerialChange += _deviceDisconnect.OnSerialChange;
+            _lifecycleHooks.Attach(device);
             device.ChargingChanged += OnChargingChanged;
 
             touchPads[index] = _mouseFactory.Create(index, device);

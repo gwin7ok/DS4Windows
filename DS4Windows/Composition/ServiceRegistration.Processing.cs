@@ -143,6 +143,7 @@ namespace DS4Windows.Composition
             services.AddSingleton<IConnectedDeviceOutputs, ConnectedDeviceOutputs>();   // 接続時の出力側の準備（OSC の通知、仮想パッドの割り当て、UDP の準備）
             services.AddSingleton<IOutputServicesLifecycle, OutputServicesLifecycle>();   // 出力側のサービス（仮想パッド、KBM、HidHide、OSC、UDP）の開始・停止の手順
             services.AddSingleton<IServiceLifecycle, ServiceLifecycle>();   // 開始・停止・ホットプラグと、その状態・イベント
+            services.AddSingleton<DeviceLifecycleHooks>();   // 機器の取り外し・同期・シリアルの購読の結び
             services.AddSingleton<IDeviceConnector, DeviceConnector>();   // 接続の組み立て
             services.AddSingleton<IDeviceDisconnectHandler, DeviceDisconnectHandler>();   // 切断・同期・シリアル変更の処理
             services.AddSingleton<IProfileLoadTarget, ProfileLoadTarget>();   // プロファイル読込の鎖が control 引数から使う 8 メンバーの窓口（6-e で control の型を置き換える）

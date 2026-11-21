@@ -353,8 +353,8 @@ def m_fields():
 
 def m_naming():
     print("## naming（命名・採用手段のばらつき）")
-    pat = re.compile(r"^\s*(?:public|protected|internal)\s+(?:(?:static|virtual|override|abstract|sealed|async|new|unsafe)\s+)*[A-Za-z_][\w<>\[\]\?\.,\s]*?\s+([a-z]\w*)\s*\(", re.M)
-    skip = {"if", "for", "while", "switch", "lock", "using", "foreach", "catch", "return", "new", "nameof", "typeof", "get", "set"}
+    pat = re.compile(r"^\s*(?:public|protected|internal)\s+(?:(?:static|virtual|override|abstract|sealed|async|new|unsafe|readonly)\s+)*[A-Za-z_][\w<>\[\]\?\.,\s]*?\s+([a-z]\w*)\s*\(", re.M)
+    skip = {"if", "for", "while", "switch", "lock", "using", "foreach", "catch", "return", "new", "nameof", "typeof", "get", "set", "readonly"}
     tot, byf = 0, Counter()
     for p in src_files():
         n = len([x for x in pat.findall(strip_comments(read(p))) if x not in skip])
