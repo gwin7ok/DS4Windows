@@ -16,7 +16,6 @@ namespace DS4Windows.UI
         public LightbarSettingsPanel()
         {
             InitializeComponent();
-            emptyColorGB.Visibility = Visibility.Collapsed;
             // 「最大の明るさ」の書式は表示言語の文言（XAML の StringFormat は固定の英語のため、ここで差し替える）
             maxLightText.SetBinding(System.Windows.Controls.TextBlock.TextProperty, new System.Windows.Data.Binding("MaxSatRainbow")
             {
@@ -30,15 +29,14 @@ namespace DS4Windows.UI
         /// <summary>「バッテリー残量で色を変える」の設定に合わせて、色の枠の見出しと「空の色」の枠の表示を揃える。</summary>
         public void RefreshColorByBatteryLayout(LightbarSettingsViewModel lightbar)
         {
+            lightbar.RefreshColorByBatteryState();
             if (lightbar.ColorBatteryPercent)
             {
                 colorGB.Header = Translations.Strings.Full;
-                emptyColorGB.Visibility = Visibility.Visible;
             }
             else
             {
                 colorGB.Header = Translations.Strings.Color;
-                emptyColorGB.Visibility = Visibility.Hidden;
             }
         }
 
@@ -86,15 +84,13 @@ namespace DS4Windows.UI
             {
                 vm.Rainbow = 0.0;
                 colorByBatteryPerCk.Content = Properties.Resources.ColorByBattery;
-                colorGB.IsEnabled = true;
-                emptyColorGB.IsEnabled = true;
+                vm.ColorSectionsEnabled = true;
             }
             else
             {
                 vm.Rainbow = 5.0;
                 colorByBatteryPerCk.Content = Properties.Resources.DimByBattery;
-                colorGB.IsEnabled = false;
-                emptyColorGB.IsEnabled = false;
+                vm.ColorSectionsEnabled = false;
             }
         }
     }

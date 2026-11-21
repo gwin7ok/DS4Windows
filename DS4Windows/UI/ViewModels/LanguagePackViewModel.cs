@@ -28,8 +28,25 @@ using DS4Windows.Core.Logging;
 
 namespace DS4Windows.UI.ViewModels
 {
-    public class LanguagePackViewModel
+    public class LanguagePackViewModel : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
+        private bool applyEnabled;
+        private bool cultureSelectable;
+
+        /// <summary>「適用」を押せるか。選択が変わると真、適用が済むと偽。</summary>
+        public bool ApplyEnabled
+        {
+            get => applyEnabled;
+            set => SetProperty(ref applyEnabled, value);
+        }
+
+        /// <summary>言語の一覧を選べるか。一覧の取得が終わると真。</summary>
+        public bool CultureSelectable
+        {
+            get => cultureSelectable;
+            set => SetProperty(ref cultureSelectable, value);
+        }
+
         // 旧 Global.PROBING_PATH／LANGUAGE_ASSEMBLY_NAME（利用はこのクラスのみ）。
         // Need to add additional probing path in code starting with .NET 6.
         private const string ProbingPath = "Lang";

@@ -135,7 +135,6 @@ namespace DS4Windows.UI
             this.ipcDispatcher = ipcDispatcher;
 
             // Initialize log settings ComboBox
-            logMinLevelComboBox.ItemsSource = new string[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
             logMinLevelComboBox.SelectedValue = mainWinVM.LogMinLevel;
 
 
@@ -150,7 +149,6 @@ namespace DS4Windows.UI
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
             lastMsgLb.DataContext = lastLogMsg;
-            ProcessPriorityComboBox.ItemsSource = DS4Windows.Core.Platform.ProcessPriorityOptions.Classes;
 
             profileListHolder.Refresh();
             profilesListBox.ItemsSource = profileListHolder.ProfileListCol;

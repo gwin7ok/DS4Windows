@@ -178,14 +178,10 @@ namespace DS4Windows.UI
                 editControlsPanel.DataContext = null;
                 editControlsPanel.IsEnabled = false;
 
-                cont1AutoProf.SelectedIndex = 0;
-                cont2AutoProf.SelectedIndex = 0;
-                cont3AutoProf.SelectedIndex = 0;
-                cont4AutoProf.SelectedIndex = 0;
-                cont5AutoProf.SelectedIndex = 0;
-                cont6AutoProf.SelectedIndex = 0;
-                cont7AutoProf.SelectedIndex = 0;
-                cont8AutoProf.SelectedIndex = 0;
+                foreach (ComboBox profileCombo in new[] { cont1AutoProf, cont2AutoProf, cont3AutoProf, cont4AutoProf, cont5AutoProf, cont6AutoProf, cont7AutoProf, cont8AutoProf })
+                {
+                    profileCombo.SelectedIndex = 0;
+                }
             }
         }
 

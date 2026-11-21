@@ -64,7 +64,7 @@ namespace DS4Windows.UI
         private void CheckForCultureChange(object? sender, EventArgs e)
         {
             // Enable apply button when selection changes
-            applyLangBtn.IsEnabled = true;
+            langPackVM!.ApplyEnabled = true;   // Initialize の後でだけ呼ばれる
         }
 
         private void ApplyLangBtn_Click(object sender, RoutedEventArgs e)
@@ -86,7 +86,7 @@ namespace DS4Windows.UI
                         "DS4Windows", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 
-                applyLangBtn.IsEnabled = false;
+                langPackVM.ApplyEnabled = false;
             }
         }
 
@@ -94,7 +94,7 @@ namespace DS4Windows.UI
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
-                cbCulture.IsEnabled = true;
+                langPackVM!.CultureSelectable = true;   // 一覧の取得は、Initialize の後
                 this.DataContext = langPackVM;
             }));
         }
