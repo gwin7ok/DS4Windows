@@ -6,6 +6,7 @@ using DS4Windows.Core.Logging;
 using DS4Windows.Core.Model;
 using DS4Windows.Core.Settings;
 using DS4Windows.Input.Abstractions;
+using DS4Windows.Input.Reports;
 using DS4Windows.Input.Hid;
 using DS4Windows.Input.Parsers;
 
@@ -81,24 +82,7 @@ namespace DS4Windows.Input.Devices
 
             if (usingBT && (this.featureSet & VidPidFeatureSet.OnlyOutputData0x05) == 0)
             {
-                outReportBuffer[0] = knownGoodBTOutputReportType;
-                //outReportBuffer[0] = 0x15;
-                //outReportBuffer[1] = (byte)(0x80 | btPollRate); // input report rate
-                outReportBuffer[1] = (byte)(0xC0 | btPollRate); // input report rate
-                //outReportBuffer[2] = 0xA0;
-
-                // Headphone volume L (0x10), Headphone volume R (0x20), Mic volume (0x40), Speaker volume (0x80)
-                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0x07
-                outReportBuffer[3] = outputFeaturesByte;
-                outReportBuffer[4] = 0x04;
-
-                outReportBuffer[6] = Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
-                outReportBuffer[7] = Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow motor
-                outReportBuffer[8] = Haptics.Current.lightbarState.LightBarColor.red; // red
-                outReportBuffer[9] = Haptics.Current.lightbarState.LightBarColor.green; // green
-                outReportBuffer[10] = Haptics.Current.lightbarState.LightBarColor.blue; // blue
-                outReportBuffer[11] = Haptics.Current.lightbarState.LightBarFlashDurationOn; // flash on duration
-                outReportBuffer[12] = Haptics.Current.lightbarState.LightBarFlashDurationOff; // flash off duration
+                DualShock4OutputReportBuilder.FillBluetooth(outReportBuffer, knownGoodBTOutputReportType, btPollRate, outputFeaturesByte, in Haptics.Current);
 
                 fixed (byte* byteR = outputReport, byteB = outReportBuffer)
                 {
@@ -117,18 +101,7 @@ namespace DS4Windows.Input.Devices
             }
             else
             {
-                outReportBuffer[0] = 0x05;
-                // Headphone volume L (0x10), Headphone volume R (0x20), Mic volume (0x40), Speaker volume (0x80)
-                // enable rumble (0x01), lightbar (0x02), flash (0x04). Default: 0x07
-                outReportBuffer[1] = outputFeaturesByte;
-                outReportBuffer[2] = 0x04;
-                outReportBuffer[4] = Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast; // fast motor
-                outReportBuffer[5] = Haptics.Current.rumbleState.RumbleMotorStrengthLeftHeavySlow; // slow  motor
-                outReportBuffer[6] = Haptics.Current.lightbarState.LightBarColor.red; // red
-                outReportBuffer[7] = Haptics.Current.lightbarState.LightBarColor.green; // green
-                outReportBuffer[8] = Haptics.Current.lightbarState.LightBarColor.blue; // blue
-                outReportBuffer[9] = Haptics.Current.lightbarState.LightBarFlashDurationOn; // flash on duration
-                outReportBuffer[10] = Haptics.Current.lightbarState.LightBarFlashDurationOff; // flash off duration
+                DualShock4OutputReportBuilder.FillUsb(outReportBuffer, outputFeaturesByte, in Haptics.Current);
 
                 fixed (byte* byteR = outputReport, byteB = outReportBuffer)
                 {
