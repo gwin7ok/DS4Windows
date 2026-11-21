@@ -39,12 +39,13 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             {
                 if (filepath == value) return;
                 filepath = value;
+                OnPropertyChanged(nameof(Filepath));
                 FilepathChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler FilepathChanged;
-        public double Delay { get => delay; set => delay = value; }
-        public string? Arguments { get => arguments; set => arguments = value; }
+        public double Delay { get => delay; set => SetProperty(ref delay, value); }
+        public string? Arguments { get => arguments; set => SetProperty(ref arguments, value); }
 
         /// <summary>起動するプログラム（.exe が実在するとき）のパス。View がこのパスからアイコンの画像を作る（ない／.exe でないときは null）。</summary>
         public string? ProgramIconPath
@@ -106,7 +107,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         private void LaunchProgramViewModel_FilepathChanged(object? sender, EventArgs e)
         {
+            OnPropertyChanged(nameof(ProgramIconPath));
             ProgramIconChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(ProgramName));
             ProgramNameChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -115,6 +118,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             filepath = action.details;
             delay = action.delayTime;
             arguments = action.extra;
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         // Controls のモード。型のある項目との往復（以前は ControlSettingsEditTarget が書いていた）
@@ -125,6 +129,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             Filepath = item.ProgramPath;
             Delay = item.HoldSeconds;
             Arguments = ComposeArguments(item.ProgramArguments, item.HideWindow);
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         // Launch Program。パスは未選択（null）でも空にする

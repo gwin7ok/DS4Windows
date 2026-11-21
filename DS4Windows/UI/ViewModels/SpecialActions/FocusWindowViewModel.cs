@@ -89,7 +89,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             OnPropertyChanged(nameof(WindowTitle));
         }
 
-        public double Delay { get => delay; set => delay = value; }
+        public double Delay { get => delay; set => SetProperty(ref delay, value); }
 
         /// <summary>前面化のあと、ウィンドウの中央へマウスポインターを移動する。</summary>
         public bool CenterCursor { get; set; }
@@ -106,6 +106,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             WindowTitle = action.extra;
             delay = action.delayTime;
             CenterCursor = action.centerCursor;
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         public void LoadControlItem(ControlSpecialItem item)
@@ -116,6 +117,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             WindowTitle = item.WindowTitle;
             Delay = item.HoldSeconds;
             CenterCursor = item.CenterCursor;
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)

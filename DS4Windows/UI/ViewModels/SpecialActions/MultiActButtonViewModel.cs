@@ -100,6 +100,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
                         loadAccessArray[i].Add(v);
                 }
             }
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         // Controls のモード。型のある項目（3 つのマクロ）との往復（SA と同じ入力・同じ検証）
@@ -114,6 +115,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             UpdateTapDisplayText();
             UpdateHoldDisplayText();
             UpdateDoubleTapDisplayText();
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         public ControlSpecialItem ToControlItem(SpecialAction.ActionTypeId type)
@@ -129,16 +131,19 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void UpdateTapDisplayText()
         {
+            OnPropertyChanged(nameof(TapMacroText));
             TapMacroTextChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void UpdateHoldDisplayText()
         {
+            OnPropertyChanged(nameof(HoldMacroText));
             HoldMacroTextChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void UpdateDoubleTapDisplayText()
         {
+            OnPropertyChanged(nameof(DoubleTapMacroText));
             DoubleTapMacroTextChanged?.Invoke(this, EventArgs.Empty);
         }
 

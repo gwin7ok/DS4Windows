@@ -49,17 +49,17 @@ namespace DS4Windows.UI.ViewModels
         public DS4ControlSettings Settings { get => settings; }
 
         private bool recordDelays;
-        public bool RecordDelays { get => recordDelays; set => recordDelays = value; }
+        public bool RecordDelays { get => recordDelays; set => SetProperty(ref recordDelays, value); }
 
         // 繰り返し（Execute Mode）と Scan Code は、共通の MacroPlaybackOptions に持つ
         private MacroPlaybackOptions playbackOptions;
         public MacroPlaybackOptions PlaybackOptions { get => playbackOptions; }
 
         private bool recording;
-        public bool Recording { get => recording; set => recording = value; }
+        public bool Recording { get => recording; set => SetProperty(ref recording, value); }
 
         private bool toggleLightbar;
-        public bool ToggleLightbar { get => toggleLightbar; set => toggleLightbar = value; }
+        public bool ToggleLightbar { get => toggleLightbar; set => SetProperty(ref toggleLightbar, value); }
 
         /// <summary>記録中に、ほかのウィンドウの上も含めて、マウスの移動とボタンを記録する。</summary>
         public bool RecordMouseMovement { get; set; }
@@ -68,7 +68,7 @@ namespace DS4Windows.UI.ViewModels
         public int PointerRecordModeIndex { get; set; }
 
         private bool toggleRummble;
-        public bool ToggleRumble { get => toggleRummble; set => toggleRummble = value; }
+        public bool ToggleRumble { get => toggleRummble; set => SetProperty(ref toggleRummble, value); }
 
         private bool toggle4thMouse;
         private bool toggle5thMouse;
@@ -87,15 +87,16 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (macroStepIndex == value) return;
                 macroStepIndex = value;
+                OnPropertyChanged(nameof(MacroStepIndex));
                 MacroStepIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         public event EventHandler? MacroStepIndexChanged;
         public Stopwatch Sw { get => sw; }
-        public bool Toggle4thMouse { get => toggle4thMouse; set => toggle4thMouse = value; }
-        public bool Toggle5thMouse { get => toggle5thMouse; set => toggle5thMouse = value; }
-        public int AppendIndex { get => appendIndex; set => appendIndex = value; }
-        public int EditMacroIndex { get => editMacroIndex; set => editMacroIndex = value; }
+        public bool Toggle4thMouse { get => toggle4thMouse; set => SetProperty(ref toggle4thMouse, value); }
+        public bool Toggle5thMouse { get => toggle5thMouse; set => SetProperty(ref toggle5thMouse, value); }
+        public int AppendIndex { get => appendIndex; set => SetProperty(ref appendIndex, value); }
+        public int EditMacroIndex { get => editMacroIndex; set => SetProperty(ref editMacroIndex, value); }
         public Dictionary<int, bool> KeysdownMap { get => keysdownMap; }
         public static HashSet<int> KeydownOverrides { get => keydownOverrides!; }   // 最初の RecordBoxViewModel の生成で作られる
 

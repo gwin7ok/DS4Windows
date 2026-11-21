@@ -14,9 +14,9 @@ namespace DS4WindowsTests
     [Collection(SharedHostStateCollection.Name)]
     public class AssignmentEditorTabSyncTests
     {
-        private static (int combo, int tab, string header)? SwitchTo(int index)
+        private static (int combo, int tab, string header, decimal? holdValue)? SwitchTo(int index, int via = -1)
         {
-            (int, int, string)? result = null;
+            (int, int, string, decimal?)? result = null;
             WpfPanelTestRunner.Run(() =>
             {
                 string? appXaml = SourceText.Read("DS4Windows/App.xaml");
@@ -40,15 +40,52 @@ namespace DS4WindowsTests
                         editor.UpdateLayout();
                         var combo = (ComboBox)editor.FindName("actionTypeCombo");
                         var tabs = (TabControl)editor.FindName("actionTypeTabControl");
+                        if (via >= 0) { combo.SelectedIndex = via; editor.UpdateLayout(); }
                         combo.SelectedIndex = index;
                         editor.UpdateLayout();
-                        result = (combo.SelectedIndex, tabs.SelectedIndex, ((TabItem)tabs.SelectedItem).Name);
+                        var tab = (TabItem)tabs.SelectedItem;
+                        var upDown = FindDescendant<Xceed.Wpf.Toolkit.DecimalUpDown>(tabs);
+                        var be = upDown == null ? null : System.Windows.Data.BindingOperations.GetBindingExpression(upDown, Xceed.Wpf.Toolkit.DecimalUpDown.ValueProperty);
+                        Console.WriteLine($"DBG status={be?.Status} dc={upDown?.DataContext?.GetType().Name} hasErr={be?.HasError} text=[{upDown?.Text}] val={upDown?.Value}");
+                        result = (combo.SelectedIndex, tabs.SelectedIndex, tab.Name, upDown?.Value);
                     }
                     finally { window.Close(); }
                 }
                 finally { Application.Current.Resources.MergedDictionaries.Remove(theme); }
             });
             return result;
+        }
+
+        private static T? FindDescendant<T>(DependencyObject root) where T : DependencyObject
+        {
+            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(root); i++)
+            {
+                var child = System.Windows.Media.VisualTreeHelper.GetChild(root, i);
+                if (child is T match) return match;
+                var found = FindDescendant<T>(child);
+                if (found != null) return found;
+            }
+
+            return null;
+        }
+
+        [Fact]
+        public void TheDisconnectBtHoldTime_ShowsZeroByDefault()
+        {
+            var r = SwitchTo(5);
+            if (r == null) return;
+            Assert.Equal(0m, r.Value.holdValue);
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(6)]
+        [InlineData(7)]
+        public void TheDisconnectBtHoldTime_ShowsZero_AfterVisitingAnotherType(int via)
+        {
+            var r = SwitchTo(5, via);
+            if (r == null) return;
+            Assert.Equal(0m, r.Value.holdValue);
         }
 
         [Theory]

@@ -8,7 +8,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions;
 public class SpecialActionViewModel : NotifyDataErrorBase, IActionTypeEditor
 {
     private double holdInterval;
-    public double HoldInterval { get => holdInterval; set => holdInterval = value; }
+    public double HoldInterval { get => holdInterval; set => SetProperty(ref holdInterval, value); }
     private int actionIndex;
     // Global.SaveAction の置換先（必須引数）
     private readonly ISpecialActionRepository specialActionRepository;
@@ -22,12 +22,14 @@ public class SpecialActionViewModel : NotifyDataErrorBase, IActionTypeEditor
     public void LoadAction(SpecialAction action)
     {
         holdInterval = action.delayTime;
+        OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
     }
 
     // Controls のモード。押し続ける秒数だけを持つ種別（Disconnect BT、Calibrate gyro、Calibrate sixaxis wheel）の項目との往復
     public void LoadControlItem(ControlSpecialItem item)
     {
         if (item != null) holdInterval = item.HoldSeconds;
+        OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
     }
 
     // 通常の割り当て（キー・マクロの手順）は残さない種別。秒数だけを項目に入れる

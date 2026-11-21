@@ -65,6 +65,7 @@ namespace DS4Windows.UI.ViewModels
             {
                 if (selectedIndex == value) return;
                 selectedIndex = value;
+                OnPropertyChanged(nameof(SelectedIndex));
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
             }
         }

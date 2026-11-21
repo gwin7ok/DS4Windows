@@ -57,6 +57,7 @@ namespace DS4Windows.UI.ViewModels
             set
             {
                 fullTabsEnabled = value;
+                OnPropertyChanged(nameof(FullTabsEnabled));
                 FullTabsEnabledChanged?.Invoke(this, EventArgs.Empty);
             }
         }

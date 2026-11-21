@@ -68,3 +68,11 @@ NG のときの「疑い先」は、変更した RV。原因の調査は `git lo
 - ③（ダブルクリック）: **NG のまま**（`InputBindings` の `MouseBinding` に替えた修正では直らなかった）。原因: 一覧の項目（`ListViewItem`）が `MouseDown` を処理済みにするため、一覧に付けた `MouseBinding` に届かない。→ `MouseDoubleClick` イベントで結び直した（割り当て一覧・ログ一覧・プロファイル一覧）。再確認待ち。
 
 4. **割り当て編集画面で、種別の一覧を変えても、下の設定の部品（タブ）が切り替わらない**（Controls・SA の両方。利用者が確認 21 の途中で報告）: `ActionTypeIndex` が変更通知を出さず、一覧とタブが同じ値に結ぶ 2 つの結びつけの同期が取れなかった。VM が `INotifyPropertyChanged` を実装していない間は、WPF が `PropertyDescriptor` 経由で同期していたが、`ObservableObject` への付け替え（RV7）で、通知のないプロパティは同期されなくなった。→ `SetProperty` で通知する。再現のテスト `AssignmentEditorTabSyncTests`（実際の画面を開き、一覧の選択とタブの選択を比べる）。**同じ形（`ObservableObject` の VM の、通知のない書き込み可能なプロパティを、複数の部品が結ぶ）が、ほかにないかを、確認の続きで注意して見る**。
+
+### 確認 21 で見つかった不具合（4 と同じ原因。「設定した直後に画面へ出ない」）
+- プログラム起動: 参照で .exe を選んでも、選んだプログラムが表示されない（保存して開き直すと表示される）。
+- 複数動作: マクロを記録しても、ボタンが「記録しました」にならない（保存し直すとなる）。
+- BT 切断: 長押し時間の既定値が 0 ではなく空欄（テストでは新規の画面で 0.00 と表示され、再現しなかった。通知の修正で直る可能性があり、実機で再確認する）。
+- **原因**: `ObservableObject`（INPC）に付け替えた ViewModel は、WPF が旧来の `XxxChanged` イベントの通知を見なくなる（RV7）。`CompositeDeviceModel`・`LaunchProgramViewModel`・`MultiActButtonViewModel`・`PressKeyViewModel`・`CheckBatteryViewModel`・`LoadProfileViewModel`・`RecordBoxViewModel`・`SpecialActionsListViewModel`・`LanguagePackViewModel`・`MainWindowsViewModel` の `XxxChanged` を呼ぶ 22 か所が、`PropertyChanged` を出していなかった。
+- **修正**: (1) 該当の 22 か所に `OnPropertyChanged(nameof(Xxx))` を足した（`ProgramIconPath` も）。(2) 通知のない単純なプロパティ（`{ get => x; set => x = value; }`）を `SetProperty` にした。(3) スペシャルアクションの各 ViewModel の `LoadAction`／`LoadControlItem` の終わりで、全プロパティを通知する。テスト `ViewModelChangeNotificationTests`。
+- 同種の調査: `public event EventHandler XxxChanged` を持つ全クラスを走査し、INPC を実装しているのは上の ViewModel だけだった（INPC でないクラスは、旧来の通知が今も使われる）。

@@ -129,10 +129,10 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
             }
         }
         public event EventHandler? DescribeTextChanged;
-        public DS4KeyType KeyType { get => keyType; set => keyType = value; }
+        public DS4KeyType KeyType { get => keyType; set => SetProperty(ref keyType, value); }
         public int Value { get => value; set => this.value = value; }
-        public int PressReleaseIndex { get => pressReleaseIndex; set => pressReleaseIndex = value; }
-        public bool NormalTrigger { get => normalTrigger; set => normalTrigger = value; }
+        public int PressReleaseIndex { get => pressReleaseIndex; set => SetProperty(ref pressReleaseIndex, value); }
+        public bool NormalTrigger { get => normalTrigger; set => SetProperty(ref normalTrigger, value); }
 
         public void LoadAction(SpecialAction action)
         {
@@ -189,6 +189,7 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
             UpdateDescribeText();
             UpdateToggleControls();
+            OnPropertyChanged(string.Empty);   // 読み込みで直接代入した値を、画面へ反映する
         }
 
         /// <summary>Default が選ばれているときの表示（出力ピッカーの Default ボタンの表示と同じ）。</summary>
@@ -258,7 +259,9 @@ namespace DS4Windows.UI.ViewModels.SpecialActions
 
         public void UpdateToggleControls()
         {
+            OnPropertyChanged(nameof(IsToggle));
             IsToggleChanged?.Invoke(this, EventArgs.Empty);
+            OnPropertyChanged(nameof(ShowToggleControls));
             ShowToggleControlsChanged?.Invoke(this, EventArgs.Empty);
             OnPropertyChanged(nameof(ShowAnalogStrength));   // 出力先が変わったとき、強さの入力の表示も更新する
         }
