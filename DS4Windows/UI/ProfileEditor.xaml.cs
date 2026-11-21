@@ -150,6 +150,8 @@ namespace DS4Windows.UI
 
             InitCommands();
             InitializeComponent();
+            // ダブルクリックのコマンドは、XAML の InputBindings では祖先を探せないため、コマンドの実体を直接結ぶ
+            mappingListBox.InputBindings.Add(new System.Windows.Input.MouseBinding(EditSelectedControlCommand, new System.Windows.Input.MouseGesture(System.Windows.Input.MouseAction.LeftDoubleClick)));
             InitVisualizerButtons();
 
             // 旧 AppHost.GetService の 4 件を、コンストラクター引数に替えた（IEditorWindowFactory.CreateProfileEditor が渡す）

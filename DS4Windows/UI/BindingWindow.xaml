@@ -170,7 +170,7 @@
                             Margin="8,0,0,0">
 
                     <Button x:Name="defaultBtn"
-                            Content="{Binding DefaultBtnString,FallbackValue={lex:Loc Default}}"
+                            Content="{Binding DefaultBtnString}"
                             Background="{Binding IsDefaultSelected, Converter={x:Static localConverters:OutputSelectionBrushConverter.Instance}, FallbackValue={StaticResource SecondaryBrush}}"
                             Margin="0,50,0,0"
                             Command="{Binding DataContext.PickDefaultCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>

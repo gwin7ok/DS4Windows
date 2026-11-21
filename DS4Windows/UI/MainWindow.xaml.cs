@@ -148,6 +148,8 @@ namespace DS4Windows.UI
             logvm = viewModelFactory.CreateLogViewModel(uiDispatcher);
             //logListView.ItemsSource = logvm.LogItems;
             logListView.DataContext = logvm;
+            // InputBindings の Command は、XAML の RelativeSource で祖先を探せない（木の外にあるため）。コマンドの実体を直接渡す
+            logListView.InputBindings.Add(new System.Windows.Input.MouseBinding(mainWinVM.ShowLogMessageCommand, new System.Windows.Input.MouseGesture(System.Windows.Input.MouseAction.LeftDoubleClick)));
             lastMsgLb.DataContext = lastLogMsg;
 
             profileListHolder.Refresh();
