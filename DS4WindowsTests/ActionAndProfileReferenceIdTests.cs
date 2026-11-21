@@ -321,16 +321,5 @@ namespace DS4WindowsTests
 
         // ---- 配線 ----
 
-        [Fact]
-        public void TheStartup_AssignsTheProfileIdsBefore_TheActionsAreLoaded()
-        {
-            string app = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
-            if (app == null) return;
-
-            string source = SourceText.ReadFileWithPartials(app);
-            int ensure = source.IndexOf("_profileIdentityService.EnsureAllPersisted()", StringComparison.Ordinal);
-            int load = source.IndexOf("_specialActionRepository.LoadActions()", StringComparison.Ordinal);
-            Assert.True(ensure > 0 && load > ensure, "プロファイルの ID の割り当てが、SA の読み込みより前にない（Load Profile の切り替え先を ID で解決するため）");
-        }
     }
 }

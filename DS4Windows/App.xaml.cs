@@ -88,64 +88,9 @@ namespace DS4Windows
             runShutdown = true;
             skipSave = true;
 
-            // Phase9 9-F F-1b（docs-forDIMG/MadeByAgent/Archive/Phase9-F-Plan.md §5）: 起動の手順を、順に呼ぶだけにした（各手順は、下のメソッド。順序と、早期の終了の条件は、従来のまま。
-            // 呼び出しの順序は 対応するテスト が守る）
-            RunPreHostBootstrap(e);
-
-            ArgumentParser parser = new ArgumentParser();
-            // Early check: handle elevated 'complete install' mode before normal startup
-            if (TryHandleCompleteInstall(e))
-            {
-                return;
-            }
-
-            parser.Parse(e.Args);
-            CheckOptions(parser);
-
-            if (exitApp)
-            {
-                return;
-            }
-
-            SetProcessPriorities();
-
-            if (!EnsureSingleInstance())
-            {
-                return;   // 別のインスタンスが動いている（そちらへ通知して、この一時的なインスタンスは終了する）
-            }
-
-            // ログのローテーションと診断ログは、単一起動の確認の後（別のインスタンスのログを、アーカイブへ回さないため）
-            RotateLogsAndLogStartupDiagnostics(e);
-
-            InitializeProcessWideSettings();
-
-            BuildHostAndServices(parser);
-
-            // FindConfigLocation was already called earlier to enable rotation as early as possible
-            bool firstRun = _appSettingsService.FirstRun;
-            string? selectedLanguage = null;
-
-            if (!RunFirstRunLanguageSelection(firstRun, ref selectedLanguage))
-            {
-                return;
-            }
-
-            if (!RunFirstRunSaveLocationAndSkeleton(firstRun))
-            {
-                return;
-            }
-
-            EnsureMacrosFolder();
-
-            bool readAppConfig = LoadAppSettings(firstRun, selectedLanguage);
-
-            ConfigureLoggingAndDiagnostics(firstRun, readAppConfig);
-
-            RunFirstLaunchSetup(firstRun);
-
-            PrepareProfilesCultureAndTheme();
-
-            ShowMainWindowAndFinish(parser);
+            // 起動の手順は、順に呼ぶだけ。順序と、早期の終了の条件は AppStartupSequence が持ち、各手順は App.StartupSteps.cs が実装する
+            _startupArgs = e;
+            AppStartupSequence.Run(this);
         }
 
         // 設定の場所を決められたか（決められなかったときは、従来どおり、ローテーションも行わない）

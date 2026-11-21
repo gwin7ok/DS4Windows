@@ -183,17 +183,8 @@ namespace DS4Windows
         /// </summary>
         private void PrepareProfilesCultureAndTheme()
         {
-            // Phase10-Step4d W1（Q4 の変更、2026-10-21）: すべてのプロファイルのファイルに固定 ID を書く（ID がないものに割り当て、ファイルのコピーで重複したものに付け替える）。
-            // SA の読み込み（下の LoadActions。Load Profile の切り替え先を ID で解決する。W3）と、プロファイルをスロットへ読み込む前（メイン画面の生成の前）に行う。
-            // 書けなかったファイル（読み取り専用など）は、参照を保存する直前に改めて試す
-            _profileIdentityService.EnsureAllPersisted();
-
-            // Phase6-Step7（決定2＝L2）: SpecialActionRepository.LoadActions は Step7-1 で Global.LoadActions と同じ動作
-            // （Actions.xml がなければ既定アクションを作って true）に是正済み。
-            if (!_specialActionRepository.LoadActions())
-            {
-                _specialActionRepository.CreateStandardActions();
-            }
+            // プロファイルの固定 ID の確定 → SA の読み込み（順序の理由は ProfileStartupLoader）
+            new DS4Windows.Composition.Startup.ProfileStartupLoader(_profileIdentityService, _specialActionRepository).Run();
 
             // Have app use selected culture
             _themeCulture.SetUICulture(_appSettingsService.UseLang);
