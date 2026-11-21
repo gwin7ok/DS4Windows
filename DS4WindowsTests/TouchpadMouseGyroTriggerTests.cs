@@ -9,6 +9,7 @@ using DS4Windows.Input;
 using DS4Windows.Processing;
 using DS4Windows.Processing.Synthetic;
 using DS4Windows.Processing.Touchpad;
+using DS4Windows.Processing.Services.Conditioning;
 using Xunit;
 
 namespace DS4WindowsTests
@@ -63,8 +64,7 @@ namespace DS4WindowsTests
             var settings = TestRepositoryFactory.CreateProfileSettingsService(
                 new BackingStore(new DS4Windows.Core.Platform.EnvironmentService()));
             InputDeviceCore device = (InputDeviceCore)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
-            var mouse = new TouchpadMouse(Slot, device, settings, new RecordingVirtualKbm(), new StickMotionState(),
-                new SyntheticInputState(), TimeProvider.System);
+            var mouse = new TouchpadMouseFactory(settings, new RecordingVirtualKbm(), new StickMotionState(), new SyntheticInputState(), TimeProvider.System).Create(Slot, device);
 
             // 切り替え（トグル）の状態を判定に混ぜないため、トグルを切る（既定は有効）
             mouse.ToggleGyroControls = false;

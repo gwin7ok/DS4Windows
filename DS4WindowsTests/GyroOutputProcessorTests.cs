@@ -8,6 +8,7 @@ using DS4Windows.Processing;
 using DS4Windows.Processing.Gyro;
 using DS4Windows.Processing.Synthetic;
 using DS4Windows.Processing.Touchpad;
+using DS4Windows.Processing.Services.Conditioning;
 using Xunit;
 
 namespace DS4WindowsTests
@@ -36,7 +37,7 @@ namespace DS4WindowsTests
             var state = new ControllerState { L1 = true };
             typeof(InputDeviceCore).GetField("cState", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(device, state);
             var sticks = new StickMotionState();
-            var mouse = new TouchpadMouse(Slot, device, settings, new RecordingVirtualKbm(), sticks, new SyntheticInputState(), TimeProvider.System);
+            var mouse = new TouchpadMouseFactory(settings, new RecordingVirtualKbm(), sticks, new SyntheticInputState(), TimeProvider.System).Create(Slot, device);
             mouse.ToggleGyroControls = false;
             mouse.ToggleGyroMouse = false;
             mouse.ToggleGyroStick = false;

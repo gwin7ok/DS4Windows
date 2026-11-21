@@ -69,29 +69,35 @@ namespace DS4Windows.Processing.Touchpad
         private readonly TouchStickOutput _touchStick;
         private FakeTrackball touchStickTrackball;
 
+        /// <summary>
+        /// 持ち物（タップ・カーソル・ホイール・ジャイロ・タッチスティック）は、<c>TouchpadMouseFactory</c> が組み立てて渡す
+        /// （デバイスの設定の読み書きや時刻の供給元を、この型が知らなくてよいようにする）。
+        /// </summary>
         public TouchpadMouse(int deviceID, InputDeviceCore d, IProfileSettingsService profileSettings, IVirtualKBM virtualKBM,
-            StickMotionState stickMotion, SyntheticInputState syntheticInput, TimeProvider timeProvider)
+            StickMotionState stickMotion, SyntheticInputState syntheticInput, TapClickDetector tap, MouseCursor mouseCursor,
+            MouseWheel mouseWheel, GyroOutputProcessor gyro, TouchStickOutput touchStick)
         {
-            _tap = new TapClickDetector(deviceID, timeProvider);
             ArgumentNullException.ThrowIfNull(stickMotion);
-            _stickMotion = stickMotion;
             ArgumentNullException.ThrowIfNull(syntheticInput);
-            _syntheticInput = syntheticInput;
             ArgumentNullException.ThrowIfNull(profileSettings);
-            _profileSettings = profileSettings;
             ArgumentNullException.ThrowIfNull(virtualKBM);
+            ArgumentNullException.ThrowIfNull(tap);
+            ArgumentNullException.ThrowIfNull(mouseCursor);
+            ArgumentNullException.ThrowIfNull(mouseWheel);
+            ArgumentNullException.ThrowIfNull(gyro);
+            ArgumentNullException.ThrowIfNull(touchStick);
+            _stickMotion = stickMotion;
+            _syntheticInput = syntheticInput;
+            _profileSettings = profileSettings;
             _virtualKBM = virtualKBM;
+            _tap = tap;
+            cursor = mouseCursor;
+            wheel = mouseWheel;
+            _gyro = gyro;
+            _touchStick = touchStick;
             deviceNum = deviceID;
             dev = d;
-            cursor = new MouseCursor(deviceNum, d.GyroMouseSensSettings, _profileSettings, _virtualKBM);
-            wheel = new MouseWheel(deviceNum, _profileSettings, _virtualKBM);
             firstTouch = new Touch(0, 0, 0, null);
-
-            _gyro = new GyroOutputProcessor(deviceNum, d, cursor, _profileSettings, _stickMotion);
-            //Global.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis1Filter);
-            //Global.ForSlot(deviceNum).Gyro.MouseStick.SetRefreshEvents(filterPair.axis2Filter);
-
-            _touchStick = new TouchStickOutput(deviceNum, _profileSettings, _stickMotion);
             touchStickTrackball = new FakeTrackball();
         }
 

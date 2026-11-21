@@ -91,7 +91,7 @@ namespace DS4WindowsTests
         public ControllerState RunMapCustom(ControllerState input)
         {
             var device = (InputDeviceCore)RuntimeHelpers.GetUninitializedObject(typeof(TestDs4Device));
-            var mouse = new TouchpadMouse(Device, device, Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System);
+            var mouse = new TouchpadMouseFactory(Settings, Recorder, _stickMotion, Synthetic, System.TimeProvider.System).Create(Device, device);
             var exposed = new ControllerStateExposed(input);
             var mapped = new ControllerState();
 
