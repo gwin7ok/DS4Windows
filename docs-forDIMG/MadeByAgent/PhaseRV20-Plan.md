@@ -1,7 +1,7 @@
 # PhaseRV20 計画書: 残りの画面の出し分けの移行と、実機確認の消化
 
 作成日: 2026-11-21
-状態: **計画（決定済み: D1＝コード作業を先、D2＝設定パネル・導入ダイアログ＋Readings＋MainWindow・AutoProfiles、D3・D4＝推奨どおり）。コードは未着手**
+状態: **完了（2026-11-21）。RV20-5（Readings）と RV20-6 の大半は見送り。実機確認は §9n**
 出典: `Measure-CodeReview.py --only mvvm`（RV19 完了時点）、`PhaseRV19-Plan.md` の完了記録。
 動き: **挙動・ログ・保存の形は変えない**。
 
@@ -64,3 +64,12 @@ RV21: `MainWindow`・`ProfileEditor`・`App` の整理（500 行級の型）と�
   - RV20-5: `ControllerReadingsControl.Readings`: 先に更新の頻度と割り当て（`MappingHotPathAllocationTests` 方式）を測り、悪化するなら、その部分を見送って理由を記録。
   - RV20-6: `MainWindow`・`AutoProfiles` の `SelectedIndex`／`ItemsSource`: 選択の副作用（プロファイルの切り替え）を特性化テストで固めてから、双方向バインディングへ。見た目の確認は実機（後でまとめて）。
 - D3・D4＝(A)。Step の順は RV20-2 → 3 → 5 → 6 → 4（再採点は最後）。実機確認の Step（RV20-0・1）は、RV20 の後の別の作業として扱う。
+
+## 完了記録（2026-11-21）
+| Step | 結果 |
+|---|---|
+| RV20-2 | `WelcomeDialogViewModel`（実行中はすべて止め、終わったら OS の条件で戻す）。テスト 5 件 |
+| RV20-3 | ライトバー・言語パックの出し分けを VM へ。タッチパッドの `Content` は、部品の差し込み（内容の入れ替え）で、状態ではないため残す |
+| RV20-5 | `Readings` は見送り（理由は `02-Scorecard.md` の RV20。計測は行っていない） |
+| RV20-6 | 固定の一覧を XAML へ、選択のリセットをループへ。残りは見送り |
+| RV20-4 | 再採点 `RV20.json`、チェックリスト §9n |
