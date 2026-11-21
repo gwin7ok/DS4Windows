@@ -14,13 +14,13 @@ namespace DS4Windows.UI.ViewModels
         /// Controls の割り当てエディターの Press Key 用。Default／Unbound と Extras を出す。
         /// マクロの表示は、実測どおり出さない（割り当てエディターで設定する）。
         /// </summary>
-        public static BindingWindowLayout ForControl { get; } = new BindingWindowLayout(true, false, false, false);
+        public static readonly BindingWindowLayout ForControl = new BindingWindowLayout(true, false, false, false);
 
         /// <summary>
         /// スペシャルアクションの Press Key 用。Default／Unbound は出さない（SA の Press Key に「Default」はない）。
         /// マクロの表示のラベルは、従来の実行時の値のとおり出る（結びつけ先がなく、既定の Visible のまま）。
         /// </summary>
-        public static BindingWindowLayout ForSpecialAction { get; } = new BindingWindowLayout(false, false, false, true);
+        public static readonly BindingWindowLayout ForSpecialAction = new BindingWindowLayout(false, false, false, true);
 
         public static BindingWindowLayout For(bool isControlMode) => isControlMode ? ForControl : ForSpecialAction;
     }
