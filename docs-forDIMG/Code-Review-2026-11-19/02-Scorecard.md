@@ -286,3 +286,10 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 - 実施: 起動の順序を `AppStartupSequence`（`IAppStartupSteps`）・`ProfileStartupLoader` へ分け、切断の後始末（実機の型）とホバーの遅延（`HoverSelectDelay<T>`、時計の差し替え）を挙動のテストへ。負の確認（ホバーは取り消し処理を壊して 2 件失敗）済み。
 - 残る文字列走査: `StartupOrderGuardTests` の 1 件、`SlotLifecycleTests` の一部、`MouseTapClickHoldTests` の 3 件目、`DisconnectGuardTests` の購読順の 1 件、行数・URL の字句検査。
 - 実機確認は `Device-Check-Checklist.md` の RV25（後回し）。保存: `scorecard/RV25.json`。
+
+
+## RV26 完了時点（2026-11-22）
+
+等級の変化なし（冗長処理 +0.1 点、91.8%→91.9%）。ソースの文字列を読むテストは 108→106 ファイル。
+- 実施: 接続時のプロファイルの選び方（`ConnectionProfileSelector`）と適用のたびの記憶（`AppliedProfileRecorder`）を `ConnectionProfileChoiceTests` の 9 件へ（初回／再接続／別のコントローラー／Linked／一時プロファイルを記憶しない）。コンテナの配線（一時プロファイルの名前が登録簿へ結ばれる）を、本番の登録で作った入れ物の挙動へ。負の確認（Older↔Selected の入れ替え、一時プロファイルの判定の削除、配線の削除）で失敗することを確認。
+- 失ったもの: `ProfileApplicationService.ApplyFromAction` が解決した名前を使うことの検査（実行に機器と非同期の適用が要る。名前の解決自体は `ResolveTarget` のテストが守る）。

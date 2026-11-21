@@ -113,32 +113,5 @@ namespace DS4WindowsTests
             Assert.Null(_service.GetRememberedProfile(Mac1));
         }
 
-        [Fact]
-        public void TheControlService_DecidesPerController_AndRemembersEveryAppliedProfile()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/AppliedProfileRecorder.cs");
-            if (path == null) return;
-
-            string controlServiceText = File.ReadAllText(path);
-            // 判定の本体は ConnectionProfileSelector へ移った
-            string selectorPath = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
-            if (selectorPath == null) return;
-            string text = File.ReadAllText(selectorPath);
-            int first = text.IndexOf("_deviceStateService.IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
-            int older = text.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
-            int remembered = text.IndexOf("profileToApply = _deviceStateService.GetRememberedProfile(connectedMac);", StringComparison.Ordinal);
-            int selected = text.IndexOf("profileToApply = _profileRepository.SelectedProfile[index];", StringComparison.Ordinal);
-            Assert.True(first >= 0 && older > first && remembered > older && selected > remembered,
-                "初回接続は Linked／OlderProfilePath、再接続はコントローラーの記憶（なければ SelectedProfile）");
-
-            Assert.Contains("_deviceStateService.MarkConnected(index, connectedMac)", text);
-            Assert.Contains("_deviceStateService.RememberProfile(connectedMac, profileToApply);", text);
-            Assert.DoesNotContain("_deviceStateService.IsFirstConnection(index)", text);   // スロット単位の判定は使わない
-
-            // 適用のたびに記憶する（AppliedProfileRecorder が持つ）
-            text = controlServiceText;
-            Assert.Contains("_profileRepository.SelectedProfileChanged += RememberAppliedProfile;", text);
-            Assert.Contains("_deviceStateService.RememberProfile(device.GetMacAddress(), e.ProfileName);", text);
-        }
     }
 }

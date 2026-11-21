@@ -84,10 +84,20 @@ namespace DS4WindowsTests
         [Fact]
         public void TheContainer_TiesTheRegistryToTheTempProfileName()
         {
-            string source = RegistrationSource.ReadAll();   // 層ごとの partial ファイルをつないだもの
-            if (source == null) return;
+            // 本番の登録（RegisterServices）で作った入れ物で、登録簿を解決すると、一時プロファイルの名前が名前の変更に追従する
+            // （保管先は一時のフォルダーへ差し替える）。
+            var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            DS4Windows.Composition.ServiceRegistration.RegisterServices(services);
+            Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddSingleton<IPathService>(services, new TempPathService(_profiles));
+            using var provider = Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(services);
+            WriteProfile("WiredBefore");
 
-            Assert.Contains("GetRequiredService<ProfileSettingsService>().AttachProfileIdentity(service)", source);
+            _ = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<IProfileIdentityService>(provider);   // 解決が配線を行う
+            var settings = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<ProfileSettingsService>(provider);
+            settings.SetTempProfileName(1, "WiredBefore");
+            File.Move(FileOf("WiredBefore"), FileOf("WiredAfter"));
+
+            Assert.Equal("WiredAfter", settings.GetTempProfileName(1));
         }
 
         // ---- (2) Load Profile の実行時の解決 ----
@@ -135,22 +145,6 @@ namespace DS4WindowsTests
 
             Assert.Equal(id, bindings.Single(b => b.Source.name == $"Synthetic_Special_{Device}_{(int)DS4Controls.L3}").Source.profileId);
             Assert.Null(bindings.Single(b => b.Source.name == $"Synthetic_Special_{Device}_{(int)DS4Controls.R3}").Source.profileId);
-        }
-
-        [Fact]
-        public void TheApplyPath_UsesTheResolvedTarget()
-        {
-            // ApplyFromAction は、解決した名前で切り替える（details をそのまま使わない）
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs");
-            if (path == null) return;
-
-            string source = File.ReadAllText(path);
-            int start = source.IndexOf("public void ApplyFromAction(", StringComparison.Ordinal);
-            int end = source.IndexOf("public bool RestoreFromAction(", start, StringComparison.Ordinal);
-            string body = source.Substring(start, end - start);
-
-            Assert.Contains("string target = ResolveTarget(action)!;", body);
-            Assert.DoesNotContain("ApplyCore(deviceIndex, action.details", body);
         }
     }
 }

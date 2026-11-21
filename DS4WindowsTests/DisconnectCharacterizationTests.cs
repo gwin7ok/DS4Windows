@@ -82,24 +82,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheFirstConnection_UsesTheOlderProfilePath_AndAReconnectionUsesTheSelectedProfile()
-        {
-            // プロファイルの選択は ConnectionProfileSelector へ移った
-            string path = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ConnectionProfileSelector.cs");
-            if (path == null) return;
-
-            string body = SourceText.Method(SourceText.ReadFileWithPartials(path), "public bool ApplyOnConnect(");
-            int first = body.IndexOf("IsFirstConnection(index, connectedMac)", StringComparison.Ordinal);
-            int older = body.IndexOf("profileToApply = _profileRepository.OlderProfilePath[index];", StringComparison.Ordinal);
-            int selected = body.IndexOf("profileToApply = _profileRepository.SelectedProfile[index];", StringComparison.Ordinal);
-            Assert.True(first >= 0 && older > first && selected > older, "初回接続は OlderProfilePath、再接続は SelectedProfile");
-
-            // 一時プロファイル／AutoProfile を使うとき（useAutoProfile）は、プロファイルを適用し直さない
-            Assert.Contains("if (!useAutoProfile)", body);
-            Assert.Contains("_profileSlotApplier.ApplyToSlot(index, profileToApply", body);
-        }
-
-        [Fact]
         public void TheFirstConnectionFlag_IsResetOnlyAtTheAppStartup()
         {
             string app = SourceFileLocator.Find("DS4Windows/App.xaml.cs");
