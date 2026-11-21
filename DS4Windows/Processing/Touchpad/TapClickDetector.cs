@@ -97,7 +97,7 @@ namespace DS4Windows.Processing.Touchpad
                     {
                         tappedOnce = true;
                         firstTap = arg.TimeStamp;
-                        timeofEnd = DateTime.Now; //since arg can't be used in synthesizeMouseButtons
+                        timeofEnd = _time.GetUtcNow().UtcDateTime; //since arg can't be used in synthesizeMouseButtons
                     }
                     else
                         StartTapClickHold(); //this way no delay if disabled (クリックは保持時間の間出し続ける)
@@ -113,7 +113,7 @@ namespace DS4Windows.Processing.Touchpad
         {
             if (tappedOnce)
             {
-                DateTime tester = DateTime.Now;
+                DateTime tester = _time.GetUtcNow().UtcDateTime;
                 if (tester > (timeofEnd + TimeSpan.FromMilliseconds((double)tapSensitivity * 1.5)))
                 {
                     StartTapClickHold();
