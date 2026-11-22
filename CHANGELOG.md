@@ -4,6 +4,8 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+## [4.4.0] - 2026-11-23
+
 ### Added
 - Xbox controllers are now supported as an input device (read through XInput; off by default, turn it on in Settings). USB and Bluetooth (BLE) controllers are recognised, the battery level is read (XInput for USB, the GATT battery service for Bluetooth), rumble is sent, and a disconnect is detected even when another pad takes the same XInput number. Disconnecting a BLE Xbox controller from DS4Windows is not possible and is reported once instead of claiming success.
 - Settings: "Hide Xbox controllers" (on by default, USB only; Bluetooth ones are hidden with HidHide). A red note appears when HidHide is not installed. The tooltip explains that apps using Windows.Gaming.Input cannot be hidden from.
