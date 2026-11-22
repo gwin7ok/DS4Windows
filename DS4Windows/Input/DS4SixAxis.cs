@@ -129,11 +129,13 @@ namespace DS4Windows.Input
             calibrationData[5].sensNumer = 2 * SixAxis.ACC_RES_PER_G;
             calibrationData[5].sensDenom = accelRange;
 
-            // Check that denom will not be zero.
+            // 割る数が 0 の軸があると、校正をかけた値が int の端になる。加速度は 3 軸すべての幅を見る（機器が全 0 などの壊れた値を返すことがある）
             calibrationDone = calibrationData[0].sensDenom != 0 &&
                 calibrationData[1].sensDenom != 0 &&
                 calibrationData[2].sensDenom != 0 &&
-                accelRange != 0;
+                calibrationData[3].sensDenom != 0 &&
+                calibrationData[4].sensDenom != 0 &&
+                calibrationData[5].sensDenom != 0;
         }
 
         private void applyCalibs(ref int yaw, ref int pitch, ref int roll,

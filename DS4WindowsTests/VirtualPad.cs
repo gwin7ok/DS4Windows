@@ -34,6 +34,23 @@ namespace DS4WindowsTests
             Create(held, frames, failureAfterFirst);
 
         /// <summary>
+        /// <paramref name="sequence"/> を 1 フレームずつ順に流す台本のデバイスを作る（HID の機種だけ。Xbox は通信路が違うので、状態を書き換える別の試験で見る）。
+        /// 各入力を 1 フレームのデバイスで一度レポートにし、そのバイト列を、最初のデバイスの台本へ連ねる。
+        /// </summary>
+        public VirtualPadDevice OpenSequence(params PadInput[] sequence)
+        {
+            VirtualPadDevice first = Open(sequence[0]);
+            if (first.Transport == null) throw new NotSupportedException(Name + ": 複数フレームの台本は HID の機種だけ");
+            for (int n = 1; n < sequence.Length; n++)
+            {
+                using VirtualPadDevice other = Open(sequence[n]);
+                first.Transport.EnqueueRead(HidReadStatus.Success, other.Transport!.LastEnqueuedData);
+            }
+
+            return first;
+        }
+
+        /// <summary>
         /// <paramref name="frames"/> 個の同じフレームを台本にする（HID の機種）。<paramref name="failureAfterFirst"/> を指定すると、最初のフレームの直後に
         /// その読み取りの結果（失敗）を挟み、そのあとにもう 1 フレームを置く（失敗のあとのフレームは届かないことを見るため）。Xbox は、状態を書き換えて切る（<see cref="VirtualPadDevice.Disconnect"/>）。
         /// </summary>
