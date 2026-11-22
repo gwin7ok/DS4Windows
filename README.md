@@ -5,11 +5,10 @@ Like those other DS4 tools, but sexier.
 DS4Windows is an extract anywhere program that allows you to get the best
 DualShock 4 experience on your PC. By emulating an Xbox 360 controller, many
 more games are accessible. Other input controllers are also supported including the
-DualSense, Switch Pro, and JoyCon controllers (**first party hardware only**).
+DualSense, Switch Pro, and Xbox controllers (**first party hardware only**; Xbox input is off by default and can be turned on in Settings). DS3 and Joy-Con support was removed in 4.3.x.
 
 This project is a fork of the work of Jays2Kings and Ryochan7. It adds various new features like switch 
-[debouncing](https://www.ganssle.com/debouncing.pdf), a tool that helps to fix stick drift and pitch and roll simulation
-for DS3 based on accelerometer value (which is a work of [sunnyqeen](https://github.com/sunnyqeen)).
+[debouncing](https://www.ganssle.com/debouncing.pdf), and a tool that helps to fix stick drift. (The DS3 pitch and roll simulation, a work of [sunnyqeen](https://github.com/sunnyqeen), was removed together with DS3 support.)
 
 ![DS4Windows Preview](https://raw.githubusercontent.com/Ryochan7/DS4Windows/jay/ds4winwpf_screen_20200412.png)
 
