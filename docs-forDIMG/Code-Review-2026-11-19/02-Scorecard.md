@@ -315,3 +315,10 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 等級の変化なし（冗長処理 +0.1 点）。ソースの文字列を読むテストは 105→104 ファイル。
 - 実施: プロファイル適用後の掃除の順序（ClearAllEntries → ClearForDevice → ClearDeviceState → 事前確保 → 束縛の差し替え）を、`ProfileApplicationService` へ偽のアクション管理・登録簿を渡した呼び出しの記録で確かめる `ApplyProfileCleanupOrderTests`（3 件。読み込み失敗時は何もしない、適用した名前の記録を含む）へ。旧 `ApplyProfileCleanupOrderGuardTests` を撤去（旧記述の「静的な ActionManager のため、ソースで固定」は、注入済みで当てはまらなくなっていた）。負の確認（`ClearForDevice` と `ClearDeviceState` の入れ替え）で失敗することを確認。
 - 見送り（理由）: 接続の順序（`DeviceConnector.PrepareConnected` の電池の取り込み → 適用 → StartUpdate）は、未初期化の偽の機器では `LoadStoreSettings` などが動かず、機器の基底の仮想化が要る。切断の購読順（`DeviceLifecycleHooks`）も具象のため同様。
+
+
+## RV30 完了時点（2026-11-22）
+
+等級の変化なし（冗長処理 +0.1 点程度）。ソースの文字列を読むテストは 104→103 ファイル（`DisconnectGuardTests` はまだ文字列を読む検査が残る場合は数えられる）。
+- 実施: RV29 で「機器の基底の仮想化が要る」とした見送りは誤りだった（`LoadStoreSettings`・`PrimeBatteryReading`・`StartUpdate` などはすでに仮想）。呼び出しを記録する偽の機器（`RecordingConnectDevice`）で、`DeviceConnector.PrepareConnected` の順序（設定の読み込み → 電池の取り込み → プロファイルの適用 → 読み取りの開始が最後）と、`DeviceLifecycleHooks` のイベントの受け取り順（切断・同期・シリアル変更は、自分の処理 → 登録簿）を `DeviceConnectionOrderTests`（3 件）で確かめる。負の確認（電池の取り込みの位置、購読順）で失敗することを確認。
+- 撤去: `BatteryPrimingTests` と `DisconnectGuardTests` の、ソースの順序を見る検査 各 1 件。

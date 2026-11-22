@@ -37,18 +37,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheConnector_PrimesTheBattery_BeforeApplyingTheProfile_AndBeforeStartUpdate()
-        {
-            string code = SourceText.ReadNormalized("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
-            if (code == null) return;
-
-            int prime = code.IndexOf("device.PrimeBatteryReading();", StringComparison.Ordinal);
-            int apply = code.IndexOf("_connectionProfileSelector.ApplyOnConnect(", StringComparison.Ordinal);
-            int start = code.IndexOf("device.StartUpdate();", StringComparison.Ordinal);
-            Assert.True(prime >= 0 && apply > prime && start > apply, "PrimeBatteryReading → ApplyOnConnect → StartUpdate の順になっていない");
-        }
-
-        [Fact]
         public void PrimeBatteryReading_DoesNotTouchTheChargingState_OrRaiseEvents()
         {
             string code = SourceText.ReadNormalized("DS4Windows/Input/Devices/DualShock4Device.cs");
