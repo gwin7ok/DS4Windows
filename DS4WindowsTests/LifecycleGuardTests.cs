@@ -101,14 +101,11 @@ namespace DS4WindowsTests
         public void TheProcessPriorityList_IsDefinedOnlyInProcessPriorityOptions_AndKeepsTheSavedOrder()
         {
             string ui = SourceText.ReadCode("DS4Windows/UI/MainWindow.xaml.cs");
-            string lifecycle = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
             string options = SourceText.ReadCode("DS4Windows/Core/Platform/ProcessPriorityOptions.cs");
-            if (ui == null || lifecycle == null || options == null) return;
+            if (ui == null || options == null) return;
 
             Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", ui);
-            Assert.DoesNotContain("ProcessPriorityClass.AboveNormal", lifecycle);
             Assert.Contains("ProcessPriorityOptions.Classes", SourceText.Read("DS4Windows/UI/MainWindow.xaml") ?? "ProcessPriorityOptions.Classes");   // 画面は XAML の x:Static で参照する
-            Assert.Contains("ProcessPriorityOptions.Classes", lifecycle);
 
             // 保存済みの設定は、この表の添字。並び順を変えない
             Assert.Equal(

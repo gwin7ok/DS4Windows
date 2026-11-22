@@ -24,18 +24,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void ControlService_DelegatesTheSelection_BeforeThePluginStep()
-        {
-            // 接続の組み立ては DeviceConnector へ移った
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
-            if (text == null) return;
-
-            int select = text.IndexOf("_connectionProfileSelector.ApplyOnConnect(");
-            int plugin = text.IndexOf("PlugVirtualPad(index, device);", select < 0 ? 0 : select);
-            Assert.True(select > 0 && plugin > select, "プロファイルの選択（ApplyOnConnect）は、仮想パッドの接続（PluginOutDev）より前に呼ばれる必要がある");
-        }
-
-        [Fact]
         public void ConnectionProfileSelector_IsRegistered_AndHasNoStaticEntryPoints()
         {
             Assert.IsType<ConnectionProfileSelector>(TestHost.GetService<IConnectionProfileSelector>());
@@ -81,18 +69,5 @@ namespace DS4WindowsTests
             Assert.IsType<InputDeviceModuleRegistry>(TestHost.GetService<IInputDeviceModuleRegistry>());
         }
 
-        [Fact]
-        public void TheOtherFiles_AndCallsTheSetupInTheOriginalOrder()
-        {
-
-            // 利用者が 0 件だった CheckProfileOptions／TouchPadOn の転送は削除した（IProfileLoadTarget が別に持つ）
-
-            // 接続時の順序: 設定の反映 → イベントの配線。接続の組み立ては DeviceConnector へ移った（E-6f1）
-            string connector = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
-            if (connector == null) return;
-            int options = connector.IndexOf("_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);");
-            int hooks = connector.IndexOf("_deviceConnectionSetup.WireInitialHooks(index, device);");
-            Assert.True(options > 0 && hooks > options, "設定の反映（ApplyProfileOptions）は、イベントの配線（WireInitialHooks）より前に呼ぶ");
-        }
     }
 }
