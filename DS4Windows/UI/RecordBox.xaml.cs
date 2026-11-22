@@ -144,54 +144,6 @@ namespace DS4Windows.UI
             }
         }
 
-        private void ChangeLightbarAction()
-        {
-            bool light = recordBoxVM.ToggleLightbar = !recordBoxVM.ToggleLightbar;
-            if (light)
-            {
-                changeLightBtn.Content = "Reset Lightbar Color";
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(1255255255, $"Lightbar Color: 255,255,255",
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActDown, DS4Windows.Processing.Macro.MacroStep.StepOutput.Lightbar);
-                recordBoxVM.AddMacroStep(step);
-            }
-            else
-            {
-                changeLightBtn.Content = "Change Lightbar Color";
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(1000000000, $"Reset Lightbar",
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActUp, DS4Windows.Processing.Macro.MacroStep.StepOutput.Lightbar);
-                recordBoxVM.AddMacroStep(step);
-            }
-        }
-
-        private void AddLightbarStep()
-        {
-            ChangeLightbarAction();
-        }
-
-        private void ChangeRumbleAction()
-        {
-            bool rumble = recordBoxVM.ToggleRumble = !recordBoxVM.ToggleRumble;
-            if (rumble)
-            {
-                addRumbleBtn.Content = "Stop Rumble";
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(1255255, $"Rumble 255,255",
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActDown, DS4Windows.Processing.Macro.MacroStep.StepOutput.Rumble);
-                recordBoxVM.AddMacroStep(step);
-            }
-            else
-            {
-                addRumbleBtn.Content = "Add Rumble";
-                DS4Windows.Processing.Macro.MacroStep step = new DS4Windows.Processing.Macro.MacroStep(1000000, $"Stop Rumble",
-                            DS4Windows.Processing.Macro.MacroStep.StepType.ActUp, DS4Windows.Processing.Macro.MacroStep.StepOutput.Rumble);
-                recordBoxVM.AddMacroStep(step);
-            }
-        }
-
-        private void AddRumbleStep()
-        {
-            ChangeRumbleAction();
-        }
-
         private void LoadPreset()
         {
             // Alt-Tab 用のプリセットの削除で、メニューの項目が 1 つになったため、メニューをやめて、保存のボタンと同じく、ファイルの選択を直接表示する

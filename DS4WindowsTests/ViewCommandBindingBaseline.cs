@@ -35,6 +35,6 @@ namespace DS4WindowsTests
         };
 
         /// <summary>画面の <c>Command</c> のバインディングの総数の下限（減らさない）。</summary>
-        public const int CommandBindingFloor = 254;
+        public const int CommandBindingFloor = 252;
     }
 }

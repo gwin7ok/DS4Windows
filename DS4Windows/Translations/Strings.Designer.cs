@@ -418,6 +418,15 @@ namespace DS4Windows.Translations {
                 return ResourceManager.GetString("BindingWin.ChangeLight", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Light.
+        /// </summary>
+        public static string BindingWin_RumbleLight {
+            get {
+                return ResourceManager.GetString("BindingWin.RumbleLight", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Change Mouse Sensitivity.
@@ -2707,23 +2716,7 @@ namespace DS4Windows.Translations {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Add Rumble.
-        /// </summary>
-        public static string RecordBox_AddRumble {
-            get {
-                return ResourceManager.GetString("RecordBox.AddRumble", resourceCulture);
-            }
-        }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Change Lightbar Color.
-        /// </summary>
-        public static string RecordBox_ChangeLightbarColor {
-            get {
-                return ResourceManager.GetString("RecordBox.ChangeLightbarColor", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Double click on a wait to edit the time.

@@ -45,7 +45,7 @@ namespace DS4WindowsTests
             string body = SourceText.Method(text, "private void ToggleRecording(");
 
             Assert.DoesNotContain("mouseButtonsPanel", body);   // マウスのボタンを押すボタンは廃止（実際の押下が記録される）
-            Assert.Contains("extraConPanel.Visibility = Visibility.Visible;", body);
+            Assert.DoesNotContain("extraConPanel", body);   // Add Rumble / Change Lightbar Color は廃止
             // 表示の判定に Record Delays を使わない
             Assert.DoesNotContain("RecordDelays", body);
         }
