@@ -136,6 +136,17 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ExportProfile_OffersTheProfileNameWithXmlAsTheDefaultFileName()
+        {
+            var list = CreateList("Alpha");
+            _dialogs.SaveFileAnswer = null;
+
+            Create().ExportProfile(list, 0);
+
+            Assert.Equal("Alpha.xml", _dialogs.LastSaveOptions.FileName);
+        }
+
+        [Fact]
         public void DeleteProfile_WhenDeclined_KeepsTheFileAndTheListItem()
         {
             var list = CreateList("Beta");
