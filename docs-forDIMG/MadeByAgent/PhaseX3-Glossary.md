@@ -273,7 +273,7 @@
 | デッドゾーンの種類 | Axial／Radial |
 | トリガーのモード | Hip Fire／Hip Fire Exclusive／Hip Fire Delay／Exclusive／Hair Trigger／Trigger Effect／Full Btn Pull |
 | ボタン名のメニュー（Disable Invert） | Circle／Cross／Square／Triangle／Up／Down／Left／Right／Options／Share／Side L／Side R／Function Left／Function Right／Touchpad Click／Finger on Touchpad／2 Fingers on Touchpad／Bottom Left Paddle／Bottom Right Paddle |
-| その他 | Utils／UDP Server／Accept 以外の Load Preset／Save Preset／Outer Btn／Outer Btn Dead／Flick Stick／Rotation／Square Stick／Six Axis (Accel)／Easing Duration／Touchpad／Special Actions／Controls／Axis Config／Other／Finished／Skip Version／Confirm／OSC の見出しと Port／Output Slots のタブ見出し |
+| その他 | Utils／UDP Server／Load Preset／Save Preset／Outer Btn／Outer Btn Dead／Flick Stick／Rotation／Square Stick／Six Axis (Accel)／Easing Duration／Touchpad／Special Actions／Controls／Axis Config／Other／Finished／Skip Version／Confirm／OSC の見出しと Port／Output Slots のタブ見出し |
 
 ### 上の表から変えた訳
 | 英語 | 日本語 |
