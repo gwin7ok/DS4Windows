@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using DS4Windows.UI;
 using DS4Windows.UI.Services;
@@ -32,7 +32,7 @@ namespace DS4WindowsTests
         public void Parts_RejectNullDependencies()
         {
             Assert.Throws<ArgumentNullException>(() => new TrayAppearanceController(null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new ProfileSelectionCoordinator(null, null, null, null, null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new ProfileSelectionCoordinator(null, null, null, null, null, null, null, null, null));
         }
     }
 }

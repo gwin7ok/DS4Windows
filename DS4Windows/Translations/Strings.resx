@@ -2630,7 +2630,25 @@ Scan Code: Keys are interpreted differently. May be needed for certain games
     <value>L2 &amp; R2</value>
   </data>
   <data name="ProfileImportOverwrite" xml:space="preserve">
-    <value>A profile named "{0}" already exists. Overwrite it?</value>
+    <value>A profile named "{0}" already exists.&#10;Yes: overwrite it (keeps its ID)&#10;No: cancel&#10;Rename: import it under a new name</value>
+  </data>
+  <data name="ProfileImportYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="ProfileImportNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="ProfileImportRename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="ProfileImportRenamePrompt" xml:space="preserve">
+    <value>Enter a new name for the imported profile.</value>
+  </data>
+  <data name="ProfileImportNameInvalid" xml:space="preserve">
+    <value>The name is empty or contains characters that cannot be used in a file name.</value>
+  </data>
+  <data name="ProfileImportNameExists" xml:space="preserve">
+    <value>A profile with that name already exists. Please enter another name.</value>
   </data>
   <data name="ProfileImportOverwriteTitle" xml:space="preserve">
     <value>Import Profile</value>

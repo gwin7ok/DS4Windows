@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -185,6 +185,48 @@ namespace DS4Windows.Core.Persistence
                 if (!_file.WriteId(path, id)) return null;
 
                 // 元と同じ ID を持っていた間の索引を、作り直す
+                lock (_gate)
+                {
+                    Rebuild(ReadEntries());
+                }
+
+                return id;
+            }
+        }
+
+        public string? ImportFile(string sourcePath, string profileName, bool overwrite, bool forceNewId)
+        {
+            string? path = PathOf(profileName);
+            if (path == null || string.IsNullOrEmpty(sourcePath) || !File.Exists(sourcePath)) return null;
+
+            lock (ProfileXmlStore.XmlIoLock)
+            {
+                string? keep = overwrite ? _file.ReadId(path) : null;
+                string? imported = overwrite || forceNewId ? null : _file.ReadId(sourcePath);
+
+                try
+                {
+                    // 取り込み元とコピー先が同じファイルなら、コピーしない
+                    if (!string.Equals(Path.GetFullPath(sourcePath), Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase))
+                        File.Copy(sourcePath, path, true);
+                }
+                catch (Exception ex)
+                {
+                    AppLogger.LogWarn($"[DI] ProfileIdentityService: cannot import '{profileName}': {ex.Message}");
+                    return null;
+                }
+
+                string? id = keep ?? imported;
+                if (id != null && !overwrite)
+                {
+                    // 取り込んだ ID が、ほかのプロファイルの ID と重複するときは、使わない
+                    bool taken = ReadEntries().Any(e => e.Id == id && !string.Equals(e.Path, path, StringComparison.OrdinalIgnoreCase));
+                    if (taken) id = null;
+                }
+
+                id ??= _file.NewId();
+                if (!_file.WriteId(path, id)) return null;
+
                 lock (_gate)
                 {
                     Rebuild(ReadEntries());

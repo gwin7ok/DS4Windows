@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -426,7 +426,8 @@ namespace DS4WindowsTests
                 TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IControllerSlotQuery>(),
                 new TempPathService(_dir),
-                new FakeDialogService());
+                new FakeDialogService(),
+                TestHost.GetService<IProfileIdentityService>());
             var list = new ProfileList(new TempPathService(_dir));
 
             coordinator.SyncProfileListAndControllers(list, () => { }, "Old", "New");
@@ -454,7 +455,8 @@ namespace DS4WindowsTests
                 TestHost.GetService<IEnvironmentService>(),
                 TestHost.GetService<IControllerSlotQuery>(),
                 new TempPathService(_dir),
-                new FakeDialogService());
+                new FakeDialogService(),
+                TestHost.GetService<IProfileIdentityService>());
 
             coordinator.SyncProfileListAndControllers(new ProfileList(new TempPathService(_dir)), () => { });
 

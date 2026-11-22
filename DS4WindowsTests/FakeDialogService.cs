@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DS4Windows.UI.Abstractions;
 
 namespace DS4WindowsTests
@@ -29,6 +29,26 @@ namespace DS4WindowsTests
         {
             Confirmations.Add(message);
             return ConfirmAnswer;
+        }
+
+        /// <summary>3 択の窓への答え（既定は「最初のボタン」）。</summary>
+        public DialogChoice ThreeWayAnswer { get; set; } = DialogChoice.First;
+        public readonly List<string> ThreeWayMessages = new List<string>();
+
+        /// <summary>文字列の入力への答え。順に返し、尽きたら null（取り消し）。</summary>
+        public readonly Queue<string> PromptAnswers = new Queue<string>();
+        public readonly List<string> PromptMessages = new List<string>();
+
+        public DialogChoice ChooseOneOfThree(string message, string title, string firstText, string secondText, string thirdText, DialogIcon icon = DialogIcon.Question)
+        {
+            ThreeWayMessages.Add(message);
+            return ThreeWayAnswer;
+        }
+
+        public string PromptText(string message, string title, string initialText = "")
+        {
+            PromptMessages.Add(message);
+            return PromptAnswers.Count > 0 ? PromptAnswers.Dequeue() : null;
         }
 
         public string PickOpenFile(FileDialogOptions options)

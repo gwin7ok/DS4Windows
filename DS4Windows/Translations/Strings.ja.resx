@@ -1669,7 +1669,25 @@ Disabled:
     <value>強弱振動モーターを入れ替える</value>
   </data>
   <data name="ProfileImportOverwrite" xml:space="preserve">
-    <value>「{0}」という名前のプロファイルはすでにあります。上書きしますか？</value>
+    <value>「{0}」という名前のプロファイルはすでにあります。&#10;はい: 上書きする（ID は保たれます）&#10;いいえ: 取り込まない&#10;名前変更: 別の名前で取り込む</value>
+  </data>
+  <data name="ProfileImportYes" xml:space="preserve">
+    <value>はい</value>
+  </data>
+  <data name="ProfileImportNo" xml:space="preserve">
+    <value>いいえ</value>
+  </data>
+  <data name="ProfileImportRename" xml:space="preserve">
+    <value>名前変更</value>
+  </data>
+  <data name="ProfileImportRenamePrompt" xml:space="preserve">
+    <value>取り込むプロファイルの新しい名前を入力してください。</value>
+  </data>
+  <data name="ProfileImportNameInvalid" xml:space="preserve">
+    <value>名前が空か、ファイル名に使えない文字が含まれています。</value>
+  </data>
+  <data name="ProfileImportNameExists" xml:space="preserve">
+    <value>その名前のプロファイルはすでにあります。別の名前を入力してください。</value>
   </data>
   <data name="ProfileImportOverwriteTitle" xml:space="preserve">
     <value>プロファイルの取り込み</value>
