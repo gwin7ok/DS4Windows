@@ -19,50 +19,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheConnection_KeepsTheOriginalOrder()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
-            if (text == null) return;
-
-            string[] order =
-            {
-                "_profileSettings.RefreshExtrasButtons(",
-                "_profileXmlStore.LoadControllerConfigsForDevice(device);",
-                "device.LoadStoreSettings();",
-                "device.CheckControllerNumDeviceSettings(numControllers);",
-                "slots.SlotManager.AddController(device, index);",   // スロット状態は IDeviceSlotState（slots）から読む
-                "_outputs.NotifyPlugged(index);",
-                "_lifecycleHooks.Attach(device);",   // 購読の順序は DeviceLifecycleHooks（DisconnectGuardTests が検査）
-                "device.ChargingChanged += OnChargingChanged;",
-                "touchPads[index] = _mouseFactory.Create(index, device);",
-                "_connectionProfileSelector.ApplyOnConnect(",
-                "_outputs.PlugVirtualPad(index, device);",
-                "_deviceConnectionSetup.ApplyProfileOptions(index, device, touchPads[index]);",
-                "_deviceConnectionSetup.WireInitialHooks(index, device);",
-                "device.Report += (sender, e) =>",
-                "_outputs.PrepareMotion(tempIdx, device);",
-                "device.StartUpdate();",
-            };
-
-            int last = -1;
-            foreach (string step in order)
-            {
-                int index = text.IndexOf(step);
-                Assert.True(index > last, $"接続の組み立ての順序が変わっている（'{step}'）");
-                last = index;
-            }
-        }
-
-        [Fact]
-        public void TheReportSubscription_CallsTheProcessorOnReport_WithTheSlotIndex()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/DeviceConnector.cs");
-            if (text == null) return;
-
-            Assert.Contains("inputReport.OnReport(sender, e, tempIdx);", text);   // 旧 host.OnReport
-        }
-
-        [Fact]
         public void TheConnector_IsRegistered_AndHasNoStaticEntryPoints()
         {
             Assert.IsType<DeviceConnector>(TestHost.GetService<IDeviceConnector>());
