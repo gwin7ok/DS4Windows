@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using DS4Windows.Core.Abstractions;
 using DS4Windows.Core.Platform;
 using DS4Windows.Core.Settings;
@@ -42,6 +42,7 @@ namespace DS4WindowsTests
             public string GetId(string profileName) => IdOfName;
             public string GetName(string profileId) => NameOfId;
             public string AssignNewId(string profileName) => null;
+            public string ImportFile(string sourcePath, string profileName, bool overwrite, bool forceNewId) => null;
             public System.Collections.Generic.IReadOnlyList<string> EnsureAllPersisted() => new string[0];
             public void Refresh() { }
             public string EnsurePersisted(string profileName) => null;

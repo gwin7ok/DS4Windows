@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace DS4Windows.Core.Abstractions
 {
@@ -37,6 +37,14 @@ namespace DS4Windows.Core.Abstractions
         /// （起動時の <see cref="EnsureAllPersisted"/> が、重複を直す）。
         /// </summary>
         string? AssignNewId(string profileName);
+
+        /// <summary>
+        /// 取り込むファイルを、プロファイルのフォルダーの <paramref name="profileName"/> へコピーし（取り込み元は書き換えない）、固定 ID を整える。
+        /// <paramref name="overwrite"/> が真なら、すでにある同名のプロファイルの ID を保つ（なければ新しい ID）。
+        /// 偽なら、<paramref name="forceNewId"/> が真か、取り込んだ ID が使えない（ない・不正・ほかのプロファイルと重複）ときに新しい ID を振り、それ以外は取り込んだ ID を保つ。
+        /// コピーできなければ null、できたら最終的な ID を返す。
+        /// </summary>
+        string? ImportFile(string sourcePath, string profileName, bool overwrite, bool forceNewId);
 
         /// <summary>
         /// 参照の解決。ID でプロファイルを探し、見つかればその名前を返す。見つからないとき（古いファイル、手編集）は、<paramref name="nameHint"/> の

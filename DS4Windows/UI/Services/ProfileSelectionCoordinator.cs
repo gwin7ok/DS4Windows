@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DS4Windows.Core.Abstractions;
@@ -25,11 +25,12 @@ namespace DS4Windows.UI.Services
         private readonly IControllerSlotQuery _slots;
         private readonly IPathService _pathService;
         private readonly IDialogService _dialogs;
+        private readonly IProfileIdentityService _identity;
 
         public ProfileSelectionCoordinator(IEditorWindowFactory editorWindowFactory, IProfileRepository profileRepo,
             IProfileSlotApplier profileSlotApplier, IAppSettingsService appSettings,
             IEnvironmentService environmentService, IControllerSlotQuery slots,
-            IPathService pathService, IDialogService dialogs)
+            IPathService pathService, IDialogService dialogs, IProfileIdentityService identity)
         {
             ArgumentNullException.ThrowIfNull(editorWindowFactory);
             _editorWindowFactory = editorWindowFactory;
@@ -47,9 +48,14 @@ namespace DS4Windows.UI.Services
             _pathService = pathService;
             ArgumentNullException.ThrowIfNull(dialogs);
             _dialogs = dialogs;
+            ArgumentNullException.ThrowIfNull(identity);
+            _identity = identity;
         }
 
-        /// <summary>プロファイルの XML を選ばせ、プロファイルのフォルダーへコピーして、一覧へ加える。</summary>
+        /// <summary>
+        /// プロファイルの XML を選ばせ、プロファイルのフォルダーへコピーして、一覧へ加える。取り込み元のファイルは書き換えない。
+        /// 同名があるときは、上書き（既存の ID を保つ）・中止・別名での保存（新しい ID）を選ばせる。
+        /// </summary>
         public void ImportProfile(ProfileList profileList)
         {
             string initialDirectory = _pathService.AppDataPath != _pathService.ExecutableDirectory
@@ -65,19 +71,85 @@ namespace DS4Windows.UI.Services
             });
             if (file == null) return;
 
-            string target = System.IO.Path.Combine(_pathService.AppDataPath, "Profiles", System.IO.Path.GetFileName(file));
+            string profilesFolder = System.IO.Path.Combine(_pathService.AppDataPath, "Profiles");
+            string target = System.IO.Path.Combine(profilesFolder, System.IO.Path.GetFileName(file));
             string name = System.IO.Path.GetFileNameWithoutExtension(file);
 
-            // 同じ名前のプロファイルがあるときは、確認なしに上書きしない（取り込み元が、取り込み先そのものなら、書き換えにならないので確認しない）
+            // 取り込み元が、取り込み先そのものなら、書き換えにならないので確認しない
             bool sameFile = string.Equals(System.IO.Path.GetFullPath(file), System.IO.Path.GetFullPath(target), StringComparison.OrdinalIgnoreCase);
-            if (!sameFile && System.IO.File.Exists(target))
+            if (sameFile)
             {
-                string text = string.Format(LocalizedText.Get("ProfileImportOverwrite"), name);
-                if (!_dialogs.Confirm(text, LocalizedText.Get("ProfileImportOverwriteTitle"), DialogIcon.Question)) return;
+                profileList.AddProfileSort(name);
+                return;
             }
 
-            if (!sameFile) System.IO.File.Copy(file, target, true);
-            profileList.AddProfileSort(name);
+            bool overwrite = false;
+            bool forceNewId = false;
+            if (System.IO.File.Exists(target))
+            {
+                // 同じ名前があるとき: はい＝既存の ID を保って上書き、いいえ＝何もしない、名前変更＝新しい名前・新しい ID で保存
+                DialogChoice choice = _dialogs.ChooseOneOfThree(
+                    string.Format(LocalizedText.Get("ProfileImportOverwrite"), name),
+                    LocalizedText.Get("ProfileImportOverwriteTitle"),
+                    LocalizedText.Get("ProfileImportYes"), LocalizedText.Get("ProfileImportNo"), LocalizedText.Get("ProfileImportRename"));
+                if (choice == DialogChoice.Second || choice == DialogChoice.Cancelled) return;
+
+                if (choice == DialogChoice.Third)
+                {
+                    string? newName = AskNewProfileName(profilesFolder, name);
+                    if (newName == null) return;
+
+                    name = newName;
+                    forceNewId = true;
+                }
+                else
+                {
+                    overwrite = true;
+                }
+            }
+
+            string? id = _identity.ImportFile(file, name, overwrite, forceNewId);
+            if (id == null)
+            {
+                AppLogger.LogWarn($"[DI] ProfileSelectionCoordinator: import of '{name}' failed");
+                return;
+            }
+
+            if (overwrite)
+            {
+                // 上書きした名前のプロファイルを使っている接続中のスロットへ、読み直して反映する
+                SyncProfileListAndControllers(profileList, () => { }, null, name);
+            }
+            else
+            {
+                profileList.AddProfileSort(name);
+            }
+        }
+
+        // 新しい名前を入力させる。空・使えない文字・同名のファイルがあるときは、理由を知らせて入力へ戻す。取り消したら null
+        private string? AskNewProfileName(string profilesFolder, string initialName)
+        {
+            string text = initialName;
+            while (true)
+            {
+                string? input = _dialogs.PromptText(LocalizedText.Get("ProfileImportRenamePrompt"), LocalizedText.Get("ProfileImportOverwriteTitle"), text);
+                if (input == null) return null;
+
+                text = input.Trim();
+                if (text.Length == 0 || text.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    _dialogs.ShowMessage(LocalizedText.Get("ProfileImportNameInvalid"), LocalizedText.Get("ProfileImportOverwriteTitle"), DialogIcon.Warning);
+                    continue;
+                }
+
+                if (System.IO.File.Exists(System.IO.Path.Combine(profilesFolder, text + ".xml")))
+                {
+                    _dialogs.ShowMessage(LocalizedText.Get("ProfileImportNameExists"), LocalizedText.Get("ProfileImportOverwriteTitle"), DialogIcon.Warning);
+                    continue;
+                }
+
+                return text;
+            }
         }
 
         /// <summary>選んだプロファイルの XML を、選ばせた保存先へコピーする。</summary>

@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +56,7 @@ namespace DS4WindowsTests
                 repo, applier,
                 TestHost.GetService<IAppSettingsService>(), env,
                 new FakeSlotQuery(connected),
-                new TempPathService(_dir), new FakeDialogService());
+                new TempPathService(_dir), new FakeDialogService(), TestHost.GetService<IProfileIdentityService>());
             return (coordinator, RecordingProxy.Of(applier), env.ControllerSlotLimit, paths);
         }
 

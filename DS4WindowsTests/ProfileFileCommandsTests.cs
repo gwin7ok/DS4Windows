@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using DS4Windows.Core.Profiles;
@@ -16,11 +16,13 @@ namespace DS4WindowsTests
         private readonly string _dir = Path.Combine(Path.GetTempPath(), "ProfCmd_" + Guid.NewGuid().ToString("N"));
         private readonly TempPathService _path;
         private readonly FakeDialogService _dialogs = new FakeDialogService();
+        private readonly DS4Windows.Core.Persistence.ProfileIdentityService _identity;
 
         public ProfileFileCommandsTests()
         {
             Directory.CreateDirectory(Path.Combine(_dir, "Profiles"));
             _path = new TempPathService(_dir);
+            _identity = new DS4Windows.Core.Persistence.ProfileIdentityService(new TempPathService(Path.Combine(_dir, "Profiles")));
         }
 
         public void Dispose()
@@ -37,7 +39,7 @@ namespace DS4WindowsTests
                 TestHost.GetService<DS4Windows.Core.Abstractions.IAppSettingsService>(),
                 TestHost.GetService<DS4Windows.Core.Abstractions.IEnvironmentService>(),
                 TestHost.GetService<DS4Windows.Processing.Abstractions.IControllerSlotQuery>(),
-                _path, _dialogs);
+                _path, _dialogs, _identity);
         }
 
         private ProfileList CreateList(params string[] names)
@@ -62,40 +64,130 @@ namespace DS4WindowsTests
             Assert.Contains(list.ProfileListCol, p => p.Name == "Incoming");
         }
 
-        [Fact]
-        public void ImportProfile_WhenTheSameNameExists_AsksBeforeOverwriting_AndKeepsTheOldFileIfDeclined()
+        private const string OldId = "11111111111111111111111111111111";
+        private const string ImportedId = "22222222222222222222222222222222";
+
+        private static string Xml(string marker, string id) => "<Profile><ProfileId>" + id + "</ProfileId><" + marker + "/></Profile>";
+
+        private string Write(string folder, string name, string content)
         {
-            var list = CreateList("Dup");
-            string existing = Path.Combine(_dir, "Profiles", "Dup.xml");
-            File.WriteAllText(existing, "<old/>");
-            string source = Path.Combine(_dir, "Dup.xml");
-            File.WriteAllText(source, "<new/>");
-            _dialogs.OpenFileAnswer = source;
-            _dialogs.ConfirmAnswer = false;
-
-            Create().ImportProfile(list);
-
-            Assert.Single(_dialogs.Confirmations);
-            Assert.Contains("Dup", _dialogs.Confirmations[0]);
-            Assert.Equal("<old/>", File.ReadAllText(existing));
+            string path = Path.Combine(folder, name + ".xml");
+            File.WriteAllText(path, content);
+            return path;
         }
 
         [Fact]
-        public void ImportProfile_WhenTheSameNameExists_OverwritesAfterTheUserAgrees_WithoutDuplicatingTheListEntry()
+        public void ImportProfile_WhenTheSameNameExists_AndTheUserSaysNo_ChangesNothing()
         {
-            var list = CreateList("Dup");
-            string existing = Path.Combine(_dir, "Profiles", "Dup.xml");
-            File.WriteAllText(existing, "<old/>");
-            string source = Path.Combine(_dir, "Dup.xml");
-            File.WriteAllText(source, "<new/>");
+            var list = CreateList();
+            string existing = Write(Path.Combine(_dir, "Profiles"), "Dup", Xml("old", OldId));
+            string source = Write(_dir, "Dup", Xml("new", ImportedId));
             _dialogs.OpenFileAnswer = source;
-            _dialogs.ConfirmAnswer = true;
+            _dialogs.ThreeWayAnswer = DS4Windows.UI.Abstractions.DialogChoice.Second;
 
             Create().ImportProfile(list);
 
-            Assert.Single(_dialogs.Confirmations);
-            Assert.Equal("<new/>", File.ReadAllText(existing));
+            Assert.Single(_dialogs.ThreeWayMessages);
+            Assert.Contains("Dup", _dialogs.ThreeWayMessages[0]);
+            Assert.Equal(Xml("old", OldId), File.ReadAllText(existing));
+        }
+
+        [Fact]
+        public void ImportProfile_WhenTheDialogIsClosed_ChangesNothing()
+        {
+            var list = CreateList();
+            string existing = Write(Path.Combine(_dir, "Profiles"), "Dup", Xml("old", OldId));
+            _dialogs.OpenFileAnswer = Write(_dir, "Dup", Xml("new", ImportedId));
+            _dialogs.ThreeWayAnswer = DS4Windows.UI.Abstractions.DialogChoice.Cancelled;
+
+            Create().ImportProfile(list);
+
+            Assert.Equal(Xml("old", OldId), File.ReadAllText(existing));
+        }
+
+        [Fact]
+        public void ImportProfile_Overwrite_TakesTheImportedSettings_ButKeepsTheStoredId_AndLeavesTheSourceUntouched()
+        {
+            var list = CreateList();
+            string existing = Write(Path.Combine(_dir, "Profiles"), "Dup", Xml("old", OldId));
+            string sourceContent = Xml("new", ImportedId);
+            string source = Write(_dir, "Dup", sourceContent);
+            _dialogs.OpenFileAnswer = source;
+            _dialogs.ThreeWayAnswer = DS4Windows.UI.Abstractions.DialogChoice.First;
+
+            Create().ImportProfile(list);
+
+            string saved = File.ReadAllText(existing);
+            Assert.Contains("<new", saved);
+            Assert.DoesNotContain("<old", saved);
+            Assert.Equal(OldId, new DS4Windows.Core.Persistence.ProfileIdentityService(new TempPathService(Path.Combine(_dir, "Profiles"))).GetId("Dup"));
+            Assert.Equal(sourceContent, File.ReadAllText(source));
             Assert.Single(list.ProfileListCol, p => p.Name == "Dup");
+        }
+
+        [Fact]
+        public void ImportProfile_Rename_SavesUnderTheNewNameWithANewId_AndKeepsTheOriginal()
+        {
+            var list = CreateList();
+            string existing = Write(Path.Combine(_dir, "Profiles"), "Dup", Xml("old", OldId));
+            string source = Write(_dir, "Dup", Xml("new", ImportedId));
+            _dialogs.OpenFileAnswer = source;
+            _dialogs.ThreeWayAnswer = DS4Windows.UI.Abstractions.DialogChoice.Third;
+            _dialogs.PromptAnswers.Enqueue("Dup");       // 重複: 入力へ戻る
+            _dialogs.PromptAnswers.Enqueue("bad/name");   // 使えない文字: 入力へ戻る
+            _dialogs.PromptAnswers.Enqueue("Fresh");
+
+            Create().ImportProfile(list);
+
+            Assert.Equal(3, _dialogs.PromptMessages.Count);
+            Assert.Equal(2, _dialogs.Messages.Count);
+            Assert.Equal(Xml("old", OldId), File.ReadAllText(existing));
+            string id = new DS4Windows.Core.Persistence.ProfileIdentityService(new TempPathService(Path.Combine(_dir, "Profiles"))).GetId("Fresh");
+            Assert.NotNull(id);
+            Assert.NotEqual(OldId, id);
+            Assert.NotEqual(ImportedId, id);
+            Assert.Contains("<new", File.ReadAllText(Path.Combine(_dir, "Profiles", "Fresh.xml")));
+            Assert.Contains(list.ProfileListCol, p => p.Name == "Fresh");
+        }
+
+        [Fact]
+        public void ImportProfile_Rename_WhenThePromptIsCancelled_ChangesNothing()
+        {
+            var list = CreateList();
+            Write(Path.Combine(_dir, "Profiles"), "Dup", Xml("old", OldId));
+            _dialogs.OpenFileAnswer = Write(_dir, "Dup", Xml("new", ImportedId));
+            _dialogs.ThreeWayAnswer = DS4Windows.UI.Abstractions.DialogChoice.Third;
+
+            Create().ImportProfile(list);
+
+            Assert.Single(Directory.GetFiles(Path.Combine(_dir, "Profiles")));
+        }
+
+        [Fact]
+        public void ImportProfile_NewName_KeepsTheImportedId()
+        {
+            var list = CreateList();
+            _dialogs.OpenFileAnswer = Write(_dir, "Incoming", Xml("new", ImportedId));
+
+            Create().ImportProfile(list);
+
+            Assert.Equal(ImportedId, new DS4Windows.Core.Persistence.ProfileIdentityService(new TempPathService(Path.Combine(_dir, "Profiles"))).GetId("Incoming"));
+        }
+
+        [Fact]
+        public void ImportProfile_NewName_WhenTheImportedIdBelongsToAnotherProfile_GetsANewId()
+        {
+            var list = CreateList();
+            Write(Path.Combine(_dir, "Profiles"), "Other", Xml("old", ImportedId));
+            _dialogs.OpenFileAnswer = Write(_dir, "Incoming", Xml("new", ImportedId));
+
+            Create().ImportProfile(list);
+
+            var identity = new DS4Windows.Core.Persistence.ProfileIdentityService(new TempPathService(Path.Combine(_dir, "Profiles")));
+            Assert.Equal(ImportedId, identity.GetId("Other"));
+            string id = identity.GetId("Incoming");
+            Assert.NotNull(id);
+            Assert.NotEqual(ImportedId, id);
         }
 
         [Fact]
