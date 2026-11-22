@@ -300,3 +300,11 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 等級の変化なし（指標の変化なし。文字列走査のファイル数は 106 のまま。メンテナンス性 -0.0 点は文書 1 件の増加）。
 - 実施: 割り当て編集の「保存ボタンは種別を選んでいる間だけ有効」「未選択の種別は検証で弾く」を ViewModel の挙動のテスト 2 件へ（`DefaultUnboundTypeTests`）。同テストの、ViewModel のソースを読む 3 つの検査を撤去。負の確認（`CanSave` と検証の条件を壊す）で 2 件とも失敗することを確認。
 - 見送り（理由）: 出力ピッカーの呼び出し（`AssignmentEditorSession.PickOutput`）は、具象の `BindingWindow`（`ShowDialog` を持つ WPF の窓）を直接受けるため、窓を偽物にできず、挙動のテストにするには窓の抽象化（本体の大きな変更）が要る。XAML の `x:Name`・`Visibility` の結びつけの検査は、画面の字句検査として残す。
+
+
+## RV28 完了時点（2026-11-22）
+
+等級の変化なし（冗長処理 +0.1 点、91.9%→92.0%）。ソースの文字列を読むテストは 106→105 ファイル。
+- 実施: 出力ピッカー（`BindingWindow`）を、呼び出し側が使う部分だけの `IBindingDialog`（`DefaultPicked`・`ShowModal`）で抽象化。`IEditorWindowFactory.CreateBindingDialog` を足し、`AssignmentEditorSession.PickOutput` は具象の窓と `Application.Current` を参照しなくなった（親をメイン画面にする処理は窓の側へ）。`AssignmentEditorPickOutputTests`（11 件）が、渡す設定（ボタン・Extras・モード・スロット）、Extras の取り込み（保存まで元は変わらない）、Default／Unbound で種別の一覧を切り替える条件、× で閉じたとき切り替えないことを、偽の窓で確かめる。負の確認（Extras の取り込み、`allowDefault`、モード、Default の切り替え条件）で失敗することを確認。
+- 撤去: 出力ピッカーの呼び出しを文字列で見る検査 4 件（`ControlDefaultAndExtrasTests`、`PickerCloseKeepsTypeTests`、`ProfileEditorTargetDeviceGuardTests` の 1 行、`DefaultUnboundTypeTests` の 3 行）。
+- 実機確認は `Device-Check-Checklist.md` の RV28。

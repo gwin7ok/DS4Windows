@@ -325,23 +325,5 @@ namespace DS4WindowsTests
 
         // ---- 割り当てエディターの呼び出し（ソース走査）----
 
-        [Fact]
-        public void TheEditor_OpensThePickerInTheControlMode_WithTheButtonAndTheExtras()
-        {
-            string path = SourceFileLocator.Find("DS4Windows/UI/Services/AssignmentEditorSession.cs");
-            if (path == null)
-            {
-                _output.WriteLine("ソースが見つからないため検査を省略した。");
-                return;
-            }
-
-            string source = File.ReadAllText(path);
-            Assert.Contains("PressKeyVM.PrepareSettings(controlTarget!.Control, controlTarget.Extras)", source);
-            Assert.Contains("BindingWindow.ExposeMode.Control", source);
-            Assert.Contains("allowDefault: true", source);
-            Assert.Contains("controlTarget.Extras = controlSettings.extras", source);
-            // SA のモードは、従来どおり
-            Assert.Contains("BindingWindow.ExposeMode.SpecialAction", source);
-        }
     }
 }
