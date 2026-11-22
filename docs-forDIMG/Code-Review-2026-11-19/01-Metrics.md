@@ -96,6 +96,8 @@
 | 構造の重複（識別子・数値・文字列を正規化。14 行の窓） | 45,333 | 5,922 | **13.1%** |
 | 同一の重複（正規化なし。10 行の窓） | 44,362 | 947 | **2.1%** |
 
+**2026-11-22 の再計測（RV6 以降）**: 構造の重複 45,032 行のうち 4,811 行（**10.7%**）、同一の重複 43,924 行のうち 504 行（**1.1%**）。
+
 構造の重複の上位（重複行／行、%）: `BindingWindow.xaml.cs` 467/675（69%）、`ProfilePresets.cs` 285/357（79%）、`AppSettingsDTO.cs` 244/554（44%）、`AppSettingsService.cs` 232/340（68%）、`ProfileEditor.HoverTables.cs` 211/266（79%）、`X360ControlTables.cs` 208/231（90%）、`DS4ControlNames.cs` 196/204（96%）、`PresetMenuHelper.cs` 160/306（52%）、`ProfileStickAxialLoadSection.cs` 144/158（91%）、`WelcomeDialog.xaml.cs` 142/242（58%）、`ControllerState.cs` 128/231（55%）、`ControllerReadingsControl.xaml.cs` 125/364（34%）、`ControllerStateFieldMapping.cs` 107/168（63%）、`HidHideAPIDevice.cs` 104/182（57%）。表・宣言の並び（`ProfilePresets`、`X360ControlTables`、`DS4ControlNames`、`ControllerState`）は、表のままでよい。
 
 同一の重複の上位: `ProfilePresets.cs` 253/356（71%）、`FakerInputHandler.cs` 68/178（38%）、`AutoProfilesViewModel.cs` 61/261（23%）、`X360ControlTables.cs` 48/230（20%）、`LinkedProfilesXmlSerializer.cs` 48/78（61%）、`HidHideAPIDevice.cs` 46/181（25%）、`RecordBox.xaml.cs` 40/457（8%）、`ProfileMigration.cs` 33/258（12%）、`Crc32Algorithm.cs` 32/252（12%）、`SendInputHandler.cs` 30/220（13%）、`GyroOutputProcessor.cs` 26/280（9%）、`GyroMouseStickInfo.cs` 19/117（16%）、`GyroMouseInfo.cs` 19/83（22%）。

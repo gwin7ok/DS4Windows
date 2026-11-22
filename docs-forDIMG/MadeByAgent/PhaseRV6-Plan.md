@@ -1,7 +1,7 @@
 # PhaseRV6 計画書: 共有部品化と、冗長な実装の整理
 
 作成日: 2026-11-19
-状態: **一部完了（2026-11-20。RV6-0〜2・RV6-5 は完了。RV6-3（同一の重複）・RV6-4（構造の重複）・RV6-6 は未実施。内訳は `02-Scorecard.md` の RV6）**
+状態: **完了（2026-11-22。RV6-0〜5 は 2026-11-20、RV6-6 は記録のみ 2026-11-22。公開フィールドのプロパティ化は別に承認）**
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の RV-21〜RV-25（§3.5、§3.6）
 前提: PhaseRV1（未参照の型の調査の記録）、PhaseRV2（空の `catch` の分類）、PhaseRV4（`WelcomeDialog` の部品化は RV4 で済む）、PhaseRV5（`Gyro*Info` が使う設定の形）。
 動き: 機能は変えない。未参照の型の削除は、規則 2.4 に従い、**1 件ずつ根拠を示して承認を得てから**。
@@ -31,11 +31,11 @@
 | RV6-0 | 未参照の型の調査（規則 2.4 の手順 1・2・4）。上の候補約 28 件を、1 件ずつ、`git log -S` と計画書で経緯を調べ、「使うべき／使うべきでない／誤検出」に分けて、`PhaseRV6-Unreferenced-Types.md` に記録する（RV1-5 の 3 件を引き継ぐ）。ユーザーの承認を得る | — | 未着手 |
 | RV6-1 | `KeyButtonActionController` まわり: (1) `PressActionController` の削除（承認後。`RemovedApiRuleTests` の表へ）。(2) D2＝(B): `IRepeater` の契約を実態に合わせる。調査（2026-11-19）で、本番の呼び出し 4 か所（`KeyButtonActionController`）はいつも `tickAction = null`、アダプターは `tickAction`・`initialDelay`・`interval` の 3 つをすべて無視する（間隔は `RepeatHelper` が自前で持つ）と分かった。`IRepeater.Start` を引数なしの `Start()` にし、アダプターの無視する引数と、ログ呼び出しを包む入れ子の `try { } catch { }` を消す（RV2 の規則に従う）。テストの偽物（`FakeDeterministicRepeater`・`MockRepeater`・`TestActionController`）を新しい契約へ直す。連打の動きは変えない。(3) `KeyButtonActionControllerAdapter` の責務を確かめ、不要な層なら畳む | `ActionControllerTests` の一式、`RepeatHelper` まわりの既存のテスト、`RemovedApiRuleTests` | 未着手 |
 | RV6-2 | `GyroMouseInfo`・`GyroMouseStickInfo` の共有化: 平滑化の設定（フィールド・入れ子の列挙型）を、共通の型 `GyroSmoothingSettings`（仮）へ。保存の要素名・既定値は変えない（RV5 の読み込みの補助に従う）。呼び出し元の変更範囲を、先に数える | `GyroControlsGoldenTests`、`GyroOutputProcessor` のテスト、黄金一式 | 未着手 |
-| RV6-3 | 同一の重複の整理: `FakerInputHandler`・`SendInputHandler`（キー送出の共通の定型）、`HidHideAPIDevice`、`LinkedProfilesXmlSerializer`、`AutoProfilesViewModel`、`Crc32Algorithm`。1 ファイルずつ、重複の中身を確かめ、**畳めるものだけ**畳む（無理に統合しない）。毎フレームの経路は、割り当て 0 の検査を保つ | 既存のテスト、割り当ての検査（`Category!=Benchmark` の Assert の検査） | 未着手 |
-| RV6-4 | 構造の重複の調査: `PresetMenuHelper`（52%）、`ControllerReadingsControl`（34%）。D4＝(B) により、構造の重複も整理の対象にする。ただし RV6-3 と同じく、畳めるものだけ。表・宣言の並びは畳まない（`ProfilePresets` は対象外のまま）。`ControllerReadingsControl` の `Click`・タイマーは RV4-6 で整理済みの前提で、ここは構造の重複だけを扱う。畳み方は 1 件ずつ決め、承認を得る | `PresetMenuHelper` まわりの既存のテスト | 未着手 |
+| RV6-3 | 同一の重複の整理: `FakerInputHandler`・`SendInputHandler`（キー送出の共通の定型）、`HidHideAPIDevice`、`LinkedProfilesXmlSerializer`、`AutoProfilesViewModel`、`Crc32Algorithm`。1 ファイルずつ、重複の中身を確かめ、**畳めるものだけ**畳む（無理に統合しない）。毎フレームの経路は、割り当て 0 の検査を保つ | 既存のテスト、割り当ての検査（`Category!=Benchmark` の Assert の検査） | 完了 |
+| RV6-4 | 構造の重複の調査: `PresetMenuHelper`（52%）、`ControllerReadingsControl`（34%）。D4＝(B) により、構造の重複も整理の対象にする。ただし RV6-3 と同じく、畳めるものだけ。表・宣言の並びは畳まない（`ProfilePresets` は対象外のまま）。`ControllerReadingsControl` の `Click`・タイマーは RV4-6 で整理済みの前提で、ここは構造の重複だけを扱う。畳み方は 1 件ずつ決め、承認を得る | `PresetMenuHelper` まわりの既存のテスト | 完了 |
 | RV6-5 | 未参照の型の整理（RV6-0 で承認されたものだけ）: 削除は `git rm`（1 型 1 コミット、`RemovedApiRuleTests` の表へ）。「使うべき」と判断したものは、原則4 の TODO（経緯、未接続の理由、接続予定）を付け、接続の作業を適切な計画書へ追加する | `RemovedApiRuleTests`、全テスト | 未着手 |
-| RV6-6 | 公開の可変フィールドの調査（記録のみ）: `SpecialAction`（30）、`TouchMouseStickInfo`（17）、`GyroMouseStickInfo`（16）が、`XmlSerializer`・リフレクション・毎フレームの経路から直接触られているかを調べ、プロパティ化できる範囲を `PhaseRV6-Public-Fields.md` に記録（実施は、効果を見て別に承認） | — | 未着手 |
-| RV6-7 | 検査: `CodeHealthRatchetTests` に、「真に未参照の型（承認済みの削除対象）＝0」に当たる項目は作らず（誤検出が多い）、代わりに `RemovedApiRuleTests` の表を更新する。`Measure-CodeReview.py --only clone,cloneexact` の数字を、`01-Metrics.md` に追記する | — | 未着手 |
+| RV6-6 | 公開の可変フィールドの調査（記録のみ）: `SpecialAction`（30）、`TouchMouseStickInfo`（17）、`GyroMouseStickInfo`（16）が、`XmlSerializer`・リフレクション・毎フレームの経路から直接触られているかを調べ、プロパティ化できる範囲を `PhaseRV6-Public-Fields.md` に記録（実施は、効果を見て別に承認） | — | 完了（記録のみ） |
+| RV6-7 | 検査: `CodeHealthRatchetTests` に、「真に未参照の型（承認済みの削除対象）＝0」に当たる項目は作らず（誤検出が多い）、代わりに `RemovedApiRuleTests` の表を更新する。`Measure-CodeReview.py --only clone,cloneexact` の数字を、`01-Metrics.md` に追記する | — | 完了（RemovedApiRuleTests は更新済み。重複の数字は 01-Metrics.md） |
 | RV6-8 | 評価の再算定（採点基準 `Code-Review-2026-11-19/03-Rubric.md`）。(1) `scripts/audit/Rubric-Inputs.json` の確認項目と手入力の値を、根拠（実行したテスト・実測）を `evidence` に書いて更新する。(2) `python -I scripts/audit/Score-CodeReview.py --json docs-forDIMG/Code-Review-2026-11-19/scorecard/RV6.json --label "RV6 完了" --diff docs-forDIMG/Code-Review-2026-11-19/scorecard/RV5.json` で、採点して保存する。(3) `02-Scorecard.md` に列と理由（等級が変わった観点、点数が動いた指標、予想とのずれ）を足し、`01-Metrics.md` §13 の「現在」を `Measure-CodeReview.py` の実測で取り直す。(4) ユーザーへ、点数・等級の変化と、次の Phase で動かす指標を報告する。机上の予想（`03-Rubric.md` §5）で動く観点: 冗長処理 B→B+。ソースは変更しない（記録のみ） | `Score-CodeReview.py`（記録のみ） | 未着手 |
 
 ## 決めること
@@ -83,3 +83,4 @@
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
 - 2026-11-20: RV6-1（`PressActionController` 削除、`IRepeater.Start()` を引数なしへ）、RV6-2（`GyroSmoothingMethod`・`GyroSmoothingMethods` の共有。フィールドごとの共通化は参照が約 120 か所のため見送り）、RV6-0（`PhaseRV6-Unreferenced-Types.md`）、RV6-5（承認された 5 型の削除。`InputReportDataBytesBT` は TODO を付けて残す）を実施。**RV6-3・RV6-4（重複の整理）、RV6-6（公開フィールドの記録）は未実施**（効果に対し、キー送出・毎フレームの経路を触るリスクがあり、実機確認の準備ができてから別に行う）。連打（`RepeatHelper`）の実機確認が必要。
 - 2026-11-20（RV6-3・RV6-4 を実施）: RV6-3a 設定ファイルの XML 書き出しの定型 5 か所を `XmlDtoText.Serialize` へ。RV6-3b `HidHideAPIDevice` の一覧の取得・設定（Black／White）を共通の関数へ、`FakerInputHandler` の Alt（本体が同一）を通常の経路の呼び出しへ、`SendInputHandler` のマウスボタン 3 つを `SendMouseButton` へ。`Crc32Algorithm`（第三者由来の表）・`AutoProfilesViewModel`・`GyroOutputProcessor` は、畳むと意味が変わる（性能・順序）ため見送り。RV6-4: `PresetMenuHelper`（プリセットごとの割り当ての表）・`ControllerReadingsControl` の構造の重複は、表・宣言の並びが主体で畳まない（D4 の但し書き）。キー送出（FakerInput・SendInput）を触ったため、実機でキー・マウス入力の確認が必要。
+- 2026-11-22: RV6-6 を実施。`PhaseRV6-Public-Fields.md` に記録（プロパティ化は `Gyro/TouchMouseStickInfo` が小さく有望。`SpecialAction` は未参照のフィールド 6 つと合わせて別 Phase）。RV6-3・RV6-4・RV6-7 の状態欄を実態に合わせた。
