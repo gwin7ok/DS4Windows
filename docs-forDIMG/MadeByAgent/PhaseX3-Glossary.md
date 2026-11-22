@@ -261,3 +261,34 @@
 | Xbox Controller Support | Xbox コントローラーのサポート |
 | Xbox Device Support | Xbox デバイスのサポート |
 | Yes, elevate | はい、権限を付与 |
+
+## X3-8 での見直し結果（2026-11-22。上の表より優先する）
+利用者が X3-3 の訳 528 件を 1 件ずつ見直した。詳しくは `PhaseX3-8-Plan.md`。上の表と食い違うものは、次のとおり。
+
+### 英語表示に統一した用語（日本語リソースから削除。英語の値が出る）
+| 分類 | 英語のまま表示する用語 |
+|---|---|
+| 出力スロット | Plug／Unplug／Dynamic／Permanent／Program／Task／Run As |
+| 感度カーブ | Linear／Quadratic／Cubic／Easeout Cubic／Easeout Quad／Enhanced Precision／Custom |
+| デッドゾーンの種類 | Axial／Radial |
+| トリガーのモード | Hip Fire／Hip Fire Exclusive／Hip Fire Delay／Exclusive／Hair Trigger／Trigger Effect／Full Btn Pull |
+| ボタン名のメニュー（Disable Invert） | Circle／Cross／Square／Triangle／Up／Down／Left／Right／Options／Share／Side L／Side R／Function Left／Function Right／Touchpad Click／Finger on Touchpad／2 Fingers on Touchpad／Bottom Left Paddle／Bottom Right Paddle |
+| その他 | Utils／UDP Server／Accept 以外の Load Preset／Save Preset／Outer Btn／Outer Btn Dead／Flick Stick／Rotation／Square Stick／Six Axis (Accel)／Easing Duration／Touchpad／Special Actions／Controls／Axis Config／Other／Finished／Skip Version／Confirm／OSC の見出しと Port／Output Slots のタブ見出し |
+
+### 上の表から変えた訳
+| 英語 | 日本語 |
+|---|---|
+| Light（振動の弱。BindingWin.RumbleLight に分離） | 弱振動 |
+| Light（テーマ） | 英語表示（Light） |
+| Arrow Keys | 十字キー |
+| Rename Profile | プロファイル名の変更 |
+| Emulated Controller | 仮想コントローラーの出力タイプ |
+| Inverse motors | 強弱振動モーターを入れ替える |
+| Right click to disconnect wireless | 右クリックで Bluetooth 接続を切断 |
+| Hip Fire Exclusive の説明文 | 「Hip Fire モードに似ています…」（モード名の表記に合わせた） |
+
+### 方針（今後の訳し方）
+- 画面の他の部分が英語表記のゲーム用語・設定名（Hip Fire、Axial など）は、説明文の中の名前も英語表記に合わせる。
+- 記号（○×□△）は使わず、ボタン名は英語で出す。
+- 未使用のキーは、リソースから削除する。
+
