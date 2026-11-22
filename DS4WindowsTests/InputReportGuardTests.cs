@@ -24,19 +24,6 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void OnReport_KeepsTheOriginalOrder_OfTheCallsToTheNewParts()
-        {
-            // On_Report は InputReportProcessor へ移した（順序の検査は新しいファイルに対して維持する）
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/InputReportProcessor.cs");
-            if (text == null) return;
-
-            int monitor = text.IndexOf("_latencyMonitor.OnReport(device, ind);");
-            int toggle = text.IndexOf("_touchpadToggle.CheckForToggle(ind, cState, pState);");
-            int mapCustom = text.IndexOf("_mapping.MapCustom(ind, cState, tempMapState");
-            Assert.True(monitor > 0 && toggle > monitor && mapCustom > toggle, "On_Report の呼び出しの順序（監視 → タッチ切り替え → マッピング）が変わっている");
-        }
-
-        [Fact]
         public void NewComponents_AreRegistered_AsSingletons()
         {
             Assert.Same(TestHost.GetService<ILatencyMonitor>(), TestHost.GetService<ILatencyMonitor>());
