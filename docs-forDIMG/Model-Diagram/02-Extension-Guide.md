@@ -63,7 +63,7 @@
 2. `LayerDependencyRuleTests`（依存の向き）、`ConstructorArityRuleTests`（引数 15 以下）、`Phase14NamespaceFolderGuardTests`（名前空間＝フォルダ）。
 3. 保存形式を触ったら、保存の黄金テストが不変であること。
 4. 実機がない機種は、差分テスト（`FakeHidTransport` に台本を与え、出力レポート・状態・切断の順序を確かめる）で守り、「実機未確認」を台帳に残す。
-5. **仮想コントローラーの契約テスト**（PhaseRV37）: `DS4WindowsTests/VirtualPad.cs` に、機種の仮想コントローラー（`PadInput` を、その機種のレポートへ変換し、偽の通信路に載せた本番のデバイスを作る）を 1 つ足し、`VirtualPad.All` へ載せる。すると、`VirtualPadContractTests`（全機種で、ボタン・トリガー・スティックが同じ意味になること）と `VirtualPadPipelineTests`（入力 → 処理 → 仮想 Xbox 360 の出力まで同じ結果になること）の全部に、自動で載る。
+5. **仮想コントローラーの契約テスト**（PhaseRV37）: `DS4WindowsTests/VirtualPad.cs` に、機種の仮想コントローラー（`PadInput` を、その機種のレポートへ変換し、偽の通信路に載せた本番のデバイスを作る）を 1 つ足し、`VirtualPad.All` へ載せる。すると、`VirtualPadContractTests`（全機種で、ボタン・トリガー・スティックが同じ意味になること）と `VirtualPadPipelineTests`（入力 → 処理 → 仮想 Xbox 360 の出力まで同じ結果になること）の全部に、自動で載る。 新機種のレポートの位置は、公開された別実装（Linux カーネルなど）の仕様から台本を組み立てる `ReportSpecConformanceTests` の形でも確かめ、食い違いは `PhaseRV38-Spec-Crosscheck.md` の形で記録する。
 
 ## 5. プロファイルの設定の項目を足す（Phase33）
 
