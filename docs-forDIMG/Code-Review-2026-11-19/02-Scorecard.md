@@ -352,3 +352,9 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 
 等級の変化なし。IPC の `loadprofile`・`loadtempprofile`（`IpcCommandProcessor`）を `IpcLoadProfileCommandTests`（5 件）へ。一時プロファイルは通常と同じ適用の入口を一時として通る、通常は接続中ならいま適用・空きスロットなら経路の事前設定だけ、一時で空きスロットなら適用しない、ファイルがなければ何もしない、を確かめる。負の確認（一時のフラグ）で失敗する。撤去: `PublishBindingsTests` の順序と IPC の文字列検査（掃除の順序は RV29、IPC は本 Phase のテストが守る）、`DisconnectClearsTempProfileTests` の記録判定の文字列検査（RV26 の記録のテストが守る）。
 - 見送り: 複製（`MainWindowFactory` の `File.Copy` → `AssignNewId`、`DupBox` の複製 → 保存通知）は、WPF の窓の生成が要る。
+
+
+## RV36 完了時点（2026-11-22）
+
+等級の変化なし。接続の組み立ての全順序（設定の読み込み → 電池 → 選択 → 仮想パッド → 設定の反映 → 配線 → レポートの購読 → モーション → 読み取りの開始）と、入力レポートの購読が機器とスロット番号を渡して `OnReport` を呼ぶことを `DeviceConnectionOrderTests` へ（計 7 件）。負の確認で失敗する。`ConnectorGuardTests` の文字列検査 2 件を撤去。
+- 残りの文字列走査（約 100 ファイル）の内訳: 撤去済みの機能・静的な窓口が戻らないことの回帰ガード、XAML・名前空間・ファイル名・行数・テーマキーの字句検査、画面（WPF の窓）の生成が要るもの。これらは、文字列走査がその検査の本来の手段のため、挙動のテストへは置き換えない。

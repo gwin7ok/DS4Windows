@@ -28,6 +28,8 @@ namespace DS4WindowsTests
             return device;
         }
 
+        private static RecordingProxy? _inputReport;
+
         private static (DeviceConnector Connector, List<string> Order) CreateConnector(RecordingConnectDevice device)
         {
             var order = device.Calls;
@@ -46,11 +48,18 @@ namespace DS4WindowsTests
             var setup = RecordingProxy.Create<IDeviceConnectionSetup>();
             RecordingProxy.Of(setup).OnCall = name => order.Add("setup." + name);
 
+            var xmlStoreFake = RecordingProxy.Create<IProfileXmlStore>();
+            RecordingProxy.Of(xmlStoreFake).OnCall = name => order.Add("xmlStore." + name);
+            var xmlStore = xmlStoreFake;
+            var inputReport = RecordingProxy.Create<IInputReportProcessor>();
+            _inputReport = RecordingProxy.Of(inputReport);
+            var mouseFactory = RecordingProxy.Create<ITouchpadMouseFactory>();
+            RecordingProxy.Of(mouseFactory).OnCall = name => order.Add("mouseFactory." + name);
             var hooks = new DeviceLifecycleHooks(RecordingProxy.Create<IDeviceDisconnectHandler>(), RecordingProxy.Create<IInputDeviceRegistry>());
             var connector = new DeviceConnector(TestRepositoryFactory.CreateProfileSettingsService(),
-                RecordingProxy.Create<IProfileXmlStore>(), RecordingProxy.Create<IAppSettingsService>(), hooks, selector, setup, modules,
-                RecordingProxy.Create<IHidHideService>(), new DeviceSlotState(), RecordingProxy.Create<IInputReportProcessor>(),
-                RecordingProxy.Create<ITouchpadMouseFactory>(), outputs);
+                xmlStore, RecordingProxy.Create<IAppSettingsService>(), hooks, selector, setup, modules,
+                RecordingProxy.Create<IHidHideService>(), new DeviceSlotState(), inputReport,
+                mouseFactory, outputs);
             return (connector, order);
         }
 
@@ -92,6 +101,40 @@ namespace DS4WindowsTests
 
             Assert.Contains("module.GetKnownExtraButtons", order);
             Assert.Contains("module.HookSettings", order);
+        }
+
+        [Fact]
+        public void TheConnection_KeepsTheWholeOrder_FromTheSettingsToTheReadingStart()
+        {
+            var device = NewDevice();
+            var (connector, order) = CreateConnector(device);
+
+            connector.PrepareConnected(1, device, Slot);
+
+            string[] expected =
+            {
+                "xmlStore.LoadControllerConfigsForDevice", "device.LoadStoreSettings", "device.CheckControllerNumDeviceSettings",
+                "outputs.NotifyPlugged", "mouseFactory.Create", "device.PrimeBatteryReading", "selector.ApplyOnConnect",
+                "outputs.PlugVirtualPad", "setup.ApplyProfileOptions", "setup.WireInitialHooks", "device.Report+=",
+                "outputs.PrepareMotion", "device.StartUpdate",
+            };
+            Assert.Equal(expected, order.Where(expected.Contains).ToArray());
+        }
+
+        [Fact]
+        public void TheReportSubscription_CallsTheProcessorOnReport_WithTheSlotIndex()
+        {
+            var device = NewDevice();
+            var (connector, _) = CreateConnector(device);
+            connector.PrepareConnected(1, device, Slot);
+            var args = System.EventArgs.Empty;
+
+            device.ReportHandlers.Single()(device, args);
+
+            object?[] call = _inputReport!.ArgsOf("OnReport").Single();
+            Assert.Same(device, call[0]);
+            Assert.Same(args, call[1]);
+            Assert.Equal(Slot, call[2]);
         }
 
         [Fact]

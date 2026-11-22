@@ -19,7 +19,10 @@ namespace DS4WindowsTests
         public List<string> Calls { get; set; } = new List<string>();
 
         public override event EventHandler<EventArgs>? Removal;
-        public override event ReportHandler<EventArgs> Report { add { Calls.Add("device.Report+="); } remove { } }
+        public override event ReportHandler<EventArgs> Report { add { Calls.Add("device.Report+="); ReportHandlers.Add(value); } remove { } }
+
+        /// <summary>購読された入力レポートのハンドラー（テストが発火させる）。</summary>
+        public List<ReportHandler<EventArgs>> ReportHandlers { get; private set; } = new List<ReportHandler<EventArgs>>();
 
         public void SetIdentity(string mac, InputDeviceType type)
         {
@@ -56,6 +59,7 @@ namespace DS4WindowsTests
         {
             var device = (RecordingConnectDevice)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(RecordingConnectDevice));
             device.Calls = new List<string>();
+            device.ReportHandlers = new List<ReportHandler<EventArgs>>();   // コンストラクターを通らないため、ここで初期化する
             return device;
         }
     }
