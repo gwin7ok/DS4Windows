@@ -24,6 +24,11 @@
 
 → 実機（DualSense）で、USB 接続・Bluetooth 接続・充電中・満充電の電池表示を確かめる。実機で食い違いが確かめられたら、読み方を直す（動作の変更なので、別途承認を得る）。
 
+## 対応（PhaseRV40。2026-11-22。ユーザーの承認で、食い違い 1〜3 を仕様側へ直した）
+- 1: 電池 ＝ `min(容量 × 10 + 5, 100)`。2: 状態は byte 53 の上位 4 ビット（1 充電中、2 満充電、0xA 以上は異常＝0％）。byte 54 の 0x08 は見ない。3: Bluetooth の出力は、[2]＝0x10、効果の構造体は [3] から（USB の添字 + 2）。初期レポート・空レポートも同じ。
+- **実機（DualSense）では未確認**。確かめる項目: Bluetooth で振動・ライトバー・トリガー効果・プレイヤー LED が効くこと、USB・Bluetooth の電池の表示（充電中・満充電を含む）。
+- 以下の「食い違い」は、対応前の記録。
+
 ## 追補（PhaseRV39。2026-11-22。2 つ目の出どころ SDL を加えた）
 出どころ: SDL の `SDL_hidapi_ps4.c`・`SDL_hidapi_ps5.c`・`SDL_hidapi_switch.c`、Microsoft の XINPUT_GAMEPAD の文書。テスト: `OutputReportSpecConformanceTests`、`ReportSpecConformanceTests`（Switch Pro の校正・XInput の表を追加）。
 

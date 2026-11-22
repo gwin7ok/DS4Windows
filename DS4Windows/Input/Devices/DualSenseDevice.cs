@@ -43,7 +43,6 @@ namespace DS4Windows.Input.Devices
         protected new const int BT_OUTPUT_REPORT_LENGTH = 78;
         private new const int BT_INPUT_REPORT_LENGTH = 78;
         protected const int TOUCHPAD_DATA_OFFSET = 33;
-        private new const int BATTERY_MAX = 8;
 
         public new const byte SERIAL_FEATURE_ID = 9;
         public override byte SerialReportID { get => SERIAL_FEATURE_ID; }
@@ -51,6 +50,7 @@ namespace DS4Windows.Input.Devices
         private const byte OUTPUT_REPORT_ID_USB = 0x02;
         private const byte OUTPUT_REPORT_ID_BT = 0x31;
         private const byte OUTPUT_REPORT_ID_DATA = 0x02;
+        private const byte OUTPUT_REPORT_TAG_DATA = 0x10;   // Bluetooth の効果の構造体の直前の固定値
         private new const byte USB_OUTPUT_CHANGE_LENGTH = 48;
         private const int OUTPUT_MIN_COUNT_BT = 20;
         private const byte LED_PLAYER_BAR_TOGGLE = 0x10;
@@ -244,22 +244,24 @@ namespace DS4Windows.Input.Devices
 
                 if ((this.featureSet & VidPidFeatureSet.NoBatteryReading) == 0)
                 {
-                    byte tempByte = inputReport[54 + reportOffset];
-                    bool tempCharging = (tempByte & 0x08) != 0;
-                    UpdateCharging(tempCharging);
+                    // byte 53 の上位 4 ビット＝状態（0 放電、1 充電中、2 満充電、0xA・0xB 異常）、下位 4 ビット＝容量（0〜10。10％刻み）。
+                    // byte 54 の 0x08 は USB 接続の印で、充電とは別（Linux カーネルと SDL の仕様）
+                    byte tempByte = inputReport[53 + reportOffset];
+                    int chargeState = tempByte >> 4;
+                    UpdateCharging(chargeState == 0x1);
 
-                    tempByte = inputReport[53 + reportOffset];
-                    bool tempFull = (tempByte & 0x20) != 0; // Check for Full status
                     int tempBattery;
-                    if (tempFull)
+                    if (chargeState == 0x2)
                     {
-                        // Full Charge flag found
                         tempBattery = 100;
+                    }
+                    else if (chargeState >= 0xA)
+                    {
+                        tempBattery = 0;
                     }
                     else
                     {
-                        // Partial charge
-                        tempBattery = BatteryScale.ToPercent(tempByte & 0x0F, BATTERY_MAX);
+                        tempBattery = Math.Min((tempByte & 0x0F) * 10 + 5, 100);
                     }
 
                     UpdateBattery(tempBattery);

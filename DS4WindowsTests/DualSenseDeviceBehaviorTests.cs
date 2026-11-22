@@ -23,7 +23,7 @@ namespace DS4WindowsTests
             this.output = output;
         }
 
-        // USB の入力レポート: [0]=ID、[1]=LX、[2]=LY、[5]=L2、[8]=下位ボタン、[28..31]=タイムスタンプ、[53]=電池、[54]=充電
+        // USB の入力レポート: [0]=ID、[1]=LX、[2]=LY、[5]=L2、[8]=下位ボタン、[28..31]=タイムスタンプ、[53]=電池（上位 4 ビット＝状態、下位 4 ビット＝容量）、[54]=接続の印
         private static byte[] Frame(byte lx, byte ly, byte l2, byte buttons, uint stamp, byte battery, byte charging)
         {
             var f = new byte[64];
@@ -82,8 +82,8 @@ namespace DS4WindowsTests
         {
             var result = Run(VidPidFeatureSet.NoGyroCalib,
                 Frame(10, 20, 0, 0x08, 3000, 0x05, 0x00),
-                Frame(200, 128, 255, 0x28, 6000, 0x08, 0x08),
-                Frame(128, 128, 0, 0x08, 9000, 0x0A, 0x08));
+                Frame(200, 128, 255, 0x28, 6000, 0x28, 0x00),
+                Frame(128, 128, 0, 0x08, 9000, 0x1A, 0x00));
 
             output.WriteLine(result.Reports);
             output.WriteLine(result.Writes);
@@ -92,9 +92,27 @@ namespace DS4WindowsTests
             Assert.Equal(Expected, (result.Reports + "--\n" + result.Writes + $"Battery={result.Battery}\n").Replace("\r\n", "\n"));
         }
 
+        // 電池の読み方は、Linux カーネルと SDL の仕様に従う: byte 53 の上位 4 ビット＝状態（0 放電、1 充電中、2 満充電、0xA 以上は異常）、下位 4 ビット＝容量（10％刻み。容量 × 10 + 5、上限 100）。
+        // byte 54 の 0x08 は USB 接続の印で、電池の値には影響しない。
+        [Theory]
+        [InlineData(0x00, 5)]
+        [InlineData(0x05, 55)]
+        [InlineData(0x09, 95)]
+        [InlineData(0x0A, 100)]
+        [InlineData(0x15, 55)]
+        [InlineData(0x20, 100)]
+        [InlineData(0xA5, 0)]
+        [InlineData(0xB5, 0)]
+        public void TheBattery_FollowsTheSpecScaleAndChargeState(int byte53, int percent)
+        {
+            var result = Run(VidPidFeatureSet.NoGyroCalib, Frame(128, 128, 0, 0x08, 3000, (byte)byte53, 0x08));
+
+            Assert.Equal(percent, result.Battery);
+        }
+
         // 旧実装（DualSenseDevice）が出した記録そのもの。移行後の実装は、これと同じ記録を出すこと
         private const string Expected =
-            "X=False Sq=False LX=10 LY=20 L2=0 Bat=62 Pkt=1 Us=1000 Ts=187 El=0.001000\n" +
+            "X=False Sq=False LX=10 LY=20 L2=0 Bat=55 Pkt=1 Us=1000 Ts=187 El=0.001000\n" +
             "X=True Sq=False LX=200 LY=128 L2=255 Bat=100 Pkt=2 Us=2000 Ts=375 El=0.001000\n" +
             "X=False Sq=False LX=128 LY=128 L2=0 Bat=100 Pkt=3 Us=3000 Ts=562 El=0.001000\n" +
             "--\n" +
