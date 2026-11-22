@@ -27,6 +27,13 @@ namespace DS4WindowsTests
             deviceType = type;
         }
 
+        /// <summary>入力レポートの処理（<c>InputReportProcessor.OnReport</c>）が読む、現在・前回の状態を用意する。</summary>
+        public void InitStates()
+        {
+            cState = new ControllerState();
+            pState = new ControllerState();
+        }
+
         public void RaiseRemoval() => Removal?.Invoke(this, EventArgs.Empty);
         public void RaiseSync() => RaiseSyncChange();
         public void RaiseSerial()
