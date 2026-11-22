@@ -308,3 +308,10 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 - 実施: 出力ピッカー（`BindingWindow`）を、呼び出し側が使う部分だけの `IBindingDialog`（`DefaultPicked`・`ShowModal`）で抽象化。`IEditorWindowFactory.CreateBindingDialog` を足し、`AssignmentEditorSession.PickOutput` は具象の窓と `Application.Current` を参照しなくなった（親をメイン画面にする処理は窓の側へ）。`AssignmentEditorPickOutputTests`（11 件）が、渡す設定（ボタン・Extras・モード・スロット）、Extras の取り込み（保存まで元は変わらない）、Default／Unbound で種別の一覧を切り替える条件、× で閉じたとき切り替えないことを、偽の窓で確かめる。負の確認（Extras の取り込み、`allowDefault`、モード、Default の切り替え条件）で失敗することを確認。
 - 撤去: 出力ピッカーの呼び出しを文字列で見る検査 4 件（`ControlDefaultAndExtrasTests`、`PickerCloseKeepsTypeTests`、`ProfileEditorTargetDeviceGuardTests` の 1 行、`DefaultUnboundTypeTests` の 3 行）。
 - 実機確認は `Device-Check-Checklist.md` の RV28。
+
+
+## RV29 完了時点（2026-11-22）
+
+等級の変化なし（冗長処理 +0.1 点）。ソースの文字列を読むテストは 105→104 ファイル。
+- 実施: プロファイル適用後の掃除の順序（ClearAllEntries → ClearForDevice → ClearDeviceState → 事前確保 → 束縛の差し替え）を、`ProfileApplicationService` へ偽のアクション管理・登録簿を渡した呼び出しの記録で確かめる `ApplyProfileCleanupOrderTests`（3 件。読み込み失敗時は何もしない、適用した名前の記録を含む）へ。旧 `ApplyProfileCleanupOrderGuardTests` を撤去（旧記述の「静的な ActionManager のため、ソースで固定」は、注入済みで当てはまらなくなっていた）。負の確認（`ClearForDevice` と `ClearDeviceState` の入れ替え）で失敗することを確認。
+- 見送り（理由）: 接続の順序（`DeviceConnector.PrepareConnected` の電池の取り込み → 適用 → StartUpdate）は、未初期化の偽の機器では `LoadStoreSettings` などが動かず、機器の基底の仮想化が要る。切断の購読順（`DeviceLifecycleHooks`）も具象のため同様。
