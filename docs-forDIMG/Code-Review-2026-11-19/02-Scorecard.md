@@ -336,3 +336,8 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 - 実施: 接続の組み立てで「プロファイルの選択 → 仮想パッドの接続」「設定の反映 → イベントの配線」と、機種の部品へ `GetKnownExtraButtons`・`HookSettings` を頼むことを `DeviceConnectionOrderTests` へ（計 5 件）。保存済みのプロセス優先度が `ProcessPriorityOptions.Classes` の添字で適用されることを `ServiceLifecycleOrderTests` へ（AboveNormal で確かめ、終わりに元へ戻す）。負の確認で失敗することを確認。
 - 撤去: `ConnectionGuardTests` の順序の文字列検査 2 件、`LifecycleGuardTests` の `ServiceLifecycle` の文字列参照 2 行。
 - 残す: `ConnectionGuardTests` の `DeviceRegistryHooks`・`DeviceConnectionSetup` の文字列検査（別の部品。実機の登録簿の型が要る）。
+
+
+## RV33 完了時点（2026-11-22）
+
+等級の変化なし。合成入力の確定（`SyntheticInputCommitter.Commit`）の順序を `SyntheticInputCommitOrderTests`（5 件）へ。クリックは 1 回だけ送り、Sync が最後、Sync の時点でデバイスの前回値の保存とロックの解放が済んでいること、押しっぱなしでは再送せず、数え直さなければ離しになること、入力がなければ Sync だけを送ることを確かめる。負の確認（Sync を保存の前へ移す）で失敗する。最初の版の負の確認は検出できなかったため、Sync 時点の状態を記録するテストを足して、検出できるようにした。`MapCustomGuardTests` の順序の文字列検査を撤去。
