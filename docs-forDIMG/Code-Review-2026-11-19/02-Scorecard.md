@@ -319,6 +319,12 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 
 ## RV30 完了時点（2026-11-22）
 
-等級の変化なし（冗長処理 +0.1 点程度）。ソースの文字列を読むテストは 104→103 ファイル（`DisconnectGuardTests` はまだ文字列を読む検査が残る場合は数えられる）。
+等級の変化なし（冗長処理 +0.1 点程度）。ソースの文字列を読むテストは 104→103 ファイル。
 - 実施: RV29 で「機器の基底の仮想化が要る」とした見送りは誤りだった（`LoadStoreSettings`・`PrimeBatteryReading`・`StartUpdate` などはすでに仮想）。呼び出しを記録する偽の機器（`RecordingConnectDevice`）で、`DeviceConnector.PrepareConnected` の順序（設定の読み込み → 電池の取り込み → プロファイルの適用 → 読み取りの開始が最後）と、`DeviceLifecycleHooks` のイベントの受け取り順（切断・同期・シリアル変更は、自分の処理 → 登録簿）を `DeviceConnectionOrderTests`（3 件）で確かめる。負の確認（電池の取り込みの位置、購読順）で失敗することを確認。
 - 撤去: `BatteryPrimingTests` と `DisconnectGuardTests` の、ソースの順序を見る検査 各 1 件。
+
+
+## RV31 完了時点（2026-11-22）
+
+等級の変化なし。開始・停止の安全弁の順序を、`ServiceLifecycleOrderTests`（4 件）へ。`ServiceLifecycle` の依存はすべてインターフェースのため、偽（呼び出しの記録）と `RecordingConnectDevice` で、開始（仮想出力 → HidHide → ネットワーク出力 → 恒久スロット → 列挙 → 接続 → UDP → 通知）、停止（事前通知 → 機器の停止・取り外し → 登録簿の停止 → ネットワーク出力の停止 → 仮想出力の停止 → 通知）、ドライバーが開始できないとき・未実行で止めたときの動きを確かめる。負の確認（停止の 2 呼び出しの入れ替え、HidHide の位置）で失敗することを確認。`LifecycleGuardTests` の `Start`・`Stop` の文字列検査 2 件を撤去。
+- 訂正: RV30 の節の「`DisconnectGuardTests` は数えられる」の注記は不正確だった（同ファイルは文字列を読まない）ため削除した。
