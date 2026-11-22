@@ -32,34 +32,11 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void TheCommitter_IsRegistered_AndKeepsTheOriginalOrder_AndHasNoStaticEntryPoints()
+        public void TheCommitter_IsRegistered_AndHasNoStaticEntryPoints()
         {
             Assert.IsType<SyntheticInputCommitter>(TestHost.GetService<ISyntheticInputCommitter>());
             Assert.Same(TestHost.GetService<ISyntheticInputCommitter>(), TestHost.GetService<ISyntheticInputCommitter>());
-
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Conditioning/SyntheticInputCommitter.cs");
-            if (text == null) return;
-
-            // 集計 → 出力 → 全体の保存 → ロックの解放 → デバイスの保存 → Sync（ガード: ロックの範囲と、Sync が最後）
-            string[] order =
-            {
-                "_syntheticInput.SyncStateLock.EnterWriteLock();",
-                "_syntheticInput.GlobalState.currentClicks.leftCount +=",
-                "_virtualKbm.PerformMouseButtonEvent(",
-                "_virtualKbm.PerformMouseWheelEvent(",
-                "_syntheticInput.GlobalState.SaveToPrevious(false);",
-                "_syntheticInput.SyncStateLock.ExitWriteLock();",
-                "state.SaveToPrevious(true);",
-                "_virtualKbm.Sync();",
-            };
-            int last = -1;
-            foreach (string step in order)
-            {
-                int index = text.IndexOf(step);
-                Assert.True(index > last, $"合成入力の確定の順序が変わっている（'{step}'）");
-                last = index;
-            }
-
+            // 確定の順序は SyntheticInputCommitOrderTests が確かめる
         }
 
         [Theory]
