@@ -223,23 +223,5 @@ namespace DS4WindowsTests
             Assert.NotNull(TestHost.GetService<IProfileApplicationService>());
             Assert.NotNull(TestHost.GetService<Func<IActionBindingBuilder>>());
         }
-
-        [Fact]
-        public void TheSource_PublishesAfterTheCleanup_AndThePipePathPublishesAfterALoadSuccess()
-        {
-            string service = SourceFileLocator.Find("DS4Windows/Processing/Services/Slots/ProfileApplicationService.cs");
-            string window = SourceFileLocator.Find("DS4Windows/Processing/Services/Connection/IpcCommandProcessor.cs");   // IPC コマンド（loadtempprofile）の実行は IpcCommandProcessor へ移した
-            if (service == null || window == null) return;
-
-            string text = File.ReadAllText(service);
-            int complete = text.IndexOf("private void CompleteProfileApplication(", StringComparison.Ordinal);
-            int prealloc = text.IndexOf("PreallocateForProfileApply(device)", complete, StringComparison.Ordinal);
-            int publish = text.IndexOf("PublishBindings(device);", complete, StringComparison.Ordinal);
-            Assert.True(complete > 0 && prealloc > complete && publish > prealloc, "束縛の差し替えは、掃除（PreallocateForProfileApply）の後に行う");
-
-            string main = File.ReadAllText(window);
-            // 一時プロファイルも通常の適用経路（ApplyProfile。束縛の差し替えを含む）を通る
-            Assert.Matches(@"_profileApplication\.ApplyProfile\(tdevice, strData\[2\], true, true,", main);
-        }
     }
 }

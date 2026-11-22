@@ -346,3 +346,9 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 ## RV34 完了時点（2026-11-22）
 
 等級の変化なし（冗長処理 +0.1 点）。ソースの文字列を読むテストは 103→102 ファイル。入力レポート 1 件の処理（`InputReportProcessor.OnReport`）の順序と条件を `InputReportOrderTests`（5 件）へ。遅延の監視 → タッチ切り替え → カーブ・デッドゾーン → マッピング → 仮想パッドへの送出 → 合成入力の確定 → ライトバーの順、カスタムの割り当てがなければマッピングを飛ばす、マクロ記録中は飛ばす、DInput 専用のスロットは仮想パッドへ送らない、スロットなし（-1）は無視、を確かめる。負の確認（確定の位置）で失敗する。`InputReportGuardTests` の順序の文字列検査を撤去。
+
+
+## RV35 完了時点（2026-11-22）
+
+等級の変化なし。IPC の `loadprofile`・`loadtempprofile`（`IpcCommandProcessor`）を `IpcLoadProfileCommandTests`（5 件）へ。一時プロファイルは通常と同じ適用の入口を一時として通る、通常は接続中ならいま適用・空きスロットなら経路の事前設定だけ、一時で空きスロットなら適用しない、ファイルがなければ何もしない、を確かめる。負の確認（一時のフラグ）で失敗する。撤去: `PublishBindingsTests` の順序と IPC の文字列検査（掃除の順序は RV29、IPC は本 Phase のテストが守る）、`DisconnectClearsTempProfileTests` の記録判定の文字列検査（RV26 の記録のテストが守る）。
+- 見送り: 複製（`MainWindowFactory` の `File.Copy` → `AssignNewId`、`DupBox` の複製 → 保存通知）は、WPF の窓の生成が要る。
