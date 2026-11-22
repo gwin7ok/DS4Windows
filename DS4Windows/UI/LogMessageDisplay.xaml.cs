@@ -43,6 +43,9 @@ namespace DS4Windows.UI
             MarkdownEngine engine = new MarkdownEngine();
             FlowDocument tmpDoc = engine.Transform(message);
             tmpDoc.TextAlignment = TextAlignment.Center;
+            // Markdown 変換後の文書は、既定の書体（明朝系）を持つ。ほかの画面と同じ書体・大きさにそろえる
+            tmpDoc.FontFamily = richMessageBox.FontFamily;
+            tmpDoc.FontSize = richMessageBox.FontSize;
 
             richMessageBox.CommandBindings.Add(new CommandBinding(
                 NavigationCommands.GoToPage,

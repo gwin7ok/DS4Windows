@@ -177,7 +177,7 @@
                             <StackPanel Margin="{StaticResource spaceMargin}">
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,8">
                                     <Label Content="{lex:Loc SpecialActionEdit.HoldFor}" ContentStringFormat="{}{0} "></Label>
-                                    <xctk:DecimalUpDown Value="{Binding HoldInterval,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5"/>
+                                    <xctk:DecimalUpDown Value="{Binding Delay,ValidatesOnNotifyDataErrors=True}" Width="60" Minimum="0" Maximum="60" FormatString= "F2" Increment="0.5"/>
                                     <Label Content="{lex:Loc AssignmentEditor_Secs}" />
                                 </StackPanel>
                                 <CheckBox Content="{lex:Loc SpecialActionEdit.ViaNotification}" IsChecked="{Binding Notification,ValidatesOnNotifyDataErrors=True}" Margin="{StaticResource spaceMargin}" />

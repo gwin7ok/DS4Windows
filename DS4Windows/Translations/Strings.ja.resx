@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Accel" xml:space="preserve">
-    <value>加速度</value>
-  </data>
   <data name="Action" xml:space="preserve">
     <value>アクション</value>
   </data>
@@ -289,9 +286,6 @@
   </data>
   <data name="Full" xml:space="preserve">
     <value>満タン</value>
-  </data>
-  <data name="Gyro" xml:space="preserve">
-    <value>ジャイロ</value>
   </data>
   <data name="HideUnchecked" xml:space="preserve">
     <value>未選択を隠す</value>
@@ -1355,26 +1349,26 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
 - 有効: DS4Windows の一般的な振動の調整と、DualSense 本体の調整の両方が働きます</value>
   </data>
   <data name="DualSRumbleModes_Tip" xml:space="preserve">
-    <value>正確モード（推奨）:
+    <value>Accurate モード（推奨）:
 - DualShock 4／Xbox 360 コントローラーの振動の感触に近づけます
 - ゲームが意図した振動の効果を、より正確に再現します
 - 振動に深みがあります。同じ強度でも、ゲーム内の振動の最小と最大の差が大きく、ごく弱い振動から、設定した強度の最大までの幅があります
 
-レガシーモード:
+Legacy モード:
 - 全体に強めですが、深みがありません
 - より「鋭い」感触です
 - ゲーム内の最小・最大の振動は、設定した強度よりわずかに弱い・わずかに強い程度になります
 
-無効:
+Disabled:
 - 振動を完全に無効にします</value>
   </data>
   <data name="DualSRumblePowerLevel_Tip" xml:space="preserve">
     <value>DualSense 本体の振動の強度を調整します。
 
-- 正確モードでは、振動の［最小 // 最大］は［1% /// 選んだ強度］になります
+- Accurate モードでは、振動の［最小 // 最大］は［1% /// 選んだ強度］になります
     - 例（62%）: ［最小 = 1% /// 最大 = 62%］
 
-- レガシーモードでは、振動の［最小 /// 最大］は、おおよそ［強度 - 12% /// 強度 + 12%］になります
+- Legacy モードでは、振動の［最小 /// 最大］は、おおよそ［強度 - 12% /// 強度 + 12%］になります
     - 例（62%）: ［最小 = 50% /// 最大 = 74%］</value>
   </data>
   <data name="Accept" xml:space="preserve">
@@ -1466,12 +1460,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="VerticalScale" xml:space="preserve">
     <value>垂直スケール</value>
-  </data>
-  <data name="AntiSnapback" xml:space="preserve">
-    <value>アンチスナップバック</value>
-  </data>
-  <data name="AntiSnapbackTiming" xml:space="preserve">
-    <value>アンチスナップバックのタイミング</value>
   </data>
   <data name="ViGEm117MinNeeded" xml:space="preserve">
     <value>ViGEmBus 1.17.333.0 以降でのみ動作します</value>
