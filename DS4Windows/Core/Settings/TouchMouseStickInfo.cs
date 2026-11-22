@@ -54,8 +54,6 @@ namespace DS4Windows.Core.Settings
         public const int DEFAULT_DEADZONE = 0;
         public const int MAX_ZONE_DEFAULT = 8;
         public const double ANTI_DEADZONE_DEFAULT = 0.40;
-        public const bool TRACKBALL_MODE_DEFAULT = true;
-        public const double TRACKBALL_FRICTION_DEFAULT = 10.0;
         public const StickOutCurve.Curve OUTPUT_CURVE_DEFAULT = StickOutCurve.Curve.Linear;
         public const double ANG_DEGREE_DEFAULT = 0.0;
         public const double ANG_RAD_DEFAULT = ANG_DEGREE_DEFAULT * Math.PI / 180.0;
@@ -77,8 +75,6 @@ namespace DS4Windows.Core.Settings
         public double beta = DEFAULT_BETA;
         public OutputStick outputStick = DEFAULT_OUTPUT_STICK;
         public OutputStickAxes outputStickDir = DEFAULT_OUTPUT_STICK_AXES;
-        public bool trackballMode = TRACKBALL_MODE_DEFAULT;
-        public double trackballFriction = TRACKBALL_FRICTION_DEFAULT;
         public StickOutCurve.Curve outputCurve;
         public double rotationRad = ANG_RAD_DEFAULT;
 
@@ -129,8 +125,6 @@ namespace DS4Windows.Core.Settings
             maxOutputEnabled = DEFAULT_MAX_OUTPUT_ENABLED; maxOutput = DEFAULT_MAX_OUTPUT;
             outputStick = DEFAULT_OUTPUT_STICK;
             outputStickDir = DEFAULT_OUTPUT_STICK_AXES;
-            trackballMode = TRACKBALL_MODE_DEFAULT;
-            trackballFriction = TRACKBALL_FRICTION_DEFAULT;
             outputCurve = OUTPUT_CURVE_DEFAULT;
             rotationRad = ANG_RAD_DEFAULT;
 

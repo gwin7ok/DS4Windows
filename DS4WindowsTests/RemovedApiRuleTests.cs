@@ -87,6 +87,9 @@ namespace DS4WindowsTests
             ("MainWindow", new[] { "MainTabCon_SelectionChanged" }),
             ("AppHost", new[] { "_disposed" }),
             ("AppLogger", new[] { "NotificationServiceInstance" }),
+            // 参照 0 の実行時状態の残骸（PhaseRV6d。タップ判定は TapClickDetector、プロファイル切替の復帰は ProfileSwitchAction が持つ）
+            ("SpecialAction", new[] { "tappedOnce", "firstTouch", "secondtouchbegin", "pastTime", "firstTap", "TimeofEnd", "prevProfileName", "prevProfileWasTemporary" }),
+            ("TouchMouseStickInfo", new[] { "trackballMode", "trackballFriction", "TRACKBALL_MODE_DEFAULT", "TRACKBALL_FRICTION_DEFAULT" }),
             // 常に None を返していた孤立 API（出力の種類の正本は、プロファイル設定の ContType）
             ("IOutputSlotService", new[] { "GetOutputDeviceType", "SetOutputDeviceType" }),
             ("OutputSlotService", new[] { "GetOutputDeviceType", "SetOutputDeviceType" }),
