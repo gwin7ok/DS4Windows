@@ -251,6 +251,67 @@ namespace DS4WindowsTests
             }
         }
 
+        // ---- Switch Pro の校正（SDL_hidapi_switch.c）: 12 ビット 2 つを 3 バイトへ。左は (最大側、中心、最小側)、右は (中心、最小側、最大側) の順 ----
+        private static byte[] SpiResponse(params (int X, int Y)[] points)
+        {
+            var response = new byte[362];
+            for (int n = 0; n < points.Length; n++)
+            {
+                int o = SwitchProCalibrationDecoder.SpiResponseOffset + n * 3;
+                response[o] = (byte)points[n].X;
+                response[o + 1] = (byte)(((points[n].X >> 8) & 0x0F) | ((points[n].Y & 0x0F) << 4));
+                response[o + 2] = (byte)(points[n].Y >> 4);
+            }
+
+            return response;
+        }
+
+        [Fact]
+        public void SwitchPro_TheLeftStickCalibration_IsReadInTheSdlOrder_MaxCenterMin()
+        {
+            var calib = new ushort[6];
+            SwitchProCalibrationDecoder.ReadLeftStick(SpiResponse((2900, 3000), (2048, 2049), (1100, 1200)), calib);
+
+            Assert.Equal(new ushort[] { 2900, 3000, 2048, 2049, 1100, 1200 }, calib);   // [0..1] 最大側、[2..3] 中心、[4..5] 最小側
+        }
+
+        [Fact]
+        public void SwitchPro_TheRightStickCalibration_IsReadInTheSdlOrder_CenterMinMax()
+        {
+            var calib = new ushort[6];
+            SwitchProCalibrationDecoder.ReadRightStick(SpiResponse((2048, 2049), (1100, 1200), (2900, 3000)), calib);
+
+            Assert.Equal(new ushort[] { 2900, 3000, 2048, 2049, 1100, 1200 }, calib);
+        }
+
+        [Fact]
+        public void SwitchPro_TheUserCalibrationMark_IsB2A1()
+        {
+            var marked = new byte[362];
+            marked[SwitchProCalibrationDecoder.SpiResponseOffset] = 0xB2;
+            marked[SwitchProCalibrationDecoder.SpiResponseOffset + 1] = 0xA1;
+
+            Assert.True(SwitchProCalibrationDecoder.HasUserCalibrationMark(marked));
+            Assert.False(SwitchProCalibrationDecoder.HasUserCalibrationMark(new byte[362]));
+        }
+
+        // ---- XInput（Microsoft の XINPUT_GAMEPAD のドキュメント）----
+        [Fact]
+        public void XInput_TheButtonMasks_AreTheDocumentedValues()
+        {
+            Assert.Equal(new ushort[] { 0x0001, 0x0002, 0x0004, 0x0008, 0x0010, 0x0020, 0x0040, 0x0080, 0x0100, 0x0200, 0x1000, 0x2000, 0x4000, 0x8000 },
+                new[]
+                {
+                    DS4Windows.Input.Xbox.XInputReportLayout.DpadUp, DS4Windows.Input.Xbox.XInputReportLayout.DpadDown,
+                    DS4Windows.Input.Xbox.XInputReportLayout.DpadLeft, DS4Windows.Input.Xbox.XInputReportLayout.DpadRight,
+                    DS4Windows.Input.Xbox.XInputReportLayout.Start, DS4Windows.Input.Xbox.XInputReportLayout.Back,
+                    DS4Windows.Input.Xbox.XInputReportLayout.LeftThumb, DS4Windows.Input.Xbox.XInputReportLayout.RightThumb,
+                    DS4Windows.Input.Xbox.XInputReportLayout.LeftShoulder, DS4Windows.Input.Xbox.XInputReportLayout.RightShoulder,
+                    DS4Windows.Input.Xbox.XInputReportLayout.A, DS4Windows.Input.Xbox.XInputReportLayout.B,
+                    DS4Windows.Input.Xbox.XInputReportLayout.X, DS4Windows.Input.Xbox.XInputReportLayout.Y,
+                });
+        }
+
         // ---- 共通の補助 ----
         private static List<ControllerState> RunAndCollect(InputDeviceCore device, FakeHidTransport transport, params byte[][] frames)
         {
