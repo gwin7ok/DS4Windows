@@ -1668,4 +1668,10 @@ Disabled:
   <data name="InverseMotors" xml:space="preserve">
     <value>強弱振動モーターを入れ替える</value>
   </data>
+  <data name="ProfileImportOverwrite" xml:space="preserve">
+    <value>「{0}」という名前のプロファイルはすでにあります。上書きしますか？</value>
+  </data>
+  <data name="ProfileImportOverwriteTitle" xml:space="preserve">
+    <value>プロファイルの取り込み</value>
+  </data>
 </root>

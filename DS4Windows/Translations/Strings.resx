@@ -2629,4 +2629,10 @@ Scan Code: Keys are interpreted differently. May be needed for certain games
   <data name="TriggerSettingsPanel_L2AndR2" xml:space="preserve">
     <value>L2 &amp; R2</value>
   </data>
+  <data name="ProfileImportOverwrite" xml:space="preserve">
+    <value>A profile named "{0}" already exists. Overwrite it?</value>
+  </data>
+  <data name="ProfileImportOverwriteTitle" xml:space="preserve">
+    <value>Import Profile</value>
+  </data>
 </root>
