@@ -44,6 +44,28 @@
 **食い違い 1・2 の補強**: SDL も、DualSense の電池は `min(容量 × 10 + 5, 100)`、充電は byte 53 の上位 4 ビット（byte 54 の 0x08 は USB 接続の意味）で、カーネルと一致。
 **メモ**: SDL の DS4 の電池は `容量 × 10 + 5`（11＝満充電）で、カーネルとこのリポジトリの 8／11 の換算とは異なる（出どころの間で割れている。直さない）。
 
+## 追補（PhaseRV41。2026-11-22。出力レポートの中身・IMU・校正・XInput）
+出どころ: カーネル `hid-playstation.c`・`hid-nintendo.c`、SDL `SDL_hidapi_ps4.c`・`_ps5.c`・`_switch.c`、Microsoft の XINPUT_GAMEPAD・XINPUT_BATTERY_INFORMATION（`xinput.h` の定数）。テスト: `OutputReportLayoutSpecConformanceTests`、`ImuCalibrationSpecConformanceTests`、`XInputValueRangeSpecConformanceTests`（26 件。すべて仕様どおりで合格。**新しい食い違いはなし**）。
+
+| 項目 | 結果 |
+|---|---|
+| DualSense 出力の構造体（motor_right 2・left 3・mute LED 8・右トリガー 10〜・左トリガー 21〜・valid_flag2 38・プレイヤー LED 43・色 44〜46）と USB／Bluetooth の同一性 | 一致 |
+| DualSense の valid_flag0（0x0F）・valid_flag1（0x01・0x04・0x10）・valid_flag2（0x02・0x04）、プレイヤー LED の 0〜3 番（0x04・0x0A・0x15・0x1B）、ミュート LED（0／1／2） | 一致 |
+| DS4 の USB 0x05（flag 1、モーター 4・5、色 6〜8、点滅 9・10）と BT 0x11（hw_control 0xC0＋間隔、flag 3、モーター 6・7、色 8〜10、点滅 11・12） | 一致 |
+| DS4・DualSense のジャイロ・加速度の校正（フィーチャーレポートの位置、USB と BT の + − の並び、バイアス、1/16 度毎秒、8192 LSB／G、加速度は幅の半分を中心にする） | 一致（校正点で ±速度・±1 G になることをテスト） |
+| Switch Pro の IMU 校正の配置（カーネルの X・Y・Z をこのアプリの DS4 向きの Y・X・Z へ読み替え）と係数（加速度 4÷幅、ジャイロ 936÷幅）、0x30 のサンプルの位置・単位（4096 LSB／G、約 14.25 LSB／度毎秒） | 一致（デバイスの読み取り位置はコードを読んで確認） |
+| XInput のスティック（符号付き 16 ビット→0〜255、Y 反転）、トリガー（0〜255）、電池の種類（1・2・3・0xFF）・残量（0〜3） | 一致 |
+
+**食い違いではないが、出どころと違う点（変更しない）**
+- DualSense の lightbar_setup（0x02）と led_brightness（0x02）を毎回書く。カーネルは初期化のときだけ。実機で動いている値なので触らない。
+- DualSense のプレイヤー LED の 5 番目以降（0x11、0x0E、0x1F）の並びは、SDL（0x1F、0x11、0x0E）と違う。このアプリ独自の割り当て。
+- DualSense の旧ファームウェア（2.21 未満）の振動方式の切替は 2.21（カーネル）。SDL は 2.24 と書いている。
+- Switch Pro の工場校正のスティックは、範囲を内側へ 0.96／1.04 に詰める（カーネルは詰めない）。
+- DS4 のジャイロ校正の分母は `plus − minus`（SDL・カーネルの DualSense は `|plus − bias| + |minus − bias|`。通常は同じ値）。SDL の校正の妥当性検査（バイアス > 1024 など）はない。
+- DS4 の Bluetooth の最小レポート（ID 0x01、10 バイト）: このアプリは 0x11 だけを受ける（0x01 は捨てる。`OnlyInputData0x01` の機種だけ 0x01 を使う）。カーネルは 0x01 を最小の入力として読むが、センサー・タッチ・電池は読まない。SDL は 0x11 へ切り替える信号を送る。
+- XInput のデッドゾーン（7849・8689・30）は、文書に数値がなく、このアプリも使わない（確認できず、対象外）。
+- トリガー効果のモード値（0x01・0x02・0x21 など）は、カーネルにも SDL にも実装がなく、仕様として確認できなかった。
+
 ## 見ていないもの
 - Switch Pro の校正後の値の計算、IMU（ジャイロ・加速度。オフセットはコードの読みだけ）。
 - DS4 の Bluetooth の最小レポート（ID 0x01、10 バイト）。このリポジトリは 0x11 を前提にしている。
