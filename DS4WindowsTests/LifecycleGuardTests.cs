@@ -35,72 +35,10 @@ namespace DS4WindowsTests
             }
         }
 
-        [Fact]
-        public void Start_KeepsTheSafetyOrder()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
-            if (text == null) return;
-
-            int start = text.IndexOf("public bool Start(");
-            int stop = text.IndexOf("public bool Stop(");
-            Assert.True(start > 0 && stop > start);
-
-            AssertOrder(text, start, stop, new[]
-            {
-                "InServiceTask = true;",
-                "_outputs.StartVirtualOutputs(showlog)",
-                "_deviceRegistry.IsExclusiveMode = _appSettings.UseExclusiveMode;",
-                "_outputs.UpdateHidHide();",
-                "_outputs.StartNetworkOutputs();",
-                "LoopControllers = true;",
-                "_virtualPad.AssignInitialDevices();",
-                "_deviceRegistry.FindControllers();",
-                "_deviceConnector.BeginPrepare(device, showlog: true);",
-                "_deviceConnector.PrepareConnected(numControllers, device, index: i);",
-                "Running = true;",
-                "_outputs.StartUdpListening();",
-                "InServiceTask = false;",
-                "_appSettings.RunHotPlug = true;",
-                "ServiceStarted?.Invoke(this, EventArgs.Empty);",
-                "RunningChanged?.Invoke(this, EventArgs.Empty);",
-                "process.PriorityClass = ProcessPriorityOptions.Classes[_appSettings.ProcessPriority];",
-            }, "Start");
-        }
-
-        [Fact]
-        public void Stop_KeepsTheSafetyOrder_IncludingTheDriverDestructionOrder()
-        {
-            string text = SourceText.ReadCode("DS4Windows/Processing/Services/Connection/ServiceLifecycle.cs");
-            if (text == null) return;
-
-            int stop = text.IndexOf("public bool Stop(");
-            int hot = text.IndexOf("public bool HotPlug(");
-            Assert.True(stop > 0 && hot > stop);
-
-            AssertOrder(text, stop, hot, new[]
-            {
-                "Running = false;",
-                "_appSettings.RunHotPlug = false;",
-                "InServiceTask = true;",
-                "PreServiceStop?.Invoke(this, EventArgs.Empty);",
-                "_virtualPad.UnplugOutDev(i, tempDevice, immediate: immediateUnplug, force: true);",
-                "_outputs.ResetDeviceState(i);",
-                "_latencyMonitor.Reset(i);",
-                "_deviceRegistry.StopControllers();",
-                "slots.SlotManager.ClearControllerList();",
-                "_outputs.StopNetworkOutputs();",
-                "_outputs.StopVirtualOutputs(anyUnplugged);",
-                "InServiceTask = false;",
-                "ActiveControllers = 0;",
-                "ServiceStopped?.Invoke(this, EventArgs.Empty);",
-                "RunningChanged?.Invoke(this, EventArgs.Empty);",
-            }, "Stop");
-        }
-
         /// <summary>
         /// 出力側のサービスの開始・停止の内側の順序（ドライバーの開始 → キーボード・マウスの初期化 → 2 秒待ち、
         /// 停止時の出力キューの待ち → スロットの停止 → 取り外しの待ち → ドライバーの破棄 → キーボード・マウスの切断）。
-        /// ServiceLifecycle からの呼び出しの順序は、上の 2 つのテストが固定する。
+        /// ServiceLifecycle からの呼び出しの順序は、ServiceLifecycleOrderTests が固定する。
         /// </summary>
         [Fact]
         public void OutputServicesLifecycle_KeepsTheDriverStartAndDestructionOrder()
