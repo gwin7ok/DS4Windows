@@ -10,7 +10,7 @@ namespace DS4Windows.Processing.Actions
     /// （docs-forDIMG/MadeByAgent/Archive/Phase8-Step2-Intent-Decisions.md 項目 2。タップ判定の分岐 B は移植しない［項目 3］）。
     /// <list type="bullet">
     /// <item><description>遅延（<c>delaySeconds</c> &gt; 0）: <see cref="ITriggerInput.Delay"/> の共有の基準時刻を、現行と同じ規則で更新する。遅延つきのときは <c>invertOnRelease</c> を無視する（現行も分岐 A では反転しない）。</description></item>
-    /// <item><description><c>invertOnRelease</c>（Macro の <c>RunOnRelease</c>）: 押された時点で「準備」状態になり（成立にはしない）、離された時点で 1 回だけ成立する。準備状態は、この型の内部状態（Q2＝A。現行の <c>SpecialAction.firstTouch</c> は使わない）。</description></item>
+    /// <item><description><c>invertOnRelease</c>（Macro の <c>RunOnRelease</c>）: 押された時点で「準備」状態になり（成立にはしない）、離された時点で 1 回だけ成立する。準備状態は、この型の内部状態（Q2＝A）。</description></item>
     /// </list>
     /// 割り当て 0（<see cref="Evaluate"/> は、構築時に確保した配列の走査と、構造体の返却のみ）。
     /// </summary>

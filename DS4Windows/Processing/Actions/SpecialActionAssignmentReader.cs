@@ -6,7 +6,7 @@ namespace DS4Windows.Processing.Actions
     /// <summary>
     /// 読み込みの部品（SpecialActions タブ側）。<see cref="SpecialAction"/> を、共通の割り当て定義（<see cref="AssignmentDefinition"/>）にする。
     /// 種別ごとの文字列の解釈は <see cref="SpecialActionItemMapper"/>（Program、Profile ほか）と、<see cref="ActionBindingBuilder.InterpretKey"/>／<see cref="ActionBindingBuilder.InterpretButton"/>（Key、Button）が行う。
-    /// 定義は設定の静的な内容だけで、実行時の状態（<c>prevProfileName</c>、<c>tappedOnce</c> など）は、引き続き <see cref="SpecialAction"/> のオブジェクトが持つ。
+    /// 定義は設定の静的な内容だけで、実行時の状態は、<see cref="SpecialAction"/> のオブジェクトではなく、各アクション・検出器が持つ。
     /// </summary>
     public static class SpecialActionAssignmentReader
     {

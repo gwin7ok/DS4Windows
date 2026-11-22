@@ -67,14 +67,13 @@ namespace DS4WindowsTests
             using var t = new SpecialActionTestScope();
             SpecialAction sa = AddMacro(t, "RunOnRelease");
             Assert.True(sa.pressRelease);
-            Assert.False(sa.firstTouch);
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 押す前は、何も起きない
             Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
 
 
-            t.RunFrame(HeldL1()); // 押したとき: 準備（firstTouch）だけで、実行しない
-   // Q2＝A: 新経路の「準備」は入力の内部の状態で、firstTouch は書かない
+            t.RunFrame(HeldL1()); // 押したとき: 準備だけで、実行しない
+   // Q2＝A: 「準備」は入力の内部の状態
             Assert.False(TestActions.Manager.IsBeingTriggered(sa, t.Device));
 
             t.RunFrame(SpecialActionTestScope.Neutral()); // 離したとき: 1 回実行（成立を反転して扱う）

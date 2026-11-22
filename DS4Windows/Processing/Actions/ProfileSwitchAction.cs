@@ -13,7 +13,6 @@ namespace DS4Windows.Processing.Actions
     /// (4) 切替のあとでフレームを打ち切る（<c>RequestEndFrame</c>。Intent-Decisions 項目 5）。
     /// 旧経路のアダプター（<c>ProfileSwitchActionAdapter</c>）は、<c>Mapping</c> が同じ処理を行うため、添字なしのコンストラクターのままで、これらを行わない。
     /// 復帰の合図は、7.5b で、エンジンが持つ（自動の復帰 ＝ Unload on trigger release）。解除トリガー（<c>uTrigger</c>）のボタンによる復帰は、Phase8-Step8 8b で機能廃止した（ユーザー承認）。uTrigger を持つ Profile も、切替は行う。
-    /// 旧経路が書く <c>prevProfileName</c>／<c>prevProfileWasTemporary</c> は、読む場所がないため、移さない（Q3＝A）。
     /// </summary>
     public class ProfileSwitchAction : IGatedOutputAction
     {

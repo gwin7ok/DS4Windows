@@ -56,15 +56,7 @@ namespace DS4Windows.Core.Settings
         public KeyButtonSwitchModeEnum? KeyButtonSwitchMode = null;
         public bool pressRelease = false;
         public DS4KeyType keyType;
-        public bool tappedOnce = false;
-        public bool firstTouch = false;
-        public bool secondtouchbegin = false;
-        public DateTime pastTime;
-        public DateTime firstTap;
-        public DateTime TimeofEnd;
         public bool automaticUntrigger = false;
-        public string? prevProfileName;  // Name of the previous profile where automaticUntrigger would jump back to (could be regular or temporary profile. Empty name is the same as regular profile)
-        public bool prevProfileWasTemporary;
         public bool synchronized = false; // If the same trigger has both "key down" and "key released" macros then run those synchronized if this attribute is TRUE (ie. key down macro fully completed before running the key release macro)
         public bool keepKeyState = false; // By default special action type "Macro" resets all keys used in the macro back to default "key up" state after completing the macro even when the macro itself doesn't do it explicitly. If this is TRUE then key states are NOT reset automatically (macro is expected to do it or to leave a key to down state on purpose)
 

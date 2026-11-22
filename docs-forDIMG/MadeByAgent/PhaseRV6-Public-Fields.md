@@ -22,3 +22,6 @@
 ## 推奨
 - 効果が大きいのは `GyroMouseStickInfo`・`TouchMouseStickInfo`（小さく、`ref` が 4 か所だけ）。次の機会に、承認を得て実施する。
 - `SpecialAction` は、6 つの未参照フィールドの削除の可否と合わせて別 Phase。
+
+## 実施（2026-11-22、ユーザー承認）
+規則 2.4 に従い、経緯（上流 DS4Windows のタップ判定・プロファイル復帰の実行時状態。いまは `TapClickDetector`・`ProfileSwitchAction` が持つ。trackball の設定の正本は `TouchpadSlotSettings`）を確かめ、`SpecialAction` の 8 フィールド（tappedOnce・firstTouch・secondtouchbegin・pastTime・firstTap・TimeofEnd・prevProfileName・prevProfileWasTemporary）と `TouchMouseStickInfo` の trackballMode・trackballFriction（定数 2 つ）を削除。状態の黄金ファイル 8 件から該当行を除き、`RemovedApiRuleTests` の表へ追記。
