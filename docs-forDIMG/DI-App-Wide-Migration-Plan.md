@@ -1,7 +1,7 @@
 # DS4Windows-Vader4Pro アプリ全体 DI化 最終プラン書
 
 作成日: 2026-08-25
-改訂日: 2026-11-16（§9.3 を実績へ更新）。2026-11-15（Phase29〜54 の実績と、残りの作業の整理を反映。§6.15 の状態表、§6.16 の PhaseX3・X4、§6.17、§9.3）。2026-11-12（Phase7b〜Phase28 の完了と、コードレビュー［2026-11］と外部レビューの照合に基づく Phase29〜38 の計画を反映。2026-11-13: Phase 番号を進める順に付け替え。詳細は下記「2026-11-12改訂の要旨」と §6.14・§6.15）。2026-10-18（Phase6 完了［2026-10-17］、Phase7 完了［2026-10-18］を反映。詳細は下記「2026-10-18改訂の要旨」）。2026-10-14（Phase5 完了、Phase6 の Step1〜9・Step9b・Step10-0〜10-3 完了、Phase8 新設を反映。詳細は下記「2026-10-14改訂の要旨」）
+改訂日: 2026-11-23（PhaseRV1〜RV48 の実績を §6.18・§6.19 と §9.3 へ反映）。2026-11-16（§9.3 を実績へ更新）。2026-11-15（Phase29〜54 の実績と、残りの作業の整理を反映。§6.15 の状態表、§6.16 の PhaseX3・X4、§6.17、§9.3）。2026-11-12（Phase7b〜Phase28 の完了と、コードレビュー［2026-11］と外部レビューの照合に基づく Phase29〜38 の計画を反映。2026-11-13: Phase 番号を進める順に付け替え。詳細は下記「2026-11-12改訂の要旨」と §6.14・§6.15）。2026-10-18（Phase6 完了［2026-10-17］、Phase7 完了［2026-10-18］を反映。詳細は下記「2026-10-18改訂の要旨」）。2026-10-14（Phase5 完了、Phase6 の Step1〜9・Step9b・Step10-0〜10-3 完了、Phase8 新設を反映。詳細は下記「2026-10-14改訂の要旨」）
 改訂履歴: 2026-09-23（Phase8 新設）／2026-09-09（Phase6「残存Global実利用箇所の解体」、Phase7「Mapping.cs完全instance化（延期）」を追加。
 DI化対象外項目をカテゴリA〜Fとして確定）
 対象ブランチ: `インターフェース化`（以降の実装は `For-DI-migration-work` ブランチで実施）
@@ -1205,21 +1205,21 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 
 2026-11-15 の数値: 自動テスト 3,567 件、ビルドの警告・エラー 0。行数の多いファイルは、画面の code-behind（`MainWindow.xaml.cs` 1,884、`ProfileEditor.xaml.cs` 1,737、`BindingWindow` 943、`App` 937、`RecordBox` 901、`AssignmentEditor` 702）が最大の残り（Phase34）。`Mapping.cs` は 895 行（2026-09 の 8,827 行から約 1/10）。
 
-### 6.18 PhaseRV1〜RV9（2026-11-19 新設。コードレビュー 2026-11-19 から作った実施計画。RV1 は承認・実施済み、RV2 以降は未承認）
+### 6.18 PhaseRV1〜RV9（2026-11-19 新設。コードレビュー 2026-11-19 から作った実施計画。2026-11-23 時点で、RV1〜RV9 は実施済み［RV4・RV6 は一部］。続きは §6.19）
 
 リポジトリ全体のコードレビュー（`docs-forDIMG/Code-Review-2026-11-19/00-Report.md`。数字は `01-Metrics.md`。計測は `scripts/audit/Measure-CodeReview.py`）の結果、前回のレビュー（2026-11）の弱点（DI・層・引数・重複）はほぼ是正済みで、構造の骨格は健全と確認した。新しい弱点は、構造の外側にある（MVVM の操作の流れ、例外の握りつぶし、設定の項目の追加の手数、採用手段のばらつき、経緯のコメント・文書の蓄積、品質の門の緩さ）。これらを 8 つの Phase に分けた。各計画書の「決めること」（D 項目）を、ユーザーが確認して承認した Phase から着手する。進める順は、下の番号の順を目安とする（RV5 は RV3・RV4 と入れ替え可。報告書 §7、G4）。
 
 | Phase | 主題 | 計画書 | 規模 | リスク | 状態 |
 |---|---|---|---|---|---|
 | RV1 | 品質の門と土台の整理（未使用の `using`、アナライザー、`Nullable` の試験、検査の枠 `CodeHealthRatchetTests`、未参照の型の調査） | `PhaseRV1-Plan.md` | 中 | 低 | **実施済み**（2026-11-19。ブランチ `PhaseRV1`。結果は同計画書の「実施の結果」） |
-| RV2 | 例外の握りつぶし（空の `catch` 389 件）と、`async void`・`.Result`・`Thread.Sleep` の作法 | `PhaseRV2-Plan.md` | 大 | 中 | 未承認 |
-| RV3 | MainWindow の MVVM 化（コマンド化。委譲だけの窓口の解消。V3 の検査） | `PhaseRV3-Plan.md` | 大 | 中〜高 | 未承認 |
-| RV4 | ProfileEditor・BindingWindow・RecordBox・WelcomeDialog などの MVVM 化と表駆動化 | `PhaseRV4-Plan.md` | 大 | 中〜高 | 未承認 |
-| RV5 | 設定の宣言化（`AppSettingsService` の畳み込み、プロファイルの読み込みの補助、宣言型の試作） | `PhaseRV5-Plan.md` | 大 | 高 | 未承認 |
-| RV6 | 共有部品化と、冗長な実装の整理（`Gyro*Info`、`KeyButtonActionController` まわり、未参照の型の削除。規則 2.4） | `PhaseRV6-Plan.md` | 中 | 低〜中 | 未承認 |
-| RV7 | 採用手段の統一（変更通知の基底、命名、タイマーの書き方の規則、テストの枠） | `PhaseRV7-Plan.md` | 中 | 低〜中 | 未承認 |
-| RV8 | 経緯のコメント・文書・ガードテストの整理（コメントのみの変更を機械で検証） | `PhaseRV8-Plan.md` | 中 | 低 | 未承認 |
-| RV9 | `Nullable` の層ごとの全体有効化（A 組＝他の Phase と独立の 516 件、B 組＝RV3〜RV6 のあとの 1,615 件。最後に `TreatWarningsAsErrors`） | `PhaseRV9-Plan.md` | 大 | 中 | 未承認（2026-11-19 作成。D1〜D4 は決定済み。着手は Phase ごとの承認待ち） |
+| RV2 | 例外の握りつぶし（空の `catch` 389 件）と、`async void`・`.Result`・`Thread.Sleep` の作法 | `PhaseRV2-Plan.md` | 大 | 中 | **実施済み**（2026-11-19。空の `catch` の整理、`Log-Policy.md` §12。ログの文言の変更は承認一覧で承認） |
+| RV3 | MainWindow の MVVM 化（コマンド化。委譲だけの窓口の解消。V3 の検査） | `PhaseRV3-Plan.md` | 大 | 中〜高 | **実施済み**（2026-11-20。`CommandGuard`、規則 V3。MVVM C+→B−） |
+| RV4 | ProfileEditor・BindingWindow・RecordBox・WelcomeDialog などの MVVM 化と表駆動化 | `PhaseRV4-Plan.md` | 大 | 中〜高 | **一部実施**（2026-11-20。RV4・RV4b。小さな画面の確定処理など。パーシャルの分割・読み取りのタイマーは残り） |
+| RV5 | 設定の宣言化（`AppSettingsService` の畳み込み、プロファイルの読み込みの補助、宣言型の試作） | `PhaseRV5-Plan.md` | 大 | 高 | **実施済み**（2026-11-20。`ProfileSetting` の保存の並び、`ReadX` の補助。5b の DTO の生成は (A) へ戻した。RV43 でジャイロ制御まで `ReadLegacy` へ） |
+| RV6 | 共有部品化と、冗長な実装の整理（`Gyro*Info`、`KeyButtonActionController` まわり、未参照の型の削除。規則 2.4） | `PhaseRV6-Plan.md` | 中 | 低〜中 | **一部実施**（2026-11-20。RV6-1・2・0・5 完了。のち RV6c・6d で参照 0 のフィールドを削除） |
+| RV7 | 採用手段の統一（変更通知の基底、命名、タイマーの書き方の規則、テストの枠） | `PhaseRV7-Plan.md` | 中 | 低〜中 | **実施済み**（2026-11-20〜22。`ThrowIfNull`、`ObservableObject`、命名、タイマーの 2 種類、`StandaloneTests` の xUnit 化、RV7d で引数なしの Get/Is/Set をプロパティへ） |
+| RV8 | 経緯のコメント・文書・ガードテストの整理（コメントのみの変更を機械で検証） | `PhaseRV8-Plan.md` | 中 | 低 | **実施済み**（2026-11-20。経緯のコメント・文書・ガードの整理） |
+| RV9 | `Nullable` の層ごとの全体有効化（A 組＝他の Phase と独立の 516 件、B 組＝RV3〜RV6 のあとの 1,615 件。最後に `TreatWarningsAsErrors`） | `PhaseRV9-Plan.md` | 大 | 中 | **実施済み**（2026-11-19〜。`Nullable` をプロジェクト全体で有効にし、警告をエラーへ。D1〜D4 は決定済み） |
 
 - 既決の対象外（再び持ち出さない）: `App.xaml.cs` の行数を目的にした整理、`Mapping`・`TriggerDispatchEngine` の分割、`AppSettingsDTO` の `partial` 分割（37-6 の見送り）、`AppLogger`・`PathService`・`EnvironmentService` の静的な状態、既存の実装 1・偽物なしのインターフェースの撤去、`NoWarn` の撤去。
 - RV9（`PhaseRV9-Plan.md`。2026-11-19 作成。D1〜D4 は決定済み、着手は未承認）: `Nullable` の層ごとの全体有効化。RV1 の D2＝(B)（2026-11-19 決定）。試験の結果は `PhaseRV1-Nullable-Trial.md`（2 層で 27 件を 0 にした）。RV1 完了後の再計測は 2,131 件／349 ファイル（A 組 516 件は他の Phase と独立、B 組 1,615 件は RV3〜RV6 のあと）。**2026-11-19 の決定**: D1＝(C)（A 組を RV2 の前、B 組を待つ Phase の後、切り替えを最後）、D2＝(A)（理由コメントつきの `!` だけ許可。規約 §3.3 へ 2 行。RV9-0 で行う）、D3＝(A)（設定に切り替え、ファイルごとの指令を機械的に消す）、D4＝(A)（`DS4WinWPF.csproj`・`DS4WindowsCli` だけ `TreatWarningsAsErrors=true`。品質の門 2/3→3/3）。
@@ -1228,6 +1228,31 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 - 評価の算定（2026-11-19 追記）: 9 観点の A〜D を毎回同じ物差しで出すため、採点基準 `Code-Review-2026-11-19/03-Rubric.md`（v1。2026-11-19 確定）、スクリプト `scripts/audit/Score-CodeReview.py`、手で記録する値 `scripts/audit/Rubric-Inputs.json`、推移の記録 `Code-Review-2026-11-19/02-Scorecard.md` を足した。各 PhaseRV の計画書の最終 Step が「評価の再算定」で、結果をユーザーへ報告する。
 - RV1 の評価（2026-11-19。`02-Scorecard.md` §3、保存は `scorecard/RV1.json`）: 各層の役割分担 B+→A（98.6%）、メンテナンス性 B−→B（72.3%）。採用手段の統一は 59.9%（C+のまま。予想 B− に約 3 点届かない。別名 `NonFormTimer` の 5 行が、使われているため残るから）。ほかの 6 観点は同じ等級。
 - 各 Phase の完了時に、本節の表の状態、`01-Metrics.md` の基準、モデル図（型の一覧に変更があるとき）を更新する。
+
+### 6.19 PhaseRV10〜RV48（2026-11-20〜23。レビューの続きの整理と、テスト・仕様の突き合わせ・実機確認で出た修正。2026-11-23 追記）
+
+RV1〜RV9 のあとも、同じ進め方（Phase ごとにブランチ、`Run-DebugAll.ps1` で警告・エラー 0、master へマージ、push は利用者）で続けた。計画書は `docs-forDIMG/MadeByAgent/PhaseRV*-Plan.md`。RV39 以降は小さな Phase のため、実施のあとに記録として計画書（`PhaseRV39-Plan.md`〜`PhaseRV48-Plan.md`）を作成した。仕様の突き合わせの記録は `PhaseRV38-Spec-Crosscheck.md`。
+
+| Phase | 主題 | 状態 |
+|---|---|---|
+| RV10 | `BackingStore` の公開フィールドを、設定の領域ごとの窓口へ（規則 3.1。公開フィールドのラチェット） | 完了 |
+| RV11〜RV13 | 500 行以上のファイルの分割、型そのものの責務分割、ジャイロ・タッチパッドの状態の絡みの解消 | 完了 |
+| RV14 | 入力機器の型の整理（`InputDeviceCore` と 3 機種。状態を持ち主ごとの部品へ。規則 3.1） | 完了 |
+| RV15・RV16 | テストの枠・小さな指標（`Run-DebugAll.ps1`）、500 行以上の型の部品化 | 完了 |
+| RV17 | 初回画面の導入の流れと、起動の組み立て（Pure DI A・共有部品化 A） | 完了 |
+| RV18 | 後回しの実機確認の消化と、未使用の `using` の整理 | 完了 |
+| RV19・RV20 | 画面の「見せる・隠す・使える」の判断を ViewModel へ | 完了 |
+| RV21 | 実機確認 48 項目の消化と、見つかった不具合の修正（マウススティックモードの廃止ほか。KI-23〜25 を起票） | 完了（確認 48 は後回し） |
+| RV22 | MVVM を A（90.1%）へ | 完了 |
+| RV23〜RV36 | 見送った改善の再検討と、文字列を読むテストの挙動のテストへの置き換え（タイマーの規則、接続・開始・停止・合成入力・IPC の順序のテスト。`IBindingDialog`） | 完了。残る文字列のテストは、回帰の番人・lint・WPF の窓（RV36 で区切り） |
+| RV37・RV38 | 仮想コントローラーによる入力機種の契約テストと、入力から出力までを通すテスト。独立した仕様との突き合わせ | 完了 |
+| RV39〜RV42 | SDL・Microsoft を 2 つ目の出どころにした仕様の突き合わせ。DualSense の電池・Bluetooth 出力の枠を仕様へ合わせた（RV40。利用者の承認）。加速度の校正の退化入力を修正 | 完了（DualSense の修正は実機未確認） |
+| RV43 | KI-23: プロファイルの取り込みの上書きの確認。読み込みの 5 節を `ReadLegacy` へ | 完了（実機確認 OK） |
+| RV44 | エクスポートの既定ファイル名を「プロファイル名.xml」に | 完了（実機確認 OK） |
+| RV45 | プロファイルの取り込みを 3 択（はい＝ID を保って上書き／いいえ／名前変更＝新しい ID）にし、ID の重複は新しい ID。`IProfileIdentityService.ImportFile`、`IDialogService.ChooseOneOfThree`・`PromptText` | 完了（実機確認 OK） |
+| RV46〜RV48 | 更新履歴（`CHANGELOG.md` の Unreleased）、README・索引・台帳・全体計画書などの文書の更新、RV39〜RV48 の計画書の作成 | 完了 |
+
+評価（`Code-Review-2026-11-19/02-Scorecard.md`）: 各層の役割分担 A、メンテナンス性 A−、オブジェクト指向 A（90.3%）、MVVM A（90.1%）、冗長処理 A、機能追加の容易化 A。2026-11-23 時点の自動テストは 3,956 件、ビルドの警告・エラーは 0。
 
 ---
 
@@ -1307,6 +1332,17 @@ Phase39 以降は、個別の計画書を作らず、実機確認で見つかっ
 | - | `docs-forDIMG/Model-Diagram/01-Structure.md`、`02-Extension-Guide.md`、`03-Lifecycle-and-DI.md`、`Ideas.md` | 現状の構造、拡張の手順、登録と寿命、未実装の構想（Phase17-0 で作り直した。旧 4 文書は `Archive/`。上の行の「01〜04」は旧い呼び方。2026-11-12 追記） |
 
 ### 9.3 次のアクション
+
+**（2026-11-23更新）Phase7b〜Phase54、PhaseRV1〜RV48 は実施済み（RV4・RV6 は一部。§6.18・§6.19）。実施する Phase で残っているものはない。**
+
+1. **リリース**: `CHANGELOG.md` の Unreleased（4.3.2 以降の変更）をまとめ済み。バージョン番号の更新・日付付きの見出しへの変更・push・リリースは利用者が行う。
+2. **実機で未確認のもの**: DualSense（RV40 で直した電池・Bluetooth 出力の枠）、Switch Pro、UDP（Cemuhook）、RV21 の確認 48、RV24・RV28 の実機確認の一部。`Known-Issues-Ledger.md` §3、`Device-Check-Checklist.md`。
+3. **台帳の未解決**: KI-14（カスタム実行ファイル名。PhaseX4）、KI-21、KI-24（再現せず）、KI-25（トレイメニュー）。KI-7 は PhaseX。KI-23 は解消済み。
+4. **時期が未定の計画**（§6.16）: PhaseX（入力側の画像とボタン名の機種別対応。KI-7）、PhaseX4（KI-14）。PhaseX3（日本語化）は完了した。実施するかどうか・時期は、利用者が決める。
+5. **一部だけ実施の項目**: RV4（パーシャルの分割、読み取りのタイマー）、RV6（RV6-3・4・6）、RV5 の残りの読み込みの節（ジャイロマウス、General、Misc、タッチパッド）、文字列を読むテストの残り（約 100 件。回帰の番人・lint・WPF の窓）。
+6. 新しい作業を始めるときは、各 Phase の完了時に、本書の §6.14・§6.15・§6.17・§6.19 の表、`Code-Review-2026-11/00-Summary.md` の該当行、モデル図を更新する。
+
+（2026-11-19 以前の記述は、次の項のとおり。履歴として残す。）
 
 **（2026-11-19追記）コードレビュー（2026-11-19）から、PhaseRV1〜RV8 の計画書を作成した（§6.18。すべて未承認）。**
 報告書は `docs-forDIMG/Code-Review-2026-11-19/00-Report.md`、数字は `01-Metrics.md`、計画書は `docs-forDIMG/MadeByAgent/PhaseRV1-Plan.md`〜`PhaseRV8-Plan.md`。次は、各計画書の「決めること」（D 項目）と、報告書 §8 の全体の決定事項（G1〜G5）をユーザーが確認し、承認した Phase から着手する（推奨の最初は PhaseRV1）。PhaseX 系の時期が未定の計画（下の 5）は、そのまま。

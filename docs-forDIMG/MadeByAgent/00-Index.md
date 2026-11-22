@@ -24,8 +24,8 @@
 ## 計画書（現行・近い Phase）
 - 規約が参照する計画書: `Phase5-Plan.md`（ガードレール）、`Phase6-Status.md`、`Phase6-Step10-Plan.md`、`Phase6-Step10b-Plan.md`、`Phase14-Plan.md`、`Phase17-Plan.md`。
 - Phase29〜40、Phase34 の V2 の 3 件、PhaseX／X2／X3／X4。
-- コードレビュー（`../Code-Review-2026-11-19/`）に基づく PhaseRV1〜RV38 の計画書と調査メモ（`PhaseRV*`）。
-- 仕様との突き合わせの記録 `PhaseRV38-Spec-Crosscheck.md`（RV38〜RV42 の追補を含む）。RV39〜RV46 は小さな Phase のため、計画書はなく、記録は git の履歴と `Known-Issues-Ledger.md`・`CHANGELOG.md` にある。
+- コードレビュー（`../Code-Review-2026-11-19/`）に基づく PhaseRV1〜RV48 の計画書と調査メモ（`PhaseRV*`）。
+- 仕様との突き合わせの記録 `PhaseRV38-Spec-Crosscheck.md`（RV38〜RV42 の追補を含む）。RV39〜RV48 は、実施のあとに記録として計画書を作成した（小さな Phase のため）。
 
 ## その他の調査メモ
 `AutoProfile-NoController-Investigation.md`、`K7b1-Investigation.md`、`Notification-Legacy-Path-Cleanup-Report.md`、`R2-MacroToggleRepeat-Plan.md`、`Reconnect-Profile-PerController-Fix-Plan.md`、`Repository-Review-2026-11-05.md`、`Structure-Review-2026-11.md`、`Xbox-Input-Research.md`、`Xbox-Probe/`、`tools/`。
