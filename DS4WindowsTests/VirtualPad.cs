@@ -30,7 +30,28 @@ namespace DS4WindowsTests
         /// <paramref name="held"/> を押し続けた状態のデバイスを作る（初期化済み。開始はしない）。
         /// Xbox を除き、入力は 1 フレームだけで、そのあと切断になる。
         /// </summary>
-        public abstract VirtualPadDevice Open(PadInput held);
+        public VirtualPadDevice Open(PadInput held, int frames = 1, HidReadStatus? failureAfterFirst = null) =>
+            Create(held, frames, failureAfterFirst);
+
+        /// <summary>
+        /// <paramref name="frames"/> 個の同じフレームを台本にする（HID の機種）。<paramref name="failureAfterFirst"/> を指定すると、最初のフレームの直後に
+        /// その読み取りの結果（失敗）を挟み、そのあとにもう 1 フレームを置く（失敗のあとのフレームは届かないことを見るため）。Xbox は、状態を書き換えて切る（<see cref="VirtualPadDevice.Disconnect"/>）。
+        /// </summary>
+        protected abstract VirtualPadDevice Create(PadInput held, int frames, HidReadStatus? failureAfterFirst);
+
+        /// <summary>台本のフレームを積む。</summary>
+        protected static void EnqueueFrames(FakeHidTransport transport, byte[] frame, int frames, HidReadStatus? failureAfterFirst)
+        {
+            transport.EnqueueRead(HidReadStatus.Success, frame);
+            if (failureAfterFirst.HasValue)
+            {
+                transport.EnqueueRead(failureAfterFirst.Value, null);
+                transport.EnqueueRead(HidReadStatus.Success, frame);
+                return;
+            }
+
+            for (int n = 1; n < frames; n++) transport.EnqueueRead(HidReadStatus.Success, frame);
+        }
 
         public override string ToString() => Name;
 
@@ -71,7 +92,13 @@ namespace DS4WindowsTests
         /// <summary>Xbox（XInput）。</summary>
         public static VirtualPad Xbox { get; } = new XboxPad();
 
-        public static VirtualPad[] All { get; } = { Ds4, DualSense, SwitchPro, Xbox };
+        /// <summary>DS4（Bluetooth。ID 0x11、common ブロックは byte 3 から、末尾に CRC）。</summary>
+        public static VirtualPad Ds4Bluetooth { get; } = new Ds4BluetoothPad();
+
+        /// <summary>DualSense（Bluetooth。ID 0x31、USB より 1 バイトずれ、末尾に CRC）。</summary>
+        public static VirtualPad DualSenseBluetooth { get; } = new DualSenseBluetoothPad();
+
+        public static VirtualPad[] All { get; } = { Ds4, DualSense, SwitchPro, Xbox, Ds4Bluetooth, DualSenseBluetooth };
 
         // ---- DS4 / DualSense の共通 ----
 
@@ -100,7 +127,7 @@ namespace DS4WindowsTests
             public override string Name => "DS4 (USB)";
             public override InputDeviceType DeviceType => InputDeviceType.DS4;
 
-            public override VirtualPadDevice Open(PadInput i)
+            protected override VirtualPadDevice Create(PadInput i, int frames, HidReadStatus? failureAfterFirst)
             {
                 var transport = new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 32, vendorId: 0x054C, productId: 0x09CC);
                 var f = new byte[64];
@@ -112,10 +139,64 @@ namespace DS4WindowsTests
                 f[9] = (byte)(i.R2Pressed ? 255 : 0);
                 f[10] = 0x10;   // タイムスタンプ
                 f[30] = 0x18;   // 電池
-                transport.EnqueueRead(HidReadStatus.Success, f);
+                EnqueueFrames(transport, f, frames, failureAfterFirst);
                 var device = new DualShock4Device(transport, "DS4", VidPidFeatureSet.NoGyroCalib);
                 device.PostInit();
-                return new VirtualPadDevice(device);
+                return new VirtualPadDevice(device, transport);
+            }
+        }
+
+        private sealed class Ds4BluetoothPad : VirtualPad
+        {
+            public override string Name => "DS4 (Bluetooth)";
+            public override InputDeviceType DeviceType => InputDeviceType.DS4;
+
+            protected override VirtualPadDevice Create(PadInput i, int frames, HidReadStatus? failureAfterFirst)
+            {
+                Crc32Algorithm.InitializeTable(Crc32Algorithm.DefaultPolynomial);   // 本番の CRC の表は、アプリの起動時に作られる
+                var transport = new FakeHidTransport(inputReportByteLength: 547, outputReportByteLength: 78, vendorId: 0x054C, productId: 0x09CC);
+                var f = new byte[547];
+                f[0] = 0x11;
+                const int c = 3;   // dualshock4_input_report_bt: report_id、reserved[2] の次が common
+                f[c + 0] = i.LX; f[c + 1] = i.LY; f[c + 2] = i.RX; f[c + 3] = i.RY;
+                f[c + 4] = SonyFace(i);
+                f[c + 5] = SonyShoulder(i);
+                f[c + 7] = (byte)(i.L2Pressed ? 255 : 0);
+                f[c + 8] = (byte)(i.R2Pressed ? 255 : 0);
+                f[c + 9] = 0x10;   // タイムスタンプ
+                f[c + 29] = 0x18;   // status[0]（電池）
+                PsReportCrc.Seal(f, 78);
+                EnqueueFrames(transport, f, frames, failureAfterFirst);
+                var device = new DualShock4Device(transport, "DS4", VidPidFeatureSet.NoGyroCalib);
+                device.PostInit();
+                return new VirtualPadDevice(device, transport);
+            }
+        }
+
+        private sealed class DualSenseBluetoothPad : VirtualPad
+        {
+            public override string Name => "DualSense (Bluetooth)";
+            public override InputDeviceType DeviceType => InputDeviceType.DualSense;
+
+            protected override VirtualPadDevice Create(PadInput i, int frames, HidReadStatus? failureAfterFirst)
+            {
+                Crc32Algorithm.InitializeTable(Crc32Algorithm.DefaultPolynomial);
+                var transport = new FakeHidTransport(inputReportByteLength: 78, outputReportByteLength: 78, vendorId: 0x054C, productId: 0x0CE6);
+                var f = new byte[78];
+                f[0] = 0x31;
+                const int s = 2;   // struct dualsense_input_report は、BT では data[2] から
+                f[s + 0] = i.LX; f[s + 1] = i.LY; f[s + 2] = i.RX; f[s + 3] = i.RY;
+                f[s + 4] = (byte)(i.L2Pressed ? 255 : 0);
+                f[s + 5] = (byte)(i.R2Pressed ? 255 : 0);
+                f[s + 7] = SonyFace(i);
+                f[s + 8] = SonyShoulder(i);
+                f[s + 27] = 0xB8; f[s + 28] = 0x0B;   // sensor_timestamp
+                f[s + 52] = 0x08;   // status[0]（電池）
+                PsReportCrc.Seal(f, 78);
+                EnqueueFrames(transport, f, frames, failureAfterFirst);
+                var device = new DualSenseDevice(transport, "DualSense", VidPidFeatureSet.NoGyroCalib);
+                device.PostInit();
+                return new VirtualPadDevice(device, transport);
             }
         }
 
@@ -124,7 +205,7 @@ namespace DS4WindowsTests
             public override string Name => "DualSense (USB)";
             public override InputDeviceType DeviceType => InputDeviceType.DualSense;
 
-            public override VirtualPadDevice Open(PadInput i)
+            protected override VirtualPadDevice Create(PadInput i, int frames, HidReadStatus? failureAfterFirst)
             {
                 var transport = new FakeHidTransport(inputReportByteLength: 64, outputReportByteLength: 48, vendorId: 0x054C, productId: 0x0CE6);
                 var f = new byte[64];
@@ -137,10 +218,10 @@ namespace DS4WindowsTests
                 f[28] = 0xB8; f[29] = 0x0B;   // タイムスタンプ
                 f[53] = 0x08;   // 電池
                 f[54] = 0x08;   // 充電
-                transport.EnqueueRead(HidReadStatus.Success, f);
+                EnqueueFrames(transport, f, frames, failureAfterFirst);
                 var device = new DualSenseDevice(transport, "DualSense", VidPidFeatureSet.NoGyroCalib);
                 device.PostInit();
-                return new VirtualPadDevice(device);
+                return new VirtualPadDevice(device, transport);
             }
         }
 
@@ -172,7 +253,7 @@ namespace DS4WindowsTests
             // 0〜255 を 12bit へ。校正の工場値（中心 2048、片側 1500）に対し、2048 を中心にして端まで振る
             private static ushort Axis(byte v) => (ushort)Math.Clamp(2048 + (v - 128) * 11, 0, 4095);
 
-            public override VirtualPadDevice Open(PadInput i)
+            protected override VirtualPadDevice Create(PadInput i, int frames, HidReadStatus? failureAfterFirst)
             {
                 var transport = new FakeHidTransport(inputReportByteLength: 362, outputReportByteLength: 49, vendorId: 0x057E, productId: 0x2009) { ReadDelayMs = 12 };
                 for (int n = 0; n < 8; n++) transport.EnqueueRead(HidReadStatus.Success, Response(0x03));   // 初期化の応答
@@ -203,11 +284,11 @@ namespace DS4WindowsTests
                 // Switch Pro は上を大きくするため、Y は反転する
                 SetStick(f, 6, Axis(i.LX), Axis((byte)(255 - i.LY)));
                 SetStick(f, 9, Axis(i.RX), Axis((byte)(255 - i.RY)));
-                transport.EnqueueRead(HidReadStatus.Success, f);
+                EnqueueFrames(transport, f, frames, failureAfterFirst);
 
                 var device = new SwitchProDevice(transport, "Switch Pro", VidPidFeatureSet.DefaultDS4);
                 device.PostInit();
-                return new VirtualPadDevice(device);
+                return new VirtualPadDevice(device, transport);
             }
 
             private static void SetStick(byte[] f, int o, ushort x, ushort y)
@@ -227,7 +308,7 @@ namespace DS4WindowsTests
 
             private static short Axis(byte v) => (short)Math.Clamp((v - 128) * 256, -32767, 32767);
 
-            public override VirtualPadDevice Open(PadInput i)
+            protected override VirtualPadDevice Create(PadInput i, int frames, HidReadStatus? failureAfterFirst)
             {
                 var api = new FakeXInputApi();
                 var interfaces = new FakeXusbInterfaceSource();
@@ -246,7 +327,11 @@ namespace DS4WindowsTests
                 var candidate = new XInputTransportSource(api, interfaces).Enumerate().Single();
                 InputDeviceCore device = new XboxDeviceCartridge().Create(InputDeviceType.Xbox, candidate.Transport, candidate.Info.name, candidate.Info.featureSet);
                 device.PostInit();
-                return new VirtualPadDevice(device);
+                return new VirtualPadDevice(device, null, () =>
+                {
+                    api.Disconnect(0);
+                    interfaces.MoveTo(Path, -1);
+                });
             }
         }
     }
