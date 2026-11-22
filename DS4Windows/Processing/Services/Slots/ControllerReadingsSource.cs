@@ -66,7 +66,7 @@ namespace DS4Windows.Processing.Services.Slots
                 device.ReadWaitEv.Set();
             }
 
-            info = new ControllerReadingInfo(calibrationCount, device.Latency, device.GetWarnInterval(),
+            info = new ControllerReadingInfo(calibrationCount, device.Latency, device.WarnInterval,
                 _inputReport.GetProcessingDelay(slot));
             return true;
         }

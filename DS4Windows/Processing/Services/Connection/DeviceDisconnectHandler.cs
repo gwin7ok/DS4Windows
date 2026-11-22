@@ -66,7 +66,7 @@ namespace DS4Windows.Processing.Services.Connection
             int ind = -1;
             for (int i = 0, arlength = host.Controllers.Length; ind == -1 && i < arlength; i++)
             {
-                if (host.Controllers[i] != null && device.GetMacAddress() == host.Controllers[i].GetMacAddress())
+                if (host.Controllers[i] != null && device.MacAddress == host.Controllers[i].MacAddress)
                     ind = i;
             }
 
@@ -106,8 +106,8 @@ namespace DS4Windows.Processing.Services.Connection
                     _profileSlotApplier.ReleaseSlot(ind);
 
                     string removed = DS4Windows.Properties.Resources.ControllerWasRemoved.Replace("*Mac address*", (ind + 1).ToString());
-                    if (device.GetBattery() <= 20 &&
-                        device.GetConnectionType() == ConnectionType.BT && !device.IsCharging())
+                    if (device.Battery <= 20 &&
+                        device.ConnectionType == ConnectionType.BT && !device.Charging)
                     {
                         removed += ". " + DS4Windows.Properties.Resources.ChargeController;
                     }
@@ -172,7 +172,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             if (ind >= 0)
             {
-                bool synced = device.IsSynced();
+                bool synced = device.Synced;
 
                 if (!synced)
                 {
@@ -208,7 +208,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             if (ind >= 0)
             {
-                _deviceStateService.OnDeviceSerialChange(host, ind, device.GetMacAddress());   // 送り主は IDeviceSlotState。購読者はいない
+                _deviceStateService.OnDeviceSerialChange(host, ind, device.MacAddress);   // 送り主は IDeviceSlotState。購読者はいない
             }
         }
     }

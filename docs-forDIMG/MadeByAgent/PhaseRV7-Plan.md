@@ -1,7 +1,7 @@
 # PhaseRV7 計画書: 採用手段の統一（変更通知、命名、タイマーの書き方、テストの枠）
 
 作成日: 2026-11-19
-状態: **一部完了（2026-11-20。変更通知の一本化・null 検査・`StandaloneTests` の xUnit 化・タイマーの一部は完了。小文字のメソッドの残り・タイマーの残りは `PhaseRV7-Survey.md` の承認待ち。内訳は `02-Scorecard.md` の RV7・RV7b）**
+状態: **完了（2026-11-22。変更通知・null 検査・xUnit 化・タイマー・小文字のメソッド名（RV7c）に加え、引数なしの Get/Is/Set メソッドのプロパティ化（RV7d）まで済み）**
 出典: `docs-forDIMG/Code-Review-2026-11-19/00-Report.md` の RV-26〜RV-28（§3.7）
 前提: PhaseRV1〜RV6 の完了（触るファイルが広いため、機能の Phase が済んだあとに 1 回だけ行う）。PhaseRV3 の D1（コマンドの基盤）の結果。**RV3 の D1 は (B) CommunityToolkit.Mvvm に決定済み（2026-11-19）。そのため、本 Phase の D1（変更通知の基底）は、ツールキットの `ObservableObject` への移行（(C)）を前提に、確認の場で再提案する。**
 動き: **機能・保存の形・ログは変えない**。名前の変更と、基底の付け替えが中心。
@@ -84,3 +84,4 @@
 - 2026-11-19: 計画書を作成。コードは未着手。
 - 2026-11-19: D1＝(C)、D2＝(B)、D3＋D5＝(B)、D4＝(A) をユーザーが選択（D2・D3・D5 は推奨 (A) と異なる）。D1 は RV3 の D1＝(B) を受けて推奨を (A) から (C) へ変更。D2 の判断のため、小文字始まりのメソッドの呼び出し箇所（本体 57 ファイル 268 か所、テスト 54 か所、XAML 0）と、独自の `SetProperty` を呼ぶ箇所（0 件）、`StandaloneTests` の構成（8 ファイル・615 行）を調べた。
 - 2026-11-19: 最終 Step「評価の再算定」を追加（採点基準 `Code-Review-2026-11-19/03-Rubric.md`、`scripts/audit/Score-CodeReview.py`）。基準 v1 は同日ユーザーが確定。
+- 2026-11-22: PhaseRV7d。`InputDeviceCore` の引数なしの `GetBattery`・`IsCharging`・`GetMacAddress`・`GetConnectionType`・`GetIdleTimeout`・`SetIdleTimeout`・`GetBTPollRate`・`IsSynced`・`GetWarnInterval`・`IsDisconnectingStatus`・`GetLastTimeElapsed(Double)` を、プロパティ（`Battery`・`Charging`・`MacAddress`・`ConnectionType`・`IdleTimeout`・`BTPollRate`・`Synced`・`WarnInterval`・`IsDisconnecting`・`LastTimeElapsed(Double)`）へ置き換えた。`IPadStatusSource`・`IConfigurableDevice` の同名メンバーもプロパティへ。引数を取る `GetBTPollRate(int)`・`GetBattery(int)` は残す（D2＝(B)）。

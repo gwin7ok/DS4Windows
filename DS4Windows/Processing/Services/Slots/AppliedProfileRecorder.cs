@@ -47,7 +47,7 @@ namespace DS4Windows.Processing.Services.Slots
                 // 一時プロファイルの適用は LoadTempProfile が UseTempProfile を立てたあとで、このイベントが発火する
                 if (_profileSettings.GetUseTempProfile(slot)) return;
 
-                _deviceStateService.RememberProfile(device.GetMacAddress(), e.ProfileName);
+                _deviceStateService.RememberProfile(device.MacAddress, e.ProfileName);
             }
             catch (Exception caught) {
                 // 記憶できなくても、適用を止めない（再接続は、スロットの SelectedProfile に戻る）

@@ -28,16 +28,16 @@ namespace DS4Windows.Processing.Services.Devices
                 if (!d.IsAlive())
                     battery = "...";
 
-                if (d.IsCharging())
+                if (d.Charging)
                 {
-                    if (d.GetBattery() >= 100)
+                    if (d.Battery >= 100)
                         battery = DS4Windows.Properties.Resources.Full;
                     else
-                        battery = d.GetBattery() + "%+";
+                        battery = d.Battery + "%+";
                 }
                 else
                 {
-                    battery = d.GetBattery() + "%";
+                    battery = d.Battery + "%";
                 }
 
                 return battery;

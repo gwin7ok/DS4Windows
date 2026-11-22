@@ -26,7 +26,7 @@ namespace DS4WindowsTests
 
             device.PrimeBatteryReading();
 
-            Assert.Equal(66, device.GetBattery());
+            Assert.Equal(66, device.Battery);
         }
 
         [Fact]

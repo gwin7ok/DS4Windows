@@ -182,13 +182,13 @@ namespace DS4Windows.Input
                 if (device != null)
                 {
                     string devPath = device.HidDevice.DevicePath;
-                    string serial = device.GetMacAddress();
+                    string serial = device.MacAddress;
                     if (Devices.ContainsKey(devPath))
                     {
                         deviceSerials.Remove(serial);
                         serialDevices.Remove(serial);
                         device.UpdateSerial();
-                        serial = device.GetMacAddress();
+                        serial = device.MacAddress;
                         if (InputDeviceCore.IsValidSerial(serial))
                         {
                             deviceSerials.Add(serial);

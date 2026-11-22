@@ -187,14 +187,14 @@ namespace DS4Windows.Processing.Services.Connection
                     InputDeviceCore tempDevice = slots.Controllers[i];
                     if (tempDevice != null)
                     {
-                        if ((_appSettings.DCBTatStop && !tempDevice.IsCharging()) || Suspending)
+                        if ((_appSettings.DCBTatStop && !tempDevice.Charging) || Suspending)
                         {
-                            if (tempDevice.GetConnectionType() == ConnectionType.BT)
+                            if (tempDevice.ConnectionType == ConnectionType.BT)
                             {
                                 tempDevice.StopUpdate();
                                 tempDevice.DisconnectBT(true);
                             }
-                            else if (tempDevice.GetConnectionType() == ConnectionType.SONYWA)
+                            else if (tempDevice.ConnectionType == ConnectionType.SONYWA)
                             {
                                 // Controller disconnect will complete on next attempted read.
                                 // Do not use StopUpdate here
@@ -276,7 +276,7 @@ namespace DS4Windows.Processing.Services.Connection
                 {
                     InputDeviceCore device = devEnum.Current;
 
-                    if (device.IsDisconnectingStatus())
+                    if (device.IsDisconnecting)
                         continue;
 
                     // Use local method rather than Func
@@ -285,7 +285,7 @@ namespace DS4Windows.Processing.Services.Connection
                         for (int Index = 0, arlength = slots.Controllers.Length; Index < arlength; Index++)
                         {
                             if (slots.Controllers[Index] != null &&
-                                slots.Controllers[Index].GetMacAddress() == device.GetMacAddress())
+                                slots.Controllers[Index].MacAddress == device.MacAddress)
                             {
                                 device.CheckControllerNumDeviceSettings(numControllers);
                                 return true;

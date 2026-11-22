@@ -47,7 +47,7 @@ namespace DS4Windows.Processing.Services.Connection
             if (!_profileSettings.GetEnableOutputDataToDS4(ind))
                 AppLogger.LogUser(AppLogLevel.Info, "Log_Conn_OutputDisabled");
 
-            device.SetIdleTimeout(_profileSettings.GetIdleDisconnectTimeout(ind));
+            device.IdleTimeout = _profileSettings.GetIdleDisconnectTimeout(ind);
             device.SetBTPollRate(_profileSettings.GetBTPollRate(ind));
 
             touchPad.ResetTrackAccel(_profileSettings.ForSlot(ind).Touchpad.TrackballFriction);
