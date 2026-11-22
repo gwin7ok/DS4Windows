@@ -33,7 +33,7 @@ namespace DS4Windows.UI
     /// <summary>
     /// Interaction logic for BindingWindow.xaml
     /// </summary>
-    public partial class BindingWindow : Window
+    public partial class BindingWindow : Window, DS4Windows.UI.Abstractions.IBindingDialog
     {
         private Dictionary<Button, BindAssociation> associatedBindings =
             new Dictionary<Button, BindAssociation>();
@@ -152,6 +152,12 @@ namespace DS4Windows.UI
 
         /// <summary>ユーザーが「Default」を選んだか（× で閉じたときは false）。判断は ViewModel が持つ。</summary>
         public bool DefaultPicked => bindingVM.DefaultPicked;
+
+        public void ShowModal()
+        {
+            Owner = Application.Current.MainWindow;
+            ShowDialog();
+        }
 
         private void ChangeForCurrentAction()
         {

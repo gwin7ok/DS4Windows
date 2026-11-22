@@ -20,6 +20,10 @@ namespace DS4Windows.UI.Abstractions
         BindingWindow CreateBindingWindow(int deviceNum, DS4ControlSettings settings, int targetDevice,
             BindingWindow.ExposeMode expose);
 
+        /// <summary>出力ピッカーを、呼び出し側が使う部分だけの型で作る（<see cref="CreateBindingWindow"/> と同じ窓）。</summary>
+        IBindingDialog CreateBindingDialog(int deviceNum, DS4ControlSettings settings, int targetDevice,
+            BindingWindow.ExposeMode expose);
+
         RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true);
 

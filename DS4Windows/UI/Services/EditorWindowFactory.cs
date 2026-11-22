@@ -32,6 +32,10 @@ namespace DS4Windows.UI.Services
             BindingWindow.ExposeMode expose)
             => _assignments.CreateBindingWindow(deviceNum, settings, targetDevice, expose, this);
 
+        public IBindingDialog CreateBindingDialog(int deviceNum, DS4ControlSettings settings, int targetDevice,
+            BindingWindow.ExposeMode expose)
+            => CreateBindingWindow(deviceNum, settings, targetDevice, expose);
+
         public RecordBox CreateRecordBox(int deviceNum, DS4ControlSettings controlSettings, int targetDevice,
             bool showscan = true, bool repeatable = true, bool showPlaybackOptions = true)
             => _recording.CreateRecordBox(deviceNum, controlSettings, targetDevice, showscan, repeatable, showPlaybackOptions);

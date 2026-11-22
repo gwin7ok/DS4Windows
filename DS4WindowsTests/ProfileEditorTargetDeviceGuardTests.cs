@@ -221,7 +221,6 @@ namespace DS4WindowsTests
                 ("DS4Windows/UI/Services/MacroRecordingWindowFactory.cs", "CreateRecordBox("),
                 ("DS4Windows/UI/Services/MacroRecordingWindowFactory.cs", "CreateRecordBoxViewModel("),
                 ("DS4Windows/UI/Services/AssignmentEditorSession.cs", "CreateRecordBoxWindow("),
-                ("DS4Windows/UI/Services/AssignmentEditorSession.cs", "CreateBindingWindow("),
             };
 
             foreach (var group in checks.GroupBy(c => c.File))

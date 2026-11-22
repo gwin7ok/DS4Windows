@@ -280,11 +280,10 @@ namespace DS4Windows.UI.Services
                 // 対象のボタンと Extras を載せた一時設定を、Control のモードの出力ピッカーへ渡す。
                 // 結果は、Press Key の状態（Default を含む）と、編集用のコピーの Extras へ取り込む（元の設定は、Save まで変わらない）
                 DS4ControlSettings controlSettings = PressKeyVM.PrepareSettings(controlTarget!.Control, controlTarget.Extras);   // 同上
-                BindingWindow controlWindow = editorWindowFactory.CreateBindingWindow(DeviceNum, controlSettings, TargetDevice,
+                IBindingDialog controlWindow = editorWindowFactory.CreateBindingDialog(DeviceNum, controlSettings, TargetDevice,
                     BindingWindow.ExposeMode.Control);
-                controlWindow.Owner = Application.Current.MainWindow;
                 bool wasDefault = PressKeyVM.SelectedActionType == DS4ControlSettings.ActionType.Default;
-                controlWindow.ShowDialog();
+                controlWindow.ShowModal();
                 PressKeyVM.ReadSettings(controlSettings, DeviceNum, allowDefault: true);
                 controlTarget.Extras = controlSettings.extras;
                 PressKeyVM.UpdateToggleControls();
@@ -309,10 +308,9 @@ namespace DS4Windows.UI.Services
             DS4ControlSettings settings = PressKeyVM.PrepareSettings();
             // 編集中の SA の Extras を、出力ピッカーへ渡して、結果を受け取る（Controls のモードと同じ）。何も設定されていない値（全部 0）は、付けない
             if (!string.IsNullOrEmpty(saExtras)) settings.extras = saExtras;
-            BindingWindow window = editorWindowFactory.CreateBindingWindow(DeviceNum, settings, TargetDevice,
+            IBindingDialog window = editorWindowFactory.CreateBindingDialog(DeviceNum, settings, TargetDevice,
                 BindingWindow.ExposeMode.SpecialAction);
-            window.Owner = Application.Current.MainWindow;
-            window.ShowDialog();
+            window.ShowModal();
             saExtras = settings.IsExtrasEmpty(settings.extras) ? null : settings.extras;
             PressKeyVM.ReadSettings(settings, DeviceNum);
             PressKeyVM.UpdateToggleControls();
