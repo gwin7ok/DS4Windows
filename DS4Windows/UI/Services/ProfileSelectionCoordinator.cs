@@ -91,6 +91,7 @@ namespace DS4Windows.UI.Services
                 Title = "Select Profile to Export File",
                 Filter = "DS4Windows Profile (*.xml)|*.xml",
                 DefaultExtension = ".xml",
+                FileName = profileList.ProfileListCol[index].Name + ".xml",   // 既定の保存名は「プロファイル名.xml」
                 CheckFileExists = false,
             });
             if (target == null) return;
