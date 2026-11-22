@@ -66,9 +66,16 @@ namespace DS4WindowsTests
         /// <summary>1 回の読み取りの前に待つミリ秒。実時間で間隔を見て、近すぎるフレームを読み飛ばす機種（Switch Pro）の台本に使う。</summary>
         public int ReadDelayMs { get; set; }
 
+        /// <summary>最後に積んだ読み取りのレポート（複数フレームの台本を、別のデバイスから組み立てるため）。</summary>
+        public byte[] LastEnqueuedData { get; private set; }
+
         public void EnqueueRead(HidReadStatus status, byte[] data = null)
         {
-            lock (_lock) _reads.Enqueue((status, data));
+            lock (_lock)
+            {
+                _reads.Enqueue((status, data));
+                LastEnqueuedData = data;
+            }
         }
 
         public bool IsOpen { get; private set; } = true;
