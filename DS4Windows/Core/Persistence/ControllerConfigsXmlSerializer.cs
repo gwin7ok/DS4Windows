@@ -57,7 +57,7 @@ namespace DS4Windows.Core.Persistence
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(store.m_controllerConfigs);
 
-                XmlNode? node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
+                XmlNode? node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.MacAddress + "\"]");
                 if (node != null)
                 {
                     // 旧「車輪の較正値」（wheelCenterPoint／wheel90DegPointLeft／wheel90DegPointRight）の読み込みは削除した。古いファイルに要素が残っていても、無視される
@@ -89,7 +89,7 @@ namespace DS4Windows.Core.Persistence
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(store.m_controllerConfigs);
 
-                XmlNode? node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.GetMacAddress() + "\"]");
+                XmlNode? node = xmlDoc.SelectSingleNode("/Controllers/Controller[@Mac=\"" + device.MacAddress + "\"]");
                 XmlNode? xmlControllersNode = xmlDoc.SelectSingleNode("/Controllers");
                 if (node == null)
                 {
@@ -102,7 +102,7 @@ namespace DS4Windows.Core.Persistence
                 }
 
                 XmlAttribute macAttr = xmlDoc.CreateAttribute("Mac");
-                macAttr.Value = device.GetMacAddress();
+                macAttr.Value = device.MacAddress;
                 node.Required().Attributes!.Append(macAttr);   // 要素ノードは、必ず属性のコレクションを持つ
 
                 XmlAttribute contTypeAttr = xmlDoc.CreateAttribute("ControllerType");

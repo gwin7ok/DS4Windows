@@ -41,9 +41,7 @@ namespace DS4Windows.Input
 
         public ConnectionType ConnectionType => conType;
         // ILightbarDevice（ライトバーの色の計算が読む値）。既存のメソッドへ委譲する
-        bool DS4Windows.Input.Abstractions.ILightbarDevice.IsCharging => IsCharging();
-        int DS4Windows.Input.Abstractions.ILightbarDevice.Battery => GetBattery();
-        ConnectionType DS4Windows.Input.Abstractions.ILightbarDevice.ConnectionType => GetConnectionType();
+        bool DS4Windows.Input.Abstractions.ILightbarDevice.IsCharging => Charging;
         DateTime DS4Windows.Input.Abstractions.ILightbarDevice.LastActive => lastActive;
         byte DS4Windows.Input.Abstractions.ILightbarDevice.LeftHeavySlowRumble => GetLeftHeavySlowRumble();
         byte DS4Windows.Input.Abstractions.ILightbarDevice.LightBarOnDuration => GetLightBarOnDuration();
@@ -53,11 +51,7 @@ namespace DS4Windows.Input
         // 通知用のイベントは基底の 1 組だけ（各機種の override 再宣言は廃止）。
         // 書き込みは UpdateBattery／UpdateCharging を通す（値が変わったときだけ通知する）
         public event EventHandler? BatteryChanged;
-        public int GetBattery()
-        {
-            return battery;
-        }
-
+        
         public byte RightLightFastRumble
         {
             get { return Haptics.Current.rumbleState.RumbleMotorStrengthRightLightFast; }

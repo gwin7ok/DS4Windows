@@ -47,7 +47,7 @@ namespace DS4Windows.Processing.Services.Conditioning
 
             int controlNum = (int)control;
             ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
-            //long timeElapsed = ctrl.Controllers[device].GetLastTimeElapsed();
+            //long timeElapsed = ctrl.Controllers[device].LastTimeElapsed;
             //double mouseOffset = 0.025;
             double mouseVerticalScale = 1.0;
             bool verticalDir = false;

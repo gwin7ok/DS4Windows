@@ -49,7 +49,7 @@ namespace DS4Windows.Core.Settings
                 bool oldUseDInputOnly = ProfileSettings.UseDInputOnlyArray[device];
                 IConfigurableDevice tempDevice = control.GetController(device);
                 bool exists = tempBool = (tempDevice != null);
-                bool synced = tempBool = exists ? tempDevice!.IsSynced() : false;   // exists が true のときだけ評価される
+                bool synced = tempBool = exists ? tempDevice!.Synced : false;   // exists が true のときだけ評価される
                 bool isAlive = tempBool = exists ? tempDevice!.IsAlive() : false;   // 同上
                 if (basicSlots[device].DinputOnly != oldUseDInputOnly)
                 {
@@ -77,11 +77,11 @@ namespace DS4Windows.Core.Settings
         public void PostLoadSnippet(int device, IProfileLoadTarget control, bool xinputStatus, bool xinputPlug)
         {
             IConfigurableDevice tempDev = control.GetController(device);
-            if (tempDev != null && tempDev.IsSynced())
+            if (tempDev != null && tempDev.Synced)
             {
                 tempDev.QueueEvent(() =>
                 {
-                    //tempDev.SetIdleTimeout(idleDisconnectTimeout[device]);
+                    //tempDev.IdleTimeout = idleDisconnectTimeout[device];
                     //tempDev.SetBTPollRate(btPollRate[device]);
                     if (xinputStatus)
                     {

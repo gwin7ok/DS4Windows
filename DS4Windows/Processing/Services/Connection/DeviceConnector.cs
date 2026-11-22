@@ -97,7 +97,7 @@ namespace DS4Windows.Processing.Services.Connection
 
             // プロファイルの選択と適用（初回接続／再接続、Linked、一時プロファイル）は ConnectionProfileSelector へ移した
             bool IsValidSerial = device.IsValidSerial();
-            profileLoaded = _connectionProfileSelector.ApplyOnConnect(index, useAutoProfile, IsValidSerial, IsValidSerial ? device.GetMacAddress() : null);
+            profileLoaded = _connectionProfileSelector.ApplyOnConnect(index, useAutoProfile, IsValidSerial, IsValidSerial ? device.MacAddress : null);
 
             if (profileLoaded || useAutoProfile)
             {

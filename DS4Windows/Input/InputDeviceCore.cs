@@ -46,10 +46,7 @@ namespace DS4Windows.Input
         }
 
         // Debouncer（デバウンスのフィルター）は機能廃止で削除した
-        public int GetWarnInterval()
-        {
-            return warnInterval;
-        }
+        public int WarnInterval => warnInterval;
 
         public bool ReadyQuickChargeDisconnect
         {
@@ -90,26 +87,11 @@ namespace DS4Windows.Input
             Report += MotionEvent;
         }
 
-        public bool IsDisconnectingStatus()
-        {
-            return this.isDisconnecting;
-        }
-
-        public object removeLocker = new object();
+                public object removeLocker = new object();
 
         public string MacAddress => Mac;
         public event EventHandler? MacAddressChanged;
-        public string GetMacAddress()
-        {
-            return this.Mac;
-        }
-
-        public ConnectionType GetConnectionType()
-        {
-            return this.conType;
-        }
-
-        // behavior only active when > 0
+                // behavior only active when > 0
         protected int idleTimeout = 0;
         public int IdleTimeout
         {
@@ -120,12 +102,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public int GetIdleTimeout()
-        {
-            return idleTimeout;
-        }
-
-        // Feature set of gamepad (some non-official DS4 gamepads require a bit different logic than a genuine Sony DS4). 0=Default DS4 gamepad feature set.
+                // Feature set of gamepad (some non-official DS4 gamepads require a bit different logic than a genuine Sony DS4). 0=Default DS4 gamepad feature set.
         protected VidPidFeatureSet featureSet;
         public VidPidFeatureSet FeatureSet
         {
@@ -140,16 +117,10 @@ namespace DS4Windows.Input
         }
 
         protected long lastTimeElapsed = 0;
-        public long GetLastTimeElapsed()
-        {
-            return lastTimeElapsed;
-        }
+        public long LastTimeElapsed => lastTimeElapsed;
 
         public double lastTimeElapsedDouble = 0.0;
-        public double GetLastTimeElapsedDouble()
-        {
-            return lastTimeElapsedDouble;
-        }
+        public double LastTimeElapsedDouble => lastTimeElapsedDouble;
 
         public byte GetLeftHeavySlowRumble()
         {
@@ -161,12 +132,7 @@ namespace DS4Windows.Input
             return Haptics.Current.lightbarState.LightBarFlashDurationOn;
         }
 
-        public int GetBTPollRate()
-        {
-            return btPollRate;
-        }
-
-        public DS4Touchpad Touchpad { get { return touchpad; } }
+                public DS4Touchpad Touchpad { get { return touchpad; } }
         public DS4SixAxis SixAxis { get { return sixAxis; } }
 
         // デバウンス時間などの設定値。InputDeviceRegistry が、デバイスの生成直後（入力の開始前）に設定する。
@@ -273,12 +239,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public bool IsSynced()
-        {
-            return synced;
-        }
-
-        /// <summary>
+                /// <summary>
         /// Used to tell the input thread to temporarily stop firing the
         /// Report event. Keeps linked methods from being executed
         /// </summary>

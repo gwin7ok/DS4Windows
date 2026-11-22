@@ -114,7 +114,7 @@ namespace DS4Windows.Processing.Services.Conditioning
                 //ControllerState pState = PreviousState[ind];
 
 
-                if (device.firstReport && device.IsSynced())
+                if (device.firstReport && device.Synced)
                 {
                     // Emit missing-action logs once per profile-apply (respect suppression).
                     // Note: Profile logging is already done by ApplyProfile in PrepareConnectedInputControllerSettingEvents

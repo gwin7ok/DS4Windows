@@ -45,7 +45,7 @@ namespace DS4Windows.Processing.Services.Slots
 
         public void PlugVirtualPad(int index, InputDeviceCore device)
         {
-            if (!_profileSettings.GetDInputOnly(index) && device.IsSynced())
+            if (!_profileSettings.GetDInputOnly(index) && device.Synced)
             {
                 _virtualPad.PluginOutDev(index, device);
             }

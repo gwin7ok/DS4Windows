@@ -42,7 +42,7 @@ namespace DS4WindowsTests
 
                 int controlNum = (int)control;
                 ControllerStateFieldMapping.ControlType controlType = ControllerStateFieldMapping.mappedType[controlNum];
-                //long timeElapsed = ctrl.Controllers[device].GetLastTimeElapsed();
+                //long timeElapsed = ctrl.Controllers[device].LastTimeElapsed;
                 //double mouseOffset = 0.025;
                 double tempMouseOffsetX = 0.0, tempMouseOffsetY = 0.0;
                 double mouseVerticalScale = 1.0;

@@ -68,7 +68,7 @@ namespace DS4WindowsTests
             Assert.True(cross);   // A → Cross
             Assert.Equal(255, l2);
             Assert.Equal(InputDeviceType.Xbox, device.DeviceType);
-            Assert.Equal(ConnectionType.USB, device.GetConnectionType());
+            Assert.Equal(ConnectionType.USB, device.ConnectionType);
         }
 
         [Fact]

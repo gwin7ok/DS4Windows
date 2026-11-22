@@ -87,15 +87,7 @@ namespace DS4Windows.Input
             }
         }
 
-        public void SetIdleTimeout(int value)
-        {
-            if (idleTimeout != value)
-            {
-                idleTimeout = value;
-            }
-        }
-
-        protected void UpdateBattery(int percent)
+                protected void UpdateBattery(int percent)
         {
             if (percent == battery) return;
 
@@ -113,11 +105,7 @@ namespace DS4Windows.Input
 
         public bool Charging => charging;
         public event EventHandler? ChargingChanged;
-        public bool IsCharging()
-        {
-            return charging;
-        }
-
+        
         public void SetBTPollRate(int value)
         {
             if (btPollRate != value && value >= 0 && value <= 16)

@@ -25,9 +25,9 @@ namespace DS4Windows.Processing.Actions
         public DisconnectTargetKind GetTargetKind(int deviceIndex)
         {
             InputDeviceCore? d = Controller(deviceIndex);
-            if (d == null || !d.IsSynced() || d.IsCharging()) return DisconnectTargetKind.None;
+            if (d == null || !d.Synced || d.Charging) return DisconnectTargetKind.None;
 
-            switch (d.GetConnectionType())
+            switch (d.ConnectionType)
             {
                 case ConnectionType.BT: return DisconnectTargetKind.Bluetooth;
                 case ConnectionType.SONYWA: return DisconnectTargetKind.Dongle;
@@ -44,7 +44,7 @@ namespace DS4Windows.Processing.Actions
         public bool IsDongleSynced(int deviceIndex)
         {
             InputDeviceCore? d = Controller(deviceIndex);
-            return d != null && d.GetConnectionType() == ConnectionType.SONYWA && d.IsSynced();
+            return d != null && d.ConnectionType == ConnectionType.SONYWA && d.Synced;
         }
 
         public bool IsIdle(int deviceIndex)

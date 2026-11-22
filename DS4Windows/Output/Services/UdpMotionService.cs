@@ -238,7 +238,7 @@ namespace DS4Windows.Output.Services
             }
 
             bool IsValidSerial = false;
-            string stringMac = d.GetMacAddress();
+            string stringMac = d.MacAddress;
             if (!string.IsNullOrEmpty(stringMac))
             {
                 stringMac = string.Join("", stringMac.Split(':'));
@@ -254,17 +254,17 @@ namespace DS4Windows.Output.Services
             }
             else
             {
-                if (d.IsSynced() || d.IsAlive())
+                if (d.Synced || d.IsAlive())
                     meta.PadState = DsState.Connected;
                 else
                     meta.PadState = DsState.Reserved;
             }
 
-            meta.ConnectionType = (d.GetConnectionType() == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
+            meta.ConnectionType = (d.ConnectionType == ConnectionType.USB) ? DsConnection.Usb : DsConnection.Bluetooth;
             meta.IsActive = !d.IsDS4Idle();
 
-            int batteryLevel = d.GetBattery();
-            if (d.IsCharging() && batteryLevel >= 100)
+            int batteryLevel = d.Battery;
+            if (d.Charging && batteryLevel >= 100)
                 meta.BatteryStatus = DsBattery.Charged;
             else
             {
