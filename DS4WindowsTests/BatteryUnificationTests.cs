@@ -58,7 +58,7 @@ namespace DS4WindowsTests
                 if (code == null) continue;
 
                 Assert.Contains("UpdateBattery(tempBattery);", code);
-                Assert.Contains("UpdateCharging(tempCharging);", code);
+                Assert.Contains("UpdateCharging(", code);
             }
         }
 

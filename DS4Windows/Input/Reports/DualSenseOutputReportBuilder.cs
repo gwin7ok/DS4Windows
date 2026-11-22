@@ -4,7 +4,8 @@ namespace DS4Windows.Input.Reports
 {
     /// <summary>
     /// DualSense の出力レポートのバイト列の組み立て（USB と Bluetooth）。状態を持たず、渡されたバッファへ書くだけ（割り当てなし）。
-    /// 2 つの書式は、Bluetooth が先頭にレポート ID（0x31）を 1 バイト足すだけで、以降の並びは同じ（USB の添字 + 1）。
+    /// 2 つの書式は、Bluetooth が先頭にレポート ID（0x31）・連番とタグ（[1]）・固定値 0x10（[2]）の 3 バイトを足すだけで、以降の並びは同じ（USB の添字 + 2。
+    /// Linux カーネルの hid-playstation.c と SDL の SDL_hidapi_ps5.c に合わせる）。
     /// 変化の判定、待機の計時、Bluetooth の CRC32 の付与、書き込みは、組み立ての外（デバイス）で行う。
     /// 音量（USB の 5〜8）は今は書かない（0 のまま）。
     /// </summary>
@@ -14,6 +15,9 @@ namespace DS4Windows.Input.Reports
         private const byte ReportIdUsb = 0x02;
         private const byte ReportIdBluetooth = 0x31;
         private const byte ReportIdData = 0x02;
+
+        /// <summary>Bluetooth の効果の構造体の直前にある、決まった値。</summary>
+        private const byte BluetoothDataTag = 0x10;
 
         /// <summary>
         /// 出力レポートを組み立てる。振動の強さは、通常か正確なエミュレーションのどちらかが有効なときだけ書く（どちらも無効なら、バッファの値を触らない）。
@@ -26,7 +30,8 @@ namespace DS4Windows.Input.Reports
             {
                 report[0] = ReportIdBluetooth;
                 report[1] = ReportIdData;
-                o = 1;
+                report[2] = BluetoothDataTag;
+                o = 2;
             }
             else
             {

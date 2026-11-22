@@ -24,7 +24,7 @@ namespace DS4Windows.Input.Devices
 
         private void SendEmptyOutputReport()
         {
-            int reportOffset = conType == ConnectionType.BT ? 1 : 0;
+            int reportOffset = conType == ConnectionType.BT ? 2 : 0;   // Bluetooth は効果の構造体が [3] から（[2] は 0x10）
             Array.Clear(outputReport, 0, outputReport.Length);
 
             outputReport[0] = conType == ConnectionType.USB ? OUTPUT_REPORT_ID_USB :
@@ -42,6 +42,7 @@ namespace DS4Windows.Input.Devices
             if (conType == ConnectionType.BT)
             {
                 outputReport[1] = OUTPUT_REPORT_ID_DATA;
+                outputReport[2] = OUTPUT_REPORT_TAG_DATA;
 
                 // Need to calculate and populate CRC32 data so controller will accept the report
                 uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);
@@ -62,7 +63,8 @@ namespace DS4Windows.Input.Devices
 
             outputReport[0] = OUTPUT_REPORT_ID_BT; // Report ID
             outputReport[1] = OUTPUT_REPORT_ID_DATA;
-            outputReport[3] = 0x15; // Toggle all LED lights. 0x01 | 0x04 | 0x10
+            outputReport[2] = OUTPUT_REPORT_TAG_DATA;
+            outputReport[4] = 0x15; // Toggle all LED lights. 0x01 | 0x04 | 0x10
 
             // Need to calculate and populate CRC32 data so controller will accept the report
             uint calcCrc32 = ~Crc32Algorithm.Compute(outputBTCrc32Head);

@@ -58,20 +58,19 @@ namespace DS4WindowsTests
         }
 
         [Fact]
-        public void DualSenseBluetooth_OutputReport_HasTheSpecIdAndCrc_ButTheCurrentFramingIsOneByteEarlierThanTheSpec()
+        public void DualSenseBluetooth_OutputReport_FollowsTheSpecFraming_AndTheCrcUsesTheOutputSeed()
         {
-            // SDL_hidapi_ps5.c・hid-playstation.c: ID 0x31、data[1]＝タグと連番、data[2]＝0x10（決まった値）、効果の構造体は data[3] から
+            // SDL_hidapi_ps5.c・hid-playstation.c: ID 0x31、data[1]＝連番とタグ、data[2]＝0x10（決まった値）、効果の構造体は data[3] から
             // （有効フラグ data[3]・data[4]、振動は右 data[5]・左 data[6]）。CRC は種 0xA2、data[74..77]。
-            // 現在の実装は、data[1]＝0x02、有効フラグ data[2]・data[3]、振動は右 data[4]・左 data[5] と、1 バイト早い（PhaseRV38-Spec-Crosscheck.md の食い違い 3）。
-            // ここでは、仕様と一致する部分（ID と CRC）を固定し、食い違う部分は「いまの形」を固定する（実機確認のあとに直すときは、この検査も直す）。
             byte[][] reports = WriteWithRumble(VirtualPad.DualSenseBluetooth, 0x31);
 
             Assert.NotEmpty(reports);
+            Assert.All(reports, r => Assert.Equal(0x10, r[2]));
             Assert.All(reports, r => Assert.True(PsReportCrc.IsValid(r, 78, PsReportCrc.OutputSeed), "出力の CRC（種 0xA2）が一致しない"));
 
-            byte[] withRumble = reports.FirstOrDefault(r => r[4] == Right && r[5] == Left)
+            byte[] withRumble = reports.FirstOrDefault(r => r[5] == Right && r[6] == Left)
                 ?? throw new Xunit.Sdk.XunitException("振動つきの出力レポートが書かれなかった");
-            Assert.NotEqual(0x10, withRumble[2]);   // 仕様では data[2] が 0x10。いまは有効フラグが入っている
+            Assert.NotEqual(0, withRumble[3] & 0x03);   // 振動の有効フラグ（valid_flag0 の bit0・bit1）
         }
 
         // ---- タッチパッド: 1 点が 4 バイト（カウンター、x の下位、x の上位 4 ビット＋y の下位 4 ビット、y の上位）。カウンターの最上位ビットが立っていると指なし ----
