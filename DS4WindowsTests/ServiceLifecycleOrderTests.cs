@@ -122,6 +122,31 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void Start_AppliesTheSavedProcessPriority_ThroughTheOptionsTable()
+        {
+            // 保存済みの設定は、ProcessPriorityOptions.Classes の添字。1 = AboveNormal（安全な値で確かめ、終わりに元へ戻す）
+            using var process = System.Diagnostics.Process.GetCurrentProcess();
+            var original = process.PriorityClass;
+            try
+            {
+                var rig = new Rig();
+                RecordingProxy.Of(AppSettingsOf(rig)).Returns["get_ProcessPriority"] = 1;
+
+                rig.Lifecycle.Start();
+
+                process.Refresh();
+                Assert.Equal(DS4Windows.Core.Platform.ProcessPriorityOptions.Classes[1], process.PriorityClass);
+                Assert.Equal(System.Diagnostics.ProcessPriorityClass.AboveNormal, process.PriorityClass);
+            }
+            finally
+            {
+                process.PriorityClass = original;
+            }
+        }
+
+        private static object AppSettingsOf(Rig rig) => typeof(ServiceLifecycle).GetField("_appSettings", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(rig.Lifecycle)!;
+
+        [Fact]
         public void Stop_WhenNotRunning_OnlyNotifies()
         {
             var rig = new Rig();

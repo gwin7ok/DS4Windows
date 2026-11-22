@@ -328,3 +328,11 @@ MVVM 原則遵守の割合 A（89.8%→90.1%、+0.3 点）。等級が A−→A 
 
 等級の変化なし。開始・停止の安全弁の順序を、`ServiceLifecycleOrderTests`（4 件）へ。`ServiceLifecycle` の依存はすべてインターフェースのため、偽（呼び出しの記録）と `RecordingConnectDevice` で、開始（仮想出力 → HidHide → ネットワーク出力 → 恒久スロット → 列挙 → 接続 → UDP → 通知）、停止（事前通知 → 機器の停止・取り外し → 登録簿の停止 → ネットワーク出力の停止 → 仮想出力の停止 → 通知）、ドライバーが開始できないとき・未実行で止めたときの動きを確かめる。負の確認（停止の 2 呼び出しの入れ替え、HidHide の位置）で失敗することを確認。`LifecycleGuardTests` の `Start`・`Stop` の文字列検査 2 件を撤去。
 - 訂正: RV30 の節の「`DisconnectGuardTests` は数えられる」の注記は不正確だった（同ファイルは文字列を読まない）ため削除した。
+
+
+## RV32 完了時点（2026-11-22）
+
+等級の変化なし。接続・開始の残りの順序検査を、挙動のテストへ。
+- 実施: 接続の組み立てで「プロファイルの選択 → 仮想パッドの接続」「設定の反映 → イベントの配線」と、機種の部品へ `GetKnownExtraButtons`・`HookSettings` を頼むことを `DeviceConnectionOrderTests` へ（計 5 件）。保存済みのプロセス優先度が `ProcessPriorityOptions.Classes` の添字で適用されることを `ServiceLifecycleOrderTests` へ（AboveNormal で確かめ、終わりに元へ戻す）。負の確認で失敗することを確認。
+- 撤去: `ConnectionGuardTests` の順序の文字列検査 2 件、`LifecycleGuardTests` の `ServiceLifecycle` の文字列参照 2 行。
+- 残す: `ConnectionGuardTests` の `DeviceRegistryHooks`・`DeviceConnectionSetup` の文字列検査（別の部品。実機の登録簿の型が要る）。

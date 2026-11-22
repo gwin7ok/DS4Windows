@@ -37,7 +37,9 @@ namespace DS4WindowsTests
             selectorProxy.OnCall = name => order.Add("selector." + name);
 
             var modules = RecordingProxy.Create<IInputDeviceModuleRegistry>();
-            RecordingProxy.Of(modules).Returns["Resolve"] = RecordingProxy.Create<IInputDeviceModule>();
+            var module = RecordingProxy.Create<IInputDeviceModule>();
+            RecordingProxy.Of(module).OnCall = name => order.Add("module." + name);
+            RecordingProxy.Of(modules).Returns["Resolve"] = module;
 
             var outputs = RecordingProxy.Create<IConnectedDeviceOutputs>();
             RecordingProxy.Of(outputs).OnCall = name => order.Add("outputs." + name);
@@ -64,6 +66,32 @@ namespace DS4WindowsTests
             int apply = order.IndexOf("selector.ApplyOnConnect");
             int start = order.IndexOf("device.StartUpdate");
             Assert.True(prime >= 0 && apply > prime && start > apply, string.Join(" → ", order));
+        }
+
+        [Fact]
+        public void TheProfileIsSelected_BeforeTheVirtualPadIsPlugged_AndTheOptionsAreAppliedBeforeTheHooksAreWired()
+        {
+            var device = NewDevice();
+            var (connector, order) = CreateConnector(device);
+
+            connector.PrepareConnected(1, device, Slot);
+
+            Assert.True(order.IndexOf("selector.ApplyOnConnect") < order.IndexOf("outputs.PlugVirtualPad"), string.Join(" → ", order));
+            Assert.True(order.IndexOf("setup.ApplyProfileOptions") >= 0
+                && order.IndexOf("setup.ApplyProfileOptions") < order.IndexOf("setup.WireInitialHooks"), string.Join(" → ", order));
+        }
+
+        [Fact]
+        public void TheDeviceModule_IsAskedForTheExtraButtons_AndHooksTheSettings()
+        {
+            var device = NewDevice();
+            var (connector, order) = CreateConnector(device);
+
+            connector.BeginPrepare(device, showlog: false);
+            connector.PrepareConnected(1, device, Slot);
+
+            Assert.Contains("module.GetKnownExtraButtons", order);
+            Assert.Contains("module.HookSettings", order);
         }
 
         [Fact]
