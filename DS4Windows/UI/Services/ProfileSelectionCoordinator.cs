@@ -65,8 +65,19 @@ namespace DS4Windows.UI.Services
             });
             if (file == null) return;
 
-            System.IO.File.Copy(file, System.IO.Path.Combine(_pathService.AppDataPath, "Profiles", System.IO.Path.GetFileName(file)), true);
-            profileList.AddProfileSort(System.IO.Path.GetFileNameWithoutExtension(file));
+            string target = System.IO.Path.Combine(_pathService.AppDataPath, "Profiles", System.IO.Path.GetFileName(file));
+            string name = System.IO.Path.GetFileNameWithoutExtension(file);
+
+            // 同じ名前のプロファイルがあるときは、確認なしに上書きしない（取り込み元が、取り込み先そのものなら、書き換えにならないので確認しない）
+            bool sameFile = string.Equals(System.IO.Path.GetFullPath(file), System.IO.Path.GetFullPath(target), StringComparison.OrdinalIgnoreCase);
+            if (!sameFile && System.IO.File.Exists(target))
+            {
+                string text = string.Format(LocalizedText.Get("ProfileImportOverwrite"), name);
+                if (!_dialogs.Confirm(text, LocalizedText.Get("ProfileImportOverwriteTitle"), DialogIcon.Question)) return;
+            }
+
+            if (!sameFile) System.IO.File.Copy(file, target, true);
+            profileList.AddProfileSort(name);
         }
 
         /// <summary>選んだプロファイルの XML を、選ばせた保存先へコピーする。</summary>

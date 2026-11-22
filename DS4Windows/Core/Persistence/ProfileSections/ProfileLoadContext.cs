@@ -92,6 +92,25 @@ namespace DS4Windows.Core.Persistence.ProfileSections
             if (node != null && Enum.TryParse(node.InnerText ?? string.Empty, out T value)) assign(value);
         }
 
+        /// <summary>
+        /// 旧来の読み方の要素を読む。要素がない、または <paramref name="apply"/> が例外を投げたとき（解析の失敗ではなく、要素の欠落や形式の誤り）は、
+        /// <paramref name="onFailure"/>（既定値へ戻す処理）を行い、欠けた設定の印を付ける。
+        /// 解析に失敗した値の代入（<c>TryParse</c> の out が 0 や false を返す）は、<paramref name="apply"/> の側で、従来どおりに書く。
+        /// </summary>
+        public void ReadLegacy(string xpath, Action<string> apply, Action? onFailure = null)
+        {
+            try
+            {
+                apply(Xdoc.SelectSingleNode(xpath).Required().InnerText);
+            }
+            catch
+            {
+                // 要素の欠落（Required が投げる）と形式の誤りを、同じ「欠けた設定」として扱う（旧来の try/catch と同じ）
+                onFailure?.Invoke();
+                MissingSetting = true;
+            }
+        }
+
         /// <summary>要素が欠けていた、または読めなかったとき true（読込の最後で、欠けた設定を追記して保存し直す判断に使う）。</summary>
         public bool MissingSetting { get; set; }
     }

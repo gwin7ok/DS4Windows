@@ -1,113 +1,58 @@
-﻿using System.Xml;
-using DS4Windows.Core.Settings;
+﻿using DS4Windows.Core.Settings;
 using DS4Windows.Core.Model;
 
 namespace DS4Windows.Core.Persistence.ProfileSections
 {
     /// <summary>
     /// DualSense 固有の設定・トリガーの二段階・曲線・SX/SZ の曲線（DualSenseControllerSettings〜SZOutputCurveMode）の読込。
-    /// <c>LegacyProfileXmlSerializer.LoadProfile</c> から移したもの。移動のみで、要素の順序・既定値・例外の扱いは変えない。
+    /// 要素の順序・既定値・欠けた設定の扱いは、読み込みの変異ゴールデン（<c>ProfileLoadMutationGoldenTests</c>）が固定している。
     /// </summary>
     internal sealed class ProfileTriggerCurveLoadSection : IProfileLoadSection
     {
         public void Load(ProfileLoadContext context)
         {
             BackingStore store = context.Store;
-            XmlDocument m_Xdoc = context.Xdoc;
-            string rootname = context.RootName;
             int device = context.Device;
-            bool missingSetting = context.MissingSetting;
-            XmlNode? Item;
+            string path(string name) => "/" + context.RootName + "/" + name;
+            int axisOutputCurveId(string name) => store.StickOutputCurveId(name);
 
-            int axisOutputCurveId(string name)
+            // DualSense 固有の設定。グループ（DualSenseControllerSettings、RumbleSettings）がないときは、中の 3 要素もないので、どれも「欠けた設定」になる
+            string rumble = path("DualSenseControllerSettings") + "/RumbleSettings/";
+            context.ReadLegacy(rumble + "EmulationMode", t =>
             {
-                return store.StickOutputCurveId(name);
-            }
-
-            // Start of DualSense specific profile load
-            //
-            XmlNode? xmlDualSenseControllerSettingsElement =
-                m_Xdoc.SelectSingleNode("/" + rootname + "/DualSenseControllerSettings");
-            bool dSControllerSettingsGroup = xmlDualSenseControllerSettingsElement != null;
-            if (dSControllerSettingsGroup)
+                RumbleEmulationMode.TryParse(t, out RumbleEmulationMode temp);
+                store.dualSenseSlots[device].RumbleEmulationMode = temp;
+            });
+            context.ReadLegacy(rumble + "EnableGenericRumbleRescale", t =>
             {
-                XmlNode? xmlDSRumbleGroupElement =
-                    xmlDualSenseControllerSettingsElement.Required().SelectSingleNode("RumbleSettings");
-                bool dSRumbleGroup = xmlDSRumbleGroupElement != null;
-
-                if (dSRumbleGroup)
-                {
-                    try
-                    {
-                        Item = xmlDSRumbleGroupElement.Required().SelectSingleNode("EmulationMode");
-                        RumbleEmulationMode.TryParse(Item.Required().InnerText, out RumbleEmulationMode temp);
-                        store.dualSenseSlots[device].RumbleEmulationMode = temp;
-                    }
-                    catch { missingSetting = true; }
-
-                    try
-                    {
-                        Item = xmlDSRumbleGroupElement.Required().SelectSingleNode("EnableGenericRumbleRescale");
-                        bool.TryParse(Item.Required().InnerText, out bool temp);
-                        store.dualSenseSlots[device].UseGenericRumbleRescale = temp;
-                    }
-                    catch { missingSetting = true; }
-
-                    try
-                    {
-                        Item = xmlDSRumbleGroupElement.Required().SelectSingleNode("HapticPowerLevel");
-                        byte.TryParse(Item.Required().InnerText, out byte temp);
-                        store.dualSenseSlots[device].HapticPowerLevel = temp;
-                    }
-                    catch { missingSetting = true; }
-
-                }
-                else
-                {
-                    missingSetting = true;
-                }
-            }
-            else
+                bool.TryParse(t, out bool temp);
+                store.dualSenseSlots[device].UseGenericRumbleRescale = temp;
+            });
+            context.ReadLegacy(rumble + "HapticPowerLevel", t =>
             {
-                missingSetting = true;
-            }
-            //
-            // End of DualSense specific profile load
+                byte.TryParse(t, out byte temp);
+                store.dualSenseSlots[device].HapticPowerLevel = temp;
+            });
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveCustom"); store.triggerSlots[device].L2Bezier.CustomDefinition = Item.Required().InnerText; }
-            catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/L2OutputCurveMode"); store.triggerSlots[device].ApplyL2CurveMode(axisOutputCurveId(Item.Required().InnerText)); }
-            catch { store.triggerSlots[device].ApplyL2CurveMode(0); missingSetting = true; }
+            context.ReadLegacy(path("L2OutputCurveCustom"), t => store.triggerSlots[device].L2Bezier.CustomDefinition = t);
+            context.ReadLegacy(path("L2OutputCurveMode"), t => store.triggerSlots[device].ApplyL2CurveMode(axisOutputCurveId(t)), () => store.triggerSlots[device].ApplyL2CurveMode(0));
 
-            context.ReadEnum<TwoStageTriggerMode>(m_Xdoc, "/" + rootname + "/L2TwoStageMode", v => store.triggerSlots[device].L2Output.TwoStageMode = v);
+            context.ReadEnum<TwoStageTriggerMode>(context.Xdoc, path("L2TwoStageMode"), v => store.triggerSlots[device].L2Output.TwoStageMode = v);
+            context.ReadInt(context.Xdoc, path("L2HipFireTime"), 0, 5000, v => store.triggerSlots[device].L2Output.hipFireMS = v);
+            context.ReadEnum<TriggerEffects>(context.Xdoc, path("L2TriggerEffect"), v => store.triggerSlots[device].L2Output.TriggerEffect = v);
 
+            context.ReadLegacy(path("R2OutputCurveCustom"), t => store.triggerSlots[device].R2Bezier.CustomDefinition = t);
+            context.ReadLegacy(path("R2OutputCurveMode"), t => store.triggerSlots[device].ApplyR2CurveMode(axisOutputCurveId(t)), () => store.triggerSlots[device].ApplyR2CurveMode(0));
 
-            context.ReadInt(m_Xdoc, "/" + rootname + "/L2HipFireTime", 0, 5000, v => store.triggerSlots[device].L2Output.hipFireMS = v);
+            context.ReadEnum<TwoStageTriggerMode>(context.Xdoc, path("R2TwoStageMode"), v => store.triggerSlots[device].R2Output.TwoStageMode = v);
+            context.ReadInt(context.Xdoc, path("R2HipFireTime"), 0, 5000, v => store.triggerSlots[device].R2Output.hipFireMS = v);
+            context.ReadEnum<TriggerEffects>(context.Xdoc, path("R2TriggerEffect"), v => store.triggerSlots[device].R2Output.TriggerEffect = v);
 
-            context.ReadEnum<DS4Windows.Core.Model.TriggerEffects>(m_Xdoc, "/" + rootname + "/L2TriggerEffect", v => store.triggerSlots[device].L2Output.TriggerEffect = v);
+            context.ReadLegacy(path("SXOutputCurveCustom"), t => store.sixAxisSlots[device].SXCurve.CustomDefinition = t);
+            context.ReadLegacy(path("SXOutputCurveMode"), t => store.sixAxisSlots[device].ApplySXCurveMode(axisOutputCurveId(t)), () => store.sixAxisSlots[device].ApplySXCurveMode(0));
 
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveCustom"); store.triggerSlots[device].R2Bezier.CustomDefinition = Item.Required().InnerText; }
-            catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/R2OutputCurveMode"); store.triggerSlots[device].ApplyR2CurveMode(axisOutputCurveId(Item.Required().InnerText)); }
-            catch { store.triggerSlots[device].ApplyR2CurveMode(0); missingSetting = true; }
-
-            context.ReadEnum<TwoStageTriggerMode>(m_Xdoc, "/" + rootname + "/R2TwoStageMode", v => store.triggerSlots[device].R2Output.TwoStageMode = v);
-
-            context.ReadInt(m_Xdoc, "/" + rootname + "/R2HipFireTime", 0, 5000, v => store.triggerSlots[device].R2Output.hipFireMS = v);
-
-            context.ReadEnum<DS4Windows.Core.Model.TriggerEffects>(m_Xdoc, "/" + rootname + "/R2TriggerEffect", v => store.triggerSlots[device].R2Output.TriggerEffect = v);
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveCustom"); store.sixAxisSlots[device].SXCurve.CustomDefinition = Item.Required().InnerText; }
-            catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SXOutputCurveMode"); store.sixAxisSlots[device].ApplySXCurveMode(axisOutputCurveId(Item.Required().InnerText)); }
-            catch { store.sixAxisSlots[device].ApplySXCurveMode(0); missingSetting = true; }
-
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveCustom"); store.sixAxisSlots[device].SZCurve.CustomDefinition = Item.Required().InnerText; }
-            catch { missingSetting = true; }
-            try { Item = m_Xdoc.SelectSingleNode("/" + rootname + "/SZOutputCurveMode"); store.sixAxisSlots[device].ApplySZCurveMode(axisOutputCurveId(Item.Required().InnerText)); }
-            catch { store.sixAxisSlots[device].ApplySZCurveMode(0); missingSetting = true; }
-
-            context.MissingSetting = missingSetting;
+            context.ReadLegacy(path("SZOutputCurveCustom"), t => store.sixAxisSlots[device].SZCurve.CustomDefinition = t);
+            context.ReadLegacy(path("SZOutputCurveMode"), t => store.sixAxisSlots[device].ApplySZCurveMode(axisOutputCurveId(t)), () => store.sixAxisSlots[device].ApplySZCurveMode(0));
         }
     }
 }

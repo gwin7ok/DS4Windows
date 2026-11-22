@@ -63,6 +63,56 @@ namespace DS4WindowsTests
         }
 
         [Fact]
+        public void ImportProfile_WhenTheSameNameExists_AsksBeforeOverwriting_AndKeepsTheOldFileIfDeclined()
+        {
+            var list = CreateList("Dup");
+            string existing = Path.Combine(_dir, "Profiles", "Dup.xml");
+            File.WriteAllText(existing, "<old/>");
+            string source = Path.Combine(_dir, "Dup.xml");
+            File.WriteAllText(source, "<new/>");
+            _dialogs.OpenFileAnswer = source;
+            _dialogs.ConfirmAnswer = false;
+
+            Create().ImportProfile(list);
+
+            Assert.Single(_dialogs.Confirmations);
+            Assert.Contains("Dup", _dialogs.Confirmations[0]);
+            Assert.Equal("<old/>", File.ReadAllText(existing));
+        }
+
+        [Fact]
+        public void ImportProfile_WhenTheSameNameExists_OverwritesAfterTheUserAgrees_WithoutDuplicatingTheListEntry()
+        {
+            var list = CreateList("Dup");
+            string existing = Path.Combine(_dir, "Profiles", "Dup.xml");
+            File.WriteAllText(existing, "<old/>");
+            string source = Path.Combine(_dir, "Dup.xml");
+            File.WriteAllText(source, "<new/>");
+            _dialogs.OpenFileAnswer = source;
+            _dialogs.ConfirmAnswer = true;
+
+            Create().ImportProfile(list);
+
+            Assert.Single(_dialogs.Confirmations);
+            Assert.Equal("<new/>", File.ReadAllText(existing));
+            Assert.Single(list.ProfileListCol, p => p.Name == "Dup");
+        }
+
+        [Fact]
+        public void ImportProfile_FromTheProfilesFolderItself_DoesNotAsk()
+        {
+            var list = CreateList();
+            string inPlace = Path.Combine(_dir, "Profiles", "Same.xml");
+            File.WriteAllText(inPlace, "<x/>");
+            _dialogs.OpenFileAnswer = inPlace;
+
+            Create().ImportProfile(list);
+
+            Assert.Empty(_dialogs.Confirmations);
+            Assert.Contains(list.ProfileListCol, p => p.Name == "Same");
+        }
+
+        [Fact]
         public void ImportProfile_WhenCancelled_ChangesNothing()
         {
             _dialogs.OpenFileAnswer = null;
