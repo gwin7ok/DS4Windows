@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using DS4Windows.Core.Platform;
 using DS4Windows.Processing.Abstractions;
