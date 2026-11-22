@@ -58,8 +58,6 @@ namespace DS4Windows.UI.ViewModels
         private bool recording;
         public bool Recording { get => recording; set => SetProperty(ref recording, value); }
 
-        private bool toggleLightbar;
-        public bool ToggleLightbar { get => toggleLightbar; set => SetProperty(ref toggleLightbar, value); }
 
         /// <summary>記録中に、ほかのウィンドウの上も含めて、マウスの移動とボタンを記録する。</summary>
         public bool RecordMouseMovement { get; set; }
@@ -67,8 +65,6 @@ namespace DS4Windows.UI.ViewModels
         /// <summary>記録する座標の基準。0＝画面の座標、1＝ポインターの下のウィンドウ内の座標（<see cref="MacroPointerMoveMode"/> と同じ番号）。</summary>
         public int PointerRecordModeIndex { get; set; }
 
-        private bool toggleRummble;
-        public bool ToggleRumble { get => toggleRummble; set => SetProperty(ref toggleRummble, value); }
 
         private int appendIndex = -1;
 

@@ -532,9 +532,6 @@
   <data name="MinAngleThreshold" xml:space="preserve">
     <value>最小角度のしきい値</value>
   </data>
-  <data name="RealWorldCalibration" xml:space="preserve">
-    <value>実世界の校正</value>
-  </data>
   <data name="ViGEmPluginFailure" xml:space="preserve">
       <value>ViGEm デバイスプラグインが失敗しました。エラーコード {0}。おそらくViGEmBus内部の問題です。接続を終了します。問題が解決しない場合は、Windowsを再起動してください。警告: Windowsのシャットダウン時にブルースクリーンが発生する可能性があります。</value>
   </data>
@@ -588,7 +585,7 @@
     <value>初回起動</value>
   </data>
   <data name="FirstLaunch.Header" xml:space="preserve">
-    <value>マッピングに使うデバイスの有効化</value>
+    <value>使用するデバイスの選択</value>
   </data>
   <data name="FirstLaunch.DeviceSupport" xml:space="preserve">
     <value>デバイスサポート</value>
@@ -1084,27 +1081,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Startup_CannotEditClose" xml:space="preserve">
     <value>この場所では DS4Windows が設定を編集できないため、終了します。</value>
   </data>
-  <data name="About_DS4WindowsGwin7okBuildVersion" xml:space="preserve">
-    <value>DS4Windows - gwin7ok ビルド（バージョン</value>
-  </data>
-  <data name="About_Hotkeys" xml:space="preserve">
-    <value>ホットキー</value>
-  </data>
-  <data name="About_License" xml:space="preserve">
-    <value>ライセンス</value>
-  </data>
-  <data name="About_Credits" xml:space="preserve">
-    <value>クレジット</value>
-  </data>
-  <data name="About_Translators" xml:space="preserve">
-    <value>翻訳者:</value>
-  </data>
-  <data name="About_Extras" xml:space="preserve">
-    <value>その他</value>
-  </data>
-  <data name="About_ProjectURL" xml:space="preserve">
-    <value>プロジェクトの URL:</value>
-  </data>
   <data name="AssignmentEditor_Name" xml:space="preserve">
     <value>名前:</value>
   </data>
@@ -1120,21 +1096,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="AssignmentEditor_LoadProfile" xml:space="preserve">
     <value>プロファイルを読み込む</value>
   </data>
-  <data name="Ui_None" xml:space="preserve">
-    <value>（なし）</value>
-  </data>
-  <data name="AssignmentEditor_PressKey" xml:space="preserve">
-    <value>キーを押す</value>
-  </data>
-  <data name="AssignmentEditor_SwitchMode" xml:space="preserve">
-    <value>切り替えモード:</value>
-  </data>
-  <data name="AssignmentEditor_Press" xml:space="preserve">
-    <value>押す</value>
-  </data>
-  <data name="AssignmentEditor_Strength" xml:space="preserve">
-    <value>強さ:</value>
-  </data>
   <data name="AssignmentEditor_DisBT" xml:space="preserve">
     <value>Bluetooth 切断</value>
   </data>
@@ -1142,16 +1103,10 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>バッテリー確認</value>
   </data>
   <data name="AssignmentEditor_MultiAct" xml:space="preserve">
-    <value>マルチ</value>
+    <value>マルチアクション</value>
   </data>
   <data name="AutoProfiles_WindowTitle" xml:space="preserve">
     <value>ウィンドウのタイトル...</value>
-  </data>
-  <data name="BindingWindow_SelectAction" xml:space="preserve">
-    <value>アクションを選択</value>
-  </data>
-  <data name="BindingWindow_Space" xml:space="preserve">
-    <value>スペース</value>
   </data>
   <data name="BindingWindow_Vol" xml:space="preserve">
     <value>↑ 音量</value>
@@ -1165,41 +1120,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="ColorPickerWindow_ColorPickerWindow" xml:space="preserve">
     <value>色の選択</value>
   </data>
-  <data name="GeneralSettingsPanel_ForReadout" xml:space="preserve">
-    <value>読み取り用</value>
-  </data>
   <data name="GeneralSettingsPanel_Mins" xml:space="preserve">
     <value>分</value>
-  </data>
-  <data name="GyroSettingsPanel_TiltUp" xml:space="preserve">
-    <value>上に傾ける</value>
-  </data>
-  <data name="GyroSettingsPanel_TiltDown" xml:space="preserve">
-    <value>下に傾ける</value>
-  </data>
-  <data name="GyroSettingsPanel_TiltLeft" xml:space="preserve">
-    <value>左に傾ける</value>
-  </data>
-  <data name="GyroSettingsPanel_TiltRight" xml:space="preserve">
-    <value>右に傾ける</value>
-  </data>
-  <data name="GyroSettingsPanel_Triggers" xml:space="preserve">
-    <value>トリガー</value>
-  </data>
-  <data name="GyroSettingsPanel_TurnBehaviorTurnsGyro" xml:space="preserve">
-    <value>回転の挙動 - ジャイロを回す</value>
-  </data>
-  <data name="GyroSettingsPanel_EvalCond" xml:space="preserve">
-    <value>条件の評価</value>
-  </data>
-  <data name="GyroSettingsPanel_And" xml:space="preserve">
-    <value>かつ</value>
-  </data>
-  <data name="GyroSettingsPanel_Or" xml:space="preserve">
-    <value>または</value>
-  </data>
-  <data name="GyroSettingsPanel_ResetGyroCalibration" xml:space="preserve">
-    <value>ジャイロの校正をリセット</value>
   </data>
   <data name="GyroSettingsPanel_CalibrationDone" xml:space="preserve">
     <value>ジャイロの校正が完了しました。</value>
@@ -1207,89 +1129,20 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="GyroSettingsPanel_GyroSensitivity" xml:space="preserve">
     <value>ジャイロの感度:</value>
   </data>
-  <data name="GyroSettingsPanel_XAxis" xml:space="preserve">
-    <value>X 軸</value>
-  </data>
-  <data name="Ui_Invert" xml:space="preserve">
-    <value>反転</value>
-  </data>
   <data name="Ui_JitterCompensation" xml:space="preserve">
     <value>ジッター補正</value>
   </data>
-  <data name="Ui_MinThreshold" xml:space="preserve">
-    <value>最小のしきい値</value>
-  </data>
-  <data name="Ui_Smoothing" xml:space="preserve">
-    <value>スムージング</value>
-  </data>
-  <data name="Ui_SmoothingOptions" xml:space="preserve">
-    <value>スムージングのオプション</value>
-  </data>
-  <data name="GyroSettingsPanel_WeightedAverage" xml:space="preserve">
-    <value>加重平均</value>
-  </data>
-  <data name="GyroSettingsPanel_SmoothWeight" xml:space="preserve">
-    <value>スムージングの重み</value>
-  </data>
-  <data name="Ui_OutputStick" xml:space="preserve">
-    <value>出力スティック</value>
-  </data>
-  <data name="Ui_OutputAxes" xml:space="preserve">
-    <value>出力する軸</value>
-  </data>
-  <data name="Ui_HorizontalAndVertical" xml:space="preserve">
-    <value>水平と垂直</value>
-  </data>
-  <data name="Ui_HorizontalOnly" xml:space="preserve">
-    <value>水平のみ</value>
-  </data>
-  <data name="Ui_VerticalOnly" xml:space="preserve">
-    <value>垂直のみ</value>
-  </data>
-  <data name="Ui_MinimumX" xml:space="preserve">
-    <value>最小 X</value>
-  </data>
-  <data name="Ui_MinimumY" xml:space="preserve">
-    <value>最小 Y</value>
-  </data>
-  <data name="GyroSettingsPanel_XAxis2" xml:space="preserve">
-    <value>X 軸</value>
-  </data>
-  <data name="Ui_InvertX" xml:space="preserve">
-    <value>X を反転</value>
-  </data>
-  <data name="Ui_InvertY" xml:space="preserve">
-    <value>Y を反転</value>
-  </data>
-  <data name="GyroSettingsPanel_Weight" xml:space="preserve">
-    <value>重み</value>
-  </data>
   <data name="LanguageSelectDialog_SelectLanguage" xml:space="preserve">
     <value>言語の選択</value>
-  </data>
-  <data name="LanguageSelectDialog_WelcomeToDS4Windows" xml:space="preserve">
-    <value>DS4Windows へようこそ!</value>
   </data>
   <data name="LanguageSelectDialog_PleaseSelectYourPreferredLanguage" xml:space="preserve">
     <value>使用する言語を選んでください。</value>
   </data>
   <data name="LightbarSettingsPanel_ColorByBattery" xml:space="preserve">
-    <value>バッテリー残量 % で色を変える</value>
-  </data>
-  <data name="MainWindow_Open" xml:space="preserve">
-    <value>開く</value>
-  </data>
-  <data name="MainWindow_Exit" xml:space="preserve">
-    <value>終了</value>
+    <value>バッテリー残量で色を変える</value>
   </data>
   <data name="MainWindow_RightClickToDisconnectWireless" xml:space="preserve">
-    <value>右クリックでワイヤレスを切断</value>
-  </data>
-  <data name="MainWindow_UseProfileColor" xml:space="preserve">
-    <value>プロファイルの色を使う</value>
-  </data>
-  <data name="MainWindow_UseCustomColor" xml:space="preserve">
-    <value>カスタムの色を使う</value>
+    <value>右クリックで Bluetooth 接続を切断</value>
   </data>
   <data name="PluginOutDevWindow_PluginOutDevWindow" xml:space="preserve">
     <value>仮想コントローラーを接続</value>
@@ -1312,17 +1165,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="ProfileEditor_Rotate902" xml:space="preserve">
     <value>-90° 回転</value>
   </data>
-  <data name="ProfileEditor_FaceButtons" xml:space="preserve">
-    <value>フェイスボタン</value>
-  </data>
   <data name="ProfileEditor_ArrowKeys" xml:space="preserve">
-    <value>矢印キー</value>
-  </data>
-  <data name="ProfileEditor_SpecialActions" xml:space="preserve">
-    <value>スペシャルアクション</value>
-  </data>
-  <data name="ProfileEditor_ControllerReadings" xml:space="preserve">
-    <value>コントローラーの読み取り値</value>
+    <value>十字キー</value>
   </data>
   <data name="ProfileNotificationWindow_DS4WindowsProfileNotification" xml:space="preserve">
     <value>DS4Windows プロファイルの通知</value>
@@ -1366,63 +1210,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="TouchpadSettingsPanel_DisableInvert" xml:space="preserve">
     <value>反転を無効にする</value>
   </data>
-  <data name="TouchpadSettingsPanel_Cross" xml:space="preserve">
-    <value>×</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Circle" xml:space="preserve">
-    <value>○</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Square" xml:space="preserve">
-    <value>□</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Triangle" xml:space="preserve">
-    <value>△</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Up" xml:space="preserve">
-    <value>上</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Down" xml:space="preserve">
-    <value>下</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Left" xml:space="preserve">
-    <value>左</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Right" xml:space="preserve">
-    <value>右</value>
-  </data>
-  <data name="TouchpadSettingsPanel_FingerOnTouchpad" xml:space="preserve">
-    <value>タッチパッドに指 1 本</value>
-  </data>
-  <data name="TouchpadSettingsPanel_2FingersOnTouchpad" xml:space="preserve">
-    <value>タッチパッドに指 2 本</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Options" xml:space="preserve">
-    <value>オプション</value>
-  </data>
-  <data name="TouchpadSettingsPanel_Share" xml:space="preserve">
-    <value>シェア</value>
-  </data>
-  <data name="TouchpadSettingsPanel_TouchpadClick" xml:space="preserve">
-    <value>タッチパッドのクリック</value>
-  </data>
-  <data name="TouchpadSettingsPanel_SideL" xml:space="preserve">
-    <value>サイド L</value>
-  </data>
-  <data name="TouchpadSettingsPanel_SideR" xml:space="preserve">
-    <value>サイド R</value>
-  </data>
-  <data name="TouchpadSettingsPanel_FunctionLeft" xml:space="preserve">
-    <value>ファンクション左</value>
-  </data>
-  <data name="TouchpadSettingsPanel_FunctionRight" xml:space="preserve">
-    <value>ファンクション右</value>
-  </data>
-  <data name="TouchpadSettingsPanel_BottomLeftPaddle" xml:space="preserve">
-    <value>左下パドル</value>
-  </data>
-  <data name="TouchpadSettingsPanel_BottomRightPaddle" xml:space="preserve">
-    <value>右下パドル</value>
-  </data>
   <data name="TouchpadSettingsPanel_SwipeUp" xml:space="preserve">
     <value>上にスワイプ</value>
   </data>
@@ -1435,32 +1222,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="TouchpadSettingsPanel_SwipeRight" xml:space="preserve">
     <value>右にスワイプ</value>
   </data>
-  <data name="WelcomeDialog_Finished" xml:space="preserve">
-    <value>完了</value>
-  </data>
   <data name="About_DriverThatProvidesVirtualGamepadSupport" xml:space="preserve">
-    <value>システム全体で仮想ゲームパッドを使えるようにするドライバーです。多くのコントローラーのマッピングアプリで使われています。作者: nefarius</value>
+    <value>システム全体で仮想コントローラーを使えるようにするドライバーです。多くのコントローラーのマッピングアプリで使われています。作者: nefarius</value>
   </data>
   <data name="About_UseHidHideToConfigureAndHide" xml:space="preserve">
     <value>HidHide を使うと、システム上で動いている他のアプリから、入力コントローラーを隠す設定ができます。コントローラーが 1 台だけ見えている必要があるゲームや、二重入力で問題が起きるゲームで使います。作者: nefarius</value>
-  </data>
-  <data name="About_HideDS4ControllerHidesTheDS4" xml:space="preserve">
-    <value>DS4 コントローラーを隠す: DS4 の通常の入力（Dinput）を他のプログラムから隠します。ゲームで入力が二重になる場合や、R2 でゲームが一時停止する場合に確認してください\nタッチパッドの左側をクリック: 左タッチ\nタッチパッドの右側をクリック: 右タッチ\nタッチパッドを 2 本の指でクリック: マルチタッチ\nタッチパッドの上部をクリック: 上部タッチ\nPS + Options、または PS を 10 秒長押し: コントローラーを切断（Bluetooth のみ）\nタッチパッドに触れながら PS: タッチパッドの動きをオフ（クリックは有効）\n右下のパッドクリック: 右クリック（右側をマウスのボタンにしているときに最適）\nタッチパッドで 2 本指を上下*: 上下にスクロール\nタッチパッドをタップして長押し*: マウスの左ボタンでドラッグ\nタッチパッドを 2 本指で左右にスワイプ: プロファイルを順に切り替え\nシフト修飾: アクションを押し続けて、別の操作セットを使う\nキーボードとマウスを割り当てるとき:\nトグル: もう一度押すまで、キーが「押しっぱなし」の状態になります\nマクロ: 1 つの入力に複数のキーを割り当てます\nスキャンコード: キーの解釈が変わります。一部のゲームで必要になる場合があります\n*有効にしている場合</value>
-  </data>
-  <data name="About_Site" xml:space="preserve">
-    <value>サイト</value>
-  </data>
-  <data name="About_Source" xml:space="preserve">
-    <value>ソース</value>
-  </data>
-  <data name="About_InhexSTERStarterOfDS4Tool" xml:space="preserve">
-    <value>InhexSTER（DS4Tool の作者）</value>
-  </data>
-  <data name="About_ElectrobrainsBranchedOffOf" xml:space="preserve">
-    <value>electrobrains（派生元）</value>
-  </data>
-  <data name="About_Contributors" xml:space="preserve">
-    <value>貢献者</value>
   </data>
   <data name="ControllerRegisterOptionsWindow_AboutVirtualControllerSupport" xml:space="preserve">
     <value>仮想コントローラーのサポートについて</value>
@@ -1474,20 +1240,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="TriggerSettingsPanel_NormalSimpleTwoStageTriggerActivation" xml:space="preserve">
     <value>通常（簡易）の 2 段トリガーの動作です。最大出力に達する前はソフトプルのアクションを実行し、最大値に達するとフルプルのアクションも実行します。</value>
   </data>
-  <data name="TriggerSettingsPanel_Exclusive" xml:space="preserve">
-    <value>排他</value>
-  </data>
   <data name="TriggerSettingsPanel_ActivatesSoftPullActionWhenUnder" xml:space="preserve">
     <value>最大出力に達する前はソフトプルのアクションを実行します。最大出力に達すると、ソフトプルのアクションを解除してから、フルプルのアクションを実行します</value>
   </data>
-  <data name="TriggerSettingsPanel_HairTrigger" xml:space="preserve">
-    <value>ヘアトリガー</value>
-  </data>
   <data name="TriggerSettingsPanel_SimilarToNormalTwoStageTrigger" xml:space="preserve">
     <value>通常の 2 段トリガーに似ていますが、1 つ違いがあります。最大出力に達する前はソフトプルのアクションを実行し、最大値に達するとフルプルのアクションも実行します。フルプルから少し戻すと、フルプルとソフトプルの両方のアクションを解除します。もう一度フルプルにすると、ソフトプルも再び実行します。</value>
-  </data>
-  <data name="TriggerSettingsPanel_HipFire" xml:space="preserve">
-    <value>ヒップファイア</value>
   </data>
   <data name="TriggerSettingsPanel_TakesThe" xml:space="preserve">
     <value></value>
@@ -1495,11 +1252,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="TriggerSettingsPanel_TimeIntoAccountTheTriggerWill" xml:space="preserve">
     <value>を考慮します。時間が経過するまで、トリガーはアクションを実行しません。時間が経過すると、そのときのトリガーの出力に応じたアクションを決めます。このモードでは、ソフトプルの実行を飛ばして、フルプルのアクションだけを実行できます。</value>
   </data>
-  <data name="TriggerSettingsPanel_HipFireExclusive" xml:space="preserve">
-    <value>ヒップファイア排他</value>
-  </data>
   <data name="TriggerSettingsPanel_SimilarToHipFireModeThe" xml:space="preserve">
-    <value>ヒップファイアのモードに似ています。主な違いは、アクションが常に 1 つだけ実行されることです。</value>
+    <value>Hip Fire モードに似ています。主な違いは、アクションが常に 1 つだけ実行されることです。</value>
   </data>
   <data name="TriggerSettingsPanel_TimeDelayUsedWithTwoState" xml:space="preserve">
     <value>2 段モードの</value>
@@ -1526,7 +1280,7 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>このプロファイルを使うコントローラーに、仮想コントローラーを作成・関連付けしません（プロファイルの保存時に適用）</value>
   </data>
   <data name="EmulatedController" xml:space="preserve">
-    <value>エミュレートするコントローラー</value>
+    <value>仮想コントローラーの出力タイプ</value>
   </data>
   <data name="OutContNotice" xml:space="preserve">
     <value>出力する仮想コントローラーの種類を選びます（プロファイルの保存時に適用）</value>
@@ -1548,9 +1302,6 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   </data>
   <data name="AntiDeadzoneTooltip" xml:space="preserve">
     <value>アンチデッドゾーンは、軸が割り当てられたデッドゾーンを抜けたあとに出す最小の出力値を示すオフセットです。主に、ゲーム内で軸に割り当てられたデッドゾーンの値に合わせるために使います。たとえばゲーム内の XInput LS の標準のデッドゾーンは 8000（25%）前後です。アンチデッドゾーンを設定しないと、DS4Windows のデッドゾーンに加えて、ゲーム側のデッドゾーンも越えるまで軸を動かす必要があります。</value>
-  </data>
-  <data name="StickInputCurveTooltip" xml:space="preserve">
-    <value>古い、廃止予定の設定です。デッドゾーンの情報を適用する前に、生の入力座標に基づくカーブを適用しようとします。不安定です</value>
   </data>
   <data name="TouchpadMinThresholdTooltip" xml:space="preserve">
     <value>マウスのイベントをシステムへ送るまでに必要な、計算上の最小の移動量</value>
@@ -1576,125 +1327,82 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="StickOuterBindInvertTooltip" xml:space="preserve">
     <value>しきい値に達する前にアウターバインドを発生させます。しきい値を超えるとアクションは解除されます</value>
   </data>
-  <data name="StickOuterBindTooltip" xml:space="preserve">
-    <value>スティックの移動量がしきい値を超えたときに実行するアクション。歩く・走るのキー割り当てに便利です。反転すると、しきい値までの間アクションが発生します</value>
-  </data>
   <data name="StickRotationTooltip" xml:space="preserve">
-    <value>＋ = 時計回り、－ = 反時計回り。\n\n回転の設定は、アナログスティックを動かすときに親指が少しずれる場合に、向きを補正するためのものです。たとえば、スティックを真上へいっぱいに倒したとき、親指が中心から少しずれることがあります。私の親指は、DS4 の握り方のせいで、真上に倒すと少し右へずれます。値は、最終的な軸の出力値を調整する角度（度）です。値は -180 から 180 まで。既定は 0 です。</value>
+    <value>＋ = 時計回り、－ = 反時計回り。
+
+回転の設定は、アナログスティックを動かすときに親指が少しずれる場合に、向きを補正するためのものです。たとえば、スティックを真上へいっぱいに倒したとき、親指が中心から少しずれることがあります。私の親指は、DS4 の握り方のせいで、真上に倒すと少し右へずれます。値は、最終的な軸の出力値を調整する角度（度）です。値は -180 から 180 まで。既定は 0 です。</value>
   </data>
   <data name="TouchpadJitterCompTooltip" xml:space="preserve">
     <value>タッチパッドの小さな動きを抑えます。タッチパッドをほぼ同じ位置で押さえているときの、意図しないマウスカーソルの動きを減らします</value>
   </data>
   <data name="DS4BTPollRate" xml:space="preserve">
-    <value>DS4 BT ポーリングレート</value>
-  </data>
-  <data name="DS4LightbarPassthruDisabled" xml:space="preserve">
-    <value>ドライバーの問題のため、この機能は現在アプリで無効です。今後の更新で修正される見込みです。</value>
+    <value>DUALSHOCK 4 Bluetooth接続 ポーリングレート</value>
   </data>
   <data name="DualSRumbleForceGenericRescale" xml:space="preserve">
     <value>2 種類の強度（一般用と DualSense 専用）を両方使う</value>
   </data>
-  <data name="DualSRumbleModeDisabled" xml:space="preserve">
-    <value>無効</value>
-  </data>
-  <data name="DualSRumbleModeAccurate" xml:space="preserve">
-    <value>正確</value>
-  </data>
-  <data name="DualSRumbleModeLegacy" xml:space="preserve">
-    <value>レガシー</value>
-  </data>
   <data name="DualSRumbleModeNPowerLevelTxt" xml:space="preserve">
     <value>振動モードと強度:</value>
-  </data>
-  <data name="DualSRumbleModePassthru" xml:space="preserve">
-    <value>パススルー</value>
   </data>
   <data name="DualSRumbleSpecificSettings" xml:space="preserve">
     <value>DualSense 専用の振動設定</value>
   </data>
   <data name="DualSRumbleForceGenericRescale_Tip" xml:space="preserve">
-    <value>無効のままにすることをお勧めします。\n\n- 無効: 振動は、設定した強度に合わせてコントローラー本体が調整します（高品質）\n\n- 有効: DS4Windows の一般的な振動の調整と、DualSense 本体の調整の両方が働きます</value>
+    <value>無効のままにすることをお勧めします。
+
+- 無効: 振動は、設定した強度に合わせてコントローラー本体が調整します（高品質）
+
+- 有効: DS4Windows の一般的な振動の調整と、DualSense 本体の調整の両方が働きます</value>
   </data>
   <data name="DualSRumbleModes_Tip" xml:space="preserve">
-    <value>正確モード（推奨）:\n- DualShock 4／Xbox 360 コントローラーの振動の感触に近づけます\n- ゲームが意図した振動の効果を、より正確に再現します\n- 振動に深みがあります。同じ強度でも、ゲーム内の振動の最小と最大の差が大きく、ごく弱い振動から、設定した強度の最大までの幅があります\n\nレガシーモード:\n- 全体に強めですが、深みがありません\n- より「鋭い」感触です\n- ゲーム内の最小・最大の振動は、設定した強度よりわずかに弱い・わずかに強い程度になります\n\n無効:\n- 振動を完全に無効にします</value>
+    <value>正確モード（推奨）:
+- DualShock 4／Xbox 360 コントローラーの振動の感触に近づけます
+- ゲームが意図した振動の効果を、より正確に再現します
+- 振動に深みがあります。同じ強度でも、ゲーム内の振動の最小と最大の差が大きく、ごく弱い振動から、設定した強度の最大までの幅があります
+
+レガシーモード:
+- 全体に強めですが、深みがありません
+- より「鋭い」感触です
+- ゲーム内の最小・最大の振動は、設定した強度よりわずかに弱い・わずかに強い程度になります
+
+無効:
+- 振動を完全に無効にします</value>
   </data>
   <data name="DualSRumblePowerLevel_Tip" xml:space="preserve">
-    <value>DualSense 本体の振動の強度を調整します。\n\n- 正確モードでは、振動の［最小 // 最大］は［1% /// 選んだ強度］になります\n    - 例（62%）: ［最小 = 1% /// 最大 = 62%］\n\n- レガシーモードでは、振動の［最小 /// 最大］は、おおよそ［強度 - 12% /// 強度 + 12%］になります\n    - 例（62%）: ［最小 = 50% /// 最大 = 74%］</value>
+    <value>DualSense 本体の振動の強度を調整します。
+
+- 正確モードでは、振動の［最小 // 最大］は［1% /// 選んだ強度］になります
+    - 例（62%）: ［最小 = 1% /// 最大 = 62%］
+
+- レガシーモードでは、振動の［最小 /// 最大］は、おおよそ［強度 - 12% /// 強度 + 12%］になります
+    - 例（62%）: ［最小 = 50% /// 最大 = 74%］</value>
   </data>
   <data name="Accept" xml:space="preserve">
     <value>確定</value>
   </data>
-  <data name="Black" xml:space="preserve">
-    <value>黒</value>
-  </data>
   <data name="Colored" xml:space="preserve">
-    <value>色付き</value>
-  </data>
-  <data name="Default" xml:space="preserve">
-    <value>既定</value>
+    <value>カラー</value>
   </data>
   <data name="DeviceType" xml:space="preserve">
     <value>デバイスの種類</value>
   </data>
   <data name="DisconnectFromBtWhenStopping" xml:space="preserve">
-    <value>停止時に Bluetooth を切断する</value>
-  </data>
-  <data name="Dynamic" xml:space="preserve">
-    <value>動的</value>
+    <value>機能停止時に Bluetooth を切断する</value>
   </data>
   <data name="FlashLightbarAtHighLatency" xml:space="preserve">
     <value>遅延が大きいときにライトバーを点滅</value>
   </data>
-  <data name="HotkeysAbout" xml:space="preserve">
-    <value>ホットキー／バージョン情報</value>
-  </data>
   <data name="IconChoice" xml:space="preserve">
-    <value>アイコンの選択</value>
-  </data>
-  <data name="OutputSlots" xml:space="preserve">
-    <value>出力スロット</value>
-  </data>
-  <data name="Permanent" xml:space="preserve">
-    <value>固定</value>
-  </data>
-  <data name="Plug" xml:space="preserve">
-    <value>接続</value>
-  </data>
-  <data name="RevertToDefaultProfileOnUnknown" xml:space="preserve">
-    <value>不明なときは既定のプロファイルに戻す</value>
-  </data>
-  <data name="ShowAutoProfileDebugMessages" xml:space="preserve">
-    <value>自動プロファイルのデバッグメッセージを表示</value>
+    <value>トレイアイコン</value>
   </data>
   <data name="SwipeTouchpadToSwitchProfiles" xml:space="preserve">
     <value>タッチパッドのスワイプでプロファイルを切り替え</value>
   </data>
-  <data name="TurnOffDS4WindowsTemporarily" xml:space="preserve">
-    <value>DS4Windows を一時的にオフにする</value>
-  </data>
-  <data name="Unplug" xml:space="preserve">
-    <value>取り外し</value>
-  </data>
-  <data name="White" xml:space="preserve">
-    <value>白</value>
-  </data>
   <data name="AppTheme" xml:space="preserve">
-    <value>アプリのテーマ</value>
+    <value>スキン</value>
   </data>
   <data name="CheckEvery" xml:space="preserve">
-    <value>確認の間隔</value>
-  </data>
-  <data name="OscServerHeading" xml:space="preserve">
-    <value>外部からの OSC による制御と監視</value>
-  </data>
-  <data name="EnableOscServer" xml:space="preserve">
-    <value>制御サーバーを有効にする</value>
-  </data>
-  <data name="EnableInterpretingOscMonitoring" xml:space="preserve">
-    <value>監視メッセージを解釈する</value>
-  </data>
-  <data name="EnableOscSender" xml:space="preserve">
-    <value>監視サービスを有効にする</value>
+    <value>更新の確認間隔</value>
   </data>
   <data name="ControllerSupportDS4" xml:space="preserve">
     <value>DS4 コントローラーのサポート</value>
@@ -1708,17 +1416,11 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="CopycatTip" xml:space="preserve">
     <value>Sony 製ではない DS4 コントローラー向けに、いくつかのフラグを変更します。サードパーティー製の DS4 互換機で、振動やライトバーが使えない問題が直る場合があります</value>
   </data>
-  <data name="Dark" xml:space="preserve">
-    <value>ダーク</value>
-  </data>
   <data name="Days" xml:space="preserve">
     <value>日</value>
   </data>
   <data name="DetectedControllers" xml:space="preserve">
     <value>検出したコントローラー</value>
-  </data>
-  <data name="DeviceOptions" xml:space="preserve">
-    <value>デバイスのオプション</value>
   </data>
   <data name="EnableVerboseLog" xml:space="preserve">
     <value>詳細なログを有効にする</value>
@@ -1729,35 +1431,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="Hours" xml:space="preserve">
     <value>時間</value>
   </data>
-  <data name="UseCustomSteamFolder" xml:space="preserve">
-    <value>カスタムの Steam フォルダーを使う</value>
-  </data>
-  <data name="Utils" xml:space="preserve">
-    <value>ユーティリティ</value>
-  </data>
-  <data name="Program" xml:space="preserve">
-    <value>プログラム</value>
-  </data>
-  <data name="RunAs" xml:space="preserve">
-    <value>実行方法</value>
-  </data>
-  <data name="Task" xml:space="preserve">
-    <value>タスク</value>
-  </data>
   <data name="GyroTriggerJitterCompensationTooltip" xml:space="preserve">
     <value>カーブの低い側で追加の抑制を行い、デバイスの揺れを補正します</value>
-  </data>
-  <data name="AutoProfiles.DisplaySwitchVia" xml:space="preserve">
-    <value>プロファイルの切り替えの表示方法</value>
-  </data>
-  <data name="AutoProfiles.LogAndNotification" xml:space="preserve">
-    <value>ログ＋通知</value>
-  </data>
-  <data name="Notification" xml:space="preserve">
-    <value>通知</value>
-  </data>
-  <data name="Light" xml:space="preserve">
-    <value>ライト</value>
   </data>
   <data name="ProfileEditor.VirtualDS4TrigOutput" xml:space="preserve">
     <value>DS4 のトリガー出力モード</value>
@@ -1771,53 +1446,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="DS4OutputTriggersDefault" xml:space="preserve">
     <value>既定（アナログ＋ボタン）</value>
   </data>
-  <data name="DeadZone" xml:space="preserve">
-    <value>デッドゾーン</value>
-  </data>
-  <data name="MaxZone" xml:space="preserve">
-    <value>最大ゾーン</value>
-  </data>
-  <data name="AntiDeadZone" xml:space="preserve">
-    <value>アンチデッドゾーン</value>
-  </data>
-  <data name="Axial" xml:space="preserve">
-    <value>軸ごと</value>
-  </data>
-  <data name="AxisConfig" xml:space="preserve">
-    <value>軸の設定</value>
-  </data>
-  <data name="Controls" xml:space="preserve">
-    <value>操作</value>
-  </data>
-  <data name="Cubic" xml:space="preserve">
-    <value>3 次</value>
-  </data>
-  <data name="DeadZone X" xml:space="preserve">
-    <value>デッドゾーン X</value>
-  </data>
-  <data name="DeadZone Y" xml:space="preserve">
-    <value>デッドゾーン Y</value>
-  </data>
   <data name="DeadZoneType" xml:space="preserve">
     <value>デッドゾーンの種類</value>
-  </data>
-  <data name="EaseoutCubic" xml:space="preserve">
-    <value>イーズアウト（3 次）</value>
-  </data>
-  <data name="EaseoutQuad" xml:space="preserve">
-    <value>イーズアウト（2 次）</value>
-  </data>
-  <data name="EnhancedPrecision" xml:space="preserve">
-    <value>高精度（Enhanced Precision）</value>
-  </data>
-  <data name="FlickStick" xml:space="preserve">
-    <value>フリックスティック</value>
-  </data>
-  <data name="Linear" xml:space="preserve">
-    <value>リニア</value>
-  </data>
-  <data name="MaxOutput" xml:space="preserve">
-    <value>最大出力</value>
   </data>
   <data name="MouseOffset" xml:space="preserve">
     <value>マウスのオフセット</value>
@@ -1831,20 +1461,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="OutputMode" xml:space="preserve">
     <value>出力モード</value>
   </data>
-  <data name="Quadratic" xml:space="preserve">
-    <value>2 次</value>
-  </data>
-  <data name="Radial" xml:space="preserve">
-    <value>円形</value>
-  </data>
   <data name="Sensitivity" xml:space="preserve">
     <value>感度</value>
-  </data>
-  <data name="SixAxisAccel" xml:space="preserve">
-    <value>6 軸（加速度）</value>
-  </data>
-  <data name="SquareStick" xml:space="preserve">
-    <value>スクエアスティック</value>
   </data>
   <data name="VerticalScale" xml:space="preserve">
     <value>垂直スケール</value>
@@ -1855,47 +1473,32 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="AntiSnapbackTiming" xml:space="preserve">
     <value>アンチスナップバックのタイミング</value>
   </data>
-  <data name="Touchpad" xml:space="preserve">
-    <value>タッチパッド</value>
-  </data>
   <data name="ViGEm117MinNeeded" xml:space="preserve">
     <value>ViGEmBus 1.17.333.0 以降でのみ動作します</value>
   </data>
-  <data name="AntiRadius" xml:space="preserve">
-    <value>アンチ半径</value>
-  </data>
   <data name="BindingWin.ChangeLight" xml:space="preserve">
-    <value>ライトを変更</value>
+    <value>ライトバーを変更</value>
+  </data>
+  <data name="BindingWin.RumbleLight" xml:space="preserve">
+    <value>弱振動</value>
   </data>
   <data name="BindingWin.ChangeMouseSensitivity" xml:space="preserve">
     <value>マウスの感度を変更</value>
   </data>
   <data name="BindingWin.KeyAndRelMouse" xml:space="preserve">
-    <value>キーボードと相対マウス</value>
+    <value>キーボード、マウス、コントローラー</value>
   </data>
   <data name="BindingWin.KeyboardAndMouse" xml:space="preserve">
     <value>キーボードとマウス</value>
   </data>
   <data name="BindingWin.MacroOn" xml:space="preserve">
-    <value>マクロ実行中。無効にするキーを選ぶか、このウィンドウを閉じて保存します</value>
+    <value>マクロ記録中。終了するキーを選ぶか、このウィンドウを閉じて保存します</value>
   </data>
   <data name="BindingWin.RecordAMacro" xml:space="preserve">
     <value>マクロを記録</value>
   </data>
-  <data name="BindingWin.SelectShiftTrigger" xml:space="preserve">
-    <value>シフトのトリガーを選択</value>
-  </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>確認</value>
-  </data>
   <data name="ControllerRegOptWin.EnableHomeLED" xml:space="preserve">
     <value>ホーム LED を有効にする</value>
-  </data>
-  <data name="ControllerRegOptWin.JoinedGyroProvider" xml:space="preserve">
-    <value>結合したジャイロの提供元</value>
-  </data>
-  <data name="ControllerRegOptWin.LinkMode" xml:space="preserve">
-    <value>リンクモード</value>
   </data>
   <data name="ControllerRegOptWin.MuteLEDMode" xml:space="preserve">
     <value>ミュート LED モード</value>
@@ -1909,41 +1512,17 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="DeltaAcceleration" xml:space="preserve">
     <value>デルタ加速</value>
   </data>
-  <data name="DirectionalSwipe" xml:space="preserve">
-    <value>方向スワイプ</value>
-  </data>
-  <data name="EasingDuration" xml:space="preserve">
-    <value>イージングの時間</value>
-  </data>
   <data name="Enabled" xml:space="preserve">
     <value>有効</value>
   </data>
   <data name="EnableTouchpadToggle" xml:space="preserve">
-    <value>タッチパッドのトグルを有効にする</value>
-  </data>
-  <data name="Extra" xml:space="preserve">
-    <value>追加</value>
-  </data>
-  <data name="FlashRate" xml:space="preserve">
-    <value>点滅の速さ</value>
-  </data>
-  <data name="FullBtnPull" xml:space="preserve">
-    <value>ボタンを全部押す</value>
+    <value>タッチパッドのマウス機能切替を有効にする</value>
   </data>
   <data name="Fuzz" xml:space="preserve">
     <value>ファズ</value>
   </data>
-  <data name="GyroControlsAccel" xml:space="preserve">
-    <value>操作（加速度）</value>
-  </data>
   <data name="Heavy" xml:space="preserve">
-    <value>強</value>
-  </data>
-  <data name="Height" xml:space="preserve">
-    <value>高さ</value>
-  </data>
-  <data name="HipFireDelay" xml:space="preserve">
-    <value>ヒップファイアの遅延</value>
+    <value>強振動</value>
   </data>
   <data name="IdleDisconnect" xml:space="preserve">
     <value>アイドル時の切断</value>
@@ -1952,13 +1531,7 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>言語パックを使う</value>
   </data>
   <data name="LaunchProgramWithProfile" xml:space="preserve">
-    <value>プロファイルと同時にプログラムを起動</value>
-  </data>
-  <data name="Lightbar" xml:space="preserve">
-    <value>ライトバー</value>
-  </data>
-  <data name="MainWin.EnableServer" xml:space="preserve">
-    <value>サーバーを有効にする</value>
+    <value>プロファイル適用時にプログラムを起動</value>
   </data>
   <data name="MaxTravel" xml:space="preserve">
     <value>最大移動量</value>
@@ -1969,17 +1542,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="MinTravel" xml:space="preserve">
     <value>最小移動量</value>
   </data>
-  <data name="Mode" xml:space="preserve">
-    <value>モード</value>
-  </data>
-  <data name="Mouse" xml:space="preserve">
-    <value>マウス</value>
-  </data>
   <data name="MouseAcceleration" xml:space="preserve">
     <value>マウスの加速</value>
-  </data>
-  <data name="MouseJoystick" xml:space="preserve">
-    <value>マウススティック</value>
   </data>
   <data name="MouseSensitivity" xml:space="preserve">
     <value>マウスの感度</value>
@@ -1990,65 +1554,17 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="No" xml:space="preserve">
     <value>いいえ</value>
   </data>
-  <data name="Normal" xml:space="preserve">
-    <value>通常</value>
-  </data>
-  <data name="Other" xml:space="preserve">
-    <value>その他</value>
-  </data>
-  <data name="OuterBind" xml:space="preserve">
-    <value>アウターバインド</value>
-  </data>
-  <data name="OuterBtn" xml:space="preserve">
-    <value>外側ボタン</value>
-  </data>
-  <data name="OuterBtnDead" xml:space="preserve">
-    <value>外側ボタンのデッド</value>
-  </data>
-  <data name="Passthru" xml:space="preserve">
-    <value>パススルー</value>
-  </data>
-  <data name="Port" xml:space="preserve">
-    <value>ポート</value>
-  </data>
-  <data name="RecordBox.AddRumble" xml:space="preserve">
-    <value>振動を追加</value>
-  </data>
-  <data name="RecordBox.ChangeLightbarColor" xml:space="preserve">
-    <value>ライトバーの色を変更</value>
-  </data>
   <data name="RecordBox.DoubleClickWaitEdit" xml:space="preserve">
     <value>待ち時間をダブルクリックして時間を編集</value>
-  </data>
-  <data name="RecordBox.FifthMB" xml:space="preserve">
-    <value>マウスの 5 番目のボタン</value>
-  </data>
-  <data name="RecordBox.FourthMB" xml:space="preserve">
-    <value>マウスの 4 番目のボタン</value>
   </data>
   <data name="RecordBox.InsertWait" xml:space="preserve">
     <value>待ち時間を挿入</value>
   </data>
-  <data name="RecordBox.LoadPreset" xml:space="preserve">
-    <value>プリセットを読み込む</value>
-  </data>
   <data name="RecordBox.MacroOrder" xml:space="preserve">
     <value>マクロの順序</value>
   </data>
-  <data name="RecordBox.PlayOnce" xml:space="preserve">
-    <value>1 回だけ再生</value>
-  </data>
   <data name="RecordBox.RecordDelays" xml:space="preserve">
     <value>待ち時間を記録</value>
-  </data>
-  <data name="RecordBox.RepeatToggle" xml:space="preserve">
-    <value>繰り返す（トグル）</value>
-  </data>
-  <data name="RecordBox.RepeatWhileHeld" xml:space="preserve">
-    <value>押している間繰り返す</value>
-  </data>
-  <data name="RecordBox.SavePreset" xml:space="preserve">
-    <value>プリセットを保存</value>
   </data>
   <data name="RecordBox.UseActionToRecord" xml:space="preserve">
     <value>キーボード/マウス＋コントローラー 1 で記録する</value>
@@ -2056,80 +1572,26 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="RecordBoxWin.WinTitle" xml:space="preserve">
     <value>マクロの編集</value>
   </data>
-  <data name="Regular" xml:space="preserve">
-    <value>標準</value>
-  </data>
   <data name="RenameProfileWin.TypeNewProfileName" xml:space="preserve">
-    <value>選択したプロファイルの XML ファイルに使う、新しい名前を入力してください。</value>
+    <value>選択したプロファイルの新しい名前を入力してください。</value>
   </data>
   <data name="RenameProfileWin.WinTitle" xml:space="preserve">
-    <value>プロファイルの名前の変更</value>
-  </data>
-  <data name="Rotation" xml:space="preserve">
-    <value>回転</value>
-  </data>
-  <data name="ScanCode" xml:space="preserve">
-    <value>スキャンコード</value>
-  </data>
-  <data name="ShiftModifier" xml:space="preserve">
-    <value>シフト修飾</value>
-  </data>
-  <data name="SkipVersion" xml:space="preserve">
-    <value>このバージョンをスキップ</value>
-  </data>
-  <data name="SnapToCenter" xml:space="preserve">
-    <value>中心にスナップ</value>
-  </data>
-  <data name="Toggle" xml:space="preserve">
-    <value>トグル</value>
-  </data>
-  <data name="TriggerEffect" xml:space="preserve">
-    <value>トリガー効果</value>
+    <value>プロファイル名の変更</value>
   </data>
   <data name="TwoStageMode" xml:space="preserve">
     <value>2 段モード</value>
-  </data>
-  <data name="UDPServer" xml:space="preserve">
-    <value>UDP サーバー</value>
-  </data>
-  <data name="Unbound" xml:space="preserve">
-    <value>未割り当て</value>
   </data>
   <data name="UpdaterWin.WinTitle" xml:space="preserve">
     <value>更新ウィンドウ</value>
   </data>
   <data name="UseController" xml:space="preserve">
-    <value>コントローラーを使う</value>
-  </data>
-  <data name="UseSmoothing" xml:space="preserve">
-    <value>スムージングを使う</value>
-  </data>
-  <data name="Width" xml:space="preserve">
-    <value>幅</value>
-  </data>
-  <data name="XCenter" xml:space="preserve">
-    <value>X 中心</value>
-  </data>
-  <data name="YCenter" xml:space="preserve">
-    <value>Y 中心</value>
+    <value>設定対象選択に使用するコントローラー</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>はい</value>
   </data>
-  <data name="Active" xml:space="preserve">
-    <value>有効</value>
-  </data>
-  <data name="Current" xml:space="preserve">
-    <value>現在</value>
-  </data>
   <data name="Intro" xml:space="preserve">
     <value>はじめに</value>
-  </data>
-  <data name="OutputSlotMan.XInputNum" xml:space="preserve">
-    <value>XInput 番号</value>
-  </data>
-  <data name="Pitch" xml:space="preserve">
-    <value>ピッチ</value>
   </data>
   <data name="PresetOptWin.OutputController" xml:space="preserve">
     <value>出力コントローラー</value>
@@ -2141,19 +1603,7 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>バッテリー: 0%</value>
   </data>
   <data name="ReadingsControl.InputDelayNA" xml:space="preserve">
-    <value>入力遅延: 該当なし</value>
-  </data>
-  <data name="ReadingsControl.SixAxisXText" xml:space="preserve">
-    <value>6 軸: 読みやすいよう、X 軸を反転して表示しています</value>
-  </data>
-  <data name="Requested" xml:space="preserve">
-    <value>予約</value>
-  </data>
-  <data name="Roll" xml:space="preserve">
-    <value>ロール</value>
-  </data>
-  <data name="Yaw" xml:space="preserve">
-    <value>ヨー</value>
+    <value>入力遅延： -- ms</value>
   </data>
   <data name="ProgramFolder" xml:space="preserve">
     <value>プログラムのフォルダー</value>
@@ -2162,19 +1612,10 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
     <value>バッテリー残量を確認</value>
   </data>
   <data name="SpecialActionEdit.DisconnectBT" xml:space="preserve">
-    <value>Bluetooth を切断</value>
-  </data>
-  <data name="SpecialActionEdit.DoubleTapTrigger" xml:space="preserve">
-    <value>ダブルタップのトリガー</value>
+    <value>Bluetooth接続を切断</value>
   </data>
   <data name="SpecialActionEdit.HoldFor" xml:space="preserve">
     <value>長押し</value>
-  </data>
-  <data name="SpecialActionEdit.HoldTrigger" xml:space="preserve">
-    <value>長押しのトリガー</value>
-  </data>
-  <data name="SpecialActionEdit.KeepKeyState" xml:space="preserve">
-    <value>キーの状態を保持</value>
   </data>
   <data name="SpecialActionEdit.LaunchProgram" xml:space="preserve">
     <value>プログラムを起動</value>
@@ -2182,14 +1623,8 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="SpecialActionEdit.LoadProfile" xml:space="preserve">
     <value>プロファイルを読み込む</value>
   </data>
-  <data name="SpecialActionEdit.MacroRecorded" xml:space="preserve">
-    <value>マクロを記録しました</value>
-  </data>
   <data name="SpecialActionEdit.MultiAction" xml:space="preserve">
     <value>マルチアクションボタン</value>
-  </data>
-  <data name="SpecialActionEdit.PressingUnloadTrigger" xml:space="preserve">
-    <value>解除のトリガーを押したとき</value>
   </data>
   <data name="SpecialActionEdit.PressKey" xml:space="preserve">
     <value>キー・マウス・ボタンを出力</value>
@@ -2197,62 +1632,20 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="SpecialActionEdit.RecordMacro" xml:space="preserve">
     <value>マクロを記録</value>
   </data>
-  <data name="SpecialActionEdit.ReleasingUnloadTrigger" xml:space="preserve">
-    <value>解除のトリガーを離したとき</value>
-  </data>
-  <data name="SpecialActionEdit.RepeatWhileHeld" xml:space="preserve">
-    <value>押している間繰り返す</value>
-  </data>
-  <data name="SpecialActionEdit.RunTriggerRelease" xml:space="preserve">
-    <value>トリガーを離したときに実行</value>
-  </data>
   <data name="SpecialActionEdit.SelectAction" xml:space="preserve">
     <value>-アクションを選択-</value>
   </data>
-  <data name="SpecialActionEdit.SelectKey" xml:space="preserve">
-    <value>キーを選択</value>
-  </data>
-  <data name="SpecialActionEdit.SelectMacro" xml:space="preserve">
-    <value>マクロを選択</value>
-  </data>
-  <data name="SpecialActionEdit.SetUnloadTrigger" xml:space="preserve">
-    <value>解除のトリガーを設定</value>
-  </data>
-  <data name="SpecialActionEdit.SyncRun" xml:space="preserve">
-    <value>同期して実行</value>
-  </data>
-  <data name="SpecialActionEdit.TapTrigger" xml:space="preserve">
-    <value>タップのトリガー</value>
-  </data>
   <data name="SpecialActionEdit.UnloadTriggerRelease" xml:space="preserve">
-    <value>トリガーを離したときに解除</value>
-  </data>
-  <data name="SpecialActionEdit.UntoggleKeyBy" xml:space="preserve">
-    <value>キーのトグルを解除する操作</value>
+    <value>トリガーを離したときに元のプロファイルへ戻す</value>
   </data>
   <data name="SpecialActionEdit.ViaLightbar" xml:space="preserve">
-    <value>ライトバー経由</value>
+    <value>ライトバーで示す</value>
   </data>
   <data name="SpecialActionEdit.ViaNotification" xml:space="preserve">
-    <value>通知経由</value>
-  </data>
-  <data name="UnloadTrigger" xml:space="preserve">
-    <value>解除のトリガー</value>
-  </data>
-  <data name="Net8NoticeWin.WinTitle" xml:space="preserve">
-    <value>.NET 8 が見つかりません</value>
-  </data>
-  <data name="Net8NotInstalledWinNotice" xml:space="preserve">
-    <value>DS4Windows バージョン 3.3 では、お使いのシステムに .NET 8 デスクトップ ランタイムのインストールが必要になります  \n[https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.0-windows-{0}-installer)  \n\n内容を確認したら、[OK] をクリックしてください。[キャンセル] を押すと、次回のアプリ起動時にもう一度お知らせします。</value>
-  </data>
-  <data name="Custom" xml:space="preserve">
-    <value>カスタム</value>
+    <value>通知で示す</value>
   </data>
   <data name="ControllerSupportMoonlight" xml:space="preserve">
     <value>仮想コントローラーのサポート</value>
-  </data>
-  <data name="AdvancedSupport" xml:space="preserve">
-    <value>高度なサポート</value>
   </data>
   <data name="StickCalibration" xml:space="preserve">
     <value>スティックの校正</value>
@@ -2275,40 +1668,16 @@ Bluetooth接続の設定（オプション）：PSボタンとShareボタンを3
   <data name="ProfileSwitchNotification" xml:space="preserve">
     <value>プロファイルの切り替え通知を表示</value>
   </data>
-  <data name="LightbarMode" xml:space="preserve">
-    <value>ライトバーのモード</value>
-  </data>
-  <data name="SolidColor" xml:space="preserve">
-    <value>単色</value>
-  </data>
-  <data name="Macro" xml:space="preserve">
-    <value>マクロ</value>
-  </data>
-  <data name="Add" xml:space="preserve">
-    <value>追加</value>
-  </data>
-  <data name="ColorAndLength" xml:space="preserve">
-    <value>色と長さ</value>
-  </data>
-  <data name="SpecialActionEdit.CalibrateGyro" xml:space="preserve">
-    <value>ジャイロを校正</value>
-  </data>
   <data name="HoldFor" xml:space="preserve">
     <value>長押し</value>
   </data>
   <data name="FailedToRetrieveLatestVersion" xml:space="preserve">
     <value>最新バージョンを取得できませんでした</value>
   </data>
-  <data name="CancelCurrentMacro" xml:space="preserve">
-    <value>実行中のマクロを中止</value>
-  </data>
-  <data name="CancelCurrentMacroTooltip" xml:space="preserve">
-    <value>このマクロを実行したとき、実行中のマクロを止めるかどうかを指定します</value>
-  </data>
   <data name="ExportSpecialActions" xml:space="preserve">
     <value>アクションをエクスポート</value>
   </data>
   <data name="InverseMotors" xml:space="preserve">
-    <value>モーターを入れ替える</value>
+    <value>強弱振動モーターを入れ替える</value>
   </data>
 </root>

@@ -874,12 +874,6 @@ Let op: deze optie werkt niet in een admin map zonder gebruikersaccountbeheer</v
   <data name="Port" xml:space="preserve">
     <value>Poort</value>
   </data>
-  <data name="RecordBox.AddRumble" xml:space="preserve">
-    <value>Trilling toevoegen</value>
-  </data>
-  <data name="RecordBox.ChangeLightbarColor" xml:space="preserve">
-    <value>Kleur lightbar veranderen</value>
-  </data>
   <data name="RecordBox.DoubleClickWaitEdit" xml:space="preserve">
     <value>Dubbelklik op een wacht op de tijd te veranderen</value>
   </data>

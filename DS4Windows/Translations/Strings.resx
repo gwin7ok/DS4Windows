@@ -970,6 +970,9 @@ Disabled:
   <data name="BindingWin.ChangeLight" xml:space="preserve">
     <value>Change Light</value>
   </data>
+  <data name="BindingWin.RumbleLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
   <data name="BindingWin.ChangeMouseSensitivity" xml:space="preserve">
     <value>Change Mouse Sensitivity</value>
   </data>
@@ -1131,12 +1134,6 @@ Disabled:
   </data>
   <data name="Port" xml:space="preserve">
     <value>Port</value>
-  </data>
-  <data name="RecordBox.AddRumble" xml:space="preserve">
-    <value>Add Rumble</value>
-  </data>
-  <data name="RecordBox.ChangeLightbarColor" xml:space="preserve">
-    <value>Change Lightbar Color</value>
   </data>
   <data name="RecordBox.AddMouseMove" xml:space="preserve">
     <value>Add Mouse Move</value>

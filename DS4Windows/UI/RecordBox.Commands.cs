@@ -17,10 +17,6 @@ namespace DS4Windows.UI
 
         public ICommand ClearStepsCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
-        public ICommand ChangeLightCommand { get; private set; } = null!; // InitCommands で必ず設定する
-
-        public ICommand AddRumbleCommand { get; private set; } = null!; // InitCommands で必ず設定する
-
         public ICommand LoadPresetCommand { get; private set; } = null!; // InitCommands で必ず設定する
 
         public ICommand SavePresetCommand { get; private set; } = null!; // InitCommands で必ず設定する
@@ -37,8 +33,6 @@ namespace DS4Windows.UI
             CancelCommand = CommandGuard.CreateSync(CancelMacro, name: nameof(CancelCommand));
             RecordCommand = CommandGuard.CreateSync(ToggleRecording, name: nameof(RecordCommand));
             ClearStepsCommand = CommandGuard.CreateSync(ClearSteps, name: nameof(ClearStepsCommand));
-            ChangeLightCommand = CommandGuard.CreateSync(AddLightbarStep, name: nameof(ChangeLightCommand));
-            AddRumbleCommand = CommandGuard.CreateSync(AddRumbleStep, name: nameof(AddRumbleCommand));
             LoadPresetCommand = CommandGuard.CreateSync(LoadPreset, name: nameof(LoadPresetCommand));
             SavePresetCommand = CommandGuard.CreateSync(SavePreset, name: nameof(SavePresetCommand));
             AddMouseMoveCommand = CommandGuard.CreateSync(AddMouseMoveStep, name: nameof(AddMouseMoveCommand));

@@ -233,7 +233,11 @@ namespace DS4Windows.UI
         private void ConBtn_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             Button? btn = sender as Button;
-            MappedControl mpControl = mappingListVM.Mappings[mappingListVM.SelectedIndex];
+            // 右クリックしたボタン自身の割り当てを対象にする。ホバーの遅延（500ms）の前は一覧が未選択（-1）のままで、
+            // そのまま引くと範囲外で落ちる
+            int index = btn != null && hoverIndexes.TryGetValue(btn, out int hovered) ? hovered : mappingListVM.SelectedIndex;
+            if (index < 0 || index >= mappingListVM.Mappings.Count) return;
+            MappedControl mpControl = mappingListVM.Mappings[index];
             profileSettingsVM.PresetMenuUtil.SetHighlightControl(mpControl.Control);
             if (conCanvas.FindResource("presetMenu") is not ContextMenu cm) return;
             if (cm.Items[0] is MenuItem temp) temp.Header = profileSettingsVM.PresetMenuUtil.PresetInputLabel;

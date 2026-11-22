@@ -1190,12 +1190,6 @@
   <data name="ReadingsControl.SixAxisXText" xml:space="preserve">
     <value>六轴：为了可读性X轴已翻转</value>
   </data>
-  <data name="RecordBox.AddRumble" xml:space="preserve">
-    <value>添加震动</value>
-  </data>
-  <data name="RecordBox.ChangeLightbarColor" xml:space="preserve">
-    <value>改变灯条颜色</value>
-  </data>
   <data name="RecordBox.DoubleClickWaitEdit" xml:space="preserve">
     <value>在延迟上双击来编辑</value>
   </data>

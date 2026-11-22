@@ -464,8 +464,17 @@ namespace DS4Windows.UI.ViewModels
             MenuChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>複数のコントローラーが接続されていると、全員の入力レポートが毎回この通知を呼び、アイコンが目まぐるしく入れ替わる。
+        /// 表示を変えるのは <see cref="BatteryIconMinIntervalSeconds"/> 秒に 1 回までにして、読み取れる速さにする（入力スレッドから呼ばれる）。</summary>
+        private const double BatteryIconMinIntervalSeconds = 2.0;
+        private long lastBatteryIconTimestamp;
+
         private void UpdateTrayBattery(object? sender, byte percentage)
         {
+            long now = System.Diagnostics.Stopwatch.GetTimestamp();
+            long last = System.Threading.Interlocked.Read(ref lastBatteryIconTimestamp);
+            if (last != 0 && System.Diagnostics.Stopwatch.GetElapsedTime(last, now).TotalSeconds < BatteryIconMinIntervalSeconds) return;
+            System.Threading.Interlocked.Exchange(ref lastBatteryIconTimestamp, now);
             IconSource = percentage switch
             {
                 < 10 => $"{ResourcePaths.ResourcesPrefix}/0.ico",

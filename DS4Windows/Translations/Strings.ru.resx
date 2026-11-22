@@ -956,12 +956,6 @@
   <data name="Port" xml:space="preserve">
     <value>Порт</value>
   </data>
-  <data name="RecordBox.AddRumble" xml:space="preserve">
-    <value>Добавить вибрацию</value>
-  </data>
-  <data name="RecordBox.ChangeLightbarColor" xml:space="preserve">
-    <value>Изменить цвет подсветки</value>
-  </data>
   <data name="RecordBox.DoubleClickWaitEdit" xml:space="preserve">
     <value>Дважды щелкните по ожиданию, чтобы отредактировать время</value>
   </data>

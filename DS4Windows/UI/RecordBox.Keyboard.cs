@@ -28,12 +28,6 @@ namespace DS4Windows.UI
                     recordBoxVM.AppendIndex = recordBoxVM.MacroStepIndex;
                 }
 
-                // 記録中は、Add Rumble/Change Lightbar Color の 2 つを表示する（マウスのボタンは、実際の押下がそのまま記録される）。
-                // 2026-09-26（ユーザー決定）: 以前は Add Rumble/Change Lightbar Color だけ Record Delays にチェックがある
-                // ときに限って表示していたが、その制限を撤廃した。Record Delays がオフの場合、開始と終了のステップの間に
-                // Wait が入らないため、必要に応じて記録後に Insert Wait やダブルクリックで待ち時間を調整する
-                extraConPanel.Visibility = Visibility.Visible;
-
                 ds4.Start();
                 recordBoxVM.ControlsEnabled = false;
                 recordBoxVM.Sw.Restart();
@@ -47,26 +41,12 @@ namespace DS4Windows.UI
                 StopMouseRecording();
                 ds4.Stop();
                 recordBtn.Content = "Record";
-                extraConPanel.Visibility = Visibility.Hidden;
                 recordBoxVM.Sw.Stop();
-
-                if (recordBoxVM.ToggleLightbar)
-                {
-                    ChangeLightbarAction();
-                }
-                if (recordBoxVM.ToggleRumble)
-                {
-                    ChangeRumbleAction();
-                }
 
                 recordBoxVM.ControlsEnabled = true;
             }
 
             recordBoxVM.EditMacroIndex = -1;
-            recordBoxVM.ToggleLightbar = false;
-            recordBoxVM.ToggleRumble = false;
-            changeLightBtn.Content = "Change Lightbar Color";
-            addRumbleBtn.Content = "Add Rumble";
             macroListBox.UnselectAll();
             recordBoxVM.MacroStepIndex = -1;
         }
