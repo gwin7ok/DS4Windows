@@ -4,8 +4,41 @@ All notable changes to this project are recorded in this file.
 
 ## [Unreleased]
 
+### Added
+- Xbox controllers are now supported as an input device (read through XInput; off by default, turn it on in Settings). USB and Bluetooth (BLE) controllers are recognised, the battery level is read (XInput for USB, the GATT battery service for Bluetooth), rumble is sent, and a disconnect is detected even when another pad takes the same XInput number. Disconnecting a BLE Xbox controller from DS4Windows is not possible and is reported once instead of claiming success.
+- Settings: "Hide Xbox controllers" (on by default, USB only; Bluetooth ones are hidden with HidHide). A red note appears when HidHide is not installed. The tooltip explains that apps using Windows.Gaming.Input cannot be hidden from.
+- The log at start-up now reports whether HidHide, ViGEmBus and FakerInput are installed, with the driver versions.
+- Battery levels of all controllers are logged in one format every 5 minutes.
+- Command line: a console build `DS4WindowsCli.exe` is now provided, so the result of `-command Query…` appears before the next prompt.
+- Gyro: a window tells you when calibration has finished.
+- Profile import: when a profile with the same name already exists, a dialog offers Yes (overwrite; the stored profile ID is kept so linked profiles stay linked), No (do nothing) or Rename (enter a new name; empty, invalid or duplicate names are rejected; the profile is saved with a new ID). A profile whose ID collides with another profile gets a new ID. A connected controller using the overwritten profile reloads it immediately.
+- Profile export: the default file name is now "profile name.xml".
+- Output Slots tab: the columns are now Output slot #, Input slot # and Input controller ID (the XInput # column was removed), and the input number is shown for every controller type. The Controllers, Auto Profiles, Log and Output Slots tabs remember their column widths, and the Controllers tab has a "Light bar colour" column heading.
+- The user interface is translated into Japanese (all texts, including the Special Action editor, the rumble test and the first-run guide).
+
 ### Changed
-- Internal: input report parsing, lightbar colour calculation and virtual pad output types were separated into replaceable parts. No behaviour change is intended. DualSense, Switch Pro, Joy-Con and DS3 are verified only by differential tests, not on real devices.
+- DS3 and Joy-Con support was removed (including the DS3 pitch/roll simulation settings). Existing profiles are still read.
+- Gyro and touchpad output mode "Mouse stick" (and the gyro camera presets that used it) was removed. An old profile that used it is read with the default mode.
+- The virtual pad is now plugged into the slot you reserved or chose in the Output Slots tab (it used to take the first free slot).
+- "Hide DS4 Controller" is renamed and its tooltip now describes what it really does.
+- Internal: input report parsing, lightbar colour calculation and virtual pad output types were separated into replaceable parts, the screens were moved to commands and view models, and the whole project now uses nullable reference types. No behaviour change is intended. DualSense and Switch Pro are verified only by differential and specification tests, not on real devices.
+
+### Fixed
+- DualSense: the battery level and the charging state now follow the layout documented by the Linux kernel and SDL, and the Bluetooth output report (rumble, light bar, player LEDs) is framed two bytes later as those sources specify. Not yet verified on a real DualSense.
+- The accelerometer calibration no longer breaks when the X or Y range is zero (some controllers report this).
+- Turning "Send output data to the physical controller" off no longer makes Xbox controllers rumble.
+- Output Slots: the settings pane now appears when a row is selected, including rows reserved as Permanent.
+- Output Slots: a USB Xbox controller's ID is built from its USB port, not from an instance number that changes.
+- Command line: numbers always mean input slot numbers (`LoadProfile`, `ChangeLedColor` and the others), and a forced light bar colour from the command line no longer survives a profile change. A temporary profile is no longer written to the settings file as the normal profile name.
+- Controllers tab: switching between custom colour and profile colour now refreshes the colour column.
+- Tray menu: it is rebuilt each time a profile is applied and the check mark moves; it no longer crashes on Stop after a garbage collection.
+- Profile-change notifications from a swipe were shown twice.
+- Auto Profiles: the "Add program" menu did not work.
+- Language switching could crash, the switch-mode text was wrong in Japanese, and double-clicking a list item did not work.
+- The category list in the profile editor did not switch tabs.
+- Macro recording: the mouse button 4 and 5 buttons that could not work were removed and a duplicate pressed key no longer throws an exception.
+- The Deadzone shape and the drift guide were drawn wrongly for per-axis mode; the red text without a selection and the rainbow check box were fixed.
+- Xbox: a controller reconnected over Bluetooth is now recognised again, and a controller is no longer connected twice at start-up.
 
 ## [4.3.2] - 2026-11-10
 
