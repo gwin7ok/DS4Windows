@@ -13,7 +13,8 @@ namespace DS4WindowsTests
     /// </summary>
     public sealed class RecordingConnectDevice : InputDeviceCore
     {
-        private RecordingConnectDevice() : base(null, null) { }
+        // 基底は通信路と名前を使わない（コンストラクターは実行されない）ため、null! を渡す
+        private RecordingConnectDevice() : base(null!, null!) { }
 
         /// <summary>呼び出しの記録。外から順序を足すときは、同じ並びへ書く。</summary>
         public List<string> Calls { get; set; } = new List<string>();
