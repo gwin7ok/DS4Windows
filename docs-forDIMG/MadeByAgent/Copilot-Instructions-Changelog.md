@@ -6,6 +6,7 @@
 
 | 日付 | 内容 |
 |---|---|
+| 2026-11-23 | PhaseRV43〜RV46: 規則の変更はなし（プロファイルの取り込みの ID は `IProfileIdentityService.ImportFile` を通す、3 択は `IDialogService.ChooseOneOfThree`）。更新履歴（CHANGELOG）と各文書を最新にした |
 | 2026-11-22 | : 3.1 にタイマーの種類の規則を追記［PhaseRV23。ユーザー承認済み］ |
 | 2026-11-21 | PhaseRV15: 4 に「Debug ALL は Run-DebugAll.ps1」、3.1 に「入力機器の状態は持ち主ごとの部品へ」（RV14 の部品）を追記 |
 | 2026-11-20 | PhaseRV10: 3.1 に「アプリ設定の領域」［BackingStore の保存対象は領域の型へ。公開フィールドのラチェット］を追記 |
